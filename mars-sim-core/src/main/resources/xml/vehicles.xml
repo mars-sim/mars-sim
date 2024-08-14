@@ -104,8 +104,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Explorer Rover" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0">
 		<!-- Note: the vehicle types used here must match those in message.properties -->
 
-		<description>A rover for collecting rock samples, ice and regolith.
-			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
+		<description>The Explorer Rover is the only rover that has both a lab and a sick bay bed. 
+			It collects rock samples, ice and regolith.</description>
 
 		<!-- type: The power source type for the vehicle (required) -->
 		<!-- Default: varied according to the type of vehicle -->
@@ -255,7 +255,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0" base-image="long range explorer">
-		<description>An extended range version of the Explorer Rover.</description>
+		<description>The Long Range Explorer is an extended range version of the Explorer Rover.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>		
 		<battery-module number="3" />
 		<energy-per-module value="15" />		
@@ -311,7 +311,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<!-- Transport rover -->
 	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" model="A" width="3.5" length="9.5">
-		<description>A rover for transporting people from one settlement to another
+		<description>The Transport Rover is for transporting people from one settlement to another
 			and can accommodate up to 8 people.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>			
 		<battery-module number="4" />
@@ -362,8 +362,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<!-- Cargo rover -->
 	<vehicle name="Cargo Rover" type="CARGO_ROVER" model="A" width="4.0" length="8.0">
-		<description>A rover for transporting cargo from one settlement to another
-			and can have fit two people only to maximize cargo space.</description>
+		<description>The Cargo Rover is for transporting cargo from one settlement to another.
+			It can have fit only 2 people in order to maximize cargo space.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="5" />
 		<energy-per-module value="15" />
@@ -409,7 +409,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		 See conceptual vehicles for Construction with Regolith https://ntrs.nasa.gov/api/citations/20170002067/downloads/20170002067.pdf
 	-->
 	<vehicle name="Light Utility Vehicle" type="LUV" model="A" width="1.7" length="2.55">
-		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
+		<description>The Light Utility Vehicle (LUV) is a small, unpressurized, one crew utility vehicle with attachable parts.
+		It is used for construction and mining mission.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="5.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
@@ -439,7 +440,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<!-- Delivery Drone -->
 	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" model="A" width="1.75" length="1.75">
-		<description>An unmanned aerial vehicle used for dropping off light cargo at nearby depots and settlements</description>
+		<description>The Delivery Drone is an unmanned aerial vehicle used for dropping off light cargo at nearby depots and settlements.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
@@ -457,7 +458,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 	
 	<vehicle name="Cargo Drone" type="CARGO_DRONE" model="A" width="1.75" length="1.75">
-		<description>An unmanned aerial vehicle used for transport of cargo between settlements</description>
+		<description>The Cargo Drone is an unmanned aerial vehicle used for transport of cargo between settlements.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />

@@ -8,9 +8,11 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -24,6 +26,8 @@ import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import io.github.parubok.text.multiline.MultilineLabel;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a vehicle.
@@ -81,6 +85,18 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		else {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}	
+		
+		JPanel labelPanel = new JPanel(new FlowLayout(10, 10, 10));
+		var label = new MultilineLabel();
+		labelPanel.add(label);
+		String text = vehicle.getDescription().replace("\n", " ");
+		label.setText(text);
+		label.setPreferredWidthLimit(300);
+		label.setLineSpacing(1.2f);
+		label.setMaxLines(30);
+		label.setBorder(new EmptyBorder(10, 5, 10, 5));
+		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
+		panel.add(labelPanel, BorderLayout.CENTER);
 		
 		// Prepare attribute panel.
 		AttributePanel infoPanel = new AttributePanel(15);

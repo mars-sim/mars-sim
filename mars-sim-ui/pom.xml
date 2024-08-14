@@ -35,6 +35,11 @@
 		</dependency>	
 
 		<dependency>
+		    <groupId>io.github.parubok</groupId>
+		    <artifactId>multiline-label</artifactId>
+		    <version>1.20</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>${jfreechart.version}</version>

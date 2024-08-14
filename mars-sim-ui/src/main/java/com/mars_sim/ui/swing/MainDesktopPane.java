@@ -263,8 +263,8 @@ public class MainDesktopPane extends JDesktopPane
 	public void unitManagerUpdate(UnitManagerEvent event) {
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
-
-			SwingUtilities.invokeLater(() -> updateToolWindow());
+//			SwingUtilities.invokeLater(() -> updateToolWindow());
+			updateToolWindow();
 		}
 	}
 
@@ -468,16 +468,14 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param toolName the name of the tool window
 	 */
 	public void closeToolWindow(String toolName) {
-		SwingUtilities.invokeLater(() -> {
-			ToolWindow window = getToolWindow(toolName, false);
-			if ((window != null) && !window.isClosed()) {
-				try {
-					window.setClosed(true);
-				} catch (java.beans.PropertyVetoException e) {
-					// ignore
-				}
+		ToolWindow window = getToolWindow(toolName, false);
+		if ((window != null) && !window.isClosed()) {
+			try {
+				window.setClosed(true);
+			} catch (java.beans.PropertyVetoException e) {
+				// ignore
 			}
-		});
+		}
 	}
 
 	/**

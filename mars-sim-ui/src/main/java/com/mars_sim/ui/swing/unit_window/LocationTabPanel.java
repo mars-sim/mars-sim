@@ -738,9 +738,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 						vicinityLabel.setText("");
 				}
 			}
-			else {
-				vicinityLabel.setText("");
-			}
 		}
 		
 		else {

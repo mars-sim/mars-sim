@@ -48,9 +48,8 @@ public class EquipmentUnitWindow extends UnitWindow {
 				true);
         this.equipment = equipment;
 
-        if (equipment instanceof EVASuit suit) {
-        	addTabPanel(new TabPanelSuitGeneral(suit, desktop));
-        }
+        if (equipment instanceof EVASuit) 
+        	addTabPanel(new TabPanelGeneralEquipment(equipment, desktop));
         
         addTabPanel(new InventoryTabPanel(equipment, desktop));
 
