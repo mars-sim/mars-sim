@@ -9,14 +9,17 @@ package com.mars_sim.core.person.health;
 import java.io.Serializable;
 
 /**
- * This centralises the process of havign a referenc eto a Complaint but storing the serialised
+ * This centralises the process of having a reference to a Complaint but storing the serialised
  * representation as a ComplaintType.
  * 
  * This will be remvoved when issue #1341 is implemented
  * 
  */
 class ComplaintReference implements Serializable {
-    private static MedicalManager medicalManager;
+	
+    private static final long serialVersionUID = 1L;
+
+	private static MedicalManager medicalManager;
 
     private ComplaintType type;
     private transient Complaint complaint;

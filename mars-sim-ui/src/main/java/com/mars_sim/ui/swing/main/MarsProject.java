@@ -4,7 +4,7 @@
  * @date 2023-03-30
  * @author Scott Davis
  */
-package com.mars_sim.ui.main;
+package com.mars_sim.ui.swing.main;
 
 import java.io.File;
 import java.io.FileInputStream;

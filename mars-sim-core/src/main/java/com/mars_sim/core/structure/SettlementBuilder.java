@@ -249,7 +249,7 @@ public final class SettlementBuilder {
 									location, populationNumber,
 									initialNumOfRobots);
 		
-		settlement.initializeStatics();
+		Settlement.initializeStatics();
 		
 		settlement.initializeDataNInstances();
 		

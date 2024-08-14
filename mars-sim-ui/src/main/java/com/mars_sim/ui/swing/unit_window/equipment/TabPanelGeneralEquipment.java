@@ -8,12 +8,9 @@ package com.mars_sim.ui.swing.unit_window.equipment;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.History;
@@ -26,8 +23,6 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
-
-import io.github.parubok.text.multiline.MultilineLabel;
 
 /**
  * This tab displays general information about an equipment.
