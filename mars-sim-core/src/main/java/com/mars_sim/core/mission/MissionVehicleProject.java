@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -18,10 +19,9 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.project.ProjectStep;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This represents a MissionProject that specialises in Vehicle based Mission.

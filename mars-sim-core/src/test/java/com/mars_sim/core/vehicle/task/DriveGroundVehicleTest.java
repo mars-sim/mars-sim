@@ -9,12 +9,12 @@ package com.mars_sim.core.vehicle.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.StatusType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
     private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;

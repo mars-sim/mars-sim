@@ -22,6 +22,8 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -29,8 +31,6 @@ import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.PilotDrone;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleGarage;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 public abstract class DroneMission extends AbstractVehicleMission {
 

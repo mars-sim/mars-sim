@@ -13,13 +13,13 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * The LocationTag class stores the location information of an object.

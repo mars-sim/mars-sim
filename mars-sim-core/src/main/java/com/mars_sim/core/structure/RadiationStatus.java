@@ -9,7 +9,7 @@ package com.mars_sim.core.structure;
 import java.io.Serializable;
 
 import com.mars_sim.core.person.health.RadiationExposure;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Represents the current status of pending Radiation events.

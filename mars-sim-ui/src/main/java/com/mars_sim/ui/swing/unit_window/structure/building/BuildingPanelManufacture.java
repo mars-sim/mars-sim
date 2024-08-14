@@ -41,7 +41,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.Manufacture;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.structure.ManufacturePanel;

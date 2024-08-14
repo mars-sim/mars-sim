@@ -34,7 +34,7 @@ import com.mars_sim.core.structure.building.utility.power.PowerMode;
 import com.mars_sim.core.structure.building.utility.power.PowerSource;
 import com.mars_sim.core.structure.building.utility.power.PowerStorage;
 import com.mars_sim.core.structure.building.utility.power.SolarPowerSource;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

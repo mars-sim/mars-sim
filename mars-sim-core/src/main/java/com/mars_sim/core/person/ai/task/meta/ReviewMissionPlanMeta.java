@@ -23,7 +23,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The meta task for reviewing mission plans.

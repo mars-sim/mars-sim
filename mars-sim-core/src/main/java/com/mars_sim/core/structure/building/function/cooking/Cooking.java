@@ -35,7 +35,7 @@ import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 

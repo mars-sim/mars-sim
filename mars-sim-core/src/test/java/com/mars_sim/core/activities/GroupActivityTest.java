@@ -7,6 +7,8 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.activities.GroupActivity.ActivityState;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
@@ -14,8 +16,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityTest extends AbstractMarsSimUnitTest {
 

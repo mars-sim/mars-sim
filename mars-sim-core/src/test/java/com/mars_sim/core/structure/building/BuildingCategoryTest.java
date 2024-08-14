@@ -2,7 +2,7 @@ package com.mars_sim.core.structure.building;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.mapdata.location.BoundedObject;
+import com.mars_sim.core.map.location.BoundedObject;
 
 public class BuildingCategoryTest extends AbstractMarsSimUnitTest {
     private static final BoundedObject BOUNDS = new BoundedObject(0, 0, 20, 10, 0D);

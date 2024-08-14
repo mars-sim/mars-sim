@@ -13,10 +13,10 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * An class for an item that is transported between planets/moons/etc.

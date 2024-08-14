@@ -18,7 +18,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.

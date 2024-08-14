@@ -23,7 +23,7 @@ import com.mars_sim.core.structure.building.function.HouseKeeping;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This function that is responsible for farming algae.

@@ -13,7 +13,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents the System Condition of a robot.

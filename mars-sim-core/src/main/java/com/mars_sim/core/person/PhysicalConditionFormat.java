@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.person;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Helper class to create text representations of the PhysicalCondition instances.

@@ -19,8 +19,8 @@ import com.mars_sim.core.structure.building.function.Research;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.farming.Farming;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The TendGreenhouse class is a task for tending the greenhouse in a

@@ -13,7 +13,7 @@ package com.mars_sim.core.structure.building.function.farming;
 //import edu.colorado.simulations.*; // Provides Organism, Plant, Herbivore classes
 import java.util.Vector;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /******************************************************************************
 * The <CODE>PondLife</CODE> Java application runs a simple simulation that

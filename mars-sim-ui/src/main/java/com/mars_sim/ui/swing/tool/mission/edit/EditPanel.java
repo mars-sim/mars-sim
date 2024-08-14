@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
@@ -44,7 +45,6 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;

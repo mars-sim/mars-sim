@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The NaturalAttributeManager class manages a person's natural attributes.

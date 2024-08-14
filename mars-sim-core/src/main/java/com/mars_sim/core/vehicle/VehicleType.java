@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum VehicleType {
 		

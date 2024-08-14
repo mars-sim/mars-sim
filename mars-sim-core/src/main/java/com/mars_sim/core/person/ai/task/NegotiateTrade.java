@@ -24,8 +24,8 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
 
 /**
  * Task to perform a trade negotiation between the buyer and seller for a Trade

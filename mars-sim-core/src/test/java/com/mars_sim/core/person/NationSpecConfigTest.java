@@ -3,7 +3,7 @@ package com.mars_sim.core.person;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 import junit.framework.TestCase;
 

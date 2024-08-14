@@ -33,13 +33,13 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Mission for mining mineral concentrations at an explored site.

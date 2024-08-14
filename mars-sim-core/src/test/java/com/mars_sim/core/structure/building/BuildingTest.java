@@ -1,9 +1,9 @@
 package com.mars_sim.core.structure.building;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class BuildingTest extends AbstractMarsSimUnitTest{
 

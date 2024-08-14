@@ -20,10 +20,10 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
 
 /**
  * A map layer showing mineral concentrations.

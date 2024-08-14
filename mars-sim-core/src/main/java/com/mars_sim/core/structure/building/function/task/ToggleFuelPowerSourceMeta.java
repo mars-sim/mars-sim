@@ -26,7 +26,7 @@ import com.mars_sim.core.structure.building.utility.power.FuelPowerSource;
 import com.mars_sim.core.structure.building.utility.power.PowerGeneration;
 import com.mars_sim.core.structure.building.utility.power.PowerSource;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the ToggleFuelPowerSource task.

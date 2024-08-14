@@ -12,9 +12,9 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * The MaintainEVAVehicle class is a task for performing

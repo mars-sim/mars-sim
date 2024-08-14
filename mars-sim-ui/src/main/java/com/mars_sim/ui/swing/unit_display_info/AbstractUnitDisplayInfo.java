@@ -12,7 +12,7 @@ import java.awt.Font;
 import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.mapdata.MapMetaData;
+import com.mars_sim.core.map.MapMetaData;
 
 /**
  * Abstract noop implementation of the UnitDisplayInfo. Used as a 

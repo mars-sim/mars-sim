@@ -85,7 +85,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.SystemDateTime;
 import com.mars_sim.core.tool.CheckSerializedSize;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.

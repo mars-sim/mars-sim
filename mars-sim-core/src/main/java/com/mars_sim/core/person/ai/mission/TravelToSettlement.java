@@ -22,10 +22,10 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The TravelToSettlement class is a mission to travel from one settlement to

@@ -39,10 +39,10 @@ import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Manufacture;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Utility class for getting manufacturing processes.

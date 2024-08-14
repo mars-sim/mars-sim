@@ -17,6 +17,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -28,7 +29,6 @@ import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A settlement building function.

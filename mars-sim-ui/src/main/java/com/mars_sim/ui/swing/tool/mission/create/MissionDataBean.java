@@ -16,6 +16,7 @@ import java.util.Map;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.goods.Good;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
@@ -44,7 +45,6 @@ import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Mission data holder bean.

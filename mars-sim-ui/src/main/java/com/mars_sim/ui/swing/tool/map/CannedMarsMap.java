@@ -10,10 +10,10 @@ import java.awt.Image;
 
 import javax.swing.JComponent;
 
-import com.mars_sim.mapdata.MapData;
-import com.mars_sim.mapdata.MapMetaData;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.map.Map;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapData;
+import com.mars_sim.core.map.MapMetaData;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * The CannedMarsMap class reads in data from files in the map_data jar file in

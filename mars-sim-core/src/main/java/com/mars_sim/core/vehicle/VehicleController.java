@@ -18,7 +18,7 @@ import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
  
  /**
   * This class represents the modeling of a motor controller, which comprises power 

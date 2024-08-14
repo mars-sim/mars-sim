@@ -18,6 +18,8 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.WalkingSteps.WalkStep;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -31,13 +33,11 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Airlockable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A general walking task that includes interior/exterior walking and

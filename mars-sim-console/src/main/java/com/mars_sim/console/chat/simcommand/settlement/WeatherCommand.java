@@ -21,8 +21,8 @@ import com.mars_sim.core.environment.DustStormType;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
 
 public class WeatherCommand extends AbstractSettlementCommand {
 	public static final ChatCommand WEATHER = new WeatherCommand();

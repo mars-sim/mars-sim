@@ -7,9 +7,9 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 
 /**
  * Static class for map utilities.

@@ -38,7 +38,7 @@ import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;

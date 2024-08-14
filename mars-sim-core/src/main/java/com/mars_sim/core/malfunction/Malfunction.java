@@ -22,7 +22,7 @@ import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Malfunction class represents a malfunction in a vehicle, structure or

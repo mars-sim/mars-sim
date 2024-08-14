@@ -18,6 +18,7 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -29,10 +30,9 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**

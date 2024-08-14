@@ -37,7 +37,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.Resource;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;

@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class Bee
 implements Serializable {

@@ -12,8 +12,8 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Command to display dashboard for this settlement

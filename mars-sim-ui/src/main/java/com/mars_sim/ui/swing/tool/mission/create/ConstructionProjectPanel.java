@@ -43,8 +43,8 @@ import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.structure.construction.ConstructionUtil;
 import com.mars_sim.core.structure.construction.ConstructionVehicleType;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 /**

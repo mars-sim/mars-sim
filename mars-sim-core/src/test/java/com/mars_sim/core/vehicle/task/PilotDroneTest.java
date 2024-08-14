@@ -10,6 +10,7 @@ package com.mars_sim.core.vehicle.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.equipment.Battery;
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -17,7 +18,6 @@ import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.VehicleController;
-import com.mars_sim.mapdata.location.Direction;
 
 public class PilotDroneTest extends AbstractMarsSimUnitTest {
     private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;  // Drive 5 km

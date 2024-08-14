@@ -17,9 +17,9 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A task for the EVA operation of performing field work at a research

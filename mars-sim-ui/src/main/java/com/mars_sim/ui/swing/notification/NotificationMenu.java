@@ -25,7 +25,7 @@ import javax.swing.JSeparator;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.MainWindowMenu;
 

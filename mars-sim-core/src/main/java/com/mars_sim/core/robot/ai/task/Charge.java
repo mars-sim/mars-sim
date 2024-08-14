@@ -18,8 +18,8 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Charge task will replenish a robot's battery.

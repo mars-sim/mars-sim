@@ -9,7 +9,7 @@ package com.mars_sim.core.person.ai.mission;
 import java.io.Serializable;
 
 import com.mars_sim.core.project.Stage;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A phase of a mission.

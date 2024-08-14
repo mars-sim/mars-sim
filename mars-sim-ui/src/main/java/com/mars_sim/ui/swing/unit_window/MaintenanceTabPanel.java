@@ -27,7 +27,7 @@ import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

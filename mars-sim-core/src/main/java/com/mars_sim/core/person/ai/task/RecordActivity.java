@@ -12,9 +12,9 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The RecordActivity class is a task for recording events/activities

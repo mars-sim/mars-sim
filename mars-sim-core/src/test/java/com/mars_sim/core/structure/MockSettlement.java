@@ -3,11 +3,11 @@ package com.mars_sim.core.structure;
 import java.util.ArrayList;
 
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.building.utility.power.PowerGrid;
 import com.mars_sim.core.structure.construction.ConstructionManager;
-import com.mars_sim.mapdata.location.Coordinates;
 
 @SuppressWarnings("serial")
 public class MockSettlement extends Settlement {

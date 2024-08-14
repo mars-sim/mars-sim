@@ -24,7 +24,7 @@ import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.HouseKeeping;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Fishery function that is responsible for aquatic farming

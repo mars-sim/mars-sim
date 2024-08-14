@@ -32,6 +32,9 @@ import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -83,10 +86,7 @@ import com.mars_sim.core.structure.building.utility.power.PowerMode;
 import com.mars_sim.core.structure.building.utility.power.PowerStorage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Building class is a settlement's building.

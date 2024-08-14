@@ -7,7 +7,7 @@ natural attributes.
 
 package com.mars_sim.core.environment;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum DustStormType {
 

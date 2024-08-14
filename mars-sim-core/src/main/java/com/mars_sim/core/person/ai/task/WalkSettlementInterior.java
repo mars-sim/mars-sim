@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -24,8 +25,7 @@ import com.mars_sim.core.structure.building.connection.Hatch;
 import com.mars_sim.core.structure.building.connection.InsideBuildingPath;
 import com.mars_sim.core.structure.building.connection.InsidePathLocation;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A subtask for walking between two interior locations in a settlement. (Ex:

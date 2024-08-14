@@ -25,8 +25,8 @@ import com.mars_sim.core.science.task.ResearchScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A task for observing the night sky with an astronomical observatory.

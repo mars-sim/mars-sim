@@ -23,7 +23,7 @@ import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyEvent;
 import com.mars_sim.core.science.ScientificStudyListener;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;

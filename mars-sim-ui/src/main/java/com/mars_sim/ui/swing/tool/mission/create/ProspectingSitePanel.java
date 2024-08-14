@@ -7,19 +7,9 @@
 
 package com.mars_sim.ui.swing.tool.mission.create;
 
-import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.*;
-import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.tool.map.EllipseLayer;
-import com.mars_sim.ui.swing.tool.map.MapPanel;
-import com.mars_sim.ui.swing.tool.map.MapUtils;
-import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -29,6 +19,18 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
+import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.tool.map.EllipseLayer;
+import com.mars_sim.ui.swing.tool.map.MapPanel;
+import com.mars_sim.ui.swing.tool.map.MapUtils;
+import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
+import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
 
 /**
  * A wizard panel for the ice or regolith prospecting site.

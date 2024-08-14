@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents the modeling of an electrical battery.

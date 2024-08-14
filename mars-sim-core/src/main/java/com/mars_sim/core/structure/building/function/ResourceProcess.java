@@ -17,7 +17,7 @@ import com.mars_sim.core.structure.building.ResourceProcessEngine;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of

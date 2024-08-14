@@ -9,7 +9,7 @@ package com.mars_sim.core.environment;
 
 import java.io.Serializable;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * Internal class representing a mineral concentration.

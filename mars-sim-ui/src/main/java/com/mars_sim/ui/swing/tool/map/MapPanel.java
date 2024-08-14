@@ -30,14 +30,14 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import com.mars_sim.core.map.IntegerMapData;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapDataFactory;
+import com.mars_sim.core.map.MapDataUtil;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.MapMetaData;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.mapdata.IntegerMapData;
-import com.mars_sim.mapdata.MapDataFactory;
-import com.mars_sim.mapdata.MapDataUtil;
-import com.mars_sim.mapdata.MapMetaData;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;

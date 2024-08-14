@@ -19,7 +19,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class manages a set of Shifts. This involves the initial allocation and the changing

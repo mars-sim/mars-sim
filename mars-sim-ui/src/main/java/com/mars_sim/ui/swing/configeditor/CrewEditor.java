@@ -48,7 +48,7 @@ import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
 

@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A map of areothermal power generation potential on the Martian surface.

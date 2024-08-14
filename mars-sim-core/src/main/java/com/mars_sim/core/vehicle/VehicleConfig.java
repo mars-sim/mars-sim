@@ -19,12 +19,12 @@ import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.manufacture.ManufactureConfig;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Provides configuration information about vehicle units. Uses a DOM document

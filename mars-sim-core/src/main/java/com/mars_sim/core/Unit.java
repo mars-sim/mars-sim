@@ -15,13 +15,13 @@ import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * The Unit class is the abstract parent class to all units in the simulation.

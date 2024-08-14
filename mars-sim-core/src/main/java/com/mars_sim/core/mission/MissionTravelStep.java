@@ -7,6 +7,7 @@
 package com.mars_sim.core.mission;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -20,7 +21,6 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This is a step in a Mission that travels from one location to another.

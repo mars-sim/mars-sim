@@ -29,7 +29,7 @@ import com.mars_sim.core.goods.CreditEvent;
 import com.mars_sim.core.goods.CreditListener;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;

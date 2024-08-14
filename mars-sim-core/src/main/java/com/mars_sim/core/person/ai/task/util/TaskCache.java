@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Class represents a set of TaskJob that can be used to select a new Task for a Work. 

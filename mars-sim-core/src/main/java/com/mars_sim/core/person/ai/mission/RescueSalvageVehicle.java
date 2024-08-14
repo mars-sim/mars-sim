@@ -17,6 +17,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -24,12 +25,11 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
 
 //   Current Definition :
 //1. 'Rescue' a vehicle -- if crew members are inside the vehicle and the 

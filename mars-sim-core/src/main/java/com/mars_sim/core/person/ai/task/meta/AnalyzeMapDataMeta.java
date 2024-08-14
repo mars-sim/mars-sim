@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -23,8 +24,7 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the AnalyzeMapData task.

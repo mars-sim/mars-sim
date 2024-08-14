@@ -16,6 +16,9 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -33,6 +36,7 @@ import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.GroundVehicle;
@@ -40,10 +44,6 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle and

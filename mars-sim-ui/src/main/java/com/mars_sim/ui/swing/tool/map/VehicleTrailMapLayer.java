@@ -12,12 +12,12 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.

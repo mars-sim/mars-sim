@@ -25,9 +25,9 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.VehicleMaintenance;
 import com.mars_sim.core.structure.building.task.MaintainBuildingMeta;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * Meta task for the MaintainGarageVehicle task.

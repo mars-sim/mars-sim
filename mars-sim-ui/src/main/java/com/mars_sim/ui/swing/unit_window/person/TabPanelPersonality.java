@@ -18,7 +18,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.MBTIPersonality;
 import com.mars_sim.core.person.ai.PersonalityTraitManager;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;

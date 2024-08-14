@@ -45,7 +45,7 @@ import com.mars_sim.core.robot.ai.job.Repairbot;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.ChainOfCommand;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The JobUtil class keeps track of the settler jobs in a simulation.

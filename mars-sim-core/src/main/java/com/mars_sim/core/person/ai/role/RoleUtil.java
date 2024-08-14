@@ -25,7 +25,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.structure.ChainOfCommand;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The RoleUtil class determines the roles of the settlers in a simulation.

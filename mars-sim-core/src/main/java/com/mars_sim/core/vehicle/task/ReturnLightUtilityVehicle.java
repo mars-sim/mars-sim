@@ -23,10 +23,10 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * A task for returning a light utility vehicle (LUV) to a rover or settlement

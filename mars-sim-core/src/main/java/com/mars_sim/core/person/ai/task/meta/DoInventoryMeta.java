@@ -18,7 +18,7 @@ import com.mars_sim.core.person.ai.task.DoInventory;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for doing an inventory of a facility.

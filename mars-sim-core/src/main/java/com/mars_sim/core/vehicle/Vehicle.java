@@ -38,6 +38,10 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.Converse;
@@ -59,12 +63,8 @@ import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.task.MaintainVehicleMeta;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic

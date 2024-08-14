@@ -54,6 +54,8 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
@@ -91,14 +93,12 @@ import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It

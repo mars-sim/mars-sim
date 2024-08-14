@@ -27,6 +27,7 @@ import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.GroupActivityType;
@@ -41,8 +42,7 @@ import com.mars_sim.core.structure.building.BuildingSpec;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Resupply mission from Earth for a settlement.

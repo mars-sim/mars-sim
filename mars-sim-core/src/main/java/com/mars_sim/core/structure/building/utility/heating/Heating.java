@@ -14,6 +14,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -25,8 +26,7 @@ import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Heating class is a building function for regulating temperature in a

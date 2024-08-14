@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * Interface for mineral maps of Mars.

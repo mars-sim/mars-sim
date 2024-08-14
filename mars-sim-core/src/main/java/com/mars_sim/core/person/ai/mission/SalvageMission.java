@@ -19,6 +19,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.Construction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -35,14 +36,13 @@ import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.structure.construction.ConstructionVehicleType;
 import com.mars_sim.core.structure.construction.SalvageValues;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**s
  * Mission for salvaging a construction stage at a building construction site.

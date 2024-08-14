@@ -30,7 +30,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

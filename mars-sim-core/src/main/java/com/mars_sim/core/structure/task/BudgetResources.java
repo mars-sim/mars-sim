@@ -22,8 +22,8 @@ import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.Management;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The task for budgeting resources.

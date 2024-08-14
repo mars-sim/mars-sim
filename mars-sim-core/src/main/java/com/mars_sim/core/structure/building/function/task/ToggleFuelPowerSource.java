@@ -13,6 +13,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -23,9 +24,8 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.utility.power.FuelPowerSource;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular

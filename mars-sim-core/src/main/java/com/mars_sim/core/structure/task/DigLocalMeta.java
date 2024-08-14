@@ -26,7 +26,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the DigLocal task.

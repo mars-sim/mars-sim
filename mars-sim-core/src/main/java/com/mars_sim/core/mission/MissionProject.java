@@ -16,6 +16,7 @@ import java.util.Set;
 
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionListener;
@@ -31,7 +32,6 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Is a Mission astraction that allows a Mission tobe defiend in terms of a number of MissionSteps.

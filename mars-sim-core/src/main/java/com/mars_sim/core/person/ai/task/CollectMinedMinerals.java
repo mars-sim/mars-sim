@@ -18,9 +18,9 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Task for collecting minerals that have been mined at a site.

@@ -6,9 +6,9 @@
  */
 package com.mars_sim.ui.swing.tool.mission.create;
 
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.*;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;

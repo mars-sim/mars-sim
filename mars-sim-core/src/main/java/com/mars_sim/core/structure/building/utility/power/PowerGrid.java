@@ -22,8 +22,8 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class is a settlement's building power grid.

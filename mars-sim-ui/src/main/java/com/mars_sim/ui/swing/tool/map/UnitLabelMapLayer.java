@@ -14,9 +14,9 @@ import java.awt.RenderingHints;
 import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 

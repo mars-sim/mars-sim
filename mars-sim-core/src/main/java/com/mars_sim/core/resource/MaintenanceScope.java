@@ -9,7 +9,7 @@ package com.mars_sim.core.resource;
 
 import java.io.Serializable;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A class for holding maintenance scope for a Part

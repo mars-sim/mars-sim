@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.List;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * This class represents a unit table displayed within the Monitor Window.

@@ -32,10 +32,10 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MineralMapConfig.MineralType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A randomly generated mineral map of Mars.

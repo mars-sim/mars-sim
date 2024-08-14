@@ -10,7 +10,7 @@ package com.mars_sim.core.environment;
 import java.io.Serializable;
 
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  *   Assumptions:

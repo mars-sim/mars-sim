@@ -31,9 +31,9 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.LifeSupport;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This is a task for teaching a student a task.

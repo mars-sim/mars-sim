@@ -20,7 +20,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 

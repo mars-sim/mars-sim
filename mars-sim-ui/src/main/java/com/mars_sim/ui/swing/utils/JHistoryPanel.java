@@ -25,7 +25,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.time.MarsDate;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * This is a panel that can display the details of a History object as a table.

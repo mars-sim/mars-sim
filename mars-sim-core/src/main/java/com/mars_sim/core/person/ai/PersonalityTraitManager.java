@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The PersonalityTraitManager class manages a person's big five personalities.

@@ -27,8 +27,6 @@ import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.mars_sim.tools.util.RandomUtil;
-
 /**
  * <p>Generates random {@code String}s.</p>
  *

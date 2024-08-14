@@ -28,11 +28,11 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class is a factory for Malfunction objects.

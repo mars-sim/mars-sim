@@ -49,7 +49,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;

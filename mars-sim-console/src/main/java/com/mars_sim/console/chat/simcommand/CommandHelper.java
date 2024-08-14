@@ -19,6 +19,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.Malfunction.Repairer;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
@@ -41,7 +42,6 @@ import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessor;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Helper class with common formatting methods.

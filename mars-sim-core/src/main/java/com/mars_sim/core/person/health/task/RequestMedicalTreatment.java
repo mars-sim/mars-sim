@@ -15,7 +15,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A task for requesting and awaiting medical treatment at a medical station.

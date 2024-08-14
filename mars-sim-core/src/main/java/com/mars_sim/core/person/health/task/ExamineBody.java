@@ -20,8 +20,8 @@ import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.MedicalEvent;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A task for performing a physical exam over a patient or a postmortem exam on

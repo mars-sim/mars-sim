@@ -16,14 +16,14 @@ import java.util.logging.Level;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
 import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents an airlock for a vehicle.

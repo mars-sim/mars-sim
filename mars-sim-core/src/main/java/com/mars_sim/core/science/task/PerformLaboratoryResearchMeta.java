@@ -24,7 +24,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the PerformLaboratoryResearch task.

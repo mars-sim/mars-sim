@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A building template information.

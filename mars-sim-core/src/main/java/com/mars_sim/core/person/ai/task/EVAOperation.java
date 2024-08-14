@@ -19,6 +19,9 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalConditionFormat;
@@ -39,14 +42,11 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Airlockable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The EVAOperation class is an abstract task that involves an extra vehicular

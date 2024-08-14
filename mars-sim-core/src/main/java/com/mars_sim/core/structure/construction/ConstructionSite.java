@@ -16,6 +16,10 @@ import java.util.List;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.MissionPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -25,10 +29,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.GroundVehicle;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A building construction site.

@@ -11,7 +11,7 @@ import java.awt.BorderLayout;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.ui.swing.MainDesktopPane;
 
 /**

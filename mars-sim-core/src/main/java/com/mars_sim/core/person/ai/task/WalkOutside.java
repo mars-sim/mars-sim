@@ -20,16 +20,16 @@ import java.util.logging.Level;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A subtask for walking between locations outside of a settlement or vehicle.

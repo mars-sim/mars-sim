@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 
 /**
  * This class provides basic method to draw on the Settlement Map panel.

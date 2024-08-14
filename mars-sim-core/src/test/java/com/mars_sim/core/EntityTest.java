@@ -1,6 +1,6 @@
 package com.mars_sim.core;
 
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.map.location.LocalPosition;
 
 public class EntityTest extends AbstractMarsSimUnitTest {
     

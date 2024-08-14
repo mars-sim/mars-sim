@@ -46,8 +46,8 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.MathUtils;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents the Physical Condition of a Person. It models a

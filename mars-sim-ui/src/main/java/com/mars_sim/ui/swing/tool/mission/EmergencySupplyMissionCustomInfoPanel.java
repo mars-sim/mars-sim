@@ -24,7 +24,7 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.person.ai.mission.EmergencySupply;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 
 /**

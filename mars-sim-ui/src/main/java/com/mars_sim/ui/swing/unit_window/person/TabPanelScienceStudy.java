@@ -24,7 +24,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;

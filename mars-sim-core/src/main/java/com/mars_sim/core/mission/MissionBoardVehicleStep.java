@@ -14,6 +14,7 @@ import java.util.Map;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -23,7 +24,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Get all Members ready to depart on the mission

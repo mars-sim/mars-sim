@@ -15,13 +15,13 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.moon.project.DevelopmentProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
 
 public class Colony implements Temporal, Entity, Comparable<Colony> {
 

@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
     public void testCreateTask() {

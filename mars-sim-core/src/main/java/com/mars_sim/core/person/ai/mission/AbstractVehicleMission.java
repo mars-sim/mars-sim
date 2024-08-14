@@ -31,6 +31,7 @@ import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Sleep;
@@ -45,6 +46,8 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
@@ -57,9 +60,6 @@ import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.PilotDrone;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.

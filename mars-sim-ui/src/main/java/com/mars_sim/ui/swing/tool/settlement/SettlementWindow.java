@@ -22,14 +22,14 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.JStatusBar;

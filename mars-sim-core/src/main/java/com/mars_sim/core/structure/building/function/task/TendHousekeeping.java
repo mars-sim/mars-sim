@@ -13,7 +13,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.function.HouseKeeping;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The TendFishTank class is a task for tending the fishery in a

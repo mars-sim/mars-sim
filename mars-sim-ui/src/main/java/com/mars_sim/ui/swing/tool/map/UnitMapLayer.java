@@ -13,11 +13,11 @@ import java.util.Collection;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 

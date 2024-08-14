@@ -31,7 +31,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A class representing a scientific study.

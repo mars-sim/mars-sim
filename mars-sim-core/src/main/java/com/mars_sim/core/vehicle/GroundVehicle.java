@@ -8,9 +8,9 @@ package com.mars_sim.core.vehicle;
 
 
 import com.mars_sim.core.environment.TerrainElevation;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * This abstract class represents a ground-type vehicle and 

@@ -22,8 +22,8 @@ import com.mars_sim.core.person.ai.MBTIPersonality;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The RelationshipUtil class computes the changes in social relationships between people.

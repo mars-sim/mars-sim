@@ -20,7 +20,7 @@ import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The PrepareDessert class is a task for making dessert

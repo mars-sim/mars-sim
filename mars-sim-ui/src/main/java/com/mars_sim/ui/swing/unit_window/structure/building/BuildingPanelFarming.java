@@ -35,14 +35,14 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.farming.Farming;
 import com.mars_sim.core.structure.building.function.farming.PhaseType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;

@@ -24,7 +24,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and

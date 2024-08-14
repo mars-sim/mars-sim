@@ -37,7 +37,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.person.Crew;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.sound.AudioPlayer;

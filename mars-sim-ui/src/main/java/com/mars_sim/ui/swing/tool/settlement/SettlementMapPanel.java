@@ -40,9 +40,9 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.MoreMath;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.MoreMath;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.UIConfig;
 

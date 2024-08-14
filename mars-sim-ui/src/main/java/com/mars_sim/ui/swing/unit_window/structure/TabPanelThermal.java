@@ -32,7 +32,7 @@ import com.mars_sim.core.structure.building.utility.heating.HeatSource;
 import com.mars_sim.core.structure.building.utility.heating.SolarHeatingSource;
 import com.mars_sim.core.structure.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.structure.building.utility.heating.ThermalSystem;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

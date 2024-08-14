@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Category for a set of Parameter values. Each one is defined in terms of a ParameterSpec.

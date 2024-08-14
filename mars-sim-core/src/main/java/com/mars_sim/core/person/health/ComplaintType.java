@@ -8,7 +8,7 @@
 
 package com.mars_sim.core.person.health;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * 	Medical Illnesses.

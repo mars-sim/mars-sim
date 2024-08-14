@@ -24,7 +24,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class keeps track of ongoing missions in the simulation.

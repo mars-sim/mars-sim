@@ -32,7 +32,7 @@ import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
 import com.formdev.flatlaf.util.HSLColor;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * This class provides a means to control the styles used in the UI.

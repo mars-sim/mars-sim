@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.building.function.Research;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.AttributePanel;

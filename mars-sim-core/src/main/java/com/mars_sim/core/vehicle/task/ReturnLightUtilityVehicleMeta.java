@@ -9,8 +9,8 @@ package com.mars_sim.core.vehicle.task;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * Meta task for the ReturnLightUtilityVehicle task.

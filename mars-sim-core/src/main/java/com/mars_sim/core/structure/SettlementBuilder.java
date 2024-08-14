@@ -32,6 +32,7 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Member;
@@ -56,9 +57,8 @@ import com.mars_sim.core.robot.RobotSpec;
 import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.RobotJob;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.VehicleFactory;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class will create new complete Settlements from a template.

@@ -34,6 +34,8 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
@@ -87,15 +89,13 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.AlphanumComparator;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The BuildingManager manages the settlement's buildings.

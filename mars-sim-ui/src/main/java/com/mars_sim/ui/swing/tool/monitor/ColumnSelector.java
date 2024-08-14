@@ -20,8 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.ModalInternalFrame;

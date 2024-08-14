@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
@@ -20,7 +21,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
     /**

@@ -13,10 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

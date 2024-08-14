@@ -18,7 +18,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.FunctionSpec;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A management building function.  The building facilitates management

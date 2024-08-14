@@ -22,9 +22,9 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The CollectResources class is a task for collecting resources at a site with

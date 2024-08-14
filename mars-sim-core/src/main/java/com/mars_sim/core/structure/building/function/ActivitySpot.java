@@ -9,9 +9,9 @@ package com.mars_sim.core.structure.building.function;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Represents an activity spot that can be claimed by a Worker.

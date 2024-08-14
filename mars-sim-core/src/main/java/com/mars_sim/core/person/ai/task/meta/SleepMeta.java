@@ -14,8 +14,8 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the Sleep task.

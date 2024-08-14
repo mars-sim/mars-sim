@@ -16,6 +16,7 @@ import com.mars_sim.core.computing.ComputingJob;
 import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -23,9 +24,8 @@ import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The AnalyzeMapData class is a task for analyzing and studying some map data set.

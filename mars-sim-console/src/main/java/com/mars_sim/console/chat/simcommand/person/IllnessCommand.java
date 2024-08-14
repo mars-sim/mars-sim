@@ -29,7 +29,7 @@ import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.Radiation;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationType;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /** 
  * 

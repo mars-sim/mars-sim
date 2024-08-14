@@ -10,9 +10,9 @@ import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.util.Collection;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * This provides a map layer that can draw Workers on the Map panel. 

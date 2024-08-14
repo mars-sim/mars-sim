@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -21,7 +22,6 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.building.utility.power.PowerSourceType;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /** 
  * The Specification of a Vehicle loaded from the external configuration.

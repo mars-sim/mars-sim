@@ -17,6 +17,7 @@ import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
@@ -38,9 +39,8 @@ import com.mars_sim.core.structure.building.function.cooking.PreparedDessert;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The EatDrink class is a task for eating a meal. The duration of the task is 40

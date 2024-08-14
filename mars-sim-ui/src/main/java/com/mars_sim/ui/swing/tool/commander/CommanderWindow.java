@@ -71,7 +71,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.farming.Farming;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;

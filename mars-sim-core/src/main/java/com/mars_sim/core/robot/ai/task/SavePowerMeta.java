@@ -9,7 +9,7 @@ package com.mars_sim.core.robot.ai.task;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the power saving task.

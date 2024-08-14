@@ -7,7 +7,7 @@
  */
 package com.mars_sim.core.vehicle;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Vehicle status types. They can be either primary or secondary.

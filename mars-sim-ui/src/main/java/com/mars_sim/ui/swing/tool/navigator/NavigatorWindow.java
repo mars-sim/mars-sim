@@ -71,16 +71,16 @@ import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.TerrainElevation;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapDataFactory;
+import com.mars_sim.core.map.MapDataUtil;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.MapMetaData;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.MapDataFactory;
-import com.mars_sim.mapdata.MapDataUtil;
-import com.mars_sim.mapdata.MapMetaData;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
@@ -120,6 +120,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
+	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
+	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
+	private static final int HEIGHT_STATUS_BAR = 16;
+
 	private static final String LEVEL = "Level ";
 	private static final String DASH = "- ";
 	private static final String CHOOSE_SETTLEMENT = "List";
@@ -143,11 +147,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String ICON = "mars";
 	public static final String PIN_ICON = "pin";
 	public static final String MAP_ICON = "settlement_map";
-	
-	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
-	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
-	
-	private static final int HEIGHT_STATUS_BAR = 16;
 
 	private static final String WHITESPACE = " ";
 	private static final String MAG = "mag: ";
@@ -158,7 +157,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String KM = " km";
 
 	private static final String RESOLUTION = "2";
-
 
 	
 	// Data member
@@ -760,6 +758,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 		
+	/**
+	 * Processes the mineral command.
+	 * 
+	 * @param source
+	 */
 	private void goToMineral(Object source) {
 		JCheckBoxMenuItem mineralItem = (JCheckBoxMenuItem) source;
 		boolean previous = ((MineralMapLayer) mineralLayer).isMineralDisplayed(mineralItem.getText());
@@ -769,7 +772,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		logger.config("Just set the state of " + mineralItem.getText() + " to " + now + " in mineral layer.");
 	}
 	
-	private void goToOtherComamnds(String command, Object source) {
+	/**
+	 * Processes other commands.
+	 * 
+	 * @param command
+	 * @param source
+	 */
+	private void goToOtherCommands(String command, Object source) {
 		if (command.startsWith(MAPTYPE_ACTION)) {
 			String newMapType = command.substring(MAPTYPE_ACTION.length());
 			if (((JCheckBoxMenuItem) source).isSelected()) {
@@ -792,6 +801,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 	
+	/**
+	 * Processes the map reload command.
+	 * 
+	 * @param command
+	 * @param source
+	 */
 	private void goToMapTypeReload(String command, Object source) {
 		if (((JCheckBoxMenuItem) source).isSelected()) {
 			String newMapType = command.substring(MAPTYPE_RELOAD_ACTION.length());
@@ -821,6 +836,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	/** 
 	 * ActionListener method overridden. 
+	 * 
+	 * @param event
 	 */
 	public void actionPerformed(ActionEvent event) {
 
@@ -842,7 +859,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			} break;
 		
 		default: // Grouped command
-			goToOtherComamnds(command, source);
+			goToOtherCommands(command, source);
 		}
 	}
 
@@ -890,6 +907,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * 
 	 * @param newMapType New map Type
 	 * @param res
+	 * @param startup
 	 */
 	private void changeMapType(String newMapType, int res, boolean startup) {
 		// Load the new map type

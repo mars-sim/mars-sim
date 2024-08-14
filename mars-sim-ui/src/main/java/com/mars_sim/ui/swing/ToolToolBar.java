@@ -32,7 +32,7 @@ import javax.swing.border.EmptyBorder;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;

@@ -44,10 +44,10 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.MathUtils;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleFactory;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A building function for manufacturing.

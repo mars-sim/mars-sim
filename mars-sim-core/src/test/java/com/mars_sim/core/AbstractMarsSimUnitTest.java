@@ -6,6 +6,8 @@ import org.junit.Before;
 
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -27,8 +29,6 @@ import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
 

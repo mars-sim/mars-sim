@@ -13,9 +13,9 @@ import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The LoadVehicleEVA class is a task for loading a vehicle with fuel and

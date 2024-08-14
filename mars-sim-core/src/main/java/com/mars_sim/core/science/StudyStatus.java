@@ -6,7 +6,7 @@
  */
  package com.mars_sim.core.science;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
   * Represents the different states of a Scientific Study

@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

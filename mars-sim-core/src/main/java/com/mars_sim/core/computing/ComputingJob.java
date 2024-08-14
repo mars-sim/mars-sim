@@ -20,7 +20,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents a job that uses computing resources to deliver an outcome.

@@ -8,8 +8,8 @@ package com.mars_sim.core.structure.building.connection;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A connection between two buildings.

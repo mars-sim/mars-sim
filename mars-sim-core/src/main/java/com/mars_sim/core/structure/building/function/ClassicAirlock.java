@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
@@ -25,7 +26,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * The ClassicAirlock class represents a classic airlock for a building.

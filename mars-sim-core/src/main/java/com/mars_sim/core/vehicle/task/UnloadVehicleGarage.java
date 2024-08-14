@@ -20,11 +20,11 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The UnloadVehicleGarage class is a task for unloading fuel and supplies from

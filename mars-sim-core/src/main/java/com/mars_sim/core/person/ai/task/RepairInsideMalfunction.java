@@ -22,11 +22,11 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The RepairInsideMalfunction class is a task to repair a malfunction.

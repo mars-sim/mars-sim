@@ -15,7 +15,7 @@ import org.apache.batik.gvt.GraphicsNode;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**

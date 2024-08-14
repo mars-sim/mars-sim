@@ -7,7 +7,7 @@
 
 package com.mars_sim.core.environment;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 public class CollectionSite extends Site {
 

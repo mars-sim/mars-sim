@@ -31,6 +31,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -53,8 +54,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 
 /**

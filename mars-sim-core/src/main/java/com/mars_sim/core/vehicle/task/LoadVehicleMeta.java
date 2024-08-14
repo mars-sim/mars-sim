@@ -28,9 +28,9 @@ import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * Meta task for both LoadVehicleEVA and LoadVehicleGarage tasks.

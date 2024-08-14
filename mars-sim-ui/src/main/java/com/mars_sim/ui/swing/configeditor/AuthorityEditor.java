@@ -35,7 +35,7 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.authority.MissionAgenda;
 import com.mars_sim.core.authority.MissionCapability;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
 

@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A class representing an Region of Interest for further exploration. It contains information on

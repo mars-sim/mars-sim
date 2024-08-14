@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.structure.building.connection;
 
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.map.location.LocalPosition;
 
 /**
  * A location point object on an inside building path.

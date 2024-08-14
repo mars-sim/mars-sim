@@ -8,8 +8,8 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * A navigation point for travel missions.

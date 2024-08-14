@@ -25,6 +25,8 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -49,10 +51,8 @@ import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Task class is an abstract parent class for tasks that allow people to do

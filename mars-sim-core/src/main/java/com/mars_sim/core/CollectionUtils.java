@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class provides general collection manipulation convenience methods.

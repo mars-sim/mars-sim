@@ -20,7 +20,7 @@ import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Preference class determines the task preferences of a person.

@@ -32,6 +32,7 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -52,10 +53,9 @@ import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The robot class represents operating a robot on Mars.

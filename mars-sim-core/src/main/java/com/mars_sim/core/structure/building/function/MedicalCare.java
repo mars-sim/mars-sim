@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.health.HealthProblem;
@@ -23,7 +24,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * The MedicalCare class represents a building function for providing medical

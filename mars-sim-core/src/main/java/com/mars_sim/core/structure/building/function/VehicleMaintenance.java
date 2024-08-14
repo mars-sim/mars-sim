@@ -18,6 +18,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
@@ -30,7 +31,6 @@ import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * The VehicleMaintenance interface is a building function for a building

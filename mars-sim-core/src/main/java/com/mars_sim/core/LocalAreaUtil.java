@@ -19,16 +19,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A utility class for calculating locations in a local area with a center

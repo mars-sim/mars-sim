@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.Part;
@@ -22,7 +23,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**

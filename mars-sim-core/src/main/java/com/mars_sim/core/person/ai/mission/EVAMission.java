@@ -14,6 +14,7 @@ import java.util.Map;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
@@ -21,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
 
 abstract class EVAMission extends RoverMission {
 

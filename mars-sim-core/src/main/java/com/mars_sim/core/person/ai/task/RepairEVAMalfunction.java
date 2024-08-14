@@ -14,11 +14,11 @@ import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.malfunction.RepairHelper;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an

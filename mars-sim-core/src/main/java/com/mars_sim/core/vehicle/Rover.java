@@ -19,6 +19,8 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -35,10 +37,8 @@ import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
 
 /**
  * The Rover class represents the rover type of ground vehicle. It contains

@@ -21,9 +21,9 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.MedicalCare;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.SickBay;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Helper class for identifying suitable HealtProblems

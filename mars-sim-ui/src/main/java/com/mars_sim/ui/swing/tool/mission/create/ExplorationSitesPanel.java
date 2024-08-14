@@ -33,11 +33,11 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;

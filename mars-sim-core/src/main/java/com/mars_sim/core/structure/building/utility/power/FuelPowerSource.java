@@ -10,7 +10,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A fuel power source that gives a steady supply of power.

@@ -23,16 +23,16 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementConfig.ResourceLimits;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A manager for computing the values of goods at a settlement.

@@ -17,11 +17,11 @@ import javax.swing.table.AbstractTableModel;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementConfig;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Represents a table model of the initial settlements. This has some intelligence

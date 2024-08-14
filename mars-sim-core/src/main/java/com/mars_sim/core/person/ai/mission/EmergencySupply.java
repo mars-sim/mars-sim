@@ -22,6 +22,8 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -34,14 +36,12 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleGarage;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A mission for delivering emergency supplies from one settlement to another.

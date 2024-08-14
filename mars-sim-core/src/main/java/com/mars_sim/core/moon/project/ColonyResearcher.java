@@ -17,7 +17,7 @@ import com.mars_sim.core.science.ResearchStudy;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class ColonyResearcher extends Colonist implements Temporal {
 	

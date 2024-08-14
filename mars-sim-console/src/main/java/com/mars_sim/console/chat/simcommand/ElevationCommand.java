@@ -11,7 +11,7 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.TerrainElevation;
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * Get the elevation of a specific location. 

@@ -14,7 +14,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Static class to create Vehicles

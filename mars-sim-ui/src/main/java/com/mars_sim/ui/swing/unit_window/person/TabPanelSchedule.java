@@ -26,7 +26,7 @@ import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.OneActivity;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;

@@ -20,12 +20,12 @@ import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.MSolDataItem;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /** This class represents the weather properties on Mars. */
 public class Weather implements Serializable, Temporal {

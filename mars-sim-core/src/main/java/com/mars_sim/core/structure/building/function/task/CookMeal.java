@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -23,8 +24,7 @@ import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The CookMeal class is a task for cooking meals in a building with the Cooking

@@ -19,7 +19,7 @@ import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The LivingAccommodation class is a building function for a living
