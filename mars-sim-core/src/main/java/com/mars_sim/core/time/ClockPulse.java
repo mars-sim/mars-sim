@@ -131,6 +131,15 @@ public class ClockPulse {
 	}
 
 	/**
+	 * Gets the last millisol.
+	 * 
+	 * @return
+	 */
+	public double getLastMillisol() {
+		return lastMillisol;
+	}
+	
+	/**
 	 * Creates a new pulse based on this one but add extra elapsed time. Note: This
 	 * does not change any of the original flags; only the elapses time.
 	 * 
@@ -139,8 +148,8 @@ public class ClockPulse {
 	 */
 	public ClockPulse addElapsed(double msolsSkipped) {
 		////////////////////////////////////////////////////////////////////////////////////
-		// NOTE: Any changes made below need to be brought to MasterClock's
-		//////////////////////////////////////////////////////////////////////////////////// fireClockPulse()
+		// NOTE: Any changes made below need to be brought to MasterClock's fireClockPulse()
+		//////////////////////////////////////////////////////////////////////////////////// 
 		////////////////////////////////////////////////////////////////////////////////////
 
 		// Get the actual elapsed millisols
@@ -173,7 +182,7 @@ public class ClockPulse {
 //		}
 //		else {
 //			// Identify if it just passes half a sol
-//			isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);
+//			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
 //		}
 //
 //
@@ -189,13 +198,14 @@ public class ClockPulse {
 //			this.isNewHalfMillisol = true;
 //		}
 //		else {
+//		    // Find the decimal part of the past millisol and current millisol
 //			int intPartLast = (int)lastMillisol;
 //			double decimalPartLast = lastMillisol - intPartLast;
 //			int intPartCurrent = (int)currentMillisol;
 //			double decimalPartCurrent = currentMillisol - intPartCurrent;
 //			
 //			// Identify if it just passes half a millisol
-//			isNewHalfMillisol = isNewIntMillisol || (decimalPartLast < .5 && decimalPartCurrent >= .5);
+//			isNewHalfMillisol = decimalPartLast < .5 && decimalPartCurrent >= .5;
 //		}
 //		
 //		

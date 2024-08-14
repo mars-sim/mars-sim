@@ -272,7 +272,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	/**
-	 * Executes a Task for a number of steps or subtask is Done
+	 * Executes a Task for a number of steps or subtask is Done.
 	 * 
 	 * @param person
 	 * @param task
@@ -296,7 +296,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
      * Creates a Clock pulse that just contains a MarsClock at a specific time.
      * 
      * @param missionSol Sol in the current mission
-     * @param mSol MSol throught the day
+     * @param mSol MSol throughout the day
      * @param newSol Is the new Sol flag set
      * @return
      */
@@ -305,6 +305,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return createPulse(marsTime, newSol, newHalfSol);
 	}
 
+	/**
+     * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * 
+     * @param marsTime
+     * @param newSol Is it a new sol ?
+     * @param newHalfSol Has half a sol just passed ? 
+     * @return
+     */
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		var master = sim.getMasterClock();
 		master.setMarsTime(marsTime);
@@ -312,7 +320,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
     }
 
 	/**
-	 * Better Assert method 
+	 * Better Assert method .
 	 */
 	public static void assertGreaterThan(String message, double minValue, double actual) {
 		if (actual <= minValue) {

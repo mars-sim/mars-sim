@@ -248,7 +248,6 @@ public class MarsTime implements Serializable {
 	 * @param sol
 	 * @param millisol
 	 * @param missionSol
-	 * @param totalMillisols
 	 */
 	private MarsTime(int orbit, int month, int sol, double millisol, int missionSol, double totalMillisols) {
 		// Set date/time to given parameters.
@@ -308,7 +307,7 @@ public class MarsTime implements Serializable {
 	 */
 	public MarsTime addTime(double addedMillisols) {
 
-		double newTotalMillisols = totalMillisols + addedMillisols;
+//		double newTotalMillisols = totalMillisols + addedMillisols;
 		double newMillisols = millisol + addedMillisols;
 		int newOrbit = orbit;
 		int newMissionSol = missionSol;
@@ -346,7 +345,7 @@ public class MarsTime implements Serializable {
 			}
 		}
 
-		return new MarsTime(newOrbit, newMonth, newSolOfMonth, newMillisols, newMissionSol, newTotalMillisols);
+		return new MarsTime(newOrbit, newMonth, newSolOfMonth, newMillisols, newMissionSol); //, newTotalMillisols);
 	}
 
 	/**

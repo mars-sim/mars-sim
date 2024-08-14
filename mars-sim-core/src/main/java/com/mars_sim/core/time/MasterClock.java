@@ -822,7 +822,7 @@ public class MasterClock implements Serializable {
 		}
 		else {
 			// Identify if it just passes half a sol
-			isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);
+			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
 		}
 
 
@@ -840,13 +840,14 @@ public class MasterClock implements Serializable {
 			isNewHalfMillisol = true;
 		}
 		else {
+			// Find the decimal part of the past millisol and current millisol
 			int intPartLast = (int)lastMillisol;
 			double decimalPartLast = lastMillisol - intPartLast;
 			int intPartCurrent = (int)currentMillisol;
 			double decimalPartCurrent = currentMillisol - intPartCurrent;
 			
 			// Identify if it just passes half a millisol
-			isNewHalfMillisol = isNewIntMillisol || (decimalPartLast < .5 && decimalPartCurrent >= .5);
+			isNewHalfMillisol = decimalPartLast < .5 && decimalPartCurrent >= .5;
 		}
 		
 		
