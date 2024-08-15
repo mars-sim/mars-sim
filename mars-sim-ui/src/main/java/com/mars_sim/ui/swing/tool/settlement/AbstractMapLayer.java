@@ -38,6 +38,9 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 
 	private static final float[] DASHES = {50.0f, 20.0f, 10.0f, 20.0f};
     
+	private static final String H = "H ";
+	private static final String T = "T ";
+	
     // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
     private static final BasicStroke THIN_DASH = new BasicStroke(2.0f,
     	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASHES, 0.0f);
@@ -232,7 +235,14 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             s--;
         }
 
-        float rowOffset = s/2f;
+        if (words[0].contains(H)) {
+        	words[0] = words[0].replace(" ", "");
+        }
+        else if (words[0].contains(T)) {
+        	words[0] = words[0].replace(" ", "");
+        }	
+        	
+        float rowOffset = s - 1f;
         int rowSize = (int)(viewpoint.scale() / 1.5f);
 
 		// Split up the name into multiple lines

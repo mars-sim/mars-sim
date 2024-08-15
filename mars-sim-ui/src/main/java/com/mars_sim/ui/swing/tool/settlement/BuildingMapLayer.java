@@ -35,6 +35,10 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 public class BuildingMapLayer extends AbstractMapLayer {
 
 	private static final String HATCH = "hatch";
+	private static final String HALLWAY = "Hallway";
+	private static final String H = "H";
+	private static final String TUNNEL = "Tunnel";
+	private static final String T = "T";
 	
     // Static members
     private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 6); 
@@ -137,7 +141,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
 
         if (showLabel) {
-            String[] words = building.getName().split(" ");
+            String[] words = building.getName().replace(HALLWAY, H).replace(TUNNEL, T).split(" ");
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 
             drawCenteredMultiLabel(words, LABEL_FONT, building.getPosition(),

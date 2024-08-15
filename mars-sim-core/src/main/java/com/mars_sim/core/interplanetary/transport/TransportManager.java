@@ -131,7 +131,8 @@ public class TransportManager implements Serializable, Temporal {
 		HistoricalEvent deliverEvent = new TransportEvent(transportItem, action,
 										transportItem.getSettlementName());
 		eventManager.registerNewEvent(deliverEvent);
-		logger.info("A transport item launched on " + transportItem.toString());
+		logger.info(transportItem.getSettlementName() + " - A transport item was launched on " 
+				+ transportItem.getLaunchDate() + ", arriving at " + transportItem.getArrivalDate() + ".");
 	}
 
 	/**

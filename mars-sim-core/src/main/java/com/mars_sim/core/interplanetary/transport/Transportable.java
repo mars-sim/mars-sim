@@ -105,6 +105,8 @@ public abstract class Transportable
 		int travelSols = ResupplyUtil.getAverageTransitTime();
 		launchDate = arrivalDate.addTime(-1D * travelSols * 1000D);
 
+		// Future: how do we handle a Mars date before sol 0 ?
+		
 		// Set resupply state based on launch and arrival time.
 		MarsTime now = master.getMarsTime();
 		MarsTime nextScheduledEvent = launchDate;
@@ -126,7 +128,8 @@ public abstract class Transportable
 	}
 
 	/**
-	 * Which managers is controlling the future events
+	 * Gets the schedule manager controlling the future events.
+	 * 
 	 * @return
 	 */
 	protected abstract ScheduledEventManager getOwningManager();
@@ -144,7 +147,8 @@ public abstract class Transportable
 	public abstract void reinit(UnitManager um);
 
 	/**
-	 * Description for the future event
+	 * Gets the description for the future event.
+	 * 
 	 * @return
 	 */
 	public String getEventDescription() {
@@ -153,7 +157,6 @@ public abstract class Transportable
 
 	/**
 	 * Cancels a transport item.
-	 * 
 	 */
 	public void cancel() {
 		state = TransitState.CANCELED;
@@ -164,6 +167,7 @@ public abstract class Transportable
 
 	/**
 	 * The Resupply has moved to a different phase.
+	 * 
 	 * @param now Current time
 	 * @return return the milliosols to the next phase
 	 */
@@ -205,6 +209,12 @@ public abstract class Transportable
 		return result;
 	}
 
+	/**
+	 * Initializes instances.
+	 * 
+	 * @param mc
+	 * @param transportManager
+	 */
 	static void initalizeInstances(MasterClock mc, TransportManager transportManager) {
 		master = mc;
 		tm = transportManager;

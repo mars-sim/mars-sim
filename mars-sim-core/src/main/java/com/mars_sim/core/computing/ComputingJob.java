@@ -239,9 +239,8 @@ public class ComputingJob implements Serializable {
         }
         
         // If scheduled then reduce computing
-        logger.info(unit, 30_000, "Consumed " + Math.round(consumed * 1000.0)/1000.0 + " CUs  "
-        		+ " remaining: " + Math.round(remainingNeed * 100.0)/100.0 + " -> "
-        		+ Math.round(newNeed * 100.0)/100.0);
+//        logger.info(unit, 30_000, "Consumed " + Math.round(consumed * 1000.0)/1000.0 + " CUs.  "
+//        		+ "Remaining: " + Math.round(remainingNeed * 100.0)/100.0 + " -> " + Math.round(newNeed * 100.0)/100.0 + " CUs.");
        
         if (node == null) {
 	        int num = nodeLoads.size();

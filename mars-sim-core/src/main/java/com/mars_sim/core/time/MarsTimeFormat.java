@@ -22,9 +22,13 @@ public class MarsTimeFormat {
 	private static final String TRUNCATED_DATE_TIME_FORMAT = DATE_FORMAT + COLON + TRUNCATED_TIME_FORMAT;
 
 	// Martian calendar static strings
-	private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri", "Edal", "Flo", "Geor", "Heliba",
-			"Idanon", "Jowani", "Kireal", "Larno", "Medior", "Neturima", "Ozulikan", "Pasurabi", "Rudiakel", "Safundo",
-			"Tiunor", "Ulasja", "Vadeun", "Wakumi", "Xetual", "Zungo" };
+	private static final String[] MONTH_NAMES = { 
+			"Adir", "Bora", "Coan", "Detri", 
+			"Edal", "Flo", "Geor", "Heliba",
+			"Idanon", "Jowani", "Kireal", "Larno", 
+			"Medior", "Neturima", "Ozulikan", "Pasurabi", 
+			"Rudiakel", "Safundo", "Tiunor", "Ulasja",
+			"Vadeun", "Wakumi", "Xetual", "Zungo" };
 
 	private static final String[] WEEK_SOL_NAMES = 
 //		{ "Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol", "Venusol", "Jovisol" };	
