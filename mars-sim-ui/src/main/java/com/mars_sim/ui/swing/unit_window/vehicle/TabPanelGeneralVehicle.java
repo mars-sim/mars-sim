@@ -86,15 +86,15 @@ public class TabPanelGeneralVehicle extends TabPanel {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}	
 		
-		JPanel labelPanel = new JPanel(new FlowLayout(10, 10, 10));
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 15));
 		var label = new MultilineLabel();
 		labelPanel.add(label);
-		String text = vehicle.getDescription().replace("\n", " ");
+		String text = vehicle.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
 		label.setText(text);
-		label.setPreferredWidthLimit(300);
+		label.setPreferredWidthLimit(430);
 		label.setLineSpacing(1.2f);
 		label.setMaxLines(30);
-		label.setBorder(new EmptyBorder(10, 5, 10, 5));
+		label.setBorder(new EmptyBorder(5, 5, 5, 5));
 		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
 		panel.add(labelPanel, BorderLayout.CENTER);
 		

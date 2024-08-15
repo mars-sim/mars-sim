@@ -177,10 +177,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- base-mass: in kg (old default : 3000). -->
 	<building type="Lander Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 		wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
-		<description> The Lander Hab is the initial habitat for a crew of four.
-	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
-	 		to jump start a settlement. It's commonly used as a main hub providing four connection points
-	 		when developing a colony.
+		<description> The Lander Hab is a jack-of-all-trades building that houses many basic but critical functions
+		to jump start a settlement. It's commonly used as a main hub.
 		</description>
 		<!-- The power requirements of the building. -->
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
@@ -521,8 +519,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="20" base-mass="1500"
 			category="EVA">
 		<description> The EVA Airlock is a node to be attached to building for giving direct access
-			in performing EVA operations.
-		</description>
+		in performing EVA operations.</description>
 		<power-required base-power="1.0" base-power-down-power="0.1" />
 		<functions>
 			<!-- This building has an airlock and changing room for EVA operations. -->
@@ -564,10 +561,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Central Hub A" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="300" room-temperature="20.0" base-mass="10000">
-		<description> The Central Hub serves to a nexus for connecting other building modules. 
-			It has a flexible air dome and is designed to be a place of gathering and relaxation. 
-		</description>
-
+		<description> The Central Hub serves to a nexus for connecting other building modules. It has a flexible air dome and is 
+		designed to be a place of gathering and relaxation.</description>
 		<power-required base-power="5.0" base-power-down-power="1.0"/>
 
 		<functions>
@@ -801,14 +796,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for Central Hub Type A -->
 
-
+	<!-- Note: a flexible air bladder
+		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials -->
+		
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
 		construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
-		<description> The Inflatable Greenhouse is essentially a flexible air bladder
-		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
-		for growing a limited number of crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
-		has an aluminized Mylar reflector curtain. It also houses one workbench with instruments for botany research.
+		<description> The Inflatable Greenhouse is a flexible air bladder
+		made with interwoven layers of Polyurethane and polyester materials to retain an atmosphere adequate
+		for growing crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
+		has an aluminized Mylar reflector curtain. It houses one workbench with instruments for botany research.
 		</description>
 
 		<power-required base-power="2.0" base-power-down-power=".2"/>
@@ -1215,14 +1212,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for algae pond -->
 
-	<building type="ERV-A" width="10.0" length="10.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="100" room-temperature="0" base-mass="3000">
-		<description> The Earth Return Vehicle Type A (ERV-A) is a vehicle base sent ahead
-		    of the arrival of the human crew. It provides equipment package for resource
-		    processing that provide essential life-support functions. It is NOT fully flight 
-		    capable and would require retrofitting to become flight-ready.
-			
-				Mars Direct Mission Plan :
+	<!-- 
+		Mars Direct Mission Plan :
 				  (1). ERV -
 				 	(a). Payload imported from Earth -
 					 	 Consumables : 3400 kg
@@ -1235,8 +1226,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				  (2). Hab -
 					(a). Payload imported from Earth -
 					 	 Consumables : 7000 kg
-				 			
-		</description>
+	-->
+	<building type="ERV-A" width="10.0" length="10.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="100" room-temperature="0" base-mass="3000">
+		<description> The Earth Return Vehicle Type A (ERV-A) is a vehicle base sent ahead
+		    of the arrival of the human crew. It provides equipment package for resource
+		    processing that provide essential life-support functions. It is NOT fully flight 
+		    capable and would require retrofitting to become flight-ready.
+		    </description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
 		<functions>

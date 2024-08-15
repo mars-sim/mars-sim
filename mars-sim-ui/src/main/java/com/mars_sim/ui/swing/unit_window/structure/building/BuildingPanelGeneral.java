@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,6 +25,8 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import io.github.parubok.text.multiline.MultilineLabel;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing
@@ -69,9 +72,21 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		svgPanel.add(svgLabel);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 15));
+		var label = new MultilineLabel();
+		labelPanel.add(label);
+		String text = building.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
+		label.setText(text);
+		label.setPreferredWidthLimit(430);
+		label.setLineSpacing(1.2f);
+		label.setMaxLines(30);
+		label.setBorder(new EmptyBorder(5, 5, 5, 5));
+		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
+		topPanel.add(labelPanel, BorderLayout.CENTER);
+		
 		// Prepare spring layout info panel.
 		AttributePanel infoPanel = new AttributePanel(8);
-		topPanel.add(infoPanel, BorderLayout.CENTER);
+		topPanel.add(infoPanel, BorderLayout.SOUTH);
 
 		infoPanel.addRow("Building Type", building.getBuildingType());
 		infoPanel.addRow("Category", building.getCategory().getName());
