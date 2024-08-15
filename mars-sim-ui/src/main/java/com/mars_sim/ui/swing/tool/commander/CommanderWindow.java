@@ -525,34 +525,7 @@ public class CommanderWindow extends ToolWindow {
 				AttributePanel rdGrid = new AttributePanel(5, 2);
 				popPanel.add(rdGrid, BorderLayout.CENTER);
 				rdGrid.setBorder(BorderFactory.createTitledBorder(" Research and Development"));
-				
-				double researchDemandCache = c.getResearchDemand();
-				researchDemandCaches.put(c, researchDemandCache);
-				String researchDemandCacheString = Math.round(researchDemandCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel researchDemandLabel = rdGrid.addRow("Research Demand", researchDemandCacheString + "");
-				researchDemandLabels.put(c, researchDemandLabel);
-				
-				double developmentDemandCache = c.getDevelopmentDemand();
-				developmentDemandCaches.put(c, developmentDemandCache);
-				String developmentDemandCacheString = Math.round(developmentDemandCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel developmentDemandLabel = rdGrid.addRow("Development Demand", developmentDemandCacheString + "");
-				developmentDemandLabels.put(c, developmentDemandLabel);
-				
-				double researchValueCache = c.getTotalResearchValue();
-				researchValueCaches.put(c, researchValueCache);
-				String researchValueCacheString = Math.round(researchValueCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel researchValueLabel = rdGrid.addRow("Research Values", researchValueCacheString + "");
-				researchValueLabels.put(c, researchValueLabel);
-				
-				double developmentValueCache = c.getTotalDevelopmentValue();
-				developmentValueCaches.put(c, developmentValueCache);
-				String developmentValueCacheString = Math.round(developmentValueCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel developmentValueLabel = rdGrid.addRow("Development Values", developmentValueCacheString + "");
-				developmentValueLabels.put(c, developmentValueLabel);
+	
 				
 				int numResearchCache = c.getNumResearchProjects();
 				numResearchCaches.put(c, numResearchCache);
@@ -566,20 +539,6 @@ public class CommanderWindow extends ToolWindow {
 				JLabel numDevelopmentLabel = rdGrid.addRow("# Development Proj", numDevelopmentCacheString + "");
 				numDevelopmentLabels.put(c, numDevelopmentLabel);
 				
-				double activenessResearchCache = c.getAverageResearchActiveness();
-				activenessResearchCaches.put(c, activenessResearchCache);
-				String activenessResearchCacheString = Math.round(activenessResearchCache * 10.0)/10.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel activenessResearchLabel = rdGrid.addRow("Research Activeness", activenessResearchCacheString + "");
-				activenessResearchLabels.put(c, activenessResearchLabel);
-				
-				double activenessDevelopmentCache = c.getAverageDevelopmentActiveness();
-				activenessDevelopmentCaches.put(c, activenessDevelopmentCache);
-				String activenessDevelopmentCacheString = Math.round(activenessDevelopmentCache * 10.0)/10.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel activenessDevelopmentLabel = rdGrid.addRow("Development Activeness", activenessDevelopmentCacheString + "");
-				activenessDevelopmentLabels.put(c, activenessDevelopmentLabel);
-			
 				double researchAreaCache = c.getResearchArea();
 				double researchAreaGrowthRateCache = c.getResearchAreaGrowthRate();
 				researchAreaCaches.put(c, researchAreaCache);
@@ -597,6 +556,48 @@ public class CommanderWindow extends ToolWindow {
 						+ " (" + Math.round(developmentAreaGrowthRateCache * 100.0)/100.0 + ")";
 				JLabel developmentAreaLabel = rdGrid.addRow("Development Facility Area", developmentAreaCacheString + "");
 				developmentAreaLabels.put(c, developmentAreaLabel);
+				
+				double activenessResearchCache = c.getAverageResearchActiveness();
+				activenessResearchCaches.put(c, activenessResearchCache);
+				String activenessResearchCacheString = Math.round(activenessResearchCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel activenessResearchLabel = rdGrid.addRow("Research Activeness", activenessResearchCacheString + "");
+				activenessResearchLabels.put(c, activenessResearchLabel);
+				
+				double activenessDevelopmentCache = c.getAverageDevelopmentActiveness();
+				activenessDevelopmentCaches.put(c, activenessDevelopmentCache);
+				String activenessDevelopmentCacheString = Math.round(activenessDevelopmentCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel activenessDevelopmentLabel = rdGrid.addRow("Development Activeness", activenessDevelopmentCacheString + "");
+				activenessDevelopmentLabels.put(c, activenessDevelopmentLabel);
+						
+				double researchDemandCache = c.getResearchDemand();
+				researchDemandCaches.put(c, researchDemandCache);
+				String researchDemandCacheString = Math.round(researchDemandCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel researchDemandLabel = rdGrid.addRow("Research Demand", researchDemandCacheString + "");
+				researchDemandLabels.put(c, researchDemandLabel);
+				
+				double developmentDemandCache = c.getDevelopmentDemand();
+				developmentDemandCaches.put(c, developmentDemandCache);
+				String developmentDemandCacheString = Math.round(developmentDemandCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel developmentDemandLabel = rdGrid.addRow("Development Demand", developmentDemandCacheString + "");
+				developmentDemandLabels.put(c, developmentDemandLabel);
+				
+				double researchValueCache = c.getTotalResearchValue();
+				researchValueCaches.put(c, researchValueCache);
+				String researchValueCacheString = Math.round(researchValueCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel researchValueLabel = rdGrid.addRow("Research Values", researchValueCacheString + "");
+				researchValueLabels.put(c, researchValueLabel);
+				
+				double developmentValueCache = c.getTotalDevelopmentValue();
+				developmentValueCaches.put(c, developmentValueCache);
+				String developmentValueCacheString = Math.round(developmentValueCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel developmentValueLabel = rdGrid.addRow("Development Values", developmentValueCacheString + "");
+				developmentValueLabels.put(c, developmentValueLabel);
 			}	
 		}
 	}

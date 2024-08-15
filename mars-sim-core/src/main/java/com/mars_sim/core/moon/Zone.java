@@ -23,7 +23,7 @@ public class Zone implements Serializable, Temporal {
 	// Area in square meters
 	private double area;
 	
-	private double growthRate;
+	private double growthPercent;
 	
 	private ZoneType type;
 	
@@ -73,14 +73,15 @@ public class Zone implements Serializable, Temporal {
 		else if (ZoneType.TRANSPORTATION == type)	
 			area = factor * RandomUtil.getRandomDouble(50, 100);
 		
-		growthRate = RandomUtil.getRandomDouble(0, 2);
+		growthPercent = RandomUtil.getRandomDouble(0, 2);
 	}
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		int millisolInt = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewIntMillisol() && millisolInt > 5 && millisolInt % 120 == 1) {
+		int missionSol = pulse.getMarsTime().getMissionSol();
+		
+		if (pulse.isNewHalfSol() || (RandomUtil.getRandomInt(50) == 1)) {
 			
 			if (ZoneType.RESEARCH == type) {
 				int numResearcher = colony.getPopulation().getNumResearchers();
@@ -93,10 +94,14 @@ public class Zone implements Serializable, Temporal {
 //						+ "  researchValue: " + researchValue
 //						+ "  numResearchProj: " + numResearchProj
 //						);
-				score = Math.max(.4, Math.min(-.4, score));
+				if (score > .2)
+					score = .2;
+				else if (score < -.2)
+					score = -.2;
 				
-				growthRate += RandomUtil.getRandomDouble(-0.01 + score, 0.011 + score);
+				growthPercent += RandomUtil.getRandomDouble(-0.011 + score, 0.011 + score);
 			}
+			
 			else if (ZoneType.ENGINEERING == type) {
 				int numEngineer = colony.getPopulation().getNumEngineers();
 				int numDevelopmentProj = colony.getNumDevelopmentProjects();
@@ -108,25 +113,28 @@ public class Zone implements Serializable, Temporal {
 //						+ "  researchValue: " + researchValue
 //						+ "  numResearchProj: " + numResearchProj
 //						);
-				score = Math.max(.4, Math.min(-.4, score));
-				
-				growthRate += RandomUtil.getRandomDouble(-0.01 + score, 0.011 + score);
+				if (score > .2)
+					score = .2;
+				else if (score < -.2)
+					score = -.2;
+		
+				growthPercent += RandomUtil.getRandomDouble(-0.01 + score, 0.01 + score);
 			}
 			else {
 				
-				growthRate += RandomUtil.getRandomDouble(-0.01, 0.011);
+				growthPercent += RandomUtil.getRandomDouble(-0.01, 0.01);
 			}
-
+		
+			if (growthPercent > 10)
+				growthPercent = 10;
+			else if (growthPercent < -5)
+				growthPercent = -5;
 			
-			if (growthRate > 10)
-				growthRate = 10;
-			else if (growthRate < -5)
-				growthRate = -5;
+			area *= 1 + growthPercent/100;
 			
-			area = area * (1 + growthRate/100);
 			// Slightly adjust the growth rate after making the contribution to 
 			// the increase or decrease of the zone area
-			growthRate = growthRate *.9;
+			growthPercent = growthPercent *.9;
 		}
 
 		return false;
@@ -140,8 +148,8 @@ public class Zone implements Serializable, Temporal {
 		return area;
 	}
 	
-	public double getGrowthRate() {
-		return growthRate;
+	public double getGrowthPercent() {
+		return growthPercent;
 	}
 	
 	/**

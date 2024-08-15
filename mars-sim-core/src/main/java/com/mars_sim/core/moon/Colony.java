@@ -263,7 +263,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @return
 	 */
 	public double getResearchAreaGrowthRate() {
-		return researchZone.getGrowthRate();
+		return researchZone.getGrowthPercent();
 	}	
 	
 	/**
@@ -290,7 +290,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @return
 	 */
 	public double getDevelopmentAreaGrowthRate() {
-		return developmentZone.getGrowthRate();
+		return developmentZone.getGrowthPercent();
 	}
 
 	/**

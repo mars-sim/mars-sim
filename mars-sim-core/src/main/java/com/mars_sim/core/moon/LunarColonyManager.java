@@ -42,6 +42,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 	
 	private static List<Coordinates> coords = new ArrayList<>();
 	
+	private LunarWorld lunarWorld;
+	
 	static {
 //		initialColonyNames.put("Kennedy", "NASA");
 //		initialColonyNames.put("Kararmin", "ISRA");
@@ -116,7 +118,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 	/**
 	 * Constructor.
 	 */
-	public LunarColonyManager() {	
+	public LunarColonyManager(LunarWorld lunarWorld) {	
+		this.lunarWorld = lunarWorld;
 	}
 	
 	/**
@@ -203,34 +206,29 @@ public class LunarColonyManager implements Serializable, Temporal {
 		return null;
 	}
 	
-//	public void init() {
-//		for (Colony c: colonies) {
-//			c.initPop();
-//		}
-//	}
-	
+
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		long tnow = System.currentTimeMillis();
+		// DEBUG: Calculate the real time elapsed [in milliseconds] long tnow = System.currentTimeMillis();
 
-		if (pulse.isNewHalfSol()) {
-			int rand = RandomUtil.getRandomInt(50);
-			if (rand == 1) {
-				addColony(false);
-			}
-		}
+		lunarWorld.timePassing(pulse);
 		
+		if (pulse.isNewHalfSol() || (RandomUtil.getRandomInt(100) == 1)) {
+			addColony(false);
+		}
+					
 		for (Colony c: colonies) {
 			c.timePassing(pulse);
 		}
 		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		tLast = System.currentTimeMillis();
-//		long elapsedMS = tLast - tnow;
-//		if (elapsedMS > 10)
-//			logger.severe("elapsedMS: " + elapsedMS);
-	
+		/**
+		 * DEBUG: Calculate the real time elapsed [in milliseconds]
+		 * tLast = System.currentTimeMillis();
+		 * long elapsedMS = tLast - tnow;
+		 * if (elapsedMS > 10)
+		 * 	logger.severe("elapsedMS: " + elapsedMS);
+		 */
+
 		return true;
 	}
 

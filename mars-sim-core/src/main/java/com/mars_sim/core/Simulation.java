@@ -291,7 +291,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager();
+		lunarColonyManager = new LunarColonyManager(lunarWorld);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -325,7 +325,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager();
+		lunarColonyManager = new LunarColonyManager(lunarWorld);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -428,7 +428,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager();
+		lunarColonyManager = new LunarColonyManager(lunarWorld);
 	
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -1414,10 +1414,8 @@ public class Simulation implements ClockListener, Serializable {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
-			// Will call each nation's timePassing(pulse) once per pulse
-			
-			lunarWorld.timePassing(pulse);
-			
+			// Future: Will call each nation's timePassing(pulse) once per pulse
+		
 			lunarColonyManager.timePassing(pulse);
 			
 			orbitInfo.timePassing(pulse);

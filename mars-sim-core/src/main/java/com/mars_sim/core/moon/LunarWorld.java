@@ -20,8 +20,8 @@ public class LunarWorld implements Serializable, Temporal {
 	public static final SimLogger logger = SimLogger.getLogger(LunarWorld.class.getName());
 
 	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		// TODO Auto-generated method stub
+	public boolean timePassing(ClockPulse pulse) {		
+		// Future: Simulate the sunlight cycle that affects the power generation
 		return false;
 	}
 
