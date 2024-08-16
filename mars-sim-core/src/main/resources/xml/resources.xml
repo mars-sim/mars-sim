@@ -23,8 +23,8 @@
 	<!-- edible - Is the resource edible? -->
 
 	<!-- Life Support Resources -->
-	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true">potable water</resource>
+	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents thermo-stabilized food that can afford long-term storage.</resource>
+	<resource name="Water" type="compound" phase="liquid" life-support="true">Potable water</resource>
 	<resource name="Oxygen" type="element" phase="gas" life-support="true" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 

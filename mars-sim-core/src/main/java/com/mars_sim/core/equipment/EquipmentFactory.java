@@ -58,6 +58,8 @@ public final class EquipmentFactory {
 		switch (type) {
 		case EVA_SUIT:
 			newEqm = new EVASuit(newName, settlement);
+			// Set description for this robot
+			newEqm.setDescription("A standard EVA suit for Mars surface operation.");
 			// Store a pressure suit inside the EVA suit
 //			((EVASuit)newEqm).storeItemResource(ItemResourceUtil.pressureSuitID, 1);
 			break;
@@ -67,6 +69,7 @@ public final class EquipmentFactory {
 		case GAS_CANISTER:
 		case LARGE_BAG:
 			newEqm = new GenericContainer(newName, type, false, settlement);
+			newEqm.setDescription("A standard " + type.getName().toLowerCase() + ".");
 			break;
 			
 		case SPECIMEN_BOX:
@@ -74,6 +77,7 @@ public final class EquipmentFactory {
 		case WHEELBARROW:			
 			// Reusable Containers
 			newEqm = new GenericContainer(newName, type, true, settlement);
+			newEqm.setDescription("A standard " + type.getName().toLowerCase() + ".");
 			break;
 		default:
 			throw new IllegalStateException("Equipment type '" + type + "' could not be constructed.");

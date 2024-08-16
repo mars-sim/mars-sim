@@ -87,6 +87,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
+	 * Sets the equipment's description.
+	 *
+	 * @param description new description.
+	 */
+	protected void setDescription(String description) {
+		super.setDescription(description);
+	}
+	
+	/**
 	 * Returns the mass of Equipment. The base mass plus the mass of whatever it is carrying.
 	 */
 	@Override

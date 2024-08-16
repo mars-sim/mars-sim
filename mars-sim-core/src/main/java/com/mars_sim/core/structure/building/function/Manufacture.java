@@ -323,10 +323,10 @@ public class Manufacture extends Function {
 
 		// Recalculate settlement good value for salvaged unit.
 		Good salvagedGood = null;
-		if (salvagedUnit instanceof Equipment) {
-			salvagedGood = GoodsUtil.getEquipmentGood(((Equipment) salvagedUnit).getEquipmentType());
-		} else if (salvagedUnit instanceof Vehicle) {
-			salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
+		if (salvagedUnit instanceof Equipment e) {
+			salvagedGood = GoodsUtil.getEquipmentGood(e.getEquipmentType());
+		} else if (salvagedUnit instanceof Vehicle v) {
+			salvagedGood = GoodsUtil.getVehicleGood(v.getDescription());
 		}
 
 		if (salvagedGood == null) {

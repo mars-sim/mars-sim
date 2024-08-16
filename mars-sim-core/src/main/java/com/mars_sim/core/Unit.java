@@ -53,7 +53,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	private long lastPulse = 0;
 	
 	private String name;
-	private String description;
+	private String description = "No Description";
 	/** Commander's notes on this unit. */
 	private String notes = "";
 	/** The unit's location tag. */
@@ -129,7 +129,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, int id, int containerId) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.description = name;
+//		this.description = name;
 		this.baseMass = 0;
 		this.identifier = id;
 		this.containerID = containerId;
@@ -147,7 +147,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, Coordinates location) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.description = name;
+//		this.description = name;
 		this.baseMass = 0;
 
 		if (masterClock != null) {

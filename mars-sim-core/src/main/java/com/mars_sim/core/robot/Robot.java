@@ -152,8 +152,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		isSalvaged = false;
 		salvageInfo = null;
 		isInoperable = false;
-		// set description for this robot
-		super.setDescription(OPERABLE);
+		
+		// Set description for this robot
+		setDescription("A " + spec.getRobotType().getName() + "(" + INOPERABLE + ")");
 
 		// Construct the SystemCondition instance.
 		health = new SystemCondition(this, spec);
@@ -302,7 +303,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	// TODO: allow robot parts to be stowed in storage
 	void setInoperable() {
 		// set description for this robot
-		super.setDescription(INOPERABLE);
+		super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
 		botMind.setInactive();
 		toBeSalvaged();
 	}
