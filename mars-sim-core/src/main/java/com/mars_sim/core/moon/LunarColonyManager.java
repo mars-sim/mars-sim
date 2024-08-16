@@ -52,7 +52,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 		initialColonyNames.put("LunarOne", "SPACEX");
 		
 		colonyNames.put("Kennedy", "NASA");
-		colonyNames.put("Kararmin", "ILRA");
+		colonyNames.put("Kararmin", "ISRA");
 		colonyNames.put("Yue De", "CNSA");
 		colonyNames.put("Barmingrad", "RKA");
 		colonyNames.put("LunarOne", "SPACEX");

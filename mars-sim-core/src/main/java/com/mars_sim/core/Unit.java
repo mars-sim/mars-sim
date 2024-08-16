@@ -379,18 +379,16 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		if (getUnitType() == UnitType.SETTLEMENT) {	
 			return location;
 		}
-//		else if (LocationStateType.MARS_SURFACE == currentStateType) {	
-//			return location;
-//		}
-		
-		Unit container = getContainerUnit();
-		if (container.getUnitType() == UnitType.MARS) {	
+	
+		Unit cu = getContainerUnit();
+		if (cu.getUnitType() == UnitType.MARS) {	
+			// Since Mars surface has no coordinates, 
+			// Get from its previously setting location
 			return location;
 		}
 		
-		// For Vehicle, Person, Robot and Equipment,
-		// Get its container unit's coordinates
-		return container.getCoordinates();
+		// Unless it's on Mars surface, get its container unit's coordinates
+		return cu.getCoordinates();
 	}
 
 	/**
@@ -425,9 +423,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
-	 * Person or Robot) If it's on the surface of Mars, then the topmost container
-	 * is MarsSurface.
+	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
 	 *
 	 * @return the unit's topmost container unit
 	 */
@@ -444,9 +441,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
-	 * Person or Robot) If it's on the surface of Mars, then the topmost container
-	 * is MarsSurface.
+	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
 	 *
 	 * @return the unit's topmost container unit
 	 */

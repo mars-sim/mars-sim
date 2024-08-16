@@ -297,10 +297,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else {	
 			// if output score is greater than the input score
 			if (score > 0 && process.isProcessRunning()) {
-				// Skip this process with 90% chance
-				int rand = RandomUtil.getRandomInt(9);
-				if (rand > 0)
+				int rand = RandomUtil.getRandomInt(50);
+				if (rand > 0) {
+					// Leave this process the way it is
 					return;
+				}
 			}
 	
 			// if output score is smaller than the input score
@@ -317,10 +318,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 			// if output score is smaller than the input score
 			else if (score < 0 && !process.isProcessRunning()) {
-				// Skip this process with 90% chance
-				int rand = RandomUtil.getRandomInt(9);
-				if (rand > 0)
+				int rand = RandomUtil.getRandomInt(50);
+				if (rand > 0) {
+					// Leave this process the way it is
 					return;
+				}
 			}
 			
 			if (score > 1 || score < -1) {

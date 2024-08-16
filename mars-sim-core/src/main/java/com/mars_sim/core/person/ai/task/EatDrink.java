@@ -976,7 +976,7 @@ public class EatDrink extends Task {
 		
 		if (proportion > MIN) {
 			// Dessert amount eaten over this period of time.
-			Unit containerUnit = person.getTopContainerUnit();
+			Unit containerUnit = person.getContainerUnit();
 
 			if (containerUnit != null) {
 				// Take dessert resource from inventory if it is available.
@@ -1222,7 +1222,7 @@ public class EatDrink extends Task {
 
 			if (proportion > MIN) {
 
-				Unit containerUnit = person.getTopContainerUnit();
+				Unit containerUnit = person.getContainerUnit();
 
 				if (containerUnit != null) {
 					// Add to cumulativeProportion
