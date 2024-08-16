@@ -71,7 +71,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private String themeCache = "";
 	private String locationStringCache;
 
-
 	private JLabel vicinityLabel;
 	private JLabel containerLabel;
 	private JLabel settlementLabel;
@@ -787,13 +786,35 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	public void destroy() {
 		super.destroy();
 		
-		containerCache = null;
-		locationCache = null;
+		vicinityLabel = null;
+		containerLabel = null;
+		settlementLabel = null;
+		 buildingLabel = null;
+		locationStateLabel = null;
+		activitySpot = null;
+		iceLabel = null;
+		regolithLabel = null;
+		areothermalLabel = null;
+		
 		locatorButton = null;
+
 		lcdLong = null;
 		lcdLat = null;
 		bannerText = null;
 		gauge = null;
+
+		latLonDim = null;
+		gaugeDim = null;
+		bannerDim = null;
+		
+		vicinityUnit = null;
+		containerCache = null;
+		buildingCache = null;
+		settlementCache = null;
+		locationCache = null;
+
+		locationStateTypeCache = null;
+		
 
 	}
 }

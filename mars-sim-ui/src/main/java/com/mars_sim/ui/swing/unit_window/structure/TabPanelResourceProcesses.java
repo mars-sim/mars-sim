@@ -157,4 +157,16 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	private void setResourceProcessOverride(boolean override) {
 		settlement.setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
 	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	@Override
+	public void destroy() {
+		super.destroy();
+		
+		settlement = null;
+		levelComboBox = null;
+		processPanel = null;
+	}
 }

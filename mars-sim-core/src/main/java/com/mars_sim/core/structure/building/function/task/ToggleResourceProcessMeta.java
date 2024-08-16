@@ -265,7 +265,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			double rate0, double rate1, double score) {
 			
 		// Save the score for that process for displaying its value
-		process.setScore(score);
+		process.setOverallScore(score);
 		
 		// Check if settlement is missing one or more of the output resources.
 		if (process.isOutputsEmpty(settlement)) {

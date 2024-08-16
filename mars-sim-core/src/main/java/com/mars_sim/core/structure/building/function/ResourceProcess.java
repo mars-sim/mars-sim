@@ -168,11 +168,11 @@ public class ResourceProcess implements Serializable {
 			return 0;
 	}
 		
-	public double getScore() {
+	public double getOverallScore() {
 		return score;
 	}
 	
-	public void setScore(double score) {
+	public void setOverallScore(double score) {
 		this.score = score;
 	}
 	

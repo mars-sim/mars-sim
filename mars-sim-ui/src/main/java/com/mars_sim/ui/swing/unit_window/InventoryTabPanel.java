@@ -9,6 +9,8 @@ package com.mars_sim.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +43,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 
 /**
@@ -53,6 +55,8 @@ public class InventoryTabPanel extends TabPanel {
 
 	private static final String INVENTORY_ICON = "inventory";
 
+	private static final String BR = "<br/>";
+	
     private ResourceTableModel resourceTableModel;
     private ItemTableModel itemTableModel;
     private EquipmentTableModel equipmentTableModel;
@@ -85,7 +89,7 @@ public class InventoryTabPanel extends TabPanel {
 		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		
         // Create resources panel
-		if (unit instanceof ResourceHolder rHolder) {
+		if (unit instanceof ResourceHolder) {
 			JScrollPane resourcesPanel = new JScrollPane();
 			resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 			inventoryContentPanel.add(resourcesPanel);
@@ -94,7 +98,27 @@ public class InventoryTabPanel extends TabPanel {
 			resourceTableModel = new ResourceTableModel(unit);
 
 			// Create resources table
-			JTable resourceTable = new JTable(resourceTableModel);
+			JTable resourceTable = new JTable(resourceTableModel) {
+	            // Implement table cell tool tips.           
+	            public String getToolTipText(MouseEvent e) {
+	                Point p = e.getPoint();
+	                int rowIndex = rowAtPoint(p);
+	                if (rowIndex < 0) {
+	                    return null;
+	                }
+	                rowIndex = getRowSorter().convertRowIndexToModel(rowIndex);
+	                
+	                int colIndex = columnAtPoint(p);
+
+	                // Only display tooltip if hovering over the 1st column
+	                if (colIndex == 0) {
+	                	return generateToolTip(resourceTableModel.getResource(rowIndex));
+	                }
+	                
+	                return null;
+	            }
+	        };			
+			
 			resourceTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 
 			resourceTable.setRowSelectionAllowed(true);
@@ -123,7 +147,26 @@ public class InventoryTabPanel extends TabPanel {
 			itemTableModel = new ItemTableModel(iHolder);
 
 			// Create item table
-			JTable itemTable = new JTable(itemTableModel);
+			JTable itemTable = new JTable(itemTableModel) {
+	            // Implement table cell tool tips.           
+	            public String getToolTipText(MouseEvent e) {
+	                Point p = e.getPoint();
+	                int rowIndex = rowAtPoint(p);
+	                if (rowIndex < 0) {
+	                    return null;
+	                }
+	                rowIndex = getRowSorter().convertRowIndexToModel(rowIndex);
+	                
+	                int colIndex = columnAtPoint(p);
+
+	                // Only display tooltip if hovering over the 1st column
+	                if (colIndex == 0) {
+	                	return generateToolTip(itemTableModel.getPart(rowIndex));
+	                }
+	                
+	                return null;
+	            }
+	        };			
 			itemTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 
 			itemTable.setRowSelectionAllowed(true);
@@ -156,7 +199,26 @@ public class InventoryTabPanel extends TabPanel {
 	        equipmentTableModel = new EquipmentTableModel(eo);
 	
 	        // Create equipment table
-	        JTable equipmentTable = new JTable(equipmentTableModel);
+	        JTable equipmentTable = new JTable(equipmentTableModel) {
+	            // Implement table cell tool tips.           
+	            public String getToolTipText(MouseEvent e) {
+	                Point p = e.getPoint();
+	                int rowIndex = rowAtPoint(p);
+	                if (rowIndex < 0) {
+	                    return null;
+	                }
+	                rowIndex = getRowSorter().convertRowIndexToModel(rowIndex);
+	                
+	                int colIndex = columnAtPoint(p);
+
+	                // Only display tooltip if hovering over the 1st column
+	                if (colIndex == 0) {
+	                	return generateToolTip(equipmentTableModel.getEquipment(rowIndex));
+	                }
+	                
+	                return null;
+	            }
+	        };
 	        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 	        
 	        equipmentTable.setRowSelectionAllowed(true);
@@ -187,6 +249,77 @@ public class InventoryTabPanel extends TabPanel {
         }
     }
 	
+	/**
+     * Generates the tooltip based on the resource's description.
+     * 
+     * @param resource
+     * @param building
+     * @return
+     */
+    private String generateToolTip(Resource resource) {
+
+        // NOTE: internationalize the resource processes' dynamic tooltip.
+        StringBuilder result = new StringBuilder("<html>");
+        // Future: Use another tool tip manager to align text to improve tooltip readability			
+        result.append(wrapText(resource.getDescription(), 80));
+     
+        result.append("</html>");   
+        
+        return result.toString();
+    }
+    
+	/**
+     * Generates the tooltip based on the equipment's description.
+     * 
+     * @param equipment
+     * @param building
+     * @return
+     */
+    private String generateToolTip(Equipment equipment) {
+
+        // NOTE: internationalize the resource processes' dynamic tooltip.
+        StringBuilder result = new StringBuilder("<html>");
+        // Future: Use another tool tip manager to align text to improve tooltip readability			
+        result.append(wrapText(equipment.getDescription(), 80));
+     
+        result.append("</html>");   
+        
+        return result.toString();
+    }
+    
+    /**
+     * Adds a html line break to every line and wraps the text around.
+     * 
+     * @param text
+     * @param wrapCharAt
+     * @return
+     */
+    public static String wrapText(String text, int wrapCharAt) {
+        int lastBreak = 0;
+        int nextBreak = wrapCharAt;
+        if (text.length() > wrapCharAt) {
+            String setString = "";
+            do {
+                while (text.charAt(nextBreak) != ' ' && nextBreak > lastBreak) {
+                    nextBreak--;
+                }
+                if (nextBreak == lastBreak) {
+                    nextBreak = lastBreak + wrapCharAt;
+                }
+                setString += text.substring(lastBreak, nextBreak).trim() + BR;
+                lastBreak = nextBreak;
+                nextBreak += wrapCharAt;
+
+            } while (nextBreak < text.length());
+            setString += text.substring(lastBreak).trim();
+            return setString;
+        }
+        else {
+        
+        	return text;
+        }
+    }
+    
     /**
      * Updates the info on this panel.
      */
@@ -200,6 +333,19 @@ public class InventoryTabPanel extends TabPanel {
         	equipmentTableModel.update();
     }
 
+    
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {	
+		itemTableModel.destroy();
+		itemTableModel = null;
+		resourceTableModel.destroy();
+		resourceTableModel = null;
+		equipmentTableModel.destroy();
+	    equipmentTableModel = null;
+	}
+	
 	/**
 	 * Internal class used as model for the resource table.
 	 */
@@ -212,17 +358,15 @@ public class InventoryTabPanel extends TabPanel {
 		private Map<Resource, Double> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
-		private Unit unit;
 		private ResourceHolder holder;
 
         private ResourceTableModel(Unit unit) {
-        	this.unit = unit;
         	this.holder = (ResourceHolder) unit;
         	loadResources(keys, stored, capacity);
         }
 
         private void loadResources(List<Resource> kys, Map<Resource, Double> stored, Map<Resource, Double> cap) {  
-        	List<AmountResource> arItems = //new ArrayList<>();
+        	List<AmountResource> arItems = 
         			holder.getAllAmountResourceIDs().stream()
 					.map(ar -> ResourceUtil.findAmountResource(ar))
 					.filter(Objects::nonNull)
@@ -241,6 +385,10 @@ public class InventoryTabPanel extends TabPanel {
 			}
         }
 
+        public Resource getResource(int row) {
+        	return keys.get(row);
+        }
+        
         public int getRowCount() {
             return keys.size();
         }
@@ -327,6 +475,18 @@ public class InventoryTabPanel extends TabPanel {
 				updateData();
 			}
     	}
+        
+    	/**
+    	 * Prepares object for garbage collection.
+    	 */
+    	public void destroy() {
+    		stored = null;
+    		capacity.clear();
+    		keys.clear();
+    		capacity = null;
+    		keys = null;
+    		holder = null;
+    	}
     }
 
 	/**
@@ -353,6 +513,10 @@ public class InventoryTabPanel extends TabPanel {
 							.toList();
 		}
 
+        public Part getPart(int row) {
+        	return items.get(row);
+        }
+        
         public int getRowCount() {
             return items.size();
         }
@@ -427,6 +591,15 @@ public class InventoryTabPanel extends TabPanel {
 				updateData();
 			}
     	}
+        
+    	/**
+    	 * Prepares object for garbage collection.
+    	 */
+    	public void destroy() {
+    		items.clear();
+    		items = null;
+    		holder = null;
+    	}
     }
 
 	/**
@@ -437,18 +610,22 @@ public class InventoryTabPanel extends TabPanel {
 
 		private List<Equipment> equipmentList = new ArrayList<>();
 
-		private EquipmentOwner unit;
+		private EquipmentOwner owner;
 
 		/**
 		 * Constructor.
 		 * 
 		 * @param inventory {@link Inventory}
 		 */
-		public EquipmentTableModel(EquipmentOwner unit) {
-			this.unit = unit;
-			equipmentList = new ArrayList<>(unit.getEquipmentSet());
+		public EquipmentTableModel(EquipmentOwner owner) {
+			this.owner = owner;
+			equipmentList = new ArrayList<>(owner.getEquipmentSet());
 		}
 
+		private Equipment getEquipment(int row) {
+			return equipmentList.get(row);
+		}
+        
 		private String getContent(Equipment e) {
 			String s = "";
 			if (e instanceof Container c) {
@@ -518,7 +695,7 @@ public class InventoryTabPanel extends TabPanel {
 		
 		public void update() {
 
-			List<Equipment> newList = new ArrayList<>(unit.getEquipmentSet());
+			List<Equipment> newList = new ArrayList<>(owner.getEquipmentSet());
 			
 			if (equipmentList.size() != newList.size()) {
 				
@@ -545,5 +722,14 @@ public class InventoryTabPanel extends TabPanel {
 		public Entity getAssociatedEntity(int row) {
 			return equipmentList.get(row);
 		}
+		
+    	/**
+    	 * Prepares object for garbage collection.
+    	 */
+    	public void destroy() {
+    		equipmentList.clear();
+    		equipmentList = null;
+    		owner = null;
+    	}
 	}
 }
