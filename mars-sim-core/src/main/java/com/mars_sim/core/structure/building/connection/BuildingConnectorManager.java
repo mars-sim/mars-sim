@@ -132,11 +132,11 @@ public class BuildingConnectorManager implements Serializable {
 //								+ ", to use hatch-facing attribute, the building face must be zero in settlement " + settlement.getName());
 					
 					if (bFacing < 0D) {
-						bFacing += 360D;
+						bFacing += 360;
 					}
 	
-					if (bFacing > 360D) {
-						bFacing -= 360D;
+					if (bFacing > 360) {
+						bFacing -= 360;
 					}
 					
 					double halfL = building.getLength() / 2;
