@@ -27,7 +27,8 @@ public abstract class ResourceAbstract implements Resource, Serializable {
 		super();
 		this.name = name;
 		this.id = id;
-		this.description = description;
+		if (!description.isBlank())
+			this.description = description;
 	}
 
 	/**

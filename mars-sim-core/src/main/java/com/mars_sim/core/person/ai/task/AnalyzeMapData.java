@@ -56,7 +56,7 @@ public class AnalyzeMapData extends Task {
 	private int numROIs;
 	/** The composite score for a multi-disciplinary of skills. */
 	private double compositeSkill;
-	/** The portion of effort spent. */
+	/** The portion of analytical effort spent. */
 	private double effort;
 	/** The total amount of work done. */
 	private double totalWork;
@@ -235,17 +235,12 @@ public class AnalyzeMapData extends Task {
      * @throws Exception
      */
     private double discoveringPhase(double time) {
-    	
-       	if (isDone() || getTimeLeft() <= 0 || totalWork > getDuration()) {
-        	// this task has ended
-			endTask();
-		}
-    	
+
     	consumeComputingResource(time);
 
     	totalWork += time;
         
-        if (totalWork > getDuration() * .95) {
+        if (totalWork > getDuration() *.95) {
 
         	// Get a lowest range rover
         	double range = person.getAssociatedSettlement().getVehicleWithMinimalRange().getEstimatedRange() * (1 + RandomUtil.getRandomDouble(-.1, .1));
@@ -311,6 +306,13 @@ public class AnalyzeMapData extends Task {
          	endTask();
         }
 
+    	
+       	if (isDone() || getTimeLeft() <= 0) {
+        	// this task has ended
+			endTask();
+		}
+    	
+       	
         return 0;
     }
     
@@ -321,7 +323,7 @@ public class AnalyzeMapData extends Task {
      */
     private void consumeComputingResource(double time) {
     	
-		if (isDone() || getTimeCompleted() + time > getDuration() || compute.isCompleted()) {
+		if (compute.isCompleted()) {
         	// this task has ended
         	endTask();
         }
@@ -344,13 +346,15 @@ public class AnalyzeMapData extends Task {
     	
     	consumeComputingResource(time);
         
+    	double duration = getDuration();
+    	
         effort += time;
           
-        if (effort > getDuration() / 3) {
+        if (effort > duration * .95) {
         	logger.log(person, Level.INFO, 20_000, 
-        			"Analyzing map data.  effort: " + Math.round(effort * 100.0)/100.0 
-        			+ "  time: " + Math.round(time * 1000.0)/1000.0
-        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
+        			"Analyzing map data. Effort : " + Math.round(effort * 100.0)/100.0 
+//        			+ "  time: " + Math.round(time * 1000.0)/1000.0
+        			+ " out of " + Math.round(duration * 100.0)/100.0
         			);
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
@@ -363,7 +367,7 @@ public class AnalyzeMapData extends Task {
         // Add experience points
         addExperience(time);
     	
-		if (isDone() || getTimeLeft() <= 0 || totalWork / time > getDuration() ) {
+		if (isDone() || getTimeLeft() <= 0 || totalWork > duration) {
 	    	// this task has ended
 			endTask();
 		}
