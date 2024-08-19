@@ -82,7 +82,7 @@ float rho) {
   }
 
   // Faster method may be to remove % mapBoxWidth and replace with a 2D kernel and a for loop that iterates over local group??
-  int2 pos = (int2)(iGID % mapBoxWidth, half_divide(iGID, mapBoxWidth)) - (int2)(halfWidth,halfHeight);
+  int2 pos = (int2)(iGID % mapBoxWidth, half_divide(iGID, mapBoxWidth)) - (int2)(halfWidth, halfHeight);
 
   float2 sph = rectToSphere(pos, (float2)(centerPhi, centerTheta), (float)rho, (float)TWO_PI);
 

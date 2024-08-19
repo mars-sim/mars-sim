@@ -1339,6 +1339,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				double newMag = (5.0/14 * newSliderValue + 1)/6;							
 				double newRho = MapPanel.RHO_DEFAULT * newMag;
 				
+//				logger.info("newSliderValue: " + Math.round(newSliderValue * 1000.0)/1000.0 
+//						+ "  newMag: " + Math.round(newMag* 1000.0)/1000.0
+//						+ "  oldRho: " + Math.round(oldRho* 1000.0)/1000.0
+//						+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
+//						);
+				
 				if (newRho > MapPanel.MAX_RHO) {
 					newRho = MapPanel.MAX_RHO;
 				}
@@ -1376,7 +1382,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * gets the map rho.
+	 * Gets the map rho.
 	 *
 	 * @param rho
 	 */

@@ -180,9 +180,9 @@ import com.mars_sim.core.tool.RandomUtil;
 			
 			System.out.println("Map type '" + mapType 
 					+ "' (res: " + metaData.getResolution() 
-					+ ") has been selected.  Map name: '" + metaData.getMapType()
-					+ "'.  Filename: '" + metaData.getFile()
-					+ "'.  Locally AV: " + metaData.isLocallyAvailable() + ".");
+					+ ") selected. Map name: '" + metaData.getMapType()
+					+ "'. Filename: '" + metaData.getFile()
+					+ "'. Map Locally available: " + metaData.isLocallyAvailable() + ".");
 			
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not find the map file.", e);

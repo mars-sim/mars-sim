@@ -351,11 +351,7 @@ public class AnalyzeMapData extends Task {
         effort += time;
           
         if (effort > duration * .95) {
-        	logger.log(person, Level.INFO, 20_000, 
-        			"Analyzing map data. Effort : " + Math.round(effort * 100.0)/100.0 
-//        			+ "  time: " + Math.round(time * 1000.0)/1000.0
-        			+ " out of " + Math.round(duration * 100.0)/100.0
-        			);
+//        	logger.log(person, Level.INFO, 20_000, "Analyzing map data. Effort: " + Math.round(effort * 10.0)/10.0 + " out of " + Math.round(duration * 10.0)/10.0);
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
         	improveMineralConcentrationEstimates(time, effort);

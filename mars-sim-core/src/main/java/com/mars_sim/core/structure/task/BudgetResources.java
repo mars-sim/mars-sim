@@ -248,8 +248,8 @@ public class BudgetResources extends Task {
 					double[] data = quarters.calculateWaterLevel(time);
 					
 					logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
-						+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
-							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
+						+ "'s water ration level. Water: " + Math.round(data[0]*10.0)/10.0
+							+ ". Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
 				} break;
 				
 				case RESOURCE: {

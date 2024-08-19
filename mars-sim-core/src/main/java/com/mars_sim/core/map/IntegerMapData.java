@@ -96,7 +96,7 @@ import com.mars_sim.core.map.common.FileLocator;
 		MIN_RHO = RHO_DEFAULT / 6;
 		MAG_DEFAULT = rho / RHO_DEFAULT;
 		
-		logger.info("Loaded " + metaMap + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
+		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + ". MAG_DEFAULT: " + Math.round(MAG_DEFAULT*10.0)/10.0 + ".");
 		
 		// Exclude mac from use openCL
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -119,7 +119,7 @@ import com.mars_sim.core.map.common.FileLocator;
 					.setArg(12, (float) getRho());
 		} catch(Exception e) {
 			HARDWARE_ACCELERATION = false;
-			logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while compiling: " + e.getMessage());
+			logger.log(Level.SEVERE, "Disabling hardware accel due to exception caused while compiling: " + e.getMessage());
 		}
  	}
 
@@ -225,7 +225,7 @@ import com.mars_sim.core.map.common.FileLocator;
 
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
-	 		logger.severe(imageName + " : " + pixelWidth + " x " + pixelHeight);
+	 		logger.config("loadMapData - " +  imageName + " : " + pixelWidth + " x " + pixelHeight + ".");
 	 		
 	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 		
@@ -342,7 +342,7 @@ import com.mars_sim.core.map.common.FileLocator;
 				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 			} catch(Exception e) {
 				HARDWARE_ACCELERATION = false;
-				logger.log(Level.SEVERE, "Disabling GPU OpenCL acceleration due to exception caused while rendering: " + e.getMessage());
+				logger.log(Level.SEVERE, "Disabling GPU OpenCL accel. Exception caused by " + e.getMessage());
 			}
 		}
 		else {
@@ -413,7 +413,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
 		 
 		 // Set the new scale arg again
-		 kernel.setArg(12, (float) getRho());
+//		 kernel.setArg(12, (float) getRho());
 		 
 		 int size = mapArray.length;
 		 int globalSize = getGlobalSize(size);
@@ -431,7 +431,8 @@ import com.mars_sim.core.map.common.FileLocator;
 				 .putArg(mapBoxWidth/2)
 				 .putArg(mapBoxHeight/2)
 				 .putArg(size)
-				 .putArgs(colBuffer, rowBuffer);
+				 .putArgs(colBuffer, rowBuffer)
+				 .putArg((float) getRho());
 
 		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
 				 .putReadBuffer(rowBuffer, false)

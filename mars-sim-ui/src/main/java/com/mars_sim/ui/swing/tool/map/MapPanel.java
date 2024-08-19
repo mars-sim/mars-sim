@@ -164,7 +164,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		MAX_RHO = IntegerMapData.MAX_RHO;
 		MIN_RHO = IntegerMapData.MIN_RHO;
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
-		magnification = 1;
+		magnification = 1; // newRho/RHO_DEFAULT;
 		
 //		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
@@ -191,51 +191,63 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Detects the mouse wheel movement.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		// Gets the latest scale
-		double oldRho = getRho();
-
-		// May use this if (e.isControlDown()) {} to add ctrl key
-        // May use if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {} to combine with other keys 
-		
-		double delta = e.getWheelRotation();
-    	double rhoDelta = - multiplier * delta;
-    	double newRho = oldRho + rhoDelta;
-    	
-//      Note 1:: Scroll up to zoom in or magnify map
-//    	Note 2:Scroll down to zoom out or shrink the map
-
-		if (newRho > MAX_RHO) {
-			newRho = MAX_RHO;
-		}
-		else if (newRho < MIN_RHO) {
-			newRho = MIN_RHO;
-		}
- 
-		if (newRho != oldRho) {
-
-			magnification = newRho/RHO_DEFAULT;
-			
-//			zooming = true;
-			
+//		// Gets the latest scale
+//		double oldRho = getRho();
+//
+//		// May use this if (e.isControlDown()) {} to add ctrl key
+//        // May use if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {} to combine with other keys 
+//		
+//		// Redefine map param
+////		RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
+////		MAX_RHO = IntegerMapData.MAX_RHO;
+////		MIN_RHO = IntegerMapData.MIN_RHO;
+////		multiplier = RHO_DEFAULT / ZOOM_STEP;
+//		
+//		double delta = e.getWheelRotation();
+//		
+//		double newMag = (5.0/14 * delta + 1)/6;							
+//		double newRho = MapPanel.RHO_DEFAULT * newMag;
+//		
+////    	double rhoDelta = - multiplier * delta;
+////    	double newRho = oldRho + rhoDelta;
+//    	
+////      Note 1:: Scroll up to zoom in or magnify map
+////    	Note 2:Scroll down to zoom out or shrink the map
+//
+//		if (newRho > MAX_RHO) {
+//			newRho = MAX_RHO;
+//		}
+//		else if (newRho < MIN_RHO) {
+//			newRho = MIN_RHO;
+//		}
+// 
+//		if (newRho != oldRho) {
+//
+//			magnification = newRho/RHO_DEFAULT;
+//			
+////			zooming = true;
+//			
 //			logger.info("mag: " + Math.round(magnification * 1000.0)/1000.0 
-//					+ "  rhoDelta: " + Math.round(rhoDelta* 1000.0)/1000.0
+//					+ "  delta: " + Math.round(delta* 1000.0)/1000.0
+//					+ "  newMag: " + Math.round(newMag* 1000.0)/1000.0
+//					+ "  oldRho: " + Math.round(oldRho* 1000.0)/1000.0
 //					+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
 //					+ "  RHO_DEFAULT: " + Math.round(RHO_DEFAULT* 1000.0)/1000.0
 //					);
-			
-	    	// Update the map scale
-//	    	setMapScale(newRho);
-
-			// Call showMap
-//			showMap(centerCoords, newRho);
-	    	// which in turns calls updateDisplay()
-	    	// which in turns calls MapTask thread
-	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
-
-			marsMap.drawMap(centerCoords, newRho);
-			
-			repaint();
-		}
+//			
+//	    	// Update the map scale
+////	    	setMapScale(newRho);
+//
+//			// Call showMap
+////			showMap(centerCoords, newRho);
+//	    	// which in turns calls updateDisplay()
+//	    	// which in turns calls MapTask thread
+//	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
+//
+//			marsMap.drawMap(centerCoords, newRho);
+//			
+//			repaint();
+//		}
     }
 	
 	/*
