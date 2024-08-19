@@ -5,7 +5,7 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Mon 12 Aug 2024)
+## Version 3.8.0 (Mon 19 Aug 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -14,6 +14,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Computing: schedule resources of a task from multiple nodes.</LI> 
   <LI>Country: incorporate Taiwan as nation state.</LI>  
   <LI>Drone: add modeling thrust and potential energy.</LI>  
+  <LI>Fishery: refine feeding, growing and harvesting fish and weed.</LI> 
   <LI>Goods Manager: rework relationship with objectives.</LI>
   <LI>Group Activity: add group activities for a settlement. e.g. birthday parties, 
   	  council announcements, team meetings etc.</LI>
@@ -47,6 +48,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Airlock: correctly looks for airlock with least number of occupants.</LI>	
   <LI>Heating: manage temperature instability via entropy change to 
   	  relate temperature change and heat transfer.</LI> 
+  <LI>Launch Date: correct the launch day calculation when it's before 01-Adir-01.</LI>
   <LI>Navigation: rework vehicle movement to consume fuel and battery power correctly.</LI>	
   <LI>Parking: set limits in looking for vehicle parking locations recursively.</LI>
   <LI>Power Generation: correct how power grid turns on/off buildings during 

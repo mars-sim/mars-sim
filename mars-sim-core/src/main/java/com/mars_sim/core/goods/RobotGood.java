@@ -216,11 +216,11 @@ class RobotGood extends Good {
 		
 		if (robotType == RobotType.MAKERBOT) {
 			
-			double tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
+			int tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
 			
-			double engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
 			
-			double comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
+			int comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
 			
 			double makerFactor = 1 + .65 * engineer + .25 * tech + .1 * comp;
 			
@@ -229,9 +229,9 @@ class RobotGood extends Good {
 		
 		else if (robotType == RobotType.REPAIRBOT) {
 
-			double tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
+			int tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
 			
-			double engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
 			
 			double repairFactor = 1 + .75 * tech + .25 * engineer;
 			
@@ -240,32 +240,32 @@ class RobotGood extends Good {
 		
 		else if (robotType == RobotType.CONSTRUCTIONBOT) {
 	
-			double engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
 			
-			double comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
+			int comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
 			
-			double architect = JobUtil.numJobs(JobType.ARCHITECT, settlement);
+			int architect = JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
 			double constructFactor = 1 + .60 * architect + .25 * engineer + .15 * comp;
 			baseDemand += baseDemand / constructFactor * pop;
 		}
 		
 		else if (robotType == RobotType.GARDENBOT) {
-			double botanistFactor = 1 + JobUtil.numJobs(JobType.BOTANIST, settlement);
+			int botanistFactor = JobUtil.numJobs(JobType.BOTANIST, settlement);
 			
 			baseDemand += baseDemand / botanistFactor * pop;
 		}
 		
 		else if (robotType == RobotType.CHEFBOT) {
-			double chiefFactor = 1 + JobUtil.numJobs(JobType.CHEF, settlement);
+			double chiefFactor = 1.0 + JobUtil.numJobs(JobType.CHEF, settlement);
 			
 			baseDemand += baseDemand / chiefFactor * pop;
 		}
 		
 		else if (robotType == RobotType.DELIVERYBOT) {
-			double trader = JobUtil.numJobs(JobType.TRADER, settlement);
+			int trader = JobUtil.numJobs(JobType.TRADER, settlement);
 			
-			double pilot = JobUtil.numJobs(JobType.PILOT, settlement);
+			int pilot = JobUtil.numJobs(JobType.PILOT, settlement);
 			
 			double traderFactor = 1 + .75 * trader + .25 * pilot;
 			
@@ -273,9 +273,9 @@ class RobotGood extends Good {
 		}
 		
 		else if (robotType == RobotType.MEDICBOT) {
-			double doc = JobUtil.numJobs(JobType.DOCTOR, settlement);
+			int doc = JobUtil.numJobs(JobType.DOCTOR, settlement);
 			
-			double psy = JobUtil.numJobs(JobType.PSYCHOLOGIST, settlement);
+			int psy = JobUtil.numJobs(JobType.PSYCHOLOGIST, settlement);
 			
 			double medicFactor = 1 + .75 * doc + .25 * psy;
 			

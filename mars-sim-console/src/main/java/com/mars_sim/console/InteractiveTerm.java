@@ -297,77 +297,76 @@ public class InteractiveTerm {
 				.constrainInputToChoices();
 		handler.executeOneTask();
 
-		if (GameManager.commandCfg.equals("0")) {
-			sim.endSimulation();
+		String choice = GameManager.commandCfg;
+		switch (choice) {
+			case "0":
+				sim.endSimulation();
 
-			System.exit(0);
-			disposeTerminal();
-		}
+				System.exit(0);
+				disposeTerminal();
+			break;
 
-		else if ((GameManager.commandCfg).equals("1")) {
-			if (consoleEdition) {
-				printChoice("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");
+			case "1":
+				if (consoleEdition) {
+					printChoice("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");
+
+					cfg = configureCommandMode(loaded);
+				} else {
+					marsTerminal.print(System.lineSeparator());
+					marsTerminal.print("Loading the Scenario Editor in Swing-based UI...");
+
+					cfg = 1;
+				}
+			break;
+			
+			case "2":
+				if (useCrew) {
+					useCrew = false;
+					printChoice("The crew loading is now disabled.");
+				} else {
+					useCrew = true;
+					printChoice("The crew loading is now enabled.");
+				}
 
 				cfg = configureCommandMode(loaded);
-			} else {
+			break;
+			
+			case "3":
+				if (loaded) {
+					printChoice("Starting a new simulation in Command Mode...");
+				} else {
+					printChoice("Cannot start the simulation since no commander profile has been loaded up. Try it again.");
+					cfg = configureCommandMode(loaded);
+				}
+			break;
+			
+			case "4":
+				printChoice(BACK_TO_THE_PREVIOUS_MENU + ".");
+
+				return selectMode();
+
+			case "5":
 				marsTerminal.print(System.lineSeparator());
-				marsTerminal.print("Loading the Scenario Editor in Swing-based UI...");
+				// Set new profile
+				profile.accept(textIO, null);
 
-				cfg = 1;
-			}
-		}
+				printChoice("Note: if profiled created successfully, choose 6 to load up this profile.");
 
-		else if ((GameManager.commandCfg).equals("2")) {
-
-			if (useCrew) {
-				useCrew = false;
-				printChoice("The crew loading is now disabled.");
-			} else {
-				useCrew = true;
-				printChoice("The crew loading is now enabled.");
-			}
-
-			cfg = configureCommandMode(loaded);
-		}
-
-		else if ((GameManager.commandCfg).equals("3")) {
-
-			if (loaded) {
-				printChoice("Starting a new simulation in Command Mode...");
-			} else {
-				printChoice("Cannot start the simulation since no commander profile has been loaded up. Try it again.");
 				cfg = configureCommandMode(loaded);
-			}
-		}
+			break;
+			
+			case "6":
+				// Load from previously saved profile
+				loaded = loadPreviousProfile();
 
-		else if ((GameManager.commandCfg).equals("4")) {
-			printChoice(BACK_TO_THE_PREVIOUS_MENU + ".");
+				printChoice("Note: if loaded successfully, will automatically proceed to start the simulation.");
 
-			return selectMode();
-		}
-
-		else if ((GameManager.commandCfg).equals("5")) {
-			marsTerminal.print(System.lineSeparator());
-			// Set new profile
-			profile.accept(textIO, null);
-
-			printChoice("Note: if profiled created successfully, choose 6 to load up this profile.");
-
-			cfg = configureCommandMode(loaded);
-		}
-
-		else if ((GameManager.commandCfg).equals("6")) {
-			// Load from previously saved profile
-			loaded = loadPreviousProfile();
-
-			printChoice("Note: if loaded successfully, will automatically proceed to start the simulation.");
-
-			if (!loaded)
+				if (!loaded)
+					cfg = configureCommandMode(loaded);
+			break;
+			
+			default:
 				cfg = configureCommandMode(loaded);
-		}
-
-		else {
-			cfg = configureCommandMode(loaded);
 		}
 
 		marsTerminal.print(System.lineSeparator());
