@@ -24,7 +24,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     private Entity focus;
     private String shortName;
     private boolean needsEVA = false;
-    private TaskScope scope = TaskScope.WORK_HOUR;
+    private TaskScope scope = TaskScope.ANY_HOUR;
 
     /**
      * Creates an abstract Settlement task for the backlog that relates to an Entity within a Settlement
@@ -37,12 +37,15 @@ public abstract class SettlementTask extends AbstractTaskJob {
      */
     protected SettlementTask(SettlementMetaTask parent, String name, Entity focus, RatingScore score) {
         super(name + (focus != null ? " @ " + focus.getName() : ""), score);
-        this.metaTask = parent;
+        
         this.demand = 1;
         this.focus = focus;
         this.shortName = name;
         
-        this.scope = ((MetaTask)parent).getScope();
+        if (parent != null) {
+	        this.metaTask = parent;
+	        this.scope = ((MetaTask)parent).getScope();
+        }
     }
 
     /**
