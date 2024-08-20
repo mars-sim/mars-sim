@@ -171,8 +171,10 @@ public class LoadVehicleMeta extends MetaTask
                 // If in Garage already then boost score
                 score.addModifier(GARAGED_MODIFIER, 2);
             }
+            // Note: owner can be null
             return new LoadJob(owner, vehicleMission, false, score);
         }
+     // Note: owner can be null
         return new LoadJob(owner, vehicleMission, true, score);
     }
 
@@ -184,6 +186,7 @@ public class LoadVehicleMeta extends MetaTask
      * @param settlement Location the load is occurring
      */
     public static TaskJob createLoadJob(VehicleMission vehicleMission, Settlement settlement) {
+    	// Question: will a null SettlementTask be causing any issues ?
         return createLoadJob(vehicleMission, settlement, false, null);
     } 
 
