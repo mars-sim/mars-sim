@@ -338,12 +338,18 @@ public class InventoryTabPanel extends TabPanel {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {	
-		itemTableModel.destroy();
-		itemTableModel = null;
-		resourceTableModel.destroy();
-		resourceTableModel = null;
-		equipmentTableModel.destroy();
-	    equipmentTableModel = null;
+		if (itemTableModel != null) {
+			itemTableModel.destroy();
+			itemTableModel = null;
+		}
+		if (resourceTableModel != null) {
+			resourceTableModel.destroy();
+			resourceTableModel = null;
+		}
+		if (equipmentTableModel != null) {
+			equipmentTableModel.destroy();
+		    equipmentTableModel = null;
+		}
 	}
 	
 	/**

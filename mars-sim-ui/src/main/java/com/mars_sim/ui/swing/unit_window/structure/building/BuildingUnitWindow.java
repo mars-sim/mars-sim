@@ -40,72 +40,76 @@ public class BuildingUnitWindow extends UnitWindow {
 		addTabPanel(new BuildingPanelPowerGen(building, desktop));
         
         for (Function f : building.getFunctions()) {
-        	switch (f.getFunctionType()) {
+        	
+        	try {
+        		switch (f.getFunctionType()) {
 
-			case ALGAE_FARMING:
-				addTabPanel( new BuildingPanelAlgae(building.getAlgae(), desktop));
-				break;
-			case ASTRONOMICAL_OBSERVATION:
-				addTabPanel( new BuildingPanelAstronomicalObservation(building.getAstronomicalObservation(), desktop));
-				break;
-			case COMPUTATION:
-				addTabPanel( new BuildingPanelComputation(building.getComputation(), desktop));
-				break;
-			case COOKING:
-	        	addTabPanel( new BuildingPanelCooking(building.getCooking(), desktop));	
-				break;
-			case PREPARING_DESSERT:
-				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
-				break;
-			case EVA:
-				addTabPanel( new BuildingPanelEVA(building.getEVA(), desktop));
-				break;
-			case FARMING:
-	        	addTabPanel( new BuildingPanelFarming(building.getFarming(), desktop));
-				break;
-			case FISHERY:
-				addTabPanel( new BuildingPanelFishery(building.getFishery(), desktop));
-				break;
-			case FOOD_PRODUCTION:
-				addTabPanel( new BuildingPanelFoodProduction(building.getFoodProduction(), desktop));
-				break;
-			case VEHICLE_MAINTENANCE:
-				addTabPanel( new BuildingPanelVehicleMaintenance(building.getVehicleMaintenance(), desktop));
-				break;
-			case LIFE_SUPPORT:
-				addTabPanel( new BuildingPanelInhabitable(building.getLifeSupport(), desktop));
-				break;
-	       	case LIVING_ACCOMMODATION:
-            	addTabPanel( new BuildingPanelAccommodation(building.getLivingAccommodation(), desktop));
-            	break;
-			case MANUFACTURE:
-				addTabPanel( new BuildingPanelManufacture(building.getManufacture(), desktop));
-				break;
-			case MEDICAL_CARE:
-				addTabPanel( new BuildingPanelMedicalCare(building.getMedical(), desktop));
-				break;
-			case POWER_STORAGE:
-				addTabPanel( new BuildingPanelPowerStorage(building.getPowerStorage(), desktop));
-				break;
-			case RESEARCH:
-				addTabPanel( new BuildingPanelResearch(building.getResearch(), desktop));
-				break;
-			case RESOURCE_PROCESSING:
-				addTabPanel( new BuildingPanelResourceProcessing(building.getResourceProcessing(), desktop));
-				break;
-			case STORAGE:
-				addTabPanel( new BuildingPanelStorage(building.getStorage(), desktop));
-				break;
-			case THERMAL_GENERATION:
-				addTabPanel(new BuildingPanelThermal(building.getThermalGeneration(), desktop));
-				break;
-			case WASTE_PROCESSING:
-				addTabPanel( new BuildingPanelWasteProcessing(building.getWasteProcessing(), desktop));
-				break;
-			default:
-				break;
+    			case ALGAE_FARMING:
+    				addTabPanel( new BuildingPanelAlgae(building.getAlgae(), desktop));
+    				break;
+    			case ASTRONOMICAL_OBSERVATION:
+    				addTabPanel( new BuildingPanelAstronomicalObservation(building.getAstronomicalObservation(), desktop));
+    				break;
+    			case COMPUTATION:
+    				addTabPanel( new BuildingPanelComputation(building.getComputation(), desktop));
+    				break;
+    			case COOKING:
+    	        	addTabPanel( new BuildingPanelCooking(building.getCooking(), desktop));	
+    				break;
+    			case PREPARING_DESSERT:
+    				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
+    				break;
+    			case EVA:
+    				addTabPanel( new BuildingPanelEVA(building.getEVA(), desktop));
+    				break;
+    			case FARMING:
+    	        	addTabPanel( new BuildingPanelFarming(building.getFarming(), desktop));
+    				break;
+    			case FISHERY:
+    				addTabPanel( new BuildingPanelFishery(building.getFishery(), desktop));
+    				break;
+    			case FOOD_PRODUCTION:
+    				addTabPanel( new BuildingPanelFoodProduction(building.getFoodProduction(), desktop));
+    				break;
+    			case VEHICLE_MAINTENANCE:
+    				addTabPanel( new BuildingPanelVehicleMaintenance(building.getVehicleMaintenance(), desktop));
+    				break;
+    			case LIFE_SUPPORT:
+    				addTabPanel( new BuildingPanelInhabitable(building.getLifeSupport(), desktop));
+    				break;
+    	       	case LIVING_ACCOMMODATION:
+                	addTabPanel( new BuildingPanelAccommodation(building.getLivingAccommodation(), desktop));
+                	break;
+    			case MANUFACTURE:
+    				addTabPanel( new BuildingPanelManufacture(building.getManufacture(), desktop));
+    				break;
+    			case MEDICAL_CARE:
+    				addTabPanel( new BuildingPanelMedicalCare(building.getMedical(), desktop));
+    				break;
+    			case POWER_STORAGE:
+    				addTabPanel( new BuildingPanelPowerStorage(building.getPowerStorage(), desktop));
+    				break;
+    			case RESEARCH:
+    				addTabPanel( new BuildingPanelResearch(building.getResearch(), desktop));
+    				break;
+    			case RESOURCE_PROCESSING:
+    				addTabPanel( new BuildingPanelResourceProcessing(building.getResourceProcessing(), desktop));
+    				break;
+    			case STORAGE:
+    				addTabPanel( new BuildingPanelStorage(building.getStorage(), desktop));
+    				break;
+    			case THERMAL_GENERATION:
+    				addTabPanel(new BuildingPanelThermal(building.getThermalGeneration(), desktop));
+    				break;
+    			case WASTE_PROCESSING:
+    				addTabPanel( new BuildingPanelWasteProcessing(building.getWasteProcessing(), desktop));
+    				break;
+    			default:
+    				break;
+            	}
+        	} catch (Exception e) {
+				throw new IllegalStateException("building function exception " + e);
         	}
-
         }
         
         // Sort tab panels

@@ -76,7 +76,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		infoPanel.addRow("Model", r.getModel());
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
 		
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 15));
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		addBorder(labelPanel, "Description");
 		var label = new MultilineLabel();
 		labelPanel.add(label);

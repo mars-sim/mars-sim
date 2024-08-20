@@ -86,7 +86,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}	
 		
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 15));
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		addBorder(labelPanel, "Description");
 		var label = new MultilineLabel();
 		labelPanel.add(label);
