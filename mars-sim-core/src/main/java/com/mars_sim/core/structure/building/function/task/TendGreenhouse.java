@@ -224,7 +224,7 @@ public class TendGreenhouse extends TendHousekeeping {
 		double mod = 1;
 		
 		if (worker.getUnitType() == UnitType.ROBOT) {
-			mod = .3 * RandomUtil.getRandomDouble(.85, 1.15);
+			mod = .4 * RandomUtil.getRandomDouble(.95, 1.05);
 		}
 		
 		// Determine amount of effective work time based on "Botany" skill

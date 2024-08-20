@@ -990,10 +990,10 @@
 			
 			Overall reaction can be represented as:
 			
-			1. Ethylene production
+			1. Ethylene production: 
 			CH3OH  → C2H4 + 4H2O 
 			(need to balance it)
-			2. Propylene production
+			2. Propylene production: 
 			CH3OH → 2C3H6 + 6H2O 
 			(need to balance it)
 						
@@ -1035,10 +1035,6 @@
 	system (FOST) as well as Synthetic Biological Membrane (SBM)
 	developed at NASA Ames.
 
-	We assume a waste processor capable of daily processsing
-	40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
-	water and 2 kg of solid waste. Note that .5 kg of water is lost
-	through evaporation.
 	-->
 	<!-- Grey Water Recycling process for cleaning grey water. -->
 	<process name="Grey Water Processor" power-required=".32" >
@@ -1061,8 +1057,13 @@
 		<!-- rate: the rate (kg/sol) the resource is produced -->
 		<!-- ambient: true if resource is vented outside -->
 		<!--          false if kept by settlement's inventory. -->
-		<output resource="water" rate="38" />
-		<output resource="solid waste" rate="2" />
+		<output resource="nitrogen" rate=".2" />
+		<output resource="nitrite" rate=".2" />
+		<output resource="nitrate" rate=".2" />
+		<output resource="ammonia" rate=".2" />
+		<output resource="phosphorus" rate=".2" />
+		<output resource="water" rate="39" />
+
 	</process>
 
 	<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
@@ -1089,17 +1090,13 @@
 		<!-- Residual requirement for using chlorine in water treatment
 				is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
 				requires 20 mg of Cl gas -->
-		<input resource="chlorine" rate=".00002" />
+		<input resource="chlorine" rate=".00001" />
 		<input resource="nitrospira spp" rate="0.02" />
 		<input resource="nitrosomonas spp" rate="0.02" />
 
-		<output resource="grey water" rate="3.5" />
-		<output resource="water" rate="5" />
+		<output resource="grey water" rate="7" />
+		<output resource="solid waste" rate="2" />
 		<output resource="toxic waste" rate="1" />
-		<output resource="nitrogen" rate=".25" />
-		<output resource="nitrite" rate=".5" />
-		<output resource="nitrate" rate=".5" />
-		<output resource="phosphorus" rate=".25" />
 	</process>
 
 	<!-- For Waste Management

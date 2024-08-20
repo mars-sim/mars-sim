@@ -1000,6 +1000,15 @@ public class Farming extends Function {
 	}
 
 	/**
+	 * Gets the remaining growing area in this building function.
+	 *
+	 * @return remaining area in square meters
+	 */
+	public double getRemainingArea() {
+		return remainingArea;
+	}
+	
+	/**
 	 * Gets the average number of growing cycles for a crop per orbit.
 	 */
 	public double getAverageGrowingCyclesPerOrbit() {

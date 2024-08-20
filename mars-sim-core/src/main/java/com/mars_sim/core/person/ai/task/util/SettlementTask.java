@@ -41,6 +41,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
         this.demand = 1;
         this.focus = focus;
         this.shortName = name;
+        
+        this.scope = ((MetaTask)parent).getScope();
     }
 
     /**

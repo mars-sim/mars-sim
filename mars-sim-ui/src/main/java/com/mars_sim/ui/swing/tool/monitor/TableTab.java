@@ -83,7 +83,7 @@ abstract class TableTab extends MonitorTab {
 				// Row accounts for sorting	
 				int rowIndex = rowAtPoint(p);
 				var sorter = getRowSorter();
-				if (sorter != null) {
+				if (sorter != null && rowIndex >= 0) {
 					rowIndex = sorter.convertRowIndexToModel(rowIndex);
 				}
 				MonitorModel model = (MonitorModel) getModel();

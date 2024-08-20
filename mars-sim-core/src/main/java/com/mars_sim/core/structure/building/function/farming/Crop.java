@@ -63,7 +63,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	private static final int O2_FACTOR = 4;
 	private static final int CO2_FACTOR = 5;
 	/** How often to calculate the crop health */
-	private static final int CHECK_HEALTH_FREQUENCY = 20;
+	private static final int CHECK_HEALTH_FREQUENCY = 8;
 	
 	/** The modifier for the work time on a crop. */
 	private static final double WORK_TIME_FACTOR = 4000.0;
@@ -440,13 +440,13 @@ public class Crop implements Comparable<Crop>, Entity {
 	public double getTendingScore() {
 		double score = 0;
 		if (currentWorkRequired > POSITIVE_ENTROPY) {
-			score = (int)Math.floor(currentWorkRequired / 50); 
+			score = (int)Math.floor(currentWorkRequired / 15); 
 		}
 		return switch(currentPhase.getPhaseType()) {
-			case HARVESTING -> score + 3;
-			case PLANTING -> score + 1;
-			case INCUBATION -> score + 1.5;
-			default -> score + 2;
+			case HARVESTING -> score * 3;
+			case PLANTING -> score * 1;
+			case INCUBATION -> score * 1.5;
+			default -> score * 2;
 		};
 	}
 
@@ -821,7 +821,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewIntMillisol() && msol % CHECK_HEALTH_FREQUENCY == 0) {
+		if (pulse.isNewHalfMillisol() || (pulse.isNewIntMillisol() && msol % CHECK_HEALTH_FREQUENCY == 0)) {
 			// Checks on crop health
 			trackHealth();
 		}

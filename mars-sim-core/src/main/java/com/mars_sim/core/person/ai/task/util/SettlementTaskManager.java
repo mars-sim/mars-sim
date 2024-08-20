@@ -93,8 +93,9 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Get the MetaTasks that can be used for these Settlement manager.
-     * By default this is the global list from MetaTaskUtil
+     * Gets the MetaTasks that can be used for these Settlement manager.
+     * By default this is the global list from MetaTaskUtil.
+     * 
      * @return
      */
     protected List<SettlementMetaTask> getMetaTasks() {
@@ -102,7 +103,8 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Gets the current cached Settlement Tasks. If there is no cache or marked as refresh then a list is created.
+     * Gets the current cached Settlement Tasks. 
+     * If there is no cache or marked as refresh then a list is created.
      */
     private List<SettlementTask> getTasks() {
         if (refreshTasks || (tasks == null)) {

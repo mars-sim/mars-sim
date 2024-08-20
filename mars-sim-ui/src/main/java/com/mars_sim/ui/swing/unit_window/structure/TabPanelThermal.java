@@ -407,7 +407,7 @@ public class TabPanelThermal extends TabPanelTable {
 			dotGreen_full = ImageLoader.getIconByName("dot/green"); 
 			dotGreen_half = ImageLoader.getIconByName("dot/green_half"); 
 			dotGreen_quarter = ImageLoader.getIconByName("dot/green_quarter"); 
-			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_threeQuarter");
+			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_three_quarter");
 		}
 
 		public int getRowCount() {

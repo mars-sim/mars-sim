@@ -51,7 +51,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS[DESC_COL] = new ColumnSpec("Description", String.class);
 		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", Integer.class);
 		COLUMNS[EVA_COL]  = new ColumnSpec("EVA", String.class);
-		COLUMNS[SCOPE_COL]  = new ColumnSpec("Worker", String.class);
+		COLUMNS[SCOPE_COL]  = new ColumnSpec("Scope", String.class);
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class);
 	}
 
@@ -240,8 +240,8 @@ public class BacklogTableModel extends AbstractMonitorModel
 			case SCOPE_COL:
 				return switch(selectedTask.getScope()) {
 					case ANY_HOUR -> "Any";
-					case NONWORK_HOUR -> "Off duty only";
-					case WORK_HOUR -> "On duty only";
+					case NONWORK_HOUR -> "Off-Duty Only";
+					case WORK_HOUR -> "On-Duty Only";
 				};
 			case DEMAND_COL:
 				return selectedTask.getDemand();
