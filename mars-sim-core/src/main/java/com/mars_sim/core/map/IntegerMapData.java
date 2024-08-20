@@ -28,6 +28,7 @@ import com.jogamp.opencl.CLBuffer;
 import com.jogamp.opencl.CLKernel;
 import com.jogamp.opencl.CLProgram;
 import com.mars_sim.core.map.common.FileLocator;
+import com.mars_sim.core.tool.MoreMath;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -412,8 +413,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	  */
 	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
 		 
-		 // Set the new scale arg again
-//		 kernel.setArg(12, (float) getRho());
+		 // Set the rho this way to avoid global map artifact. Reason unknown.
+		 kernel.setArg(12, (float) getRho());
 		 
 		 int size = mapArray.length;
 		 int globalSize = getGlobalSize(size);
@@ -432,7 +433,8 @@ import com.mars_sim.core.map.common.FileLocator;
 				 .putArg(mapBoxHeight/2)
 				 .putArg(size)
 				 .putArgs(colBuffer, rowBuffer)
-				 .putArg((float) getRho());
+//				 .putArg((float) getRho())
+				 ;
 
 		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
 				 .putReadBuffer(rowBuffer, false)
@@ -465,10 +467,10 @@ import com.mars_sim.core.map.common.FileLocator;
       * @return a point2d of phi and theta
       */
 	 public static Point2D convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
-		 double sinPhi = Math.sin(phi);
-		 double sinTheta = Math.sin(theta);
-		 double cosPhi = Math.cos(phi);
-		 double cosTheta = Math.cos(theta);
+		 double sinPhi = MoreMath.sin(phi);
+		 double sinTheta = MoreMath.sin(theta);
+		 double cosPhi = MoreMath.cos(phi);
+		 double cosTheta = MoreMath.cos(theta);
 
 		 double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
@@ -481,7 +483,7 @@ import com.mars_sim.core.map.common.FileLocator;
 		 double z3 = z2;
 
 		 double phiNew = Math.acos(z3 / rho);
-		 double thetaNew = Math.asin(x3 / (rho * Math.sin(phiNew)));
+		 double thetaNew = Math.asin(x3 / (rho * MoreMath.sin(phiNew)));
 
 		 if (x3 >= 0) {
 			 if (y3 < 0)

@@ -26,7 +26,7 @@ public class MapUtils {
 	/**
 	 * Gets a coordinate x, y position on the map image.
 	 * 
-	 * @param coords  location of unit
+	 * @param coords location of unit
 	 * @param baseMap the type of map.
 	 * @return display point on map
 	 */

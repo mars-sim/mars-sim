@@ -944,12 +944,13 @@ public class Walk extends Task {
 
 		setDescription(Msg.getString("Task.description.walk.exitingRoverInGarage")); //$NON-NLS-1$
 
+		// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
+		// can be problematic if no building is assigned.
+		// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
+		
 		if (person != null
 			// Exit the rover parked inside a garage onto the settlement
 			&& person.isInVehicleInGarage()
-				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
-				// can be problematic if no building is assigned.
-				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 				&& person.transfer(garageBuilding)) {
 					logger.log(person, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()
@@ -958,9 +959,8 @@ public class Walk extends Task {
 					canExit = true;
 		}
 
-		else
-			// Exit the rover parked inside a garage onto the settlement
-			if (robot.isInVehicleInGarage()
+		else if (robot != null 
+			&& robot.isInVehicleInGarage()
 				&& robot.transfer(garageBuilding)) {
 					logger.log(robot, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()
