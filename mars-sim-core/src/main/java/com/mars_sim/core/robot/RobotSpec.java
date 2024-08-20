@@ -33,13 +33,16 @@ public class RobotSpec implements Serializable {
 
 	private int height;
 	private int mass;
+	
+	private String description;
 
-	public RobotSpec(RobotType robotType, String makeModel,
+	public RobotSpec(RobotType robotType, String makeModel, String description,
 			double standbyPower, double rate, double lowPowerMode, double maxCapacity,
 			int height, int mass,
 			Map<NaturalAttributeType, Integer> attributeMap, Map<SkillType, Integer> skillMap) {
 		this.robotType = robotType;
 		this.makeModel = makeModel;
+		this.description = description;
 		this.attributeMap = attributeMap;
 		this.skillMap = skillMap;
 		this.standbyPower = standbyPower;
@@ -66,6 +69,15 @@ public class RobotSpec implements Serializable {
 	 */
 	public final String getMakeModel() {
 		return makeModel;
+	}
+	
+	/**
+	 * Gets the description.
+	 * 
+	 * @return
+	 */
+	public final String getDescription() {
+		return description;
 	}
 	
 	/**

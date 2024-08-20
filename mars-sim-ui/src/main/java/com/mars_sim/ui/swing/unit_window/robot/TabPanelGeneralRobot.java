@@ -7,9 +7,12 @@
 package com.mars_sim.ui.swing.unit_window.robot;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
@@ -19,6 +22,8 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import io.github.parubok.text.multiline.MultilineLabel;
 
 /**
  * This tab shows the general details of the Robot type.
@@ -60,7 +65,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 	protected void buildUI(JPanel center) {
 		SystemCondition sc = r.getSystemCondition();
 
-		JPanel topPanel = new JPanel(new BorderLayout());
+		JPanel topPanel = new JPanel(new BorderLayout(10, 10));
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout info panel.
@@ -71,8 +76,22 @@ public class TabPanelGeneralRobot extends TabPanel {
 		infoPanel.addRow("Model", r.getModel());
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
 		
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 15));
+		addBorder(labelPanel, "Description");
+		var label = new MultilineLabel();
+		labelPanel.add(label);
+		String text = r.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
+		label.setText(text);
+		label.setPreferredWidthLimit(430);
+		label.setLineSpacing(1.2f);
+		label.setMaxLines(3);
+		label.setBorder(new EmptyBorder(5, 5, 5, 5));
+		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
+		topPanel.add(labelPanel, BorderLayout.CENTER);
+			
 		JPanel dataPanel = new JPanel(new BorderLayout(10, 10));
-		topPanel.add(dataPanel, BorderLayout.CENTER);
+		topPanel.add(dataPanel, BorderLayout.SOUTH);
+		
         addBorder(dataPanel, "Battery Condition");
 		AttributePanel battPanel = new AttributePanel(10);
 		dataPanel.add(battPanel, BorderLayout.NORTH);

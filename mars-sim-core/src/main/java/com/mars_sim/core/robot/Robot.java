@@ -80,6 +80,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 
+	private static final String CURRENTLY = "Currently ";
+	
 	/** The string tag of operable. */
 	private static final String OPERABLE = "Operable";
 	/** The string tag of inoperable. */
@@ -143,7 +145,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		this.robotType = spec.getRobotType();
 		this.position = LocalPosition.DEFAULT_POSITION;
 		this.model = spec.getMakeModel();
-
+		
 		// Set base mass
 		setBaseMass(spec.getMass());
 		// Set height
@@ -154,8 +156,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		isInoperable = false;
 		
 		// Set description for this robot
-		setDescription("A " + spec.getRobotType().getName() + "(" + INOPERABLE + ")");
-
+		setDescription("[ " + CURRENTLY + OPERABLE + " ] " + spec.getDescription());
+		
 		// Construct the SystemCondition instance.
 		health = new SystemCondition(this, spec);
 

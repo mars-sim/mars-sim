@@ -73,6 +73,7 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 15));
+		addBorder(labelPanel, "Description");
 		var label = new MultilineLabel();
 		labelPanel.add(label);
 		String text = building.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
