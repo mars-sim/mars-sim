@@ -42,7 +42,7 @@ public abstract class DigLocalMeta extends MetaTask
 		private static final long serialVersionUID = 1L;
 
         public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
-            super(owner, owner.getName(), null, score);
+            super(owner, owner.getName().replaceFirst("ing", ""), null, score);
             setDemand(total);
             setEVA(true); // Enable the EVA based assessments
         }

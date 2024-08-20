@@ -17,14 +17,16 @@ public class ShiftSlot implements ScheduledEventHandler {
 
 	private static final long serialVersionUID = 1L;
 	
+	private static final String DASH = " - ";
+	
     /**
      * The work status of this slot.
      */
     public enum WorkStatus {
-        ON_DUTY ("On Duty"), 
-        OFF_DUTY ("Off Duty"), 
-        ON_CALL ("On Call"), 
-        ON_LEAVE ("On Leave");
+        ON_DUTY ("On-Duty"), 
+        OFF_DUTY ("Off-Duty"), 
+        ON_CALL ("On-Call"), 
+        ON_LEAVE ("On-Leave");
 
     	private String name;
 
@@ -126,10 +128,11 @@ public class ShiftSlot implements ScheduledEventHandler {
     }
 
     /**
-     * Get the extended description of this shift slot.
+     * Gets the extended description of this shift slot.
+     * 
      * @return Return the shift name and it on/off status.
      */
     public String getStatusDescription() {
-        return shift.getName() + " " + getStatus().getName();
+        return shift.getName() + DASH + getStatus().getName();
     }
 }

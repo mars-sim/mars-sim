@@ -94,15 +94,15 @@ public class PersonTaskManager extends TaskManager {
 			case OFF_DUTY:
 			case ON_LEAVE:
 				mtList = MetaTaskUtil.getNonDutyHourTasks();
-				shiftDesc = "Shift: NonDuty";
+				shiftDesc = "Shift: Non-Duty";
 				break;
 			case ON_CALL:
 				mtList = MetaTaskUtil.getOnCallMetaTasks();
-				shiftDesc = "Shift: OnCall";
+				shiftDesc = "Shift: On-Call";
 				break;
 			case ON_DUTY:
 				mtList = MetaTaskUtil.getDutyHourTasks();
-				shiftDesc = "Shift: Duty";
+				shiftDesc = "Shift: On-Duty";
 				break;
 			default:
 				throw new IllegalStateException("Do not know status " + workStatus);

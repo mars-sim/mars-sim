@@ -387,7 +387,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				if (!person.getPhysicalCondition().isDead()) {
 					ShiftSlot shift = person.getShiftSlot();		
 					if (shift.getStatus() == WorkStatus.ON_CALL) {
-						result = "On Call";
+						result = WorkStatus.ON_CALL.getName();
 					}
 					else {
 						result = shift.getStatusDescription();

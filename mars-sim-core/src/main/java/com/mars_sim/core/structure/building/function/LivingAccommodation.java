@@ -170,11 +170,10 @@ public class LivingAccommodation extends Function {
 					person.setBed(bed);
 				}
 				
-				logger.log(person, Level.INFO, 0, "Given a "
+				logger.log(person, Level.INFO, 0, "Assigned with " + sp.getName() + " as a "
 							+ (permanent ? "permanent" : "temporary")
-							+ " bed at " + sp.getPos() + "("
-							+ sp.getName() + ") in " + building.getName());
-				
+							+ " bed at " + sp.getPos() + " in " + building.getName() + ".");
+	
 				return bed;
 			}
 		}

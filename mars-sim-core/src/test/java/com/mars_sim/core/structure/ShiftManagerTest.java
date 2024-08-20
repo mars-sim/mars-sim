@@ -191,15 +191,15 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         // Check OnCall
         slot.setOnCall(true);
-        testWorkStatus(futures, slot, shiftEnd, "OnCall worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
+        testWorkStatus(futures, slot, shiftEnd, "On-Call worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
 
         // Check OnLeave & OnCall. On Call takes precedence
         slot.setOnLeave(1000);
-        testWorkStatus(futures, slot, shiftEnd, "OnCall & OnLeave worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
+        testWorkStatus(futures, slot, shiftEnd, "On-Call & On-Leave worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
 
         // Check OnLeave 
         slot.setOnCall(false);
-        testWorkStatus(futures, slot, shiftEnd, "OnLeave worker", WorkStatus.ON_LEAVE, WorkStatus.ON_LEAVE);
+        testWorkStatus(futures, slot, shiftEnd, "On-Leave worker", WorkStatus.ON_LEAVE, WorkStatus.ON_LEAVE);
     }
 
     /**

@@ -43,6 +43,13 @@ public class BacklogTableModel extends AbstractMonitorModel
 	private static final int SCOPE_COL = EVA_COL+1;
 	private static final int DEMAND_COL = SCOPE_COL+1;
 	static final int SCORE_COL = DEMAND_COL+1;
+	
+	private static final String ANY = "Any";
+	private static final String OFF_DUTY_ONLY = "Off-Duty Only";
+	private static final String ON_DUTY_ONLY = "On-Duty Only";
+	private static final String YES = "Yes";
+	private static final String NO = "No";
+					
 
 	static {
 		COLUMNS = new ColumnSpec[SCORE_COL+1];
@@ -236,12 +243,12 @@ public class BacklogTableModel extends AbstractMonitorModel
 			case DESC_COL:
 				return selectedTask.getShortName();
 			case EVA_COL:
-				return (selectedTask.isEVA() ? "Yes" : "No");
+				return (selectedTask.isEVA() ? YES: NO);
 			case SCOPE_COL:
 				return switch(selectedTask.getScope()) {
-					case ANY_HOUR -> "Any";
-					case NONWORK_HOUR -> "Off-Duty Only";
-					case WORK_HOUR -> "On-Duty Only";
+					case ANY_HOUR -> ANY;
+					case NONWORK_HOUR -> OFF_DUTY_ONLY;
+					case WORK_HOUR -> ON_DUTY_ONLY;
 				};
 			case DEMAND_COL:
 				return selectedTask.getDemand();

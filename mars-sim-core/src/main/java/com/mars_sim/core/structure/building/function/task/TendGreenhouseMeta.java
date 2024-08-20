@@ -41,7 +41,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         private Farming farm;
 
         public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, RatingScore score) {
-            super(owner, "Tend Crop", farm.getBuilding(), score);
+            super(owner, "Tend Crops", farm.getBuilding(), score);
             this.farm = farm;
 
             setDemand(demand);

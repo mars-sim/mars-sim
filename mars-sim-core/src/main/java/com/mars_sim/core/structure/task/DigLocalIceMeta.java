@@ -37,8 +37,9 @@ public class DigLocalIceMeta extends DigLocalMeta {
         return new DigLocalIce(person);
     }
 
-        /**
-     * Assess what digging tasks can be done at a Settlement
+    /**
+     * Assesses what digging tasks can be done at a settlement.
+     * 
      * @param settlement The focus of the search
      */
     @Override
