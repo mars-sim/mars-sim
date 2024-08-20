@@ -28,7 +28,6 @@ import com.jogamp.opencl.CLBuffer;
 import com.jogamp.opencl.CLKernel;
 import com.jogamp.opencl.CLProgram;
 import com.mars_sim.core.map.common.FileLocator;
-import com.mars_sim.core.tool.MoreMath;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -467,10 +466,10 @@ import com.mars_sim.core.tool.MoreMath;
       * @return a point2d of phi and theta
       */
 	 public static Point2D convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
-		 double sinPhi = MoreMath.sin(phi);
-		 double sinTheta = MoreMath.sin(theta);
-		 double cosPhi = MoreMath.cos(phi);
-		 double cosTheta = MoreMath.cos(theta);
+		 double sinPhi = Math.sin(phi);
+		 double sinTheta = Math.sin(theta);
+		 double cosPhi = Math.cos(phi);
+		 double cosTheta = Math.cos(theta);
 
 		 double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
@@ -483,7 +482,7 @@ import com.mars_sim.core.tool.MoreMath;
 		 double z3 = z2;
 
 		 double phiNew = Math.acos(z3 / rho);
-		 double thetaNew = Math.asin(x3 / (rho * MoreMath.sin(phiNew)));
+		 double thetaNew = Math.asin(x3 / (rho * Math.sin(phiNew)));
 
 		 if (x3 >= 0) {
 			 if (y3 < 0)
