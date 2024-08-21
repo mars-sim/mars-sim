@@ -381,7 +381,19 @@ public class Crop implements Comparable<Crop>, Entity {
 		return currentPhase.getPhaseType();
 	}
 
-
+	/**
+	 * Sets the current phase to harvesting.
+	 */
+	public void setToHarvest() {
+		boolean isDone = false;
+		while (!isDone) {
+			currentPhase = cropSpec.getNextPhase(currentPhase);
+			if (currentPhase.getPhaseType() == PhaseType.HARVESTING) {
+				isDone = true;
+			}
+		}
+	}
+	
 	/**
 	 * Gets the maximum possible food harvest for crop.
 	 *

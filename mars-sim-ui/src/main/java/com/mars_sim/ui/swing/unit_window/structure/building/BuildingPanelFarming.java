@@ -11,11 +11,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -25,10 +28,14 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -82,6 +89,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private boolean uiDone = false;
 	
 	// Data cache
+	private int rowCache;
 	/** The number of farmers cache. */
 	private int farmersCache;
 	/** The number of crops cache. */
@@ -265,6 +273,53 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
         }; // end of WebTable
         
 		cropTable.setAutoCreateRowSorter(true);
+		
+		cropTable.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		        int r = cropTable.rowAtPoint(e.getPoint());
+		        if (r >= 0 && r < cropTableModel.getRowCount()) {
+		        	rowCache = r;
+		        	cropTable.setRowSelectionInterval(r, r);
+		        } else {
+		        	cropTable.clearSelection();
+		        	rowCache = -1;
+		        }
+		    }
+		});
+		
+		
+		// Create a popup menu for the crop table
+        final JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem harvestItem = new JMenuItem("Early Harvest");
+//      harvestItem.addActionListener(e -> JOptionPane.showMessageDialog(center, "Do you want to fast-track this crop for an early harvest right now ? "));
+        harvestItem.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	JMenuItem item = (JMenuItem) e.getSource();
+            	if (item == harvestItem) {
+            		SwingUtilities.invokeLater(() -> {
+                            int rowAtPoint = rowCache; 
+                            // Not working : cropTable.getSelectedRow();
+                            // Not working : cropTable.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), cropTable));
+                            if (rowAtPoint > -1) {
+                            	cropTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+                            	Crop crop = cropTableModel.getCrop(rowAtPoint);
+                            	System.out.println("3: " + crop.getName());
+                            	int reply = JOptionPane.showConfirmDialog(center, "Would you like to fast-track '" 
+                            			+ crop.getCropName() + "' for an early harvest right now ? ", "Early Harvest", JOptionPane.YES_NO_OPTION);
+                		        if (reply == JOptionPane.YES_OPTION) {
+                		        	System.out.println("4: " + reply);
+                		        	crop.setToHarvest();
+                		        }
+                        }
+                    });
+            	}
+            }
+        });
+        
+        popupMenu.add(harvestItem); 
+        cropTable.setComponentPopupMenu(popupMenu);
 		
 		TableColumnModel cropColumns = cropTable.getColumnModel();
 		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(5);
@@ -592,7 +647,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				default -> null;
 			};
 		}
-
+		
 		public Object getValueAt(int row, int column) {
 
 			Crop crop = crops.get(row);
