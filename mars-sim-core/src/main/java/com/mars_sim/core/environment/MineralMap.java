@@ -61,6 +61,14 @@ public interface MineralMap extends Serializable {
 	public String[] getMineralTypeNames();
 
 	/**
+	 * Gets the color string of a mineral.
+	 * 
+	 * @param mineralName
+	 * @return
+	 */
+	public String getColorString(String mineralTypeName);
+	
+	/**
 	 * Finds a random location with mineral concentrations from a starting location.
 	 * and within a distance range.
 	 * 

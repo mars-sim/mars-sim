@@ -14,6 +14,7 @@ import java.awt.image.PixelGrabber;
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
@@ -136,6 +139,8 @@ public class RandomMineralMap implements MineralMap {
 	private Map<Coordinates, Map<String, Integer>> allMineralsByLoc;
 
 	private String[] mineralTypeNames;
+	/** A map of the mineral name and its rgb color string. */
+	private transient SortedMap<String, String> mineralColorMap;
 	
 	private transient Set<Coordinates> allLocations;
 	
@@ -149,6 +154,8 @@ public class RandomMineralMap implements MineralMap {
 	RandomMineralMap() {
 	
 		allMineralsByLoc = new HashMap<>();
+		
+		mineralColorMap = new TreeMap<>();
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
 		
@@ -174,6 +181,9 @@ public class RandomMineralMap implements MineralMap {
 		Iterator<MineralType> i = minerals.iterator();
 		while (i.hasNext()) {
 			MineralType mineralType = i.next();
+			
+			// Save the color string
+			mineralColorMap.put(mineralType.toString(), mineralType.getColorString());
 			
 			// Create super set of topographical regions.
 			Set<Coordinates> regionSet = new HashSet<>(NUM_REGIONS);
@@ -527,6 +537,16 @@ public class RandomMineralMap implements MineralMap {
 	}
 
 	/**
+	 * Gets the color string of a mineral.
+	 * 
+	 * @param mineralName
+	 * @return
+	 */
+	public String getColorString(String mineralName) {
+		return mineralColorMap.get(mineralName);
+	}
+	
+	/**
 	 * Gets an array of all mineral type names.
 	 * 
 	 * @return array of name strings.
@@ -549,7 +569,10 @@ public class RandomMineralMap implements MineralMap {
 				logger.severe("Error getting mineral types.", e);
 			}
 			
+			Arrays.sort(result);
+			
 			mineralTypeNames = result;
+			
 			return result;
 		}
 		

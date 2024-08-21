@@ -476,7 +476,6 @@ public class MasterClock implements Serializable {
 	}
 
 
-
 	/**
 	 * Adds earth time and mars time.
 	 *
@@ -531,7 +530,6 @@ public class MasterClock implements Serializable {
 				nextPulseTime -= deltaPulseTime;
 				if (nextPulseTime < minMilliSolPerPulse)
 					nextPulseTime = minMilliSolPerPulse;
-
 				// Adjust the time pulses and get the deviation
 				nextPulseDeviation = adjustPulseWidth();
 			}
@@ -551,21 +549,15 @@ public class MasterClock implements Serializable {
 				if (realElapsedMillisec != 0.0)
 					actualTR = 0.9 * actualTR + 0.1 * earthMillisec / realElapsedMillisec;
 
-				if (!listenerExecutor.isTerminated()
-					&& !listenerExecutor.isShutdown()) {
-
+				if (!listenerExecutor.isTerminated() && !listenerExecutor.isShutdown()) {
 					// Update the uptimer
 					uptimer.updateTime(realElapsedMillisec);
-
 					// Gets the timestamp for the pulse
-					timestampPulseStart();
-					
+					timestampPulseStart();				
 					// Add time to the Earth clock.
 					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
-
 					// Add time pulse to Mars clock.
 					marsTime = marsTime.addTime(nextPulseTime);
-
 					// Run the clock listener tasks that are in other package
 					fireClockPulse(nextPulseTime);
 				}

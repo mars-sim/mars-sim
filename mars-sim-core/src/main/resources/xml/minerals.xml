@@ -3,6 +3,7 @@
 	<!ELEMENT mineral-concentrations (mineral*)>
 	<!ELEMENT mineral (locale-list)>
 	<!ATTLIST mineral name CDATA #REQUIRED>
+	<!ATTLIST mineral color CDATA #REQUIRED>
 	<!ATTLIST mineral frequency (common|uncommon|rare|very_rare) #REQUIRED>
 	<!ELEMENT locale-list (locale+)>
 	<!ELEMENT locale EMPTY>
@@ -12,10 +13,31 @@
 <!-- List of all mineral concentrations that can be mined. -->
 <mineral-concentrations>
 
+	<!-- Chalcopyrite is a copper sulfide mineral. -->
+	<!-- http://en.wikipedia.org/wiki/Chalcopyrite -->
+	<!-- color: RGB color in the form of a sharp # symbol followed by a 6-digit alphanumeric code -->
+	<!-- frequency:  how common are the mineral concentrations ? -->
+	<!--             "common", "uncommon", "rare", "very_rare" -->
+	<!-- brass yellow. Copper content. RGB color: ##ffee00 (light yellow) -->
+	<mineral name="Chalcopyrite" color="#ffee00" frequency="uncommon">
+		<locale-list>
+			<locale name="sedimentary" />
+			<locale name="volcanic" />
+		</locale-list>
+	</mineral>
+	
+		
+	<!-- Goethite is an iron ore that has metamorphic origins. -->
+	<!-- http://en.wikipedia.org/wiki/Goethite -->
+	<!-- Yellow-brown, Reddish-brown, Dark brown. iron(III) oxide-hydroxide named in honor to the poet Goethe. RGB color: #BAAA47 (pale gold) -->
+	<mineral name="Goethite" color="#BAAA47" frequency="common">
+		<locale-list>
+			<locale name="sedimentary" />
+		</locale-list>
+	</mineral>
+	
 	<!-- Hematite is an iron ore. -->
-	<!-- http://en.wikipedia.org/wiki/Hematite -->
-	<!-- frequency - how common are the mineral concentrations? -->
-	<!-- Valid values: "common", "uncommon", "rare", "very_rare" -->
+	<!-- http://en.wikipedia.org/wiki/Hematite -->	
 	<!-- 
 		1. https://science.nasa.gov/science-news/science-at-nasa/2001/ast28mar_1
 		
@@ -78,11 +100,53 @@
 		It is a common rock-forming mineral found in sedimentary, metamorphic, 
 		and igneous rocks at locations throughout the world.
 	-->
-	<mineral name="Hematite" frequency="common">
+	<!-- Grey, rust red, brown. Fe2O3. has impurities. RGB color: #B05508 (rust orange, slightly red) -->
+	<mineral name="Hematite" color="#B05508" frequency="common">
 		<locale-list>
 			<!-- locale topographical regions the mineral is located. -->
 			<!-- Valid values: "volcanic", "sedimentary", "crater" -->
 			<locale name="volcanic" />
+			<locale name="sedimentary" />
+		</locale-list>
+	</mineral>
+	
+		
+	<!-- Kamacite is an iron-nickel mineral found in meteorites. -->
+	<!-- http://en.wikipedia.org/wiki/Kamacite 
+	     Derived from the Greek root καμακ- "kamak" or κάμαξ "kamaks", meaning vine-pole.-->
+	<!-- dark brass, black, gray Fe2O3. has impurities. RGB color: #6d6329 (dull mud brown slightly orange) -->
+	<mineral name="Kamacite" color="#6d6329" frequency="common">
+		<locale-list>
+			<locale name="crater" />
+		</locale-list>
+	</mineral>
+	
+		
+	<!-- Magnesite is a magnesium carbonate with metamorphic origins. -->
+	<!-- http://en.wikipedia.org/wiki/Magnesite -->
+	<!-- 
+		Magnesite is a mineral with the chemical formula MgCO3 
+		(magnesium carbonate). Iron, manganese, cobalt, and nickel may occur 
+		as admixtures, but only in small amounts.
+	
+		1. http://en.wikipedia.org/wiki/Magnesite 
+		
+	    Magnesite was detected in meteorite ALH84001 and on planet Mars itself. 
+	    Magnesite was identified on Mars using infrared spectroscopy from satellite 
+	    orbit. Near Jezero Crater, Mg-carbonates have been detected and reported to
+	    have formed in lacustrine environment prevailing there.[28] Controversy 
+	    still exists over the temperature of formation of these carbonates. 
+	    
+	    Low-temperature formation has been suggested for the magnesite from the 
+	    Mars-derived ALH84001 meteorite.
+
+		Magnesium-rich olivine (forsterite) favors production of magnesite from 
+		peridotite. Iron-rich olivine (fayalite) favors production of magnetite-
+		magnesite-silica compositions.
+	-->
+	<!-- white. yellow, grey, blue. RGB color: #FFFFFF (white) -->
+	<mineral name="Magnesite" color="#FFFFFF" frequency="rare">
+		<locale-list>
 			<locale name="sedimentary" />
 		</locale-list>
 	</mineral>
@@ -112,40 +176,14 @@
 		The case for former Martian life now rests on the identification of a small
 		subset of the magnetite crystals in ALH84001 as biogenic in origin. 
 	-->
-	<mineral name="Magnetite" frequency="rare">
+	<!-- black, dark grey, silver, brown. RGB color: #86869b (dull blue/silver grey) -->
+	<mineral name="Magnetite" color="#86869b" frequency="rare">
 		<locale-list>
 			<locale name="volcanic" />
 			<locale name="sedimentary" />
 		</locale-list>
 	</mineral>
-	
-	<!-- Magnesite is a magnesium carbonate with metamorphic origins. -->
-	<!-- http://en.wikipedia.org/wiki/Magnesite -->
-	<!-- 
-		Magnesite is a mineral with the chemical formula MgCO3 
-		(magnesium carbonate). Iron, manganese, cobalt, and nickel may occur 
-		as admixtures, but only in small amounts.
-	
-		1. http://en.wikipedia.org/wiki/Magnesite 
-		
-	    Magnesite was detected in meteorite ALH84001 and on planet Mars itself. 
-	    Magnesite was identified on Mars using infrared spectroscopy from satellite 
-	    orbit. Near Jezero Crater, Mg-carbonates have been detected and reported to
-	    have formed in lacustrine environment prevailing there.[28] Controversy 
-	    still exists over the temperature of formation of these carbonates. 
-	    
-	    Low-temperature formation has been suggested for the magnesite from the 
-	    Mars-derived ALH84001 meteorite.
 
-		Magnesium-rich olivine (forsterite) favors production of magnesite from 
-		peridotite. Iron-rich olivine (fayalite) favors production of magnetite-
-		magnesite-silica compositions.
-	-->
-	<mineral name="Magnesite" frequency="rare">
-		<locale-list>
-			<locale name="sedimentary" />
-		</locale-list>
-	</mineral>
 	
 	<!-- Olivine is a magnesium iron silicate found in meteorites. -->
  	<!-- 
@@ -169,63 +207,88 @@
      	Olivine weathers rapidly into clay minerals in the presence of liquid water. 
      	Therefore, areas with large outcroppings of olivine-bearing rock indicate that liquid 
      	water has not been abundant since the rocks formed.
+     	
+     	Magnesium Iron Silicate (Mg,Fe)2SiO4. A type of nesosilicate or orthosilicate
  	-->
-	<mineral name="Olivine" frequency="uncommon">
+	<!-- yellow to yellow-green color, occasionally ranging to pale olive green. RGB color: #a4d629 (greenish yellow) -->
+	<mineral name="Olivine" color="#a4d629" frequency="uncommon">
 		<locale-list>
 			<locale name="crater" />
 		</locale-list>
 	</mineral>
+
 	
-	<!-- Goethite is an iron ore that has metamorphic origins. -->
-	<!-- http://en.wikipedia.org/wiki/Goethite -->
-	<mineral name="Goethite" frequency="common">
-		<locale-list>
-			<locale name="sedimentary" />
-		</locale-list>
-	</mineral>
+	<!-- Malachite is a copper carbonate mineral. -->
+	<!-- http://en.wikipedia.org/wiki/Malachite 
 	
-	<!-- Kamacite is an iron-nickel mineral found in meteorites. -->
-	<!-- http://en.wikipedia.org/wiki/Kamacite -->
-	<mineral name="Kamacite" frequency="common">
-		<locale-list>
-			<locale name="crater" />
-		</locale-list>
-	</mineral>
-	
-	<!-- Taenite is an iron-nickel mineral found in meteorites. -->
-	<!-- http://en.wikipedia.org/wiki/Taenite -->
-	<mineral name="Taenite" frequency="common">
-		<locale-list>
-			<locale name="crater" />
-		</locale-list>
-	</mineral>
-	
-	<!-- Chalcopyrite is a copper sulfide mineral. -->
-	<!-- http://en.wikipedia.org/wiki/Chalcopyrite -->
-	<mineral name="Chalcopyrite" frequency="uncommon">
+	     Derives (via Latin: molochītis, Middle French: melochite, and Middle English melochites) from Greek Μολοχίτης λίθος
+	     molochites lithos, "mallow-green stone", from μολόχη molochē, variant of μαλάχη malāchē, "mallow".
+	     
+	     The mineral was given this name due to its resemblance to the leaves of the mallow plant.[7] Copper (Cu2+) gives
+	     malachite its green color.
+	-->
+	<!-- vibrant, bluish-green color with a distinctive banded or striated pattern. RGB color: #22dda1 (light bluish green) -->
+	<mineral name="Malachite" color="#22dda1" frequency="uncommon">
 		<locale-list>
 			<locale name="sedimentary" />
 			<locale name="volcanic" />
 		</locale-list>
 	</mineral>
 	
-	<!-- Malachite is a copper carbonate mineral. -->
-	<!-- http://en.wikipedia.org/wiki/Malachite -->
-	<mineral name="Malachite" frequency="uncommon">
+	<!-- Pyroxenes are a group of important rock-forming inosilicate minerals found in many igneous and metamorphic rocks. -->
+	<!-- https://en.wikipedia.org/wiki/Pyroxene													-->
+	<!-- Pyroxenes have the general formula XY(Si,Al)2O6, where X represents calcium (Ca), sodium (Na), iron (Fe(II)) or 
+	     magnesium (Mg) and more rarely zinc, manganese or lithium, and Y represents ions of smaller size, such as chromium (Cr),
+	     aluminium (Al), magnesium (Mg), cobalt (Co), manganese (Mn), scandium (Sc), titanium (Ti), vanadium (V) or even 
+	     iron (Fe(II) or Fe(III)).    
+	     
+	     The name pyroxene is derived from the Ancient Greek words for 'fire' (πυρ, pur) and 'stranger' (ξένος, xénos). 
+	     Pyroxenes were so named due to their presence in volcanic lavas, where they are sometimes found as crystals embedded 
+	     in volcanic glass; it was assumed they were impurities in the glass, hence the name meaning "fire stranger". 
+	     However, they are simply early-forming minerals that crystallized before the lava erupted.  -->
+	     
+	<!-- RGB color: #08580d (dark green) -->
+	<mineral name="Pyroxene" color="#08580d" frequency="common">
 		<locale-list>
-			<locale name="sedimentary" />
 			<locale name="volcanic" />
 		</locale-list>
 	</mineral>
 	
 	<!-- Sylvite is a salt concentration of potassium chloride. -->
-	<!-- http://en.wikipedia.org/wiki/Sylvite -->
-	<mineral name="Sylvite" frequency="common">
+	<!-- http://en.wikipedia.org/wiki/Sylvite 
+	     
+	     Rock salt. Potassium Chloride (KCl) in natural mineral form. 
+	     
+	     It forms crystals in the isometric system very similar to normal rock salt, halite (NaCl). 
+	-->
+	<!-- Colorless to white
+		 Pale gray
+		 Pale blue
+		 May be yellowish red to red due to hematite inclusions
+	 	 RGB color: #bdcddc (pale grey with slightly pale blue) -->
+	<mineral name="Sylvite" color="#bdcddc" frequency="common">
 		<locale-list>
 			<locale name="sedimentary" />
 		</locale-list>
 	</mineral>
 	
+	
+	
+	<!-- Taenite is an iron-nickel mineral found in meteorites. -->
+	<!-- http://en.wikipedia.org/wiki/Taenite 
+	      Fe-Ni meteorite minerals														-->
+	<!-- metallic grayish to white color. It is an opaque mineral, meaning it does not transmit light, and its 
+	     grayish-white hue is a characteristic feature of this Fe-Ni alloy. 
+	     Opaque. Color: Silver-white to grayish white.   Luster: Metallic.    
+	     RGB color: #E4E6E8 (pale silver white) -->
+	<mineral name="Taenite" color="#E4E6E8" frequency="common">
+		<locale-list>
+			<locale name="crater" />
+		</locale-list>
+	</mineral>
+
+
+
 	<!-- jarosite, Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz,
     Amphibole, Silicates -->
 	

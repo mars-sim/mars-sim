@@ -277,26 +277,23 @@ public class TendGreenhouse extends TendHousekeeping {
 			
 			cropSpec = greenhouse.selectSeedling();
 			
-			if (cropSpec != null) {
-				updateDescription(DONE_SEEDING + " " + cropSpec.getName());
-			}
-			else {
-				// Find another task
+			if (cropSpec == null) {
+
 				endTask();
 				
 				return time / 2.0;
 			}
 			
 			addExperience(workTime);
-	
 		}
 		
-		
 		if (cropSpec != null && greenhouse.getNumCrops2Plant() > 0 && getDuration() <= (getTimeCompleted() + time)) {
+			
 			greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
-			updateDescription(SEED + " " + cropSpec + ".");
-				
+	
 			addExperience(workTime);
+			
+			updateDescription(DONE_SEEDING + " " + cropSpec + ".");
 			
 			endTask();
 		}

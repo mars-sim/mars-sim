@@ -581,12 +581,6 @@
 			<output resource="nickel" rate="5.0" />
 	</process>
 
-	<process name="Do Taenite smelting" power-required="1.3" >
-			<input resource="taenite" rate="50.0" />
-			
-			<output resource="iron powder" rate="20.0" />
-			<output resource="nickel" rate="30.0" />
-	</process>
 
 	<process name="Do Chalcopyrite smelting" power-required="1.3" >
 			<input resource="chalcopyrite" rate="50.0" />
@@ -606,6 +600,29 @@
 			<output resource="brine water" rate="4.1" />
 	</process>
 	
+	<process name="Do Pyroxene smelting" power-required="1.3" >
+			<input resource="pyroxene" rate="50.0" />
+		
+			<output resource="calcium" rate="2" />	
+			<output resource="sodium" rate="2" />
+			<output resource="iron powder" rate="2" />	
+			<output resource="magnesium" rate="2" />
+
+			<output resource="Chromium" rate="2" />
+			<output resource="Lithium" rate="2" />	
+			<output resource="Manganese" rate="2" />	
+					
+			<output resource="titanium" rate="2" />	
+			<output resource="zinc" rate="2" />
+			<output resource="scandium" rate="2" />	
+			<output resource="vanadium" rate="2" />	
+			
+			<output resource="aluminum" rate="2" />		
+			<output resource="silicon" rate="4" />				
+			
+			<output resource="oxygen" rate="22" />
+	</process>
+	
 	<process name="Do Sylvite smelting" power-required="1.3" >
 			<input resource="sylvite" rate="50.0" />
 			
@@ -613,6 +630,14 @@
 			<output resource="chlorine" rate="23.8" />
 	</process>
 
+
+	<process name="Do Taenite smelting" power-required="1.3" >
+			<input resource="taenite" rate="50.0" />
+			
+			<output resource="iron powder" rate="20.0" />
+			<output resource="nickel" rate="30.0" />
+	</process>
+	
 	<process name="Extract minerals from Basaltic deposits" power-required="0.1" >
 		<description>
 			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
