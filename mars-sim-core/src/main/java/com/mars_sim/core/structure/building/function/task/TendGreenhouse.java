@@ -156,7 +156,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	/**
 	 * Sets the task description of being done with tending crops.
 	 */
-	private void setDescriptionCropDone() {
+	private void setDescriptionTendingDone() {
 		setDescription(DONE_TENDING + " " + previousCropName, false);
 	}
 	
@@ -175,6 +175,7 @@ public class TendGreenhouse extends TendHousekeeping {
 		}
 		
     	if (getTimeCompleted() > getDuration()) {
+    		setDescriptionTendingDone();
         	endTask();
         	return time;
     	}
@@ -193,7 +194,7 @@ public class TendGreenhouse extends TendHousekeeping {
 		}
 		
 		if (needyCrop == null) {
-			setDescriptionCropDone();
+			setDescriptionTendingDone();
 			endTask();
 			return 0;
 		}
@@ -207,9 +208,7 @@ public class TendGreenhouse extends TendHousekeeping {
 			return 0;
 		}
 
-		setDescriptionCropDone();
-
-		return 0;
+		return remainingTime;
 	}
 	
 	/**
@@ -234,28 +233,25 @@ public class TendGreenhouse extends TendHousekeeping {
 		else
 			mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.1;
 		
+	
 		double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
 		
-		// Calculate used time
-		double usedTime = workTime - remain;
+		updateDescription(TEND + " " + needyCrop.getName());
 		
-		if (usedTime > 0) {
-			setDescription(TEND + " " + previousCropName, false);
+		if (remain > workTime * .75)
+			remain = workTime * .75;
 
-			// Add experience
-			addExperience(time);
+
+		// Add experience
+		addExperience(time);
 	
-			// Check for accident in greenhouse.
-			checkForAccident(greenhouse.getBuilding(), time, 0.005);
-		}
-		else {
-			setDescriptionCropDone();
-		}
-		
+		// Check for accident in greenhouse.
+		checkForAccident(greenhouse.getBuilding(), time, 0.005);
+
 		if (!greenhouse.requiresWork(needyCrop))
 			needyCrop = null;
 		
-		return 0;
+		return remain;
 	}
 	
 	/**
@@ -295,15 +291,13 @@ public class TendGreenhouse extends TendHousekeeping {
 	
 		}
 		
-		else if (greenhouse.getNumCrops2Plant() > 0 && getDuration() <= (getTimeCompleted() + time)) {
+		
+		if (cropSpec != null && greenhouse.getNumCrops2Plant() > 0 && getDuration() <= (getTimeCompleted() + time)) {
 			greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
 			updateDescription(SEED + " " + cropSpec + ".");
 				
 			addExperience(workTime);
-		}
-		
-		else {
-			// Find another task
+			
 			endTask();
 		}
 		

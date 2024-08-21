@@ -26,6 +26,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	// Data members
 	/** Is this a seed only? */
 	private boolean seedOnly;
+	/** The number of phases. */	
+	private int numPhases;
 	/** The crop spec id. */
 	private int id;
 	/** The crop id. */
@@ -87,6 +89,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		this.inedibleBiomass = inedibleBiomass;
 		this.dailyPAR = dailyPAR;
 		this.phases = phases;
+		this.numPhases = phases.size();
 		this.cropID = ResourceUtil.findIDbyAmountResourceName(name);
 		if (seedName != null) {
 			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);
@@ -217,7 +220,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 			if (entry.getPhaseType() == target) {
 				return phases.get(nextId);
 			}
-			nextId++;
+			if (nextId < numPhases)
+				nextId++;
 		}
 		return null;
 	}
@@ -235,7 +239,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 			if (entry.getPhaseType() == phaseType) {
 				return phases.get(nextId).getPhaseType();
 			}
-			nextId++;
+			if (nextId < numPhases)
+				nextId++;
 		}
 		return null;
 	}
@@ -256,15 +261,14 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * What percentage complete has to be completed for the specified phase
-	 * to advance to the next one ?
+	 * Gets the starting percentage of the specified phase.
 	 * 
 	 * @param phaseType
 	 * @return
 	 */
 	public double getNextPhasePercentage(PhaseType phaseType) {
 		double result = 0;
-		for(Phase p : phases) {
+		for (Phase p : phases) {
 			result += p.getPercentGrowth();
 			if (p.getPhaseType() == phaseType)
 				return result;

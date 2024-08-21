@@ -387,7 +387,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	public void setToHarvest() {
 		boolean isDone = false;
 		while (!isDone) {
-			currentPhase = cropSpec.getNextPhase(currentPhase);
+			// Advance forward one growing phase
+			advancePhase();
 			if (currentPhase.getPhaseType() == PhaseType.HARVESTING) {
 				isDone = true;
 			}
@@ -1245,9 +1246,13 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 
 	public double getPercentGrowth() {
-		return  percentageGrowth;
+		return percentageGrowth;
 	}
 
+//	public void setPercentGrowth(double percent) {
+//		percentageGrowth = percent;
+//	}
+			
 	public int getIdentifier() {
 		return identifier;
 	}

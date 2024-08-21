@@ -105,7 +105,7 @@ public abstract class TendHousekeeping extends Task {
 	 */
 	protected void updateDescription(String text) {
 		setDescription(text);
-		logger.fine(worker, 30_000L, text);
+		logger.info(worker, 10_000, text);
 	}
 	
 	/**

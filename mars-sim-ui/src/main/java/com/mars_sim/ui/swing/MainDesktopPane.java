@@ -81,7 +81,7 @@ public class MainDesktopPane extends JDesktopPane
 	private static final String DESKTOP_PROPS = "desktop";
 	private static final String PRELOAD_TOOLS = "preload_tools";
 
-	/** default logger. */
+	/** Default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 	/** The sound player. */

@@ -42,6 +42,7 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.farming.Crop;
@@ -66,6 +67,9 @@ import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
  */
 @SuppressWarnings("serial")
 public class BuildingPanelFarming extends BuildingFunctionPanel {
+
+	/** Default logger. */
+	private static SimLogger logger = SimLogger.getLogger(BuildingPanelFarming.class.getName());
 
 	private static final String PLANT_ICON = "plant";
 	private static final String G_M2_DAY = " g/m\u00b2/day";
@@ -111,8 +115,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	/** The cache value for the remaining area in this greenhouse. */
 	private double remainingAreaCache;
 	
-	
-	
 	private JLabel radLabel;
 	private JLabel farmerLabel;
 	private JLabel cropsLabel;
@@ -135,6 +137,8 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	/** The farming building. */
 	private Farming farm;
 	private Coordinates location;
+	
+	private Crop cropCache;
 
 	private JList<String> list;
 
@@ -277,13 +281,22 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropTable.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mousePressed(MouseEvent e) {
-		        int r = cropTable.rowAtPoint(e.getPoint());
-		        if (r >= 0 && r < cropTableModel.getRowCount()) {
-		        	rowCache = r;
-		        	cropTable.setRowSelectionInterval(r, r);
+		    	java.awt.Point p = e.getPoint();
+                int rowIndex = cropTable.rowAtPoint(p);
+				RowSorter<? extends TableModel> sorter = cropTable.getRowSorter();
+				if (sorter != null) {
+					rowIndex = sorter.convertRowIndexToModel(rowIndex);
+				}	
+		    	
+		        if (rowIndex >= 0 && rowIndex < cropTableModel.getRowCount()) {
+		        	Crop crop = cropTableModel.getCrop(rowIndex);
+		        	rowCache = rowIndex;
+		        	cropCache = crop;
+		        	cropTable.setRowSelectionInterval(rowIndex, rowIndex);
 		        } else {
 		        	cropTable.clearSelection();
 		        	rowCache = -1;
+		        	cropCache = null;
 		        }
 		    }
 		});
@@ -304,13 +317,15 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
                             // Not working : cropTable.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), cropTable));
                             if (rowAtPoint > -1) {
                             	cropTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
-                            	Crop crop = cropTableModel.getCrop(rowAtPoint);
-                            	System.out.println("3: " + crop.getName());
+                            	Crop crop = cropCache;
                             	int reply = JOptionPane.showConfirmDialog(center, "Would you like to fast-track '" 
                             			+ crop.getCropName() + "' for an early harvest right now ? ", "Early Harvest", JOptionPane.YES_NO_OPTION);
                 		        if (reply == JOptionPane.YES_OPTION) {
-                		        	System.out.println("4: " + reply);
+                		        	logger.info(building, 0, "Hand picked " + crop.getCropName() + " for an early harvest.");
                 		        	crop.setToHarvest();
+                		        }
+                		        else {
+                		        	logger.info(building, 0, "Not choosing " + crop.getCropName() + " for an early harvest.");
                 		        }
                         }
                     });
@@ -619,7 +634,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			return crops.size();
 		}
 
-		// Change from 4 to 5 in order to include the crop's category as columnIndex 4
 		public int getColumnCount() {
 			return WORK + 1;
 		}
@@ -664,7 +678,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 					else if (condition > .3 ) return redHalfDot;
 					else return redOneQuarterDot;
 				case NAME:
-					return crop.getCropName();
+					return crop.getName();
 				case PHASE:
 					return currentPhase.getName();
 				case GROWTH: 
