@@ -30,6 +30,8 @@ import com.mars_sim.core.tool.RandomUtil;
 
 // See https://www.jpl.nasa.gov/news/news.php?feature=6680
 
+// See https://github.com/mars-sim/mars-sim/issues/225 on past effort in finding elevation via color shaded maps
+
 /**
  * The TerrainElevation class represents the surface terrain of the virtual
  * Mars. It provides information about elevation and terrain ruggedness and
@@ -47,7 +49,7 @@ public class TerrainElevation implements Serializable {
 
 	private static final double RATE = 1;
 
-	private static final String TOPO_MAP_TYPE = "topo";
+	private static final String TOPO_MAP_TYPE = "molaColor";
 	
 	private Set<CollectionSite> sites;
 	
@@ -279,7 +281,8 @@ public class TerrainElevation implements Serializable {
 //		int color = mapDataUtil.getMapData("topo").getRGBColorInt(location.getPhi(), location.getTheta());
 //
 //		// The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). 
-//		// The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L"). The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid. 
+//		// The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L"). 
+//	    // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid. 
 //		
 //		double height = (color - 9000) / 10_000;
 //
@@ -301,12 +304,78 @@ public class TerrainElevation implements Serializable {
 		
 		int[] rgb = {red, green, blue};
 		
-		// Returns the hue value only
 		float[] hsb = getHSB(rgb);
 		
-		double height = hsb[0];
-
+		float hue = hsb[0];
+		float sat = hsb[1];
+		float bri = hsb[2];
+		
+		double height = 0;
+		if (hue > .5 && hue < .51) {
+			if (sat > .14 && sat < .3 && bri > .9 && bri <= 1.0) {
+				// height between 20 and 21 km 
+				height = sat * 6980;
+				// Note: the factor 6980 was derived from the lookup table
+				// See https://github.com/mars-sim/mars-sim/issues/225#issuecomment-535167986
+			}
+			else {
+				// height between h = -4 km and - 3 km 
+				height = 1000 * (-7.2993 * hue - 26.39062);
+			}
+		}
+		else {
+			// Not done yet in considering exceptions
+		}
+		
 		return height;
+	}
+	
+	public int getHue(int red, int green, int blue) {
+
+	    float min = Math.min(Math.min(red, green), blue);
+	    float max = Math.max(Math.max(red, green), blue);
+
+	    if (min == max) {
+	        return 0;
+	    }
+
+	    float hue = 0f;
+	    if (max == red) {
+	        hue = (green - blue) / (max - min);
+
+	    } else if (max == green) {
+	        hue = 2f + (blue - red) / (max - min);
+
+	    } else {
+	        hue = 4f + (red - green) / (max - min);
+	    }
+
+	    hue = hue * 60;
+	    if (hue < 0) hue = hue + 360;
+
+	    return Math.round(hue);
+	}
+	
+    /**
+     * Returns the HSB array.
+     * 
+     * @param rgb
+     * @return
+     */
+    public static float[] getHSB(int[] rgb) {
+		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
+
+		// Reference: 
+		// 1. https://kdoore.gitbook.io/cs1335-java-and-processing/getting-started/hsb_color_mode
+		// 2. https://www.learnui.design/blog/the-hsb-color-system-practicioners-primer.html
+		
+		String s1 = String.format("HSB: %5.3f, %5.3f, %5.3f ",
+				Math.round(hsb[0]*1000.0)/1000.0,
+				Math.round(hsb[1]*1000.0)/1000.0,
+				Math.round(hsb[2]*1000.0)/1000.0);
+		System.out.print(s1);
+
+		return hsb;
 	}
 	
     /** 
@@ -318,27 +387,7 @@ public class TerrainElevation implements Serializable {
     	return getMOLAElevation(location);
     }
     
-	
-    /**
-     * Returns the HSB array.
-     * 
-     * @param rgb
-     * @return
-     */
-    public static float[] getHSB(int[] rgb) {
-		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
-		float hue = hsb[0];
-		float saturation = hsb[1];
-		float brightness = hsb[2];
 
-//		String s1 = String.format(" %5.3f %5.3f %5.3f  ",
-//				Math.round(hue*1000.0)/1000.0,
-//				Math.round(saturation*1000.0)/1000.0,
-//				Math.round(brightness*1000.0)/1000.0);
-//		System.out.print(s1);
-
-		return new float[] {hue, saturation, brightness};
-	}
 
 	/**
 	 * Returns the elevation in km at the given location, based on MOLA's dataset.
@@ -366,7 +415,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Returns the elevation in km at the given location, based on MOLA's dataset.
+	 * Returns the elevation in km at the given location, based on MOLA's MEDGR dataset.
 	 *
 	 * @param phi
 	 * @param theta

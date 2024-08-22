@@ -60,7 +60,7 @@ public class MEGDRMapArray extends MEGDRMapReader {
 	        
 			double resolution = Math.round(DIAMETER / mapWidth * 100.0)/100.0; 
 			
-			logger.info("Horizontal resolution is " + resolution + " km between two pixels at the equator.");
+			logger.info("Horizontal resolution is " + resolution + " km between 2 pixels at the equator.");
 			
             setSize(mapWidth, mapHeight);
 			

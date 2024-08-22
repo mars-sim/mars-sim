@@ -316,10 +316,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		return mouseDragging;
 	}
 
-//	public boolean isZooming() {
-//		return zooming;
-//	}
-	
 	public boolean isChanging() {
 		return mouseDragging;
 	}

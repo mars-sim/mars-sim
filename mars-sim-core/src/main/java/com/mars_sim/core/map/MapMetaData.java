@@ -15,7 +15,7 @@ import com.mars_sim.core.map.common.FileLocator;
 
 public class MapMetaData {
 	
-    private boolean colourful;
+    private boolean colourful = true;
     
     /** The selected resolution of the map file. */
 	private int res = 0;
@@ -112,7 +112,7 @@ public class MapMetaData {
     }
 
     /**
-     * Is the map file locally available.
+     * Is the map file available locally (or else remotely) ?
      * 
      * @return
      */
@@ -120,6 +120,11 @@ public class MapMetaData {
         return locallyAvailableMap.get(getFile());
     }
     
+    /**
+     * Is this a color map ? 
+     * 
+     * @return
+     */
     public boolean isColourful() {
         return colourful;
     }

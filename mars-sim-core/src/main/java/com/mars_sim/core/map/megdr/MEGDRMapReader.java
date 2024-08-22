@@ -28,7 +28,7 @@ public abstract class MEGDRMapReader {
 //	LEVEL 1 :
 //  File name: megt90n000eb.img
 //	Pixels: 5760 x 2880
-//	Resolution: 16 pixels per degree (or 0.0625by 0.0625 degrees)
+//	Resolution: 16 pixels per degree (or 0.0625 by 0.0625 degrees)
 //	Scale: 3.705 km per pixel (=1/16)	
 //  File size: 32.4 MB
 //	

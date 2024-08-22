@@ -7,11 +7,53 @@
 	<!ATTLIST mineral frequency (common|uncommon|rare|very_rare) #REQUIRED>
 	<!ELEMENT locale-list (locale+)>
 	<!ELEMENT locale EMPTY>
-	<!ATTLIST locale name (volcanic|sedimentary|crater) #REQUIRED>
+	<!ATTLIST locale name (volcanic|sedimentary|plutonic|crater) #REQUIRED>
 ]>
 
 <!-- List of all mineral concentrations that can be mined. -->
 <mineral-concentrations>
+
+	<!-- 
+		
+		See https://www.mars.asu.edu/data/ for mineral map
+		
+		
+		A. Brave browser
+		
+		Given the Martian environment and the presence of clay minerals, it’s likely that plutonic rocks 
+		on Mars would contain minerals such as:
+
+		1. Plagioclase feldspar: a common mineral in Gabbro, a dark-colored, coarsely-grained plutonic rock 
+		   (as described in the search result)
+		2. Pyroxenes (including augite): also present in Gabbro, these minerals are common in mafic plutonic rocks
+		3. Micas: a group of minerals that can form in plutonic rocks, particularly in those with a high silica content
+		4. Clay minerals: abundant on Mars, these minerals would likely be present in Martian plutonic rocks, 
+		   potentially in the form of phyllosilicates (e.g., montmorillonite, kaolinite)
+		
+		
+		B. https://www.thoughtco.com/plutonic-rocks-1440845
+		   https://www.thoughtco.com/about-igneous-rocks-1438950
+		
+		There are three main types of igneous rocks. Rock formed of lava is called extrusive, rock from 
+		shallow magma is called intrusive, and rock from deep magma is called plutonic. 
+		
+		The deeper the magma, the slower it cools, and it forms larger mineral crystals. 
+		
+		The name "plutonic" refers to Pluto, Roman god of wealth and the underworld; pluto's origins also 
+		come from "wealth," or "rich one," which could refer to the precious metals present in the Earth and 
+		in rocks. Gold and silver are found in veins in plutonic rocks, which are formed from the intrusions 
+		of the magma.
+
+		In contrast, volcanic rocks are formed by magma above ground. Their crystals are evident only through
+		an examination under a microscope.
+		
+		Plutonic rock is holocrystalline—every bit of mineral matter is in a crystalline form, and there is 
+		no glassy fraction. Typical plutonic rocks look like granite.
+		
+		Whereas plutonic rocks form continents, basalt lies in the crust underneath the oceans.
+		
+		Rocks are extrusive if it did erupt.
+	-->
 
 	<!-- Chalcopyrite is a copper sulfide mineral. -->
 	<!-- http://en.wikipedia.org/wiki/Chalcopyrite -->
@@ -21,6 +63,8 @@
 	<!-- brass yellow. Copper content. RGB color: ##ffee00 (light yellow) -->
 	<mineral name="Chalcopyrite" color="#ffee00" frequency="uncommon">
 		<locale-list>
+			<!-- locale topographical regions the mineral is located. -->
+			<!-- Valid values: "volcanic" (extrusive igneous), "plutonic" (intrusive igneous), "sedimentary", "crater" -->
 			<locale name="sedimentary" />
 			<locale name="volcanic" />
 		</locale-list>
@@ -103,8 +147,6 @@
 	<!-- Grey, rust red, brown. Fe2O3. has impurities. RGB color: #B05508 (rust orange, slightly red) -->
 	<mineral name="Hematite" color="#B05508" frequency="common">
 		<locale-list>
-			<!-- locale topographical regions the mineral is located. -->
-			<!-- Valid values: "volcanic", "sedimentary", "crater" -->
 			<locale name="volcanic" />
 			<locale name="sedimentary" />
 		</locale-list>
@@ -251,6 +293,7 @@
 	<mineral name="Pyroxene" color="#08580d" frequency="common">
 		<locale-list>
 			<locale name="volcanic" />
+			<locale name="plutonic" />
 		</locale-list>
 	</mineral>
 	
@@ -288,9 +331,36 @@
 	</mineral>
 
 
-
 	<!-- jarosite, Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz,
     Amphibole, Silicates -->
+	
+	<!-- 
+		A. https://en.wikipedia.org/wiki/Amphibole
+		
+		   Amphibole is a group of inosilicate minerals, forming prism or needlelike crystals, 
+		   composed of double chain SiO4 tetrahedra, linked at the vertices and generally containing 
+		   ions of iron and/or magnesium in their structures. 
+		   
+		   Amphiboles can be green, black, colorless, white, yellow, blue, or brown. 
+		
+		1. Amphibole is a group of hydrous minerals that occur in a wide
+		   range of rock types, including those found on Mars. 
+		
+		2. Amphiboles are a major group of dark-colored rock-forming inosilicate minerals composed of 
+		   double chain SiO4 tetrahedra linked at the vertices and generally containing ions of iron 
+		   and/or magnesium in their structures.
+
+		3. On Mars, Amphiboles are likely to be present in Martian rocks that have undergone metamorphism, 
+		   such as those found in the Martian crust or upper mantle. 
+		
+		4. The presence of Amphiboles on Mars is supported by the fact that they are common in metamorphic 
+		   and igneous rocks on Earth, and Martian rocks have undergone similar geological processes.
+
+		5. Like pyroxenes, amphiboles are classified as inosilicate (chain silicate) minerals. 
+		   However, the pyroxene structure is built around single chains of silica tetrahedra while 
+		   amphiboles are built around double chains of silica tetrahedra.
+		   
+	-->
 	
 	
 </mineral-concentrations>

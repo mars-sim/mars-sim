@@ -80,7 +80,7 @@ import com.mars_sim.core.tool.RandomUtil;
 					// Split the details into the parts
 					String[] array = mapProps.getProperty(mapString).split(SEPARATOR);
 					String mapType = array[0];
-					boolean isColour = Boolean.parseBoolean(array[1]);
+					boolean isColour = Boolean.parseBoolean(array[1].replaceAll(" ", ""));
 								
 					int size = array.length;
 					List<String> mapList = new ArrayList<>();
@@ -90,7 +90,8 @@ import com.mars_sim.core.tool.RandomUtil;
 							mapList.add(array[i].replaceAll(" ", ""));
 					}
 
-//					System.out.println(array[0] + " - size: " + array.length + "  " + mapList + " - size: " + mapList.size());
+//					Kept for debugging: System.out.println(array[0] + " - size: " + array.length + "  " + mapList + " - size: " + mapList.size());
+//					Kept for debugging: System.out.println("mapString: " + mapString + ".  mapType: " + mapType + ".  isColour: " + isColour);
 					
 					metaDataMap.put(mapString, new MapMetaData(mapString, mapType, isColour, mapList));
 				}
@@ -178,11 +179,12 @@ import com.mars_sim.core.tool.RandomUtil;
 			// Patch the metadata to be locally available
 			metaData.setLocallyAvailable(true);
 			
-			System.out.println("Map type '" + mapType 
-					+ "' (res: " + metaData.getResolution() 
-					+ ") selected. Map name: '" + metaData.getMapType()
+			System.out.println("Loading map type '" + mapType 
+					+ "'. Res level: " + metaData.getResolution() 
+					+ ". Map name: '" + metaData.getMapType()
 					+ "'. Filename: '" + metaData.getFile()
-					+ "'. Map Locally available: " + metaData.isLocallyAvailable() + ".");
+					+ "'. Color: " + metaData.isColourful()
+					+ ". Local: " + metaData.isLocallyAvailable() + ".");
 			
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not find the map file.", e);

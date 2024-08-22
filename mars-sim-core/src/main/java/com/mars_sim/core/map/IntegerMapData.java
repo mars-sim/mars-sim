@@ -17,6 +17,7 @@ import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -225,13 +226,76 @@ import com.mars_sim.core.map.common.FileLocator;
 
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
-	 		logger.config("loadMapData - " +  imageName + " : " + pixelWidth + " x " + pixelHeight + ".");
+//	 		logger.config("loadMapData - " +  imageName + " : " + pixelWidth + " x " + pixelHeight + ".");
 	 		
 	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 		
 	 		baseMapPixels = new int[pixelHeight][pixelWidth];
 	 		
-	 		if (hasAlphaChannel) {
+	 		if (!meta.isColourful()) {	
+	 			
+	 			// Note: May use the shade map to get height values
+	 			
+	 			boolean done = false;
+	 			boolean alreadyWentToNextByte = false;
+ 			    int byteIndex = 0;
+ 			    int row = 0;
+ 			    int col = 0;
+ 			    int numBits = 0;
+ 			    byte currentByte = pixels[byteIndex];
+ 			    while (!done) {
+ 			        alreadyWentToNextByte = false;
+	        
+ 			        // See https://stackoverflow.com/questions/32804784/weird-rgb-value-from-java-bufferedimage-getrgb/32824569#32824569
+ 			    	   
+ 			        // Using 0x10101 mask will turn it into monochromic 0 or 1
+ 			        
+			        // Use 0xff mask because byte is a signed type in Java, and we want an unsigned value
+ 			        int grayValue = (currentByte & 0xff);        
+// 			        int monoValue = (currentByte & 0x80) >> 7;
+// 			        System.out.print(grayValue + " ");
+ 			        
+	        		baseMapPixels[row][col] = grayValue;
+	        
+ 			        currentByte = (byte) (((int) currentByte) << 1);
+ 			        numBits++;
+
+ 			        if ((row == pixelHeight - 1) && (col == pixelWidth - 1)) {
+ 			            done = true;
+ 			        }
+ 			        else {
+ 			            col++;
+
+ 			            if (numBits == 8) {
+ 			                currentByte = pixels[++byteIndex];
+ 			                numBits = 0;
+ 			                alreadyWentToNextByte = true;
+ 			            }
+
+ 			            if (col == pixelWidth) {
+ 			                row++;
+ 			                col = 0;
+
+ 			                if (!alreadyWentToNextByte) {
+ 			                    currentByte = pixels[++byteIndex];
+ 			                    numBits = 0;
+ 			                }
+ 			            }
+ 			        }
+ 			    } 			
+	 			// https://stackoverflow.com/questions/30951726/reading-a-grayscale-image-in-java		
+//	 			Raster raster = cylindricalMapImage.getData();
+//	 			int h = raster.getHeight();
+//	 			int w = raster.getWidth();
+//	 		    for (int i = 0; i < w; i++) {
+//	 		        for (int j = 0; j < h; j++) {
+//	 		        	baseMapPixels[j][i] = raster.getSample(i, j, 0);
+//	 		        }
+//	 		    }
+	 		}
+	 		
+	 		else if (hasAlphaChannel) {
+ 			
 	 			final int pixelLength = 4;
 	 			
 	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
@@ -269,7 +333,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		}
 	 		
 	 		else {
-	 			final int pixelLength = 3;
+	 			
+	 		    final int pixelLength = 3;
 	 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
 	 				int argb = 0;
 	 				
@@ -327,8 +392,17 @@ import com.mars_sim.core.map.common.FileLocator;
 //				+ "  scale: " + newRho);
 		
  		// Create a new buffered image to draw the map on.
- 		BufferedImage bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
- 				BufferedImage.TYPE_INT_ARGB);//.TYPE_INT_ARGB);//TYPE_4BYTE_ABGR);TYPE_INT_ARGB_PRE);
+ 		BufferedImage bImage = null;
+ 				
+ 		if (meta.isColourful()) {
+ 			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
+				BufferedImage.TYPE_INT_ARGB);
+ 		}
+ 		else {
+ 			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
+ 				BufferedImage.TYPE_BYTE_GRAY); // TYPE_USHORT_GRAY
+ 		} 
+
 
  		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
@@ -349,8 +423,9 @@ import com.mars_sim.core.map.common.FileLocator;
 			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 		}
 
- 		// Create new map image.
- 		bImage.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
+
+	 	// Create new map image.
+	 	bImage.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
  		
  		// If alpha value is 255, it is fully opaque.
  		//  A value of 1 would mean it is (almost) fully transparent.
@@ -359,6 +434,11 @@ import com.mars_sim.core.map.common.FileLocator;
  		return bImage;
  	}
 
+ 	private int toRGB(int grayValue) {
+// 	    int part = Math.round(value * 255);
+ 	    return grayValue * 0x10101;
+ 	}
+ 	
  	
  	public void setAlpha(byte alpha, BufferedImage image) {       
  		// alpha is in 0-255 range
