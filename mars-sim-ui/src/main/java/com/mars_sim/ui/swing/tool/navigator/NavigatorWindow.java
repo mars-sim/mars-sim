@@ -459,7 +459,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setPreferredSize(new Dimension(90, HEIGHT_STATUS_BAR));
+		heightLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 	    
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
@@ -883,7 +883,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		for (int i = 0; i < numLevel; i++) {
 			list.add(LEVEL + i);
 		}
-		
+	
 		String[] options = list.toArray(String[]::new);
 		
 		String intialValue = options[0];
@@ -891,7 +891,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (oldRes != 0)
 			intialValue = LEVEL + oldRes;
 		
-		return JOptionPane.showOptionDialog(getDesktop(),
+		return JOptionPane.showOptionDialog(getFocusOwner(),
 			"Choose res level for '" + newMapType 
 			+ "' map type ? (Will download if not available locally)", 
 			"Surface Map Level",
@@ -1168,8 +1168,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		double theta = pos.getTheta();			
 		
 		double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-//			Withhold the use of RGBE for now: double h1 = TerrainElevation.getRGBElevation(pos);
-
+		double h1 = TerrainElevation.getColorElevation(phi, theta);
+		
 		double mag = mapPanel.getMagnification();
 		
 		phi = Math.round(phi*1000.0)/1000.0;
@@ -1178,7 +1178,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 		elevSB.append(ELEVATION)
 			.append(Math.round(h0*1000.0)/1000.0)
-//			Reserve this for now: .append(" (").append(Math.round(h1*1000.0)/1000.0).append(")")
+			.append(" (").append(Math.round(h1*1000.0)/1000.0).append(")")
 			.append(KM);
 		
 		String coordStr = pos.getFormattedString();
@@ -1339,11 +1339,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				double newMag = (5.0/14 * newSliderValue + 1)/6;							
 				double newRho = MapPanel.RHO_DEFAULT * newMag;
 				
-//				logger.info("newSliderValue: " + Math.round(newSliderValue * 1000.0)/1000.0 
-//						+ "  newMag: " + Math.round(newMag* 1000.0)/1000.0
-//						+ "  oldRho: " + Math.round(oldRho* 1000.0)/1000.0
-//						+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
-//						);
+				logger.info("newSliderValue: " + Math.round(newSliderValue * 1000.0)/1000.0 
+						+ "  newMag: " + Math.round(newMag* 1000.0)/1000.0
+						+ "  oldRho: " + Math.round(oldRho* 1000.0)/1000.0
+						+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
+						);
 				
 				if (newRho > MapPanel.MAX_RHO) {
 					newRho = MapPanel.MAX_RHO;
@@ -1357,7 +1357,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				}
 		});
 		
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();		
 		labelTable.put( Integer.valueOf(98), new JLabel("6") );
 		labelTable.put( Integer.valueOf(81), new JLabel("5") );
 		labelTable.put( Integer.valueOf(65), new JLabel("4") );

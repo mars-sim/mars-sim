@@ -171,6 +171,12 @@ public class SettlementTransparentPanel extends JComponent {
 	private UnitManager unitManager;
 
 
+	/**
+	 * The panel with elements that are on top of the settlement map.
+	 * 
+	 * @param desktop
+	 * @param mapPanel
+	 */
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
         this.desktop = desktop;

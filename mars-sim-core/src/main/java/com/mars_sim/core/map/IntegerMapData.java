@@ -17,7 +17,6 @@ import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -63,7 +62,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	private int pixelHeight;
 	/* height pixels divided by pi (equals to pixelHeight / Math.PI). */
 	private double rho;
-	/* The base map pixels array. */
+	/* The base map pixels double array. */
  	private int[][] baseMapPixels = null;
  	/* The meta data of the map. */
 	private MapMetaData meta;
@@ -79,16 +78,23 @@ import com.mars_sim.core.map.common.FileLocator;
  	 * @param filename   the map data file name.
  	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData newMeta) throws IOException {
-		this.meta = newMeta;
+ 	IntegerMapData(MapMetaData mapMetaData) throws IOException {
+		this.meta = mapMetaData;
 		
 		// Load data files
-		String metaMap = newMeta.getFile();
+		String metaFile = mapMetaData.getFile();
 		
 		try {
-			loadMapData(metaMap);
+			if (metaFile == null || metaFile.equals("")) {
+				logger.log(Level.SEVERE, "Map file not found.");
+				return;
+			}
+			else {
+				loadMapData(metaFile);
+			}
 		} catch(Exception e) {
 			logger.log(Level.SEVERE, "Unable to load map. " + e.getMessage());
+			return;
 		}
 		
 		rho = pixelHeight / Math.PI;

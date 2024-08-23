@@ -29,7 +29,6 @@ public class ElevationCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		Coordinates location = null;
-		double elevationMOLA = 0;
 		boolean result = false;
 		
 		// If a Unit then that is the start location
@@ -49,8 +48,10 @@ public class ElevationCommand extends ChatCommand {
 		
 		context.println("Start location: " + location); 
 
-		elevationMOLA = TerrainElevation.getMOLAElevation(location);
-		context.println("MOLA Elevation: " + String.format(CommandHelper.KM_FORMAT, elevationMOLA));
+		double elevationMEGDR = TerrainElevation.getMEGDRElevation(location);
+		context.println("MEGDR Elevation: " + String.format(CommandHelper.KM_FORMAT, elevationMEGDR));
+		double elevationColor = TerrainElevation.getColorElevation(location);
+		context.println("Color Elevation: " + String.format(CommandHelper.KM_FORMAT, elevationColor));
 		
 		return result;
 	}

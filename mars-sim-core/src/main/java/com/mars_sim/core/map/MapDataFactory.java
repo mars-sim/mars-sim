@@ -59,6 +59,10 @@ import com.mars_sim.core.tool.RandomUtil;
 
 	private Map<String, MapMetaData> metaDataMap = new HashMap<>();
 
+	private MapData mapDataCache;
+	
+	private MapMetaData mapMetaDataCache;
+			
 	private MEGDRMapReader reader;
 
  	/**
@@ -146,7 +150,7 @@ import com.mars_sim.core.tool.RandomUtil;
 
 		MapMetaData metaData = metaDataMap.get(mapType);
  		if (metaData == null) {
-			logger.warning("Map type " + mapType + " unknown.");
+ 			logger.log(Level.SEVERE, "Map type " + mapType + " unknown.");
 			
 			new MapDataFactory();
 		}
@@ -165,27 +169,37 @@ import com.mars_sim.core.tool.RandomUtil;
  		
  		MapData mapData = null;
  		
-		MapMetaData metaData = metaDataMap.get(mapType);
+		MapMetaData mapMetaData = metaDataMap.get(mapType);
 		
- 		if (metaData == null) {
-			logger.warning("Map type " + mapType + " unknown.");
+ 		if (mapMetaData == null) {
+ 			logger.log(Level.SEVERE, "Map type " + mapType + " unknown.");
 			return null;
 		}
 
+ 		if (mapMetaDataCache != null && mapMetaDataCache.equals(mapMetaData)
+ 			&& !mapMetaData.getFile().equals("")
+ 			&& mapMetaDataCache.getFile().equals(mapMetaData.getFile())
+ 				) {
+ 			return mapDataCache;
+ 		}
+
 		try {
 			// Obtain a new MapData instance
-			mapData = new IntegerMapData(metaData);
-			
+			mapData = new IntegerMapData(mapMetaData);		
 			// Patch the metadata to be locally available
-			metaData.setLocallyAvailable(true);
+			mapMetaData.setLocallyAvailable(true);
 			
-			System.out.println("Loading map type '" + mapType 
-					+ "'. Res level: " + metaData.getResolution() 
-					+ ". Map name: '" + metaData.getMapType()
-					+ "'. Filename: '" + metaData.getFile()
-					+ "'. Color: " + metaData.isColourful()
-					+ ". Local: " + metaData.isLocallyAvailable() + ".");
+			mapDataCache = mapData;
 			
+			mapMetaDataCache = mapMetaData;
+			
+			logger.log(Level.CONFIG, "Loading map type '" + mapType 
+					+ "'. Res level: " + mapMetaData.getResolution() 
+					+ ". Map name: '" + mapMetaData.getMapType()
+					+ "'. Filename: '" + mapMetaData.getFile()
+					+ "'. Color: " + mapMetaData.isColourful()
+					+ ". Local: " + mapMetaData.isLocallyAvailable() + ".");
+
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not find the map file.", e);
 		}

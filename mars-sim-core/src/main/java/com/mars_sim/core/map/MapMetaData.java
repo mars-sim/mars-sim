@@ -19,6 +19,7 @@ public class MapMetaData {
     
     /** The selected resolution of the map file. */
 	private int res = 0;
+    /** The available number of resolution level for this map type. */
 	private int numLevel = 1;
 	
 	private String mapString;
@@ -93,7 +94,7 @@ public class MapMetaData {
     }
     
     /**
-     * Gets the number of level of resolution.
+     * Gets the available number of level of resolution.
      * 
      * @return
      */
@@ -136,9 +137,15 @@ public class MapMetaData {
      * @return
      */
     public String getFile(int res) {
-    	if (listOfMaps.size() > res)
+    	numLevel = listOfMaps.size();	
+    	if (numLevel > res) {
+    		this.res = res;
     		return listOfMaps.get(res);
-    	return "";
+    	}
+    	else {
+    		res--;
+    		return getFile(res);
+    	}
     }
     
     /**
