@@ -416,7 +416,7 @@ public class MainWindow
 		// Create the status bar
 		JStatusBar statusBar = new JStatusBar(1, 1, HEIGHT_STATUS_BAR);
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
-
+	
 		// Create speed buttons
 		createSpeedButtons(statusBar);
 

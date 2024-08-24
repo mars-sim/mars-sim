@@ -65,7 +65,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private static final String MUSIC_UP = "musicup";
 	private static final String MUSIC_DOWN = "musicdown";
 	private static final String MUSIC_MUTE = "musicmute";
-
+	
+	private static final String LOOK_AND_FEEL_ICON = "action/theme";
+	private static final String BROWSER_ICON = "action/browser";
+	
 	// Data members
 	/** The main window frame. */
 	private MainWindow mainWindow;
@@ -159,13 +162,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 											  TOOL_TOOLBAR, "mainMenu.tooltip.toolbar"	,
 										      KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_DOWN_MASK, false));
 		settingsMenu.add(showToolBarItem);	
-		useExternalBrowser = createCheckMenuItem("Use Desktop Browser", null,
+		useExternalBrowser = createCheckMenuItem("Use Desktop Browser", BROWSER_ICON,
 					EXTERNAL_BROWSER, "mainMenu.tooltip.toolbar"	, null);
 		settingsMenu.add(useExternalBrowser);	
 		settingsMenu.add(new JSeparator());
 
 		// Create submenu for LAF
 		JMenu lafMenu = new JMenu("Look and Feel");
+		Icon lafIcon = ImageLoader.getIconByName(LOOK_AND_FEEL_ICON);
+		lafMenu.setIcon(lafIcon);
 		JMenu lightMenu = new JMenu("Light Theme");
 		JMenu darkMenu = new JMenu("Dark Theme");
 		ButtonGroup group = new ButtonGroup();
@@ -278,7 +283,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		helpMenu.add(createMenuItem("mainMenu.about", null, ABOUT, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(new JSeparator());
-		helpMenu.add(createMenuItem("mainMenu.tutorial", null, TUTORIAL, null,
+		helpMenu.add(createMenuItem("mainMenu.tutorial", GuideWindow.TUTORIAL_ICON, TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false)));

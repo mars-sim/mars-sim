@@ -83,7 +83,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private MasterClock masterClock;
 
 	/**
-	 * Constructs a ToolToolBar object
+	 * Constructs a ToolToolBar object.
+	 * 
 	 * @param parentMainWindow the main window pane
 	 */
 	public ToolToolBar(MainWindow parentMainWindow) {
@@ -100,9 +101,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
-		// Fix tool bar
-		setFloatable(false);
 
+		setFloatable(true);
+
+		setRollover(true);
+		
 		// Prepare tool buttons
 		prepareToolButtons();
 		setMaximumSize(new Dimension(0, 32));
@@ -129,7 +132,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON); //$NON-NLS-1$
 		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON); //$NON-NLS-1$
 
-		// Everythong after this is on teh roght hand side
+		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
+		
+		// Everything after this is on the right hand side
 		add(Box.createHorizontalGlue()); 
 
 		earthDate = createTextLabel("Greenwich Mean Time (GMT) for Earth");
@@ -145,7 +150,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		calendarPane = setupCalendarPanel(masterClock.getMarsTime());	
 		addToolButton(MARSCAL, "Open the Mars Calendar", "schedule");
 
-		addToolButton(OrbitViewer.NAME, "Open the Orbit Viewer", OrbitViewer.ICON);
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button
