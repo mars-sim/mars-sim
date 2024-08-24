@@ -74,8 +74,8 @@ public class SettlementMapPanel extends JPanel {
 	private static final String ROTATION_PROP = "ROTATION";
 
 	// Static members.
-	private static final double WIDTH = 6D;
 	public static final double DEFAULT_SCALE = 10D;
+	private static final double SELECTION_RANGE = 0.10D; // This is the Settlement coordinate frame, 10cm
 
 
 	// Data members
@@ -243,9 +243,9 @@ public class SettlementMapPanel extends JPanel {
 				showBuildingCoord(x, y);
 				// Display the pixel coordinate of the window panel
 				// Note: the top left-most corner of window panel is (0,0)
-				settlementWindow.setPixelXYCoord(x, y, false);
+				settlementWindow.setPixelXYCoord(x, y);
 				// Display the settlement map coordinate of the hovering mouse pointer
-				settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), false);
+				settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
 
 				if (exit) {
 					exit = false;
@@ -269,9 +269,9 @@ public class SettlementMapPanel extends JPanel {
 					settlementWindow.setPop(getSettlement().getNumCitizens());
 					// Remove the pixel coordinate of the window panel
 					// Note: the top left most corner is (0,0)
-					settlementWindow.setPixelXYCoord(x, y, true);
+					settlementWindow.setPixelXYCoord(x,y);
 					// Remove the settlement map coordinate of the hovering mouse pointer
-					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), true);
+					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
 					// Remove the building coordinate
 					settlementWindow.setBuildingXYCoord(LocalPosition.DEFAULT_POSITION, true);
 					exit = true;
@@ -480,14 +480,13 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selectedPerson;
 	 */
 	private Person selectPersonAt(LocalPosition settlementPosition) {
-		double range = WIDTH / scale;
 
 		// Note 1: Not using settlement.getIndoorPeople() for now since it doesn't  
 		// 		   include those who have stepped outside
 		// Note 2: getIndoorPeople() will shorten the execution time to find people 
 		// Note 3: need to include non-associated people from other settlements
 		for(Person person : CollectionUtils.getPeopleInSettlementVicinity(settlement)) {
-			if (person.getPosition().getDistanceTo(settlementPosition) < range) {
+			if (person.getPosition().getDistanceTo(settlementPosition) < SELECTION_RANGE) {
 				selectPerson(person);
 				return person;
 
@@ -503,10 +502,9 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selectedRobot;
 	 */
 	private Robot selectRobotAt(LocalPosition settlementPosition) {
-		double range = WIDTH / scale;
 
 		for(Robot robot : CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement)) {
-			if (robot.getPosition().getDirectionTo(settlementPosition) <= range) {
+			if (robot.getPosition().getDistanceTo(settlementPosition) <= SELECTION_RANGE) {
 				selectRobot(robot);
 				return robot;
 			}
