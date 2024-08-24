@@ -63,7 +63,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	/* height pixels divided by pi (equals to pixelHeight / Math.PI). */
 	private double rho;
 	/* The base map pixels double array. */
- 	private int[][] baseMapPixels = null;
+ 	private int[][] baseMapPixels = new int[0][0];
  	/* The meta data of the map. */
 	private MapMetaData meta;
  	/* The OpenCL program instance. */
@@ -301,7 +301,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		}
 	 		
 	 		else if (hasAlphaChannel) {
- 			
+	 			// Note: viking geologic is the only one that has alpha channel
+	 			
 	 			final int pixelLength = 4;
 	 			
 	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
@@ -402,14 +403,17 @@ import com.mars_sim.core.map.common.FileLocator;
  				
  		if (meta.isColourful()) {
  			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
-				BufferedImage.TYPE_INT_ARGB);
+				BufferedImage.TYPE_INT_RGB);
  		}
  		else {
  			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
  				BufferedImage.TYPE_BYTE_GRAY); // TYPE_USHORT_GRAY
  		} 
 
-
+// 		Graphics2D g2d = bImage.createGraphics();
+// 		g2d.setColor(Color.BLACK);
+// 		g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
+ 		
  		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
 // 		logger.config("transparency: " + result.getTransparency());
@@ -431,7 +435,7 @@ import com.mars_sim.core.map.common.FileLocator;
 
 
 	 	// Create new map image.
-	 	bImage.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
+	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxHeight);
  		
  		// If alpha value is 255, it is fully opaque.
  		//  A value of 1 would mean it is (almost) fully transparent.
@@ -440,6 +444,20 @@ import com.mars_sim.core.map.common.FileLocator;
  		return bImage;
  	}
 
+    public void setRGB(BufferedImage bImage, int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
+		int yoff  = offset;
+		int off;
+		Object pixel = null;
+			
+		for (int y = startY; y < startY + h; y++, yoff += scansize) {
+			off = yoff;
+			for (int x = startX; x < startX + w; x++) {
+			    pixel = bImage.getColorModel().getDataElements(rgbArray[off++], pixel);
+			    bImage.getRaster().setDataElements(x, y, pixel);
+			}
+		}
+	}
+    
  	private int toRGB(int grayValue) {
 // 	    int part = Math.round(value * 255);
  	    return grayValue * 0x10101;
@@ -608,11 +626,11 @@ import com.mars_sim.core.map.common.FileLocator;
 
  		int row = (int) Math.round(phi * ((double) baseMapPixels.length / Math.PI));
  		if (row > baseMapPixels.length - 1)
- 			row = baseMapPixels.length - 1;
-
+ 	 		row--;
+ 			
  		int column = (int) Math.round(theta * ((double) baseMapPixels[0].length / TWO_PI));
  		if (column > baseMapPixels[0].length - 1)
- 			column = baseMapPixels[0].length - 1;
+ 			column--;
  		
 // 		int pixel = baseMapPixels[row][column];
 // 		int pixelWithAlpha = (pixel >> 24) & 0xFF; 

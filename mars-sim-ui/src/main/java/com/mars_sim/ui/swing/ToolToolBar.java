@@ -30,6 +30,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import org.httprpc.sierra.DatePicker;
+
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
@@ -82,7 +84,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JLabel marsTime;
 
 	private JPanel calendarPane;
-
+	private DatePicker datePicker;
 	private MasterClock masterClock;
 
 	/**
@@ -115,7 +117,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		incrementClocks(masterClock);
 	}
 
-	/** Prepares tool buttons */
+	/** 
+	 * Prepares tool buttons 
+	 */
 	private void prepareToolButtons() {
 
 		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -142,6 +146,17 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		earthDate = createTextLabel("Greenwich Mean Time (GMT) for Earth");
 		add(earthDate);
+			
+//		datePicker = new DatePicker();		
+//      var earthTime = masterClock.getEarthTime();
+////    var now = LocalDate.now();
+//      var now = LocalDate.of(earthTime.getYear(), earthTime.getMonth(), earthTime.getDayOfMonth());
+//      datePicker.setDate(now);
+//      datePicker.setMinimumDate(now.minusMonths(3));
+//      datePicker.setMaximumDate(now.plusMonths(3));
+//      datePicker.setPopupVerticalAlignment(VerticalAlignment.TOP);
+//      datePicker.addActionListener(event -> showSelection(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))); //datePicker.getDate()));	
+		
 		addSeparator();
 		missionSol = createTextLabel("Simulation Sol Count");
 		add(missionSol);
@@ -162,6 +177,16 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(MAIN_WIKI, "View mars-sim wiki", GuideWindow.wikiIcon);
 	}
 
+//    private void showSelection(DateTimeFormatter formatter) {//, TemporalAccessor value) {
+////        var message = String.format("You selected %s.", formatter.format(value));
+//        var earthTime = masterClock.getEarthTime();
+////      var now = LocalDate.now();
+//        var now = LocalDate.of(earthTime.getYear(), earthTime.getMonth(), earthTime.getDayOfMonth());
+//        datePicker.setDate(now);
+////        earthDate.setText(masterClock.getEarthTime().format(SHORT_TIMESTAMP_FORMATTER));
+//        earthDate.setText(String.format(formatter.format(now)));
+//    }
+    
 	/**
 	 * Adds a tool bar button.
 	 * 
@@ -243,13 +268,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 	/**
 	 * Increments the label of both the earth and mars clocks.
+	 * 
+	 * @param master
 	 */
 	public void incrementClocks(MasterClock master) {
-		MarsTime marsClock = master.getMarsTime();
-		missionSol.setText("Sol : " + marsClock.getMissionSol());
-
+		missionSol.setText("Sol : " + master.getMarsTime().getMissionSol());
 		earthDate.setText(master.getEarthTime().format(SHORT_TIMESTAMP_FORMATTER));
-		marsTime.setText(marsClock.getTruncatedDateTimeStamp());
+		marsTime.setText(master.getMarsTime().getTruncatedDateTimeStamp());
 	}
 
 	/** 

@@ -371,7 +371,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 		latCBDir = new JComboBoxMW<>(latStrings);
-		latCBDir.setPreferredSize(new Dimension(50, 25));
+		latCBDir.setPreferredSize(new Dimension(60, 25));
 		latCBDir.setEditable(false);
 		topPane.add(latCBDir);
 
@@ -389,7 +389,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 		lonCBDir = new JComboBoxMW<>(longStrings);
-		lonCBDir.setPreferredSize(new Dimension(50, 25));
+		lonCBDir.setPreferredSize(new Dimension(60, 25));
 		lonCBDir.setEditable(false);
 		topPane.add(lonCBDir);
 

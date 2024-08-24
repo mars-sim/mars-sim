@@ -533,39 +533,26 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                drawCenteredMessage(mapErrorMessage, g2d);
 	            }
 	        	else {
-		
-//	        		g2d.setBackground(Color.BLACK);
 	        		
 	        		// Clear the background with white
 //	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-
 	        		// Paint black background
 //	        		g2d.setPaint(Color.BLACK); 
 	        		g2d.setColor(Color.BLACK);
 	                
 	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-
-	        		g2d.drawImage(starfield, 0, 0, Color.black, null);
-	        		
-//	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
-	        		
+//	        		g2d.drawImage(starfield, 0, 0, Color.black, this);
 //	        		g2d.setComposite(AlphaComposite.SrcOver); 
 //	        		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
 	        		// or 0.0f)); // draw transparent background
 	        		// or 1.0f)); // turn on opacity
 	        		
 //	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-
-//	        		Graphics2D gbi = null;
-	        		
+        		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
 	                		mapImage = marsMap.getMapImage();
 	                		if (mapImage != null) {
-//		                		gbi = (Graphics2D) mapImage.getGraphics();       
-//		                		gbi.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-//	                			g2d.clearRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-//	                			gbi.drawImage(mapImage, 0, 0, this);      
 	                			g2d.drawImage(mapImage, 0, 0, this);  
 	                		}         		
 	                	}
@@ -580,9 +567,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                	// It only have to redraw its map layer below
 	                	Iterator<MapLayer> i = mapLayers.iterator();
 	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
-	                	
-                		
-//                		gbi.dispose();
+              		
+		        		g2d.setBackground(Color.BLACK);
 	                }
 	        	}
 	        }
