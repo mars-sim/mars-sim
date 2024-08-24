@@ -16,6 +16,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -50,7 +51,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
         // Draw all construction sites.
-        boolean constLabels = mapPanel.isShowConstructionLabels();
+        boolean constLabels = mapPanel.isOptionDisplayed(DisplayOption.CONSTRUCTION_LABELS);
         for(ConstructionSite c : settlement.getConstructionManager()
                                 .getConstructionSites()) {
             drawConstructionSite(c, constLabels, viewpoint);

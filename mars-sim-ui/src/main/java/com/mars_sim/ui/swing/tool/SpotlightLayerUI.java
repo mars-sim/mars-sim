@@ -24,14 +24,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.LayerUI;
 
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
 @SuppressWarnings("serial")
 public class SpotlightLayerUI extends LayerUI<JPanel> {
 
-	//private static final long serialVersionUID = 1L;
-
 	private boolean mActive;
-	private int mX, mY;
+	private int mX;
+	private int mY;
 
 	private SettlementMapPanel settlementMapPanel;
 
@@ -66,31 +66,24 @@ public class SpotlightLayerUI extends LayerUI<JPanel> {
 	    // Paint the view.
 	    super.paint (g2, c);
 
-	    if (mActive) {
-		    if (settlementMapPanel.isDaylightTrackingOn()) {
-			      // Create a radial gradient, transparent in the middle.
-			      java.awt.geom.Point2D center = new java.awt.geom.Point2D.Float(mX, mY);
-			      float radius = 60;
-			      float[] dist = {0.0f, 1.0f};
-			      //Color[] colors = {new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.gray};
+	    if (mActive && settlementMapPanel.isOptionDisplayed(DisplayOption.DAYLIGHT_LAYER)) {
+			// Create a radial gradient, transparent in the middle.
+			java.awt.geom.Point2D center = new java.awt.geom.Point2D.Float(mX, mY);
+			float radius = 60;
+			float[] dist = {0.0f, 1.0f};
 
-			      Color[] colors = {
-			    		  //new Color(0.0f, 0.0f, 0.0f, 0.0f),
-			    		  //new Color(0, 0, 0, 0)
-			    		  //new Color(g2.getColor().getRed() * 0.25f, g2.getColor().getGreen() * 0.25f, g2.getColor().getBlue() * 0.25f, 0f),//, g.getColor().getAlpha()),
-			    		 //new Color(g2.getColor().getRed(), g2.getColor().getGreen(), g2.getColor().getBlue(), 0.0f)
-			    	  		new Color(.9f, .9f, .9f, .9f),
-			    	    	new Color(g2.getColor().getRed()/255f, g2.getColor().getGreen()/255f, g2.getColor().getBlue()/255f, 0.0f)
+			Color[] colors = {
+					new Color(.9f, .9f, .9f, .9f),
+					new Color(g2.getColor().getRed()/255f, g2.getColor().getGreen()/255f, g2.getColor().getBlue()/255f, 0.0f)
 
-			      };
+			};
 
-			      RadialGradientPaint p =
-			          new RadialGradientPaint(center, radius, dist, colors);
-			      g2.setPaint(p);
-			      g2.setComposite(AlphaComposite.getInstance(
-			          AlphaComposite.SRC_OVER, 0.4f));
-			      g2.fillRect(0, 0, c.getWidth(), c.getHeight());
-		    }
+			RadialGradientPaint p =
+				new RadialGradientPaint(center, radius, dist, colors);
+			g2.setPaint(p);
+			g2.setComposite(AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, 0.4f));
+			g2.fillRect(0, 0, c.getWidth(), c.getHeight());
 	    }
 
 	    g2.dispose();

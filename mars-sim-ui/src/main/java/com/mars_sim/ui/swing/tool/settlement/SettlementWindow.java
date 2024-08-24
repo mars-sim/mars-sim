@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -54,7 +53,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final String WHITESPACES_2 = " ";
 	private static final String CLOSE_PARENT = ") ";
 	private static final String WITHIN_BLDG = " Building: (";
-	private static final String SETTLEMENT_MAP = " Map: (";
+	private static final String SETTLEMENT_MAP = " Map: ";
 	private static final String PIXEL_MAP = " Window: (";
 
 	private JLabel buildingXYLabel;
@@ -134,10 +133,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setVisible(true);
 	}
 
-	private String format0(double x, double y) {
-		return Math.round(x*100.00)/100.00 + ", " + Math.round(y*100.00)/100.00;
-	}
-
 	private String format1(double x, double y) {
 		return (int)x + ", " + (int)y;
 	}
@@ -145,17 +140,16 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	/**
 	 * Sets the label of the coordinates within a building.
 	 *
-	 * @param x
-	 * @param y
+	 * @param pos
 	 * @param blank
 	 */
-	void setBuildingXYCoord(double x, double y, boolean blank) {
+	void setBuildingXYCoord(LocalPosition pos, boolean blank) {
 		if (blank) {
 			buildingXYLabel.setText("");
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
-			sb.append(WITHIN_BLDG).append(format0(x, y)).append(CLOSE_PARENT);
+			sb.append(WITHIN_BLDG).append(pos.getShortFormat()).append(CLOSE_PARENT);
 			buildingXYLabel.setText(sb.toString());
 		}
 	}
@@ -164,34 +158,20 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	 * Sets the x/y pixel label of the settlement window.
 	 *
 	 * @param point
-	 * @param blank
 	 */
-	void setPixelXYCoord(double x, double y, boolean blank) {
-		if (blank) {
-			windowXYLabel.setText("");
-		}
-		else {
-			StringBuilder sb = new StringBuilder();
-			sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
-			windowXYLabel.setText(sb.toString());
-		}
+	void setPixelXYCoord(double x, double y) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
+		windowXYLabel.setText(sb.toString());
 	}
 
 	/**
 	 * Sets the label of the settlement map coordinates.
 	 *
 	 * @param point
-	 * @param blank
 	 */
-	void setMapXYCoord(Point.Double point, boolean blank) {
-		if (blank) {
-			mapXYLabel.setText("");
-		}
-		else {
-			StringBuilder sb = new StringBuilder();
-			sb.append(SETTLEMENT_MAP).append(format0(point.getX(), point.getY())).append(CLOSE_PARENT);
-			mapXYLabel.setText(sb.toString());
-		}
+	void setMapXYCoord(LocalPosition point) {
+		mapXYLabel.setText(SETTLEMENT_MAP + point.getShortFormat());
 	}
 
 	/**
@@ -240,7 +220,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
     public void displayVehicle(Vehicle vv) {
 		if (vv.isInSettlement()) {
 			refocusMap(vv.getSettlement(), vv.getPosition());
-			mapPanel.setShowVehicleLabels(true);
 		}
     }
 

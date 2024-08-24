@@ -65,6 +65,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	private static Map<Integer, JInternalFrame> panels = new ConcurrentHashMap<>();
 
     public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
+		add(unit.getUnitType().getName() + " : " + unit.getName());
+		addSeparator();
     	MainDesktopPane desktop = swindow.getDesktop();
     	
     	switch (unit.getUnitType()) {
@@ -150,13 +152,6 @@ public class PopUpUnitMenu extends JPopupMenu {
             	d.setOpacity(0.75f);
 		        d.setBackground(new Color(0,0,0,128));
                 d.setVisible(true);
-
-                // Make panel drag-able
-//        	    ComponentMover mover = new ComponentMover(desktop);
-//        	    mover.registerComponent(getComponents());
-//			    ComponentMover mover = new ComponentMover(d, desktop);
-//			    mover.registerComponent(b);
-
              }
         );
 
@@ -173,7 +168,6 @@ public class PopUpUnitMenu extends JPopupMenu {
     private JMenuItem buildDetailsItem(final Unit unit, final MainDesktopPane desktop) {
 		JMenuItem detailsItem = new JMenuItem(Msg.getString("PopUpUnitMenu.details"));
 
-//        detailsItem.setForeground(new Color(139,69,19));
         detailsItem.addActionListener(e -> {
 	            if (unit.getUnitType() == UnitType.VEHICLE
 	            		|| unit.getUnitType() == UnitType.PERSON
@@ -182,7 +176,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            	desktop.showDetails(unit);
 	            }
 	            
-	            // TODO Why is this not a dedicated class ?
 	            else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
 	            	buildConstructionWindow(unit, desktop);
 	            }
@@ -214,10 +207,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 
         JInternalFrame d = new JInternalFrame(
         		unit.getSettlement().getName() + " - " + site,
-        		true,  //resizable
-                false, //not closable
-                true, //not maximizable
-                false); //iconifiable);
+        		true, 
+                false, 
+                true,
+                false); 
 
         d.setIconifiable(false);
         d.setClosable(true);
@@ -327,7 +320,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 			if (siteAngle >= 360)
 				siteAngle = 0;
 			site.setFacing(siteAngle);
-			logger.info(site, "Just set facing to " + (int)Math.round(siteAngle) + ".");
+			logger.info(site, "Just set facing to " + siteAngle + ".");
 			repaint();
         });
 
@@ -364,11 +357,4 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		return confirmItem;
 	}
-	
-	
-	public void destroy() {
-		panels.clear();
-		panels = null;
-	}
-
 }
