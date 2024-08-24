@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
 /**
  * A settlement map layer for displaying Robots.
@@ -40,7 +41,7 @@ public class RobotMapLayer extends WorkerMapLayer<Robot> {
 
 		List<Robot> robots = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
-		drawWorkers(robots, selectedRobot, mapPanel.isShowRobotLabels(), viewpoint);
+		drawWorkers(robots, selectedRobot, mapPanel.isOptionDisplayed(DisplayOption.ROBOT_LABELS), viewpoint);
 	}
 
 	/**

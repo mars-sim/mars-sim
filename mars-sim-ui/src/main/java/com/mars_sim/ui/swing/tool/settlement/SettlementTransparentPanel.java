@@ -73,6 +73,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -206,11 +207,11 @@ public class SettlementTransparentPanel extends JComponent {
 	    	@Override
 	    	public Dimension getMinimumSize() {
 	    		return new Dimension(50, 100);
-	    	};
+	    	}
 	    	@Override
 	    	public Dimension getPreferredSize() {
 	    		return new Dimension(50, 100);
-	    	};
+	    	}
 	    };
 
         buildInfoP();
@@ -248,10 +249,6 @@ public class SettlementTransparentPanel extends JComponent {
 	    sunlightPanel.setBackground(new Color(0,0,0,128));
 	    sunlightPanel.setOpaque(false);
 	    sunlightPanel.add(sunPane, BorderLayout.NORTH);
-
-        // Make panel drag-able
-//	    ComponentMover mover = new ComponentMover(desktop.getMainWindow());
-//	    mover.registerComponent(sunPane.getComponents());
 	    
 	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
 	    centerPanel.setBackground(new Color(0,0,0,128));
@@ -869,9 +866,7 @@ public class SettlementTransparentPanel extends JComponent {
 		recenterButton.setBackground(new Color(0,0,0,128));
 
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
-		recenterButton.addActionListener(e -> {
-				mapPanel.reCenter();
-		});
+		recenterButton.addActionListener(e -> mapPanel.reCenter());
 
 		// Create rotate counter-clockwise button.
         final Icon ccwIcon = ImageLoader.getIconByName("settlement_map/left");
@@ -939,6 +934,14 @@ public class SettlementTransparentPanel extends JComponent {
 		labelsMenu = null;
 	}
 
+	private JCheckBoxMenuItem createDisplayToggle(String label, SettlementMapPanel.DisplayOption op) {
+		JCheckBoxMenuItem result = new JCheckBoxMenuItem(label, mapPanel.isOptionDisplayed(op));
+		result.setContentAreaFilled(false);
+		result.addActionListener(e -> mapPanel.toggleDisplayOption(op));
+		result.setSelected(mapPanel.isOptionDisplayed(op));
+		return result;
+	}
+
 	/**
 	 * Creates the labels popup menu.
 	 * 
@@ -947,15 +950,6 @@ public class SettlementTransparentPanel extends JComponent {
 	private JPopupMenu createLabelsMenu() {
 		JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
 		popMenu.setBorderPainted(false);
-
-		// Create Day Night Layer menu item.
-		JCheckBoxMenuItem dayNightLabelMenuItem = new JCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.daylightTracking"), mapPanel.isDaylightTrackingOn()); //$NON-NLS-1$
-		dayNightLabelMenuItem.setContentAreaFilled(false);
-		dayNightLabelMenuItem.addActionListener(e ->
-				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn()));
-		dayNightLabelMenuItem.setSelected(mapPanel.isDaylightTrackingOn());
-		popMenu.add(dayNightLabelMenuItem);
 
 		// Activity spot menu
 		var spotLabelMenuItem = new JMenu("Activity Spots");
@@ -984,45 +978,11 @@ public class SettlementTransparentPanel extends JComponent {
 			spotLabelMenuItem.add(ftItem);
 		}
 
-		// Create building label menu item.
-		var buildingLabelMenuItem = new JCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
-		buildingLabelMenuItem.setContentAreaFilled(false);
-		buildingLabelMenuItem.addActionListener(e ->
-				mapPanel.setShowBuildingLabels(!mapPanel.isShowBuildingLabels()));
-		popMenu.add(buildingLabelMenuItem);
-
-		// Create construction/salvage label menu item.
-		var constructionLabelMenuItem = new JCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.constructionSites"), mapPanel.isShowConstructionLabels()); //$NON-NLS-1$
-		constructionLabelMenuItem.setContentAreaFilled(false);
-		constructionLabelMenuItem.addActionListener(e -> 
-				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels()));
-		popMenu.add(constructionLabelMenuItem);
-
-		// Create vehicle label menu item.
-		var vehicleLabelMenuItem = new JCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.vehicles"), mapPanel.isShowVehicleLabels()); //$NON-NLS-1$
-		vehicleLabelMenuItem.setContentAreaFilled(false);
-		vehicleLabelMenuItem.addActionListener(e -> 
-				mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels()));
-		popMenu.add(vehicleLabelMenuItem);
-
-		// Create person label menu item.
-		var personLabelMenuItem = new JCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.people"), mapPanel.isShowPersonLabels()); //$NON-NLS-1$
-		personLabelMenuItem.setContentAreaFilled(false);
-		personLabelMenuItem.addActionListener(e -> 
-				mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels()));
-		popMenu.add(personLabelMenuItem);
-
-		// Create person label menu item.
-		var robotLabelMenuItem = new JCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
-		robotLabelMenuItem.setContentAreaFilled(false);
-		robotLabelMenuItem.addActionListener(e ->
-				mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels()));
-		popMenu.add(robotLabelMenuItem);
+		// Create display option items
+		for(DisplayOption op : DisplayOption.values()) {
+			popMenu.add(createDisplayToggle(Msg.getString("SettlementWindow.menu." + op.name().toLowerCase()),
+				op));
+		}
 
 		popMenu.pack();
 

@@ -11,6 +11,7 @@ import java.awt.Color;
 
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
 /**
  * The DayNightMapLayer is a graphics layer to display twilight and night time shading of the settlement
@@ -37,7 +38,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	@Override
 	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
-		if (mapPanel.isDaylightTrackingOn()) {
+		if (mapPanel.isOptionDisplayed(DisplayOption.DAYLIGHT_LAYER)) {
 
 			// NOTE: whenever the user uses the combobox to switch to another settlement in Settlement Map Tool,
 			// the corresponding location instance of the new settlement will be reloaded

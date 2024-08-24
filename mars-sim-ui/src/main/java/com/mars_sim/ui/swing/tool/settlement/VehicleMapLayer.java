@@ -23,6 +23,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -54,11 +55,12 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
+		boolean drawLabel = mapPanel.isOptionDisplayed(DisplayOption.VEHICLE_LABELS);
 
 		// Draw all parked vehicles at this settlement location
 		for (Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
 			if (v.isReady())
-				drawVehicle(v, mapPanel.isShowVehicleLabels(), viewpoint);
+				drawVehicle(v, drawLabel, viewpoint);
 		}
 
 		// Restore original graphic transforms.

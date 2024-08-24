@@ -27,6 +27,7 @@ import com.mars_sim.core.structure.building.connection.Hatch;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -94,7 +95,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
         if (settlement != null) {  
-            boolean bldgLabels = mapPanel.isShowBuildingLabels();
+            boolean bldgLabels = mapPanel.isOptionDisplayed(DisplayOption.BUILDING_LABELS);
             Set<FunctionType> spotLabels = mapPanel.getShowSpotLabels();
 
             // Display svg images of all buildings in the entire settlement
