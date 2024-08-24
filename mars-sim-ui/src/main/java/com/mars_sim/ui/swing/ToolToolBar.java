@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -65,6 +66,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
 
 	private static final String DISPLAY_HELP = "display-help";
+	private static final String MAIN_WIKI = "main-wiki";
+	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //$NON-NLS-1$
 	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
@@ -132,7 +135,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON); //$NON-NLS-1$
 		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON); //$NON-NLS-1$
 
-		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
+		addToolButton(OrbitViewer.NAME, "Open Orbit Viewer", OrbitViewer.ICON);
 		
 		// Everything after this is on the right hand side
 		add(Box.createHorizontalGlue()); 
@@ -148,17 +151,28 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addSeparator();
 
 		calendarPane = setupCalendarPanel(masterClock.getMarsTime());	
-		addToolButton(MARSCAL, "Open the Mars Calendar", "schedule");
+		addToolButton(MARSCAL, "Open Mars Calendar", "schedule");
 
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button
-		addToolButton(DISPLAY_HELP, "View the Help tool", GuideWindow.HELP_ICON);
+		addToolButton(DISPLAY_HELP, "View Help tool", GuideWindow.guideIcon);
+		
+		// Add wiki button
+		addToolButton(MAIN_WIKI, "View mars-sim wiki", GuideWindow.wikiIcon);
 	}
 
+	/**
+	 * Adds a tool bar button.
+	 * 
+	 * @param toolName
+	 * @param tooltip
+	 * @param iconKey
+	 */
 	private void addToolButton(String toolName, String tooltip, String iconKey) {
 		JButton toolButton = new JButton(ImageLoader.getIconByName(iconKey));
 		toolButton.setActionCommand(toolName);
+		toolButton.setPreferredSize(new Dimension(30, 30));
 		toolButton.setMaximumSize(new Dimension(30, 30));
 		if (tooltip == null) {
 			tooltip = toolName;
@@ -168,6 +182,26 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		add(toolButton);
 	}
 
+	/**
+	 * Adds a tool bar button.
+	 * 
+	 * @param toolName
+	 * @param tooltip
+	 * @param icon
+	 */
+	private void addToolButton(String toolName, String tooltip, Icon icon) {
+		JButton toolButton = new JButton(icon);
+		toolButton.setActionCommand(toolName);
+		toolButton.setPreferredSize(new Dimension(30, 30));
+		toolButton.setMaximumSize(new Dimension(30, 30));
+		if (tooltip == null) {
+			tooltip = toolName;
+		}
+		toolButton.setToolTipText(tooltip);
+		toolButton.addActionListener(this);
+		add(toolButton);
+	}
+	
 	
 	private JLabel createTextLabel(String tooltip) {
 		JLabel label = new JLabel();
@@ -254,7 +288,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			case DISPLAY_HELP:
 				parentMainWindow.showHelp(null); // Default help page
 				break;
-
+				
+			case MAIN_WIKI:
+				SwingHelper.openBrowser(WIKI_URL);
+				break;
+				
 			default:
 				parentMainWindow.getDesktop().openToolWindow(event.getActionCommand());
 				break;

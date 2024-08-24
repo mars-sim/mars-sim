@@ -69,6 +69,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private static final String LOOK_AND_FEEL_ICON = "action/theme";
 	private static final String BROWSER_ICON = "action/browser";
 	
+	private static final String VOL_UP_ICON = "action/vol_up";
+	private static final String VOL_DOWN_ICON = "action/vol_down";
+	
 	// Data members
 	/** The main window frame. */
 	private MainWindow mainWindow;
@@ -230,10 +233,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			});
 			settingsMenu.add(musicVolumeSlider);
 
-			settingsMenu.add(createMenuItem("mainMenu.musicVolumeUp", null,
+			settingsMenu.add(createMenuItem("mainMenu.musicVolumeUp", VOL_UP_ICON,
 							MUSIC_UP, "mainMenu.musicVolumeUp",
 							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_DOWN_MASK, false)));
-			settingsMenu.add(createMenuItem("mainMenu.musicVolumeDown", null,
+			settingsMenu.add(createMenuItem("mainMenu.musicVolumeDown", VOL_DOWN_ICON,
 							MUSIC_DOWN, "mainMenu.musicVolumeDown",
 							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_DOWN_MASK, false)));
 			musicMuteItem = createCheckMenuItem(Msg.getString("mainMenu.muteMusic"), null,
@@ -258,10 +261,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			});
 			settingsMenu.add(effectVolumeSlider);
 
-			settingsMenu.add(createMenuItem("mainMenu.effectVolumeUp", null,
+			settingsMenu.add(createMenuItem("mainMenu.effectVolumeUp", VOL_UP_ICON,
 											EFFECT_UP, "mainMenu.effectVolumeUp",
 											KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.CTRL_DOWN_MASK, false)));
-			settingsMenu.add(createMenuItem("mainMenu.effectVolumeDown", null,
+			settingsMenu.add(createMenuItem("mainMenu.effectVolumeDown", VOL_DOWN_ICON,
 											EFFECT_DOWN, "mainMenu.effectVolumeDown",
 											KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.CTRL_DOWN_MASK, false)));
 			effectMuteItem = createCheckMenuItem(Msg.getString("mainMenu.muteEffect"), null,
@@ -280,18 +283,24 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		add(helpMenu);
 
 		// Create About Mars Simulation Project menu item
-		helpMenu.add(createMenuItem("mainMenu.about", null, ABOUT, null,
+		helpMenu.add(createMenuItem("mainMenu.about", GuideWindow.idCardIcon, ABOUT, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(new JSeparator());
 		helpMenu.add(createMenuItem("mainMenu.tutorial", GuideWindow.TUTORIAL_ICON, TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false)));
-		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
+		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.guideIcon, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false)));
 	}
 
 	private JMenuItem createMenuItem(String nameKey, String iconName, String command, String tooltipKey, KeyStroke keyStroke) {
 		JMenuItem item = new JMenuItem(Msg.getString(nameKey)); //$NON-NLS-1$
 		actionMenuItem(item, iconName, command, tooltipKey, keyStroke);
+		return item;
+	}
+	
+	private JMenuItem createMenuItem(String nameKey, Icon icon, String command, String tooltipKey, KeyStroke keyStroke) {
+		JMenuItem item = new JMenuItem(Msg.getString(nameKey)); //$NON-NLS-1$
+		actionMenuItem(item, icon, command, tooltipKey, keyStroke);
 		return item;
 	}
 
@@ -302,12 +311,33 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		return item;
 	}
 
-	private void actionMenuItem(JMenuItem item, String iconName, String command, String tooltipKey,
-								KeyStroke keyStroke) {
-		if (iconName != null) {
+	/**
+	 * Sets up an action menu item.
+	 * 
+	 * @param item
+	 * @param iconName
+	 * @param command
+	 * @param tooltipKey
+	 * @param keyStroke
+	 */
+	private void actionMenuItem(JMenuItem item, String iconName, String command, String tooltipKey, KeyStroke keyStroke) {
+		if (iconName != null && !iconName.equals("")) {
 			Icon icon = ImageLoader.getIconByName(iconName);
 			item.setIcon(icon);
 		}
+
+		setupMenuItem(item, command, tooltipKey, keyStroke);
+	}
+
+	/**
+	 * Sets up an menu item.
+	 * 
+	 * @param item
+	 * @param command
+	 * @param tooltipKey
+	 * @param keyStroke
+	 */
+	private void setupMenuItem(JMenuItem item, String command, String tooltipKey, KeyStroke keyStroke) {
 		if (tooltipKey != null) {
 			item.setToolTipText(Msg.getString(tooltipKey)); //$NON-NLS-1$
 		}
@@ -316,7 +346,25 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		item.setActionCommand(command);
 		item.setAccelerator(keyStroke);
 	}
-
+	
+	/**
+	 * Sets up an action menu item.
+	 * 
+	 * @param item
+	 * @param icon
+	 * @param command
+	 * @param tooltipKey
+	 * @param keyStroke
+	 */
+	private void actionMenuItem(JMenuItem item, Icon icon, String command, String tooltipKey, KeyStroke keyStroke) {
+		if (icon != null) {
+			item.setIcon(icon);
+		}
+		
+		setupMenuItem(item, command, tooltipKey, keyStroke);
+	}
+	
+	
 	/**
 	 * Gets the Main Window.
 	 *

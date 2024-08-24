@@ -27,7 +27,8 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class MarsCalendarDisplay extends JComponent {
 
-	public static final int OFFSET = 10;
+	public static final int X_OFFSET = 10;
+	public static final int Y_OFFSET = 10;
 	public static final int BOX_WIDTH = 160;
 	public static final int BOX_LENGTH = 105;
 	
@@ -79,10 +80,10 @@ public class MarsCalendarDisplay extends JComponent {
 	public MarsCalendarDisplay(MarsTime marsTime, MainDesktopPane desktop) {
 
 		// Set component size
-		setPreferredSize(new Dimension(BOX_WIDTH, OFFSET + BOX_LENGTH));
-		setMaximumSize(new Dimension(BOX_WIDTH, OFFSET + BOX_LENGTH));
-		setMinimumSize(new Dimension(BOX_WIDTH, OFFSET + BOX_LENGTH));
-		setAlignmentX(CENTER_ALIGNMENT);
+		setPreferredSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
+		setMaximumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
+		setMinimumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
+		setAlignmentX(LEFT_ALIGNMENT);
 		setAlignmentY(CENTER_ALIGNMENT);
 		
 		// Set up week letter font
@@ -130,38 +131,38 @@ public class MarsCalendarDisplay extends JComponent {
 
 		// Paint background
 		g.setColor(lightColor);
-		g.fillRect(OFFSET, OFFSET, BOX_WIDTH - 2 * OFFSET, 95);
+		g.fillRect(X_OFFSET, Y_OFFSET, BOX_WIDTH - 2 * Y_OFFSET, 95);
 
 		// Paint mid week day name header
 		g.setColor(headerColor);
-		g.fillRect(OFFSET, OFFSET, BOX_WIDTH - 2 * OFFSET, 15);
+		g.fillRect(X_OFFSET, Y_OFFSET, BOX_WIDTH - 2 * Y_OFFSET, 15);
 
 
 		// If the number of sols in month are 27, black out lower left square
 		if (solsInMonth == 27) {
 			g.setColor(Color.black);
-			g.fillRect(OFFSET + 121, OFFSET + 71, OFFSET + 138, OFFSET + 93);
+			g.fillRect(X_OFFSET + 121, Y_OFFSET + 71, X_OFFSET + 138, Y_OFFSET + 93);
 		}
 
 		// Paint grid lines
 		g.setColor(baseColor);
-		g.drawRect(OFFSET, OFFSET, 139, 94);
+		g.drawRect(X_OFFSET, X_OFFSET, 139, 94);
 
 		// Paint vertical day lines
 		for (int x = 1; x < 7; x++) {
-			g.drawLine(OFFSET + 20 * x, OFFSET, OFFSET + 20 * x, OFFSET + 94);
+			g.drawLine(X_OFFSET + 20 * x, Y_OFFSET, X_OFFSET + 20 * x, Y_OFFSET + 94);
 		}
 
 		// Paint horizontal lines
 		for (int x = 0; x < 4; x++) {
-			g.drawLine(OFFSET, OFFSET + (20 * x) + 15, OFFSET + 139, OFFSET + (20 * x) + 15);
+			g.drawLine(X_OFFSET, Y_OFFSET + (20 * x) + 15, X_OFFSET + 139, Y_OFFSET + (20 * x) + 15);
 		}
 
 		// Draw week letters
 		g.setFont(weekFont);
 		for (int x = 0; x < 7; x++) {
 			int letterWidth = weekMetrics.charWidth(weekdayLetters[x]);
-			g.drawString("" + weekdayLetters[x], OFFSET + (20 * x) + 11 - (letterWidth / 2), OFFSET + weekHeight + 1);
+			g.drawString("" + weekdayLetters[x], X_OFFSET + (20 * x) + 11 - (letterWidth / 2), Y_OFFSET + weekHeight + 1);
 		}
 
 		// Draw sol letters
@@ -174,12 +175,12 @@ public class MarsCalendarDisplay extends JComponent {
 				int yPos = (20 * y) + 35 - (solHeight / 2);
 				
 				if (solNumber <= solsInMonth)
-					g.drawString(Integer.toString(solNumber), OFFSET + xPos, OFFSET + yPos);
+					g.drawString(Integer.toString(solNumber), X_OFFSET + xPos, Y_OFFSET + yPos);
 				
 				if (solNumber == solOfMonthCache) {
-					g.fillRect(OFFSET + (20 * x) + 2, OFFSET + (20 * y) + 17, 17, 17);
+					g.fillRect(X_OFFSET + (20 * x) + 2, Y_OFFSET + (20 * y) + 17, 17, 17);
 					g.setColor(numberHighlightColor);
-					g.drawString(Integer.toString(solNumber), OFFSET + xPos, OFFSET + yPos);
+					g.drawString(Integer.toString(solNumber), X_OFFSET + xPos, Y_OFFSET + yPos);
 					g.setColor(numberColor);
 				}
 			}

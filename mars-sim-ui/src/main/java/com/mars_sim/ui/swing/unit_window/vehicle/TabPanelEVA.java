@@ -13,7 +13,6 @@ import java.awt.FlowLayout;
 import java.util.Collection;
 
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -124,8 +123,7 @@ public class TabPanelEVA extends TabPanel {
     	}
 
 		JPanel wikiPanel = new JPanel(new FlowLayout());
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
+		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiPanel.add(wikiButton);
 //		wikiButton.setAlignmentX(.5f);
 //		wikiButton.setAlignmentY(.5f);
