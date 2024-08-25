@@ -14,6 +14,7 @@ import static com.mars_sim.core.map.OpenCL.getProgram;
 import static com.mars_sim.core.map.OpenCL.getQueue;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -43,7 +44,9 @@ import com.mars_sim.core.map.common.FileLocator;
 	
  	private static final double TWO_PI = Math.PI * 2;
  	
-	private static boolean HARDWARE_ACCELERATION = true;
+ 	private static final double HALF_PI = Math.PI / 2D;
+ 	
+	private static boolean HARDWARE_ACCELERATION = false;
 
  	public static double MAX_RHO;
 
@@ -106,12 +109,12 @@ import com.mars_sim.core.map.common.FileLocator;
 		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + ". MAG_DEFAULT: " + Math.round(MAG_DEFAULT*10.0)/10.0 + ".");
 		
 		// Exclude mac from use openCL
-		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-			HARDWARE_ACCELERATION = false;
-		}
-		else {
-			setKernel();
-		}
+//		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+//			HARDWARE_ACCELERATION = false;
+//		}
+//		else {
+//			setKernel();
+//		}
  	}
  	
  	/**
@@ -403,7 +406,7 @@ import com.mars_sim.core.map.common.FileLocator;
  				
  		if (meta.isColourful()) {
  			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
-				BufferedImage.TYPE_INT_RGB);
+				BufferedImage. TYPE_INT_RGB); // TYPE_4BYTE_ABGR
  		}
  		else {
  			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
@@ -479,8 +482,7 @@ import com.mars_sim.core.map.common.FileLocator;
  	    }
  	}
  	
-
- 	/**
+	/**
  	 * Constructs a map array for display with CPU.
  	 * 
  	 * @param centerPhi
@@ -503,7 +505,124 @@ import com.mars_sim.core.map.common.FileLocator;
 			 }
 		 }
 	 }
+	 
+ 	/**
+ 	 * Constructs a map array for display with CPU.
+ 	 * 
+ 	 * @param centerPhi
+ 	 * @param centerTheta
+ 	 * @param mapBoxWidth
+ 	 * @param mapBoxHeight
+ 	 * @param mapArray
+ 	 * @param scale
+ 	 */
+	 private void cpu1(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
+		 int halfWidth = mapBoxWidth / 2;
+//		 int halfHeight = mapBoxHeight / 2;
+
+		 // The map data is PI offset from the center theta.
+		 double correctedTheta = centerTheta - Math.PI;
+		 while (correctedTheta < 0D)
+			 correctedTheta += TWO_PI;
+		 while (correctedTheta > TWO_PI)
+			 correctedTheta -= TWO_PI;
+		
+		 // Determine phi iteration angle.
+		 double phiIterationPadding = 1.26D; // Derived from testing.
+		 double phiIterationAngle = Math.PI / (mapBoxHeight * phiIterationPadding);
+
+		 // Determine phi range.
+		 double phiPadding = 1.46D; // Derived from testing.
+		 double phiRange = Math.PI * phiPadding * pixelHeight / mapBoxHeight;
+
+		 // Determine starting and ending phi values.
+		 double startPhi = centerPhi - (phiRange / 2D);
+		 if (startPhi < 0D)
+			 startPhi = 0D;
+		 double endPhi = centerPhi + (phiRange / 2D);
+		 if (endPhi > Math.PI)
+			 endPhi = Math.PI;
+
+		 double ratio = TWO_PI * pixelWidth / mapBoxWidth;
+		 // Note : Polar cap phi values must display 2 PI theta range. 
+		 // (derived from testing)
+		 double polarCapRange = Math.PI / 6.54D; 
+		 // Determine theta iteration angle.
+		 double thetaIterationPadding = 1.46D; // Derived from testing.
+		 // Theta padding, derived from testing.
+		 double minThetaPadding = 1.02D; 
+		 // Determine theta range.
+		 double minThetaDisplay = ratio * minThetaPadding;
+			
+		 for (double x = startPhi; x <= endPhi; x += phiIterationAngle) {
+			 
+			 double thetaIterationAngle = TWO_PI / (((double) mapBoxWidth * Math.sin(x) * thetaIterationPadding) + 1D);
+
+			 double thetaRange = ((1D - Math.sin(x)) * TWO_PI) + minThetaDisplay;
+			
+			 if ((x < polarCapRange) || (x > (Math.PI - polarCapRange)))
+				thetaRange = TWO_PI;
+			 if (thetaRange > TWO_PI)
+				thetaRange = TWO_PI;
+
+			 // Determine the theta starting and ending values.
+			 double startTheta = centerTheta - (thetaRange / 2D);
+			 double endTheta = centerTheta + (thetaRange / 2D);
+			
+			 for (double y = startTheta; y <= endTheta; y += thetaIterationAngle) {
+			 
+				 // Correct y value to make sure it is within bounds. (0 to 2PI)
+				 double yCorrected = y;
+				 while (yCorrected < 0)
+					 yCorrected += TWO_PI;
+				 while (yCorrected > TWO_PI)
+					 yCorrected -= TWO_PI;
+				 
+				 Point loc = findRectPosition(centerPhi, centerTheta, x, yCorrected, getRho(), halfWidth, halfWidth);
+				  
+				 // Determine the display x and y coordinates for the pixel in the image.
+				 int xx = pixelWidth - (int)loc.getX();
+				 int yy = pixelHeight - (int)loc.getY();
+				
+				 // Check that the x and y coordinates are within the display area.
+				 boolean leftBounds = xx >= 0;
+				 boolean rightBounds = xx < pixelWidth;
+				 boolean topBounds = yy >= 0;
+				 boolean bottomBounds = yy < pixelHeight;
+				 
+				 if (leftBounds && rightBounds && topBounds && bottomBounds) {
+					// Determine array index for the display location.
+					int index1 = (pixelWidth - xx) + ((pixelHeight - yy) * pixelWidth);			
+					// Put color in array at index.
+					if ((index1 >= 0) && (index1 < mapArray.length))
+						mapArray[index1] = getRGBColorInt(x, yCorrected);
+				 }
+			 }
+		 }
+	 }
 		 
+	/**
+	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
+	 * and y display coordinates for spherical location.
+	 *
+	 * @param newPhi   the new phi coordinate
+	 * @param newTheta the new theta coordinate
+	 * @param rho      diameter of planet (in km)
+	 * @param half_map half the map's width (in pixels)
+	 * @param low_edge lower edge of map (in pixels)
+	 * @return pixel offset value for map
+	 */
+	public Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
+			int half_map, int low_edge) {
+	
+		final double col = newTheta + (- HALF_PI - oldTheta);
+		final double xx = rho * Math.sin(newPhi);
+		int x = ((int) Math.round(xx * Math.cos(col)) + half_map) - low_edge;
+		int y = ((int) Math.round(((xx * (0D - Math.cos(oldPhi))) * Math.sin(col))
+				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + half_map) - low_edge;
+		return new Point(x, y);
+	}
+		
 	 /**
 	  * Constructs a map array for display with GPU via JOCL.
 	  * 
@@ -600,6 +719,7 @@ import com.mars_sim.core.map.common.FileLocator;
 
 		 return new Point2D.Double(phiNew, thetaNew);
 	 }
+	 
 	 
  	/**
  	 * Gets the RGB map color as an integer at a given location.
