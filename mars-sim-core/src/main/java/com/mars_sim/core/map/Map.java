@@ -33,10 +33,10 @@ public interface Map {
 	 * Creates a 2D map at a given center point.
 	 * 
 	 * @param newCenter 	The new center location
-	 * @param scale 		The new map scale
+	 * @param rho 		The new map rho
 	 * @throws Exception if error in drawing map.
 	 */
-	public void drawMap(Coordinates newCenter, double scale);
+	public void drawMap(Coordinates newCenter, double rho);
 
 	/**
 	 * Checks if a requested map is complete.

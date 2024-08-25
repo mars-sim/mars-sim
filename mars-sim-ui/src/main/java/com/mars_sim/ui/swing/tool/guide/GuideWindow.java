@@ -43,13 +43,19 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	/** Tool name. */
 	public static final String NAME = "guide";
-	public static final String HELP_ICON = "action/help";
+	public static final String HELP_ICON = "action/guide";
+	public static final String TUTORIAL_ICON = "action/tutorial";
 	public static final String HOME_ICON = "action/home";
 	
 	public static final String WIKI_ICON = "action/wiki";
 	public static final String WIKI_URL = Msg.getString("GuideWindow.githubwiki.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("GuideWindow.githubwiki.title"); //$NON-NLS-1$
     	
+	
+	public static final Icon idCardIcon = ImageLoader.getIconByName("action/about");
+	public static final Icon wikiIcon = ImageLoader.getIconByName(WIKI_ICON);
+	public static final Icon guideIcon = ImageLoader.getIconByName(HELP_ICON);
+	
 	private JLabel urlLabel;
 	
 	/** Data members. */
@@ -59,7 +65,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	private JViewport viewPort;
 	
 	private Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
-	private Icon wikiIcon = ImageLoader.getIconByName(WIKI_ICON);
+
 	
 	private JButton homeButton = new JButton(homeIcon);
 	private JButton backButton = new JButton("<");

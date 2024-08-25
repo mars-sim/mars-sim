@@ -56,15 +56,15 @@ public class JStatusBar extends TexturedPanel {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(getWidth(), barHeight + (2 * (MARGIN + 2))));
     
-        leftPanel = new JPanel(new BorderLayout());
+        leftPanel = new JPanel(new FlowLayout());
         leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(leftPanel, BorderLayout.WEST);
         
-        centerPanel = new JPanel(new BorderLayout());
+        centerPanel = new JPanel(new FlowLayout());
         centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(centerPanel, BorderLayout.CENTER);
         
-        rightPanel = new JPanel(new BorderLayout());
+        rightPanel = new JPanel(new FlowLayout());
         rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(rightPanel, BorderLayout.EAST);
     }

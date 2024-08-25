@@ -75,7 +75,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private final double ZOOM_STEP = 16;
 
 	private double multiplier;
-	private double magnification;
+	
+//	private double magnification;
 	
 	private String mapErrorMessage;
 	
@@ -164,9 +165,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		MAX_RHO = IntegerMapData.MAX_RHO;
 		MIN_RHO = IntegerMapData.MIN_RHO;
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
-		magnification = 1; // newRho/RHO_DEFAULT;
+//		magnification = 1; // newRho/RHO_DEFAULT;
 		
-//		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
+//		logger.info("rho: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
 
 	/**
@@ -191,7 +192,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Detects the mouse wheel movement.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
-//		// Gets the latest scale
+//		// Gets the latest rho
 //		double oldRho = getRho();
 //
 //		// May use this if (e.isControlDown()) {} to add ctrl key
@@ -235,14 +236,14 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //					+ "  RHO_DEFAULT: " + Math.round(RHO_DEFAULT* 1000.0)/1000.0
 //					);
 //			
-//	    	// Update the map scale
-////	    	setMapScale(newRho);
+//	    	// Update the map rho
+////	    	setRho(newRho);
 //
 //			// Call showMap
 ////			showMap(centerCoords, newRho);
 //	    	// which in turns calls updateDisplay()
 //	    	// which in turns calls MapTask thread
-//	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
+//	    	// which in turns calls marsMap.drawMap(centerCoords, getRho());
 //
 //			marsMap.drawMap(centerCoords, newRho);
 //			
@@ -435,14 +436,15 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Displays map at given center, regenerating if necessary.
 	 *
 	 * @param newCenter the center location for the globe
+	 * @param rho
 	 */
-	public void showMap(Coordinates newCenter, double scale) {
+	public void showMap(Coordinates newCenter, double rho) {
 		if (newCenter == null) 
 			return;
 		
 		if (centerCoords == null
 			|| !centerCoords.equals(newCenter)
-			|| scale != getRho()) {
+			|| rho != getRho()) {
 				recreateMap = true;
 				centerCoords = newCenter;
 		}
@@ -452,7 +454,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			
 		if (recreateMap) {
 			wait = true;
-			updateDisplay(scale);
+			updateDisplay(rho);
 			recreateMap = false;
 		}
 	}
@@ -461,20 +463,20 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		updateDisplay(getRho());
 	}
 
-	public void updateDisplay(double scale) {
+	public void updateDisplay(double rho) {
 		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
 			|| desktop.isToolWindowOpen(MissionWindow.NAME))
 			&& (!executor.isTerminated() || !executor.isShutdown())) {
-				executor.execute(new MapTask(scale));
+				executor.execute(new MapTask(rho));
 		}
 	}
 
 	class MapTask implements Runnable {
 
-		private double scale;
+		private double rho;
 		
-		private MapTask(double scale) {
-			this.scale = scale;
+		private MapTask(double rho) {
+			this.rho = rho;
 		}
 
 		@Override
@@ -487,7 +489,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					centerCoords = new Coordinates(HALF_PI, 0);
 				}
 
-				marsMap.drawMap(centerCoords, scale);
+				marsMap.drawMap(centerCoords, rho);
 				
 				wait = false;
 				repaint();
@@ -533,39 +535,26 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                drawCenteredMessage(mapErrorMessage, g2d);
 	            }
 	        	else {
-		
-//	        		g2d.setBackground(Color.BLACK);
 	        		
 	        		// Clear the background with white
 //	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-
 	        		// Paint black background
 //	        		g2d.setPaint(Color.BLACK); 
 	        		g2d.setColor(Color.BLACK);
 	                
 	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-
-	        		g2d.drawImage(starfield, 0, 0, Color.black, null);
-	        		
-//	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
-	        		
+//	        		g2d.drawImage(starfield, 0, 0, Color.black, this);
 //	        		g2d.setComposite(AlphaComposite.SrcOver); 
 //	        		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
 	        		// or 0.0f)); // draw transparent background
 	        		// or 1.0f)); // turn on opacity
 	        		
 //	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-
-//	        		Graphics2D gbi = null;
-	        		
+        		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
 	                		mapImage = marsMap.getMapImage();
 	                		if (mapImage != null) {
-//		                		gbi = (Graphics2D) mapImage.getGraphics();       
-//		                		gbi.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-//	                			g2d.clearRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-//	                			gbi.drawImage(mapImage, 0, 0, this);      
 	                			g2d.drawImage(mapImage, 0, 0, this);  
 	                		}         		
 	                	}
@@ -580,9 +569,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                	// It only have to redraw its map layer below
 	                	Iterator<MapLayer> i = mapLayers.iterator();
 	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
-	                	
-                		
-//                		gbi.dispose();
+              		
+		        		g2d.setBackground(Color.BLACK);
 	                }
 	        	}
 	        }
@@ -664,7 +652,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
      * @return
      */
     public double getMagnification() {
-    	return magnification;
+    	return getRho() / RHO_DEFAULT; // magnification;
     }
     
 	/**

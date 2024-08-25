@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -380,8 +379,7 @@ extends TabPanel {
 		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		radiationPanel.add(linkPane, BorderLayout.SOUTH);
 		
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
+		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		linkPane.add(wikiButton, SwingConstants.CENTER);
 		wikiButton.setAlignmentX(.5f);
 		wikiButton.setAlignmentY(.5f);

@@ -14,7 +14,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -32,7 +31,6 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
@@ -61,14 +59,16 @@ public class TimeWindow extends ToolWindow {
 	public static final int HEIGHT = 590;
 	
 	/** Tool name. */
-	private static final String DESIRED = "x (Desired : ";
-	private static final String X_CLOSE_P = "x)";
-	private static final String AVERAGE = " (Average : ";
-	private static final String CLOSE_P = ")";
+	public final String DESIRED = "x (Desired : ";
+	public final String X_CLOSE_P = "x)";
+	public final String AVERAGE = " (Average : ";
+	public final String CLOSE_P = ")";
 
-	private static final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
-	private static final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
-		
+	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
+	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
+	
+//    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
+	
 	/** the execution time label string */
 	private static final String EXEC = "Execution";
 	/** the sleep time label string */
@@ -190,8 +190,7 @@ public class TimeWindow extends ToolWindow {
 		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
 		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
 
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
+		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiButton.setAlignmentX(.5f);
 		wikiButton.setAlignmentY(.5f);
 		wikiButton.setToolTipText("Open Timekeeping Wiki in GitHub");

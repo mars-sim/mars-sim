@@ -14,6 +14,7 @@ import static com.mars_sim.core.map.OpenCL.getProgram;
 import static com.mars_sim.core.map.OpenCL.getQueue;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -43,15 +44,15 @@ import com.mars_sim.core.map.common.FileLocator;
 	
  	private static final double TWO_PI = Math.PI * 2;
  	
+ 	private static final double HALF_PI = Math.PI / 2D;
+ 	
 	private static boolean HARDWARE_ACCELERATION = true;
-
+	// The max rho
  	public static double MAX_RHO;
-
+ 	// The min rho
  	public static double MIN_RHO;
-
 	// The default rho at the start of the sim
  	public static double RHO_DEFAULT;
- 	
  	// The default magnification at the start of the sim
   	public static double MAG_DEFAULT;
 
@@ -63,7 +64,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	/* height pixels divided by pi (equals to pixelHeight / Math.PI). */
 	private double rho;
 	/* The base map pixels double array. */
- 	private int[][] baseMapPixels = null;
+ 	private int[][] baseMapPixels = new int[0][0];
+ 	
  	/* The meta data of the map. */
 	private MapMetaData meta;
  	/* The OpenCL program instance. */
@@ -301,7 +303,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		}
 	 		
 	 		else if (hasAlphaChannel) {
- 			
+	 			// Note: viking geologic is the only one that has alpha channel
+	 			
 	 			final int pixelLength = 4;
 	 			
 	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
@@ -402,14 +405,17 @@ import com.mars_sim.core.map.common.FileLocator;
  				
  		if (meta.isColourful()) {
  			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
-				BufferedImage.TYPE_INT_ARGB);
+				BufferedImage. TYPE_INT_RGB); // TYPE_4BYTE_ABGR
  		}
  		else {
  			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
  				BufferedImage.TYPE_BYTE_GRAY); // TYPE_USHORT_GRAY
  		} 
 
-
+// 		Graphics2D g2d = bImage.createGraphics();
+// 		g2d.setColor(Color.BLACK);
+// 		g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
+ 		
  		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
 // 		logger.config("transparency: " + result.getTransparency());
@@ -431,7 +437,7 @@ import com.mars_sim.core.map.common.FileLocator;
 
 
 	 	// Create new map image.
-	 	bImage.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
+	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxHeight);
  		
  		// If alpha value is 255, it is fully opaque.
  		//  A value of 1 would mean it is (almost) fully transparent.
@@ -440,6 +446,20 @@ import com.mars_sim.core.map.common.FileLocator;
  		return bImage;
  	}
 
+    public void setRGB(BufferedImage bImage, int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
+		int yoff  = offset;
+		int off;
+		Object pixel = null;
+			
+		for (int y = startY; y < startY + h; y++, yoff += scansize) {
+			off = yoff;
+			for (int x = startX; x < startX + w; x++) {
+			    pixel = bImage.getColorModel().getDataElements(rgbArray[off++], pixel);
+			    bImage.getRaster().setDataElements(x, y, pixel);
+			}
+		}
+	}
+    
  	private int toRGB(int grayValue) {
 // 	    int part = Math.round(value * 255);
  	    return grayValue * 0x10101;
@@ -461,8 +481,7 @@ import com.mars_sim.core.map.common.FileLocator;
  	    }
  	}
  	
-
- 	/**
+	/**
  	 * Constructs a map array for display with CPU.
  	 * 
  	 * @param centerPhi
@@ -485,7 +504,124 @@ import com.mars_sim.core.map.common.FileLocator;
 			 }
 		 }
 	 }
+	 
+ 	/**
+ 	 * Constructs a map array for display with CPU.
+ 	 * 
+ 	 * @param centerPhi
+ 	 * @param centerTheta
+ 	 * @param mapBoxWidth
+ 	 * @param mapBoxHeight
+ 	 * @param mapArray
+ 	 * @param scale
+ 	 */
+	 private void cpu1(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
+		 int halfWidth = mapBoxWidth / 2;
+//		 int halfHeight = mapBoxHeight / 2;
+
+		 // The map data is PI offset from the center theta.
+		 double correctedTheta = centerTheta - Math.PI;
+		 while (correctedTheta < 0D)
+			 correctedTheta += TWO_PI;
+		 while (correctedTheta > TWO_PI)
+			 correctedTheta -= TWO_PI;
+		
+		 // Determine phi iteration angle.
+		 double phiIterationPadding = 1.26D; // Derived from testing.
+		 double phiIterationAngle = Math.PI / (mapBoxHeight * phiIterationPadding);
+
+		 // Determine phi range.
+		 double phiPadding = 1.46D; // Derived from testing.
+		 double phiRange = Math.PI * phiPadding * pixelHeight / mapBoxHeight;
+
+		 // Determine starting and ending phi values.
+		 double startPhi = centerPhi - (phiRange / 2D);
+		 if (startPhi < 0D)
+			 startPhi = 0D;
+		 double endPhi = centerPhi + (phiRange / 2D);
+		 if (endPhi > Math.PI)
+			 endPhi = Math.PI;
+
+		 double ratio = TWO_PI * pixelWidth / mapBoxWidth;
+		 // Note : Polar cap phi values must display 2 PI theta range. 
+		 // (derived from testing)
+		 double polarCapRange = Math.PI / 6.54D; 
+		 // Determine theta iteration angle.
+		 double thetaIterationPadding = 1.46D; // Derived from testing.
+		 // Theta padding, derived from testing.
+		 double minThetaPadding = 1.02D; 
+		 // Determine theta range.
+		 double minThetaDisplay = ratio * minThetaPadding;
+			
+		 for (double x = startPhi; x <= endPhi; x += phiIterationAngle) {
+			 
+			 double thetaIterationAngle = TWO_PI / (((double) mapBoxWidth * Math.sin(x) * thetaIterationPadding) + 1D);
+
+			 double thetaRange = ((1D - Math.sin(x)) * TWO_PI) + minThetaDisplay;
+			
+			 if ((x < polarCapRange) || (x > (Math.PI - polarCapRange)))
+				thetaRange = TWO_PI;
+			 if (thetaRange > TWO_PI)
+				thetaRange = TWO_PI;
+
+			 // Determine the theta starting and ending values.
+			 double startTheta = centerTheta - (thetaRange / 2D);
+			 double endTheta = centerTheta + (thetaRange / 2D);
+			
+			 for (double y = startTheta; y <= endTheta; y += thetaIterationAngle) {
+			 
+				 // Correct y value to make sure it is within bounds. (0 to 2PI)
+				 double yCorrected = y;
+				 while (yCorrected < 0)
+					 yCorrected += TWO_PI;
+				 while (yCorrected > TWO_PI)
+					 yCorrected -= TWO_PI;
+				 
+				 Point loc = findRectPosition(centerPhi, centerTheta, x, yCorrected, getRho(), halfWidth, halfWidth);
+				  
+				 // Determine the display x and y coordinates for the pixel in the image.
+				 int xx = pixelWidth - (int)loc.getX();
+				 int yy = pixelHeight - (int)loc.getY();
+				
+				 // Check that the x and y coordinates are within the display area.
+				 boolean leftBounds = xx >= 0;
+				 boolean rightBounds = xx < pixelWidth;
+				 boolean topBounds = yy >= 0;
+				 boolean bottomBounds = yy < pixelHeight;
+				 
+				 if (leftBounds && rightBounds && topBounds && bottomBounds) {
+					// Determine array index for the display location.
+					int index1 = (pixelWidth - xx) + ((pixelHeight - yy) * pixelWidth);			
+					// Put color in array at index.
+					if ((index1 >= 0) && (index1 < mapArray.length))
+						mapArray[index1] = getRGBColorInt(x, yCorrected);
+				 }
+			 }
+		 }
+	 }
 		 
+	/**
+	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
+	 * and y display coordinates for spherical location.
+	 *
+	 * @param newPhi   the new phi coordinate
+	 * @param newTheta the new theta coordinate
+	 * @param rho      diameter of planet (in km)
+	 * @param half_map half the map's width (in pixels)
+	 * @param low_edge lower edge of map (in pixels)
+	 * @return pixel offset value for map
+	 */
+	public Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
+			int half_map, int low_edge) {
+	
+		final double col = newTheta + (- HALF_PI - oldTheta);
+		final double xx = rho * Math.sin(newPhi);
+		int x = ((int) Math.round(xx * Math.cos(col)) + half_map) - low_edge;
+		int y = ((int) Math.round(((xx * (0D - Math.cos(oldPhi))) * Math.sin(col))
+				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + half_map) - low_edge;
+		return new Point(x, y);
+	}
+		
 	 /**
 	  * Constructs a map array for display with GPU via JOCL.
 	  * 
@@ -583,6 +719,7 @@ import com.mars_sim.core.map.common.FileLocator;
 		 return new Point2D.Double(phiNew, thetaNew);
 	 }
 	 
+	 
  	/**
  	 * Gets the RGB map color as an integer at a given location.
  	 * 
@@ -608,11 +745,11 @@ import com.mars_sim.core.map.common.FileLocator;
 
  		int row = (int) Math.round(phi * ((double) baseMapPixels.length / Math.PI));
  		if (row > baseMapPixels.length - 1)
- 			row = baseMapPixels.length - 1;
-
+ 	 		row--;
+ 			
  		int column = (int) Math.round(theta * ((double) baseMapPixels[0].length / TWO_PI));
  		if (column > baseMapPixels[0].length - 1)
- 			column = baseMapPixels[0].length - 1;
+ 			column--;
  		
 // 		int pixel = baseMapPixels[row][column];
 // 		int pixelWithAlpha = (pixel >> 24) & 0xFF; 

@@ -14,7 +14,6 @@ import java.util.Collection;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -126,11 +125,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
         content.add(topPanel, BorderLayout.CENTER);
  
 		JPanel wikiPanel = new JPanel(new FlowLayout());
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
+		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiPanel.add(wikiButton);
-//		wikiButton.setAlignmentX(.5f);
-//		wikiButton.setAlignmentY(.5f);
 		wikiButton.setToolTipText("Open Airlock Wiki in GitHub");
 		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 		content.add(wikiPanel, BorderLayout.NORTH);
