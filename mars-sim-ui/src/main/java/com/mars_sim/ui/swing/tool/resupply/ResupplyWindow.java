@@ -57,8 +57,9 @@ public class ResupplyWindow extends ToolWindow
 	private static final SimLogger logger = SimLogger.getLogger(ResupplyWindow.class.getName());
 
 	/** Tool name. */
-	public static final String NAME = "Resupply Tool";
+	public static final String NAME = "resupply";
 	public static final String ICON = "resupply";
+    public static final String TITLE = "Resupply Tool";
 
 	// Data members
 
@@ -78,7 +79,7 @@ public class ResupplyWindow extends ToolWindow
 	 */
 	public ResupplyWindow(MainDesktopPane desktop)  {
 		// Use the ToolWindow constructor.
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());

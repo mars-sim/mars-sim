@@ -30,8 +30,9 @@ extends ToolWindow {
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("ScienceWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "science";
 	public static final String ICON = "science";
+    public static final String TITLE = Msg.getString("SettlementWindow.title");
 
 	// Data members
 	private AbstractStudyListPanel ongoingStudyListPane;
@@ -47,7 +48,7 @@ extends ToolWindow {
 	public ScienceWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		selectedStudy = null;
 

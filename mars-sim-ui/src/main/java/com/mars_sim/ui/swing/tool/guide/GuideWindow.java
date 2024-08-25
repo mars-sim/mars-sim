@@ -42,7 +42,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener {
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "guide";
 	public static final String HELP_ICON = "action/help";
 	public static final String HOME_ICON = "action/home";
 	
@@ -73,7 +73,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	 *            the desktop pane
 	 */
 	public GuideWindow(MainDesktopPane desktop) {
-		super(NAME, desktop);
+		super(NAME, Msg.getString("GuideWindow.title"), desktop);
 		
        	init();            
 	}
@@ -124,7 +124,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
 		JScrollPane scrollPane = new JScrollPane(htmlPane);
-		viewPort = (JViewport) scrollPane.getViewport();
+		viewPort = scrollPane.getViewport();
 		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		mainPane.add(scrollPane,  BorderLayout.CENTER);
 		

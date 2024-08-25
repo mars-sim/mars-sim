@@ -87,8 +87,9 @@ public class MonitorWindow extends ToolWindow
 	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 640;
 
-	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "monitor";
 	public static final String ICON = "monitor";
+    public static final String TITLE = Msg.getString("MonitorWindow.title");
 
 	// Added an custom icon for each tab
 	private static final String COLONY_ICON = "settlement";
@@ -148,7 +149,7 @@ public class MonitorWindow extends ToolWindow
 	 */
 	public MonitorWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		unitManager = desktop.getSimulation().getUnitManager();
 		
@@ -545,7 +546,7 @@ public class MonitorWindow extends ToolWindow
 
 		String title = tabTableModel.getName();
 		
-		super.setTitle(NAME + " - " + title);
+		super.setTitle(TITLE + " - " + title);
 		
 		// Disable all buttons
 		boolean enableMap = selectedTab.isNavigatable();
