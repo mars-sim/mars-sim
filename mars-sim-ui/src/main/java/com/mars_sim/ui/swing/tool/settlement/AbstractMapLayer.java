@@ -235,9 +235,11 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             s--;
         }
 
+        // Shrink the Hallway label further by removing the whitespace
         if (words[0].contains(H)) {
         	words[0] = words[0].replace(" ", "");
         }
+        // Shrink the Tunnel label further by removing the whitespace
         else if (words[0].contains(T)) {
         	words[0] = words[0].replace(" ", "");
         }	

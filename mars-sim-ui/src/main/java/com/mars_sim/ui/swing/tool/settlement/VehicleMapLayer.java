@@ -33,7 +33,11 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 	// Static members
 	private static final Color RECT_COLOR = new Color(208, 224, 242); // pale grey color
+
+    private static final Color VEHICLE_SELECTED_COLOR = Color.WHITE;
+    
 	private static final ColorChoice VEHICLE_COLOR = new ColorChoice(Color.YELLOW.darker(), Color.BLACK);
+	
 	private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
 
 	// Data members
@@ -75,12 +79,15 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 */
 	private void drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
 
+    	// Check if it's drawing the mouse-picked building 
+        Color selectedColor = (vehicle.equals(mapPanel.getSelectedVehicle()) ? VEHICLE_SELECTED_COLOR : null);
+        
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if (svg != null) {
 			
 			// Draw base SVG image for vehicle.
-			drawStructure(vehicle, svg, null, null, viewpoint);
+			drawStructure(vehicle, svg, svg, selectedColor, viewpoint);
 
 			// Draw overlay if the vehicle is being maintained or repaired.
 			if (isVehicleRepairOrMaintenance(vehicle)) {

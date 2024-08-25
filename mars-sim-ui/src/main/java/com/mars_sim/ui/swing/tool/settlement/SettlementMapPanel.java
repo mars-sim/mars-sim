@@ -93,9 +93,11 @@ public class SettlementMapPanel extends JPanel {
 	private int yLast;
 
 	private MainDesktopPane desktop;
+	
 	private SettlementWindow settlementWindow;
 	
 	private Settlement settlement;
+	
 	private PopUpUnitMenu menu;
 	
 	private SettlementTransparentPanel settlementTransparentPanel;
@@ -103,12 +105,16 @@ public class SettlementMapPanel extends JPanel {
 	private DayNightMapLayer dayNightMapLayer;
 
 	private Set<FunctionType> showSpotLabels = new HashSet<>();
+	
 	private List<SettlementMapLayer> mapLayers;
+	
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
 	private Map<Settlement, Building> selectedBuilding;
-
+	private Map<Settlement, Vehicle> selectedVehicle;
+	
 	private static Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
+	
 	private Set<DisplayOption> displayOptions = new HashSet<>();
 
 	/**
@@ -163,6 +169,7 @@ public class SettlementMapPanel extends JPanel {
 				showSpotLabels.add(ft);
 			}
 		}
+		selectedVehicle = new HashMap<>();
 		selectedBuilding = new HashMap<>();
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
@@ -571,9 +578,8 @@ public class SettlementMapPanel extends JPanel {
 	 * @param settlementPosition Position to search
 	 * @return selectedBuilding
 	 */
-	private Building selectBuildingAt(LocalPosition settlementPosition) {
-				
-		for(Building building : settlement.getBuildingManager().getBuildingSet()) {
+	private Building selectBuildingAt(LocalPosition settlementPosition) {			
+		for (Building building : settlement.getBuildingManager().getBuildingSet()) {
 			if (!building.getInTransport() && isWithin(settlementPosition, building)) {
 				selectBuilding(building);
 				return building;
@@ -589,7 +595,7 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selected construction site
 	 */
 	private ConstructionSite selectConstructionSiteAt(LocalPosition settlementPosition) {
-		for(ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
+		for (ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
 			if (!ConstructionMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))
 				&& isWithin(settlementPosition, s)) {
 					return s;
@@ -606,8 +612,7 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selectedVehicle
 	 */
 	private Vehicle selectVehicleAt(LocalPosition settlementPosition) {
-
-		for(Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
+		for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
 			double width = vehicle.getWidth(); // width is on y-axis ?
 			double length = vehicle.getLength(); // length is on x-axis ?
 			double newRange;
@@ -619,12 +624,43 @@ public class SettlementMapPanel extends JPanel {
 				newRange = length / 2.0;
 			
 			if (vehicle.getPosition().getDistanceTo(settlementPosition) <= newRange) {
+				selectVehicle(vehicle);
 				return vehicle;
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * Selects a vehicle on the map.
+	 *
+	 * @param person the selected vehicle.
+	 */
+	public void selectVehicle(Vehicle vehicle) {
+		if ((settlement != null) && (vehicle != null)) {
+			Vehicle currentlySelected = selectedVehicle.get(settlement);
+			if (vehicle.equals(currentlySelected)) {
+				selectedVehicle.put(settlement, null);
+			} else {
+				selectedVehicle.put(settlement, vehicle);
+			}
+		}
+	}
+
+	
+	/**
+	 * Gets the selected vehicle for the current settlement.
+	 *
+	 * @return the selected vehicle.
+	 */
+	public Vehicle getSelectedVehicle() {
+		Vehicle result = null;
+		if (settlement != null) {
+			result = selectedVehicle.get(settlement);
+		}
+		return result;
+	}
+	
 	/**
 	 * Selects a person on the map.
 	 *
