@@ -11,8 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -62,8 +60,9 @@ public class SearchWindow
 extends ToolWindow {
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("SearchWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "search";
 	public static final String ICON = "action/find";
+    public static final String TITLE = Msg.getString("SearchWindow.title");
 
 	/** True if unitList selection events should be ignored. */
 	private boolean lockUnitList;
@@ -100,7 +99,7 @@ extends ToolWindow {
 	public SearchWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 		unitManager = desktop.getSimulation().getUnitManager();
 	
 		// Initialize locks
@@ -132,11 +131,7 @@ extends ToolWindow {
 		searchForSelect = new JComboBox<>(categories);
 		searchForSelect.setRenderer(new UnitTypeRenderer());
 		searchForSelect.setSelectedIndex(0);
-		searchForSelect.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent event) {
-				changeCategory((UnitType) searchForSelect.getSelectedItem());
-			}
-		});
+		searchForSelect.addItemListener(event -> changeCategory((UnitType) searchForSelect.getSelectedItem()));
 		searchForPane.add(searchForSelect);
 
 		// Create select unit panel
@@ -192,7 +187,7 @@ extends ToolWindow {
 				if (event.getClickCount() == 2) search();
 				else if (!lockUnitList) {
 					// Change search text to selected name.
-					String selectedUnitName = ((Unit) unitList.getSelectedValue()).getName();
+					String selectedUnitName = unitList.getSelectedValue().getName();
 					lockSearchText = true;
 					if (!selectTextField.getText().equals(selectedUnitName))
 						selectTextField.setText(selectedUnitName);

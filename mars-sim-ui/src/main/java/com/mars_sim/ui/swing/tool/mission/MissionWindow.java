@@ -21,8 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -54,8 +52,10 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 	/** Tool name. */
-	public static final String NAME = "Mission Tool";
+	public static final String NAME = "mission";
 	public static final String ICON = "mission";
+	public static final String TITLE = "Mission Tool";
+
 	
 	private static final int PADDING = 20;
 	static final int LEFT_PANEL_WIDTH = 220;
@@ -94,7 +94,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	public MissionWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		this.missionMgr = desktop.getSimulation().getMissionManager();
 		this.missionMgr.addListener(new MissionManagerListener() {
@@ -111,9 +111,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 			
 		});
 
-//		setSize(new Dimension(WIDTH, HEIGHT));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-//		setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		
 		// Create content panel.
 		JPanel mPane = new JPanel(new BorderLayout());
@@ -130,27 +128,24 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		missionTree = new JTree(treeModel);
 		missionTree.setExpandsSelectedPaths(true);    
 		missionTree.setCellRenderer(new MissionTreeRenderer());          
-		missionTree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
-                        .getPath().getLastPathComponent();
-				Object selection = node.getUserObject();
+		missionTree.addTreeSelectionListener(e -> {
+		    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
+		            .getPath().getLastPathComponent();
+			Object selection = node.getUserObject();
 
-				if (selection instanceof Mission) {
-					Mission m = (Mission) selection;
-					selectMission(m);
-				}
-				else {
-					selectMission(null);
-				}
-            }
-        });
+			if (selection instanceof Mission) {
+				Mission m = (Mission) selection;
+				selectMission(m);
+			}
+			else {
+				selectMission(null);
+			}
+		});
 
 		JScrollPane scroller = new JScrollPane(missionTree);
 		
 		scroller.setSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
 		scroller.setMinimumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
-//		scroller.setMaximumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
 		
 		treePanel.add(scroller, BorderLayout.CENTER);
 
@@ -166,15 +161,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		mainPanel = new MainDetailPanel(desktop, this);
 		tabPane.add("Main", mainPanel);
 
-		// Create the site detail panel.
-//		SiteTabPanel sitetabPanel = new SiteTabPanel(desktop, this);
-//		tabPane.add("Site", sitetabPanel);
-		
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(this);
-//		navpointPane.setSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
-//		navpointPane.setPreferredSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
-//		navpointPane.setMaximumSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 		
 		tabPane.add("Navigation", navpointPane);
 
@@ -246,7 +234,6 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		DefaultMutableTreeNode sNode = settlementNodes.get(s);
 		if (sNode == null) {
 			sNode = new DefaultMutableTreeNode(s.getName(), true);
-			//missionRoot.add(parent);
 			treeModel.insertNodeInto(sNode, missionRoot, missionRoot.getChildCount());
 			settlementNodes.put(s, sNode);
 		}
@@ -378,7 +365,6 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 	private static class MissionTreeRenderer extends DefaultTreeCellRenderer {
 		private static final Icon COMPLETED = ImageLoader.getIconByName("mission/completed");
-		//private static final Icon ABORTED = ImageLoader.getIconByName("mission/aborted");
 		private static final Icon IN_PROGRESS = ImageLoader.getIconByName("mission/inprogress");
 		private static final Icon REVIEW = ImageLoader.getIconByName("mission/review");
 	  

@@ -46,8 +46,9 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final int VERTICAL = 800;
 	private static final int HEIGHT_STATUS_BAR = 16;
 	
-	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "settlement_map";
 	public static final String ICON = "settlement_map";
+    public static final String TITLE = Msg.getString("SettlementWindow.title");
 
 	private static final String POPULATION = " Pop: ";
 	private static final String WHITESPACES_2 = " ";
@@ -76,7 +77,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	 */
 	public SettlementWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 

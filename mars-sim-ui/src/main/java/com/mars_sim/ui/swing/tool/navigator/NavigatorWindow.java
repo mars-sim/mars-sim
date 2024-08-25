@@ -145,8 +145,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String LAT_PROP = "latitude";
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "navigator";
 	public static final String ICON = "mars";
+	public static final String TITLE = Msg.getString("NavigatorWindow.title");
 	public static final String PIN_ICON = "pin";
 	public static final String MAP_ICON = "settlement_map";
 
@@ -159,6 +160,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String KM = " km";
 
 	private static final String RESOLUTION = "2";
+
 
 	
 	// Data member
@@ -230,7 +232,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public NavigatorWindow(MainDesktopPane desktop) {
 		// use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		Simulation sim = desktop.getSimulation();
 		this.landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();

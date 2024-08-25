@@ -92,7 +92,7 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 public class OrbitViewer extends ToolWindow
 implements ActionListener {
 
-	public static final String NAME = "Orbit Viewer";
+	public static final String NAME = "astro";
 	public static final String ICON = "astro";
 	
 	private final int FRAME_WIDTH = 600;
@@ -232,9 +232,9 @@ implements ActionListener {
 	 */
 	public OrbitViewer(MainDesktopPane desktop) { 
 		// Call ModalInternalFrame constructor
-        super(NAME, desktop);
+        super(NAME, "Orbit Viewer", desktop);
 
-		String array[][] = getParameterInfo();
+		String[][] array = getParameterInfo();
 		rowOfMatrix = array.length;
 
 		createGUI();

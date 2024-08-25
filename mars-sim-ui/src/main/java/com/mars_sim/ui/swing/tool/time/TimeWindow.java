@@ -51,41 +51,42 @@ public class TimeWindow extends ToolWindow {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "time";
 	public static final String ICON = "time";
-	private static final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
+	public static final String TITLE = Msg.getString("TimeWindow.title");
+
+	public static final int WIDTH = 300;
+	public static final int HEIGHT = 590;
 	
-	public final int WIDTH = 300;
-	public final int HEIGHT = 590;
-	
+	/** Tool name. */
 	public final String DESIRED = "x (Desired : ";
 	public final String X_CLOSE_P = "x)";
 	public final String AVERAGE = " (Average : ";
 	public final String CLOSE_P = ")";
 
+	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
 	
 //    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** the execution time label string */
-	private final String EXEC = "Execution";
+	private static final String EXEC = "Execution";
 	/** the sleep time label string */
-	private final String SLEEP_TIME = "Sleep";
+	private static final String SLEEP_TIME = "Sleep";
 	/** the time pulse width label string */
-	private final String NEXT_PULSE_TIME = "Next Pulse Width";
+	private static final String NEXT_PULSE_TIME = "Next Pulse Width";
 	/** the pulse deviation label string */
-	private final String PULSE_DEVIATION = "Pulse Deviation";
+	private static final String PULSE_DEVIATION = "Pulse Deviation";
 	/** the optimal pulse label string */
-	private final String OPTIMAL = " (Optimal : ";
+	private static final String OPTIMAL = " (Optimal : ";
 	/** the reference pulse label string */
-	private final String REFERENCE = " (Ref : ";
+	private static final String REFERENCE = " (Ref : ";
 	
 	/** the execution time unit */
-//	private static final String MILLISOLS = " millisols";
-	/** the execution time unit */
-	private final String MS = " ms";
+	private static final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
-	private final String UMT = " (UMT) ";
+	private static final String UMT = " (UMT) ";
+
 
 	// Data members
 	private String northernSeasonTip ="";
@@ -143,7 +144,7 @@ public class TimeWindow extends ToolWindow {
 	 */
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 	
 		// Set window resizable to false.
 		setResizable(true);

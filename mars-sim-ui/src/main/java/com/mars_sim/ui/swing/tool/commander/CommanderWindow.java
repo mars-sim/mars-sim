@@ -92,8 +92,9 @@ public class CommanderWindow extends ToolWindow {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CommanderWindow.class.getName());
 
-	public static final String NAME = "Command Dashboard";
+	public static final String NAME = "dashboard";
 	public static final String ICON = "dashboard";
+    public static final String TITLE = "Command Dashboard";
 
 	private static final String DIPLOMATIC_TAB = "Diplomatic";
 
@@ -111,6 +112,7 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT = "Accept Trading initiated by other settlements";
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
+
 
 	private JTabbedPane tabPane;
 	/** Person Combo box */	
@@ -229,7 +231,7 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	public CommanderWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		this.masterClock = desktop.getSimulation().getMasterClock();
 		unitManager = desktop.getSimulation().getUnitManager();

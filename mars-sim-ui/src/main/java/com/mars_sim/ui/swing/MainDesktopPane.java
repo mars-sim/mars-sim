@@ -249,7 +249,11 @@ public class MainDesktopPane extends JDesktopPane
 		return comp;
 	}
 
-	private void centerJIF(Component comp) {
+	/**
+	 * Move a window to the center of the desktop
+	 * @param comp
+	 */
+	void centerJIF(Component comp) {
 		Dimension desktopSize = getSize();
 		Dimension jInternalFrameSize = comp.getSize();
 		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
@@ -262,7 +266,6 @@ public class MainDesktopPane extends JDesktopPane
 	public void unitManagerUpdate(UnitManagerEvent event) {
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
-//			SwingUtilities.invokeLater(() -> updateToolWindow());
 			updateToolWindow();
 		}
 	}
@@ -314,6 +317,20 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
+	 * Get the list of open Tool windows
+	 */
+	Collection<ToolWindow> getToolWindows() {
+		return toolWindows;
+	}
+
+	/**
+	 * Get the list of open UnitWindows
+	 */
+	Collection<UnitWindow> getUnitWindows() {
+		return unitWindows;
+	}
+
+	/**
 	 * Returns a tool window for a given tool name.
 	 *
 	 * @param toolName      the name of the tool window
@@ -327,30 +344,22 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		if (createWindow) {
-			ToolWindow w = null;
-			if (toolName.equals(CommanderWindow.NAME)) {
-				w = new CommanderWindow(this);
-			} else if (toolName.equals(NavigatorWindow.NAME)) {
-				w = new NavigatorWindow(this);
-			} else if (toolName.equals(SearchWindow.NAME)) {
-				w = new SearchWindow(this);
-			} else if (toolName.equals(TimeWindow.NAME)) {
-				w = new TimeWindow(this);
-			} else if (toolName.equals(SettlementWindow.NAME)) {
-				w = new SettlementWindow(this);
-			} else if (toolName.equals(ScienceWindow.NAME)) {
-				w = new ScienceWindow(this);
-			} else if (toolName.equals(GuideWindow.NAME)) {
-				w = new GuideWindow(this);
-			} else if (toolName.equals(MonitorWindow.NAME)) {
-				w = new MonitorWindow(this);
-			} else if (toolName.equals(MissionWindow.NAME)) {
-				w = new MissionWindow(this);
-			} else if (toolName.equals(ResupplyWindow.NAME)) {
-				w = new ResupplyWindow(this);
-			} else if (toolName.equals(OrbitViewer.NAME)) {
-				w = new OrbitViewer(this);
-			} else {
+			ToolWindow w = switch(toolName) {
+				case CommanderWindow.NAME -> new CommanderWindow(this);
+				case NavigatorWindow.NAME -> new NavigatorWindow(this);
+				case SearchWindow.NAME -> new SearchWindow(this);
+				case TimeWindow.NAME -> new TimeWindow(this);
+				case SettlementWindow.NAME -> new SettlementWindow(this);
+				case ScienceWindow.NAME -> new ScienceWindow(this);
+				case GuideWindow.NAME -> new GuideWindow(this);
+				case MonitorWindow.NAME -> new MonitorWindow(this);
+				case MissionWindow.NAME -> new MissionWindow(this);
+				case ResupplyWindow.NAME -> new ResupplyWindow(this);
+				case OrbitViewer.NAME -> new OrbitViewer(this);
+				default -> null;
+			};
+			if (w == null) {
+				logger.warning("No tool called " + toolName);
 				return null;
 			}
 
@@ -546,6 +555,13 @@ public class MainDesktopPane extends JDesktopPane
 			if (initProps != null) {
 				tempWindow.setUIProps(initProps.props());
 				newPosition = initProps.position();
+				
+				// Make sure store position is visible
+				Dimension desktopSize = getSize();
+				if ((newPosition.getX() >= desktopSize.getWidth())
+						|| (newPosition.getY() >= desktopSize.getHeight())) {
+					newPosition = null;
+				}
 			}
 			if (newPosition == null) {
 				newPosition = getRandomLocation(tempWindow);
@@ -620,11 +636,11 @@ public class MainDesktopPane extends JDesktopPane
 
 	private Point getCenterLocation(JInternalFrame tempWindow) {
 
-		Dimension desktop_size = getSize();
-		Dimension window_size = tempWindow.getSize();
+		Dimension desktopSize = getSize();
+		Dimension windowSize = tempWindow.getSize();
 
-		int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
-		int rY = (int) Math.round((desktop_size.height - window_size.height - 100) / 2D);
+		int rX = (int) Math.round((desktopSize.width - windowSize.width) / 2D);
+		int rY = (int) Math.round((desktopSize.height - windowSize.height - 100) / 2D);
 
 		// Added rX checking
 		if (rX < 0) {
@@ -647,11 +663,11 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	private Point getRandomLocation(JInternalFrame tempWindow) {
 
-		Dimension desktop_size = getSize();
-		Dimension window_size = tempWindow.getSize();
+		Dimension desktopSize = getSize();
+		Dimension windowSize = tempWindow.getSize();
 
 		// Populate windows in grid=like starting position
-		int w = desktop_size.width - window_size.width;
+		int w = desktopSize.width - windowSize.width;
 		int rX = RandomUtil.getRandomInt(w / 20) * 20;
 
 		int rY = RandomUtil.getRandomInt(5) * 20;
@@ -667,12 +683,12 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return a specific point on the desktop
 	 */
 	private Point computeLocation(JInternalFrame f, int positionX, int positionY) {
-		Dimension desktop_size = getSize();
-		Dimension window_size = f.getSize();
+		Dimension desktopSize = getSize();
+		Dimension windowSize = f.getSize();
 
 		// Populate windows in grid=like starting position
-		int w = desktop_size.width - window_size.width;
-		int h = desktop_size.height - window_size.height;
+		int w = desktopSize.width - windowSize.width;
+		int h = desktopSize.height - windowSize.height;
 		int rX = 0;
 		int rY = 0;
 
@@ -712,9 +728,9 @@ public class MainDesktopPane extends JDesktopPane
 		announcementWindow.setSize(new Dimension(200, 100));
 		announcementWindow.pack();
 		add(announcementWindow, 0);
-		int Xloc = (int) ((getWidth() - announcementWindow.getWidth()) * .5D);
-		int Yloc = (int) ((getHeight() - announcementWindow.getHeight()) * .15D);
-		announcementWindow.setLocation(Xloc, Yloc);
+		int xloc = (int) ((getWidth() - announcementWindow.getWidth()) * .5D);
+		int yloc = (int) ((getHeight() - announcementWindow.getHeight()) * .15D);
+		announcementWindow.setLocation(xloc, yloc);
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
 		announcementWindow.pack();
@@ -796,6 +812,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		// Nothing to do
 	}
 
 	/**
@@ -824,20 +841,17 @@ public class MainDesktopPane extends JDesktopPane
 		if (unitWindows != null) {
 			for (UnitWindow u : unitWindows) {
 				u.destroy();
-				u = null;
 			}
 			unitWindows = null;
 		}
 		if (toolWindows != null) {
 			for (ToolWindow w : toolWindows) {
 				w.destroy();
-				w = null;
 			}
 			toolWindows = null;
 		}
 		backgroundImageIcon = null;
 		backgroundLabel = null;
-		soundPlayer = null;
 		announcementWindow = null;
 		mainWindow = null;
 	}
