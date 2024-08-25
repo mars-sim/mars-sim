@@ -266,7 +266,6 @@ public class MainDesktopPane extends JDesktopPane
 	public void unitManagerUpdate(UnitManagerEvent event) {
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
-//			SwingUtilities.invokeLater(() -> updateToolWindow());
 			updateToolWindow();
 		}
 	}
@@ -556,6 +555,13 @@ public class MainDesktopPane extends JDesktopPane
 			if (initProps != null) {
 				tempWindow.setUIProps(initProps.props());
 				newPosition = initProps.position();
+				
+				// Make sure store position is visible
+				Dimension desktopSize = getSize();
+				if ((newPosition.getX() >= desktopSize.getWidth())
+						|| (newPosition.getY() >= desktopSize.getHeight())) {
+					newPosition = null;
+				}
 			}
 			if (newPosition == null) {
 				newPosition = getRandomLocation(tempWindow);

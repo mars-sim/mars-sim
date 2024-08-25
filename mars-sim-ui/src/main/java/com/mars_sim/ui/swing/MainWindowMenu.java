@@ -180,9 +180,23 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		JMenuItem center = new JMenuItem("Center");
 		center.addActionListener(e -> {
 			mainWindow.getDesktop().centerJIF(internal);
-			internal.setVisible(true);
+			try {
+				internal.setSelected(true);
+			} catch (PropertyVetoException e1) {
+				// ignore
+			}
 		});
 		top.add(center);
+
+		JMenuItem show = new JMenuItem("Front");
+		show.addActionListener(e -> {
+			try {
+				internal.setSelected(true);
+			} catch (PropertyVetoException e1) {
+				// ignore
+			}
+		});
+		top.add(show);
 
 		JMenuItem close = new JMenuItem("Close");
 		close.addActionListener(e -> {

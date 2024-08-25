@@ -32,7 +32,7 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = "science";
 	public static final String ICON = "science";
-    public static final String TITLE = Msg.getString("SettlementWindow.title");
+    public static final String TITLE = Msg.getString("ScienceWindow.title");
 
 	// Data members
 	private AbstractStudyListPanel ongoingStudyListPane;
