@@ -46,15 +46,13 @@ import com.mars_sim.core.map.common.FileLocator;
  	
  	private static final double HALF_PI = Math.PI / 2D;
  	
-	private static boolean HARDWARE_ACCELERATION = false;
-
+	private static boolean HARDWARE_ACCELERATION = true;
+	// The max rho
  	public static double MAX_RHO;
-
+ 	// The min rho
  	public static double MIN_RHO;
-
 	// The default rho at the start of the sim
  	public static double RHO_DEFAULT;
- 	
  	// The default magnification at the start of the sim
   	public static double MAG_DEFAULT;
 
@@ -67,6 +65,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	private double rho;
 	/* The base map pixels double array. */
  	private int[][] baseMapPixels = new int[0][0];
+ 	
  	/* The meta data of the map. */
 	private MapMetaData meta;
  	/* The OpenCL program instance. */
@@ -109,12 +108,12 @@ import com.mars_sim.core.map.common.FileLocator;
 		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + ". MAG_DEFAULT: " + Math.round(MAG_DEFAULT*10.0)/10.0 + ".");
 		
 		// Exclude mac from use openCL
-//		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-//			HARDWARE_ACCELERATION = false;
-//		}
-//		else {
-//			setKernel();
-//		}
+		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			HARDWARE_ACCELERATION = false;
+		}
+		else {
+			setKernel();
+		}
  	}
  	
  	/**

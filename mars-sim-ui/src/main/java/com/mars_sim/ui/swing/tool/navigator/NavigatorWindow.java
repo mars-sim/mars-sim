@@ -20,6 +20,8 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -162,6 +164,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	// Data member
 	/** The map rho. */
 	private double rho;
+	/** The scale of the zoom slider. */
+	private double scale;
 	
 	private String mapTypeCache;
 	
@@ -657,29 +661,33 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementComboBox.setRenderer(new PromptComboBoxRenderer(CHOOSE_SETTLEMENT));
-		
-		// Set the item listener only after the setup is done
-		settlementComboBox.addItemListener(event -> {
-			if (settlementComboBox.getSelectedIndex() == -1)
-				return;
-			
-			Settlement newSettlement = (Settlement) event.getItem();
-			
-			if (newSettlement != null) {
-				// Change to the selected settlement in SettlementMapPanel
-				if (selectedSettlement != newSettlement) {
-					// Set the selected settlement
-					selectedSettlement = newSettlement;
-				}
-				
-				// Need to update the coordinates
-				updateCoordsMaps(newSettlement.getCoordinates());
-				
-				// Reset it back to the prompt text
-				settlementComboBox.setSelectedIndex(-1);
-			}
-		});
 
+		// Set the item listener only after the setup is done
+		settlementComboBox.addItemListener(new ItemListener() {
+	        @Override
+	        public void itemStateChanged(ItemEvent e) {
+				if (settlementComboBox.getSelectedIndex() == -1)
+					return;
+				
+				
+				Settlement newSettlement = (Settlement) e.getItem();
+				
+				if (newSettlement != null) {
+					// Change to the selected settlement in SettlementMapPanel
+					if (selectedSettlement != newSettlement) {
+						// Set the selected settlement
+						selectedSettlement = newSettlement;
+					}
+					
+					// Need to update the coordinates
+					updateCoordsMaps(newSettlement.getCoordinates());
+					
+					// Reset it back to the prompt text
+					settlementComboBox.setSelectedIndex(-1);
+				}
+	        }
+		});
+		
 		// Listen for new Settlements
 		umListener = event -> {
 			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
@@ -1335,15 +1343,35 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				int newSliderValue = zoomSlider.getValue();
 		
 				double oldRho = getRho();
+				double oldScale = getScale();	
 				
-				double newMag = (5.0/14 * newSliderValue + 1)/6;							
-				double newRho = MapPanel.RHO_DEFAULT * newMag;
+				double newScale = (5.0/14 * newSliderValue + 1)/6;							
+				double newRho = MapPanel.RHO_DEFAULT * newScale;
 				
-				logger.info("newSliderValue: " + Math.round(newSliderValue * 1000.0)/1000.0 
-						+ "  newMag: " + Math.round(newMag* 1000.0)/1000.0
-						+ "  oldRho: " + Math.round(oldRho* 1000.0)/1000.0
-						+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
-						);
+				/**
+				 * e.g. At level 0,
+				 * newSliderValue: 0.0  newScale: 0.167  oldRho: 31.831  newRho: 31.831
+				 * newSliderValue: 0.0  newScale: 0.167  oldRho: 43.199  newRho: 31.831
+				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 225.091  newRho: 190.986
+				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 179.618  newRho: 190.986
+				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 202.354  newRho: 190.986
+				 * newSliderValue: 98.0  newScale: 6.0  oldRho: 1134.547  newRho: 1145.916
+				 * 
+				 * At level 1,
+				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 431.083  newRho: 458.366
+				 * newSliderValue: 34.0  newScale: 2.19  oldRho: 406.982  newRho: 418.35
+				 * 
+				 * At level 2,
+				 * newSliderValue: 35.0  newScale: 2.25  oldRho: 418.35  newRho: 1031.324
+				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 1439.412  newRho: 1358.547
+				 */
+				
+				logger.info("res: " + mapPanel.getMapResolution()
+						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
+						+ "  oldScale: " + Math.round(oldScale* 1000.0)/1000.0
+						+ "  newScale: " + Math.round(newScale* 1000.0)/1000.0
+						+ "  oldRho: " + Math.round(oldRho* 10.0)/10.0
+						+ "  newRho: " + Math.round(newRho* 10.0)/10.0);
 				
 				if (newRho > MapPanel.MAX_RHO) {
 					newRho = MapPanel.MAX_RHO;
@@ -1354,6 +1382,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		 
 				if (newRho != oldRho) {				
 					setRho(newRho);
+				}
+				
+				if (newScale != oldScale) {				
+					scale = newScale;
 				}
 		});
 		
@@ -1381,6 +1413,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
+	/**
+	 * Gets the map scale.
+	 *
+	 * @param scale
+	 */
+	public double getScale() {
+		return scale;
+	}
+	
 	/**
 	 * Gets the map rho.
 	 *

@@ -43,8 +43,8 @@ import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.SimulationListener;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
@@ -434,7 +434,7 @@ public class MainWindow
 	private void createPauseSwitch() {
 		pauseSwitch = new JToggleButton(PAUSE_ICON);
 		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
-		pauseSwitch.addItemListener(i -> pauseSwitch.setIcon(pauseSwitch.isSelected() ? PLAY_ICON : PAUSE_ICON));
+//		pauseSwitch.addItemListener(i -> pauseSwitch.setIcon(pauseSwitch.isSelected() ? PLAY_ICON : PAUSE_ICON));
 		pauseSwitch.setSelected(false);
 
 		pauseSwitch.addActionListener(e -> masterClock.setPaused(pauseSwitch.isSelected(), false));

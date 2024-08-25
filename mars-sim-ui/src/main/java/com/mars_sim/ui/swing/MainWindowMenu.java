@@ -116,12 +116,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
 
-		fileMenu.add(createMenuItem("mainMenu.save", "action/save", SAVE, null,
+		fileMenu.add(createMenuItemAction("mainMenu.save", "action/save", SAVE, null,
 									KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false)));
-		fileMenu.add(createMenuItem("mainMenu.saveAs", "action/saveAs", SAVE_AS, null,
+		fileMenu.add(createMenuItemAction("mainMenu.saveAs", "action/saveAs", SAVE_AS, null,
 									KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false)));
 		fileMenu.add(new JSeparator());
-		fileMenu.add(createMenuItem("mainMenu.exit", "action/exit", EXIT, null,
+		fileMenu.add(createMenuItemAction("mainMenu.exit", "action/exit", EXIT, null,
 									KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false)));
 
 		// Create tools menu
@@ -131,23 +131,23 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		add(toolsMenu);
 
 		// Create tool menu items
-		toolsMenu.add(createCheckMenuItem(NavigatorWindow.NAME, NavigatorWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(NavigatorWindow.NAME, NavigatorWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false)));
-		toolsMenu.add(createCheckMenuItem(SearchWindow.NAME, SearchWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(SearchWindow.NAME, SearchWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false)));
-		toolsMenu.add(createCheckMenuItem(TimeWindow.NAME, TimeWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(TimeWindow.NAME, TimeWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
-		toolsMenu.add(createCheckMenuItem(MonitorWindow.NAME, MonitorWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(MonitorWindow.NAME, MonitorWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));	
-		toolsMenu.add(createCheckMenuItem(MissionWindow.NAME, MissionWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(MissionWindow.NAME, MissionWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false)));	
-		toolsMenu.add(createCheckMenuItem(SettlementWindow.NAME, SettlementWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(SettlementWindow.NAME, SettlementWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
-		toolsMenu.add(createCheckMenuItem(ScienceWindow.NAME, ScienceWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(ScienceWindow.NAME, ScienceWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false)));	
-		toolsMenu.add(createCheckMenuItem(ResupplyWindow.NAME, ResupplyWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(ResupplyWindow.NAME, ResupplyWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false)));	
-		toolsMenu.add(createCheckMenuItem(CommanderWindow.NAME, CommanderWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItemAction(CommanderWindow.NAME, CommanderWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false)));	
 
 		// Create settings menu
@@ -157,15 +157,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		add(settingsMenu);
 
 		// Create Show Unit Bar menu item
-		showUnitBarItem = createCheckMenuItem(Msg.getString("mainMenu.unitbar"), null,
+		showUnitBarItem = createCheckMenuItemAction(Msg.getString("mainMenu.unitbar"), null,
 											  UNIT_TOOLBAR, "mainMenu.tooltip.unitbar"	,
 										      KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_DOWN_MASK, false));
 		settingsMenu.add(showUnitBarItem);
-		showToolBarItem = createCheckMenuItem(Msg.getString("mainMenu.toolbar"), null,
+		showToolBarItem = createCheckMenuItemAction(Msg.getString("mainMenu.toolbar"), null,
 											  TOOL_TOOLBAR, "mainMenu.tooltip.toolbar"	,
 										      KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_DOWN_MASK, false));
 		settingsMenu.add(showToolBarItem);	
-		useExternalBrowser = createCheckMenuItem("Use Desktop Browser", BROWSER_ICON,
+		useExternalBrowser = createCheckMenuItemAction("Use Desktop Browser", BROWSER_ICON,
 					EXTERNAL_BROWSER, "mainMenu.tooltip.toolbar"	, null);
 		settingsMenu.add(useExternalBrowser);	
 		settingsMenu.add(new JSeparator());
@@ -233,13 +233,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			});
 			settingsMenu.add(musicVolumeSlider);
 
-			settingsMenu.add(createMenuItem("mainMenu.musicVolumeUp", VOL_UP_ICON,
+			settingsMenu.add(createMenuItemAction("mainMenu.musicVolumeUp", VOL_UP_ICON,
 							MUSIC_UP, "mainMenu.musicVolumeUp",
 							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_DOWN_MASK, false)));
-			settingsMenu.add(createMenuItem("mainMenu.musicVolumeDown", VOL_DOWN_ICON,
+			settingsMenu.add(createMenuItemAction("mainMenu.musicVolumeDown", VOL_DOWN_ICON,
 							MUSIC_DOWN, "mainMenu.musicVolumeDown",
 							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_DOWN_MASK, false)));
-			musicMuteItem = createCheckMenuItem(Msg.getString("mainMenu.muteMusic"), null,
+			musicMuteItem = createCheckMenuItemAction(Msg.getString("mainMenu.muteMusic"), null,
 												MUSIC_MUTE, "mainMenu.muteMusic",
 												KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
 			settingsMenu.add(musicMuteItem);
@@ -261,13 +261,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			});
 			settingsMenu.add(effectVolumeSlider);
 
-			settingsMenu.add(createMenuItem("mainMenu.effectVolumeUp", VOL_UP_ICON,
+			settingsMenu.add(createMenuItemAction("mainMenu.effectVolumeUp", VOL_UP_ICON,
 											EFFECT_UP, "mainMenu.effectVolumeUp",
 											KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.CTRL_DOWN_MASK, false)));
-			settingsMenu.add(createMenuItem("mainMenu.effectVolumeDown", VOL_DOWN_ICON,
+			settingsMenu.add(createMenuItemAction("mainMenu.effectVolumeDown", VOL_DOWN_ICON,
 											EFFECT_DOWN, "mainMenu.effectVolumeDown",
 											KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.CTRL_DOWN_MASK, false)));
-			effectMuteItem = createCheckMenuItem(Msg.getString("mainMenu.muteEffect"), null,
+			effectMuteItem = createCheckMenuItemAction(Msg.getString("mainMenu.muteEffect"), null,
 												EFFECT_MUTE, "mainMenu.muteEffect",
 												KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK, false));
 			settingsMenu.add(effectMuteItem);
@@ -286,25 +286,65 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		helpMenu.add(createMenuItem("mainMenu.about", GuideWindow.idCardIcon, ABOUT, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(new JSeparator());
-		helpMenu.add(createMenuItem("mainMenu.tutorial", GuideWindow.TUTORIAL_ICON, TUTORIAL, null,
+		helpMenu.add(createMenuItemAction("mainMenu.tutorial", GuideWindow.TUTORIAL_ICON, TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.guideIcon, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false)));
 	}
 
-	private JMenuItem createMenuItem(String nameKey, String iconName, String command, String tooltipKey, KeyStroke keyStroke) {
-		JMenuItem item = new JMenuItem(Msg.getString(nameKey)); //$NON-NLS-1$
+	/**
+	 * Creates a menu item with action.
+	 * 
+	 * @param nameKey
+	 * @param iconName
+	 * @param command
+	 * @param tooltipKey
+	 * @param keyStroke
+	 * @return
+	 */
+	private JMenuItem createMenuItemAction(String nameKey, String iconName, String command, String tooltipKey, KeyStroke keyStroke) {
+		JMenuItem item = createMenuItem(nameKey);
 		actionMenuItem(item, iconName, command, tooltipKey, keyStroke);
 		return item;
 	}
 	
+	/**
+	 * Creates a menu item with action.
+	 * 
+	 * @param nameKey
+	 * @param icon
+	 * @param command
+	 * @param tooltipKey
+	 * @param keyStroke
+	 * @return
+	 */
 	private JMenuItem createMenuItem(String nameKey, Icon icon, String command, String tooltipKey, KeyStroke keyStroke) {
-		JMenuItem item = new JMenuItem(Msg.getString(nameKey)); //$NON-NLS-1$
+		JMenuItem item = createMenuItem(nameKey);
 		actionMenuItem(item, icon, command, tooltipKey, keyStroke);
 		return item;
 	}
 
-	private JCheckBoxMenuItem createCheckMenuItem(String name, String iconName, String command, String tooltipKey,
+	/**
+	 * Creates a menu item.
+	 * 
+	 * @param nameKey
+	 * @return
+	 */
+	private JMenuItem createMenuItem(String nameKey) {
+		return new JMenuItem(Msg.getString(nameKey)); //$NON-NLS-1$
+	}
+	
+	/**
+	 * Creates a check box menu item with action.
+	 * 
+	 * @param name
+	 * @param iconName
+	 * @param command
+	 * @param tooltipKey
+	 * @param keyStroke
+	 * @return
+	 */
+	private JCheckBoxMenuItem createCheckMenuItemAction(String name, String iconName, String command, String tooltipKey,
 										KeyStroke keyStroke) {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(name);
 		actionMenuItem(item, iconName, command, tooltipKey, keyStroke);
@@ -490,7 +530,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 	}
 
-	/** MenuListener method overriding. */
+	/** 
+	 * MenuListener method overriding. 
+	 */
 	@Override
 	public final void menuSelected(MenuEvent event) {
 		MainDesktopPane desktop = mainWindow.getDesktop();

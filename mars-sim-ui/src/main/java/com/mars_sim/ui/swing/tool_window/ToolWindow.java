@@ -114,7 +114,9 @@ public abstract class ToolWindow extends JInternalFrame {
 	}
 	
 	/**
-	 * Update window. This is overridden by subclasses
+	 * Updates window. 
+	 * Note: This is overridden by subclasses.
+	 * 
 	 * @param pulse Clock step advancement
 	 */
 	public void update(ClockPulse pulse) {
