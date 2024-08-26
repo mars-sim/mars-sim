@@ -23,6 +23,7 @@ import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class represents an airlock for a vehicle.
@@ -584,7 +585,7 @@ extends Airlock {
 				addTime(time);
 			}
 
-			if (pulse.isNewMSol()) {
+			if (pulse.isNewIntMillisol() || RandomUtil.getRandomInt(10) == 0) {
 				// Check occupants
 				checkOccupantIDs();
 				// Check the airlock operator

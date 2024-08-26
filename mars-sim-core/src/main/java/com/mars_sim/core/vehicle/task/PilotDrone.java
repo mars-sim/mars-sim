@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PilotDrone.java
- * @date 2022-06-17
+ * @date 2024-07-15
  * @author Manny
  */
 package com.mars_sim.core.vehicle.task;
@@ -17,7 +17,6 @@ import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The PilotDrone class is a task for piloting a drone to a
@@ -54,7 +53,7 @@ public class PilotDrone extends OperateVehicle {
 	/**
 	 * Default Constructor.
 	 * 
-	 * @param pilot            the worker pilotting
+	 * @param pilot            the worker piloting
 	 * @param flyer             the flyer to be driven
 	 * @param destination       location to be driven to
 	 * @param startTripTime     the starting time of the trip
@@ -68,7 +67,7 @@ public class PilotDrone extends OperateVehicle {
 	/**
 	 * Constructs with a given starting phase.
 	 * 
-	 * @param pilot            the worker pilotting
+	 * @param pilot            the worker piloting
 	 * @param vehicle           the vehicle to be driven
 	 * @param destination       location to be driven to
 	 * @param startTripTime     the starting time of the trip
@@ -78,18 +77,21 @@ public class PilotDrone extends OperateVehicle {
 	public PilotDrone(Worker pilot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
-		// Use OperateVehicle constructor
-		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 100D + RandomUtil.getRandomDouble(-20D, 20D));
+		// Note: OperateVehicle constructor should have set the phase to MOBILIZE
+		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 1000);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 
-		if (startingPhase != null)
+		if (getPhase() == null) {
+			logger.log(pilot, Level.INFO, 4_000, "Starting phase is null.");
+		}
+		
+		if (startingPhase != null) {
 			setPhase(startingPhase);
-
-		logger.log(pilot, Level.INFO, 20_000, "Took control of the drone at phase '"
+			logger.log(pilot, Level.INFO, 4_000, "Took control of the drone at phase '"
 					+ startingPhase + "'.");
-
+		}
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class PilotDrone extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when piloting");
+    	    logger.info(worker, "Phase is null. No longer piloting " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.
@@ -117,6 +119,27 @@ public class PilotDrone extends OperateVehicle {
 		}
 	}
 
+	/**
+	 * Moves the vehicle in its direction at its speed for the amount of time given.
+	 * Stop if reached destination.
+	 * 
+	 * @param time the amount of time (ms) to drive.
+	 * @return the amount of time (ms) left over after driving (if any)
+	 */
+	@Override
+	protected double mobilizeVehicle(double time) {
+
+		// If speed is less than or equal to LOW_SPEED, change to avoiding collision phase.
+		if (!getVehicle().isInSettlement() && (getVehicle().getSpeed() >= HIGH_SPEED) 
+				&& !AVOID_COLLISION.equals(getPhase())) {
+			setPhase(AVOID_COLLISION);
+		} 
+		else
+			 return super.mobilizeVehicle(time);
+		
+		return time;
+	}
+	
 	/**
 	 * Perform task in obstacle phase.
 	 * 

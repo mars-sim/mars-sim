@@ -344,10 +344,11 @@
 
 	<part name="EVA Battery" type="EVA" mass="1.2" >
 		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, this 
-		 rechargeable battery module is rated for 150 W at 18V 
+		 rechargeable battery module is rated for 150 W at 18V.  
 		 for providing 8 hrs of electrical power to the EVA suit. 
-		 Total energy capacity is 150 * 8 = 1.2 kWh. Weight: 1.2/1 = 1.2 kg.
-		 66.67 Ah * 18 Volt = 1.2 kWh.
+		 Energy capacity: 150 W * 8 hrs = 1.2 kWh.  
+		 Weight: 1.2 kWh / 1 kWh/kg = 1.2 kg. 
+		 Amperage: 1.2 kWh / 18 Volt = 66.67 Ah.  
 		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
@@ -356,12 +357,13 @@
 	
 	<part name="Battery Module" type="vehicle" mass="15.0">
 		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
-		this 15kWh rechargeable battery provides 'auxiliary' 
-		electrical power to the vehicle, on top of the primary
-		fuel cell stack. It operates at 400V. With 15 kWh capacity,
-		or 37.5 Ah (= 15/.4). Assume 6.43 km/kWh (based on a Tesla Model S
-		battery pack weighing 2240 kg with 100 kWh capacity that can travel 
-		643 km), this battery allows traveling a distance of 96.5 km on a single charge.
+		this 15 kWh rechargeable battery provides 'auxiliary' electrical power to 
+		the vehicle, on top of the primary fuel cell stack. 
+		It's rated to operate at 400V.
+		With 15 kWh capacity, or it's 37.5 Ah (= 15/.4). 
+		Assume 6.43 km/kWh (based on a Tesla Model S battery pack weighing 2240 kg 
+		with 100 kWh capacity that can travel 643 km), 
+		this battery allows traveling a distance of 96.5 km on a single charge.
 		</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="2" max-number="2" />
@@ -750,7 +752,7 @@
 
 	<part name="Semiconductor Wafer" type="electronic" mass="1"/>
 
-	<part name="Laser Sintering 3D printer" type="electronic" mass="50.0">
+	<part name="SLS 3D Printer" type="electronic" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="3" max-number="2" />
 		</maintenance-entity-list>

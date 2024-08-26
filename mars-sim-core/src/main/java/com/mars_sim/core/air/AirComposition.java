@@ -184,7 +184,7 @@ public class AirComposition implements Serializable {
 				calcPersonImpact(t, numPeople,  accumulatedTime);
 			}
 
-			if (pulse.isNewMSol()
+			if (pulse.isNewIntMillisol()
 					&& pulse.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
 				monitorGases(building, t);
 			}

@@ -83,7 +83,7 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Start the step so record the Vehicles currnet locaiton
+     * Starts the step so record the Vehicles current location.
      */
     @Override
     protected void start() {
@@ -92,7 +92,8 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Get the assigned vehicle
+     * Gets the assigned vehicle.
+     * 
      * @return
      */
     private Vehicle getVehicle() {
@@ -100,7 +101,8 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Create the most appropriate Task to operate the vehicle
+     * Creates the most appropriate Task to operate the vehicle.
+     * 
      * @param vehicle
      * @param worker
      * @return
@@ -117,7 +119,7 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * What resources are needed for this travel. Should be vehicle fuel plus food and oxygen.
+     * Gets the resources are needed for this travel. Should be vehicle fuel plus food and oxygen.
      */
     @Override
     void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
@@ -142,7 +144,7 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Distance covered so far.
+     * Gets the distance covered so far.
      */
     public double getDistanceCovered() {
         if (startingCoordinate == null) {
@@ -152,7 +154,8 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Where is the travel step taking the Misison
+     * Gets the navpoint that the travel step taking the Mission.
+     * 
      * @return
      */
     public NavPoint getDestination() {
@@ -160,7 +163,7 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Completing the travel step transfer the Vehicle to the desitnation Settlement
+     * Completes the travel step transfer the Vehicle to the destination settlement.
     */ 
     @Override
     protected void complete() {

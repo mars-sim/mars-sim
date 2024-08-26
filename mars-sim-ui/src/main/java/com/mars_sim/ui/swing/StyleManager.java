@@ -29,6 +29,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.util.HSLColor;
+import com.mars_sim.tools.Msg;
 
 /**
  * This class provides a means to control the styles used in the UI.
@@ -46,13 +47,16 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
-    public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.00 Liter");
-    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
-    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
-    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
+    public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
+    public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.0 Liter");
+    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.0 km/kg");
+    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.0 Wh/km");
+    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.0 Wh/kg");
     public static final DecimalFormat DECIMAL_M2 = new DecimalFormat("#,##0.00 m\u00B2");
-    public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 m/s\u00B2");
-    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 m/s"); 
+    public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 "
+									+ Msg.getString("unit.meterperssecsquared")); //$NON-NLS-1$   
+    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 " 
+    								+ Msg.getString("unit.meterpersec")); //$NON-NLS-1$
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
     public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
@@ -68,7 +72,19 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_SOLS3 = new DecimalFormat("#,##0.000 Sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
+    public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
+    public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0.0 msol");
+    // For solar irradiance
+    public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
+    								+ Msg.getString("unit.wattpermetersquared")); //$NON-NLS-1$
+    // For air density
+    public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
+    								+ Msg.getString("unit.grampercubicmeter")); //$NON-NLS-1$
+    // For air pressure
+    public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 " 
+    								+ Msg.getString("pressure.unit.kPa")); //$NON-NLS-1$
 
+    
     // Supported LAFs
     private static final String DARK = "Flat Dark";
     private static final String LIGHT = "Flat Light";

@@ -491,7 +491,7 @@ public class UnitManager implements Serializable, Temporal {
 						+ s.getName());
 		}
 
-		logger.config("Setting up settlement task thread for " + s + ".");
+		logger.config("Setting up a settlement task thread for " + s + ".");
 		SettlementTask st = new SettlementTask(s);
 		settlementTasks.add(st);
 	}

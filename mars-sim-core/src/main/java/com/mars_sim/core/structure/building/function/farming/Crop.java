@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Crop.java
- * @date 2023-05-06
+ * @date 2024-07-12
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function.farming;
@@ -144,6 +144,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	public static final double LOSS_FACTOR_HPS = NON_VISIBLE_RADIATION_HPS * .75 + CONDUCTION_CONVECTION_HPS / 2D;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.001;
+	
+	private static final double COMBINED_LAMP_FACTOR = KW_PER_HPS * VISIBLE_RADIATION_HPS 
+			* (1 - BALLAST_LOSS_HPS) / PHYSIOLOGICAL_LIMIT;
 
 	/** The string reference for mushroom */
 	private static final String MUSHROOM = "mushroom";
@@ -492,7 +495,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID);
 					logger.warning(this, 10_000, 
-							amt + " kg crop waste generated.");
+							Math.round(amt * 10D)/10D  + " kg crop waste generated.");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}
@@ -502,16 +505,16 @@ public class Crop implements Comparable<Crop>, Entity {
 				// Seedling (<10% grown crop) is less resilient and more prone to environmental
 				// factors
 			if (health < .1) {
-				logger.warning(this, 10_000, "Its seedlings at " 
+				logger.warning(this, 10_000, "Seedlings at " 
 						+ Math.round(percentageGrowth * 10D)/10D 
-						+ " percent of growth had very poor health ("
-						+ Math.round(health * 100D) / 1D + " %) and didn't survive.");
+						+ " % growth unable to survive due to very poor health ("
+						+ Math.round(health * 100D) / 1D + " %).");
 				// Add Crop Waste
-				double amt = percentageGrowth * remainingHarvest / 100D;
+				double amt = percentageGrowth * remainingHarvest / 100;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID);
 					logger.warning(this, 10_000, 
-							amt + " kg crop waste generated.");
+							Math.round(amt * 100D) / 100D  + " kg crop waste generated.");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}
@@ -818,7 +821,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewMSol() && msol % CHECK_HEALTH_FREQUENCY == 0) {
+		if (pulse.isNewIntMillisol() && msol % CHECK_HEALTH_FREQUENCY == 0) {
 			// Checks on crop health
 			trackHealth();
 		}
@@ -904,8 +907,10 @@ public class Crop implements Comparable<Crop>, Entity {
 		// Reduce the frequent toggling on and off of lamp and to check on
 		// the time of day to anticipate the need of sunlight.
 			// Future: also compare also how much more sunlight will still be available
-			if (uPAR > 40) { // if sunlight is available
+			if (uPAR > 40) { 
+				// if sunlight is available
 				turnOffLighting();
+				
 				cumulativeDailyPAR = cumulativeDailyPAR + intervalPAR;
 				// Gets the effectivePAR
 				effectivePAR = intervalPAR;
@@ -933,15 +938,15 @@ public class Crop implements Comparable<Crop>, Entity {
 				// of time
 				
 				// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
-				int numLamp = (int) (Math.ceil(
-						deltakW / KW_PER_HPS / VISIBLE_RADIATION_HPS / (1 - BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
+				int numLamp = (int) (Math.ceil(deltakW / COMBINED_LAMP_FACTOR));
 				// Future: should also allow the use of LED_KIT for lighting
 				// For converting lumens to PAR/PPF, see
 				// http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
 				// Note: do NOT include any losses below
-				double supplykW = numLamp * KW_PER_HPS * VISIBLE_RADIATION_HPS * (1 - BALLAST_LOSS_HPS)
-						/ PHYSIOLOGICAL_LIMIT;
+				double supplykW = numLamp * COMBINED_LAMP_FACTOR;
+				// Turn on the lamps
 				turnOnLighting(supplykW);
+				
 				double deltaPARSupplied = supplykW * time * conversionFactor / growingArea; // in mol / m2
 				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]

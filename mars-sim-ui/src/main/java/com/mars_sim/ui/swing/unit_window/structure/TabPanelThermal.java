@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * TabPanelThermalSystem.java
+ * TabPanelThermal.java
  * @date 2024-07-03
  * @author Manny Kung
  */
@@ -46,7 +46,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * This is a tab panel for settlement's Thermal System .
  */
 @SuppressWarnings("serial")
-public class TabPanelThermalSystem extends TabPanelTable {
+public class TabPanelThermal extends TabPanelTable {
 
 	// default logger.
 	
@@ -111,7 +111,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelThermalSystem(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelThermal(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
@@ -137,14 +137,14 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		topContentPanel.add(heatInfoPanel);
 
 		// Prepare total heat load label.
-		totHeatLoadCache = thermalSystem.getRequiredHeat();
+		totHeatLoadCache = thermalSystem.getTotalHeatReq();
 		totHeatLoadLabel = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.totalHeatLoad"), 
 				StyleManager.DECIMAL_KW.format(totHeatLoadCache),
 				Msg.getString("TabPanelThermalSystem.totalHeatLoad.tooltip")); //$NON-NLS-1$
 
 		
 		// Prepare total heat gen label.
-		totHeatGenCache = thermalSystem.getGeneratedHeat();
+		totHeatGenCache = thermalSystem.getTotalHeatGen();
 		totHeatGenLabel = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.totalHeatGen"), 
 							StyleManager.DECIMAL_KW.format(totHeatGenCache),
 							Msg.getString("TabPanelThermalSystem.totalHeatGen.tooltip")); //$NON-NLS-1$
@@ -173,12 +173,6 @@ public class TabPanelThermalSystem extends TabPanelTable {
 							StyleManager.DECIMAL_KW.format(heatGenFuelCache),
 							Msg.getString("TabPanelThermalSystem.heatGenFuel.tooltip")); //$NON-NLS-1$
 
-		// Prepare power generated label.
-		powerGenCache = thermalSystem.getGeneratedPower();
-		powerGenLabel = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.totalPowerGen"),
-							StyleManager.DECIMAL_KW.format(powerGenCache),
-							Msg.getString("TabPanelThermalSystem.totalPowerGen.tooltip")); //$NON-NLS-1$
-
 		effEHeatCache = getAverageEfficiencyElectricHeat();
 		electricEffTF = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"),
 							StyleManager.DECIMAL_PERC.format(effEHeatCache*100D),
@@ -194,6 +188,12 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.degradRate"),
 							StyleManager.DECIMAL_PERC.format(degradRate*100D),
 							Msg.getString("TabPanelThermalSystem.degradRate.tooltip")); //$NON-NLS-1$	
+
+		// Prepare power generated label.
+		powerGenCache = thermalSystem.getTotalPowerGen();
+		powerGenLabel = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.totalPowerGen"),
+							StyleManager.DECIMAL_KW.format(powerGenCache),
+							Msg.getString("TabPanelThermalSystem.totalPowerGen.tooltip")); //$NON-NLS-1$
 
 
 		// Create override check box panel.
@@ -249,9 +249,15 @@ public class TabPanelThermalSystem extends TabPanelTable {
 			buildings = manager.getSortedBuildings();
 		else
 			buildings = manager.getBuildingsWithThermal();
-		heatTableModel.update();
+		
+		heatTableModel.fireTableDataChanged();
 	}
 
+	/**
+	 * Gets average solar heating thermal efficiency.
+	 * 
+	 * @return
+	 */
 	public double getAverageEfficiencySolarHeating() {
 		double effSolar = 0;
 		int i = 0;
@@ -275,6 +281,11 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		return effSolar;
 	}
 
+	/**
+	 * Gets average electric heating thermal efficiency.
+	 * 
+	 * @return
+	 */
 	public double getAverageEfficiencyElectricHeat() {
 
 		double effElectric = 0;
@@ -306,7 +317,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 	@Override
 	public void update() {
 
-		double heat = thermalSystem.getGeneratedHeat();
+		double heat = thermalSystem.getTotalHeatGen();
 		if (totHeatGenCache != heat) {
 			totHeatGenCache = heat;
 			totHeatGenLabel.setText(
@@ -314,7 +325,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 				);
 		}
 
-		double heatLoad = thermalSystem.getRequiredHeat();
+		double heatLoad = thermalSystem.getTotalHeatReq();
 		if (totHeatLoadCache != heatLoad) {
 			totHeatLoadCache = heatLoad;
 			totHeatLoadLabel.setText(
@@ -355,7 +366,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		}
 		
 		
-		double power = thermalSystem.getGeneratedPower(); 
+		double power = thermalSystem.getTotalPowerGen(); 
 		if (powerGenCache != power) {
 			powerGenCache = power;
 			powerGenLabel.setText(
@@ -533,6 +544,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		}
 
 		public void update() {
+
 	    	int numRow = getRowCount();
 	    	int numCol = getColumnCount();
 	    	for (int i=0; i<numRow; i++) {	

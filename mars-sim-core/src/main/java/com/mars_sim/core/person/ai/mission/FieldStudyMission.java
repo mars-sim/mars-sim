@@ -126,7 +126,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		this.science = study.getScience();
 		this.fieldSite = fieldSite;
 		this.fieldSiteTime = fieldSiteTime;
-		addNavpoint(fieldSite, "field research site");
+		addNavpoint(fieldSite, "a field research site");
 
 		// Add mission members.
 		addMembers(members, false);
@@ -221,7 +221,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		double limit = range / 4D;
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-		addNavpoint(fieldSite, "field research site");
+		addNavpoint(fieldSite, "a field research site");
 	}
 
 	@Override

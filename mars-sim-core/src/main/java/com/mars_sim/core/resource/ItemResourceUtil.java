@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2023-06-12
+ * @date 2024-07-12
  * @author Manny Kung
  */
 
@@ -50,7 +50,7 @@ public class ItemResourceUtil implements Serializable {
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
 	// 3-D printer
-	private static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
+	private static final String SLS_3D_PRINTER = "SLS 3D Printer";
 
 	public static int garmentID;
 	public static int pressureSuitID;
@@ -148,7 +148,7 @@ public class ItemResourceUtil implements Serializable {
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
 		backhoeID = findIDbyItemResourceName(BACKHOE);
 
-		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
+		printerID = findIDbyItemResourceName(SLS_3D_PRINTER);
 	}
 
 	
@@ -294,6 +294,13 @@ public class ItemResourceUtil implements Serializable {
 		return ir.getID();
 	}
 
+	/**
+	 * Removes an unneeded part from the part map.
+	 * 
+	 * @param parts
+	 * @param unneeded
+	 * @return
+	 */
 	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, Set<Integer> unneeded) {
 		for (Integer i : unneeded) {
 			parts.remove(i);

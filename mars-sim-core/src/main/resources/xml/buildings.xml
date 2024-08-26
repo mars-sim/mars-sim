@@ -176,10 +176,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->
 	<!-- base-mass: in kg (old default : 3000). -->
 	<building type="Lander Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
-		wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="3000">
+		wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Lander Hab is the initial habitat for a crew of four.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
-	 		to jump start a settlement. It's commonly used as a central hub providing four connection points
+	 		to jump start a settlement. It's commonly used as a main hub providing four connection points
 	 		when developing a colony.
 		</description>
 		<!-- The power requirements of the building. -->
@@ -367,8 +367,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="16" />
-				<process-engine name="Filter Brine Water" number-modules="8" />
+				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Filter Brine Water" number-modules="20" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -518,7 +518,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="EVA Airlock" width="6.0" length="4.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="20" base-mass="1500"
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="20" base-mass="1500"
 			category="EVA">
 		<description> The EVA Airlock is a node to be attached to building for giving direct access
 			in performing EVA operations.
@@ -563,7 +563,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of EVA Airlock -->
 
 	<building type="Central Hub A" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
-		wear-lifetime="3340000" maintenance-time="150" room-temperature="20.0" base-mass="10000">
+		wear-lifetime="3340000" maintenance-time="300" room-temperature="20.0" base-mass="10000">
 		<description> The Central Hub serves to a nexus for connecting other building modules. 
 			It has a flexible air dome and is designed to be a place of gathering and relaxation. 
 		</description>
@@ -748,8 +748,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
-				<process-engine name="Melt Ice" number-modules="48" />
-				<process-engine name="Filter Brine Water" number-modules="24" />
+				<process-engine name="Melt Ice" number-modules="40" />
+				<process-engine name="Filter Brine Water" number-modules="40" />
 						
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
@@ -791,7 +791,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Solar Heating" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="40.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0" />
@@ -802,8 +802,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for Central Hub Type A -->
 
 
-	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
-		wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="3000">
+	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
+		construction="INFLATABLE" base-level="0"
+		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
 		<description> The Inflatable Greenhouse is essentially a flexible air bladder
 		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
 		for growing a limited number of crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
@@ -924,8 +925,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for inflatable greenhouse -->
 
-	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="26.0" base-mass="10000">
+	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" 
+		construction="SEMI_ENGINEERED" base-level="0"
+		wear-lifetime="3340000" maintenance-time="250" room-temperature="24.0" base-mass="10000">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded
 			laminate of polyamide and polyolefin interwoven around an aluminum frame to give rise
@@ -1118,7 +1120,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for fish farm -->
 
 	<building type="Algae Pond" width="6.0" length="9.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="3000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
 		<description>
 			This building grows spirulina in ponds. It is furnished with a biology research lab 
 			with instruments.
@@ -1455,8 +1457,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="30"/>	
-				<process-engine name="Filter Brine Water" number-modules="20"/>						
+				<process-engine name="Melt Ice" number-modules="60"/>	
+				<process-engine name="Filter Brine Water" number-modules="60"/>						
 			</resource-processing>
 			
 			<storage capacity="300000">
@@ -1492,7 +1494,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="4000">
+		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
 		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor 
 			system, which was developed by Soviet Union in 1987 for use by Cosmos 1818 
 			and Cosmos 1867 satellites in space. Based on thermionic energy conversion 
@@ -1511,7 +1513,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	
 	<building type="TOPAZ-3 Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="4000">
+		wear-lifetime="3340000" maintenance-time="300" room-temperature="0" base-mass="4000">
 		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has 
 			higher thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, 
 			it provides ~30 kWe.</description>
@@ -1526,7 +1528,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 		
 	<building type="Kilopower Reactor" width="2.0" length="2.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="1500">
+		wear-lifetime="3340000" maintenance-time="150" room-temperature="0" base-mass="1500">
 		<description>The Kilopower Reactor provides ~20 kWe. It contains two 10 kWe modules, 
 		each with a reactor core using depleted uranium as fuel source. 
 		It uses stirling converters for generating power via mechanical movement of pistons 
@@ -1550,7 +1552,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="4000">
+		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
 		<description>The MD1 Nuclear Reactor at 40kW is the first compact fission power plant commissioned 
 		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
 		<power-required base-power="0.25" base-power-down-power="0.025" />
@@ -3145,8 +3147,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Machinery Hab -->
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" 
-			construction="SEMI_SOLID" base-level="0"
+	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200"
 			category="CONNECTION">
 		<description> The Hallway is a pressurized access tube connecting
@@ -3174,10 +3175,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-<!-- The buildings below are underground and are used primarily for
-     Trading and Mining settlements -->
+<!-- The buildings below are constructed with in-situ materials, primarly 
+	underground and are used primarily for trading and mining settlements -->
 
-	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" base-level="-1"
+	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Outpost Hub is a vaulted brick building that acts
 			as the main hub of a trading or mining outpost. Like its cousin
@@ -3310,8 +3312,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="16" />
-				<process-engine name="Filter Brine Water" number-modules="8" />
+				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Filter Brine Water" number-modules="20" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
@@ -3418,7 +3420,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Outpost Hub  -->
 
-	<building type="Bunkhouse" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Bunkhouse" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="1500"
 			category="LIVING">
 		<description> The Bunkhouse is a spartan living quarters with
@@ -3458,7 +3461,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Bunkhouse -->
 
-	<building type="Storage Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Storage Shed" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="1500">
 		<description> The Storage Shed is a small brick building for
 			storing resources for the settlement.
@@ -3489,7 +3493,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Storage Shed -->
 
 	<building type="Loading Dock Garage" width="15.0" length="18.0" 
-		north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
+			construction="CONCRETE" north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
 			maintenance-time="300" room-temperature="22.5" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
@@ -3548,7 +3552,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for loading dock garage -->
 
-	<building type="Mining Lab" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Mining Lab" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE"  base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2500">
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
@@ -3596,8 +3601,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Mining Lab -->
 
 
-	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="2500">
+	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="2500">
 		<description> The Inground Greenhouse is a semi underground structure with a
 			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.
@@ -3687,7 +3693,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for inground greenhouse -->
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
-	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" base-level="-1"
+	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200"
 			category="CONNECTION">
 		<description> The Tunnel is an underground pressurized access tube connecting

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocationTag.java
- * @date 2023-05-09
+ * @date 2024-07-17
  * @author Manny Kung
  */
 package com.mars_sim.core.location;
@@ -116,44 +116,77 @@ public class LocationTag implements LocationState, Serializable {
 				&& p.getPhysicalCondition().getDeathDetails() != null) {
 				return p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath();
 			}
-
+			
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
-
+			
 			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
-
-			Settlement settlement = findSettlementVicinity();
-			if (settlement != null) {
-				return settlement.getName() + VICINITY;
+			
+			if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s.getName() + VICINITY;
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v.getName() + VICINITY;
 			}
 			
-			Vehicle vehicle = findVehicleVicinity();
-			if (vehicle != null) {
-				return vehicle.getName() + VICINITY;
+			if (LocationStateType.VEHICLE_VICINITY == p.getLocationStateType()) {
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v + VICINITY;			
 			}
 			
-//			if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {
-//				Settlement s = findSettlementVicinity();
-//				if (s != null)
-//					return s.getName() + VICINITY;
-//				Vehicle v = findNearbyVehicleVicinity();
-//				if (v != null)
-//					return v.getName() + VICINITY;
-//			}
+			if (LocationStateType.SETTLEMENT_VICINITY == p.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s + VICINITY;			
+			}
+			
+			return MARS_SURFACE;
 		}
 
 		else if (r != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
 				return r.getSettlement().getName();
+			
 			if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType())
 				return r.getVehicle().getName();
+				
+			if (LocationStateType.MARS_SURFACE == r.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s.getName() + VICINITY;
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v.getName() + VICINITY;
+			}
+			
+			if (LocationStateType.VEHICLE_VICINITY == r.getLocationStateType()) {
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v + VICINITY;			
+			}
+			
+			if (LocationStateType.SETTLEMENT_VICINITY == r.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s + VICINITY;			
+			}
+			
+			return MARS_SURFACE;
 		}
 
 		else if (e != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == e.getLocationStateType())
 				return e.getSettlement().getName();
-
+			
+			if (LocationStateType.INSIDE_VEHICLE == e.getLocationStateType())
+				return e.getVehicle().getName();
+			
+			if (LocationStateType.ON_PERSON_OR_ROBOT == e.getLocationStateType())
+				return e.getContainerUnit().getLocationTag().getImmediateLocation();
 		}
 
 		else if (b != null) {
@@ -163,6 +196,13 @@ public class LocationTag implements LocationState, Serializable {
 		else if (v != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();
+			
+			if (LocationStateType.SETTLEMENT_VICINITY == v.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s + VICINITY;			
+			}
+			
 			if (LocationStateType.MARS_SURFACE == v.getLocationStateType()) {
 				Settlement s = findSettlementVicinity();
 				if (s != null)
@@ -170,16 +210,9 @@ public class LocationTag implements LocationState, Serializable {
 				Vehicle v = findVehicleVicinity();
 				if (v != null)
 					return v.getName() + VICINITY;
-				
-				return MARS_SURFACE;
 			}
-			if (LocationStateType.SETTLEMENT_VICINITY == v.getLocationStateType()) {
-				Settlement s = findSettlementVicinity();
-				if (s != null)
-					return findSettlementVicinity().getName() + VICINITY;
-				else
-					return MARS_SURFACE;			
-			}
+			
+			return MARS_SURFACE;
 		}
 
 		else if (s != null) {
@@ -239,14 +272,14 @@ public class LocationTag implements LocationState, Serializable {
 				return p.getVehicle().getName();
 			}
 
-			Settlement settlement = findSettlementVicinity();
-			if (settlement != null) {
-				return settlement.getName() + VICINITY;
-			}
 			
-			Vehicle vehicle = findVehicleVicinity();
-			if (vehicle != null) {
-				return vehicle.getName() + VICINITY;
+			if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s.getName() + VICINITY;
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v.getName() + VICINITY;
 			}
 
 			return MARS_SURFACE;
@@ -263,9 +296,15 @@ public class LocationTag implements LocationState, Serializable {
 			if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType()) {
 				return r.getVehicle().getName();
 			}
-
-			if (r.isRightOutsideSettlement())
-				return findSettlementVicinity().getName() + VICINITY;
+			
+			if (LocationStateType.MARS_SURFACE == r.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s.getName() + VICINITY;
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v.getName() + VICINITY;
+			}
 
 			return MARS_SURFACE;
 		}
@@ -273,11 +312,22 @@ public class LocationTag implements LocationState, Serializable {
 		else if (e != null) {
 			if (LocationStateType.ON_PERSON_OR_ROBOT == e.getLocationStateType())
 				return e.getContainerUnit().getLocationTag().getImmediateLocation();
-			if (e.isRightOutsideSettlement())
-				return findSettlementVicinity().getName() + VICINITY;
+
 			if (e.isInside())
 				return e.getContainerUnit().getName();
-
+		
+			if (LocationStateType.VEHICLE_VICINITY == e.getLocationStateType()) {
+				Vehicle v = findVehicleVicinity();
+				if (v != null)
+					return v + VICINITY;			
+			}
+			
+			if (LocationStateType.SETTLEMENT_VICINITY == e.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s + VICINITY;			
+			}
+			
 			return MARS_SURFACE;
 		}
 

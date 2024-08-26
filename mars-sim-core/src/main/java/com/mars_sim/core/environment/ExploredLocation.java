@@ -85,11 +85,12 @@ public class ExploredLocation implements Serializable {
 			reserve += AVERAGE_RESERVE_MASS * concentration * RandomUtil.getRandomDouble(.5, 5);
 		}
 
-		totalMass = reserve; //RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
+		// Use RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
+		totalMass = reserve;
 		remainingMass = totalMass;
 		
 		logger.info(settlement, location.getFormattedString() 
-			+ " has estimated reserve of " + (int)totalMass + " kg.  % Minerals: "
+			+ " has estimated reserve of " + (int)totalMass + " kg. % Minerals: "
 			+  estimatedMineralConcentrations);
 	}
 

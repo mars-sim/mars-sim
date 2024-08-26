@@ -136,21 +136,24 @@ public class VehicleSpec implements Serializable {
 	
 	/** The # of battery modules of the vehicle.  */
 	private int numBatteryModule;
-    /** The maximum energy capacity of a standard battery module in kWh. */
-    private double energyPerModule;
+	
+	private int fuelTypeID;
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
 
+	private double value;
+    /** The maximum energy capacity of a standard battery module in kWh. */
+    private double energyPerModule;
 	/** Base speed of vehicle in kph (can be set in child class). */
-	private double baseSpeed = 0;
+	private double baseSpeed = 1;
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
-	private double baseRange = 0;
+	private double baseRange = 1;
 	/** The efficiency of the vehicle's drivetrain. [dimension-less] */
 	private double drivetrainEfficiency;
 	/** The conversion fuel-to-drive energy factor for a specific vehicle type [Wh/kg] */
 	private double fuel2DriveEnergy;
 	/** The base acceleration of the vehicle [m/s2]. */
-	private double baseAccel = 0;
+	private double baseAccel = 1;
 	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
@@ -164,7 +167,7 @@ public class VehicleSpec implements Serializable {
 	// Define percent of other energy usage (other than for drivetrain)
 	private double otherEnergyUsagePercent = 0;
 	/** The estimated total number of hours the vehicle can run [hr], given the full tank of fuel. */
-	private double totalHours;
+	private double baseTotalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
 	/** The maximum cargo capacity of the vehicle [kg] */	
@@ -196,7 +199,7 @@ public class VehicleSpec implements Serializable {
 	// See https://ev-database.org/cheatsheet/energy-consumption-electric-car 
 	
 	/**
-	 * The coefficient for conversing FC to FE 
+	 * The coefficient for converting FC to FE 
 	 */
 	private double coefficientBaseFC2FE;
 	
@@ -224,19 +227,17 @@ public class VehicleSpec implements Serializable {
 
 	private String baseImage;
 	
+	private String modelName;
+	
 	private String name;
 
 	private String description;
-	
+
+	private String fuelTypeStr;
+
 	private VehicleType type;
 	
 	private PowerSourceType powerSourceType;
-	
-	private String fuelTypeStr;
-	
-	private int fuelTypeID;
-
-	private double value;
 	
 	private Map<Integer, Double> cargoCapacityMap;
 	private List<ScienceType> labTechSpecialties = null;
@@ -252,13 +253,14 @@ public class VehicleSpec implements Serializable {
 
 	private Set<Integer> partIDs;
 
-	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
+	public VehicleSpec(String name, VehicleType type, String model, String description, String baseImage,
 			String powerSourceStr, String fuelTypeStr, double value,
 			int batteryModule, double energyPerModule, int fuelCellStack,
 			double drivetrainEff, 
 			double baseSpeed, double basePower,
 			double emptyMass, int crewSize) {
 		this.name = name;
+		this.modelName = model;
 		this.type = type;
 		this.description = description;
 		this.baseImage = baseImage;
@@ -429,34 +431,29 @@ public class VehicleSpec implements Serializable {
 		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency + batteryCapacity;
 		
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
-		double estEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
-		
+		double baseEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
 		// Gets the estimated average road load power (including coasting)
-		double roadLoadPower = .25 * (.15 * peakPower + .85 * basePower);
-		
+		double baseRoadLoadPower = .25 * (.15 * peakPower + .85 * basePower);
 		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = estEnergyConsumed / roadLoadPower;
+		baseTotalHours = baseEnergyConsumed / baseRoadLoadPower;
 		// kW / kph -> (kW / km / h) -> kW * h / km
-		double averageForce = roadLoadPower / baseSpeed; 
-
-		
-		// Gets the base range [in km] of the vehicle
-		// kWh / (kW * h / km) -> km * h / h -> km
-		baseRange = estEnergyConsumed / averageForce;
-		
-		// Gets the base fuel economy [in km/kg] of this vehicle
-		baseFuelEconomy = baseRange / Math.max(1, fuelCapacity);
+		double baseForce = baseRoadLoadPower / baseSpeed; 
 	
+		// Gets the base range [in km] of the vehicle
+		// km = kWh / (kW * h / km) -> km * h / h -> km
+		baseRange = baseEnergyConsumed / baseForce;
+		// Gets the base fuel economy [in km/kg] of this vehicle
+		baseFuelEconomy = baseRange / (1 + fuelCapacity);
 		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.
-		baseFuelConsumption =  1000 * estEnergyConsumed / Math.max(1, baseRange);
-		
-		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption * roadLoadPower / baseSpeed;
+		baseFuelConsumption =  1000 * baseEnergyConsumed / (1 + baseRange);
+		// Gets the base coeff for FC to FE
+		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption * baseRoadLoadPower / baseSpeed;
 		
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
 		double endMass = calculatedEmptyMass + additionalEndMass;
-		// Accounts for the additional payload mass (always less than one)
+		// Accounts for the additional payload mass
 		double massModifier = 1 + .2 * (additionalBeginningMass/calculatedEmptyMass 
 				+ additionalEndMass/calculatedEmptyMass);
 		
@@ -466,7 +463,7 @@ public class VehicleSpec implements Serializable {
 		initialFuelConsumption = baseFuelConsumption * massModifier;
 		
 		// Gets the base acceleration [m/s2]
-		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / Math.max(1, baseSpeed) * 1000 * 3.6;
+		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / (1 + baseSpeed) * 1000 * 3.6;
 	}
 	
 	public final void setWidth(double width) {
@@ -492,7 +489,7 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/**
-	 * Gets the name of the vehicle specification.
+	 * Gets the name of the vehicle.
 	 * 
 	 * @return
 	 */
@@ -500,6 +497,16 @@ public class VehicleSpec implements Serializable {
 		return name;
 	}
 	
+	
+	/**
+	 * Gets the model name of the vehicle.
+	 * 
+	 * @return
+	 */
+	public String getModelName() {
+		return modelName;
+	}
+
 	/**
 	 * Gets the type of the vehicle specification.
 	 * 
@@ -546,7 +553,7 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the energy per module of the battery.
+	 * Gets the energy per module of the battery module [kWh].
 	 * 
 	 * @return
 	 */
@@ -910,12 +917,12 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the estimated total hours the vehicle can operate.
+	 * Gets the base total hours the vehicle can operate.
 	 * 
 	 * @return
 	 */
-	public double getTotalHours() {
-		return totalHours;
+	public double getBaseTotalHours() {
+		return baseTotalHours;
 	}
 
 	/**

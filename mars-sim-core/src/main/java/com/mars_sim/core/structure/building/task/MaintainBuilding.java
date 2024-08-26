@@ -68,7 +68,7 @@ public class MaintainBuilding extends Task  {
 
 		String des = DETAIL + entity.getName();
 		setDescription(des);
-		logger.info(worker, 30_000, des);
+		logger.info(worker, 30_000, des + ".");
 		
 		// Walk to random location in building.
 		walkToRandomLocInBuilding(entity, false);

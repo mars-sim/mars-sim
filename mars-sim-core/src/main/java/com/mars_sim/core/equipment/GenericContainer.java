@@ -52,6 +52,9 @@ class GenericContainer extends Equipment implements Container {
 		this.totalCapacity = ContainerUtil.getContainerCapacity(type);
 		
 		setBaseMass(type);
+		
+		// Set settlement as its container unit
+		setContainerUnit(base);
 	}
 
 //	/**

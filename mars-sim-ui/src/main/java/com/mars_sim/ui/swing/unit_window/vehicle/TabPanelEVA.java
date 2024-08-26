@@ -202,7 +202,7 @@ public class TabPanelEVA extends TabPanel {
 		boxBottomPanel.setLayout(new BoxLayout(boxBottomPanel, BoxLayout.X_AXIS));
 		panel.add(boxBottomPanel, BorderLayout.SOUTH);
 	
-		// Create outside list panel
+		// Create outside list panel - zone 4
 		JPanel outsidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		outsidePanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone4.tooltip"));
 		outsidePanel.setBorder(
@@ -219,24 +219,7 @@ public class TabPanelEVA extends TabPanel {
 		};
 		outsidePanel.add(outsideListPanel);
 		
-		// Create outside wait panel
-		JPanel insidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		insidePanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone0.tooltip"));
-		insidePanel.setBorder(
-				StyleManager.createLabelBorder(
-						Msg.getString("BuildingPanelEVA.titledB.zone0")));
-		boxBottomPanel.add(insidePanel);
-
-		// Create insideListPanel 
-		insideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
-			@Override
-			protected Collection<Person> getData() {
-				return getUnitsFromIds(vehicleAirlock.getAwaitingInnerDoor());
-			}
-		};
-		insidePanel.add(insideListPanel);
-		
-		// Create occupant panel
+		// Create occupant panel - zone 1 to 3
 		JPanel occupantPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		occupantPanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone13.tooltip"));
 		occupantPanel.setBorder(
@@ -252,6 +235,23 @@ public class TabPanelEVA extends TabPanel {
 			}
         };
         occupantPanel.add(occupantListPanel);
+        
+		// Create inside wait panel - zone 0
+		JPanel insidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		insidePanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone0.tooltip"));
+		insidePanel.setBorder(
+				StyleManager.createLabelBorder(
+						Msg.getString("BuildingPanelEVA.titledB.zone0")));
+		boxBottomPanel.add(insidePanel);
+
+		// Create insideListPanel 
+		insideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(vehicleAirlock.getAwaitingInnerDoor());
+			}
+		};
+		insidePanel.add(insideListPanel);
     }
 
     @Override

@@ -303,7 +303,7 @@ public class MissionTableModel extends AbstractMonitorModel
 				break;
 
 			case DATE_EMBARKED:
-				result = mission.getLog().getDateStarted();
+				result = mission.getLog().getDateEmbarked();
 				break;
 
 			case DATE_RETURNED:

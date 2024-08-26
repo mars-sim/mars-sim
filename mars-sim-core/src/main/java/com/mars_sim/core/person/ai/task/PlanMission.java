@@ -61,7 +61,7 @@ public class PlanMission extends Task {
 	 */
 	public PlanMission(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomInt(20, 50));
+		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomInt(40, 60));
 
 		boolean canDo = person.getMind().canStartNewMission();
 		if (!canDo) {
@@ -120,6 +120,24 @@ public class PlanMission extends Task {
 	}
 
 	/**
+	 * Sees if the task is at least 70% completed.
+	 * 
+	 * @return true if the task is at least 70% completed.
+	 */
+	private boolean is70Completed() {
+		return getTimeCompleted() >= getDuration() * .7;
+	}
+
+	/**
+	 * Sees if the task is at least 95% completed.
+	 * 
+	 * @return true if the task is at least 95% completed.
+	 */
+	private boolean isNearlyCompleted() {
+		return getTimeCompleted() >= getDuration() * .95;
+	}
+	
+	/**
 	 * Performs the selecting mission phase.
 	 * 
 	 * @param time the amount of time (millisols) to perform the phase.
@@ -130,18 +148,47 @@ public class PlanMission extends Task {
 		
 		boolean canDo = person.getMind().canStartNewMission();
 		if (!canDo) {
+			logger.log(worker, Level.INFO, 10_000, "Not ready to start a new mission.");
 			endTask();
 		}
 		else {
-			// Start a new mission
-			person.getMind().getNewMission();
-			
 			Mission mission = person.getMind().getMission();
-			if (mission != null)
-				setPhase(SUBMITTING);
+			if (mission == null) {	
+				if (is70Completed()) {
+					// Simulate to have at least 70% of the time spent in selecting a mission plan to submit
+					
+					// Start a new mission
+					mission = person.getMind().startNewMission();
+					if (mission == null) {
+						// No mission found so stop planning for now
+						logger.log(worker, Level.WARNING, 30_000, "Working on a mission.");
+					}
+					else {	
+						setPhase(SUBMITTING);
+					}
+				}
+				else {
+					// Prior to 70% completion
+					
+//					1. PlanMission should make use of the task time spent in the selecting 
+//					   phase. May be adding a research phase.
+//					2. One suggestion is modeling a memory cell for recording a person's 
+//					   effort in researching a mission type. 
+//					3. Model how to document all efforts such as consulting with leadership, 
+//					   meeting with experts, looking up map data to determine mission 
+//					   feasibility, etc.
+				}
+			}
 			else {
-				// No mission found so stop planning for now
+				// if a person already have an active mission, such as by 
+				// being recruited into a mission started by someone else
+				
+				// Note: should still save his research here for expediting future endeavor in 
+				//       starting a new mission. 
+				logger.log(worker, Level.WARNING, 10_000, "Already have '" + mission.getName() + "' as an active mission.");
+				
 				endTask();
+				return 0;
 			}
 		}
 		
@@ -157,23 +204,41 @@ public class PlanMission extends Task {
 	private double submittingPhase(double time) {
 		double remainingTime = 0;
 		
-		Mission mission = person.getMind().getMission();
-		MissionPlanning plan = mission.getPlan();
-		
-		if ((plan != null) && !mission.isDone()) {
-			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
-					+ mission.getName() + ".");
+		if (isNearlyCompleted()) {
+			Mission mission = person.getMind().getMission();
 			
-			// Set the plan pending and add to approval list
-			plan.setStatus(PlanType.PENDING);
-			missionManager.requestMissionApproving(plan);
+			MissionPlanning plan = mission.getPlan();
+			
+			if (plan == null) {
+				// No mission found so stop planning for now
+				logger.log(worker, Level.INFO, 10_000, "No plan in place for " + mission.getName() + " just yet.");
+				
+				endTask();
+			}
+			else if (mission.isDone()) {
+				// No mission found so stop planning for now
+				logger.log(worker, Level.INFO, 10_000, "Mission already accomplished.");
+				
+				endTask();
+			}
+			else if ((plan != null) && !mission.isDone()) {
+				// Simulate to take 20% of the task time to request for approval of the mission
+				logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
+						+ mission.getName() + ".");
+				
+				// Set the plan pending and add to approval list
+				plan.setStatus(PlanType.PENDING);
+				missionManager.requestMissionApproving(plan);
+				
+				endTask();
+			}
 		}
+		
+		
 		
 		// Add experience
 		addExperience(time); 
-		
-		endTask();
-		
+
 		return remainingTime;
 	}
 	

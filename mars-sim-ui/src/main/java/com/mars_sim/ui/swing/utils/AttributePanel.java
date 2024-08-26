@@ -78,7 +78,17 @@ public class AttributePanel extends JPanel {
 		return contentLabel;
 	}
 	
-	
+	/**
+	 * Adds a field and label to a Panel. The layout should be Spring layout.
+	 * 
+	 * @param titleLabel The fixed label
+	 * @param content Initial content of the text field
+	 * @tooltip
+	 * @return The JLabel that can be updated.
+	 */
+	public JLabel addRow(String titleLabel, String content, String tooltip) {
+		return addTextField(titleLabel, content, tooltip);
+	}
 	
 	/**
 	 * Adds a field and label to a Panel. The layout should be Spring layout.

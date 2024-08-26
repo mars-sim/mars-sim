@@ -94,6 +94,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 	 * @return
 	 */
 	private RatingScore getSettlementProbability(Settlement settlement) {
+		// Future: all drones offer the same range (unless it can be retrofitted/customized
 
 		// Check for the best delivery settlement within range.
 		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, false);

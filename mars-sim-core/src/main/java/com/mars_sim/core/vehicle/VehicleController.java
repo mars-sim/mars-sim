@@ -36,12 +36,14 @@
 	 public static final double RATIO_OXIDIZER_FUEL = 1.5;
 	 /** The ratio of water produced for every methanol consumed. */
 	 private static final double RATIO_WATER_METHANOL = 1.125;
-	 /** The ratio of water produced for every methanol consumed. */
-	 private static final double RATIO_WATER_METHANE = 2.25;
+	 /** The ratio of water produced for every methane consumed. */
+//	 private static final double RATIO_WATER_METHANE = 2.25;
 	 /** The factor for estimating the adjusted fuel economy. */
 	 public static final double FUEL_ECONOMY_FACTOR = .8;
 	 /** The factor for estimating the adjusted fuel consumption. */
-	 public static final double FUEL_CONSUMPTION_FACTOR = 1.2;
+	 public static final double FUEL_CONSUMPTION_FACTOR = 1.2; 
+	 /** The minimum fuel consumption. */
+	 public static final double MIN_FUEL = 0.001;
 	 
 	 /** Mars surface gravity is 3.72 m/s2. */
 	 private static final double GRAVITY = 3.72;
@@ -55,20 +57,24 @@
 	 /** The outside average air density. */
 	 public final double airDensity = 0.02;
 	 
+	 private static final String KG = " kg  ";
+	 private static final String WH = " Wh  ";
+	 private static final String KWH = " kWh  ";
+	 private static final String KPH = " kph ";
+	 private static final String KPH_ = " kph  "; 
+	 private static final String W = " W  ";
+	 private static final String KM = " km  ";
+	 
 	 /**
 	  * Please do NOT delete any of the metric unit string below.
 	  * They will be handy for testing. Thanks !
-	 private static final String KG = " kg  ";
+	  *
 	 private static final String N = " N  ";
 	 private static final String KM_KG = " km/kg  ";
 	 private static final String WH_KM = " Wh/km  ";
-	 private static final String KM = " km  ";
+
 	 private static final String KW = " kW  ";
 	 private static final String KPH = " kph  ";
-	 private static final String KPH_ = " kph ";
-	 private static final String WH = " Wh  ";
-	 private static final String KWH = " kWh  ";
-	 private static final String W = " W  ";		
 	  */
 	 
 	 // Data members
@@ -107,7 +113,7 @@
 	  * @param vKPH
 	  * @param remainingFuel
 	  * @param remainingOxidizer
-	  * @return
+	  * @return remainingHrs
 	  */
 	 public double consumeFuelEnergy(double hrsTime, double distToCover, double vKPH, double remainingFuel, double remainingOxidizer) {
 		 // Set overallEnergyUsed [in Wh], not in kWh
@@ -134,12 +140,14 @@
 			 logger.log(vehicle, Level.INFO, 20_000, "Final speed was negative (" 
 					 +  Math.round(vKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 vKPH = 0;
+			 vMS = 0;
 		 }
 			
 		 if (uKPH < 0 || uMS < 0) {
 			 logger.log(vehicle, Level.INFO, 20_000, "Initial speed was negative (" 
 					 +  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 uKPH = 0;
+			 uMS = 0;
 		 }
 		 
 		 // distance in km
@@ -167,18 +175,28 @@
 		 double mg = mass * GRAVITY;
 		 
 		 double potentialEnergyDrone = 0;
+		  
+		 if (vehicle instanceof Rover) {
+				// For Ground rover, it doesn't need as much
+			 angle = vehicle.getTerrainGrade();
+			 // Assume road rolling resistance coeff of 0.05 on roads with pebbles/potholes on Mars (typically 0.015 on paved roads on Earth)
+			 // See https://x-engineer.org/rolling-resistance/
+			 // The ratio between distance and wheel radius is the rolling resistance coefficient
+			 fRolling = - 0.05 * mg * Math.cos(angle);
+			 // https://x-engineer.org/road-slope-gradient-force/
+			 fRoadSlope = - mg * Math.sin(angle);
+		 }
 		 
-		 if (vehicle instanceof Drone) {
+		 else if (vehicle instanceof Drone) {
 			 // For drones, it needs energy to ascend into the air and hover in the air
-			 // Note: Refine this equation for drones 
-			 
+			 // Note: Refine this equation for drones			 
 			 // in km
 			 double currentHeight = ((Drone) vehicle).getHoveringHeight();
-			 /*
-			  * NOTE: May comment off the logging codes below once debugging is done.
-			  * But DO NOT delete any of them. Needed for testing when 
-			  * new features are added in future. Thanks !
-			  * 
+			/*
+			 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+			 * delete any of them. Needed for testing when new features are added in future. Thanks !
+			 */ 
+			  
 			 // Airflow velocity (V1)  // V1 = V0 + v1
 //			 double V1;
 			 // UAV flight speed (V0) // 
@@ -196,13 +214,10 @@
 //			 double weightForceW = 0;
 //			 double liftForceL = 0;
 //			 double thrustForceT = 0;
-//			 double liftToDragRatio = 0; 
-			  */
+//			 double liftToDragRatio = 0;
 			 
-			 fGravity = - mg;
-			 
-			 fRolling = 0;
-			 
+			 fGravity = - mg;		 
+			 fRolling = 0;		 
 			 fRoadSlope = 0;
 			  // FUTURE : How to simulate controlled descent to land at the destination ?
 			  // Also need to account for the use of fuel or battery's power to ascend and descend 
@@ -210,49 +225,38 @@
 			 if (uMS < vMS) {
 				 // Scenario A : Ascent
 				 if (currentHeight >= Flyer.ELEVATION_ABOVE_GROUND) {
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done.
-					  * But DO NOT delete any of them. Needed for testing when 
-					  * new features are added in future. Thanks !
-					  * 
-					 // Case A1 : hovering
-					 // Thus UAV flight speed (V0) is zero
-//					 V0 = 0;
-					 // Airflow velocity V1 = V0 + v1 = 0 + v1
-//					 V1 = v1;
-					 */
+				/*
+				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+				 * delete any of them. Needed for testing when new features are added in future. Thanks !
+				 */
+				 	// Case A1 : hovering
+					// Thus UAV flight speed (V0) is zero
+					// V0 = 0;
+					// Airflow velocity V1 = V0 + v1 = 0 + v1
+					// V1 = v1;
 					 
-					 // Do NOT ascent anymore. Hover at the this height and travel horizontally
+					// Do NOT ascent anymore. Hover at the this height and travel horizontally
 					 potentialEnergyDrone = 0;
-					 
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done.
-					  * But DO NOT delete any of them. Needed for testing when 
-					  * new features are added in future. Thanks !
-					  * 
-					 // Hover airflow velocity V1 = v1 = sqrt (CT /2)
-//					 v1 = Math.sqrt(CT/2);	
-					 // Hover thrust coefficient: CT = 2 * v1^2
-//					 CT = 2 * v1 * v1;
-					 // Hover thrust: T = 2 * density * pi * r^2 * v1^2
-//					 thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * v1 * v1;
-//					 liftToDragRatio = liftForceL / dragForceD;				 
-//					 thrustForceT = weightForceW / liftToDragRatio;
+					/*
+					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+					 * delete any of them. Needed for testing when new features are added in future. Thanks !
 					 */
+					// Hover airflow velocity V1 = v1 = sqrt (CT /2)
+					// v1 = Math.sqrt(CT/2);	
+					// Hover thrust coefficient: CT = 2 * v1^2
+					// CT = 2 * v1 * v1;
+					// Hover thrust: T = 2 * density * pi * r^2 * v1^2
+					// thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * v1 * v1;
+					// liftToDragRatio = liftForceL / dragForceD;				 
+					// thrustForceT = weightForceW / liftToDragRatio;
 				 }
 				 else {
 					 // Case A2 : lifting up
 					 // For ascent, assume the height gained is the same as distanceTravelled
-					 potentialEnergyDrone = mg * 1000 * distanceTravelled;
-					 	 
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done.
-					  * But DO NOT delete any of them. Needed for testing when 
-					  * new features are added in future. Thanks !
-					  * 
+					 potentialEnergyDrone = mg * 1000 * distanceTravelled;				 	 
+
 					 // Lifting up thrust T = 2 * density * pi * r^2 * (V0 + v1) * v1
-//					 thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * (V0 + v1) * v1;
-					  */
+					 // thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * (V0 + v1) * v1;
 				 }
 			 }
  
@@ -272,35 +276,22 @@
 					 if (currentHeight < distanceTravelled) {
 						 // Assume the height lost is the same as distanceTravelled
 						 distanceTravelled = currentHeight;
-						 /*
-						  * NOTE: May comment off the logging codes below once debugging is done.
-						  * But DO NOT delete any of them. Needed for testing when 
-						  * new features are added in future. Thanks !
-						  * 
+						/*
+						 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+						 * delete any of them. Needed for testing when new features are added in future. Thanks !
+						 */
 						 // Landing airflow velocity V1 = v1 - abs(V0)
-//						 V1 = v1 - Math.abs(vMS);					 
+						 // V1 = v1 - Math.abs(vMS);					 
 						 // Landing thrust coefficient: CT = −2(V0_bar + v1_bar)．v1_bar
 						 // Landing induced velocity: v1_bar = −v0_bar / 2 - sqrt((v0_bar/2)^2 - CT/2))
 						 // Landing thrust T = - 2 * density * pi * r^2 * ( V0 + v1) * v1
-//						 thrustForceT =  - 2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * (vMS + v1) * v1;
-					 	  */
+						 // thrustForceT =  - 2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * (vMS + v1) * v1;
 					 }
 
 					 // For descent, assume the height lost is the same as distanceTravelled
 					 potentialEnergyDrone = .25 * mg * 1000 * distanceTravelled;
 				 }
 			 }
-		 }
-	 
-		 else if (vehicle instanceof Rover) {
-				// For Ground rover, it doesn't need as much
-			 angle = vehicle.getTerrainGrade();
-			 // Assume road rolling resistance coeff of 0.05 on roads with pebbles/potholes on Mars (typically 0.015 on paved roads on Earth)
-			 // See https://x-engineer.org/rolling-resistance/
-			 // The ratio between distance and wheel radius is the rolling resistance coefficient
-			 fRolling = - 0.05 * mg * Math.cos(angle);
-			 // https://x-engineer.org/road-slope-gradient-force/
-			 fRoadSlope = - mg * Math.sin(angle);
 		 }
 		 
 		 double fInitialFriction = - 5.0 / (0.5 + averageSpeed);  // [in N]
@@ -319,20 +310,21 @@
 		  
 		 double fuelNeeded = 0;
 		 
+		 double energyByBattery = 0;
+		 
 		 if (accelMotor >= 0) {
 			 // Scenario 1: acceleration is needed to either maintain the speed or to go up to the top speed
   
 			 // Set new vehicle acceleration
 			 vehicle.setAccel(accelMotor);
-			 
+			 // W = [m/s2] [kg] [m/s] + [J] / [s]
 			 double iPower = accelMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
 			 
-			 if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
-				 /*
-				  * NOTE: May comment off the logging codes below once debugging is done.
-				  * But DO NOT delete any of them. Needed for testing when 
-				  * new features are added in future. Thanks !
-				  * 
+//			 if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
+				/*
+				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+				 * delete any of them. Needed for testing when new features are added in future. Thanks !
+
 				 logger.log(vehicle, Level.INFO, 20_000,  
 					 "Scenario 1A: Need to exert power just to maintain the speed at "
 					 + Math.round(vKPH * 100.0)/100.0 + KPH
@@ -340,67 +332,79 @@
 					 + "accelTarget: " + Math.round(accelTarget * 100.0)/100.0 + " m/s2  "
 					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 100.0)/100.0 + " m/s2."
 					 );
-				  */
-			 }
-			 else {
-				 /*
-				  * NOTE: May comment off the logging codes below once debugging is done.
-				  * But DO NOT delete any of them. Needed for testing when 
-				  * new features are added in future. Thanks !
-				  * 
+				 */
+//			 }
+//			 else {
+				/*
+				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+				 * delete any of them. Needed for testing when new features are added in future. Thanks !
+
 				 logger.log(vehicle, Level.INFO, 20_000,  
 					 "Scenario 1B: Need to accelerate and increase the speed from "
 					 +  Math.round(uKPH * 100.0)/100.0 + KPH_
 					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH_
 					 + "accelMotor: " + Math.round(accelMotor * 100.0)/100.0 + " m/s2  "
 					 + "accelTarget: " + Math.round(accelTarget * 100.0)/100.0 + " m/s2  "
-					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_0.0)/100.0 + " m/s2."
-					 );
-				  */
-			 }        
+					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_0.0)/100.0 + " m/s2.");
+				 */
+//			 }        
   
 			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 double totalEnergyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
-			 // Get energy from the battery
-			 double energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
+			// Get energy [in Wh] from the battery
+//			 double energyByBattery = 0;
+			 // Get energy [in Wh] from the fuel
+			 double energyNeededByFuel = 0;
+			 
+			 if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+				 // For drone, prioritize to use up fuel as power source first
+				 // Get energy from the battery				 
+				 energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
+			 }
+			 else {
+				 // For ground vehicles
+				 // Get energy from the battery
+				 energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
+			 }
+			 
 			 // Get energy from the fuel
-			 double energyByFuel = totalEnergyNeeded - energyByBattery;
+			 energyNeededByFuel = totalEnergyNeeded - energyByBattery;
 			 
 			 overallEnergyUsed = totalEnergyNeeded;
 			 
-			 // Scenario 2A : Battery has enough juice for the acceleration
-			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 100.0)/100.0) {
-				 /*
-				  * NOTE: May comment off the logging codes below once debugging is done.
-				  * But DO NOT delete any of them. Needed for testing when 
-				  * new features are added in future. Thanks !
-				  * 
+			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 1000.0)/1000.0) {
+				 // Scenario 2A : Battery has enough juice for the acceleration
+				 
+				/*
+				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+				 * delete any of them. Needed for testing when new features are added in future. Thanks !
+				 */
+
 				 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2A: Use on-board battery only. "
 						 + "energyByBattery: " + Math.round(energyByBattery * 100.0)/100.0 + WH
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH 						 
-						 + "Battery: " + Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
-						 ); 		 
-				*/
+						 + "Battery: " + Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH); 		 
+
 			 }
 			  
-			 else if (energyByFuel > 0.001) {
+			 else if (energyNeededByFuel > MIN_FUEL) {
 				  // Scenario 2B and 2C: If the battery is unable to meet the needed energy requirement
 				 // Need to turn on fuel cells to supply more power
 				  
 				 // Derive the mass of fuel needed kg = Wh / Wh/kg
-				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
+				 fuelNeeded = energyNeededByFuel / vehicle.getFuelConv();
 				 
 				 // Note that if remainingFuel == -1, it's either nuclear powered or solar powered
 				 if (remainingFuel == -1 || fuelNeeded <= remainingFuel) {
+					// Scenario 2B: if fuelNeeded is smaller than remainingFuel, 
+					// then fuel is sufficient.
 					 
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done.
-					  * But DO NOT delete any of them. Needed for testing when 
-					  * new features are added in future. Thanks !
-					  * 
-					 // Scenario 2B: fuel is sufficient
+					/*
+					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+					 * delete any of them. Needed for testing when new features are added in future. Thanks !
+					 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2B: Partial battery with sufficient fuel.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
@@ -408,41 +412,55 @@
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH  						 
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
-						 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + " km."
-						 );
-						 */
+						 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + " km.");
+
 				 }
 				 else {				
 					 // Scenario 2C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
 					 
 					 // Limit the fuel to be used
 					 fuelNeeded = remainingFuel;
+					 // Calculate the new energy provided by the fuel
+					 energyNeededByFuel = fuelNeeded * vehicle.getFuelConv();	
+					 
+					 logger.log(vehicle, Level.INFO, 20_000, "energyNeededByFuel: " 
+							 +  Math.round(energyNeededByFuel * 1000.0)/1000.0 + " Wh");					 
+					 
+					 // Recompute overallEnergyUsed
+					 overallEnergyUsed = energyNeededByFuel + energyByBattery;
+							
+					 // Calculate the new instantaneous power
+					 // 1 Wh = 3.6 kJ 
+					 // W = J / s  / [3.6 kJ / Wh]
+					 // W = Wh / 3.6k
+					 iPower = overallEnergyUsed / secs / JOULES_PER_WH;
  
-					 energyByFuel = fuelNeeded * vehicle.getFuelConv();
-		 
-					 // FUTURE: need to consider the on-board vehicle power usage
-					 iPower = energyByFuel / secs * JOULES_PER_WH;
- 
-					 // recompute overallEnergyUsed
-					 overallEnergyUsed = energyByFuel + energyByBattery;
-							 
+					 // FUTURE: will consider the on-board accessory vehicle power usage
+		
+					 // Previously, double iPower = accelMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
+					 // iPower - potentialEnergyDrone / secs = accelMotor * mass * vMS ; 
+					 // vMS = (iPower - potentialEnergyDrone / secs) / accelMotor / mass
+					 
+					 vMS = (iPower - potentialEnergyDrone / secs) / accelMotor / mass;
+					 
 					 // Find the new speed   
-					 vKPH = iPower - potentialEnergyDrone / secs / accelMotor / mass;
+//?					 vKPH = iPower - potentialEnergyDrone / secs / accelMotor / mass;
 					 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
 					 
-					 vMS = vKPH / KPH_CONV; // [in m/s^2]
+					 vKPH = vMS * KPH_CONV;
+					 
+//					 vMS = vKPH / KPH_CONV; // [in m/s^2]
  
 					 accelTarget = (vMS - uMS) / secs; // [in m/s^2]
 					 // Recompute the new distance it could travel
 					 distanceTravelled = vKPH * hrsTime;
 							 
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done.
-					  * But DO NOT delete any of them. Needed for testing when 
-					  * new features are added in future. Thanks !
-					  * 
+					/*
+					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+					 * delete any of them. Needed for testing when new features are added in future. Thanks !
+					 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
 							 "Scenario 2C: Partial battery and insufficient fuel.  " 
 							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
@@ -453,26 +471,25 @@
 							 + "iPower: " 			+ Math.round(iPower * 100.0)/100.0 + W							
 							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH   							
 //							 + "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + KM 
-							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM
-							 );
-					 */
+							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM);
+					 
 				 }
 			 }
-			 else { // Scenario 2D : is this normal ?
-				 /*
-				  * NOTE: May comment off the logging codes below once debugging is done.
-				  * But DO NOT delete any of them. Needed for testing when 
-				  * new features are added in future. Thanks !
-				  * 
+			 else { 
+				// Scenario 2D : battery power is not sufficient and not using any fuel
+				// Diagnostic : 
+				/*
+				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+				 * delete any of them. Needed for testing when new features are added in future. Thanks !
+				 */
 				  logger.log(vehicle, Level.INFO, 20_000,  
-						 "Scenario 2D: Unknown.  " 
-						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
-						 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
-						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
-						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
-						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
-						 );
-				  */
+							 "Scenario 2D: " 
+							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
+							 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
+							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
+							 + "energyByFuel: " +  Math.round(energyNeededByFuel * 100.0)/100.0 + WH
+							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
+							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG);
 			 }
 			 
 			 double iFE = 0;
@@ -499,10 +516,10 @@
 			 double aveP = overallEnergyUsed / 1000.0 / hrsTime;
 			 */
 			 
-			 /*
-			  * NOTE: May comment off the logging codes below once debugging is done.
-			  * But DO NOT delete any of them. Needed for testing when 
-			  * new features are added in future. Thanks !
+			/*
+			 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+			 * delete any of them. Needed for testing when new features are added in future. Thanks !
+
 			  
 			 logger.log(vehicle, Level.INFO, 20_000,  
 					vehicle.getSpecName()
@@ -549,12 +566,13 @@
 					+ "initFC: " 			+ Math.round(vehicle.getInitialFuelConsumption() * 100.0)/100.0 + WH_KM  					
 					+ "instantFC: " 		+ Math.round(iFC * 100.0)/100.0 + WH_KM
 					+ "estFC: " 			+ Math.round(vehicle.getEstimatedFuelConsumption() * 100.0)/100.0 + WH_KM  
-					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 100.0)/100.0 + WH_KM  
-			 );
+					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 100.0)/100.0 + WH_KM);
 			*/
 			 
 			 // Cache the new value of fuelUsed	
 			 if (fuelNeeded > 0 && remainingFuel != -1) {
+				 logger.log(vehicle, Level.INFO, 20_000, "fuelNeeded: " 
+						 +  Math.round(fuelNeeded * 1000.0)/1000.0 + " kg");
 				 // Retrieve the fuel needed for the distance traveled
 				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume double amount of oxygen as fuel oxidizer
@@ -564,31 +582,59 @@
 			 }
 		 }
 		 
-		 else {
-				// Scenario 2: deceleration is needed
+		 else if (accelMotor == 0D) {
+			// accelMotor < 0
+			 // Scenario 2: deceleration is needed
 			 
 			 // Gets the deceleration using regenerative braking
-			 double accelRegen = accelMotor;
+			 double regenDecel = 0;
 			 // Set new vehicle acceleration
-			 vehicle.setAccel(accelRegen);
+			 vehicle.setAccel(0);
 			 
-			 double iPower = - accelRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
+			 double iPower = 0; // (vMS + uMS)/2.0; // [in W]
 				
 			 /*
 			  * NOTE: May comment off the logging codes below once debugging is done.
 			  * But DO NOT delete any of them. Needed for testing when 
 			  * new features are added in future. Thanks !
-			  * 
+			  */ 
 			 logger.log(vehicle, Level.INFO, 20_000, 
-					 "Scenario 2: Need to decelerate and reduce the speed from " 
-					 +  Math.round(uKPH * 10.0)/10.0 + KPH_
-					 + "to " + Math.round(vKPH * 10.0)/10.0 + KPH_
-					 + "regen decel: " + Math.round(accelRegen * 100.0)/100.0 
+					 "Scenario 2a: No change of speed. uKPH: " 
+					 +  Math.round(uKPH * 100.0)/100.0 + KPH_
+					 + "vKPH: " + Math.round(vKPH * 100.0)/100.0 + KPH_
+					 + "regen decel: " + Math.round(regenDecel * 100.0)/100.0 
 					 + " m/s2.  "
-					 + "target decel: " + Math.round(accelTarget * 100.0)/100.0 
+					 + "target accel: " + Math.round(accelTarget * 100.0)/100.0 
 					 + " m/s2."			
 			 );
-			 */
+		 }
+		 
+		 else { 
+			 // accelMotor < 0
+			 // Scenario 2: deceleration is needed
+			 
+			 // Gets the deceleration using regenerative braking
+			 double regenDecel = accelMotor;
+			 // Set new vehicle acceleration
+			 vehicle.setAccel(regenDecel);
+			 
+			 double iPower = - regenDecel * mass * vMS; // (vMS + uMS)/2.0; // [in W]
+				
+			 /*
+			  * NOTE: May comment off the logging codes below once debugging is done.
+			  * But DO NOT delete any of them. Needed for testing when 
+			  * new features are added in future. Thanks !
+			  */ 
+			 logger.log(vehicle, Level.INFO, 20_000, 
+					 "Scenario 2b: Decelerate and reduce the speed from " 
+					 +  Math.round(uKPH * 100.0)/100.0 + KPH
+					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH_
+					 + "regen decel: " + Math.round(regenDecel * 100.0)/100.0 
+					 + " m/s2.  "
+					 + "target accel: " + Math.round(accelTarget * 100.0)/100.0 
+					 + " m/s2."			
+			 );
+
 			 
 			 // Convert the energyNeeded energy from J to Wh
 			 double energyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
@@ -614,11 +660,10 @@
 				 vehicle.setIFuelEconomy(iFE);
 			 }
 			 
-			 /*
-			  * NOTE: May comment off the logging codes below once debugging is done.
-			  * But DO NOT delete any of them. Needed for testing when 
-			  * new features are added in future. Thanks !
-			  * 
+			/*
+			 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+			 * delete any of them. Needed for testing when new features are added in future. Thanks !
+
 			 logger.log(vehicle, Level.INFO, 20_000,  
 			 vehicle.getSpecName()
 			 		+ "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
@@ -655,22 +700,21 @@
 		 // Determine new position
 		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled)); 
 		 
-		 double totalEnergyUsed = (1.0 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) * (overallEnergyUsed + regenEnergyBuffer);
+		 double totalEnergyUsed = (0.1 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) 
+				 * (overallEnergyUsed + regenEnergyBuffer);
 
-		 /*
-		  * NOTE: May comment off the logging codes below once debugging is done.
-		  * But DO NOT delete any of them. Needed for testing when 
-		  * new features are added in future. Thanks !
-		  * 
+		/*
+		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+		 * delete any of them. Needed for testing when new features are added in future. Thanks !
+
 		 logger.info(vehicle, 20_000L, "dist: " + Math.round(distanceTravelled * 100.0)/100.0 
 				 + "  totalEnergyUsed: "  + Math.round(totalEnergyUsed* 100.0)/100.0
 				 + "  totalEnergyUsed / dist: "  + Math.round(totalEnergyUsed/distanceTravelled * 100.0)/100.0
-				 + "  averageRoadLoadPower: " + Math.round(averageRoadLoadPower * 100.0)/100.0
-				 );
+				 + "  averageRoadLoadPower: " + Math.round(averageRoadLoadPower * 100.0)/100.0);
 		 */
 		 
 		 // Add distance traveled to vehicle's odometer.
-		 vehicle.addOdometerMileage(distanceTravelled, totalEnergyUsed);
+		 vehicle.addOdometerMileage(distanceTravelled, energyByBattery, fuelNeeded);
 		 // Track maintenance due to distance traveled.
 		 vehicle.addDistanceLastMaintenance(distanceTravelled);
 		 // Derive the instantaneous fuel economy [in km/kg]

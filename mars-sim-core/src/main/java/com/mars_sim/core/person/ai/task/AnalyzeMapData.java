@@ -200,7 +200,6 @@ public class AnalyzeMapData extends Task {
         
         if (totalWork > getDuration() * .95) {
 
-   	
         	// Get a lowest range rover
      		Rover rover = person.getAssociatedSettlement().getVehicleWithMinimalRange();
      		
@@ -211,11 +210,20 @@ public class AnalyzeMapData extends Task {
      		// Look for the first site to be analyzed and explored
      		Coordinates aSite = person.getAssociatedSettlement().getAComfortableNearbyMineralLocation(rangeLimit, skill);
          				
-         	// Creates an initial explored site in SurfaceFeatures
-         	person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
-         				
-         	logger.info(person, "Zoned up a ROI at " +  aSite.getFormattedString() + ".");
-         	
+     		if (aSite != null) {
+	         	// Creates an initial explored site in SurfaceFeatures
+     			ExploredLocation loc = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
+	         			
+     			if (loc != null)
+     				logger.info(person, "Zoned up a new ROI at " +  aSite.getFormattedString() + ".");
+     			else {
+     				logger.info(person, "No site of interest found.");
+     			}
+     		}
+     		else {
+     			logger.info(person, "No site of interest found.");
+     		}
+     		
          	endTask();
         }
 

@@ -54,6 +54,8 @@ implements ActionListener {
 	
 	private JTextField causeTF, timeTF, malTF, examinerTF;
 
+	private DeathInfo death;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -76,7 +78,7 @@ implements ActionListener {
 	protected void buildUI(JPanel content) {
 			
 		PhysicalCondition condition = person.getPhysicalCondition();
-		DeathInfo death = condition.getDeathDetails();
+		death = condition.getDeathDetails();
 
 		// Prepare death label panel
 		JPanel deathLabelPanel = new JPanel(new SpringLayout());
@@ -112,10 +114,11 @@ implements ActionListener {
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		examinerTF = new JTextField();
-		String text = "[Not Yet]";
+		String text = "";
 		if (death.getExamDone()) {
-			text = death.getDoctor() + " [" 
-				+ Math.round(death.getTimeExam() * 10.0)/10.0 + " millisols]";
+			text = death.getDoctor();
+//				+ " [" 
+//				+ Math.round(death.getTimeExam() * 10.0)/10.0 + " millisols]";
 		}
 		examinerTF.setText(text);
 		examinerTF.setEditable(false);
@@ -244,6 +247,19 @@ implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		// Update navigator tool.
 		getDesktop().centerMapGlobe(getUnit().getCoordinates());
+	}
+	
+	/**
+	 * Updates the info on this panel.
+	 */
+	@Override
+	public void update() {
+		
+		if (death.getExamDone()) {
+			String text = death.getDoctor() + " [" 
+				+ death.getTimePostMortemExam().getTruncatedDateTimeStamp() + "]";
+			examinerTF.setText(text);
+		}	
 	}
 }
 

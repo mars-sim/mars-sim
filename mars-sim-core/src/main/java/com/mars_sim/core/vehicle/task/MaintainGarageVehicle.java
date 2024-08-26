@@ -49,8 +49,8 @@ public class MaintainGarageVehicle extends Task {
 	/** Task phases. */
 	private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString("Task.phase.maintainVehicle")); //$NON-NLS-1$
 
-	private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-										true, 0.1D, SkillType.MECHANICS);
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, 
+			NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.1D, SkillType.MECHANICS);
 
 	// Data members
 	/** The maintenance garage. */
@@ -97,35 +97,23 @@ public class MaintainGarageVehicle extends Task {
 				return;
 			}
 			
-
-			for(var garageBuilding : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
-				VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
-					
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-					if (garageTemp.getFlyerCapacity() > 0) {
-						garage = garageTemp;
-						garage.addFlyer((Flyer)vehicle);
-					}							
-				}
-				else {
-					if (garageTemp.getAvailableCapacity() > 0) {
-						garage = garageTemp;
-						garage.addVehicle(vehicle);
-					}
-				}
-
-				if (garage != null) {	
-					// Walk to garage.
-					walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
-					break;
-				}
+			vehicle.addToAGarage();
+			
+			building = settlement.getBuildingManager().addToGarageBuilding(vehicle);
+				
+			if (building != null) {
+				garage = building.getVehicleMaintenance();
 			}
 		}
 
 		// End task if vehicle or garage not available.
 		if (garage == null) {
-			clearTask(vehicle.getName() + " No available garage for maintenance.");
+			clearTask("No available garage for " + vehicle.getName() + " maintenance.");
 			return;
+		}
+		else {
+			// Walk to garage.
+			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.VEHICLE_MAINTENANCE, false);
 		}
 
 		logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());

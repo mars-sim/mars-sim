@@ -4,10 +4,11 @@
 	<!ELEMENT vehicle (description?, power-source, battery-module, energy-per-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
+	<!-- These are aligned with VehicleType enum-->
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 
-	<!-- These are aligned with VehicleType enum-->
 	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
+	<!ATTLIST vehicle model CDATA #REQUIRED>
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
 	<!ATTLIST vehicle length CDATA #REQUIRED>
@@ -100,10 +101,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 <vehicle-configuration>
 	<!-- The size of the rover [in m]. (required) -->
-	<vehicle name="Explorer Rover" type="EXPLORER_ROVER" width="3.5" length="8.0">
+	<vehicle name="Explorer Rover" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0">
 		<!-- Note: the vehicle types used here must match those in message.properties -->
 
-		<description>A rover for collecting rock samples from remote sites and ice prospecting.
+		<description>A rover for collecting rock samples, ice and regolith.
 			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
 
 		<!-- The power source type for the vehicle (required) -->
@@ -155,6 +156,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Cargo capacity list -->
 		<!-- See Rover.java for adding capacity for each resource -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
+		<!-- 
+			 As a comparison, Tesla's Cybertruck's payload capacity 
+			 is 1,136 kg. Chevrolet Silverado EV's 652 kg 
+			 and the Ford F-150 Lightning's 1,000 kg.	
+		-->
 		<!-- Default: varies according to the type of vehicle -->
 		<cargo total-capacity="2000.0">
 
@@ -189,11 +195,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- Default: varies according to the type of vehicle -->
 			<!--<capacity resource="dessert" value="120.0" />-->
 
-			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="rock samples" value="400.0" />
+			<!-- Default: varies according to the type of vehicle
+			<capacity resource="rock samples" value="750.0" /> -->
 
-			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="ice" value="400.0" />
+			<!-- Default: varies according to the type of vehicle 
+			<capacity resource="ice" value="750.0" /> -->
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="food waste" value="10.0" />
@@ -248,8 +254,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	</vehicle>
 
-	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long range explorer">
-		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
+	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0" base-image="long range explorer">
+		<description>An extended range version of the Explorer Rover.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
 		<battery-module number="3" />
 		<energy-per-module value="10" />		
@@ -270,13 +276,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="200.0" />
 			<capacity resource="food" value="100.0" />
 			
-			<capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" />
+			<!--capacity resource="rock samples" value="750.0" />
+			<capacity resource="ice" value="750.0" /> -->
 			
 			<capacity resource="food waste" value="8.0" />
-			<capacity resource="solid waste" value="40.0" />
+			<capacity resource="solid waste" value="20.0" />
 			<capacity resource="toxic waste" value="4.0" />
-			<capacity resource="grey water" value="40.0" />
+			<capacity resource="grey water" value="20.0" />
 			<capacity resource="black water" value="10.0" />
 		</cargo>
 
@@ -304,7 +310,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Transport rover -->
-	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" width="3.5" length="9.5">
+	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" model="A" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another
 			and can accommodate up to 8 people.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>			
@@ -315,7 +321,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="25.0" />
 		<base-power value="20" />
 		<empty-mass value="1700.0" />
-		<terrain-handling value="2.5"/>
+		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
 			<capacity resource="methanol" value="400.0" />
@@ -327,8 +333,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="2500.0" />
 			<capacity resource="food" value="250.0" />
 			
-			<capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" />
+			<!--capacity resource="rock samples" value="400.0" />
+			<capacity resource="ice" value="400.0" /> -->
 			
 			<capacity resource="food waste" value="16.0" />
 			<capacity resource="solid waste" value="80.0" />
@@ -355,7 +361,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Cargo rover -->
-	<vehicle name="Cargo Rover" type="CARGO_ROVER" width="4.0" length="8.0">
+	<vehicle name="Cargo Rover" type="CARGO_ROVER" model="A" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
@@ -366,7 +372,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="25.0" />
 		<base-power value="20" />		
 		<empty-mass value="2000.0" />
-		<terrain-handling value="2.5"/>
+		<terrain-handling value="2"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
 			<capacity resource="methanol" value="400.0" />
@@ -378,8 +384,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="2500.0" />
 			<capacity resource="food" value="250.0" />
 			
-			<capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" />
+			<!--capacity resource="rock samples" value="400.0" />
+			<capacity resource="ice" value="400.0" /> -->
 			
 			<capacity resource="food waste" value="16.0" />
 			<capacity resource="solid waste" value="80.0" />
@@ -402,7 +408,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Light Utility Vehicle
 		 See conceptual vehicles for Construction with Regolith https://ntrs.nasa.gov/api/citations/20170002067/downloads/20170002067.pdf
 	-->
-	<vehicle name="Light Utility Vehicle" type="LUV" width="1.7" length="2.55">
+	<vehicle name="Light Utility Vehicle" type="LUV" model="A" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="1" />
@@ -432,7 +438,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Delivery Drone -->
-	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" width="1.75" length="1.75">
+	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" model="A" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		<battery-module number="1" />

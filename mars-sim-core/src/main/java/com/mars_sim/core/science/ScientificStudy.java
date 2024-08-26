@@ -793,7 +793,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			throw new IllegalArgumentException("State cannot be used to complete Study:" + completionState.name());
 		}
 
-		logger.info(this, "Completed:" + completionState.getName() + ", reason:" + reason);
+		logger.info(this, "State: " + completionState.getName() + ". Reason: " + reason);
 
 		this.phase = completionState;
 		primaryResearcher.setStudy(null);
@@ -1085,7 +1085,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 					MarsTime lastPrimaryWork = getLastPrimaryResearchWorkTime();
 					if ((lastPrimaryWork != null) && now.getTimeDiff(
 							lastPrimaryWork) > getPrimaryWorkDownTimeAllowed()) {
-						setCompleted(StudyStatus.CANCELLED, "Abandoned due to lack of participation from primary researcher.");
+						setCompleted(StudyStatus.CANCELLED, "Abandoned due to lack of participation from the primary researcher");
 					}
 				}
 
@@ -1100,7 +1100,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 							Person researcher = um.getPersonByID(e.getKey());
 							removeCollaborativeResearcher(researcher);
 							logger.info(this, "Removed " + researcher.getName()
-								+ " as a collaborator due to lack of participation.");
+								+ " as a collaborator due to lack of participation");
 						}
 					}
 				}

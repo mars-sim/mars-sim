@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Rover.java
- * @date 2023-06-05
+ * @date 2024-07-12
  * @author Scott Davis
  */
 
@@ -317,6 +317,16 @@ public class Rover extends GroundVehicle implements Crewable,
 	public boolean isCrewmember(Person person) {
 		return getCrew().contains(person);
 	}
+	
+	/**
+	 * Checks if person is in the airlock.
+	 *
+	 * @param person the person to check
+	 * @return
+	 */
+	public boolean isInAirlock(Person person) {
+		return getAirlock().getOccupants().contains(person.getIdentifier());
+	}
 
 	/**
 	 * Checks if robot is a crewmember.
@@ -500,6 +510,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @return true if yes
 	 */
 	public boolean isPluggedIn() {
+		// Q: Should we consider a rover "plugged in" as soon as it parks in the settlement vicinity ?
+		// Q: What distance is it supposed to be away from the host building ?
 		if (isInSettlement())
 			return true;
 
@@ -561,7 +573,6 @@ public class Rover extends GroundVehicle implements Crewable,
 		Vehicle v = null;
 
 		// Note: need to draw the the hose connecting between the vehicle and the settlement to supply resources
-
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 				v = getTowingVehicle();
@@ -742,6 +753,8 @@ public class Rover extends GroundVehicle implements Crewable,
 		return airlock;
 	}
 
+	
+	
 	/**
 	 * Perform time-related processes
 	 *
@@ -913,6 +926,14 @@ public class Rover extends GroundVehicle implements Crewable,
 		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
 		double fuelRange = super.getRange() * FUEL_RANGE_FACTOR;
 
+		// Battery constribute the range
+		double cap = super.getBatteryCapacity();
+		double percent = super.getBatteryPercent();
+		double estFC = super.getEstimatedFuelConsumption();
+		double batteryRange = cap * percent / 100 / estFC * 1000;
+		
+//		logger.info(this, "batteryRange: " + batteryRange);
+		
 		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();
 
@@ -939,7 +960,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / margin;
 
-		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange)));
+		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange + batteryRange)));
 
 		return max;
 	}

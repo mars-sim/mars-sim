@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2023-07-19
+ * @date 2024-07-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -231,8 +231,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return true if everyone is aboard
 	 */
 	protected final boolean isEveryoneInRover() {
+		// Note: prior to calling this method, may need to be more defensive 
+		//       to ensure that no "teleported" persons are still members.
+		//       Or else the it would always return false
 		Rover r = getRover();
-		for(Worker m : getMembers()) {
+		for (Worker m : getMembers()) {
 			Person p = (Person) m;
 			if (!r.isCrewmember(p)) {
 				return false;
@@ -338,7 +341,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			else {
 				// If the leader is ejected, then the mission must be cancelled
-				logger.info(member, "Mission Lead " + getStartingPerson().getName() 
+				logger.info(member, "Noted that mission Lead " + getStartingPerson().getName() 
 						+ " evicted from '" + getName() + "' and mission cancelled.");
 				endMission(MISSION_LEAD_NO_SHOW);
 			}
@@ -384,7 +387,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (canWalk) {
 						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 						if (!canDo) {
-							logger.warning(person, "Unable to start walking to " + v + ".");
+							logger.warning(person, 10_000, "Unable to start walking toward " + v + ".");
 						}
 					}
 
@@ -403,7 +406,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (canWalk) {
 					boolean canDo = assignTask(robot, new Walk(robot, walkingSteps));
 					if (!canDo) {
-						logger.warning(robot, "Unable to start walk to " + v + ".");
+						logger.warning(robot, "Unable to start walking to " + v + ".");
 					}
 				}
 
@@ -473,6 +476,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (garage != null) {
 					logger.info(v0, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
 				}
+				else {
+					// Park in the vicinity of the settlement outside
+					v0.findNewParkingLoc();
+				}
 			}
 			else {
 				if (v1 != null) {
@@ -481,7 +488,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					untetherVehicle(v0, v1, disembarkSettlement);
 				}
 				
-				if (v2 != null) {
+				else if (v2 != null) {
 					registerVehicle(v1, disembarkSettlement);
 					
 					untetherVehicle(v2, v0, disembarkSettlement);
@@ -639,7 +646,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (p.isInSettlement()) {
 						logger.info(p, "[Status Report] " + roverName
 								+ " in " + rover.getBuildingLocation().getName()
-								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								+ ".  Location State: " + p.getLocationStateType().getName()
 								);
 					}
 					
@@ -647,7 +654,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						// Not in settlement yet
 						logger.info(p, "[Status Report] " + roverName
 								+ " in " + rover.getLocationStateType().getName()
-								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								+ ".  Location State: " + p.getLocationStateType().getName()
 								);
 					}
 				}
@@ -737,13 +744,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 				boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, rover);
+				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
 				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 				
 				if (canWalk) {
 					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 					if (!canDo) {
-						logger.warning(person, 10_000, "Unable to walk to " + destinationBuilding + ".");
+						logger.warning(person, 10_000, "Unable to walk back to " + destinationBuilding + ".");
 					}
 				}
 
@@ -856,7 +863,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (person.isSuperUnfit()) {
 				
 				if (areAllOthersUnfit) {
-					logger.warning(person, 10_000L, "As every is unfit to operate " + getRover() + ", " 
+					logger.warning(person, 10_000L, "As everyone is unfit to operate " + getRover() + ", " 
 						+ person + " decided to step up to be the pilot.");
 				} else {
 					logger.warning(person, 10_000L, "Super unfit to operate " + getRover() + ".");
@@ -864,7 +871,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 			
-			if (!((Vehicle)getRover()).haveStatusType(StatusType.OUT_OF_FUEL)) {
+			Vehicle v = (Vehicle)getRover();
+			
+			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)
+					&& !v.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -875,7 +885,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			else {
-				logger.warning(getRover(), 10_000L, "Out of fuel. Quit assigning the driving task.");
+				logger.warning(getRover(), 10_000L, "Out of fuel/battery power. Quit assigning the driving task.");
 				return null;
 			}
 		}
@@ -1092,11 +1102,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
 			// Remove last person added to the mission.
 			Person lastPerson = null;
-			 for (Iterator<Worker> i = getMembers().iterator(); 
-					 i.hasNext();) {      
-				 Worker member = i.next();
-				if (member instanceof Person) {
-					lastPerson = (Person) member;
+			for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {      
+				Worker member = i.next();
+				if (member instanceof Person p) {
+					lastPerson = p;
 					// Use Iterator's remove() method
 					i.remove();
 					// Adjust the work shift

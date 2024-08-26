@@ -653,12 +653,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		eventManager.registerNewEvent(newEvent);
 
-		logger.log(entity, Level.WARNING, 0, 
+		if (eventType.getName().equalsIgnoreCase("Acts of God"))
+			logger.log(entity, Level.WARNING, 0, 
 								malfunction.getName()
 								+ PROBABLE_CAUSE 
 								+ eventType.getName() 
-								+ "."
-								+ (actor != null ? CAUSED_BY + whoAffected + "'." : "."));
+								+ ".");
+		else
+			logger.log(entity, Level.WARNING, 0, 
+					malfunction.getName()
+					+ PROBABLE_CAUSE 
+					+ eventType.getName() 
+					+ "."
+					+ (actor != null ? CAUSED_BY + whoAffected + "'." : "."));
 	}
 
 	/**
@@ -678,7 +685,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentWearCondPercent = 0D;
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
 
-		if (pulse.isNewMSol()
+		if (pulse.isNewIntMillisol()
 				&& pulse.getMarsTime().getMillisolInt() % FREQUENCY == 0) {
 			
 			delay--;

@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 2-KR" default-population="7" description="Phase 2 base for KARI"
+    name="Phase 2-KR" default-population="9" description="Phase 2 base for KARI"
 	number-of-robots="5" sponsor="KARI">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -130,7 +130,7 @@
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse to the fish farm -->
+    <!-- This hallway connects the lander hab to a fish farm -->
     <building id="15" type="Hallway" length="4.0" xloc="0"
         yloc="-6.5" facing="0.0">
         <connection-list>
@@ -139,7 +139,7 @@
         </connection-list>
     </building>
 
-    <!-- This fish farm connects to the inflatable greenhouse -->
+    <!-- This fish farm connects to a hallway -->
     <building id="16" type="Fish Farm" xloc="0.0" yloc="-13"
         facing="180.0">
         <connection-list>
@@ -159,7 +159,6 @@
 	<building-package name="MD1 Set 1 - 1x1"/>
 	<building-package name="Small Areothermal Well Set 1 - 1x1"/> 
 
-	
     <vehicle type="Explorer Rover" number="3" />
     <vehicle type="Light Utility Vehicle" number="3" />
     <vehicle type="Delivery Drone" number="3" />

@@ -51,7 +51,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
-	private static final int MAX_MEMBERS = 1;
+	private static final int MAX_MEMBERS = 3;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 
@@ -70,7 +70,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	private Map<Good, Integer> desiredBuyLoad;
 
 	/**
-	 * Constructor. Started by DeliveryMeta
+	 * Constructor. Started by DeliveryMeta.
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
@@ -379,9 +379,10 @@ public class Delivery extends DroneMission implements CommerceMission {
 				}
 			}
 
-			// If the rover is in a garage, put the rover outside.
+
 			Vehicle v = getVehicle();
 
+			// If the rover is in a garage, put the rover outside.
 			// Put the rover outside.
 			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
 //			BuildingManager.removeFromGarage(v);

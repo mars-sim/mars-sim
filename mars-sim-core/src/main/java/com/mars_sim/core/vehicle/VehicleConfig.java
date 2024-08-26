@@ -38,6 +38,7 @@ public class VehicleConfig {
 	// Element names
 	private static final String VEHICLE = "vehicle";
 	private static final String NAME = "name";
+	private static final String MODEL = "model";
 	private static final String TYPE = "type";
 	private static final String FUEL = "fuel";
 	private static final String BASE_IMAGE = "base-image";
@@ -111,6 +112,7 @@ public class VehicleConfig {
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
 		for (Element vehicleElement : vehicleNodes) {
 			String name = vehicleElement.getAttributeValue(NAME);
+			String model = vehicleElement.getAttributeValue(MODEL);
 			VehicleType type = VehicleType.valueOf(ConfigHelper.convertToEnumName(vehicleElement.getAttributeValue(TYPE)));
 
 			String baseImage = vehicleElement.getAttributeValue(BASE_IMAGE);
@@ -147,7 +149,7 @@ public class VehicleConfig {
 			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, 
+			VehicleSpec v = new VehicleSpec(name, type, model, description, baseImage, 
 					powerSourceType, fuelTypeStr, powerValue,
 					battery, energyPerModule, fuelCell, 
 					drivetrainEff, baseSpeed, basePower, emptyMass, 

@@ -325,7 +325,7 @@ public class Computation extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 	
-			if (pulse.isNewMSol()) {
+			if (pulse.isNewIntMillisol()) {
 				
 				increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR * currentCU / 10);
 	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResourcesMissionCustomInfoPanel.java
- * @date 2023-03-31
+ * @date 2024-07-18
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.mission;
@@ -30,16 +30,16 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class CollectResourcesMissionCustomInfoPanel
-extends MissionCustomInfoPanel
-implements UnitListener {
+extends MissionCustomInfoPanel implements UnitListener {
 
 	// Data members.
-	private CollectResourcesMission mission;
-
-	private Rover missionRover;
-	private JLabel[] amountLabels = null;
 	private Set<AmountResource> resourcesCollected = new HashSet<>();
-
+	
+	private JLabel[] amountLabels = null;
+	
+	private Rover missionRover;
+	private CollectResourcesMission mission;
+	
 	/**
 	 * Constructor.
 	 */
@@ -52,15 +52,14 @@ implements UnitListener {
 
 		// Create content panel.
 		AttributePanel collectionPanel = new AttributePanel(resourceIds.length);
-		collectionPanel.setBorder(StyleManager.createLabelBorder("Resource Collected - Aboard Vehicle"));
+		collectionPanel.setBorder(StyleManager.createLabelBorder("Resource Collected"));
 		add(collectionPanel, BorderLayout.NORTH);
 				
 		amountLabels = new JLabel[resourceIds.length];
 		for (int i=0; i<resourceIds.length; i++) {
 			AmountResource ar = ResourceUtil.findAmountResource(resourceIds[i]);
 			resourcesCollected.add(ar);
-			
-			amountLabels[i] = collectionPanel.addTextField(ar.getName(), StyleManager.DECIMAL_KG.format(0D), null);
+			amountLabels[i] = collectionPanel.addRow(ar.getName(), StyleManager.DECIMAL_KG.format(0D));
 		}
 	}
 
@@ -68,13 +67,15 @@ implements UnitListener {
 	@Override
 	public void updateMission(Mission newMission) {
 		if (newMission instanceof CollectResourcesMission crMission) {
+
+			// Set the mission and mission rover.
+			this.mission = crMission;
+			
 			// Remove as unit listener to any existing rovers.
 			if (missionRover != null) {
 				missionRover.removeUnitListener(this);
 			}
 
-			// Set the mission and mission rover.
-			this.mission = crMission;
 			if (this.mission.getRover() != null) {
 				missionRover = this.mission.getRover();
 				// Register as unit listener for mission rover.
@@ -83,6 +84,8 @@ implements UnitListener {
 
 			// Update the collection value label.
 			updateCollectionValueLabel();
+			
+			repaint();
 		}
 	}
 
@@ -108,7 +111,7 @@ implements UnitListener {
 	 */
 	private void updateCollectionValueLabel() {
 
-		Map<Integer, Double> collected = mission.getResourcesCollected();
+		Map<Integer, Double> collected = mission.getCumulativeCollectedByID();
 
 		int i = 0;
 		for (AmountResource resourceId : resourcesCollected) {

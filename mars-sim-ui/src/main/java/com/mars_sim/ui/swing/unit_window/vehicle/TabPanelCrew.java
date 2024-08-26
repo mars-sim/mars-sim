@@ -13,7 +13,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -66,13 +65,10 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	private JLabel crewNumTF;
 
-	private int crewNumCache;
-	private int crewCapacityCache;
+	private int crewNumCache = -1;
 
 	/** The mission instance. */
-	private Mission mission;
-	/** The Crewable instance. */
-	private Crewable crewable;
+	private VehicleMission mission;
 
 	/**
 	 * Constructor.
@@ -89,8 +85,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			vehicle, desktop
 		);
 
-		crewable = (Crewable) vehicle;
-		mission = vehicle.getMission();
+		if (vehicle.getMission() instanceof VehicleMission vm) {
+			mission = vm;
+		}
 	}
 
 	@Override
@@ -103,13 +100,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		northPanel.add(crewCountPanel, BorderLayout.CENTER);
 
 		// Create crew num header label
-		crewNumCache = crewable.getCrewNum();
 		crewNumTF = crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewNum"),
-								Integer.toString(crewNumCache),
+								"",
 								 Msg.getString("TabPanelCrew.crew.tooltip"));
 
 		// Create crew cap header label
-		crewCapacityCache = crewable.getCrewCapacity();
+		int crewCapacityCache = ((Crewable) getUnit()).getCrewCapacity();
 		crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewCapacity"),
 								Integer.toString(crewCapacityCache),
 					 			Msg.getString("TabPanelCrew.crewCapacity.tooltip"));
@@ -163,15 +159,21 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		Vehicle vehicle = (Vehicle) getUnit();
 		Crewable crewable = (Crewable) vehicle;
 		Mission newMission = vehicle.getMission();
-		if (mission != newMission) {
-			mission = newMission;
-			memberTableModel.setMission(newMission);
+		if ((mission == null) || !mission.equals(newMission)) {
+			if (newMission instanceof VehicleMission vm) {
+				mission = vm;
+			}
+			else {
+				mission = null;
+			}
+
+			memberTableModel.setMission(mission);
 		}
 
 		// Update crew num
 		if (crewNumCache != crewable.getCrewNum() ) {
 			crewNumCache = crewable.getCrewNum() ;
-			crewNumTF.setText(crewNumCache + "");
+			crewNumTF.setText(Integer.toString(crewNumCache));
 		}
 
 		// Update crew table
@@ -200,8 +202,10 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		
 		crewNumTF = null;
 		memberTable = null;
-		memberTableModel.clearMembers();
-		memberTableModel = null;
+		if (memberTableModel != null) {
+			memberTableModel.clearMembers();
+			memberTableModel = null;
+		}
 	}
 
 	/**
@@ -210,7 +214,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	private class MemberTableModel extends AbstractTableModel implements UnitListener, EntityModel {
 
 		// Private members.
-		private Mission mission;
+		private VehicleMission mission;
 		private List<Worker> members;
 
 		/**
@@ -245,6 +249,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @param columnIndex the column's index.
 		 * @return the column name.
 		 */
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return Msg.getString("MainDetailPanel.column.name"); //$NON-NLS-1$
@@ -261,6 +266,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @param column the table column.
 		 * @return the value.
 		 */
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
 				Worker member = members.get(row);
@@ -285,12 +291,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @return
 		 */
 		boolean boarded(Worker member) {
-			if (mission instanceof VehicleMission) {			
-				if (member.getUnitType() == UnitType.PERSON) {
-					Rover r = (Rover)(((VehicleMission)mission).getVehicle());
-					if (r != null && r.isCrewmember((Person)member))
-						return true;
-				}
+			if (member.getUnitType() == UnitType.PERSON) {
+				Rover r = (Rover)mission.getVehicle();
+				return (r != null && r.isCrewmember((Person)member));
 			}
 			return false;
 		}
@@ -300,16 +303,17 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 *
 		 * @param newMission the new mission.
 		 */
-		void setMission(Mission newMission) {
+		void setMission(VehicleMission newMission) {
 			this.mission = newMission;
 			updateMembers();
 		}
 
 		/**
-		 * Catch unit update event.
+		 * Catches unit update event.
 		 *
 		 * @param event the unit event.
 		 */
+		@Override
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
 			Worker member = (Worker) event.getSource();
@@ -327,39 +331,31 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Update mission members.
+		 * Updates mission members.
 		 */
 		void updateMembers() {
 			if (mission != null) {
 				List<Worker> newList = new ArrayList<>(mission.getMembers());
 
 				if (!members.equals(newList)) {
-					List<Integer> rows = new ArrayList<>();
+					// Existing members, not in the new list then remove listener
+					members.stream()
+							.filter(m -> !newList.contains(m))
+							.forEach(mm -> mm.removeUnitListener(this));
 
-					for (Worker mm: members) {
-						if (!newList.contains(mm)) {
-							mm.removeUnitListener(this);
-						}
-					}
-
-					for (Worker mm: newList) {
-						if (!members.contains(mm)) {
-							mm.addUnitListener(this);
-							int index = newList.indexOf(mm);
-							rows.add(index);
-						}
-					}
+					// New members, not in the existing list then add listener
+					newList.stream()
+							.filter(m -> !members.contains(m))
+							.forEach(mm -> mm.addUnitListener(this));
 
 					// Replace the old member list with new one.
 					members = newList;
 
-					for (int i : rows) {
-						// Update this row
-						fireTableRowsUpdated(i, i);
-					}
+					// Update this row
+					fireTableDataChanged();
 				}
 			} else {
-				if (members.size() > 0) {
+				if (!members.isEmpty()) {
 					clearMembers();
 					fireTableDataChanged();
 				}
@@ -367,17 +363,11 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Clear all members from the table.
+		 * Clears all members from the table.
 		 */
 		private void clearMembers() {
-			if (members != null) {
-				Iterator<Worker> i = members.iterator();
-				while (i.hasNext()) {
-					Worker member = i.next();
-					member.removeUnitListener(this);
-				}
-				members.clear();
-			}
+			members.forEach(m -> m.removeUnitListener(this));
+			members.clear();
 		}
 
 		@Override

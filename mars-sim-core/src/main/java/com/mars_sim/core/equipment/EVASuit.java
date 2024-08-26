@@ -210,10 +210,14 @@ public class EVASuit extends Equipment
 		setBaseMass(getEmptyMass());
 
 		locnHistory = new History<>(10);
+		
+		// Set settlement as its container unit
+		setContainerUnit(settlement);
 	}
 
 	/**
-	 * Get the usual mass of an empty EVASuit
+	 * Gets the usual mass of an empty EVASuit.
+	 * 
 	 * @return
 	 */
 	public static double getEmptyMass() {
@@ -225,6 +229,7 @@ public class EVASuit extends Equipment
 	
 	/**
      * Gets the total capacity of resource that this container can hold.
+     * 
      * @return total capacity (kg).
      */
 	@Override
@@ -243,7 +248,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Stores the resource
+	 * Stores the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -266,7 +271,7 @@ public class EVASuit extends Equipment
 
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -434,7 +439,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Record usage of this suit
+	 * Records usage of this suit.
 	 *
 	 * @param pulse the amount of clock pulse passing (in millisols)
 	 * @throws Exception if error during time.
@@ -488,14 +493,16 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * History of the EVASuit
+	 * Gets the history of the EVASuit.
+	 * 
 	 * @return
 	 */
 	public History<Unit> getHistory() {
 		return locnHistory;
 	}
+	
 	/**
-	 * Return the parts that normally fail on a EVA Suit
+	 * Returns the parts that normally fail on a EVA Suit.
 	 * 
 	 * @return
 	 */
@@ -504,7 +511,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Load the resources need from a source. Also unload any waste
+	 * Loads the resources need from a source. Also unload any waste.
 	 * 
 	 * @param source Source of resources
 	 * @return The %age full of the suit
@@ -518,7 +525,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Fully load a resource into the EVASuit
+	 * Fully loads a resource into the EVASuit.
 	 * 
 	 * @param source
 	 * @param resourceId
@@ -537,7 +544,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Unload any waste products to the holder
+	 * Unloads any waste products to the holder.
 	 * 
 	 * @param newSuitOwner
 	 */
@@ -550,7 +557,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * How fully loaded is the Suit; lowest of water and oxygen
+	 * Gets how fully loaded. Gets the lowest of water and oxygen.
 	 * 
 	 * @return Percentage of lowest resource
 	 */
@@ -588,7 +595,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Gets a list of all stored item resources
+	 * Gets a list of all stored item resources.
 	 *
 	 * @return a list of resource ids
 	 */
@@ -614,7 +621,7 @@ public class EVASuit extends Equipment
 	}
 	
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -635,7 +642,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -646,7 +653,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Gets a list of all stored amount resources
+	 * Gets a list of all stored amount resources.
 	 *
 	 * @return a list of resource ids
 	 */
@@ -656,7 +663,7 @@ public class EVASuit extends Equipment
 	}
 	
 	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 * Gets all stored amount resources in eqmInventory, including inside equipment.
 	 *
 	 * @return all stored amount resources.
 	 */
@@ -680,7 +687,7 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Gets the total weight of the stored resources
+	 * Gets the total weight of the stored resources.
 	 *
 	 * @return
 	 */

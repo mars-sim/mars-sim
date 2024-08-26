@@ -104,10 +104,10 @@ public class MasterClock implements Serializable {
 
 	/** The user's preferred simulation time ratio. */
 	private int desiredTR = 0;
-	/** Sol day on the last fireEvent. */
+	/** The last sol on the last fireEvent. Need to set to -1. */
 	private int lastSol = -1;
-	/** The last millisol integer on the last fireEvent. */
-	private int lastIntMillisol = 0;
+	/** The last millisol integer on the last fireEvent. Need to set to -1. */
+	private int lastIntMillisol = -1;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
 	/** Duration of last sleep in milliseconds per pulse. */
@@ -794,48 +794,91 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	private void fireClockPulse(double time) {
-		
 		////////////////////////////////////////////////////////////////////////////////////		
 		// NOTE: Any changes made below may need to be brought to ClockPulse's addElapsed()
 		////////////////////////////////////////////////////////////////////////////////////
+		
+		// Get the current millisol integer
+		int currentIntMillisol = marsTime.getMillisolInt();
+		// Get the current millisol
 		double currentMillisol = marsTime.getMillisol();
 		// Get the current sol
 		int currentSol = marsTime.getMissionSol();
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 1: Update isNewSol and isNewHalfSol
+		////////////////////////////////////////////////////////////////////////////////////
+
 		// Identify if this pulse crosses a sol
 		boolean isNewSol = (lastSol != currentSol);
+		boolean isNewHalfSol = false;
+		
 		// Updates lastSol
 		if (isNewSol) {
-			lastSol = currentSol;
+			this.lastSol = currentSol;
+			isNewHalfSol = true;
 		}
-		// Identify if it just passes half a sol
-		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
-		
-		if (isNewHalfSol) {
-			lastSol = currentSol;
+		else {
+			// Identify if it just passes half a sol
+			isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);
 		}
-		
-		// Update the lastMillisol
-		lastMillisol = currentMillisol;	
-		// Get the current millisol integer
-		int currentIntMillisol = marsTime.getMillisolInt();
-		// Checks if this pulse starts a new integer millisol
-		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol; 
-		// Update the lastIntMillisol
-		if (isNewIntMillisol) {
-			lastIntMillisol = currentIntMillisol;
-		}
+
+
 		////////////////////////////////////////////////////////////////////////////////////
+		// Part 2: Update isNewIntMillisol and isNewHalfMillisol
+		////////////////////////////////////////////////////////////////////////////////////
+
+		// Checks if this pulse starts a new integer millisol
+		boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
+		boolean isNewHalfMillisol = false;
 		
-		// Print the current sol banner
+		// Updates lastSol
+		if (isNewIntMillisol) {
+			this.lastIntMillisol = currentIntMillisol;
+			isNewHalfMillisol = true;
+		}
+		else {
+			int intPartLast = (int)lastMillisol;
+			double decimalPartLast = lastMillisol - intPartLast;
+			int intPartCurrent = (int)currentMillisol;
+			double decimalPartCurrent = currentMillisol - intPartCurrent;
+			
+			// Identify if it just passes half a millisol
+			isNewHalfMillisol = isNewIntMillisol || (decimalPartLast < .5 && decimalPartCurrent >= .5);
+		}
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 3: Update lastMillisol
+		////////////////////////////////////////////////////////////////////////////////////
+
+		// Update the lastMillisol
+		lastMillisol = currentMillisol;
+	
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 4: Print the current sol banner
+		////////////////////////////////////////////////////////////////////////////////////
+
 		if (isNewSol)
 			printNewSol(currentSol);
 		
-		// Log the pulse
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 5: Log the pulse
+		////////////////////////////////////////////////////////////////////////////////////
+
 		long newPulseId = nextPulseId++;
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol);
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 6: Create a clock pulse
+		////////////////////////////////////////////////////////////////////////////////////
+
+		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 

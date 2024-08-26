@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectIce.java
- * @date 2022-07-16
+ * @date 2024-07-12
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -29,7 +29,7 @@ public class CollectIce extends CollectResourcesMission {
 	private static final long serialVersionUID = 1L;
 
 	/** Number of barrels required for the mission. */
-	public static final int REQUIRED_BARRELS = 20;
+	public static final int REQUIRED_BARRELS = 4;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;
@@ -103,10 +103,15 @@ public class CollectIce extends CollectResourcesMission {
 	protected double calculateRate(Worker worker) {
 		return scoreLocation(worker.getCoordinates());
 	}
+	
+	protected void pickType(Worker worker) {
+		setResourceID(resourceID);
+	}
 
 	/**
-	 * what resources can be collected once on site. By default this is just
+	 * Gets the resources can be collected once on site. By default this is just
 	 * the main resource but could be others.
+	 * 
 	 * @return
 	 */
 	@Override

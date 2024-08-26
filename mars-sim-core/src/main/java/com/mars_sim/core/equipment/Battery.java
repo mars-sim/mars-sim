@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class represents the modeling of an electrical battery.
@@ -34,8 +35,8 @@ public class Battery implements Serializable {
     /** The maximum energy capacity of a standard battery module in kWh. */
 //    public static final double ENERGY_PER_MODULE = 15.0;
     
-    private static final String KWH = " kWH  ";
-    private static final String KW = " kW  ";
+    private static final String KWH__ = " kWH  ";
+    private static final String KW__ = " kW  ";
     
 	/** The max ampere hour of the battery in Ah. */	
 	private final double maxAmpHour;
@@ -59,13 +60,18 @@ public class Battery implements Serializable {
     private double performance;
 	/** The percentage that triggers low power warning. */
     private double lowPowerPercent = 10;
-	/** The current energy of the unit in kWh. */
-	private double currentEnergy;
+	/** The current energy stored in kWh. */
+	private double kWhStored;
     /** The standby power consumption in kW. */
     private double standbyPower = 0.01;
-	/** The maximum capacity of the battery in kWh. */	
-	private double maxCapacity;
-	/** The current ampere hour of the battery in Ah. */	
+	/** The energy storage capacity [in kWh, not Wh] capacity. */
+	private double energyStorageCapacity;
+	/** 
+	 * The rating [in ampere-hour or Ah] of the battery in terms of its charging/discharging ability at 
+	 * a particular C-rating. An amp is a measure of electrical current. The hour 
+	 * indicates the length of time that the battery can supply this current.
+	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
+	 */
 	private double ampHour;
 
 	private Unit unit;
@@ -83,22 +89,26 @@ public class Battery implements Serializable {
         operable = true;
         this.numModule = numModule;
         this.energyPerModule = energyPerModule;
-        maxCapacity = energyPerModule * numModule;
-        ampHour = maxCapacity * 1000 / STANDARD_VOLTAGE;
+        energyStorageCapacity = energyPerModule * numModule;
+        ampHour = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
         // Save max Ah at the start
         maxAmpHour = ampHour;
-        
-        currentEnergy = maxCapacity; //RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
+		// At the start of sim, set to a random value
+        kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
  
         updateLowPowerMode();
     }
 
     private void updateLowPowerMode() {
-        isLowPower = getBatteryState() < lowPowerPercent;
+        isLowPower = getBatteryLevel() < lowPowerPercent;
     }
 
-    private void updateCurrentAmpHour() {
-    	ampHour = maxAmpHour * currentEnergy / maxCapacity; 
+    /**
+     * Updates the Amp Hour rating.
+     */
+    private void updateAmpHourRating() {
+    	ampHour = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 
+    	// maxAmpHour * kWhStored / energyStorageCapacity; 
     }
     
     /**
@@ -124,7 +134,7 @@ public class Battery implements Serializable {
      * @return
      */
     private double getMaxPowerDraw(double time) {
-    	return Math.min(currentEnergy / time, ampHour * STANDARD_VOLTAGE / time);
+    	return Math.min(kWhStored / time, ampHour * STANDARD_VOLTAGE / time);
     }
     
     /**
@@ -134,7 +144,7 @@ public class Battery implements Serializable {
      * @return
      */
     public double getMaxPowerCharging(double time) {
-    	return Math.min((maxCapacity - currentEnergy) / time, maxAmpHour * STANDARD_VOLTAGE / time);
+    	return Math.min((energyStorageCapacity - kWhStored) / time, ampHour * maxAmpHour * STANDARD_VOLTAGE / time);
     }
     
     /**
@@ -151,7 +161,7 @@ public class Battery implements Serializable {
     		double powerMax = getMaxPowerDraw(time);
     				
     		double energyToDeliver = 0;
-	    	double energyCanSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
+	    	double energyCanSupply = energyStorageCapacity - energyStorageCapacity * lowPowerPercent / 100;
 	    	if (energyCanSupply <= 0)
 	    		return 0;
 	    	
@@ -161,25 +171,25 @@ public class Battery implements Serializable {
 //    		else
 //    			powerAvailable = powerMax;
 	    	
-    		energyToDeliver = Math.min(currentEnergy, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
+    		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
           	logger.log(unit, Level.INFO, 20_000, 
-          			"[Battery Status]  "
-          	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + KWH
-          			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
-                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH
-                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
+          			"[Battery Status] "
+          	       	+ "currentEnergy: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH__
+          			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH__
+                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH__
+                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH__
                 	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
-          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW
-          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW
+          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW__
+          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__
            	);
            	
-	    	currentEnergy -= energyToDeliver; 
+	    	kWhStored -= energyToDeliver; 
 	    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
             updateLowPowerMode();
                 
-            updateCurrentAmpHour();
+            updateAmpHourRating();
             
             return energyToDeliver;
     	}
@@ -197,7 +207,7 @@ public class Battery implements Serializable {
     public double provideEnergy(double kWh, double time) {
     	// FUTURE: Consider the effect of the charging rate and the time parameter
     	
-    	double percent = currentEnergy / maxCapacity;
+    	double percent = kWhStored / energyStorageCapacity;
     	double energyAccepted = 0;
     	double percentAccepted = 0;
     	if (percent >= 100)
@@ -205,18 +215,18 @@ public class Battery implements Serializable {
     	
     	else {
     		percentAccepted = 100 - percent;
-    		energyAccepted = percentAccepted / 100.0 * maxCapacity;
+    		energyAccepted = percentAccepted / 100.0 * energyStorageCapacity;
 
     		if (kWh < energyAccepted) {
     			energyAccepted = kWh;
     		}
     		
-        	currentEnergy += energyAccepted;
+        	kWhStored += energyAccepted;
     		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
             updateLowPowerMode();
             
-            updateCurrentAmpHour();
+            updateAmpHourRating();
             
         	return energyAccepted;
     	}
@@ -229,21 +239,21 @@ public class Battery implements Serializable {
      * @return
      */
     public boolean isBatteryAbove(double percent) {
-    	return (getBatteryState() > percent);
+    	return (getBatteryLevel() > percent);
     }
 
 	/** 
 	 * Returns the current amount of energy in kWh. 
 	 */
 	public double getCurrentEnergy() {
-		return currentEnergy;
+		return kWhStored;
 	}
 	
 	/** 
 	 * Charges up the battery in no time. 
 	 */
 	public void topUpBatteryEnergy() {
-		currentEnergy = maxCapacity;
+		kWhStored = energyStorageCapacity;
 	}
 	
 	public double getLowPowerPercent() {
@@ -304,15 +314,15 @@ public class Battery implements Serializable {
      * 
      * @return
      */
-    public double getBatteryState() {
-    	return currentEnergy * 100 / maxCapacity;
+    public double getBatteryLevel() {
+    	return kWhStored / energyStorageCapacity * 100;
     }
     
     /**
-     * Gets the maximum battery capacity in kWh.
+     * Gets the battery energy storage capacity in kWh.
      */
     public double getBatteryCapacity() {
-        return maxCapacity;
+        return energyStorageCapacity;
     }
 
     /**
@@ -331,14 +341,14 @@ public class Battery implements Serializable {
      * @return the energy accepted
      */
     public double deliverEnergy(double kWh) {
-    	double newEnergy = currentEnergy + kWh;
-        double targetEnergy = 0.95 * maxCapacity;
+    	double newEnergy = kWhStored + kWh;
+        double targetEnergy = 0.95 * energyStorageCapacity;
     	if (newEnergy > targetEnergy) {
     		newEnergy = targetEnergy;
     		isCharging = false;
     	}
-    	double diff = newEnergy - currentEnergy;
-    	currentEnergy = newEnergy;
+    	double diff = newEnergy - kWhStored;
+    	kWhStored = newEnergy;
 		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
         updateLowPowerMode();

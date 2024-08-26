@@ -17,7 +17,6 @@
 ## Table of Contents
 * [Introduction](#introduction)  
    * [Simulation](#simulation)
-   * [Exploration](#exploration)
    * [Mars Direct Mission Plan](#mars-direct-mission-plan) 
    * [Settlement Development](#settlement-development)
    * [Economics](#economics)
@@ -34,7 +33,8 @@
    * [Mission](#mission)
    * [Weather](#weather)
    * [Maintenance and Malfunction](#maintenance-and-malfunction)
-* [Summary](#summary)
+* [Creating the Future](#creating-the-future)
+* [Conclusion](#conclusion)
 * [Set up](#set-up)
    * [Prerequisites](#prerequisites)
    * [JDK and JavaFX](#jdk-and-javafx)
@@ -103,7 +103,7 @@ communication towers, and, in future, road/train network.
 The key to achieve this is developing a network of viable and self-sustainable settlements. 
 Initially, the sponsor would guide the development of her settlements. Eventually, each settlement
 will evolve and develop her own laws and governance, going beyond its former [command structure](https://github.com/mars-sim/mars-sim/wiki/Role), 
-and it previously confined [objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
+and it previously defined mission agenda and [objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
 
 ## Economics
 
@@ -118,7 +118,7 @@ VPs of the exchange of resources in a Trading mission or Delivery mission.
 In mars-sim, we witness an incredible undertaking in that 33 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
 from Earth are participating in this dream of making Mars as the second home for humanity. 
 
-Altogether, there's a total of 2 blocs, 14 space agencies, 1 organization, and 2 corporations 
+Altogether, there's a total of 2 blocs, 12 space agencies, 1 organization, and 2 corporations 
 to choose from when funding a settlement. 
 
 European Space Agency (ESA) is a bloc that consists of 22 member nations united in shaping 
@@ -129,6 +129,10 @@ Meanwhile, International Space Research Alliance (ISRA) comprises China, Russia,
 Notably, the Mars Society is an international organization that has chapters in all 33 member nations. 
 
 Two corporations, namely, SpaceX and Blue Origin, have joined in to build settlements on Mars.
+
+> [!NOTE]
+> See [Sponsorship](https://github.com/mars-sim/mars-sim/wiki/Sponsorship) for further discussions on 
+this topic.
 
 ---
 

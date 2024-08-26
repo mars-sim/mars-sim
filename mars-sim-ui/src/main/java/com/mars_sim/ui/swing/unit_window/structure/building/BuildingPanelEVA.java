@@ -23,7 +23,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
-import com.mars_sim.core.structure.building.function.BuildingAirlock;
+import com.mars_sim.core.structure.building.function.ClassicAirlock;
 import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.tools.Msg;
@@ -85,7 +85,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private UnitListPanel<Person> reservationListPanel;
 
 	private EVA eva;
-	private BuildingAirlock buildingAirlock;
+	private ClassicAirlock buildingAirlock;
 
 	/**
 	 * Constructor.
@@ -105,7 +105,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Initialize data members
 		this.eva = eva;
-		this.buildingAirlock = (BuildingAirlock)eva.getAirlock();
+		this.buildingAirlock = (ClassicAirlock)eva.getAirlock();
 	}
 	
 	/**

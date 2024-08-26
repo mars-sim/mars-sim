@@ -474,7 +474,7 @@ public class PhysicalCondition implements Serializable {
 			}
 			
 			// Check once per msol (millisol integer)
-			if (pulse.isNewMSol()) {
+			if (pulse.isNewIntMillisol()) {
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
 				// Update thirst
@@ -1306,7 +1306,7 @@ public class PhysicalCondition implements Serializable {
 		if (healthLog.get(type) != null)
 			freq = healthLog.get(type);
 		healthLog.put(type, freq + 1);
-		logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
+		logger.log(person, Level.INFO, 1_000L, "Suffering from " + type.getName() + ".");
 		recalculatePerformance();
 		return newProblem;
 	}
@@ -1370,7 +1370,7 @@ public class PhysicalCondition implements Serializable {
 				case SUFFOCATION: 
 					reading = "Oxygen";
 					unit = " kg";
-					decimals = 10000.0;
+					decimals = 10_000.0;
 					break;
 				
 				case DECOMPRESSION:
@@ -1391,9 +1391,9 @@ public class PhysicalCondition implements Serializable {
 				default:
 			}
 			String s = reading + " sensor triggered. "
-					+ "  Actual: " + Math.round(actual*decimals)/decimals + unit
-					+ "  Required: " + Math.round(required*decimals)/decimals + unit;
-			logger.log(person, Level.SEVERE, 60_000, s);
+					+ " Actual: " + Math.round(actual*decimals)/decimals + unit
+					+ " Required: " + Math.round(required*decimals)/decimals + unit;
+			logger.log(person, Level.SEVERE, 20_000, s);
 
 			addMedicalComplaint(medicalManager.getComplaintByName(complaint));
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);

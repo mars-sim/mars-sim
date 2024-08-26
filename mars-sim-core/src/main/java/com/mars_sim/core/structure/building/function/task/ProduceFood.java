@@ -65,7 +65,7 @@ public class ProduceFood extends Task {
 	
 	/** Impact doing this Task */
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
-										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .2D,
+										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .01,
 										Set.of(new SkillWeight(SkillType.COOKING, 5),
 											   new SkillWeight(SkillType.MATERIALS_SCIENCE, 2)));
 

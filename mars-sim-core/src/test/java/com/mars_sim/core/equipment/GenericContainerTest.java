@@ -45,7 +45,17 @@ extends TestCase {
     }
 
 	/*
-	 * Test container with a single resource
+	 * Tests container associated settlement assignment.
+	 */
+	public void testAssociatedSettlement() throws Exception {
+		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
+	
+		Settlement as = c.getAssociatedSettlement();
+		assertEquals("Associated Settlement", as, settlement);
+	}
+	
+	/*
+	 * Tests container with a single resource.
 	 */
 	public void testSingleResource() throws Exception {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
@@ -70,7 +80,7 @@ extends TestCase {
 	}
 	
 	/*
-	 * Test container with 2 resources
+	 * Tests container with 2 resources.
 	 */
 	public void testTwoResource() throws Exception {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
@@ -92,7 +102,7 @@ extends TestCase {
 	}
 	
 	/*
-	 * Test container with 2 resources
+	 * Tests container with 2 resources.
 	 */
 	public void testEmptying() throws Exception {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
@@ -120,7 +130,7 @@ extends TestCase {
 	}
 	
 	/*
-	 * Test container with 2 resources
+	 * Tests container with 2 resources.
 	 */
 	public void testNoneReusable() throws Exception {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
@@ -138,7 +148,7 @@ extends TestCase {
 	
 	
 	/*
-	 * Test container with 2 resources
+	 * Tests container with 2 resources.
 	 */
 	public void testReusable() throws Exception {
 		GenericContainer c = new GenericContainer("Specimen", EquipmentType.SPECIMEN_BOX, true, settlement);
@@ -157,7 +167,7 @@ extends TestCase {
 	}
 
 	/*
-	 * Test container with Liquids & Solids
+	 * Tests container with Liquids & Solids.
 	 */
 	public void testBarrelLiquid() throws Exception {
 		EquipmentType cType = EquipmentType.BARREL;
@@ -167,10 +177,10 @@ extends TestCase {
 		int	allowedId1 = ResourceUtil.waterID;
 		int failedId1 = ResourceUtil.oxygenID;
 		int allowedId2 = ResourceUtil.regolithBID;
-
+		
 		// Test negatives first
 		assertPhaseNotSupported(c, failedId1);
-
+		
 		assertEquals("Container capacity 1", cap, c.getAmountResourceRemainingCapacity(allowedId1));
 		assertEquals("Container capacity 2", cap, c.getAmountResourceRemainingCapacity(allowedId2));
 		
@@ -183,14 +193,14 @@ extends TestCase {
 	}
 	
 	/*
-	 * Test container with Gas
+	 * Test container with Gas.
 	 */
 	public void testCanisterGas() throws Exception {
 		assertPhaseSupported(EquipmentType.GAS_CANISTER, PhaseType.GAS);
 	}
 	
 	/*
-	 * Test container with Solids
+	 * Test container with Solids.
 	 */
 	public void testLargeBagSolid() throws Exception {
 		assertPhaseSupported(EquipmentType.LARGE_BAG, PhaseType.SOLID);
@@ -206,6 +216,7 @@ extends TestCase {
 	
 	/**
 	 * Test that a specific container type can only support the specific PhaseType.
+	 * 
 	 * @param cType
 	 * @param required
 	 */
@@ -250,6 +261,12 @@ extends TestCase {
 		assertEquals("Container " + c.getName() + " stored", cap/2, c.getStoredMass());
 	}
 	
+	/**
+	 * Tests phase support.
+	 * 
+	 * @param c
+	 * @param resourceId
+	 */
 	private void assertPhaseNotSupported(GenericContainer c, int resourceId) {
 		double cap = ContainerUtil.getContainerCapacity(c.getEquipmentType());
 

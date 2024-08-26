@@ -99,8 +99,6 @@ public class TabPanelPowerGrid extends TabPanelTable {
 
 	private BuildingManager manager;
 
-	private List<PowerSource> powerSources;
-
 	private List<Building> buildings;
 
 	/**
@@ -140,12 +138,12 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Prepare power used tf.
 		powerLoadCache = powerGrid.getRequiredPower();
 		// Prepare the power usage percent
-		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 1000.0)/10.0;
+		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0;
 		
 		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
 				StyleManager.DECIMAL_PERC1.format(percentPowerUsage) + OPEN_PARA 
 				+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
-				+ SLASH + StyleManager.DECIMAL_KW.format(powerGenCache) + OPEN_PARA,
+				+ SLASH + StyleManager.DECIMAL_KW.format(powerGenCache) + CLOSE_PARA,
 				Msg.getString("TabPanelPowerGrid.powerUsage.tooltip"));
 		
 		// Prepare power storage capacity tf.
@@ -153,12 +151,12 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Prepare power stored tf.
 		energyStoredCache = powerGrid.getStoredEnergy();
 		// Prepare the energy usage percent
-		percentEnergyUsage = Math.round(energyStoredCache/energyCapacityCache * 1000.0)/10.0;
+		percentEnergyUsage = Math.round(energyStoredCache/energyCapacityCache * 100 * 10.0)/10.0;
 
 		percentEnergyUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.energyUsage"),
 				StyleManager.DECIMAL_PERC1.format(percentEnergyUsage) + OPEN_PARA 
 				+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
-				+ SLASH + StyleManager.DECIMAL_KWH.format(energyCapacityCache) + OPEN_PARA,
+				+ SLASH + StyleManager.DECIMAL_KWH.format(energyCapacityCache) + CLOSE_PARA,
 				Msg.getString("TabPanelPowerGrid.energyUsage.tooltip"));
 		
 		// Create solar cell eff tf
@@ -170,7 +168,8 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Create degradation rate tf.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
 		powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"),
-									StyleManager.DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
+									StyleManager.DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) 
+									+ PERCENT_PER_SOL,
 									Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 
 		// Create a button panel
@@ -236,31 +235,22 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	        JRadioButton button = (JRadioButton) event.getSource();
 
 			if (button == r0) {
-				buildings = manager.getBuildingsF1NoF2F3(
-						FunctionType.POWER_GENERATION, FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
+				buildings = manager.getBuildingsF1NoF2F3(FunctionType.POWER_GENERATION, 
+						FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
 			}
 			else if (button == r1) {
 				buildings = getBuildingsWithPowerGeneration();
 			}
 			else if (button == r2) {
-				buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, FunctionType.THERMAL_GENERATION);
+				buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, 
+						FunctionType.THERMAL_GENERATION);
 			}
 			else if (button == r3) {
 				buildings = manager.getSortedBuildings();
 			}
 
-			powerTableModel.update();
+			powerTableModel.fireTableDataChanged();
 	    }
-	}
-	
-
-	/**
-	 * Gets a list of buildings should be shown.
-	 * 
-	 * @return a list of buildings
-	 */
-	private List<Building> getBuildings() {
-		return buildings;
 	}
 
 	/**
@@ -306,7 +296,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		if (powerGenCache != gen || powerLoadCache != req) {
 			powerGenCache = gen;
 			powerLoadCache = req;
-			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 1000.0)/10.0;
+			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0;
 
 			String s = StyleManager.DECIMAL_PERC1.format(percentPowerUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
@@ -323,7 +313,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		if (energyCapacityCache != cap || energyStoredCache != store) {
 			energyCapacityCache = cap;
 			energyStoredCache = store;
-			percentEnergyUsage = Math.round(energyStoredCache / energyCapacityCache * 1000.0)/10.0;
+			percentEnergyUsage = Math.round(energyStoredCache / energyCapacityCache * 100 * 10.0)/10.0;
 					
 			String s = StyleManager.DECIMAL_PERC1.format(percentEnergyUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
@@ -463,11 +453,11 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		}
 
 		public void update() {
-			// Check if building list has changed.
-			List<Building> tempBuildings = getBuildings();
-			if (!tempBuildings.equals(buildings)) {
-				buildings = tempBuildings;
-			}
+//			// Check if building list has changed.
+//			List<Building> tempBuildings = getBuildings();
+//			if (!tempBuildings.equals(buildings)) {
+//				buildings = tempBuildings;
+//			}
 
 	    	int numRow = getRowCount();
 	    	int numCol = getColumnCount();
@@ -502,7 +492,6 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		powerTableModel = null;
 		powerGrid = null;
 		manager = null;
-		powerSources = null;
 		buildings = null;
 	}
 }

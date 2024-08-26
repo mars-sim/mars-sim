@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResources.java
- * @date 2022-07-18
+ * @date 2024-07-14
  * @author Scott Davis
  */
 
@@ -17,9 +17,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.mission.CollectResourcesMission;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -37,19 +38,22 @@ public class CollectResources extends EVAOperation {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CollectResources.class.getName());
 
+	/** Task name */
+	private static final String NAME = Msg.getString("Task.description.collectResources"); //$NON-NLS-1$
+	
+	/** Simple Task name */
+	static final String SIMPLE_NAME = CollectResources.class.getSimpleName();
+	
 	/** The average labor time it takes to find the resource. */
-	public static final double LABOR_TIME = 50D;
+	public static final double LABOR_TIME = 200D;
 
 	/** Task phases. */
 	private static final TaskPhase COLLECT_RESOURCES = 
 			new TaskPhase(Msg.getString("Task.phase.collectResources"), //$NON-NLS-1$
 					createPhaseImpact(PhysicalEffort.HIGH, SkillType.AREOLOGY, SkillType.PROSPECTING));
-
     public static final LightLevel LIGHT_LEVEL = LightLevel.NONE;
 
 	// Data members
-	/** Rover used. */
-	protected Rover rover;
 	/** Collection rate for resource (kg/millisol). */
 	protected double collectionRate;
 	/** Targeted amount of resource to collect at site. (kg) */
@@ -61,9 +65,14 @@ public class CollectResources extends EVAOperation {
 
 	/** The resource type. */
 	protected Integer resourceType;
+	
 	/** The container type to use to collect resource. */
 	protected EquipmentType containerType;
-
+	/** Rover used. */
+	protected Rover rover;
+	
+	private CollectResourcesMission mission;
+	
 	/**
 	 * Constructor.
 	 *
@@ -77,10 +86,10 @@ public class CollectResources extends EVAOperation {
 	 * @param containerType   the type of container to use to collect resource.
 	 */
 	public CollectResources(Person person, Rover rover, Integer resourceType, double collectionRate,
-			double targettedAmount, double startingCargo, EquipmentType containerType) {
+			double targettedAmount, double startingCargo, EquipmentType containerType, CollectResourcesMission mission) {
 
 		// Use EVAOperation parent constructor.
-		super("Collecting Resources", person,
+		super(NAME, person,
 					LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D), COLLECT_RESOURCES);
 
 		setMinimumSunlight(LIGHT_LEVEL);
@@ -97,33 +106,58 @@ public class CollectResources extends EVAOperation {
 		this.startingCargo = startingCargo;
 		this.resourceType = resourceType;
 		this.containerType = containerType;
+		this.mission = mission;
 
 		// Determine location for collection site.
 		setRandomOutsideLocation(rover);
 
 		// Take container for collecting resource.
-		if (!hasAContainer()) {
+		int num = numContainers();
+		if (num == 0) {
 			boolean hasIt = takeContainer();
 
 			// If container is not available, end task.
 			if (!hasIt) {
 				logger.warning(person, 5000,
-						"Unable to find containers to collect resources.");
+						"Unable to find a " + containerType.getName().toLowerCase() + " to collect resources.");
 				endTask();
+				return;
+			}
+		}
+		else if (num > 1) {
+			// Return extra containers
+			for (int i=0; i<num-1; i++) {
+				Container container = person.findContainer(containerType, false, resourceType); 
+				if (container != null) {
+					boolean done = container.transfer(rover);
+					if (done)
+						logger.info(person, 0, "Returned an extra " + containerType.getName().toLowerCase() + " from person back to rover.");
+					else
+						logger.warning(person, 0, "Unable to transfer a " + containerType.getName().toLowerCase() + " from person back to rover.");
+				}	
 			}
 		}
 
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
-		int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-		
-		int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+		setCollectionRate(collectionRate);
+	}
+
+	/**
+	 * Sets the collection rate for the resource.
+	 * 
+	 * @param collectionRate
+	 */
+	protected void setCollectionRate(double collectionRate) {
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
 		int prospecting = person.getSkillManager().getSkillLevel(SkillType.PROSPECTING);
 		
 		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) 
 				* (.5 * (eva + prospecting) + .2) ;
+		logger.info(person, 20_000, mission.getName() +  " collection rate: " + Math.round(compositeRate * 10.0)/10.0);
 	}
-
+	
 	/**
 	 * Performs the method mapped to the task's current phase.
 	 *
@@ -145,17 +179,15 @@ public class CollectResources extends EVAOperation {
 
 	}
 
-
 	/**
-	 * Checks if the person is carrying a container of this type.
+	 * Checks how many containers a person is carrying.
 	 *
 	 * @return true if carrying a container of this type.
-	 *
 	 */
-	private boolean hasAContainer() {
-		return person.containsEquipment(containerType);
+	private int numContainers() {
+		return person.findNumContainersOfType(containerType);
 	}
-
+	
 	/**
 	 * Takes the least full container from the rover.
 	 *
@@ -165,8 +197,17 @@ public class CollectResources extends EVAOperation {
 		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 
 		if (container != null) {
-			return container.transfer(person);
-		}
+			boolean success = container.transfer(person);
+			if (success) {
+				logger.info(person, 5000, "Getting hold of a " + containerType.getName().toLowerCase() + " from rover.");
+			}
+			else 
+				logger.warning(person, "Unable to transfer a " + containerType.getName().toLowerCase() + " from rover to person.");
+			return success;
+		} 
+		else
+			logger.warning(person, 5000, "Could not get hold of a " + containerType.getName().toLowerCase() + " from rover.");
+		
 		return false;
 	}
 
@@ -179,21 +220,39 @@ public class CollectResources extends EVAOperation {
 	 */
 	private double collectResources(double time) {
 		
-		if (checkReadiness(time) > 0)
-			return time;
-
-		// Collect resources.
-		Container container = person.findContainer(containerType, false, resourceType);
-		if (container == null) {
-			checkLocation("No container available.");
+		if (checkReadiness(time) > 0) {
 			return time;
 		}
 
-		double remainingPersonCapacity = container.getAmountResourceRemainingCapacity(resourceType);
-		double currentSamplesCollected = rover.getAmountResourceStored(resourceType) - startingCargo;
-		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
-		double sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);
+		// Check container
+		Container container = person.findContainer(containerType, false, resourceType);
+		if (container == null) {
+			if (resourceType == ResourceUtil.iceID) {
+				checkLocation("No container available for ice.");
+			}
+			else if (resourceType == ResourceUtil.regolithID) {
+				checkLocation("No container available for regolith.");
+			}
+			return time;
+		}
 
+		double remainCap = container.getAmountResourceRemainingCapacity(resourceType);
+		if (remainCap <= 0.01) {
+			remainCap = 0;
+			checkLocation("Container capacity maxed out.");
+		}
+		
+//		double collectedAtThisSite = rover.getAmountResourceStored(resourceType) - startingCargo;
+		double collectedAtThisSite = mission.getCollectedAtCurrentSite();
+		
+		double remainingSamplesNeeded = targettedAmount - collectedAtThisSite;
+		if (remainingSamplesNeeded <= 0.01) {
+			remainingSamplesNeeded = 0;
+			checkLocation("No more samples needed.");
+		}
+		
+		double sampleLimit = Math.min(remainingSamplesNeeded, remainCap);
+		
 		double samplesCollected = time * compositeRate;
 
 		// Modify collection rate by areology and prospecting skill.
@@ -203,7 +262,7 @@ public class CollectResources extends EVAOperation {
 		if (areologySkill + prospecting == 0) {
 			samplesCollected /= 2D;
 		}
-		if (areologySkill + prospecting > 1) {
+		else {
 			samplesCollected += samplesCollected * .25D * (areologySkill + prospecting);
 		}
 
@@ -221,27 +280,65 @@ public class CollectResources extends EVAOperation {
 		
 		// Collect resources
 		if (samplesCollected <= sampleLimit) {
+			mission.recordResourceCollected(resourceType, samplesCollected);
 			container.storeAmountResource(resourceType, samplesCollected);
-			double result = time - (samplesCollected / collectionRate);
-			if (result < 0)
-				return 0;
-			return result;
-
-		} else {
-			if (sampleLimit > 0) {
-				container.storeAmountResource(resourceType, sampleLimit);
-				double result = time - (sampleLimit / collectionRate);
-				if (result < 0)
-					return 0;
-				return result;
-			}
-			
+		} 
+		else {
+			mission.recordResourceCollected(resourceType, sampleLimit);
+			container.storeAmountResource(resourceType, sampleLimit);
 			checkLocation("Samples collected exceeded set limits.");
 		}
+		
+//		logger.info(person, 30_000, "sampleLimit: " + Math.round(sampleLimit * 100.0)/100.0
+//				+ "  samplesCollected: " + Math.round(samplesCollected * 100.0)/100.0
+//				+ "  collectedAtThisSite: " + Math.round(collectedAtThisSite * 100.0)/100.0 
+//				+ "  targettedAmount: " + Math.round(targettedAmount * 100.0)/100.0
+//				+ "  compositeRate: " + Math.round(compositeRate * 100.0)/100.0);
 		
 		return 0;
 	}
 
+	/**
+	 * Unloads resources from the Container.
+	 * 
+	 * @param container
+	 * @param amount
+	 * @param effort
+	 */
+    private void unloadContainer(Container container, double amount, double effort) {
+ 
+		// Retrieve this amount from the container
+		container.retrieveAmountResource(resourceType, amount);
+
+      	int newResourceID = 0;
+      	
+    	// Remap regoliths by allowing the possibility of misclassifying regolith types
+		if (resourceType == ResourceUtil.regolithID) {
+			int rand = RandomUtil.getRandomInt(10);
+			
+			// Reassign as the other 3 types of regoliths
+			if (rand == 8) {			
+				newResourceID = ResourceUtil.regolithBID;
+			}
+			else if (rand == 9) {						
+				newResourceID = ResourceUtil.regolithCID;
+			}
+			else if (rand == 10) {					
+				newResourceID = ResourceUtil.regolithDID;
+			}
+			else
+				newResourceID = resourceType;
+		}
+		else if (resourceType == ResourceUtil.iceID) {
+			newResourceID = resourceType;
+		}
+		
+		// Add to the daily output
+		rover.getAssociatedSettlement().addOutput(newResourceID, amount, effort);
+		// Store the amount in the settlement
+		rover.storeAmountResource(newResourceID, amount);
+	}
+    
 	/**
 	 * Checks if a person can perform an CollectResources task.
 	 *
@@ -273,15 +370,26 @@ public class CollectResources extends EVAOperation {
 			if (person.isSuperUnfit())
 				return false;
 			
-			// Checks if available container with remaining capacity for resource.
-			Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
-			boolean containerAvailable = (container != null);
-
-			// Check if container and full EVA suit can be carried by person or is too
-			// heavy.
+			// Checks if the person has an available container with remaining capacity for resource.
+			Container container = ContainerUtil.findLeastFullContainer(person, containerType, resourceType);
+			if (container == null) {
+				// Checks if the rover has an available container with remaining capacity for resource.
+				container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+			}
+			// Transfer that container from rover to person
+			boolean containerAvailable = false;
 			double carryMass = 0D;
+			
 			if (container != null) {
-				carryMass += container.getBaseMass() + container.getStoredMass();
+				containerAvailable = true;
+				
+				// Check if container and full EVA suit can be carried by person 
+				// or is too heavy.
+				carryMass = container.getBaseMass() + container.getStoredMass();
+
+			} else {
+				logger.warning(person, 5000, "No " + containerType.getName().toLowerCase() + " available.");
+				return false;
 			}
 
 			EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
@@ -303,10 +411,39 @@ public class CollectResources extends EVAOperation {
 	 */
 	@Override
 	protected void clearDown() {
-		if (rover != null) {
-			// Task may end early before a Rover is selected
-			returnEquipmentToVehicle(rover);
+		// Take container for collecting resource.
+		int num = numContainers();
+		if (num >= 1) {
+			// Return extra containers
+			for (int i=0; i<num; i++) {
+				Container container = person.findContainer(containerType, false, resourceType); 
+				if (container != null) {
+					boolean done = container.transfer(rover);
+					if (done) {
+						logger.info(person, 0, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
+						double amount = container.getAmountResourceStored(resourceType);
+						if (amount > 0) {
+							unloadContainer(container, amount, getTimeCompleted());
+						}
+					}
+					else
+						logger.warning(person, "Unable to transfer a " + containerType.getName().toLowerCase()  + " from person back to rover.");
+				}	
+			}
 		}
+		
+//		if (rover != null) {
+//			// Task may end early before a Rover is selected
+//			returnEquipmentToVehicle(rover);
+//		}
+		
+		// Remove pressure suit and put on garment
+		if (person.unwearPressureSuit(rover)) {
+			person.wearGarment(rover);
+		}
+	
+		// Assign thermal bottle
+		person.assignThermalBottle();
 
 		super.clearDown();
 	}

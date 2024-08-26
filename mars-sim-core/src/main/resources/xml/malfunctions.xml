@@ -1064,8 +1064,8 @@
 	</malfunction>
 
 
-	<!-- 2015-05-31 Added ls 3d printer failure. -->
-	<malfunction name="Laser Sintering 3D Printer Failure">
+	<!-- 2015-05-31 Added sls 3d printer failure. -->
+	<malfunction name="SLS 3D Printer Failure">
 		<severity value="50" />
 		<malfunction-probability value="3.0" />
 		<repair-inside time="200.0" />
@@ -1085,7 +1085,7 @@
 			<part name="stepper motor small" number="1" repair-probability="5" />
 			<part name="timing belt" number="1" repair-probability="5" />
 			<part name="optical prism" number="1" repair-probability="5" />
-			<part name="Laser Sintering 3D Printer" number="1" repair-probability="1" />
+			<part name="SLS 3D Printer" number="1" repair-probability="1" />
 			<part name="optical cable" number="1" repair-probability="3" />
 			<part name="optical lens" number="1" repair-probability="2" />
 			<part name="logic board" number="1" repair-probability="5" />

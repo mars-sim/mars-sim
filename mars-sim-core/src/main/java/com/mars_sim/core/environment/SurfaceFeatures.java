@@ -555,16 +555,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 			double initialEst = mineralMap.getMineralConcentration(mineralType, location);
 
-			totalConc += initialEst;
 			
 			if (initialEst <= 0) {
 				continue;
 			}
 			
-			double variance = 5.0 / (1 + skill);
+			double variance = 10.0 / (1 + skill);
 			// With no improvements the estimates are capped
-			if (variance > 5) {
-				variance = 5;
+			if (variance > 10) {
+				variance = 10;
 			}
 			
 			double newEst = initialEst + initialEst * RandomUtil.getRandomDouble(-variance, variance);
@@ -581,6 +580,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 //					+ "   new est %: " + Math.round(newEst* 1000.0)/1000.0);
 			
 			initialMineralEstimations.put(mineralType, newEst);
+			
+			totalConc += newEst;
 		}
 
 		if (totalConc > 0) {
@@ -593,7 +594,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				regioOfInterestLocations.add(result);
 		}
 		else {
-			logger.info(settlement, location.getFormattedString() + " has no mineral concentrations.");
+			logger.info(settlement, "Initially found no mineral concentrations in " + location.getFormattedString() + ".");
 		}
 		
 		return result;
@@ -687,7 +688,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			double msol = pulse.getMarsTime().getMillisolInt();
 			
 			// the value of optical depth doesn't need to be refreshed too often

@@ -127,7 +127,7 @@ public final class UnloadHelper {
     		if (amount > amountUnloading) {
     			amount = amountUnloading;
     		}
-    		double capacity = source.getAmountResourceRemainingCapacity(id);
+    		double capacity = dest.getAmountResourceRemainingCapacity(id);
     		if (capacity < amount) {
     			amount = capacity;
     		}

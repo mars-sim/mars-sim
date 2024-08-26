@@ -54,7 +54,7 @@ public class ComputingJob implements Serializable {
     }
 
     /**
-	 * Accesses the computing nodes. THis will reduce the computing needed by a factor
+	 * Accesses the computing nodes. This will reduce the computing needed by a factor
      * related to the time.
 	 * 
 	 * @param time The time for the processing node

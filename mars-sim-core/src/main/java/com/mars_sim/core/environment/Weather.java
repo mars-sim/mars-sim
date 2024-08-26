@@ -233,7 +233,7 @@ public class Weather implements Serializable, Temporal {
 				int msol = clock.getMarsTime().getMillisolInt();
 				
 				// the value of optical depth doesn't need to be refreshed too often
-				if (clock.getClockPulse() != null && clock.getClockPulse().isNewMSol()
+				if (clock.getClockPulse() != null && clock.getClockPulse().isNewIntMillisol()
 						&& msol % WINDSPEED_REFRESH == 0) {
 					
 					double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
@@ -375,7 +375,7 @@ public class Weather implements Serializable, Temporal {
 
 		pressureLock.lock();
 		
-		if (clock.getClockPulse() != null && clock.getClockPulse().isNewMSol()
+		if (clock.getClockPulse() != null && clock.getClockPulse().isNewIntMillisol()
 				&& clock.getMarsTime().getMillisolInt() % PRESSURE_REFRESH == 1) {
 			newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
@@ -447,7 +447,7 @@ public class Weather implements Serializable, Temporal {
 	
 		tempLock.lock();
 		
-		if (clock.getClockPulse() != null && clock.getClockPulse().isNewMSol()
+		if (clock.getClockPulse() != null && clock.getClockPulse().isNewIntMillisol()
 				&& clock.getMarsTime().getMillisolInt() % TEMPERATURE_REFRESH == 0) {
 			newT = calculateTemperature(location);
 		} 
@@ -685,7 +685,7 @@ public class Weather implements Serializable, Temporal {
 		int remainder0 = msol % DATA_SAMPLING;
 		int remainder1 = msol % DUST_STORM_REFRESH;
 		
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			
 			if (remainder0 == 1) {		
 				// Add a data point
@@ -764,14 +764,14 @@ public class Weather implements Serializable, Temporal {
 			MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
 	
 			if (!w.isYestersolDataValid()) {
-				logger.warning(3_000L, "Weather data from yesterday at " + c + " is not available.");
+				logger.warning(30_000, "Weather data from yestersol at " + c + " not available.");
 				return;
 			}
 			else
 				dailyWeatherList = w.getYestersolData();
 		}
 		else {
-			logger.warning(3_000L, "Weather data at " + c + " is not available.");
+			logger.warning(30_000, "Weather data at " + c + " not available.");
 			return;
 		}
 		

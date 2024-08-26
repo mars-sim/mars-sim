@@ -223,7 +223,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				article = "an ";
 
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + article + missionStr + appendStr);
+					"Began organizing " + article + missionStr + appendStr + ".");
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -365,7 +365,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * A Member leaves the Mission.
+	 * A Member leaves the Mission and adjust his work shift.
 	 */
 	protected final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift
@@ -550,7 +550,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Time that the current phases started
+	 * Gets the time that the current phases started.
 	 */
 	@Override
 	public MarsTime getPhaseStartTime() {
@@ -803,23 +803,24 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null) {
 
 			if (currentTask.getName().equals(task.getName())){
-	      		logger.info(person, 10_000L, "Already assigned with '" + currentTask.getName() + "'.");
+//	      		logger.info(person, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
 			}
 
 			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 10_000L, "Current asleep.");
-
-				// If the person has been doing this task, 
-				// then there is no need of adding it.
+	      		logger.info(person, 4_000, "Currently asleep. Not available to perform other tasks.");
+				// If the person is asleep, 
+				// do not assign this task.
+	      		
+	      		// Note: what if it's an emergency that one must wake up and respond ?
 				return false;
 			}
 		}
 		
 		if (person.isSuperUnfit()) {
-			logger.warning(person, 10_000L, "Super unfit to perform '" + task + ".");
+			logger.warning(person, 4_000, "Super unfit to perform '" + task + ".");
 			return false;
 		}
 		
@@ -830,15 +831,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task);
 		}
 
+
 		if (canPerformTask) {
-			if (currentTask != null) {
-				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-			}
-			else
-				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "'.");
+			/**
+			 * Do not delete. Reserve for debugging.
+			 */
+//			if (currentTask != null) {
+//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//			}
+//			else
+//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(person, 10_000L, "Unable to perform '" + task.getName() + "'.");
+			logger.info(person, 4_000, "Unable to perform '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}
@@ -855,31 +860,43 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If robot is malfunctioning, it cannot perform task.
 		if (robot.getMalfunctionManager().hasMalfunction()) {
+			logger.info(robot, 4_000, "Malfunctioned and cannot be assigned with '" + task.getName() + "'.");
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(10))
+		if (!robot.getSystemCondition().isBatteryAbove(20)) {
+			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
 			return false;
+		}
 
 		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
 		
 		if (currentTask != null) {
 
-			if (currentTask.getName().equals(task.getName())
-					|| currentTask.getName().equals(Charge.NAME))
-				// If the person has been doing this task, 
+			if (currentTask.getName().equals(task.getName())) {
+//				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+				// If the robot has been doing this task, 
 				// then there is no need of adding it.
 				return false;
+			}
+			
+			else if (currentTask.getName().equals(Charge.NAME)) {
+				logger.info(robot, 4_000, "Still charging and cannot be assigned with '" + task.getName() + "'.");
+				return false;
+			}
 		}
 
 		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
 		
 		if (canPerformTask) {
-			if (currentTask != null) {
-				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-			}
-			else
-				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "'.");
+			/**
+			 * Do not delete. Reserve for debugging.
+			 */
+//			if (currentTask != null) {
+//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//			}
+//			else
+//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
 			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");
@@ -969,7 +986,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 *
 	 * @param startingMember the mission member starting the mission.
 	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
-	 * @param minMembers Minimum number of members requried
+	 * @param minMembers Minimum number of members required
 	 */
 	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
 

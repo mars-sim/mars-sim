@@ -167,6 +167,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		switch (getUnitType()) {
 		case BUILDING, CONTAINER, EVA_SUIT, PERSON, ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+			// Why no containerID ?
 			break;
 			
 		case VEHICLE:
@@ -562,8 +563,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 					i.unitUpdate(ue);
 				}
 				catch(RuntimeException rte) {
-					logger.warning(this, "Problem executing listener " + i + " for event " + ue
-									+ " due to " + rte.getMessage());
+					logger.severe(this, "Problem executing listener " + i + " for event " + ue, rte);
 				}
 			}
 		}
@@ -638,7 +638,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public boolean isOutside() {
 		if (LocationStateType.MARS_SURFACE == currentStateType
-				|| LocationStateType.SETTLEMENT_VICINITY == currentStateType)
+				|| LocationStateType.SETTLEMENT_VICINITY == currentStateType
+				|| LocationStateType.VEHICLE_VICINITY == currentStateType)
 			return true;
 
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)

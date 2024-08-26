@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Exploration.java
- * @date 2023-06-30
+ * @date 2024-07-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -61,28 +61,31 @@ public class Exploration extends EVAMission
 	private static final String EXPLORATION_SITE = "Exploration Site ";
 
 	/** Number of specimen containers required for the mission. */
-	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
 	/** Amount of time to explore a site. */
-	private static final double STANDARD_TIME_PER_SITE = 250.0;
+	private static final double STANDARD_TIME_PER_SITE = 750.0;
 	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 	
+	// Data members
 	/** Number of collection sites. */
 	private int numSites;
-	
 	/**
 	 * The cumulative and combined site time for all members who will explore the site
 	 */
 	private double siteTime;
 
-	// Data members
+	/** The cumulative amount (kg) of resources collected across multiple sites. */
+	private Map<Integer, Double> amountCollectedBySite;
+	/** The cumulative amount (kg) of resources collected across multiple sites. */
+	private Map<Integer, Double> cumulativeCollectedByID;
 	/** Map of exploration sites and their completion. */
 	private Map<String, Double> explorationSiteCompletion;
-	/** The current exploration site. */
-	private ExploredLocation currentSite;
 	/** The set of sites to be claimed by this mission. */
 	private Set<ExploredLocation> claimedSites;
-
+	
+	/** The current exploration site. */
+	private ExploredLocation currentSite;
 	/**
 	 * Constructor.
 	 *
@@ -94,6 +97,9 @@ public class Exploration extends EVAMission
 		// Use RoverMission constructor.
 		super(MISSION_TYPE, startingPerson, null,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
+		
+		this.cumulativeCollectedByID = new HashMap<>();
+		this.explorationSiteCompletion = new HashMap<>();
 		
 		Settlement s = getStartingSettlement();
 
@@ -128,7 +134,7 @@ public class Exploration extends EVAMission
 			// Update the number of determined sites
 			numSites = sitesToClaim.size();
 			
-			initSites(sitesToClaim, skill);
+			initializeExplorationSites(sitesToClaim, skill);
 
 			// Set initial mission phase.
 			setInitialPhase(needsReview);
@@ -148,17 +154,19 @@ public class Exploration extends EVAMission
 		// Use RoverMission constructor.
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
-				
+		
+		this.cumulativeCollectedByID = new HashMap<>();
+		this.explorationSiteCompletion = new HashMap<>();
+		
 		Person person = (Person)members.toArray()[0];
 		
 		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);		
 		
-		initSites(explorationSites, skill);
+		initializeExplorationSites(explorationSites, skill);
 
 		// Add mission members.
 		if (!isDone()) {
 			addMembers(members, false);
-
 			// Set initial mission phase.
 			setInitialPhase(false);
 		}
@@ -166,8 +174,11 @@ public class Exploration extends EVAMission
 
 	/**
 	 * Sets up the exploration sites.
+	 *  
+	 * @param explorationSites
+	 * @param skill
 	 */
-	private void initSites(List<Coordinates> explorationSites, int skill) {
+	private void initializeExplorationSites(List<Coordinates> explorationSites, int skill) {
 
 		numSites = explorationSites.size();
 		
@@ -177,7 +188,12 @@ public class Exploration extends EVAMission
 		
 		explorationSiteCompletion = new HashMap<>(numSites);
 		
-		setEVAEquipment(EquipmentType.SPECIMEN_BOX, REQUIRED_SPECIMEN_CONTAINERS);
+		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int buffer = (int)(numMembers * 1.5);
+		int newContainerNum = Math.max(buffer, REQUIRED_SPECIMEN_CONTAINERS);
+		
+		setEVAEquipment(EquipmentType.SPECIMEN_BOX, newContainerNum);
+	
 
 		// Configure the sites to be explored with mineral concentration during the stage of mission planning
 		for (Coordinates c : explorationSites) {
@@ -248,7 +264,7 @@ public class Exploration extends EVAMission
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
 		double range = getVehicle().getRange();
-		return getStartingSettlement().getARandomNearbyMineralLocation(range);
+		return getStartingSettlement().determineFirstSiteCoordinate(range, 1);
 	}
 	
 	/**
@@ -282,7 +298,7 @@ public class Exploration extends EVAMission
 
 		// If person can explore the site, start that task.
 		if (ExploreSite.canExploreSite(person, getRover())) {
-			assignTask(person, new ExploreSite(person, currentSite, getRover()));
+			assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
 		}
 
 		return true;
@@ -467,10 +483,7 @@ public class Exploration extends EVAMission
 	 * @return first exploration site or null if none.
 	 */
 	private Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
-		
-		int skillDistance = RandomUtil.getRandomRegressionInteger(10, 500 * (1 + areologySkill));
-	
-		return getStartingSettlement().getAComfortableNearbyMineralLocation(limit, skillDistance);
+		return getStartingSettlement().determineFirstSiteCoordinate(limit, areologySkill);
 	}
 	
 	/**
@@ -594,7 +607,44 @@ public class Exploration extends EVAMission
 		return siteValue / count;
 	}
 
+	/**
+	 * Records the amount of resources collected.
+	 * 
+	 * @param resourceType
+	 * @param samplesCollected
+	 */
+	public void recordResourceCollected(int resourceType, double samplesCollected) {
+		// Update amountCollectedBySite
+		int siteIndex = getCurrentNavpointIndex(); 
+		if (amountCollectedBySite.containsKey(siteIndex)) {
+			double oldAmount0 = amountCollectedBySite.get(siteIndex);
+			double newAmount0 = oldAmount0 + samplesCollected;
+			amountCollectedBySite.put(siteIndex, newAmount0);
+		}
+		else {
+			amountCollectedBySite.put(siteIndex, samplesCollected);
+		}
+		
+		// Update cumulativeCollectedByID
+		if (cumulativeCollectedByID.containsKey(resourceType)) {
+			double oldAmount1 = cumulativeCollectedByID.get(resourceType);
+			double newAmount1 = oldAmount1 + samplesCollected;
+			cumulativeCollectedByID.put(resourceType, newAmount1);
+		}
+		else {
+			cumulativeCollectedByID.put(resourceType, samplesCollected);
+		}
+	}
 	
+	/**
+	 * Gets the total amount of resources collected so far in the mission.
+	 *
+	 * @return resource amount (kg).
+	 */
+	public Map<Integer, Double> getCumulativeCollectedByID() {
+		return cumulativeCollectedByID;
+	}
+
 	/** 
 	 * Gets number of collection sites. 
 	 */

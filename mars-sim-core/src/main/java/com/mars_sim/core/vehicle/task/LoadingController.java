@@ -343,8 +343,8 @@ public class LoadingController implements Serializable {
 			manifest.remove(resource);
 		}
 		else if (!mandatory && usedSupply) {
-			logger.info(vehicle, loader + " optional amount " + resourceName
-						+ ", not loaded=" + amountNeeded);
+			logger.info(vehicle, loader + " could not load " + resourceName
+						+ ", returning " + Math.round(amountNeeded * 100D) / 100D + " kg.");
 			manifest.remove(resource);
 		}
 		else {

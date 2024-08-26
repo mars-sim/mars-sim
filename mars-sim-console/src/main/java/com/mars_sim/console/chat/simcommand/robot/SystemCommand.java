@@ -33,12 +33,12 @@ public class SystemCommand extends AbstractUnitCommand {
         response.appendLabeledString("Model", robot.getModel());
 
         response.appendLabeledString("Battery Power", String.format(CommandHelper.PERC_FORMAT,
-                                                                                        sc.getBatteryState()));
+                                                                                        sc.getBatteryLevel()));
         response.appendLabeledString("Low Power Threshold", String.format(CommandHelper.PERC_FORMAT,
                                                                                         sc.getLowPowerModePercent()));
         response.appendLabeledString("Recommended Charging Threshold", String.format(CommandHelper.PERC_FORMAT,
                                                                                         sc.getRecommendedThreshold()));
-        response.appendLabeledString("Battery Capacity", String.format(CommandHelper.KWH_FORMAT, sc.getBatteryCapacity()));   
+        response.appendLabeledString("Battery Capacity", String.format(CommandHelper.KWH_FORMAT, sc.getEnergyStorageCapacity()));   
         response.appendLabeledString("Charging", sc.isCharging() ? "Yes" : "No");
         response.appendLabeledString("Standby Power", String.format(CommandHelper.KW_FORMAT, sc.getStandbyPowerConsumption()));                                                                                                                                                             
 

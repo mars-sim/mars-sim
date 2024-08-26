@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
- * @date 2023-09-15
+ * @date 2024-07-15
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -98,7 +98,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
 	protected static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
+	//private static final MissionPhase RETURNING_HOME = new MissionPhase("returningHome", Stage.CLOSEDOWN);
 
+	
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
 	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
@@ -342,6 +344,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	/**
 	 * Leaves the mission's vehicle and unreserves it.
+	 * 
 	 * @param v Vehicle to be released
 	 */
 	protected final void releaseVehicle(Vehicle v) {
@@ -395,7 +398,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if error determining vehicle range.
 	 */
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		// By default all vehciles are equal
+		// By default all vehicles are equal
 		return 0;
 	}
 
@@ -590,9 +593,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		else if (LOADING.equals(phase)) {
+
 			setPhase(DEPARTING, getStartingSettlement().getName());	
 		}
-
+		
+		// Note: Add a new phase called RESTING here right after loading in done and prior to departing, 
+		//       Create a mission schedule and have everyone sync up to it. 
+		//       Have everyone sleep sufficiently and depart at the start of the next sol during daylight.
+		
 		else if (DEPARTING.equals(phase)) {
 			startTravellingPhase();
 		}
@@ -761,7 +769,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				if (operateVehicleTask != null) {
 					operateVehicleTask = createOperateVehicleTask(member, operateVehicleTask.getPhase());
 				} else {
-					operateVehicleTask = createOperateVehicleTask(member, null);
+					operateVehicleTask = createOperateVehicleTask(member, OperateVehicle.MOBILIZE);
 				}
 
 				if (operateVehicleTask != null) {
@@ -1602,7 +1610,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		return null;
 	}
-
+	
 	/**
 	 * Gets the current navpoint the mission is stopped at.
 	 * 
@@ -1974,13 +1982,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * next navigation point.
 	 */
 	protected void startTravellingPhase() {
-		getLog().setStarted();
+		if (getLog().getDateEmbarked() == null) {
+			// If the embarked date has already been set, do not call it again
+			getLog().generatedDateEmbarked();
+		}
 		startTravelToNextNode();
 		setPhase(TRAVELLING, getNextNavpointDescription());
 	}
 
 	/**
-	 * Start the Embarking phase
+	 * Start the Embarking phase.
 	 */
 	private void startLoadingPhase() {
 		setPhase(LOADING, getStartingSettlement().getName());

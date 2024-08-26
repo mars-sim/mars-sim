@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainDetailPanel.java
- * @date 2023-03-31
+ * @date 2024-07-12
  * @author Scott Davis
  */
 
@@ -97,7 +97,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	private static final int MAX_LENGTH = 48;
+	private static final int WIDTH_1 = 300;
+	private static final int WIDTH_2 = 250;
 	private static final int HEIGHT_1 = 125;
+	private static final int HEIGHT_2 = 250;
 	
 	// Private members
 	private JLabel vehicleStatusLabel;
@@ -305,7 +308,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		Border blackline = StyleManager.createLabelBorder("Phase Log");
 		logPane.setBorder(blackline);
 		logPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		logPane.setPreferredSize(new Dimension(-1, HEIGHT_1));
+		logPane.setPreferredSize(new Dimension(WIDTH_2, HEIGHT_2));
 
 		// Create scroll panel for member list.
 		JScrollPane logScrollPane = new JScrollPane();
@@ -338,7 +341,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	
 			// Prepare member list panel
 			JPanel memberListPane = new JPanel(new BorderLayout(5, 5));
-			memberListPane.setPreferredSize(new Dimension(100, HEIGHT_1));
+			memberListPane.setPreferredSize(new Dimension(WIDTH_1, HEIGHT_1));
 			memberBottomPane.add(memberListPane, BorderLayout.CENTER);
 	
 			// Create scroll panel for member list.
@@ -352,6 +355,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			memberTable = new JTable(memberTableModel);
 			memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+			memberTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+			memberTable.getColumnModel().getColumn(3).setPreferredWidth(40);
 			memberTable.setRowSelectionAllowed(true);
 			memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			EntityLauncher.attach(memberTable, desktop);
@@ -425,7 +430,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionCustomPane.add(salvagePanel, salvageMissionName);
 
 		// Create custom exploration mission panel.
-		MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel();
+		MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel(ResourceUtil.rockIDs);
 		String explorationMissionName = Exploration.class.getName();
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
@@ -967,7 +972,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (columnIndex == 0)
 				return "Date"; //$NON-NLS-1$
 			else if (columnIndex == 1)
-				return "Phase";
+				return "Entry";
 			else
 				return Msg.getString("unknown"); //$NON-NLS-1$
 		}
@@ -1033,7 +1038,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return column count.
 		 */
 		public int getColumnCount() {
-			return 3;
+			return 4;
 		}
 
 		/**
@@ -1048,8 +1053,12 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				return Msg.getString("MainDetailPanel.column.name"); //$NON-NLS-1$
 			else if (columnIndex == 1)
 				return Msg.getString("MainDetailPanel.column.task"); //$NON-NLS-1$
-			else
+			else if (columnIndex == 2)
 				return Msg.getString("MainDetailPanel.column.onboard"); //$NON-NLS-1$
+			else if (columnIndex == 3)
+				return Msg.getString("MainDetailPanel.column.airlock"); //$NON-NLS-1$
+			else
+				return null;
 		}
 
 		/**
@@ -1067,12 +1076,18 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					return member.getName();
 				else if (column == 1)
 					return member.getTaskDescription();
-				else {
+				else if (column == 2) {
 					if (isOnboard(member))
 						return "Y";
-					else
-						return "N";
+					return "N";
 				}
+				else if (column == 3) {
+					if (isInAirlock(member))
+						return "Y";
+					return "N";
+				}
+				else 
+					return null;
 			} else
 				return Msg.getString("unknown"); //$NON-NLS-1$
 		}
@@ -1090,9 +1105,31 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 						return false;
 					}
-					else if (v instanceof Rover) {
-						Rover r = (Rover) v;
+					else if (v instanceof Rover r) {
 						if (r != null && r.isCrewmember((Person)member)) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * Is this member currently in vehicle's airlock ?
+		 *
+		 * @param member
+		 * @return
+		 */
+		boolean isInAirlock(Worker member) {
+			if (mission instanceof VehicleMission) {		
+				if (member.getUnitType() == UnitType.PERSON) {
+					Vehicle v = ((VehicleMission)mission).getVehicle();
+					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+						return false;
+					}
+					else if (v instanceof Rover r) {
+						if (r != null && r.isInAirlock((Person)member)) {
 							return true;
 						}
 					}
@@ -1145,7 +1182,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 				SwingUtilities.invokeLater(new MemberTableUpdater());
 			} else {
-				if (members.size() > 0) {
+				if (!members.isEmpty()) {
 					clearMembers();
 					SwingUtilities.invokeLater(new MemberTableUpdater());
 				}

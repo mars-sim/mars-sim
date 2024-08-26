@@ -227,6 +227,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	/**
 	 * Executes a Task for a number of steps or until it completes.
+	 * Note: for maven testing.
 	 * 
 	 * @param person
 	 * @param task
@@ -305,7 +306,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		var master = sim.getMasterClock();
 		master.setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true);
+        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true, false);
     }
 
 	/**
@@ -321,6 +322,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	public static void assertLessThan(String message, double maxValue, double actual) {
 		if (actual >= maxValue) {
+			fail(message + " ==> " +
+					"Expected: a value less than <" + maxValue + ">\n" +
+					"Actual was <" + actual + ">");
+		}
+	}
+	
+	public static void assertEqualLessThan(String message, double maxValue, double actual) {
+		if (actual > maxValue) {
 			fail(message + " ==> " +
 					"Expected: a value less than <" + maxValue + ">\n" +
 					"Actual was <" + actual + ">");

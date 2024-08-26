@@ -38,7 +38,7 @@
 		<part type="flexible hose" number="10"/>
 
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="laser sintering 3d printer" number="4"/>
+		<part type="SLS 3D Printer" number="4"/>
 		<part type="heat pump" number="2"/>
 		<part type="carbon dioxide laser" number="5"/>
 		<part type="helium neon laser" number="5"/>
@@ -155,7 +155,7 @@
 		<part type="air duct" number="20"/>
 		<part type="flexible hose" number="20"/>
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="laser sintering 3d printer" number="6"/>
+		<part type="SLS 3D Printer" number="6"/>
 		<part type="heat pump" number="5"/>
 		<part type="carbon dioxide laser" number="10"/>
 		<part type="helium neon laser" number="10"/>
@@ -274,7 +274,7 @@
 		<part type="air duct" number="30"/>
 		<part type="flexible hose" number="30"/>
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="laser sintering 3d printer" number="8"/>
+		<part type="SLS 3D Printer" number="8"/>
 		<part type="heat pump" number="10"/>
 		<part type="carbon dioxide laser" number="20"/>
 		<part type="helium neon laser" number="20"/>
@@ -393,7 +393,7 @@
 		<part type="air duct" number="40"/>
 		<part type="flexible hose" number="40"/>
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="laser sintering 3d printer" number="16"/>
+		<part type="SLS 3D Printer" number="16"/>
 		<part type="heat pump" number="20"/>
 		<part type="carbon dioxide laser" number="30"/>
 		<part type="helium neon laser" number="30"/>

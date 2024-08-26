@@ -48,7 +48,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private boolean isSalvaged;
 
 	/** Unique identifier for the settlement that owns this equipment. */
-	private int associatedSettlementID;
+//	private int associatedSettlementID;
 	/** The identifier for the registered owner of this equipment. */
 	private int registeredOwner;
 
@@ -84,9 +84,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		salvageInfo = null;
 
 		registeredOwner = -1;
-
-		// Gets the settlement id
-		associatedSettlementID = settlement.getIdentifier();
 	}
 
 	/**
@@ -325,7 +322,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlementID);
+		return super.getAssociatedSettlement();
 	}
 
 	public static String generateName(String baseName) {
@@ -372,15 +369,22 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 					&& newContainer.getUnitType() == UnitType.MARS) {
 						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}	
-				// 2b. If the previous cu is a vehicle
-				//     and this vehicle is in within settlement vicinity
-				//     and this person's new cu is mars surface,
-				//     then location state is within settlement vicinity
+				// 2b. If the previous cu is a vehicle or a person
+				//     and the previous cu is in settlement vicinity
+				//     then the new location state is settlement vicinity
 				else if ((cu.getUnitType() == UnitType.VEHICLE
 						|| cu.getUnitType() == UnitType.PERSON)
 						&& cu.isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+				}
+				// 2c. If the previous cu is a vehicle
+				//     and the previous cu vehicle is outside on mars surface
+				//     then the new location state is vehicle vicinity
+				else if ((cu.getUnitType() == UnitType.VEHICLE)
+						&& cu.isOutside()
+						&& newContainer.getUnitType() == UnitType.MARS) {
+							currentStateType = LocationStateType.VEHICLE_VICINITY;
 				}
 				else {
 					updateEquipmentState(newContainer);

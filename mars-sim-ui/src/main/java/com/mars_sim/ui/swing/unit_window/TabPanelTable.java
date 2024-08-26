@@ -56,6 +56,7 @@ public abstract class TabPanelTable extends TabPanel {
 
 	private String[] headerTooltips;
 	private String tableTitle;
+	private JTable table;
 	
 	/**
 	 * Constructor.
@@ -83,8 +84,9 @@ public abstract class TabPanelTable extends TabPanel {
 		super(tabTitle, tabIcon, tabToolTip, unit, desktop);
 	}
 
-		/**
-	 * Add some tooltips to the tabe header
+	/**
+	 * Adds some tooltips to the table header.
+	 * 
 	 * @param tooltips
 	 */
 	protected void setHeaderToolTips(String [] tooltips) {
@@ -92,7 +94,8 @@ public abstract class TabPanelTable extends TabPanel {
 	}
 
 	/**
-	 * Add a title to the table
+	 * Adds a title to the table.
+	 * 
 	 * @param title
 	 */
 	protected void setTableTitle(String title) {
@@ -127,7 +130,7 @@ public abstract class TabPanelTable extends TabPanel {
 		var tableModel = createModel();
 		
 		// Prepare table.
-		var table = new JTable(tableModel);
+		table = new JTable(tableModel);
 		if (tableModel instanceof EntityModel) {
 			// Call up the window when clicking on a row on the table
 			EntityLauncher.attach(table, getDesktop());
@@ -155,8 +158,16 @@ public abstract class TabPanelTable extends TabPanel {
 	}
 
 	/**
+	 * Get the central table of the panel
+	 */
+	protected JTable getMainTable() {
+		return table;
+	}
+
+	/**
 	 * This method should configure the table for any special renderers or
-	 * column widths. It should be overriden by subclasses.
+	 * column widths. It should be overridden by subclasses.
+	 * 
 	 * @param columnModel Columns to be configured
 	 */
 	protected void setColumnDetails(TableColumnModel columnModel) {
@@ -164,8 +175,9 @@ public abstract class TabPanelTable extends TabPanel {
 	}
 
 	/**
-	 * This is for the model to be dispalyed in the table.
+	 * This is for the model to be displayed in the table.
 	 * If the return is a UnitModel then the launcher will be enabled.
+	 * 
 	 * @return
 	 */
 	protected abstract TableModel createModel();
@@ -173,7 +185,8 @@ public abstract class TabPanelTable extends TabPanel {
 	/**
 	 * If the panel has an info panel then it is created by this method. It will be placed
 	 * above the table.
-	 * Subclasses can override this if info is to be displayed
+	 * Subclasses can override this if info is to be displayed.
+	 * 
 	 * @return Could return null
 	 */
 	protected JPanel createInfoPanel() {

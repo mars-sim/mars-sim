@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelWeather.java
- * @date 2022-07-09
+ * @date 2024-07-17
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -37,28 +37,22 @@ extends TabPanel {
 
 	private static final String WEATHER_ICON = "weather";
 	
-	private static final String DUSTY_SKY = "large/dusty";
-	private static final String SUNNY = "large/sunny";
-	private static final String HOT = "large/hot";
-	private static final String SNOW_BLOWING = "large/snow_blowing";
-	private static final String SNOW = "large/now";
-	private static final String WIND = "large/windy"; 
-	private static final String FRIGID = "large/frigid";
-	private static final String HAZE = "large/haze";
+//	private static final String DUSTY_SKY = "large/dusty";
+//	private static final String FRIGID = "large/frigid";
+//	private static final String HAZE = "large/haze";
+//	private static final String HOT = "large/hot";
+//	private static final String LIGHTNING = "large/lightning";	
+//	private static final String SNOW_BLOWING = "large/snow_blowing";
+//	private static final String SUN_STORM = "large/sun_storm";
+//	private static final String SNOW = "large/now";
+//	private static final String SUNNY = "large/sunny";
+//	private static final String WIND = "large/windy"; 
 
-	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
+
+	private static final double RADIANS_TO_DEGREES = 180/Math.PI;
+
+	private int windDirectionCache;
 	
-	private JLabel airDensityTF;
-	private JLabel pressureTF;
-	private JLabel solarIrradianceTF;
-	private JLabel windSpeedTF;
-	private JLabel windDirTF;
-	private JLabel opticalDepthTF;
-	private JLabel zenithAngleTF;
-	private JLabel solarDeclinationTF;
-
-	private JLabel temperatureValueLabel;
-
 	private double airPressureCache;
 	private double temperatureCache;
 	private double windSpeedCache;
@@ -68,16 +62,23 @@ extends TabPanel {
 	private double solarDeclinationCache;
 	private double solarIrradianceCache;
 
-	private int windDirectionCache;
-	
-	private String iconCache;
+//	private String iconCache;
 
 	private JLabel latitudeLabel;
 	private JLabel longitudeLabel;
 	private JLabel weatherLabel;
+	private JLabel airDensityLabel;
+	private JLabel pressureTF;
+	private JLabel solarIrradianceLabel;
+	private JLabel windSpeedLabel;
+	private JLabel windDirLabel;
+	private JLabel opticalDepthLabel;
+	private JLabel zenithAngleLabel;
+	private JLabel solarDeclinationLabel;
 
+	private JLabel temperatureLabel;
+	
 	private Coordinates locationCache;
-
 	private Weather weather;
 	private SurfaceFeatures surfaceFeatures;
 	private OrbitInfo orbitInfo;
@@ -85,13 +86,14 @@ extends TabPanel {
 		
     /**
      * Constructor.
+     * 
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
     public TabPanelWeather(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super(
-    		null,
+        	Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
     		ImageLoader.getIconByName(WEATHER_ICON),
     		Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
     		unit, desktop
@@ -110,19 +112,18 @@ extends TabPanel {
         // Initialize location cache
         locationCache = getUnit().getCoordinates();
 
-
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
         mainPanel.setBorder(new MarsPanelBorder());
         content.add(mainPanel, BorderLayout.NORTH);
 		   
 		// Create location panel
 		AttributePanel locnPanel = new AttributePanel(2);
-		latitudeLabel = locnPanel.addTextField("Lat", getLatitudeString(), null);
-		longitudeLabel = locnPanel.addTextField("Long", getLongitudeString(), null);
+		latitudeLabel = locnPanel.addRow("Lat", getLatitudeString());
+		longitudeLabel = locnPanel.addRow("Lon", getLongitudeString());
 
       	// Create weatherPanel
-        JPanel centerEastPanel = new JPanel(new BorderLayout(0, 0));
-        centerEastPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+        JPanel centerEastPanel = new JPanel(new BorderLayout(5, 5));
+        centerEastPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         centerEastPanel.add(locnPanel, BorderLayout.NORTH);
         
         JPanel eastPanel = new JPanel(new BorderLayout(0, 10));       
@@ -130,7 +131,7 @@ extends TabPanel {
         eastPanel.add(centerEastPanel, BorderLayout.CENTER);
 
         // Create imgPanel
-    	JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
+    	JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 5));
         weatherLabel = new JLabel();
     	imgPanel.add(weatherLabel, JLabel.CENTER);
     	centerEastPanel.add(imgPanel, BorderLayout.SOUTH);
@@ -140,41 +141,49 @@ extends TabPanel {
         centerEastPanel.add(temperaturePanel, BorderLayout.CENTER);
 
         // Prepare temperature label
-        temperatureValueLabel = new JLabel(StyleManager.DECIMAL_CELCIUS.format(getTemperature()), JLabel.CENTER);
-        temperatureValueLabel.setOpaque(false);
-        temperaturePanel.add(temperatureValueLabel);
+//        temperatureValueLabel = new JLabel(StyleManager.DECIMAL_CELCIUS.format(getTemperature()), JLabel.CENTER);
+//        temperatureValueLabel.setOpaque(false);
+//        temperaturePanel.add(temperatureValueLabel);
 
-        JPanel metricsPanel = new JPanel(new BorderLayout(0, 0));
+        JPanel metricsPanel = new JPanel(new BorderLayout(5, 5));
         mainPanel.add(metricsPanel, BorderLayout.CENTER);
-
+        
+        JPanel atmPanel = new JPanel(new BorderLayout(5, 5));
+        metricsPanel.add(atmPanel, BorderLayout.NORTH);
+        
         // Create spring layout panel
-        AttributePanel springPanel = new AttributePanel(8);
-        metricsPanel.add(springPanel, BorderLayout.NORTH);
-
-        pressureTF =  springPanel.addTextField(Msg.getString("TabPanelWeather.airPressure.label"), "", null);
-        airDensityTF = springPanel.addTextField(Msg.getString("TabPanelWeather.airDensity.label"), "", null);
-        windSpeedTF = springPanel.addTextField(Msg.getString("TabPanelWeather.windspeed.label"), "", null);
-        windDirTF = springPanel.addTextField(Msg.getString("TabPanelWeather.windDirection.label"), "", null);
-        solarIrradianceTF = springPanel.addTextField(Msg.getString("TabPanelWeather.solarIrradiance.label"), "", null);
-        opticalDepthTF = springPanel.addTextField(Msg.getString("TabPanelWeather.opticalDepth.label"), "", null);
-        zenithAngleTF = springPanel.addTextField(Msg.getString("TabPanelWeather.zenithAngle.label"), "", null);
-        solarDeclinationTF = springPanel.addTextField(Msg.getString("TabPanelWeather.solarDeclination.label"), "", null);
-    }
+        AttributePanel atmSpringPanel = new AttributePanel(5);
+        atmPanel.add(atmSpringPanel, BorderLayout.NORTH);
+        addBorder(atmPanel, "Atmospheric");
+           
+        temperatureLabel = atmSpringPanel.addRow("Temperature", "");
+        pressureTF =  atmSpringPanel.addRow(Msg.getString("TabPanelWeather.airPressure.label"), "");
+        airDensityLabel = atmSpringPanel.addRow(Msg.getString("TabPanelWeather.airDensity.label"), "");
+        windSpeedLabel = atmSpringPanel.addRow(Msg.getString("TabPanelWeather.windspeed.label"), "");
+        windDirLabel = atmSpringPanel.addRow(Msg.getString("TabPanelWeather.windDirection.label"), "");
+        
+        JPanel sunPanel = new JPanel(new BorderLayout(5, 5));
+        metricsPanel.add(sunPanel, BorderLayout.CENTER);
+        
+        // Create spring layout panel
+        AttributePanel sunSpringPanel = new AttributePanel(4);
+        sunPanel.add(sunSpringPanel, BorderLayout.NORTH);
+        addBorder(sunPanel, "Solar");
+        
+        solarIrradianceLabel = sunSpringPanel.addRow(Msg.getString("TabPanelWeather.solarIrradiance.label"), "");
+        opticalDepthLabel = sunSpringPanel.addRow(Msg.getString("TabPanelWeather.opticalDepth.label"), "");
+        zenithAngleLabel = sunSpringPanel.addRow(Msg.getString("TabPanelWeather.zenithAngle.label"), "");
+        solarDeclinationLabel = sunSpringPanel.addRow(Msg.getString("TabPanelWeather.solarDeclination.label"), "");
+   
+        update();
+	}
 
     public double getTemperature() {
 		return weather.getTemperature(locationCache);
     }
 
-    public String getAirPressureString(double value) {
-    	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
-    }
-
     public double getAirPressure() {
-    	return Math.round(weather.getAirPressure(locationCache) *100.0) / 100.0;
-    }
-
-    public String getWindSpeedString(double value) {
-    	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    	return weather.getAirPressure(locationCache);
     }
 
     public double getWindSpeed() {
@@ -189,10 +198,6 @@ extends TabPanel {
  		return surfaceFeatures.getOpticalDepth(locationCache);
      }
 
-    public String getOpticalDepthString(double value) {
-     	return StyleManager.DECIMAL_PLACES2.format(value);
-    }
-
     public double getZenithAngle() {
  		return orbitInfo.getSolarZenithAngle(locationCache);
      }
@@ -206,17 +211,9 @@ extends TabPanel {
 		return weather.getAirDensity(locationCache);
     }
 
-    public String getAirDensityString(double value) {
-     	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
-    }
-
     public double getSolarIrradiance() {
   		return surfaceFeatures.getSolarIrradiance(locationCache);
       }
-
-     public String getSolarIrradianceString(double value) {
-      	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
-     }
 
 	private String getLatitudeString() {
 		return locationCache.getFormattedLatitudeString();
@@ -235,130 +232,125 @@ extends TabPanel {
         if (!masterClock.isPaused()) {
 
 	        // If unit's location has changed, update location display.
-	    	// TODO: if a person goes outside the settlement for servicing an equipment
-	    	// does the coordinate (down to how many decimal) change?
+        	
+	    	// Future: if a person goes outside in settlement vicinity for servicing an equipment,
+	    	//         does the coordinates (down to how many decimals) change ?
+        	
 	        if (!locationCache.equals(location)) {
 	            locationCache = location;
 	            latitudeLabel.setText(getLatitudeString());
 	            longitudeLabel.setText(getLongitudeString());
 	        }
 
-			double p =  Math.round(getAirPressure()*100.0)/100.0;
+			double p = getAirPressure();
 	        if (airPressureCache != p) {
 	        	airPressureCache = p;
-	        	pressureTF.setText(" " + getAirPressureString(airPressureCache));
+	        	pressureTF.setText(StyleManager.DECIMAL_KPA.format(airPressureCache));
 	        }
 
-	        double t =  Math.round(getTemperature()*100.0)/100.0;
+	        double t = getTemperature();
 	        if (temperatureCache != t) {
 	        	temperatureCache = t;
-	        	temperatureValueLabel.setText(StyleManager.DECIMAL_CELCIUS.format(temperatureCache));
+	        	temperatureLabel.setText(StyleManager.DECIMAL_CELCIUS.format(temperatureCache));
 	        }
  
 	        int wd = getWindDirection();
 	        if (windDirectionCache != wd) {
 	        	windDirectionCache = wd;
-	        	windDirTF.setText(StyleManager.DECIMAL_DEG.format(windDirectionCache));
+	        	windDirLabel.setText(StyleManager.DECIMAL_DEG.format(windDirectionCache));
 	        }
 
-	        double s = Math.round(getWindSpeed()*100.0)/100.0;
+	        double s = getWindSpeed();
 	        if (windSpeedCache != s) {
 	        	windSpeedCache = s;
-	        	windSpeedTF.setText(" " + getWindSpeedString(windSpeedCache));
+	        	windSpeedLabel.setText(StyleManager.DECIMAL_M_S.format(windSpeedCache));
 	        }
 
-	        double ad =  Math.round(getAirDensity()*100.0)/100.0;
+	        double ad = getAirDensity();
 	        if (airDensityCache != ad) {
 	        	airDensityCache = ad;
-	        	airDensityTF.setText(" " + getAirDensityString(airDensityCache));
+	        	airDensityLabel.setText(StyleManager.DECIMAL_G_M3.format(airDensityCache));
 	        }
 
-	        double od =  Math.round(getOpticalDepth()*100.0)/100.0;
+	        double od = getOpticalDepth();
 	        if (opticalDepthCache != od) {
 	        	opticalDepthCache = od;
-	        	opticalDepthTF.setText(" " + getOpticalDepthString(opticalDepthCache));
+	        	opticalDepthLabel.setText(StyleManager.DECIMAL_PLACES2.format(opticalDepthCache));
 	        }
 
 	        //////////////////////////////////////////////
-	        
-	       	String icon = null;
-
-	    	if (temperatureCache <= 0) {
-	    		if (temperatureCache < -40)
-	    			icon = FRIGID;
-	    		else {
-	    			if (windSpeedCache > 6D)
-	    				icon = SNOW_BLOWING;
-	    			else
-	    				icon = SNOW;
-	    		}
-	    	}
-	    	else if (temperatureCache >= 26)
-	    		icon = HOT;
-	    	else { //if (temperatureCache >= 0) {
-	    		if (windSpeedCache > 20D) {
-	    			icon = WIND;
-	    		}
-	    		else if (opticalDepthCache > 1D) {
-			    	if (opticalDepthCache > 3D)
-			    		icon = DUSTY_SKY;
-			    	else
-			    		icon = HAZE;
-		    	}
-	    		else
-	    			icon = SUNNY;
-	    	}
-
-	    	//////////////////////////////////////////////
-	    	
-	    	if (!icon.equals(iconCache)) {
-	    		iconCache = icon;
-	    		weatherLabel.setIcon(ImageLoader.getIconByName(icon));
-	    	}
+//	       	String icon = null;
+//
+//	    	if (temperatureCache <= 0) {
+//	    		if (temperatureCache < -40)
+//	    			icon = FRIGID;
+//	    		else {
+//	    			if (windSpeedCache > 6D)
+//	    				icon = SNOW_BLOWING;
+//	    			else
+//	    				icon = SNOW;
+//	    		}
+//	    	}
+//	    	else if (temperatureCache >= 26)
+//	    		icon = HOT;
+//	    	else { //if (temperatureCache >= 0) {
+//	    		if (windSpeedCache > 20D) {
+//	    			icon = WIND;
+//	    		}
+//	    		else if (opticalDepthCache > 1D) {
+//			    	if (opticalDepthCache > 3D)
+//			    		icon = DUSTY_SKY;
+//			    	else
+//			    		icon = HAZE;
+//		    	}
+//	    		else
+//	    			icon = SUNNY;
+//	    	}
+//	
+//	    	if (!icon.equals(iconCache)) {
+//	    		iconCache = icon;
+//	    		weatherLabel.setIcon(ImageLoader.getIconByName(icon));
+//	    	}
 
 	        double za = getZenithAngle();
 	        if (zenithAngleCache != za) {
 	        	zenithAngleCache = za;
-	        	zenithAngleTF.setText(StyleManager.DECIMAL_DEG.format(zenithAngleCache * RADIANS_TO_DEGREES));
+	        	zenithAngleLabel.setText(StyleManager.DECIMAL_DEG.format(zenithAngleCache * RADIANS_TO_DEGREES));
 	        }
 
-	   
 	        double sd = getSolarDeclination();
 	        if (solarDeclinationCache != sd) {
 	        	solarDeclinationCache = sd;
-	        	solarDeclinationTF.setText(StyleManager.DECIMAL_DEG.format(solarDeclinationCache));
+	        	solarDeclinationLabel.setText(StyleManager.DECIMAL_DEG.format(solarDeclinationCache));
 	        }
 
 	        double ir = getSolarIrradiance();
 	        if (solarIrradianceCache != ir) {
 	        	solarIrradianceCache = ir;
-	        	solarIrradianceTF.setText(" " + getSolarIrradianceString(solarIrradianceCache));
+	        	solarIrradianceLabel.setText(StyleManager.DECIMAL_W_M2.format(solarIrradianceCache));
 	        }
 	    }
     }
 
 	/**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     @Override
     public void destroy() {
     	super.destroy();
     	
-    	airDensityTF = null;
+    	airDensityLabel = null;
     	pressureTF = null;
-    	solarIrradianceTF = null;
-    	windSpeedTF = null;
-    	windDirTF = null;
-    	opticalDepthTF = null;
-    	zenithAngleTF = null;
-    	solarDeclinationTF = null;
-
-    	temperatureValueLabel = null;
-
+    	solarIrradianceLabel = null;
+    	windSpeedLabel = null;
+    	windDirLabel = null;
+    	opticalDepthLabel = null;
+    	zenithAngleLabel = null;
+    	solarDeclinationLabel = null;
+    	temperatureLabel = null;
     	latitudeLabel = null;
     	longitudeLabel = null;
     	weatherLabel = null;
-
     	locationCache = null;
     }
 }

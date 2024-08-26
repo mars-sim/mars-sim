@@ -250,7 +250,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				if (robot.getSystemCondition().isInoperable())
 					result = null;
 				else
-					result = getBatteryStatus(robot.getSystemCondition().getBatteryState());
+					result = getBatteryStatus(robot.getSystemCondition().getBatteryLevel());
 				break;
 
 			case HEALTH: 

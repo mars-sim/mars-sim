@@ -144,6 +144,8 @@ public abstract class Vehicle extends Unit
 	private double lastDistance;
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
+	/** The cumulative fuel usage of the vehicle [kg] */
+	private double cumFuelUsedKG;
 	/** The cumulative energy usage of the vehicle [kWh] */
 	private double cumEnergyUsedKWH;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
@@ -155,6 +157,8 @@ public abstract class Vehicle extends Unit
 	
 	/** The vehicle specification */
 	private String specName;
+	/** The vehicle model */
+	private String modelName;
 	
 	/** Parked position (meters) from center of settlement. */
 	private LocalPosition posParked;	
@@ -223,6 +227,7 @@ public abstract class Vehicle extends Unit
 		
 		this.spec = spec;
 		this.specName = spec.getName();
+		this.modelName = spec.getModelName();
 		this.vehicleType = spec.getType();
 		setBaseMass(spec.getEmptyMass());
 		
@@ -309,20 +314,28 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the base image for this Vehicle.
 	 * 
-	 * @todo This needs refactoring to avoid copying out VehicleSpec properties
 	 * @return Name of base image for this vehicle
 	 */
 	public String getBaseImage() {
 		return spec.getBaseImage();
 	}
+	
 	/**
-	 * Gets the name of the vehicle specification.
+	 * Gets the spec name of the vehicle.
 	 * 
-	 * @see VehicleConfig#getVehicleSpec(String)
-	 * @return Name of the VehicleSpec
+	 * @return spec name
 	 */
 	public String getSpecName() {
 		return specName;
+	}
+	
+	/**
+	 * Gets the model of the vehicle.
+	 * 
+	 * @return Name of the model
+	 */
+	public String getModelName() {
+		return modelName;
 	}
 
 	public VehicleType getVehicleType() {
@@ -778,7 +791,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the speed of vehicle.
 	 *
-	 * @return the vehicle's speed (in km/hr)
+	 * @return the vehicle's speed (in kph)
 	 */
 	public double getSpeed() {
 		return speed;
@@ -787,7 +800,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the vehicle's current speed.
 	 *
-	 * @param speed the vehicle's speed (in km/hr)
+	 * @param speed the vehicle's speed (in kph)
 	 */
 	public void setSpeed(double speed) {
 		if (speed < 0D)
@@ -811,7 +824,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the base speed of vehicle
 	 *
-	 * @return the vehicle's base speed (in kph or km/hr)
+	 * @return the vehicle's base speed (in kph)
 	 */
 	public double getBaseSpeed() {
 		return spec.getBaseSpeed();
@@ -830,7 +843,8 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
+        	range = Math.min(getBaseRange() / RANGE_FACTOR, 
+        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
         }
         else {
         	
@@ -841,7 +855,8 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
+        		range = Math.min(getBaseRange() / RANGE_FACTOR, 
+        					getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
     		}
         }
 
@@ -914,6 +929,15 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Gets the cumulative fuel usage of the vehicle [kg].
+	 * 
+	 * @return
+	 */
+	public double getCumFuelUsage() {
+		return cumFuelUsedKG;
+	}
+	
+	/**
 	 * Gets the energy available at the full tank [kWh].
 	 *
 	 * @return
@@ -946,9 +970,11 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
+//		return getFuelConv() / getCumFuelConsumption();
 		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return odometerMileage / cumEnergyUsedKWH / 1000 * getFuelConv();
+		// [km] / [kg] 
+		return odometerMileage / cumFuelUsedKG;
 	}
 	
 	/**
@@ -959,7 +985,8 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelConsumption() {
 		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return 1000 * cumEnergyUsedKWH / odometerMileage;
+		// [kWh] / [km] / 1000 
+		return  cumEnergyUsedKWH / odometerMileage / 1000;
 	}
 	
 	/**
@@ -971,7 +998,7 @@ public abstract class Vehicle extends Unit
 		double cumFE = getCumFuelEconomy();
 		double cumFC = getCumFuelConsumption();
 		
-		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed >0)
+		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed > 0)
 			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
 		
 		return 0;
@@ -1033,7 +1060,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Mass of Equipment is the stored mass plus the base mass.
+	 * Gets the stored mass plus the base mass.
 	 */
 	@Override
 	public double getMass() {
@@ -1083,7 +1110,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
 		if (cum == 0)
-			return (.5 * base + .5 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.5 * base + .5 * init);// * VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.3 * base + .3 * init + .4 * cum);
 		}
@@ -1111,7 +1138,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
 		if (cum == 0)
-			return (.5 * base + .5 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.5 * base + .5 * init);// / VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.3 * base + .3 * init + .4 * cum);
 		}
@@ -1141,7 +1168,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getBatteryPercent() {
-		return getController().getBattery().getBatteryState();
+		return getController().getBattery().getBatteryLevel();
 	}
 	
 	
@@ -1178,11 +1205,13 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @param distance the distance traveled traveled [km]
 	 * @param cumEnergyUsed the energy used [Wh]
+	 * @param cumFuelUsedKG the fuel used [kg]
 	 */
-	public void addOdometerMileage(double distance, double cumEnergyUsed) {
+	public void addOdometerMileage(double distance, double cumEnergyUsed, double cumFuelUsedKG) {
 		this.odometerMileage += distance;
 		this.lastDistance = distance;
 		this.cumEnergyUsedKWH += cumEnergyUsed/1000;
+		this.cumFuelUsedKG += cumFuelUsedKG;
 	}
 
 	public double getLastDistanceTravelled() {
@@ -1387,18 +1416,18 @@ public abstract class Vehicle extends Unit
 			removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
 		
-		// Regardless being outside or inside settlement,
-		// if it's still reportedly under maintenance
-		// but maintenance just got done	
-		else if (haveStatusType(StatusType.MAINTENANCE) 
-			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
-			// Make sure reservedForMaintenance is false since vehicle now needs no maintenance.
-			setReservedForMaintenance(false);
-			// Remove the malfunction status
-			removeSecondaryStatus(StatusType.MAINTENANCE);
-			// If the vehicle is in a garage, remove from garage
-			BuildingManager.removeFromGarage(this);
-		}
+//		// Regardless being outside or inside settlement,
+//		// if it's still reportedly under maintenance
+//		// but maintenance just got done	
+//		else if (haveStatusType(StatusType.MAINTENANCE) 
+//			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
+//			// Make sure reservedForMaintenance is false since vehicle now needs no maintenance.
+//			setReservedForMaintenance(false);
+//			// Remove the malfunction status
+//			removeSecondaryStatus(StatusType.MAINTENANCE);
+//			// If the vehicle is in a garage, remove from garage
+//			BuildingManager.removeFromGarage(this);
+//		}
 		
 		// Regardless being outside or inside settlement,
 		// NOT under maintenance
@@ -1419,7 +1448,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		// Check once per msol (millisol integer)
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			
 //			if (primaryStatus == StatusType.PARKED && isReserved()){
 //				// If the vehicle is reserved and is not in a garage, add to  garage
@@ -1718,6 +1747,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Finds a new parking location and facing.
+	 * TODO Why is this not in the Garage Function class?
 	 */
 	public void findNewParkingLoc() {
 
@@ -1734,7 +1764,7 @@ public abstract class Vehicle extends Unit
 		List<Building> evas = settlement.getBuildingManager()
 				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA);
 		int numGarages = settlement.getBuildingManager().getGarages().size();
-		int total = (int)(evas.size() + numGarages * weight - 1);
+		int total = (evas.size() + numGarages * weight - 1);
 		if (total < 0)
 			total = 0;
 		int rand = RandomUtil.getRandomInt(total);
@@ -1786,14 +1816,13 @@ public abstract class Vehicle extends Unit
 		double l = getLength() * d * 1.25;
 		
 		// Note: May need a more permanent solution by figuring out how to detect those enclosed space
-		
 		int count = 0;
 		
 		// Try iteratively outward from 10m to 500m distance range.
-		for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
+		for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
 			// Try random locations at each distance range.
-			for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
-				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, x) + y);
+			for (int y = oY; (y < 500) && !foundGoodLocation; y++) {
+				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, .5*x) + .5*y);
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 				
 				newLoc = centerLoc.getPosition(distance, radianDirection);
@@ -1812,22 +1841,66 @@ public abstract class Vehicle extends Unit
 
 		if (foundGoodLocation) {
 			setParkedLocation(newLoc, newFacing);
-			logger.info(this, "Moved to new parking loc on iteration " + count + ".");
+			logger.info(this, "Moved to new parking loc at (" 
+					+ Math.round(newLoc.getX() * 10.0)/10.0 
+					+ ", " + Math.round(newLoc.getY() * 10.0)/10.0 
+					+ ").");
 		}
 		else {
 			logger.info(this, "Parking loc not found.");
 		}
 	}
 	
+	
+	/**
+	 * Tags a vehicle for maintenance.
+	 */
+	public void maintainVehicle() {
+		// This code is wrong..... Should just set the condition to make this Vehicle elligable for Maintentance
+        logger.info(this, "Triggering a vehicle maintenance task.");
+	}
+	
+	
 	/**
 	 * Relocates a vehicle. 
 	 */
 	public void relocateVehicle() {
-		// Remove the vehicle from a garage if it's inside
-		BuildingManager.removeFromGarage(this);
-		// Note: No need to call below separately to find a new outside location for parking
-		// Calling removeFromGarage above will take care of finding new parking loc
-		// findNewParkingLoc();
+
+		if (isInGarage()) {
+			// If it's in a garage, remove the vehicle from a garage and 
+			// relocate it outside
+			BuildingManager.removeFromGarage(this);
+			// Note: removeVehicle or removeFlyer will automatically call 
+			// parkInVicinity which will in turns call findNewParkingLoc
+			logger.info(this, "Left garage and parked outside as instructed.");
+		}
+		else {
+			// If it's not in a garage 
+			if (reservedForMaintenance) {
+				// If it's under maintenance, go to a garage if possible
+				// else park outside
+				logger.info(this, "Reserved for maintenance. Looking for a garage.");
+				boolean done = addToAGarage();
+				if (!done) {
+					logger.info(this, "Garage space not found. Parked outside.");
+					findNewParkingLoc();
+				}
+			}
+			else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE) {
+				// If it's under maintenance, go to a garage if possible
+				// else park outside
+				logger.info(this, "Under maintenance. Looking for a garage.");
+				boolean done = addToAGarage();
+				if (!done) {
+					logger.info(this, "Garage space not found. Parked outside.");
+					findNewParkingLoc();
+				}
+			}
+			else {
+				logger.info(this, "Looking for another spot to park outside.");
+				findNewParkingLoc();
+			}
+		}
 	}
 
 	public static double getFuelRangeErrorMargin() {
@@ -1884,7 +1957,8 @@ public abstract class Vehicle extends Unit
 	 * @return true if yes
 	 */
 	public boolean isOutsideOnMarsMission() {
-		return LocationStateType.MARS_SURFACE == currentStateType;
+		return LocationStateType.MARS_SURFACE == currentStateType
+				|| LocationStateType.VEHICLE_VICINITY == currentStateType;
 	}
 
 	/**
@@ -2355,9 +2429,6 @@ public abstract class Vehicle extends Unit
 			else
 				return LocationStateType.SETTLEMENT_VICINITY;
 		}
-
-//		if (newContainer.getUnitType() == UnitType.BUILDING)
-//			return LocationStateType.INSIDE_SETTLEMENT;
 
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;

@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * DriveGroundVehicleTest.java
+ * @date 2024-07-16
+ * @author Barry Evans
+ */
+
 package com.mars_sim.core.vehicle.task;
 
 
@@ -9,19 +16,21 @@ import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
-    private static final int DIST = 1;  // Drive 1 KM
-    private static final double RESOURCE_AMOUNT = 100D;
-
+    private static final double DIST = OperateVehicle.ARRIVING_BUFFER * 2;  // Drive 2 km
+    private static final double METHANOL_AMOUNT = 30D;
+    private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
+    
     public void testDriveVehicle() {
-        var s = buildSettlement("Start");
-        var v = buildRover(s, "Test", LocalPosition.DEFAULT_POSITION);
-        v.storeAmountResource(v.getFuelTypeID(), RESOURCE_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, RESOURCE_AMOUNT);
+        var s = buildSettlement("Test Settlement");
+        var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
+        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
 
-        var p = buildPerson("Driver", s, JobType.PILOT);
+        String name = "Test Driver";
+        var p = buildPerson(name, s, JobType.PILOT);
         p.transfer(v);
 
         var targetDir = new Direction(0.1);
@@ -30,7 +39,7 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
                                     0D);
 
         assertFalse("Task created", task.isDone());
-        assertEquals("Driver", p, v.getOperator());
+        assertEquals(name, p, v.getOperator());
 
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 10);
@@ -40,25 +49,24 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
 
         // Drive the rest
         executeTaskUntilPhase(p, task, 1000);
-        assertEquals("Vehicle oddmeter", DIST, Math.round(v.getOdometerMileage()));
+        
+        assertEquals("Vehicle oddmeter", Math.round(DIST), Math.round(v.getOdometerMileage()));
         assertEquals("Vehicle at destination", dest, v.getCoordinates());
         assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
-        assertLessThan("Oxygen stored", RESOURCE_AMOUNT, v.getAmountResourceStored(ResourceUtil.oxygenID));
-        assertLessThan("Fuel stored", RESOURCE_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
 
         assertTrue("Task complete", task.isDone());
     }
 
     public void testDriveVehicleNoFuel() {
-        var s = buildSettlement("Start");
-        var v = buildRover(s, "Test", LocalPosition.DEFAULT_POSITION);
-        v.storeAmountResource(v.getFuelTypeID(), 100);
-        v.storeAmountResource(ResourceUtil.oxygenID, 100);
+        var s = buildSettlement("Test Settlement");
+        var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
+        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
 
-        var p = buildPerson("Driver", s, JobType.PILOT);
+        var p = buildPerson("Test Driver", s, JobType.PILOT);
         p.transfer(v);
 
         var targetDir = new Direction(0.1);
@@ -67,9 +75,14 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
                                     0D);
 
         assertFalse("Task created", task.isDone());
-
+ 
         // Execute few calls to get driver positioned and moving then remove fuel
         executeTask(p, task, 10);
+        
+        // If Battery power is used, instead of fuel
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.oxygenID));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
+        
         v.retrieveAmountResource(v.getFuelTypeID(), v.getAmountResourceStored(v.getFuelTypeID()));
         assertEquals("Fuel emptied", 0.0D, v.getAmountResourceStored(v.getFuelTypeID()));
 

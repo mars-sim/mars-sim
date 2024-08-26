@@ -24,6 +24,8 @@ public enum StatusType {
 	TOWED 				(false),	
 	TOWING 				(false),	
 	OUT_OF_FUEL 		(false),
+	OUT_OF_OXIDIZER 	(false), 
+	OUT_OF_BATTERY_POWER(false),
 	LOADING				(false),
 	UNLOADING			(false)
 	;

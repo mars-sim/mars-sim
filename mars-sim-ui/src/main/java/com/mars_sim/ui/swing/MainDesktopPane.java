@@ -511,6 +511,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		UnitWindow tempWindow = null;
 
+		// See if the window of this unit has already been opened
 		for (UnitWindow window : unitWindows) {
 			if (window.getUnit() == unit) {
 				tempWindow = window;

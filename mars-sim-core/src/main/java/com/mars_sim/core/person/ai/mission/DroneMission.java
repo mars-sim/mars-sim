@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DroneMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-07-15
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.mission;
@@ -14,10 +14,12 @@ import java.util.logging.Level;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Drone;
@@ -85,7 +87,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Gets the available vehicle at the settlement with the greatest range.
+	 * Gets a drone that is ready for use.
 	 *
 	 * @param settlement         the settlement to check.
 	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
@@ -96,7 +98,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		Drone bestDrone = null;
 		double bestRange = 0D;
 
-		for(Drone drone : settlement.getParkedGaragedDrones()) {
+		for (Drone drone : settlement.getParkedGaragedDrones()) {
 
 			boolean usable = !drone.isReservedForMission();
             usable = usable && (allowMaintReserved || !drone.isReserved());
@@ -141,23 +143,46 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		
-		if ((member instanceof Robot robot) 
-				&& !robot.getSystemCondition().isBatteryAbove(10)) {
-				return null;
+		if (member instanceof Robot robot 
+				&& robot.getSystemCondition().getBatteryLevel() < 5) {
+			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryLevel() + " %");
+			
+        	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
+        	if (canCharge) {
+        		logger.log(member, Level.INFO, 4_000,
+            			"Instructed to charge up the battery ahead of piloting " + getVehicle() + ".");
+            	
+    			return null;
+        	}
 		}
-		
+
+        else if (member instanceof Person person
+				&& person.isSuperUnfit()){
+        	// For humans
+        	logger.warning(person, 4_000, "Not norminally fit to pilot " + getVehicle() + ".");
+        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
+        	boolean canSleep = assignTask(person, new Sleep(person));
+        	if (canSleep) {
+        		logger.log(member, Level.INFO, 4_000,
+            			"Instructed to sleep ahead of piloting " + getVehicle() + ".");
+            	
+    			return null;
+        	}
+        }
+				
 		Drone d = getDrone();
-		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
+		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)
+				&& !d.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
 			if (lastOperateVehicleTaskPhase != null) {
-				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
+				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
 			} else {
-				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
+				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance());
 			}
 		}
 		else {
-			logger.warning(d, 10_000L, "Out of fuel. Quit assigning the driving task.");
+			logger.warning(d, 4_000, "Out of fuel and battery power. Quit assigning the piloting task.");
 			return null;
 		}
 
@@ -219,19 +244,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	@Override
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
-
-		Vehicle v0 = getVehicle();
-		disembark(member, v0, disembarkSettlement);
-	}
-
-	/**
-	 * Disembarks the vehicle and unload cargo upon arrival.
-	 *
-	 * @param member
-	 * @param v
-	 * @param disembarkSettlement
-	 */
-	public void disembark(Worker member, Vehicle v, Settlement disembarkSettlement) {
+		Vehicle v = getVehicle();
+		
 		logger.log(v, Level.INFO, 10_000,
 				"Disemabarked at " + disembarkSettlement.getName() + ".");
 
@@ -245,8 +259,12 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			}
 
 			// Add vehicle to a garage if available.
-			disembarkSettlement.getBuildingManager().addToGarage(v);
-
+			boolean canGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+			if (!canGarage) {
+				// Park in the vicinity of the settlement outside
+				v.findNewParkingLoc();
+			}
+				
 			// Unload drone if necessary.
 			boolean droneUnloaded = drone.getStoredMass() == 0D;
 

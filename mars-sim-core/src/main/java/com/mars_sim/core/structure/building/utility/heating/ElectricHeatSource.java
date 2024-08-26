@@ -85,6 +85,11 @@ public class ElectricHeatSource extends HeatSource {
 				* electricEfficiency / RATED_ELECTRIC_EFFICIENCY;
 	}
 
+	/**
+	 * Requests an estimate of the heat produced by this heat source.
+	 * 
+	 * @return heat [in kW]
+	 */
 	@Override
 	public double requestHeat(double percent) {
 		return getMaxHeat() * percent / 100 

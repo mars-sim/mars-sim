@@ -23,7 +23,7 @@ import com.mars_sim.core.vehicle.SickBay;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * Command to get the specs of a vehicle.
+ * The command to get the specs of a vehicle.
  * This is a singleton.
  */
 public class VehicleSpecCommand extends ChatCommand {
@@ -54,7 +54,8 @@ public class VehicleSpecCommand extends ChatCommand {
 		StructuredResponse buffer = new StructuredResponse();
 		buffer.appendLabeledString("Name", source.getName());
 		buffer.appendLabeledString("Type", source.getVehicleType().getName());
-		buffer.appendLabeledString("Specification", source.getSpecName());
+		buffer.appendLabeledString("Spec Name", source.getSpecName());
+		buffer.appendLabeledString("Model", source.getModelName());
 		buffer.appendLabeledString("Description", source.getDescription());
 		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
 		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));

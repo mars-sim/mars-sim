@@ -110,30 +110,35 @@ public class MeteoriteImpactProperty implements Serializable {
 		// incident on an area of 10^6 km2 (Bland and Smith, 2000).
 		double logN = -0.689 * Math.log10(massPerMeteorite) + 4.17;
 
-		// The Mars’s total surface area = 144.8 million km²
+		// Note: The Mars’s total surface area = 144.8 million km²
+		
+
+		// The epsilon. per 10^6 sq km, need to convert to per sq meter by dividing 10^12
+		double numMeteoritesPerYearPerMeter = Math.pow(10, logN - 12D); 
 		
 		// g. # of meteorites per year per meter
-		// per 10^6 sq km, need to convert to per sq meter by dividing 10^12
-		double numMeteoritesPerYearPerMeter = Math.pow(10, logN - 12D); // = epsilon
-		totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
+		totalMassPerSqkm = .8 * totalMassPerSqkm + .2 * massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
 		
 		// h. probability of impact per square meter per year
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
 
 		// i. probability of impact per square meter per sol
-		probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
+		probabilityOfImpactPerSQMPerSol = .8 * probabilityOfImpactPerSQMPerSol + .2 * probabilityOfImpactPerSQMPerYear / MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		// Part II
 		// Assuming size and impact speed of the meteorites are homogeneous,
 		// determine how far the meteorites may penetrate the wall
 		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impVel, 1 / 3D);
 
+		// a. gets the wall penetration thickness on average
+		wallPenetrationThickness = .8 * wallPenetrationThickness + .2 * 1.5 * penetrationThicknessOnAL;
+		
 		// FUTURE: does it account for all angles of penetration on average ?
-		wallPenetrationThickness = 1.5 * penetrationThicknessOnAL;
 	}
 
 	/**
-	 * How much debris is created per sq KM when a metorite hits
+	 * Gets how much debris is created per sq km when a meteorite hits.
+	 * 
 	 * @return
 	 */
 	public double getDebrisMass() {
@@ -141,7 +146,8 @@ public class MeteoriteImpactProperty implements Serializable {
 	}
 
 	/**
-	 * How deep does meteorite pentration through a Building wall
+	 * Gets how deep does meteorite penetration through a building wall.
+	 * 
 	 * @return
 	 */
 	public double getWallPenetration() {

@@ -24,6 +24,13 @@ public class MissionStatus implements Serializable {
 		return new MissionStatus("Mission.status.noResources", resourceName);
 	}
 
+	/**
+	 * Factory helper method to create a status.
+	 */
+	public static MissionStatus createResourceStatus(String reason) {
+		return new MissionStatus(reason);
+	}
+	
 	private String name;
 
 	public MissionStatus(String key) {

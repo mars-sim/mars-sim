@@ -29,7 +29,7 @@ import com.mars_sim.core.structure.AirlockType;
 import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.BuildingAirlock;
+import com.mars_sim.core.structure.building.function.ClassicAirlock;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -64,7 +64,7 @@ public class ExitAirlock extends Task {
 	private static final String NOT_NOMINALLY_FIT = "Not nominally fit";
 	private static final String NOT_EVA_FIT = "Not EVA fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
-	private static final String CHAMBER_FULL = "All chambers are occupied.";
+	private static final String CHAMBER_FULL = "All chambers occupied";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -537,7 +537,7 @@ public class ExitAirlock extends Task {
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				walkAway(person, "Can't egress. " + CHAMBER_FULL 
-						+ " Current task: " + person.getTaskDescription() + ".");
+						+ ". Current task: " + person.getTaskDescription() + ".");
 				return 0;
 			}
 				
@@ -716,7 +716,7 @@ public class ExitAirlock extends Task {
 			}
 
 			if (airlock.areAll4ChambersFull()) {
-				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL);
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL + ". ");
 				return 0;
 			}
 			
@@ -828,7 +828,7 @@ public class ExitAirlock extends Task {
 		if (inSettlement) {
 
 			if (!isInZone(AirlockZone.ZONE_2) && airlock.areAll4ChambersFull()) {
-				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL);
+				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL + ". ");
 				return 0;
 			}
 			
@@ -1272,10 +1272,12 @@ public class ExitAirlock extends Task {
 	 * @return true if person can exit the entity
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
-
-		if (airlock.areAll4ChambersFull() || !airlock.hasSpace())
+	
+		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+			logger.info(person, 4_000, CHAMBER_FULL + " in " + airlock.getEntityName() +  ".");
 			return false;
-
+		}
+		
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
 			// May need to relocate the following code to a proper place
@@ -1293,9 +1295,9 @@ public class ExitAirlock extends Task {
 						person.rescueOperation((Rover) person.getVehicle(), nearbySettlement);
 						// Note: rescueOperation() is more like a hack, rather than a legitimate way 
 						// of transferring a person through the airlock into the settlement 
-						
-					}
+					}	
 				}
+				
 				else if (person.isOutside()) {
 					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
 					if (nearbySettlement != null)
@@ -1304,7 +1306,7 @@ public class ExitAirlock extends Task {
 				}
 
 			} catch (Exception e) {
-				logger.severe(person, "Could not get new action: ", e);
+				logger.severe(person, 4_000, "Could not get new action: ", e);
 			}
 
 			return false;
@@ -1312,6 +1314,7 @@ public class ExitAirlock extends Task {
 
 		// Check if person is outside.
 		if (person.isOutside()) {
+			logger.severe(person, 4_000, "already outside.");
 			return false;
 		}
 
@@ -1404,7 +1407,7 @@ public class ExitAirlock extends Task {
 			}
 			
 			if (inSettlement) {
-				((BuildingAirlock)airlock).removeFromActivitySpot(person);
+				((ClassicAirlock)airlock).removeFromActivitySpot(person);
 			}
 			
 			airlock.remove(person);

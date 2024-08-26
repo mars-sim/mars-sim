@@ -31,13 +31,12 @@ public class CollectRegolith extends CollectResourcesMission {
 	private static final long serialVersionUID = 1L;
 
 	/** Number of large bags required for the mission. */
-	public static final int REQUIRED_LARGE_BAGS = 20;
+	public static final int REQUIRED_LARGE_BAGS = 4;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
-
 
 	/**
 	 * Constructor.
@@ -93,26 +92,31 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	@Override
 	protected double calculateRate(Worker worker) {
+		return scoreLocation(worker.getCoordinates());
+	}
 
-		// Randomly pick one of the 4 regolith types
-		int rand = RandomUtil.getRandomInt(4);
-		if (rand == 4) {
+	protected void pickType(Worker worker) {
+		int rand = RandomUtil.getRandomInt(3);
+		if (rand == 0) {
 			// Pick the one that has the highest vp
 			double highest = 0;
+			int bestType = 0;
 			for (int type: getCollectibleResources()) {
 				double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePoint(type);
 				if (highest < vp) {
 					highest = vp;
-					setResourceID(type);
+					bestType = type;
 				}
 			}
+			
+			setResourceID(bestType);
 		}
-		else
+		else {
+			// Randomly pick one of the 4 regolith types
 			setResourceID(getCollectibleResources()[rand]);
-
-		return scoreLocation(worker.getCoordinates());
+		}
 	}
-
+	
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {
 		return OBJECTIVES;

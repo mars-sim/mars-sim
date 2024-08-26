@@ -44,8 +44,10 @@ public class EquipmentUnitWindow extends UnitWindow {
         super(desktop, equipment, equipment.getAssociatedSettlement().getName() + " - " + equipment.getName(), false);
         this.equipment = equipment;
 
-        addTabPanel(new TabPanelSuitGeneral((EVASuit)equipment, desktop));
-
+        if (equipment instanceof EVASuit suit) {
+        	addTabPanel(new TabPanelSuitGeneral(suit, desktop));
+        }
+        
         addTabPanel(new InventoryTabPanel(equipment, desktop));
 
         addTabPanel(new LocationTabPanel(equipment, desktop));

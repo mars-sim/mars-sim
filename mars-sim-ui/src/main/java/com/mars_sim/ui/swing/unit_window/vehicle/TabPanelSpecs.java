@@ -7,20 +7,17 @@
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.batik.gvt.GraphicsNode;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
-import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -30,7 +27,21 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class TabPanelSpecs extends TabPanel {
 
-	private static final String ID_ICON = "info";
+	private static final String SPECS_ICON = "specs";
+	
+	private JLabel roverRange;
+	private JLabel currentRange;
+	private JLabel cumEnergyUsage;
+	private JLabel cumFuelUsage;
+	private JLabel roadSpeed;
+	private JLabel roadPower;
+	private JLabel cumFE;
+	private JLabel cumFC;
+	private JLabel estFC;
+	private JLabel estFE;
+	private JLabel instantFE;
+	private JLabel instantFC;
+	
 	
 	private Vehicle v;
 
@@ -40,7 +51,7 @@ public class TabPanelSpecs extends TabPanel {
 	public TabPanelSpecs(Vehicle v, MainDesktopPane desktop) {
 		super(
 			Msg.getString("TabPanelSpecs.title"),
-			ImageLoader.getIconByName(ID_ICON), 
+			ImageLoader.getIconByName(SPECS_ICON), 
 			Msg.getString("TabPanelSpecs.tooltip"),
 			v, desktop);
 		this.v = v;
@@ -52,82 +63,95 @@ public class TabPanelSpecs extends TabPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		JPanel topPanel = new JPanel(new BorderLayout());
+		AttributePanel grid0 = new AttributePanel(6, 2);
+		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
 		center.add(topPanel, BorderLayout.NORTH);
-
-		// Add SVG Image loading for the building
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(v.getBaseImage());
-		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 128, 64, true);
-		JLabel svgLabel = new JLabel(svgIcon);
-		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		svgPanel.add(svgLabel);
-		topPanel.add(svgPanel, BorderLayout.NORTH);
+		topPanel.add(grid0, BorderLayout.NORTH);
+//		addBorder(topPanel, "Fuel Consumption and Economy");
+		topPanel.setBorder(BorderFactory.createTitledBorder("Fuel Consumption (FC) and Fuel Economy (FE)"));
 		
-		int fuelTypeID = v.getFuelTypeID();
-		String fuelTypeStr = "None";
-		if (fuelTypeID < 0) {
-			fuelTypeStr = v.getFuelTypeStr();
+		grid0.addRow( "Base FC-FC Coef", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()));
+		grid0.addRow( "Cum FC-FE Coef", StyleManager.DECIMAL_PLACES3.format(v.getCoeffCumFC2FE()));		
+		
+		grid0.addRow( "Base FC", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getBaseFuelConsumption()));
+		grid0.addRow( "Base FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getBaseFuelEconomy()));	
+		
+		grid0.addRow( "Initial FC", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getInitialFuelConsumption()));
+		grid0.addRow( "Initial FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getInitialFuelEconomy()));			
+		
+		cumFC = grid0.addRow( "Cum FC", StyleManager.DECIMAL_WH_KM.format(v.getCumFuelConsumption()));
+		cumFE = grid0.addRow( "Cum FE", StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));	
+		
+		estFC = grid0.addRow( "Estimated FC", StyleManager.DECIMAL_WH_KM.format(v.getEstimatedFuelConsumption()));
+		estFE = grid0.addRow( "Estimated FE", StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()));			
+		
+		instantFC = grid0.addRow( "Instant FC", StyleManager.DECIMAL_WH_KM.format(v.getIFuelConsumption()));
+		instantFE = grid0.addRow( "Instant FE", StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()));
+		
+		AttributePanel grid1 = new AttributePanel(3, 2);
+		JPanel centerPanel = new JPanel(new BorderLayout(0, 20));
+		center.add(centerPanel, BorderLayout.CENTER);
+		centerPanel.add(grid1, BorderLayout.NORTH);
+//		addBorder(centerPanel, "DriveTrain (DT) Performance");	
+		centerPanel.setBorder(BorderFactory.createTitledBorder("DriveTrain (DT) Performance"));
+	
+		grid1.addRow( "Base Speed", StyleManager.DECIMAL_M_S.format(v.getVehicleSpec().getBaseSpeed()));
+		grid1.addRow( "Base Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getBasePower()));
+
+		roadSpeed = grid1.addRow( "Ave Road Speed", StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()));
+		roadPower = grid1.addRow( "Ave Road Power", StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
+		
+		grid1.addRow( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()));	
+		grid1.addRow( "Peak Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getPeakPower()));
+				
+		AttributePanel grid2 = new AttributePanel(4, 2);
+		JPanel bottomPanel = new JPanel(new BorderLayout(0, 30));
+		centerPanel.add(bottomPanel, BorderLayout.CENTER);
+		bottomPanel.add(grid2, BorderLayout.NORTH);
+//		addBorder(bottomPanel, "DriveTrain (DT) Range Energy");	
+		bottomPanel.setBorder(BorderFactory.createTitledBorder("DriveTrain (DT) Range Energy"));
+	
+		grid2.addRow( "DT Efficiency", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()));
+		grid2.addRow( "Fuel-to-Drive", StyleManager.DECIMAL_WH_KG.format(v.getVehicleSpec().getFuel2DriveEnergy()));
+		
+		grid2.addRow( "DT Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()));
+		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
+
+		cumEnergyUsage = grid2.addRow( "Cum Energy Used", StyleManager.DECIMAL_KWH.format(v.getCumEnergyUsage()));	
+		currentRange = grid2.addRow( "Current Range", StyleManager.DECIMAL_KM.format(v.getRange()));
+		
+		cumFuelUsage = grid2.addRow( "Cum Fuel Used", StyleManager.DECIMAL_KWH.format(v.getCumFuelUsage()));	
+		if (v instanceof Rover r) {
+			roverRange = grid2.addRow( "Rover Range", StyleManager.DECIMAL_KM.format(r.getRange()));
 		}
 		else {
-			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
+			roverRange = grid2.addRow( "Rover Range", StyleManager.DECIMAL_KM.format(0));
 		}
-		
-		JPanel specsPanel = new JPanel(new BorderLayout());
-		center.add(specsPanel, BorderLayout.CENTER);
-		
-		// Prepare spring layout info panel.
-		AttributePanel labelGrid = new AttributePanel(17, 2);
-		specsPanel.add(labelGrid, BorderLayout.CENTER);
-		
-		labelGrid.addTextField( "Type", v.getVehicleType().getName(), null);
-		labelGrid.addTextField( "Specification", v.getSpecName(), null);
-		
-		labelGrid.addTextField( "Crew Size", v.getVehicleSpec().getCrewSize() + "", null);
-		labelGrid.addTextField( "Fuel Cell Stack", v.getFuellCellStack() + "", null);	
-		
-		labelGrid.addTextField( "Battery Module", v.getBatteryModule() + "", null);	
-		labelGrid.addTextField( "Fuel Type", fuelTypeStr, null);
+	}
 	
-		labelGrid.addTextField( "Battery Capacity", v.getBatteryCapacity() + "", null);	
-		labelGrid.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
+	/**
+	 * Updates the info on this panel.
+	 */
+	@Override
+	public void update() {
+		roadSpeed.setText(StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()));
+		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
+	
+		cumEnergyUsage.setText(StyleManager.DECIMAL_KWH.format(v.getCumEnergyUsage()));	
+		cumFuelUsage.setText(StyleManager.DECIMAL_KWH.format(v.getCumFuelUsage()));	
 		
-		labelGrid.addTextField( "Battery Percent", StyleManager.DECIMAL_PERC1.format(v.getBatteryPercent()), null);
-		labelGrid.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
+		cumFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));
+		cumFC.setText(StyleManager.DECIMAL_KM_KG.format(v.getCumFuelConsumption()));
 		
-		labelGrid.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);	
-		labelGrid.addTextField( "Base FC2FE", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()), null);
+		estFC.setText(StyleManager.DECIMAL_WH_KM.format(v.getEstimatedFuelConsumption()));
+		estFE.setText(StyleManager.DECIMAL_WH_KM.format(v.getEstimatedFuelEconomy()));
 		
-		labelGrid.addTextField( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()), null);	
-		labelGrid.addTextField( "Cum FC2FE", StyleManager.DECIMAL_PLACES3.format(v.getCoeffCumFC2FE()), null);		
+		instantFE.setText(StyleManager.DECIMAL_WH_KM.format(v.getIFuelEconomy()));
+		instantFC.setText(StyleManager.DECIMAL_WH_KM.format(v.getIFuelConsumption()));
 		
-		labelGrid.addTextField( "Base Speed", StyleManager.DECIMAL_M_S.format(v.getVehicleSpec().getBaseSpeed()), null);
-		labelGrid.addTextField( "Base Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getBasePower()), null);
-
-		labelGrid.addTextField( "Road Speed", StyleManager.DECIMAL_KM.format(v.getAverageRoadLoadSpeed()), null);
-		labelGrid.addTextField( "Road Power", StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()), null);
-		
-		labelGrid.addTextField( "Drivetrain Eff", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()), null);
-		labelGrid.addTextField( "Peak Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getPeakPower()), null);
-		
-		labelGrid.addTextField( "Drivetrain En", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()), null);
-		labelGrid.addTextField( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()), null);
-		
-		labelGrid.addTextField( "Drive Energy", StyleManager.DECIMAL_WH_KG.format(v.getVehicleSpec().getFuel2DriveEnergy()), null);
-		labelGrid.addTextField( "Current Range", StyleManager.DECIMAL_KM.format(v.getRange()), null);
-
-		labelGrid.addTextField( "Base FC", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getBaseFuelConsumption()), null);
-		labelGrid.addTextField( "Base FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getBaseFuelEconomy()), null);	
-		
-		labelGrid.addTextField( "Initial FC", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getInitialFuelConsumption()), null);
-		labelGrid.addTextField( "Initial FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getInitialFuelEconomy()), null);			
-		
-		labelGrid.addTextField( "Cumulative FC", StyleManager.DECIMAL_WH_KM.format(v.getCumFuelConsumption()), null);
-		labelGrid.addTextField( "Cumulative FE", StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()), null);	
-		
-		labelGrid.addTextField( "Estimated FC", StyleManager.DECIMAL_WH_KM.format(v.getEstimatedFuelConsumption()), null);
-		labelGrid.addTextField( "Estimated FE", StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()), null);			
-		
-		labelGrid.addTextField( "Instant FC", StyleManager.DECIMAL_WH_KM.format(v.getIFuelConsumption()), null);
-		labelGrid.addTextField( "Instant FE", StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()), null);			
+		currentRange.setText(StyleManager.DECIMAL_KM.format(v.getRange()));
+		if (v instanceof Rover r) {
+			roverRange.setText(StyleManager.DECIMAL_KM.format(r.getRange()));
+		}
 	}
 }

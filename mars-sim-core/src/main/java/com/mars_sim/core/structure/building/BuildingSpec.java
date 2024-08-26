@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingSpec.java
- * @date 2021-10-01
+ * @date 2024-07-12
  * @author Barry Evans
  */
 package com.mars_sim.core.structure.building;
@@ -48,7 +48,11 @@ public class BuildingSpec {
 	private String buildingType;
 	private String description;
 	
-	private ConstructionType construction = ConstructionType.SOLID;
+	/**
+	 * The type of material use for the construction of the wall of a building.
+	 * Solid by default 
+	 */
+	private ConstructionType constructionType = ConstructionType.PRE_FABRICATED;
 
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
 	
@@ -203,11 +207,11 @@ public class BuildingSpec {
 	}
 	
 	public ConstructionType getConstruction() {
-		return construction;
+		return constructionType;
 	}
 
-	public void setConstruction(ConstructionType construction) {
-		this.construction = construction;
+	public void setConstruction(ConstructionType type) {
+		this.constructionType = type;
 	}
 
 	public Map<Integer, Double> getStorage() {

@@ -28,7 +28,7 @@ public final class MissionPhase implements Serializable {
 	private Stage stage = Stage.ACTIVE;
 
 	/**
-	 * Constructor for an ACTIVE phase
+	 * Constructor for an ACTIVE phase.
 	 * 
 	 * @param the phase name.
 	 */
@@ -37,7 +37,7 @@ public final class MissionPhase implements Serializable {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param key The key for the phase name.
 	 */
@@ -63,7 +63,8 @@ public final class MissionPhase implements Serializable {
 	}
 
 	/**
-	 * Get the template for any description
+	 * Gets the template for any description.
+	 * 
 	 * @return
 	 */
 	public String getDescriptionTemplate() {
@@ -71,7 +72,7 @@ public final class MissionPhase implements Serializable {
 	}
 	
 	/**
-	 * Get teh Stage associated wth this phase.
+	 * Gets the Stage associated with this phase.
 	 */
 	public Stage getStage() {
 		return stage;
