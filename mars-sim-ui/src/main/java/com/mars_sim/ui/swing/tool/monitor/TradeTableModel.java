@@ -73,7 +73,6 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 
 	/**
 	 * Constructor 2.
-	 * 
 	 */
 	public TradeTableModel() {
 		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting", COLUMNS,
@@ -102,7 +101,8 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	}
 
 	/**
-	 * get the value for a Good property
+	 * Gets the value for a Good property.
+	 * 
 	 * @param selectedGood Good selected
 	 * @param columnIndex COlumn to get
 	 */

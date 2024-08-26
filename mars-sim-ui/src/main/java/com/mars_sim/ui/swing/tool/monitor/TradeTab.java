@@ -32,7 +32,6 @@ public class TradeTab extends TableTab {
 		// Use TableTab constructor
 		super(window, new TradeTableModel(), true, false, TRADE_ICON);
 
-	
 		TableColumnModel m = table.getColumnModel();
 		for(int i = TradeTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {
 			TableCellRenderer renderer;

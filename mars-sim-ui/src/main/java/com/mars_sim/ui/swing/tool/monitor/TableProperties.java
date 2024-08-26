@@ -39,7 +39,7 @@ class TableProperties extends JInternalFrame {
 	/** Table to change. */
     private TableColumnModel model;
     /** Checkboxes. */
-    private ArrayList<JCheckBox> columnButtons = new ArrayList<JCheckBox>();
+    private ArrayList<JCheckBox> columnButtons = new ArrayList<>();
 
     /**
      * Constructs a MonitorPropsDialog class.

@@ -5,7 +5,7 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Mon 19 Aug 2024)
+## Version 3.8.0 (Mon 26 Aug 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -41,6 +41,8 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>
   <LI>Preference: show # active Missions controlled by Preference panel.</LI>
   <LI>Settlement: add new Process History tab showing all completed Processes.</LI>
+  <LI>Status Bar: correctly show phi and theta of the mouse cursor.</LI>
+  <LI>Vehicle: shows highlighted vehicle box border in settlement map.</LI>
 </OL>  
 
 ### C. FIXES :

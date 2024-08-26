@@ -19,11 +19,10 @@ import javax.swing.SwingUtilities;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
- * This provides a table model implementation that allows each row to be mapped to
- * a single SImualtion entity. The properties of the entity are mapped into columns
- * by the sub implementation.
- * The class provides the ability to cache specific columns in a backing store to reduce the
- * computation effort.
+ * This class provides a table model implementation that allows each row to be mapped to
+ * a single simulation entity. The properties of the entity are mapped into columns
+ * by the sub implementation. It provides the ability to cache specific columns in a 
+ * backing store to reduce the computation effort.
  * 
  */
 @SuppressWarnings("serial")
@@ -31,7 +30,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 
 
     private List<T> entities;
-    private Map<T,Map<Integer,Object>> rowCache;
+    private Map<T ,Map<Integer, Object>> rowCache;
     private Set<Integer> cachedColumns;
     private boolean fireEnabled;
 
@@ -91,7 +90,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 		}
         fireTableDataChanged();
         
-		// Just fire one table event for teh whole table
+		// Just fire one table event for the whole table
 		fireEnabled = true;
     }
 
@@ -251,7 +250,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     private void setCacheValue(T entity, int columnIndex, Object value) {
-        rowCache.computeIfAbsent(entity, k -> new HashMap<Integer,Object>()).put(columnIndex, value);
+        rowCache.computeIfAbsent(entity, k -> new HashMap<Integer, Object>()).put(columnIndex, value);
     }
 
     /**

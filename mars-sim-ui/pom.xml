@@ -44,7 +44,6 @@
 			<artifactId>jfreechart</artifactId>
 			<version>${jfreechart.version}</version>
 		</dependency>
-
 		<dependency>
 		    <groupId>org.httprpc</groupId>
 		    <artifactId>sierra</artifactId>

@@ -92,9 +92,9 @@ abstract class TableTab extends MonitorTab {
 		};
 
 		// Set default renderers
+		this.table.setDefaultRenderer(Integer.class, DIGIT0_RENDERER);
 		this.table.setDefaultRenderer(Double.class, DIGIT1_RENDERER);
 		this.table.setDefaultRenderer(Number.class, DIGIT2_RENDERER);
-		this.table.setDefaultRenderer(Integer.class, DIGIT0_RENDERER);
 		this.table.setDefaultRenderer(MarsTime.class, TIME_RENDERER);
 
 		// call it a click to display details button when user double clicks the table
@@ -125,7 +125,6 @@ abstract class TableTab extends MonitorTab {
 		add(scroller, BorderLayout.CENTER);
 
 		setName(model.getName());
-
 		// Use column resizer
 		adjustColumnWidth(table);
 	}
@@ -233,6 +232,12 @@ abstract class TableTab extends MonitorTab {
 		settlementColumnId = idx;
 	}
 
+	/**
+	 * Filters the settlements.
+	 * 
+	 * @param currentSelection
+	 * @return
+	 */
 	public boolean setSettlementFilter(Set<Settlement> currentSelection) {
 		if (settlementColumnId > 0) {
 			boolean showSettlement = (currentSelection.size() > 1);
