@@ -5,7 +5,7 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Mon 26 Aug 2024)
+## Version 3.8.0 (Tue 27 Aug 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>

@@ -632,7 +632,7 @@ public class Heating implements Serializable {
 	 * @return
 	 */
 	private double computeNewT(double oldTC, double deltaHeatkW, double seconds) {
-		double k = C_TO_K + oldTC;
+		double oldTK = C_TO_K + oldTC;
 		double numMoles = 0;
 		LifeSupport ls = building.getLifeSupport();
 		if (ls != null)
@@ -644,15 +644,16 @@ public class Heating implements Serializable {
 		// delta entropy in [J/K] or [kJ / 1000 / K] or [kW * seconds / 1000 / K]
 		// Since J = Ws
 
-		// This prevents seconds from becoming overwhelming large or small
+		// This prevents seconds from becoming overwhelmingly large or small
 		seconds = Math.min(3600, Math.max(1, seconds));
 
-		double entropyChange = deltaHeatkW * seconds * 1000 / k;
+		double entropyChange = deltaHeatkW * seconds * 1000 / oldTK;
 
 		double ratio = entropyChange / GAS_CONSTANT / numMoles;
 
+		double newTK = oldTK * Math.exp(ratio);
 		// newT in [C]
-		double newTC = k * Math.exp(ratio) - C_TO_K;
+		double newTC = newTK - C_TO_K;
 
 		// This prevents newTC from becoming overwhelming large or small
 		newTC = Math.min(45, Math.max(0, newTC));
@@ -661,23 +662,27 @@ public class Heating implements Serializable {
 		// n = 0.0821 L·atm/mol·K
 		// R = 0.0289 kg/mol
 
-		if (newTC > 40) {
-			logger.warning(building, 20_000, "newT: " + Math.round(newTC * 100.0) / 100.0 + " > 40.");
-			error = true;
-		}
-
-		else if (newTC < 0) {
-			logger.warning(building, 20_000, "newT: " + Math.round(newTC * 100.0) / 100.0 + " < 0.");
-			error = true;
-		}
-
-		if (error)
-			logger.info(building, 20_000, "computeNewT - " + "T: " + Math.round(oldTC * 1000.0) / 1000.0 + " -> "
-					+ Math.round(newTC * 1000.0) / 1000.0 + "  deltaHeatkW: " + Math.round(deltaHeatkW * 100.0) / 100.0
-					+ " kW" + "  Math.exp(ratio): " + Math.round(Math.exp(ratio) * 1000.0) / 1000.0 + "  ratio: "
-					+ Math.round(ratio * 1000.0) / 1000.0 + "  entropyChange: "
-					+ Math.round(entropyChange * 1_000.0) / 1_000.0 + " kJ/K" + "  numMoles: "
-					+ Math.round(numMoles * 10.0) / 10.0 + "  seconds: " + Math.round(seconds * 100.0) / 100.0);
+		/**
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
+		 */
+//		
+//		if (newTC > 40) {
+//			logger.warning(building, 20_000, "newT: " + Math.round(newTC * 100.0) / 100.0 + " > 40.");
+//			error = true;
+//		}
+//
+//		else if (newTC < 0) {
+//			logger.warning(building, 20_000, "newT: " + Math.round(newTC * 100.0) / 100.0 + " < 0.");
+//			error = true;
+//		}
+//
+//		if (error)
+//			logger.info(building, 20_000, "computeNewT - " + "T: " + Math.round(oldTC * 1000.0) / 1000.0 + " -> "
+//					+ Math.round(newTC * 1000.0) / 1000.0 + "  deltaHeatkW: " + Math.round(deltaHeatkW * 100.0) / 100.0
+//					+ " kW" + "  Math.exp(ratio): " + Math.round(Math.exp(ratio) * 1000.0) / 1000.0 + "  ratio: "
+//					+ Math.round(ratio * 1000.0) / 1000.0 + "  entropyChange: "
+//					+ Math.round(entropyChange * 1_000.0) / 1_000.0 + " kJ/K" + "  numMoles: "
+//					+ Math.round(numMoles * 10.0) / 10.0 + "  seconds: " + Math.round(seconds * 100.0) / 100.0);
 		return newTC;
 	}
 
@@ -696,9 +701,9 @@ public class Heating implements Serializable {
 		// This prevents seconds from becoming overwhelming large or small
 		double seconds = Math.min(3600, Math.max(1, millisols * MarsTime.SECONDS_PER_MILLISOL));
 
-		double k = C_TO_K + nowT;
+		double nowTK = C_TO_K + nowT;
 		double tPresetK = C_TO_K + tPreset;
-		double logTs = Math.log(tPresetK / k);
+		double logTs = Math.log(tPresetK / nowTK);
 		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
 		double nR = GAS_CONSTANT * numMoles;
 
@@ -716,16 +721,20 @@ public class Heating implements Serializable {
 
 		// if devT is positive, needs to raise temperature by increasing heat
 		// if devT is negative, needs to low temperature by transferring heat away
-		double deltaHeatJ = entropyChange * k;
+		double deltaHeatJ = entropyChange * nowTK;
 
 //		// Find the estimate required heat in kW (not kWh)
 		// Note: the advantage of using kW, instead of kWh is that kW can be compared
 		// across the board
 		double estReqHeatkW = deltaHeatJ / 1000.0 / seconds;
 
-		// This prevents estReqHeatkW from becoming overwhelming large or small
+		// This prevents estReqHeatkW from becoming overwhelmingly large (>30) or small (<-30)
 		estReqHeatkW = Math.min(30, Math.max(-30, estReqHeatkW));
 
+		/**
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
+		 */
+//		
 //		if (estReqHeatkW > 25) {
 //			logger.warning(building, 20_000,
 //					"estReqHeatkW: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " > 25.");
@@ -737,18 +746,16 @@ public class Heating implements Serializable {
 //					"estReqHeat: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " < -25.");
 //			error = true;
 //		}
-
-		if (error)
-			logger.info(building, 20_000,
-					"estimateRequiredHeat - " + "estReqHeat: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " kW"
-							+ "  nowT: " + Math.round(nowT * 10.0) / 10.0 + "  deltaHeatJ: "
-							+ Math.round(deltaHeatJ * 10.0) / 10.0 + " J" + "  millisols: "
-							+ Math.round(millisols * 1000.0) / 1000.0 + "  seconds: "
-							+ Math.round(seconds * 1000.0) / 1000.0 + "  logTs: " + Math.round(logTs * 1000.0) / 1000.0
-							+ "  entropyChange: " + Math.round(entropyChange * 100.0) / 100.0 + " J/K" + "  nR: "
-							+ Math.round(nR * 10.0) / 10.0 + "  numMoles: " + Math.round(numMoles * 10.0) / 10.0);
-
-//		estReqHeatkW = Math.max(-40, Math.min(40, estReqHeatkW));
+//
+//		if (error)
+//			logger.info(building, 20_000,
+//					"estimateRequiredHeat - " + "estReqHeatkW: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " kW"
+//							+ "  nowT: " + Math.round(nowT * 10.0) / 10.0 + "  deltaHeatJ: "
+//							+ Math.round(deltaHeatJ * 10.0) / 10.0 + " J" + "  millisols: "
+//							+ Math.round(millisols * 1000.0) / 1000.0 + "  seconds: "
+//							+ Math.round(seconds * 1000.0) / 1000.0 + "  logTs: " + Math.round(logTs * 1000.0) / 1000.0
+//							+ "  entropyChange: " + Math.round(entropyChange * 100.0) / 100.0 + " J/K" + "  nR: "
+//							+ Math.round(nR * 10.0) / 10.0 + "  numMoles: " + Math.round(numMoles * 10.0) / 10.0);
 
 		return estReqHeatkW;
 	}
@@ -910,20 +917,20 @@ public class Heating implements Serializable {
 		error = checkError("gain", gain, GAIN_LIMIT) || error;
 
 		/**
-		 * Do NOT delete. For future Debugging.
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
 		 */
-		if (error)
-			logger.warning(building, 20_000,
-					"Gain: " + Math.round(gain * 100.0) / 100.0 + "  passiveVentHeat: "
-							+ Math.round(passiveVentHeat * 100.0) / 100.0 + "  heatGenCache: "
-							+ Math.round(heatGenCache * 100.0) / 100.0 + "  excessHeat: "
-							+ Math.round(excessHeat * 100.0) / 100.0 + "  Occupants: "
-							+ Math.round(heatGainOccupants * 100.0) / 100.0 + "  numEVAgoers: " + numEVAgoers
-							+ "  EVAHeater: " + Math.round(heatGainFromEVAHeater * 100.0) / 100.0 + "  solarHeatGain: "
-							+ Math.round(solarHeatGain * 100.0) / 100.0 + "  canopyHeatGain: "
-							+ Math.round(canopyHeatGain * 100.0) / 100.0 + "  lighting: "
-							+ Math.round(lightingGain * 100.0) / 100.0 + "  Equipment: "
-							+ Math.round(heatGainEquipment * 100.0) / 100.0);
+//		
+//		if (error) logger.warning(building, 20_000,
+//					"Gain: " + Math.round(gain * 100.0) / 100.0 + "  passiveVentHeat: "
+//							+ Math.round(passiveVentHeat * 100.0) / 100.0 + "  heatGenCache: "
+//							+ Math.round(heatGenCache * 100.0) / 100.0 + "  excessHeat: "
+//							+ Math.round(excessHeat * 100.0) / 100.0 + "  Occupants: "
+//							+ Math.round(heatGainOccupants * 100.0) / 100.0 + "  numEVAgoers: " + numEVAgoers
+//							+ "  EVAHeater: " + Math.round(heatGainFromEVAHeater * 100.0) / 100.0 + "  solarHeatGain: "
+//							+ Math.round(solarHeatGain * 100.0) / 100.0 + "  canopyHeatGain: "
+//							+ Math.round(canopyHeatGain * 100.0) / 100.0 + "  lighting: "
+//							+ Math.round(lightingGain * 100.0) / 100.0 + "  Equipment: "
+//							+ Math.round(heatGainEquipment * 100.0) / 100.0);
 
 		return new double[] { gain, canopyHeatGain };
 	}
@@ -1078,15 +1085,14 @@ public class Heating implements Serializable {
 		error = checkError("loss", loss, LOSS_LIMIT) || error;
 
 		/**
-		 * Do NOT delete. For future Debugging.
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
 		 */
-		if (error)
-			logger.warning(building, 20_000,
-					"Loss: " + Math.round(loss * 1000.0) / 1000.0 + " kW" + "  heatAirlock: "
-							+ Math.round(heatAirlock * 1000.0) / 1000.0 + "  structuralLoss: "
-							+ Math.round(structuralLoss * 1000.0) / 1000.0 + "  solarHeatLoss: "
-							+ Math.round(solarHeatLoss * 1000.0) / 1000.0 + "  ventInHeat: "
-							+ Math.round(passiveVentHeatCache * 1000.0) / 1000.0);
+//		if (error) logger.warning(building, 20_000,
+//					"Loss: " + Math.round(loss * 1000.0) / 1000.0 + " kW" + "  heatAirlock: "
+//							+ Math.round(heatAirlock * 1000.0) / 1000.0 + "  structuralLoss: "
+//							+ Math.round(structuralLoss * 1000.0) / 1000.0 + "  solarHeatLoss: "
+//							+ Math.round(solarHeatLoss * 1000.0) / 1000.0 + "  ventInHeat: "
+//							+ Math.round(passiveVentHeatCache * 1000.0) / 1000.0);
 
 		return loss;
 	}
@@ -1179,18 +1185,17 @@ public class Heating implements Serializable {
 		error = checkError("dHeat1", dHeat1, 30) || error;
 
 		/**
-		 * Do NOT delete. For future Debugging.
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
 		 */
-		if (error)
-			logger.warning(building, 20_000,
-					"Air heat sink - " + "nowT: " + Math.round(nowT * 100.0) / 100.0 + "  dHeat1: "
-							+ Math.round(dHeat1 * 1000.0) / 1000.0 + "  convFactorAir: "
-							+ Math.round(convFactorAir * 1000.0) / 1000.0 + "  airMass: "
-							+ Math.round(airMass * 1000.0) / 1000.0 + "  airHeatCap: "
-							+ Math.round(airHeatCap * 1000.0) / 1000.0 + "  heatCapAirMoisture: "
-							+ Math.round(heatCapAirMoisture * 1000.0) / 1000.0 + "  %AirMoisture: "
-							+ Math.round(percentAirMoisture * 100.0) / 100.0 + "  airHeatSink: "
-							+ Math.round(airHeatSink * 1000.0) / 1000.0);
+//		if (error) logger.warning(building, 20_000,
+//					"Air heat sink - " + "nowT: " + Math.round(nowT * 100.0) / 100.0 + "  dHeat1: "
+//							+ Math.round(dHeat1 * 1000.0) / 1000.0 + "  convFactorAir: "
+//							+ Math.round(convFactorAir * 1000.0) / 1000.0 + "  airMass: "
+//							+ Math.round(airMass * 1000.0) / 1000.0 + "  airHeatCap: "
+//							+ Math.round(airHeatCap * 1000.0) / 1000.0 + "  heatCapAirMoisture: "
+//							+ Math.round(heatCapAirMoisture * 1000.0) / 1000.0 + "  %AirMoisture: "
+//							+ Math.round(percentAirMoisture * 100.0) / 100.0 + "  airHeatSink: "
+//							+ Math.round(airHeatSink * 1000.0) / 1000.0);
 
 		return new double[] { dHeat1, convFactorAir };
 	}
@@ -1444,21 +1449,22 @@ public class Heating implements Serializable {
 		setHeatRequired(selReqHeat);
 
 		/**
-		 * Do NOT delete. For future Debugging.
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks !
 		 */
-		if (error || selReqHeat > 30 || selReqHeat < -30)
-			logger.warning(building, 20_000, "cycleThermalControl - " + "oldT: " + Math.round(oldT * 100.0) / 100.0
-					+ "  newT: " + Math.round(newT * 100.0) / 100.0 + "  devT: " + Math.round(devT * 100.0) / 100.0
-
-					+ "  extraHeat: " + Math.round(extraHeat * 1000.0) / 1000.0 + "  newHeat: "
-					+ Math.round(newHeat * 1000.0) / 1000.0 + "  selectedReqHeat: "
-					+ Math.round(selReqHeat * 1000.0) / 1000.0 + "  estReqHeat: "
-					+ Math.round(estReqHeat * 1000.0) / 1000.0 + "  reqkW: " + Math.round(reqkW * 1000.0) / 1000.0
-
-					+ "  convFactor: " + Math.round(convFactor * 1000.0) / 1000.0 + "  millisols: "
-					+ Math.round(millisols * 1000.0) / 1000.0 + "  bound: " + Math.round(bound * 100.0) / 100.0
-					+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0) / 1000.0 + "  postNetHeat: "
-					+ Math.round(postNetHeatCache * 100.0) / 100.0);
+//		
+//		if (error || selReqHeat > 30 || selReqHeat < -30)
+//			logger.warning(building, 20_000, "cycleThermalControl - " + "oldT: " + Math.round(oldT * 100.0) / 100.0
+//					+ "  newT: " + Math.round(newT * 100.0) / 100.0 + "  devT: " + Math.round(devT * 100.0) / 100.0
+//
+//					+ "  extraHeat: " + Math.round(extraHeat * 1000.0) / 1000.0 + "  newHeat: "
+//					+ Math.round(newHeat * 1000.0) / 1000.0 + "  selectedReqHeat: "
+//					+ Math.round(selReqHeat * 1000.0) / 1000.0 + "  estReqHeat: "
+//					+ Math.round(estReqHeat * 1000.0) / 1000.0 + "  reqkW: " + Math.round(reqkW * 1000.0) / 1000.0
+//
+//					+ "  convFactor: " + Math.round(convFactor * 1000.0) / 1000.0 + "  millisols: "
+//					+ Math.round(millisols * 1000.0) / 1000.0 + "  bound: " + Math.round(bound * 100.0) / 100.0
+//					+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0) / 1000.0 + "  postNetHeat: "
+//					+ Math.round(postNetHeatCache * 100.0) / 100.0);
 	}
 
 	/**
@@ -1476,13 +1482,13 @@ public class Heating implements Serializable {
 		} else if (Double.isNaN(value)) {
 			logger.severe(building, 20_000, type + " is NaN.");
 			return true;
-		} else if (value == 0.0) {
-			return false;
+//		} else if (value == 0.0) {
+//			return false;
 		} else if (limit > 0 && value > limit) {
-			logger.warning(building, 20_000, type + ": " + Math.round(value * 100.0) / 100.0 + " > " + limit + ".");
+//			logger.warning(building, 20_000, type + ": " + Math.round(value * 100.0) / 100.0 + " > " + limit + ".");
 			return true;
 		} else if (limit < 0 && value < limit) {
-			logger.warning(building, 20_000, type + ": " + Math.round(value * 100.0) / 100.0 + " < " + limit + ".");
+//			logger.warning(building, 20_000, type + ": " + Math.round(value * 100.0) / 100.0 + " < " + limit + ".");
 			return true;
 		}
 
@@ -1613,17 +1619,16 @@ public class Heating implements Serializable {
 		}
 
 		/**
-		 * Do NOT delete. For debugging.
+		 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
 		 */
-		if (error)
-			logger.warning(building, 3_000, "index:" + index + "  nowT: " + Math.round(nowT * 10.0) / 10.0 + "  dh: "
-					+ Math.round(dt * 1000.0) / 1000.0 + "  heat: " + Math.round(heat * 1000.0) / 1000.0
-					+ "  millisols: " + Math.round(millisols * 10.0) / 10.0 + "  upperBound: "
-					+ Math.round(upperBound * 10.0) / 10.0 + "  heatSink[" + Math.round(heatSink[0] * 1000.0) / 1000.0
-					+ ", " + Math.round(heatSink[1] * 1000.0) / 1000.0 + "]" + "  limit: "
-					+ Math.round(limit * 10000.0) / 10000.0 + "  transfer: " + Math.round(transfer * 1000.0) / 1000.0
-					+ "  newTransfer: " + Math.round(newTransfer * 1000.0) / 1000.0 + "  efficiency: "
-					+ Math.round(efficiency * 100.0) / 100.0);
+//		if (error) logger.warning(building, 3_000, "index:" + index + "  nowT: " + Math.round(nowT * 10.0) / 10.0 + "  dh: "
+//					+ Math.round(dt * 1000.0) / 1000.0 + "  heat: " + Math.round(heat * 1000.0) / 1000.0
+//					+ "  millisols: " + Math.round(millisols * 10.0) / 10.0 + "  upperBound: "
+//					+ Math.round(upperBound * 10.0) / 10.0 + "  heatSink[" + Math.round(heatSink[0] * 1000.0) / 1000.0
+//					+ ", " + Math.round(heatSink[1] * 1000.0) / 1000.0 + "]" + "  limit: "
+//					+ Math.round(limit * 10000.0) / 10000.0 + "  transfer: " + Math.round(transfer * 1000.0) / 1000.0
+//					+ "  newTransfer: " + Math.round(newTransfer * 1000.0) / 1000.0 + "  efficiency: "
+//					+ Math.round(efficiency * 100.0) / 100.0);
 
 		return heat;
 	}
