@@ -1292,15 +1292,13 @@ public class Heating implements Serializable {
 		error = checkError("newT", newT, MAX_INDOOR_TEMPERATURE) || error;
 
 		if (newT > MAX_INDOOR_TEMPERATURE) {
-			logger.warning(building, 20_000,
-					"newT: " + Math.round(newT * 10.0) / 10.0 + " > " + MAX_INDOOR_TEMPERATURE);
+//			logger.warning(building, 20_000, "newT: " + Math.round(newT * 10.0) / 10.0 + " > " + MAX_INDOOR_TEMPERATURE);
 			newT = MAX_INDOOR_TEMPERATURE;
 			error = true;
 		}
 
 		else if (newT < MIN_INDOOR_TEMPERATURE) {
-			logger.warning(building, 20_000,
-					"newT: " + Math.round(newT * 10.0) / 10.0 + " < " + MIN_INDOOR_TEMPERATURE);
+//			logger.warning(building, 20_000, "newT: " + Math.round(newT * 10.0) / 10.0 + " < " + MIN_INDOOR_TEMPERATURE);
 			newT = MIN_INDOOR_TEMPERATURE;
 			error = true;
 		}
@@ -1427,6 +1425,11 @@ public class Heating implements Serializable {
 			}
 			newHeat += transfer;
 			heatSinkLimit[rand] = newSink1;
+			
+			/**
+			 * Do NOT delete log below. Handy for debugging suspicious out-of-range values. Thanks!
+			 */
+			
 //			logger.info("oldSink1: " + oldSink1
 //					+ "  newSink1: " + newSink1
 //					+ "  extraHeat: " + extraHeat
@@ -1434,14 +1437,14 @@ public class Heating implements Serializable {
 //					+ "  transfer: " + transfer
 //					);
 
-			if (newHeat > 3 || newT > 40 || newT <= 10) {
-				error = true;
-				logger.info(building, 20_000,
-						"At T: " + Math.round(newT * 100.0) / 100.0 + ", soak up "
-								+ Math.round(newHeat * 1000.0) / 1000.0
-								+ " kW with Phase Change Material (PCM) to avoid overheating. areaFactor: "
-								+ Math.round(areaFactor * 10.0) / 10.0 + ".");
-			}
+//			if (newHeat > 3 || newT > 40 || newT <= 10) {
+//				error = true;
+//				logger.info(building, 20_000,
+//						"At T: " + Math.round(newT * 100.0) / 100.0 + ", soak up "
+//								+ Math.round(newHeat * 1000.0) / 1000.0
+//								+ " kW with Phase Change Material (PCM) to avoid overheating. areaFactor: "
+//								+ Math.round(areaFactor * 10.0) / 10.0 + ".");
+//			}
 		}
 
 		error = checkError("selReqHeat", selReqHeat, 30) || error;
