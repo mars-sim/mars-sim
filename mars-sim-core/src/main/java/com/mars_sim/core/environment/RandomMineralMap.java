@@ -446,12 +446,7 @@ public class RandomMineralMap implements MineralMap {
 			double theta = c.getTheta();
 			double phiDiff = Math.abs(aLocation.getPhi() - phi);
 			double thetaDiff = Math.abs(aLocation.getTheta() - theta);
-//			double halfPhiD = phiDiff / 2;
-//			double halfThetaD = thetaDiff / 2;
-//			double radius = Math.min(halfPhiD, halfThetaD);
-//			double length = halfPhiD * halfPhiD + halfThetaD * halfThetaD;
-//			boolean outsideCircle = length - radius * radius > 0;
-				
+			
 			// Only take in what's within a certain boundary
 			if (phi > PHI_LIMIT && phi < Math.PI - PHI_LIMIT
 				&& phiDiff < angle && thetaDiff < angle) {
