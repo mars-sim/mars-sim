@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -98,19 +97,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 		if (mapCenterCache == null || !mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) 
 				|| updateLayer || rhoCache != rho || numMineralsCache != numMinerals) {
-			
-			Point2D point = null;
-			int deltaX = 0;
-			int deltaY = 0;
-			
-			// if rho has changed, it's not meaningful to calculate deltaX and deltaY 
-			// since the scale is no longer the same
-			if (mapCenterCache != null) {
-				point = Coordinates.computeDeltaPixels(mapCenterCache, mapCenter, Map.MAP_BOX_HEIGHT / 2.0);
-				deltaX = (int)point.getX();
-				deltaY = (int)point.getY();
-			}
-			
+				
 			mapTypeCache = mapType;
 			updateLayer = false;
 			
@@ -120,100 +107,19 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	
 			boolean hasMinerals = false;
 			
-//			boolean redo = false;
-			
 			for (int x = 0; x < Map.MAP_BOX_WIDTH; x = x + 2) {
 				
 				for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
-						
-					// Do NOT delete the following line of codes
-//					if (mapCenterCache == null || rho != rhoCache || numMineralsCache != numMinerals) {
-					
-						java.util.Map<String, Double> mineralConcentrations = 
+									
+					java.util.Map<String, Double> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
 										mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), 
 										mag);
-						hasMinerals = true;
-//					}
-					
-					// Do NOT delete the following blocks of codes						
-					// Would save a lot of CPU util if one is able to put mineralArrayCache to work	
-						
-//					else {
-//						
-//						if (mapCenterCache != null && mineralArrayCache != null && rho == rhoCache && (deltaX > 0 || deltaY > 0)) {
-//
-//							if (deltaX <= 0 && deltaY <= 0 && x >= deltaX && y >= deltaY) {
-//								logger.info(10_000L, "case 1");
-//								int i = x - deltaX;
-//								int j = y - deltaY;
-////								int index = (x - deltaX) + (y * Map.MAP_BOX_WIDTH - deltaY);
-//								// Shift the portion of the old x and y values from the old mineralConcentrationArray
-//								newMineralArray[x] = mineralArrayCache[i + j];		
-//								hasMinerals = true;
-//							}
-//							else if (deltaX >= 0 && deltaY >= 0 && x <= Map.MAP_BOX_WIDTH - deltaX && y <= Map.MAP_BOX_HEIGHT - deltaY) {
-//								logger.info(10_000L, "case 2");
-//								int i = x;
-//								int j = y;
-////								int index = x + (y * Map.MAP_BOX_WIDTH);
-//								// Shift the portion of the old x and y values from the old mineralConcentrationArray
-//								newMineralArray[x] = mineralArrayCache[i + j];		
-//								hasMinerals = true;
-//							}
-//							else if (deltaX >= 0 && deltaY <= 0 && x <= Map.MAP_BOX_WIDTH - deltaX && y >= deltaY) {
-//								logger.info(10_000L, "case 3");
-//								int i = x;
-//								int j = y - deltaY;
-////								int index = x + (y * Map.MAP_BOX_WIDTH - deltaY);
-//								// Shift the portion of the old x and y values from the old mineralConcentrationArray
-//								newMineralArray[x] = mineralArrayCache[i + j];	
-//								hasMinerals = true;
-//							}
-//							else if (deltaX <= 0 && deltaY >= 0 && x >= deltaX && y <= Map.MAP_BOX_HEIGHT - deltaY) {
-//								logger.info(10_000L, "case 4");
-//								int i = x - deltaX;
-//								int j = y;
-////								int index = (x - deltaX) + (y * Map.MAP_BOX_WIDTH);
-//								// Shift the portion of the old x and y values from the old mineralConcentrationArray
-//								newMineralArray[x] = mineralArrayCache[i + j];		
-//								hasMinerals = true;
-//							}
-//							else {
-//								mineralConcentrations = mineralMap
-//									.getSomeMineralConcentrations(mineralsDisplaySet, mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), mag);
-//							}
-//						}
-//						else {
-//							mineralConcentrations = mineralMap
-//								.getSomeMineralConcentrations(mineralsDisplaySet, mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), mag);
-//						}
-//					}
-						
+									
 					if (mineralConcentrations != null && !mineralConcentrations.isEmpty()) {
 		
-						Iterator<String> i = mineralConcentrations.keySet().iterator();
-						while (i.hasNext()) {
-							String mineralType = i.next();
-							if (isMineralDisplayed(mineralType)) {
-	//							logger.info(mineralType + " is being drawn.");
-								double concentration = mineralConcentrations.get(mineralType);
-								if (concentration <= 0) {
-									continue;
-								}
-								Color baseColor = mineralColorMap.get(mineralType);
-								int index = x + (y * Map.MAP_BOX_WIDTH);
-								addColorToMineralConcentrationArray(index, baseColor, concentration, newMineralArray);
-								addColorToMineralConcentrationArray((index + 1), baseColor, concentration, newMineralArray);
-								if (y < Map.MAP_BOX_HEIGHT - 1) {
-									int indexNextLine = x + ((y + 1) * Map.MAP_BOX_WIDTH);
-									addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration, newMineralArray);
-									addColorToMineralConcentrationArray((indexNextLine + 1), baseColor,
-											concentration, newMineralArray);
-								}
-							}
-						}
+						computeColorMineralArray(mineralConcentrations, newMineralArray, x, y);
 						
 						hasMinerals = true;
 					}
@@ -235,30 +141,49 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 		
 	 		// Create new map image.
 			mineralImage.setRGB(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT, newMineralArray, 0, Map.MAP_BOX_WIDTH);
-	
-//			// Create mineral concentration image
-//			mineralImage = displayComponent.createImage(new MemoryImageSource(Map.MAP_BOX_WIDTH,
-//					Map.MAP_BOX_HEIGHT, mineralConcentrationArray, 0, Map.MAP_BOX_WIDTH));
-//
-//			MediaTracker mt = new MediaTracker(displayComponent);
-//			mt.addImage(mineralImage, 0);
-//			try {
-//				mt.waitForID(0);
-//			} catch (InterruptedException e) {
-//				logger.log(Level.SEVERE, "MineralMapLayer interrupted: " + e);
-//				// Restore interrupted state
-//			    Thread.currentThread().interrupt();
-//			}
 
 		}
 		
 		// Draw the mineral concentration image
 		g2d.drawImage(mineralImage, 0, 0, displayComponent);
 			
-		// Do not call dispose
-//		g2d.dispose();
+		// Note: Do not call g2d.dispose() here
 	}
 
+	/**
+	 * Computes color for the concentration array.
+	 * 
+	 * @param mineralConcentrations
+	 * @param newMineralArray
+	 * @param x
+	 * @param y
+	 */
+	private void computeColorMineralArray(java.util.Map<String, Double> mineralConcentrations, int[] newMineralArray, int x, int y) {
+	
+		Iterator<String> i = mineralConcentrations.keySet().iterator();
+		while (i.hasNext()) {
+			String mineralType = i.next();
+			
+			if (isMineralDisplayed(mineralType)) {
+				double concentration = mineralConcentrations.get(mineralType);
+				if (concentration <= 0) {
+					continue;
+				}
+				Color baseColor = mineralColorMap.get(mineralType);
+				int index = x + (y * Map.MAP_BOX_WIDTH);
+				addColorToMineralConcentrationArray(index, baseColor, concentration, newMineralArray);
+				addColorToMineralConcentrationArray((index + 1), baseColor, concentration, newMineralArray);
+				
+				if (y < Map.MAP_BOX_HEIGHT - 1) {
+					int indexNextLine = x + ((y + 1) * Map.MAP_BOX_WIDTH);
+					addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration, newMineralArray);
+					addColorToMineralConcentrationArray((indexNextLine + 1), baseColor,
+							concentration, newMineralArray);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Adds a color to the mineral concentration array.
 	 * 

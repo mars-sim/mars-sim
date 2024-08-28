@@ -133,14 +133,15 @@ public class RandomMineralMap implements MineralMap {
 	private final String RARE_FREQUENCY = "rare";
 	private final String VERY_RARE_FREQUENCY = "very rare";
 
-	private final double LIMIT = Math.PI / 7;
+	private final double PHI_LIMIT = Math.PI / 7;
+	private final double ANGLE_LIMIT = .01;
 	
+	private String[] mineralTypeNames;
+	
+	/** A map of the mineral name and its rgb color string. */
+	private SortedMap<String, String> mineralColorMap;
 	// A map of all mineral concentrations
 	private Map<Coordinates, Map<String, Integer>> allMineralsByLoc;
-
-	private String[] mineralTypeNames;
-	/** A map of the mineral name and its rgb color string. */
-	private transient SortedMap<String, String> mineralColorMap;
 	
 	private transient Set<Coordinates> allLocations;
 	
@@ -426,8 +427,9 @@ public class RandomMineralMap implements MineralMap {
 	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates aLocation,
 			double mag) {
 		
-		double angle = .025 / mag;
-	
+		double angle = ANGLE_LIMIT;
+		double magSQ = Math.sqrt(mag);
+		
 		Map<String, Double> newMap = new HashMap<>();
 		
 		boolean emptyMap = true;
@@ -444,9 +446,9 @@ public class RandomMineralMap implements MineralMap {
 			double theta = c.getTheta();
 			double phiDiff = Math.abs(aLocation.getPhi() - phi);
 			double thetaDiff = Math.abs(aLocation.getTheta() - theta);
-
+			
 			// Only take in what's within a certain boundary
-			if (phi > LIMIT && phi < Math.PI - LIMIT
+			if (phi > PHI_LIMIT && phi < Math.PI - PHI_LIMIT
 				&& phiDiff < angle && thetaDiff < angle) {
 				
 				Map<String, Integer> map = allMineralsByLoc.get(c);
@@ -455,38 +457,40 @@ public class RandomMineralMap implements MineralMap {
 				if (mineralNames.isEmpty()) {
 					continue;
 				}
-				
-				double distance = aLocation.getDistance(c);
-			
+		
 				Iterator<String> j = mineralNames.iterator();
 				while (j.hasNext()) {
 					String mineralName = j.next();	
 					
-					double effect = 0;
-					double conc = map.get(mineralName);	
+					double conc = 2 * map.get(mineralName);	
 					// Tune the fuzzyRange to respond to the map magnification and mineral concentration
-					double fuzzyRange = conc;
+					double fuzzyRange = conc * magSQ;
 									
-					if (distance < fuzzyRange)
-						effect = (1D - (distance / fuzzyRange)) * conc;				
+					double deltaAngle = (phiDiff + thetaDiff) / 2;
 					
-					if (effect > 0D) {
+					double radius = Math.max(phiDiff, thetaDiff);
+				
+					double limit = 1 - deltaAngle / radius;
+					
+					if (thetaDiff < angle && phiDiff < angle)	{
 						
+						double effect =  Math.sqrt(limit) * fuzzyRange;
+					
 						if (emptyMap) {
 							newMap = new HashMap<>();
 							emptyMap = false;
 						}
-						double totalConcentration = 0D;
+						double newConc = 0D;
 						if (newMap.containsKey(mineralName)) {
 							// Load the total concentration
-							totalConcentration = newMap.get(mineralName);
+							newConc = newMap.get(mineralName);
 						}
 						
-						totalConcentration += effect;
-						if (totalConcentration > 100D)
-							totalConcentration = 100D;
+						newConc = newConc + effect;
+						if (newConc > 100)
+							newConc = 100;
 						
-						newMap.put(mineralName, totalConcentration);
+						newMap.put(mineralName, newConc);
 					}
 				}
 			}	

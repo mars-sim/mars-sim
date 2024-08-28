@@ -45,6 +45,8 @@ import com.mars_sim.core.tool.RandomUtil;
 	
 	private static final String SEPARATOR = ",";
 	
+	private static final String WHITESPACE = " ";
+	
 	private static Logger logger = Logger.getLogger(MapDataFactory.class.getName());
 
 	private static final double PI = Math.PI;
@@ -277,9 +279,9 @@ import com.mars_sim.core.tool.RandomUtil;
 	}
 
 	public static void main(String[] args) throws IOException {
-		runPerfTest(DIRECT_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(ARRAY_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(MEMORY_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(DIRECT_READER + SEPARATOR + WHITESPACE + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(ARRAY_READER + SEPARATOR + WHITESPACE + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(MEMORY_READER + SEPARATOR + WHITESPACE + MEGDRMapReader.DEFAULT_MEGDR_FILE);
 	}
 
 	private static void runPerfTest(String spec) {
@@ -297,7 +299,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		}
 		Instant finish = Instant.now();
 		long finishMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-		System.out.println("Reader " + spec + " Memory increase " + formatter.format(finishMemory - startMemory));
-		System.out.println(size + " lookups in " + Duration.between(start, finish).toMillis());
+		System.out.println("Reader " + spec + " - Memory increase " + formatter.format(finishMemory - startMemory) + ".");
+		System.out.println(size + " lookups in " + Duration.between(start, finish).toMillis() + " ms.");
 	}
  }

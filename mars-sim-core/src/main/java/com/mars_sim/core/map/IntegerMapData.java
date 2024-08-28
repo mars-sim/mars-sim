@@ -312,6 +312,16 @@ import com.mars_sim.core.map.common.FileLocator;
 	 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
 	 				int argb = 0;
 	 				
+	 				// Note: The color is a 32-bit integer in ARGB format. 
+	 				//           Fully Opaque = 0xFF______
+	 				//      Fully Transparent = 0x00______
+	 				// Also,
+	 				//	   Red   = 0xFFFF0000
+	 				//	   Green = 0xFF00FF00
+	 				//	   Blue  = 0xFF0000FF
+	 				//
+	 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
+	 				
 	 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
 	 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
 	 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
@@ -346,6 +356,16 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		    final int pixelLength = 3;
 	 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
 	 				int argb = 0;
+	 					 				
+	 				// Note: The color is a 32-bit integer in ARGB format. 
+	 				//           Fully Opaque = 0xFF______
+	 				//      Fully Transparent = 0x00______
+	 				// Also,
+	 				//	Red   = 0xFFFF0000
+	 				//	Green = 0xFF00FF00
+	 				//	Blue  = 0xFF0000FF
+	 				//
+	 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
 	 				
 	 				argb += -16777216; // 255 alpha
 	 				argb += ((int) pixels[pixel] & 0xff); // blue
