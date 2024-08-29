@@ -14,8 +14,10 @@ package com.mars_sim.core.map.megdr;
  */
 public abstract class MEGDRMapReader {
 		
-
-
+// On Mars, 1 degree is approximately 59 km at the equator.
+// See https://tharsis.gsfc.nasa.gov/MOLA/Background/resolution.php
+// Details at https://tharsis.gsfc.nasa.gov/MOLA/Phasing_And_Capture/data.php
+	
 //	NOTE: (Do not delete)
 //	
 //	LEVEL 0 :
