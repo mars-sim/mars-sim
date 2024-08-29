@@ -507,7 +507,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			// Set the map type
 			// NOTE: this method causes Error JOptionPane.showMessageDialog at start up 
-			changeMapType(userSettings.getProperty(MAPTYPE_ACTION, MapDataFactory.DEFAULT_MAP_TYPE), resolution, true);
+			changeMap(userSettings.getProperty(MAPTYPE_ACTION, MapDataFactory.DEFAULT_MAP_TYPE), resolution, true);
 
 			mapTypeCache = MapDataFactory.DEFAULT_MAP_TYPE;
 			
@@ -792,7 +792,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (command.startsWith(MAPTYPE_ACTION)) {
 			String newMapType = command.substring(MAPTYPE_ACTION.length());
 			if (((JCheckBoxMenuItem) source).isSelected()) {
-				changeMapType(newMapType, mapPanel.getMapResolution(), false);
+				changeMap(newMapType, mapPanel.getMapResolution(), false);
 				mapTypeCache = newMapType;
 			}
 		}
@@ -820,26 +820,37 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void goToMapTypeReload(String command, Object source) {
 		if (((JCheckBoxMenuItem) source).isSelected()) {
 			String newMapType = command.substring(MAPTYPE_RELOAD_ACTION.length());
-			int reply = selectUnloadedMap(newMapType);
+			int reply = loadDialog(newMapType);
 
 			// Warning: do not allow reply to be -1
-			if (reply == -1)
+			if (reply < 0)
 				reply = 0;
 			
 			// Note: may explore the use of mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
-			int oldRes = mapPanel.getMapMetaData().getResolution(); 
-			if (oldRes < 0)
-				oldRes = 0;
+			int lastMapRes = mapPanel.getMapMetaData().getResolution(); 
+			if (lastMapRes < 0)
+				lastMapRes = 0;
 			
+			// Consider if reply < mapPanel.getMapMetaData().getNumLevel()				
 			// Note: Level 0 is the lowest res
-			if (reply < mapPanel.getMapMetaData().getNumLevel()				
-				&& reply != oldRes 
-						|| reply != mapPanel.getMapResolution() 
-						|| !newMapType.equalsIgnoreCase(mapTypeCache)) {
-					// Set to the new map resolution
-					mapPanel.setMapResolution(reply);
-					changeMapType(newMapType, reply, false);
-					mapTypeCache = newMapType;
+			
+			if (!newMapType.equalsIgnoreCase(mapTypeCache)) {
+				// If loading a completely different map type
+				
+				// Set to the new map resolution
+				mapPanel.setMapResolution(reply);
+				changeMap(newMapType, reply, false);
+				mapTypeCache = newMapType;
+			}
+			
+			else if (reply != mapPanel.getMapResolution()) {
+				// if loading the same map type but of a different resolution
+				
+				// Set to the new map resolution
+				mapPanel.setMapResolution(reply);
+				
+				changeMap(newMapType, reply, false);
+//				mapTypeCache = newMapType;
 			}
 		}
 	}
@@ -874,11 +885,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Selects an unloaded map as the new choice but prompt user first.
+	 * Loads a dialog and prompt user for res level.
 	 * 
 	 * @param newMapType
 	 */
-	private int selectUnloadedMap(String newMapType) {
+	private int loadDialog(String newMapType) {
 
 		// Previously, int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
 		int oldRes = mapPanel.getMapMetaData().getResolution(); 
@@ -913,15 +924,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Changes the MapType.
+	 * Changes the map.
 	 * 
 	 * @param newMapType New map Type
 	 * @param res
 	 * @param startup
 	 */
-	private void changeMapType(String newMapType, int res, boolean startup) {
-		// Load the new map type
-		if (startup || mapPanel.loadNewMapType(newMapType, res)) {
+	private void changeMap(String newMapType, int res, boolean startup) {
+//		logger.info("changeMap - newMapType: " + newMapType + "  res: " + res);
+				
+		// Load a new map 
+		if (startup || mapPanel.loadMap(newMapType, res)) {
 			// Update dependent panels
 			MapMetaData metaType = mapPanel.getMapMetaData();
 			
@@ -1368,12 +1381,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 1439.412  newRho: 1358.547
 				 */
 				
-				logger.info("res: " + mapPanel.getMapResolution()
-						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
-						+ "  oldScale: " + Math.round(oldScale* 1000.0)/1000.0
-						+ "  newScale: " + Math.round(newScale* 1000.0)/1000.0
-						+ "  oldRho: " + Math.round(oldRho* 10.0)/10.0
-						+ "  newRho: " + Math.round(newRho* 10.0)/10.0);
+//				logger.info("res: " + mapPanel.getMapResolution()
+//						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
+//						+ "  oldScale: " + Math.round(oldScale* 1000.0)/1000.0
+//						+ "  newScale: " + Math.round(newScale* 1000.0)/1000.0
+//						+ "  oldRho: " + Math.round(oldRho* 10.0)/10.0
+//						+ "  newRho: " + Math.round(newRho* 10.0)/10.0);
 				
 				if (newRho > MapPanel.MAX_RHO) {
 					newRho = MapPanel.MAX_RHO;
