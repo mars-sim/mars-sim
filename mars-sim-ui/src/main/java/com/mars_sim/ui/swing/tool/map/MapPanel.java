@@ -150,7 +150,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map
-		loadNewMapType(MapDataFactory.DEFAULT_MAP_TYPE, getMapResolution());
+		loadMap(MapDataFactory.DEFAULT_MAP_TYPE, getMapResolution());
 		
 		mapError = false;
 		wait = false;
@@ -384,23 +384,25 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param res
 	 * @return true if map type set successfully
 	 */
-	public boolean loadNewMapType(String newMapString, int res) {
-		boolean reload = false;
+	public boolean loadMap(String newMapString, int res) {
+//		logger.info("loadMap - newMapString: " + newMapString + "  res: " + res);
+		
+		boolean toload = false;
 		
 		if (marsMap == null) {	
-//			logger.info("marsMap == null");
-			reload = true;
+			logger.info("marsMap == null");
+			toload = true;
 		}
 		else if (res != marsMap.getMapMetaData().getResolution()) {
-//			logger.info("res != marsMap.getMapMetaData().getResolution()");
-			reload = true;
+			logger.info("marsMap.getMapMetaData().getResolution(): " + marsMap.getMapMetaData().getResolution());
+			toload = true;
 		}
 		else if (!newMapString.equals(marsMap.getMapMetaData().getMapString())) {
-//			logger.info("!newMapString.equals(marsMap.getMapMetaData().getMapString())");
-			reload = true;
+			logger.info("marsMap.getMapMetaData().getMapString(): " + marsMap.getMapMetaData().getMapString());
+			toload = true;
 		}
 		
-		if (reload) {
+		if (toload) {
 			
 			mapUtil.setMapData(newMapString, res);
 			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString));
@@ -418,10 +420,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			
 			showMap(centerCoords, getRho());
 			
-			return reload;
+			return toload;
 		}
 	
-		return reload;
+		return toload;
 	}
 
 	public Coordinates getCenterLocation() {

@@ -178,12 +178,11 @@ import com.mars_sim.core.tool.RandomUtil;
 			return null;
 		}
 
- 		if (mapMetaDataCache != null && mapMetaDataCache.equals(mapMetaData)
- 			&& !mapMetaData.getFile().equals("")
- 			&& mapMetaDataCache.getFile().equals(mapMetaData.getFile())
- 				) {
- 			return mapDataCache;
- 		}
+// 		if (mapMetaDataCache != null // && mapMetaDataCache.equals(mapMetaData)
+// 			&& !mapMetaData.getFile().equals("")
+// 			&& mapMetaDataCache.getFile().equals(mapMetaData.getFile())) {
+// 			return mapDataCache;
+// 		}
 
 		try {
 			// Obtain a new MapData instance
