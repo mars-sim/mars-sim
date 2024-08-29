@@ -301,10 +301,11 @@ public final class Coordinates implements Serializable {
 	}
 	
 	/**
-	 * Computes the x and y displacement distance in km between the two given coordinates.
+	 * Computes the x and y displacement distance in # of pixels between the two given coordinates.
 	 *
 	 * @param c0
 	 * @param c1
+	 * @param halfHeight0 half of mapBoxHeight in # of pixels;
 	 * @return Point2D
 	 */
 	public static Point2D computeDeltaPixels(Coordinates c0, Coordinates c1, double halfHeight) {

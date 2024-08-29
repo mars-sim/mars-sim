@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * SimulationConstants.java
+ * @date 2023-10-17
+ * @author Barry Evans
+ */
+
 package com.mars_sim.core.tool;
 
 import com.mars_sim.core.Simulation;
