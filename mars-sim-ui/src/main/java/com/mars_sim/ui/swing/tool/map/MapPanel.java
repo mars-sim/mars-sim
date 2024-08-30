@@ -394,18 +394,18 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			toload = true;
 		}
 		else if (res != marsMap.getMapMetaData().getResolution()) {
-			logger.info("marsMap.getMapMetaData().getResolution(): " + marsMap.getMapMetaData().getResolution());
+//			logger.info("marsMap.getMapMetaData().getResolution(): " + marsMap.getMapMetaData().getResolution());
 			toload = true;
 		}
 		else if (!newMapString.equals(marsMap.getMapMetaData().getMapString())) {
-			logger.info("marsMap.getMapMetaData().getMapString(): " + marsMap.getMapMetaData().getMapString());
+//			logger.info("marsMap.getMapMetaData().getMapString(): " + marsMap.getMapMetaData().getMapString());
 			toload = true;
 		}
 		
 		if (toload) {
 			
-			mapUtil.setMapData(newMapString, res);
-			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString));
+//			mapUtil.setMapData(newMapString, res);
+			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString, res));
 
 			// Redefine map param
 			RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;

@@ -51,11 +51,11 @@ import java.util.Collection;
  	 * Gets the map data.
  	 * 
  	 * @param mapType
- 	 * @param selectedResolution
+ 	 * @param res
  	 * @return
  	 */
- 	public MapData loadMapData(String mapType) {
- 		return mapDataFactory.loadMapData(mapType);
+ 	public MapData loadMapData(String mapType, int res) {
+ 		return mapDataFactory.loadMapData(mapType, res);
  	}
 
  	/**
