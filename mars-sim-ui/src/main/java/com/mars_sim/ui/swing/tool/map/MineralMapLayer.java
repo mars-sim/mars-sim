@@ -103,7 +103,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			
 			int[] newMineralArray = new int[Map.MAP_BOX_WIDTH * Map.MAP_BOX_HEIGHT];
 
-			double mag = baseMap.getMagnification();
+			double mag = baseMap.getScale();
 	
 			boolean hasMinerals = false;
 			

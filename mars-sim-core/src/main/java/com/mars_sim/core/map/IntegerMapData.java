@@ -54,14 +54,14 @@ import com.mars_sim.core.map.common.FileLocator;
 	// The default rho at the start of the sim
  	public static double RHO_DEFAULT;
  	// The default magnification at the start of the sim
-  	public static double MAG_DEFAULT;
+//  	public static double MAG_DEFAULT;
 
  	// Data members.
   	/* # of pixels in the width of the map image. */
 	private int pixelWidth;
 	/* # of pixels in the height of the map image. */
 	private int pixelHeight;
-	/* height pixels divided by pi (equals to pixelHeight / Math.PI). */
+	/* The radius of Mars in # of pixels (pixelHeight / PI). */
 	private double rho;
 	/* The base map pixels double array. */
  	private int[][] baseMapPixels = new int[0][0];
@@ -80,8 +80,9 @@ import com.mars_sim.core.map.common.FileLocator;
  	 * @param filename   the map data file name.
  	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData mapMetaData) throws IOException {
+ 	IntegerMapData(MapMetaData mapMetaData, double rho) throws IOException {
 		this.meta = mapMetaData;
+		this.rho = rho;
 		
 		// Load data files
 		String metaFile = mapMetaData.getFile();
@@ -99,13 +100,12 @@ import com.mars_sim.core.map.common.FileLocator;
 			return;
 		}
 		
-		rho = pixelHeight / Math.PI;
-		RHO_DEFAULT = rho;
+		RHO_DEFAULT = pixelHeight / Math.PI;
+//		rho = RHO_DEFAULT;
 		MAX_RHO = RHO_DEFAULT * 6;
 		MIN_RHO = RHO_DEFAULT / 6;
-		MAG_DEFAULT = rho / RHO_DEFAULT;
-		
-		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + ". MAG_DEFAULT: " + Math.round(MAG_DEFAULT*10.0)/10.0 + ".");
+
+		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + " RHO_DEFAULT : " + Math.round(RHO_DEFAULT *10.0)/10.0);
 		
 		// Exclude mac from use openCL
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -143,16 +143,16 @@ import com.mars_sim.core.map.common.FileLocator;
 	}
 
     /**
-     * Gets the magnification of the Mars surface map.
+     * Gets the scale of the Mars surface map.
      * 
      * @return
      */
-    public double getMagnification() {
+    public double getScale() {
     	return rho / RHO_DEFAULT;
     }
     
 	/**
-	 * Gets the scale of the Mars surface map.
+	 * Gets the rho of the Mars surface map.
 	 * 
 	 * @return
 	 */
@@ -187,7 +187,7 @@ import com.mars_sim.core.map.common.FileLocator;
      * @return
      */
     public double getHalfAngle() {
-    	double ha = Math.sqrt(HALF_MAP_ANGLE / getMagnification() / (0.25 + meta.getResolution()));
+    	double ha = Math.sqrt(HALF_MAP_ANGLE / getScale() / (0.25 + meta.getResolution()));
     	return Math.min(Math.PI, ha);
     }
 	

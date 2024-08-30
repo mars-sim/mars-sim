@@ -49,11 +49,11 @@ import java.io.IOException;
     public double getHalfAngle();
     
     /**
-     * Gets the magnification of the Mars surface map.
+     * Gets the scale of the Mars surface map.
      * 
      * @return
      */
-    public double getMagnification();
+    public double getScale();
     
     /**
      * Gets the number of pixels height.
