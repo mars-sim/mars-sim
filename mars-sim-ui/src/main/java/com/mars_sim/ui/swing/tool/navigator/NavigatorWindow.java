@@ -1191,7 +1191,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		double theta = pos.getTheta();			
 		
 		double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-		double h1 = TerrainElevation.getColorElevation(phi, theta);
+		double h1 = 0;//TerrainElevation.getColorElevation(phi, theta);
 		
 		double mag = mapPanel.getMagnification();
 		

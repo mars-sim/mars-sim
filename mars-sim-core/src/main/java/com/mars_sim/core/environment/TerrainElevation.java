@@ -345,7 +345,7 @@ public class TerrainElevation implements Serializable {
 	 */
 	public static double getColorElevation(double phi, double theta) {	
 		// Find hue and saturation color components at location.
-		Color color = new Color(mapDataUtil.loadMapData(TOPO_MAP_TYPE).getRGBColorInt(phi, theta));
+		Color color = new Color(mapDataUtil.loadMapData(TOPO_MAP_TYPE, 0).getRGBColorInt(phi, theta));
 		int red = color.getRed();
 		int green = color.getGreen();
 		int blue = color.getBlue();

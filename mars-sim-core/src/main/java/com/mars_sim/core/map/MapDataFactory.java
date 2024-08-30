@@ -156,35 +156,37 @@ import com.mars_sim.core.tool.RandomUtil;
 			
 			new MapDataFactory();
 		}
- 		else
- 			// Change the map resolution
- 			metaData.setResolution(res);
+// 		else
+// 			// Change the map resolution
+// 			metaData.setResolution(res);
  	}
  	
  	/**
  	 * Loads the map data of the requested map type.
  	 * 
  	 * @param mapType the map type
+ 	 * @param res
  	 * @return the map data
  	 */
- 	MapData loadMapData(String mapType) {
+ 	MapData loadMapData(String mapType, int res) {
  		
  		MapData mapData = null;
  		
 		MapMetaData mapMetaData = metaDataMap.get(mapType);
-		
+	
  		if (mapMetaData == null) {
  			logger.log(Level.SEVERE, "Map type " + mapType + " unknown.");
 			return null;
 		}
 
-// 		if (mapMetaDataCache != null // && mapMetaDataCache.equals(mapMetaData)
-// 			&& !mapMetaData.getFile().equals("")
-// 			&& mapMetaDataCache.getFile().equals(mapMetaData.getFile())) {
-// 			return mapDataCache;
-// 		}
-
+ 		if (mapMetaDataCache != null && mapMetaDataCache.equals(mapMetaData)
+ 				&& mapMetaDataCache.getResolution() == res) {
+			return mapDataCache;
+		}
+ 		
 		try {
+			// Set the resolution
+			mapMetaData.setResolution(res);
 			// Obtain a new MapData instance
 			mapData = new IntegerMapData(mapMetaData);		
 			// Patch the metadata to be locally available
