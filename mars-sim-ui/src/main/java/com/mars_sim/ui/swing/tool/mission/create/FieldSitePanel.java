@@ -134,7 +134,7 @@ public class FieldSitePanel extends WizardPanel {
             IntPoint initialNavpointPos = new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX - (pixelRange / 2));
             navLayer.addNavpointPosition(initialNavpointPos);
             
-            Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
+            Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0.0, (-1.0 * (pixelRange / 2)), 
                                         mapPane.getMap().getRho());
             locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
             mapPane.showMap(initialNavpoint);
@@ -238,8 +238,8 @@ public class FieldSitePanel extends WizardPanel {
                 if (withinBounds(displayPos)) {
                     navLayer.setNavpointPosition(0, displayPos);
                     Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-                    Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - Map.HALF_MAP_BOX, 
-                            displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
+                    Coordinates navpoint = center.convertRectToSpherical(1.0 * displayPos.getiX() - Map.HALF_MAP_BOX, 
+                    		1.0 * displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
                     locationLabel.setText("Location: " + navpoint.getFormattedString());
                 
                     mapPane.repaint();

@@ -519,7 +519,7 @@ import com.mars_sim.core.map.common.FileLocator;
 			 for(int x = 0; x < mapBoxWidth; x++) {
 				 int index = x + (y * mapBoxWidth);
 
-				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, getRho());
+				 Point2D loc = convertRectToSpherical(1.0*(x - halfWidth), 1.0*(y - halfHeight), centerPhi, centerTheta, getRho());
 				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
 			 }
 		 }

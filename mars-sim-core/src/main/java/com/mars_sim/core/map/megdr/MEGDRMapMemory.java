@@ -64,7 +64,7 @@ public class MEGDRMapMemory extends MEGDRCachedReader
         memoryBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,
 		  							0, fileChannel.size());
 		
-		short mapHeight = (short) Math.sqrt(fileSize / 4);
+		short mapHeight = (short) Math.sqrt(fileSize / 4D);
 		short mapWidth = (short) (mapHeight * 2);
 		
 		logger.info("Reading elevation memory mapped to '" + mapSource.getName()

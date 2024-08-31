@@ -290,7 +290,7 @@ public class PowerStorage extends Function {
 	 * Updates the terminal voltage of the battery.
 	 */
 	private void updateVoltage() {
-    	terminalVoltage = Math.round(kWhStored / ampHours * 1000D * 1_000)/1_000;
+    	terminalVoltage = Math.round(1000D * kWhStored / ampHours * 1_000)/1_000;
     	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
     		terminalVoltage = BATTERY_MAX_VOLTAGE;
 	}

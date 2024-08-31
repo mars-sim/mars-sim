@@ -103,10 +103,10 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 				+ .2 * manager.getAttribute(NaturalAttributeType.CREATIVITY)) / 25;
 		
 		// Make sure the minimum skillF is 1, not zero
-		double skillF = 1;
+		int skillF = 1;
 		
 		if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
-			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel()/5;
+			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
 		}
 
 		score.addModifier(SKILL_MODIFIER, skillF);

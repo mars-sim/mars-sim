@@ -184,7 +184,7 @@ public class Storage extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return resourceCapacities.size() * 2;
+		return resourceCapacities.size() * 2D;
 	}
 
 	/**

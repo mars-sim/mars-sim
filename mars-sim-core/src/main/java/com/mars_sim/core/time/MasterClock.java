@@ -49,13 +49,13 @@ public class MasterClock implements Serializable {
 	public static final int CPU_MODIFIER = 4;
 
 	// 1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x 
-	public static final double MID_TIME_RATIO = (int)Math.pow(2, MID_SPEED); 
+	public static final double MID_TIME_RATIO = Math.pow(2.0, 1.0 * MID_SPEED); 
 	// 384x, 576x, 864x, 1296x, 1944x, 2916x
 	public static final double HIGH_TIME_RATIO = MID_TIME_RATIO 
-							* Math.pow(1.5, HIGH_SPEED - MID_SPEED);
+							* Math.pow(1.5, 1.0 * HIGH_SPEED - MID_SPEED);
 	// 3645x, 7290x, 10935x, 14580x, 18225x, 21870x
 	public static final double MAX_TIME_RATIO = HIGH_TIME_RATIO
-							* Math.pow(1.25, MAX_SPEED - HIGH_SPEED);
+							* Math.pow(1.25, 1.0 * MAX_SPEED - HIGH_SPEED);
 	
 	/** The Maximum number of pulses in the log .*/
 	private static final int MAX_PULSE_LOG = 40;
@@ -603,7 +603,7 @@ public class MasterClock implements Serializable {
 		if (sleepTime < 0) {
 			// Increase the optimal pulse width proportionally so as to avoid negative sleep time 
 			// value would be > 1
-			double value = 1 - sleepTime / 1000;
+			double value = 1.0 - sleepTime / 1000.0;
 			if (value > 1.1)
 				value = 1.1;
 			else if (value < 1.0)

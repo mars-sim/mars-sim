@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MineralMap.java
- * @date 2024-07-25
+ * @date 2024-08-30
  * @author Scott Davis
  */
 
@@ -44,7 +44,7 @@ public interface MineralMap extends Serializable {
 	 * @param mag					the magnification
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates location, double mag);
+	public Map<String, Integer> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates location, double mag);
 
 	/**
 	 * Creates mineral concentrations at a given location.

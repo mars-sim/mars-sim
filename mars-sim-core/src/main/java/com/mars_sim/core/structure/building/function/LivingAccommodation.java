@@ -329,7 +329,7 @@ public class LivingAccommodation extends Function {
 
 		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
 		
-		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE/3, TOILET_CHANCE*3) * portion;
+		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE / 3D, TOILET_CHANCE * 3D) * portion;
 		
 		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
 		
