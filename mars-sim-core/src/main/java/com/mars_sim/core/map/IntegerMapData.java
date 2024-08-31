@@ -53,8 +53,10 @@ import com.mars_sim.core.map.common.FileLocator;
  	public static double MIN_RHO;
 	// The default rho at the start of the sim
  	public static double RHO_DEFAULT;
- 	// The default magnification at the start of the sim
-//  	public static double MAG_DEFAULT;
+ 	// The max rho multiplier allowed
+  	public static double MAX_RHO_MULTIPLIER = 5;
+  	// The min rho fraction allowed
+  	public static double MIN_RHO_FRACTION = 3;
 
  	// Data members.
   	/* # of pixels in the width of the map image. */
@@ -102,8 +104,8 @@ import com.mars_sim.core.map.common.FileLocator;
 		
 		RHO_DEFAULT = pixelHeight / Math.PI;
 //		rho = RHO_DEFAULT;
-		MAX_RHO = RHO_DEFAULT * 6;
-		MIN_RHO = RHO_DEFAULT / 6;
+		MAX_RHO = RHO_DEFAULT * MAX_RHO_MULTIPLIER;
+		MIN_RHO = RHO_DEFAULT / MIN_RHO_FRACTION;
 
 		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + " RHO_DEFAULT : " + Math.round(RHO_DEFAULT *10.0)/10.0);
 		

@@ -381,8 +381,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return true if map type set successfully
 	 */
 	public boolean loadMap(String newMapString, int res) {
-//		logger.info("loadMap - newMapString: " + newMapString + "  res: " + res);
-		
+
 		boolean toload = false;
 		
 		if (marsMap == null) {	
@@ -390,11 +389,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			toload = true;
 		}
 		else if (res != marsMap.getMapMetaData().getResolution()) {
-//			logger.info("marsMap.getMapMetaData().getResolution(): " + marsMap.getMapMetaData().getResolution());
 			toload = true;
 		}
 		else if (!newMapString.equals(marsMap.getMapMetaData().getMapString())) {
-//			logger.info("marsMap.getMapMetaData().getMapString(): " + marsMap.getMapMetaData().getMapString());
 			toload = true;
 		}
 		

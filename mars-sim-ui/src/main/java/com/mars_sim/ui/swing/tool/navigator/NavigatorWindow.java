@@ -60,6 +60,7 @@ import javax.swing.Painter;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.core.GameManager;
@@ -73,6 +74,7 @@ import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.TerrainElevation;
+import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.MapDataFactory;
 import com.mars_sim.core.map.MapDataUtil;
@@ -118,6 +120,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			this.order = order;
 			this.layer = layer;
 		}
+		
+		public int getOrder() {
+			return order;
+		}
 	}
 	
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
@@ -125,7 +131,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 16;
-
+	private static final int SCALE_CONVERSION = 3;
+	
 	private static final String LEVEL = "Level ";
 	private static final String DASH = "- ";
 	private static final String CHOOSE_SETTLEMENT = "List";
@@ -157,8 +164,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String THETA = "\u03B8: ";
 	private static final String PHI = "\u03C6: ";
 
-	private static final String ELEVATION = " h: ";
-//	private static final String KM = " km";
+	private static final String KM_PIXEL = " pixel: ";
+	private static final String ELEVATION = " height: ";
+	private static final String KM = " km";
 	private static final String OPEN_PARA = " (";
 	private static final String CLOSE_PARA = ")";
 	
@@ -199,6 +207,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	/** The info label on the status bar. */
 	private JLabel scaleLabel;
+	private JLabel kmPerPixelLabel;
 	private JLabel heightLabel;
 	private JLabel coordLabel;
 	private JLabel phiLabel;
@@ -419,7 +428,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		// Prepare options button.
 		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
 		optionsButton.putClientProperty("JButton.buttonType", "help");
-//		May add back optionsButton.setIcon(UIManager.getIcon("Tree.closedIcon"))
+//		May add back 
+		optionsButton.setIcon(UIManager.getIcon("Tree.closedIcon"));
 		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 		optionsButton.addActionListener(e ->
 				SwingUtilities.invokeLater(() ->
@@ -455,17 +465,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Font font = StyleManager.getSmallFont();
 		
 		phiLabel = new JLabel();
-		phiLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 		phiLabel.setFont(font);
-		phiLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
+		phiLabel.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
 
 		thetaLabel = new JLabel();
 		thetaLabel.setFont(font);
-		thetaLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
+		thetaLabel.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
 
 		scaleLabel = new JLabel();
 		scaleLabel.setFont(font);
-		scaleLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
+		scaleLabel.setPreferredSize(new Dimension(55, HEIGHT_STATUS_BAR));
+		
+		kmPerPixelLabel = new JLabel();
+		kmPerPixelLabel.setFont(font);
+		kmPerPixelLabel.setPreferredSize(new Dimension(80, HEIGHT_STATUS_BAR));
 		
 		rhoLabel = new JLabel();
 		rhoLabel.setFont(font);
@@ -473,19 +486,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
+		heightLabel.setPreferredSize(new Dimension(85, HEIGHT_STATUS_BAR));
 	    
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
-		coordLabel.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
+		coordLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 		
+		statusBar.addLeftComponent(coordLabel, false);
 		statusBar.addLeftComponent(phiLabel, false);
 		statusBar.addLeftComponent(thetaLabel, false);
-		statusBar.addCenterComponent(scaleLabel, false);
+		
 		statusBar.addCenterComponent(rhoLabel, false);
 		statusBar.addCenterComponent(heightLabel, false);
-		statusBar.addRightComponent(coordLabel, false);
 		
+		statusBar.addRightComponent(scaleLabel, false);
+		statusBar.addRightComponent(kmPerPixelLabel, false);
+
 		// Apply user choice from xml config file
 		checkSettings();
 		
@@ -652,13 +668,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param height
 	 * @param coord
 	 */
-	private void updateStatusBar(double scale, double phi, double theta, String rho, String height, String coord) {
-		scaleLabel.setText(SCALE + scale);
-		phiLabel.setText(PHI + phi);
-		thetaLabel.setText(THETA + theta);
-		rhoLabel.setText(rho);
-		heightLabel.setText(height);
+	private void updateStatusBar(double scale, double phi, double theta, double rho, double height, String coord) {
 		coordLabel.setText(WHITESPACE + coord);
+
+		phiLabel.setText(PHI + StyleManager.DECIMAL_PLACES3.format(phi));
+		thetaLabel.setText(THETA + StyleManager.DECIMAL_PLACES3.format(theta));
+		
+		rhoLabel.setText(RHO + StyleManager.DECIMAL_PLACES2.format(rho));
+		heightLabel.setText(ELEVATION + StyleManager.DECIMAL3_KM.format(height));
+		
+		scaleLabel.setText(SCALE + StyleManager.DECIMAL_PLACES2.format(scale));
+		kmPerPixelLabel.setText(KM_PIXEL + StyleManager.DECIMAL_PLACES2.format(Coordinates.MARS_RADIUS_KM / rho) + KM);
 	}
 	
 	/**
@@ -903,7 +923,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private int loadDialog(String newMapType) {
 
-		// Previously, int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
 		int oldRes = mapPanel.getMapMetaData().getResolution(); 
 		if (oldRes < 0) {
 			oldRes = 0;
@@ -943,7 +962,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param startup
 	 */
 	private void changeMap(String newMapType, int res, boolean startup) {
-//		logger.info("changeMap - newMapType: " + newMapType + "  res: " + res);
 				
 		// Load a new map 
 		if (startup || mapPanel.loadMap(newMapType, res)) {
@@ -1027,12 +1045,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			String resolutionString = LEVEL + currentRes;
 			
-			// Q: Should we always allow the JOption box to pop up ? Use boolean loaded = false;
-			
 			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + OPEN_PARA +  resolutionString + CLOSE_PARA
-//															+ (!loaded ? " (Not loaded)" : "")
 															, metaData.equals(mapPanel.getMapMetaData()));
-//			// May use this:  mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_RELOAD_ACTION) + metaData.getMapString());
+			
 			mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + metaData.getMapString());
 			
 			mapItem.addActionListener(this);
@@ -1042,9 +1057,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		optionsMenu.addSeparator();
 
-		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
-			optionsMenu.add(createSelectableMapOptions(LAYER_ACTION, e.getKey(),
-							mapPanel.hasMapLayer(e.getValue().layer)));
+		int size = mapLayers.size();
+		for (int i = 0; i < size; i++) {
+			for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
+				MapOrder mo = e.getValue();
+				if (mo.getOrder() == i) {
+					optionsMenu.add(createSelectableMapOptions(LAYER_ACTION, e.getKey(),
+								mapPanel.hasMapLayer(e.getValue().layer)));
+				}
+			}
 		}
 
 		optionsMenu.pack();
@@ -1196,32 +1217,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		Coordinates pos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
-		StringBuilder coordSB = new StringBuilder();			
-//		StringBuilder elevSB = new StringBuilder();
-
 		double phi = pos.getPhi();
 		double theta = pos.getTheta();			
-		
 		double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-//		double h1 = TerrainElevation.getColorElevation(phi, theta);
-		
+//		double h1 = TerrainElevation.getColorElevation(phi, theta);	
 		double scale = mapPanel.getScale();
 		
-		String rhoStr = RHO + StyleManager.DECIMAL_PLACES2.format(rho);
-		
-		phi = Math.round(phi * 1000.0)/1000.0;
-		theta = Math.round(theta * 1000.0)/1000.0;
-		scale = Math.round(scale  *100.0)/100.0;
-				
-		String elevStr = ELEVATION + StyleManager.DECIMAL3_KM.format(h0);
-		
-//		elevSB.append(ELEVATION).append(Math.round(h0*1000.0)/1000.0)
-//			.append(OPEN_PARA).append(Math.round(h1*1000.0)/1000.0).append(CLOSE_PARA).append(KM);
-		
-		String coordStr = pos.getFormattedString();
-		coordSB.append(coordStr);
-		
-		updateStatusBar(scale, phi, theta, rhoStr, elevStr, coordStr);
+		updateStatusBar(scale, phi, theta, rho, h0, pos.getFormattedString());
 
 		checkOnTarget(pos);
 	}
@@ -1353,7 +1355,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
             }
         });
 
-        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 98, 14);
+        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
+        		(int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLIER), 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(60, 400));
         zoomSlider.setSize(new Dimension(60, 400));
@@ -1374,7 +1377,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 				double oldRho = getRho();
 				
-				double scale = (5.0/14 * newSliderValue + 1)/6;	
+				double scale = computeScale(newSliderValue);
 				
 				double rho = MapPanel.RHO_DEFAULT * scale;
 				
@@ -1395,24 +1398,21 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					setScale(scale);
 				}
 				
-				logger.info("res: " + mapPanel.getMapResolution()
-						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
-						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
-						+ " -> " + Math.round(scale* 1000.0)/1000.0
-						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
-						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
-						+ " -> " + Math.round(rho* 10.0)/10.0);
+//				logger.info("res: " + mapPanel.getMapResolution()
+//						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
+//						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
+//						+ " -> " + Math.round(scale* 1000.0)/1000.0
+//						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
+//						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
+//						+ " -> " + Math.round(rho* 10.0)/10.0);
 
 		});
 		
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();		
-		labelTable.put( Integer.valueOf(98), new JLabel("6") );
-		labelTable.put( Integer.valueOf(81), new JLabel("5") );
-		labelTable.put( Integer.valueOf(65), new JLabel("4") );
-		labelTable.put( Integer.valueOf(48), new JLabel("3") );
-		labelTable.put( Integer.valueOf(31), new JLabel("2") );
-		labelTable.put( Integer.valueOf(14), new JLabel("1") );
-		labelTable.put( Integer.valueOf(0), new JLabel("1/6") );		
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
+		for (int i = 1; i < IntegerMapData.MAX_RHO_MULTIPLIER + 1; i++) {
+			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
+		}
+//		labelTable.put(0, new JLabel("1/4"));
 		zoomSlider.setLabelTable(labelTable);
     }
 	
@@ -1423,21 +1423,49 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public void updateScaleZoomSlider(double rho) {
 		
-		scale = rho / MapPanel.RHO_DEFAULT;
+		double newScale = rho / MapPanel.RHO_DEFAULT;
 		
-		double newSliderValue = (scale * 6 - 1) * 14 / 5;
-		
-		zoomSlider.setValue((int)newSliderValue);
+		if (scale != newScale && newScale < (int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLIER)) {
+//			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
+			scale = newScale;
+
+			double newSliderValue = computeSliderValue(scale);
+			
+			zoomSlider.setValue((int)(Math.round(newSliderValue * 10.0)/10.0));
+		}
+	}
+	
+	/**
+	 * Computes the new slider value.
+	 * 
+	 * @param scale
+	 * @return
+	 */
+	private double computeSliderValue(double scale) {
+		return (scale * IntegerMapData.MIN_RHO_FRACTION - SCALE_CONVERSION) * IntegerMapData.MAX_RHO_MULTIPLIER;
+	}
+	
+	/**
+	 * Computes the new scale.
+	 * 
+	 * @param sliderValue
+	 * @return
+	 */
+	private double computeScale(double sliderValue) {
+		return (1.0 * sliderValue / IntegerMapData.MAX_RHO_MULTIPLIER + SCALE_CONVERSION) / IntegerMapData.MIN_RHO_FRACTION;
 	}
 	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		int numClicks = e.getWheelRotation();	
-		if (numClicks > 0) {
+		double movement = e.getPreciseWheelRotation();
+		// Note: limiting the mouse movement to incrementing or decrementing 1 only
+		// to lower the need of having to render a new map excessively		
+		if (movement > 0) {
+			// Move mouse wheel rotated down, thus moving down zoom slider.
 			zoomSlider.setValue(zoomSlider.getValue() - 1);
 		}
-		else if (numClicks < 0) {
-			// Move zoom slider up.
+		else if (movement < 0) {
+			// Move mouse wheel rotated up, thus moving up zoom slider.
 			zoomSlider.setValue(zoomSlider.getValue() + 1);
 		}
 	}
