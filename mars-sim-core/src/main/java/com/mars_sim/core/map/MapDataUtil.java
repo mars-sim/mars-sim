@@ -52,10 +52,11 @@ import java.util.Collection;
  	 * 
  	 * @param mapType
  	 * @param res
+ 	 * @param rho
  	 * @return
  	 */
- 	public MapData loadMapData(String mapType, int res) {
- 		return mapDataFactory.loadMapData(mapType, res);
+ 	public MapData loadMapData(String mapType, int res, double rho) {
+ 		return mapDataFactory.loadMapData(mapType, res, rho);
  	}
 
  	/**

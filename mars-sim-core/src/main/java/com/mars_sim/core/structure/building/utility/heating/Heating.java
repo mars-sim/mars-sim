@@ -518,9 +518,9 @@ public class Heating implements Serializable {
 		double waterMass = 0;
 
 		if (building.getFishery() != null) {
-			waterMass = building.getFishery().getTankSize() / 4;
+			waterMass = building.getFishery().getTankSize() / 4D;
 		} else if (building.getAlgae() != null) {
-			waterMass = building.getAlgae().getWaterMass() / 4;
+			waterMass = building.getAlgae().getWaterMass() / 4D;
 		}
 
 		// Future: account for the size of water tank in each building

@@ -59,13 +59,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	// Data members
 	private boolean mouseDragging;
-//	private boolean zooming;
 	private boolean mapError;
 	private boolean wait;
-//	private boolean update;
 	private boolean recreateMap = false;
 	
-	public static double RHO_DEFAULT;
+	public static double RHO_DEFAULT = MAP_BOX_HEIGHT / Math.PI;
 	public static double MAX_RHO;
 	public static double MIN_RHO;
 	
@@ -75,9 +73,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private final double ZOOM_STEP = 16;
 
 	private double multiplier;
-	
-//	private double magnification;
-	
+
 	private String mapErrorMessage;
 	
 	private Coordinates centerCoords;
@@ -161,13 +157,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		setMaximumSize(getPreferredSize());
 		setSize(getPreferredSize());
 		
-		RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
+		// Note: rho = pixelHeight / Math.PI;
+//		RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
 		MAX_RHO = IntegerMapData.MAX_RHO;
 		MIN_RHO = IntegerMapData.MIN_RHO;
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
-//		magnification = 1; // newRho/RHO_DEFAULT;
-		
-//		logger.info("rho: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
+
+		logger.info("RHO_DEFAULT: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
 
 	/**
@@ -404,18 +400,14 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		if (toload) {
 			
-//			mapUtil.setMapData(newMapString, res);
-			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString, res));
+			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString, res, getRho()));
 
 			// Redefine map param
 			RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
 			MAX_RHO = IntegerMapData.MAX_RHO;
 			MIN_RHO = IntegerMapData.MIN_RHO;
 			multiplier = RHO_DEFAULT / ZOOM_STEP;
-			
-			// Actually need to retain the previous magnification
-//			magnification = getRho()/RHO_DEFAULT;
-			
+					
 			recreateMap = true;
 			
 			showMap(centerCoords, getRho());
@@ -465,6 +457,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		updateDisplay(getRho());
 	}
 
+	/**
+	 * Updates the display on a thread.
+	 * 
+	 * @param rho
+	 */
 	public void updateDisplay(double rho) {
 		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
 			|| desktop.isToolWindowOpen(MissionWindow.NAME))
@@ -473,6 +470,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 	}
 
+	/**
+	 * The task class for drawing the surface map.
+	 */
 	class MapTask implements Runnable {
 
 		private double rho;
@@ -492,6 +492,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				}
 
 				marsMap.drawMap(centerCoords, rho);
+				
+				// Update the zoom slider value
+				navwin.updateScaleZoomSlider(rho);
 				
 				wait = false;
 				repaint();
@@ -633,7 +636,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
      * @return
      */
     public double getRho() {
-    	return marsMap.getRho();
+    	if (marsMap != null)
+    		return marsMap.getRho();
+    	
+    	return RHO_DEFAULT;
     }
 
 	/**
@@ -642,19 +648,20 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param rho
 	 */
 	public void setRho(double rho) {
-//		marsMap.setRho(rho);
-		marsMap.drawMap(centerCoords, rho);
-		repaint();
+		if (marsMap != null) {
+			marsMap.drawMap(centerCoords, rho);
+			repaint();
+		}
 	}
 	
     
     /**
-     * Gets the magnification of the Mars surface map.
+     * Gets the scale of the Mars surface map.
      * 
      * @return
      */
-    public double getMagnification() {
-    	return getRho() / RHO_DEFAULT; // magnification;
+    public double getScale() {
+    	return getRho() / RHO_DEFAULT;
     }
     
 	/**

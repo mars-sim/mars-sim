@@ -526,7 +526,7 @@ public class OpenSimplex2S {
         long xsvp = xsb * PRIME_X, ysvp = ysb * PRIME_Y, zsvp = zsb * PRIME_Z, wsvp = wsb * PRIME_W;
 
         // Index into initial table.
-        int index = ((fastFloor(xs * 4) & 3) << 0)
+        int index = (fastFloor(xs * 4) & 3)
                 | ((fastFloor(ys * 4) & 3) << 2)
                 | ((fastFloor(zs * 4) & 3) << 4)
                 | ((fastFloor(ws * 4) & 3) << 6);

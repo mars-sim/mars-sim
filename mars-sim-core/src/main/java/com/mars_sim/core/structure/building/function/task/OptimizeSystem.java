@@ -104,13 +104,13 @@ public class OptimizeSystem extends Task {
 			return time;
 		}
 		
-		double com = 0;
+		int skillF = 0;
 		
 		if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
-			com = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
+			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
 		}
 		
-		double modTime = time * FACTOR * com;
+		double modTime = time * FACTOR * skillF;
 			
 		totalEntropyReduce += node.reduceEntropy(modTime);	
 

@@ -152,14 +152,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String MAP_ICON = "settlement_map";
 
 	private static final String WHITESPACE = " ";
-	private static final String MAG = "mag: ";
+	private static final String SCALE = "Scale: ";
+	private static final String RHO = "\u03C1: ";
 	private static final String THETA = "\u03B8: ";
 	private static final String PHI = "\u03C6: ";
 
 	private static final String ELEVATION = " h: ";
-	private static final String KM = " km";
-
-	private static final String RESOLUTION = "2";
+//	private static final String KM = " km";
+	private static final String OPEN_PARA = " (";
+	private static final String CLOSE_PARA = ")";
+	
+	private static final String RESOLUTION = "0";
 
 
 	
@@ -195,11 +198,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JPanel bottomPane;
 	
 	/** The info label on the status bar. */
-	private JLabel magLabel;
+	private JLabel scaleLabel;
 	private JLabel heightLabel;
 	private JLabel coordLabel;
 	private JLabel phiLabel;
 	private JLabel thetaLabel;
+	private JLabel rhoLabel;
 
 	private JSlider zoomSlider;
 
@@ -459,9 +463,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		thetaLabel.setFont(font);
 		thetaLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
 
-		magLabel = new JLabel();
-		magLabel.setFont(font);
-		magLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
+		scaleLabel = new JLabel();
+		scaleLabel.setFont(font);
+		scaleLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
+		
+		rhoLabel = new JLabel();
+		rhoLabel.setFont(font);
+		rhoLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
 		
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
@@ -473,7 +481,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		statusBar.addLeftComponent(phiLabel, false);
 		statusBar.addLeftComponent(thetaLabel, false);
-		statusBar.addCenterComponent(magLabel, false);
+		statusBar.addCenterComponent(scaleLabel, false);
+		statusBar.addCenterComponent(rhoLabel, false);
 		statusBar.addCenterComponent(heightLabel, false);
 		statusBar.addRightComponent(coordLabel, false);
 		
@@ -636,17 +645,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/**
 	 * Updates the labels on the status bar.
 	 * 
-	 * @param height
-	 * @param coord
+	 * @param scale
 	 * @param phi
 	 * @param theta
+	 * @param rho
+	 * @param height
+	 * @param coord
 	 */
-	private void updateStatusBar(double mag, String height, String coord, double phi, double theta) {
-		magLabel.setText(MAG + mag);
-		heightLabel.setText(height);
-		coordLabel.setText(WHITESPACE + coord);
+	private void updateStatusBar(double scale, double phi, double theta, String rho, String height, String coord) {
+		scaleLabel.setText(SCALE + scale);
 		phiLabel.setText(PHI + phi);
 		thetaLabel.setText(THETA + theta);
+		rhoLabel.setText(rho);
+		heightLabel.setText(height);
+		coordLabel.setText(WHITESPACE + coord);
 	}
 	
 	/**
@@ -1017,7 +1029,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			// Q: Should we always allow the JOption box to pop up ? Use boolean loaded = false;
 			
-			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + " (" +  resolutionString + ")"
+			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + OPEN_PARA +  resolutionString + CLOSE_PARA
 //															+ (!loaded ? " (Not loaded)" : "")
 															, metaData.equals(mapPanel.getMapMetaData()));
 //			// May use this:  mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_RELOAD_ACTION) + metaData.getMapString());
@@ -1185,30 +1197,31 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Coordinates pos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
 		StringBuilder coordSB = new StringBuilder();			
-		StringBuilder elevSB = new StringBuilder();
+//		StringBuilder elevSB = new StringBuilder();
 
 		double phi = pos.getPhi();
 		double theta = pos.getTheta();			
 		
 		double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-		double h1 = 0;//TerrainElevation.getColorElevation(phi, theta);
+//		double h1 = TerrainElevation.getColorElevation(phi, theta);
 		
-		double mag = mapPanel.getMagnification();
+		double scale = mapPanel.getScale();
 		
-		phi = Math.round(phi*1000.0)/1000.0;
-		theta = Math.round(theta*1000.0)/1000.0;
-		mag = Math.round(mag*10.0)/10.0;
-			
-		elevSB.append(ELEVATION)
-			.append(Math.round(h0*1000.0)/1000.0)
-			.append(" (").append(Math.round(h1*1000.0)/1000.0).append(")")
-			.append(KM);
+		String rhoStr = RHO + StyleManager.DECIMAL_PLACES2.format(rho);
+		
+		phi = Math.round(phi * 1000.0)/1000.0;
+		theta = Math.round(theta * 1000.0)/1000.0;
+		scale = Math.round(scale  *100.0)/100.0;
+				
+		String elevStr = ELEVATION + StyleManager.DECIMAL3_KM.format(h0);
+		
+//		elevSB.append(ELEVATION).append(Math.round(h0*1000.0)/1000.0)
+//			.append(OPEN_PARA).append(Math.round(h1*1000.0)/1000.0).append(CLOSE_PARA).append(KM);
 		
 		String coordStr = pos.getFormattedString();
 		coordSB.append(coordStr);
 		
-		updateStatusBar(mag, elevSB.toString(), 
-				coordStr, phi, theta);
+		updateStatusBar(scale, phi, theta, rhoStr, elevStr, coordStr);
 
 		checkOnTarget(pos);
 	}
@@ -1356,52 +1369,40 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		zoomSlider.addChangeListener(e -> {
 				// Change scale of map based on slider position.
 				int newSliderValue = zoomSlider.getValue();
-		
-				double oldRho = getRho();
+				// Note: scale = rho / RHO_DEFAULT;
 				double oldScale = getScale();	
 				
-				double newScale = (5.0/14 * newSliderValue + 1)/6;							
-				double newRho = MapPanel.RHO_DEFAULT * newScale;
+				double oldRho = getRho();
 				
-				/**
-				 * e.g. At level 0,
-				 * newSliderValue: 0.0  newScale: 0.167  oldRho: 31.831  newRho: 31.831
-				 * newSliderValue: 0.0  newScale: 0.167  oldRho: 43.199  newRho: 31.831
-				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 225.091  newRho: 190.986
-				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 179.618  newRho: 190.986
-				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 202.354  newRho: 190.986
-				 * newSliderValue: 98.0  newScale: 6.0  oldRho: 1134.547  newRho: 1145.916
-				 * 
-				 * At level 1,
-				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 431.083  newRho: 458.366
-				 * newSliderValue: 34.0  newScale: 2.19  oldRho: 406.982  newRho: 418.35
-				 * 
-				 * At level 2,
-				 * newSliderValue: 35.0  newScale: 2.25  oldRho: 418.35  newRho: 1031.324
-				 * newSliderValue: 14.0  newScale: 1.0  oldRho: 1439.412  newRho: 1358.547
-				 */
+				double scale = (5.0/14 * newSliderValue + 1)/6;	
 				
-//				logger.info("res: " + mapPanel.getMapResolution()
-//						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
-//						+ "  oldScale: " + Math.round(oldScale* 1000.0)/1000.0
-//						+ "  newScale: " + Math.round(newScale* 1000.0)/1000.0
-//						+ "  oldRho: " + Math.round(oldRho* 10.0)/10.0
-//						+ "  newRho: " + Math.round(newRho* 10.0)/10.0);
+				double rho = MapPanel.RHO_DEFAULT * scale;
 				
-				if (newRho > MapPanel.MAX_RHO) {
-					newRho = MapPanel.MAX_RHO;
+				if (rho > MapPanel.MAX_RHO) {
+					rho = MapPanel.MAX_RHO;
+					scale = rho / MapPanel.RHO_DEFAULT;
 				}
-				else if (newRho < MapPanel.MIN_RHO) {
-					newRho = MapPanel.MIN_RHO;
+				else if (rho < MapPanel.MIN_RHO) {
+					rho = MapPanel.MIN_RHO;
+					scale = rho / MapPanel.RHO_DEFAULT;
 				}
-		 
-				if (newRho != oldRho) {				
-					setRho(newRho);
+	
+				if (rho != oldRho) {				
+					setRho(rho);
 				}
 				
-				if (newScale != oldScale) {				
-					scale = newScale;
+				if (scale != oldScale) {				
+					setScale(scale);
 				}
+				
+				logger.info("res: " + mapPanel.getMapResolution()
+						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
+						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
+						+ " -> " + Math.round(scale* 1000.0)/1000.0
+						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
+						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
+						+ " -> " + Math.round(rho* 10.0)/10.0);
+
 		});
 		
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();		
@@ -1415,7 +1416,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		zoomSlider.setLabelTable(labelTable);
     }
 	
-
+	/**
+	 * Explicitly changes the scale and sets the zoom slider value.
+	 * 
+	 * @param rho
+	 */
+	public void updateScaleZoomSlider(double rho) {
+		
+		scale = rho / MapPanel.RHO_DEFAULT;
+		
+		double newSliderValue = (scale * 6 - 1) * 14 / 5;
+		
+		zoomSlider.setValue((int)newSliderValue);
+	}
+	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		int numClicks = e.getWheelRotation();	
@@ -1435,6 +1449,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public double getScale() {
 		return scale;
+	}
+	
+	/**
+	 * Sets the map scale.
+	 *
+	 * @param scale
+	 */
+	public void setScale(double scale) {
+		this.scale = scale;
 	}
 	
 	/**

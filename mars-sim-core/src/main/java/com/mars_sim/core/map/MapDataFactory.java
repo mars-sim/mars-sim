@@ -166,9 +166,10 @@ import com.mars_sim.core.tool.RandomUtil;
  	 * 
  	 * @param mapType the map type
  	 * @param res
+ 	 * @param rho
  	 * @return the map data
  	 */
- 	MapData loadMapData(String mapType, int res) {
+ 	MapData loadMapData(String mapType, int res, double rho) {
  		
  		MapData mapData = null;
  		
@@ -188,7 +189,7 @@ import com.mars_sim.core.tool.RandomUtil;
 			// Set the resolution
 			mapMetaData.setResolution(res);
 			// Obtain a new MapData instance
-			mapData = new IntegerMapData(mapMetaData);		
+			mapData = new IntegerMapData(mapMetaData, rho);		
 			// Patch the metadata to be locally available
 			mapMetaData.setLocallyAvailable(true);
 			

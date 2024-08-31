@@ -71,7 +71,7 @@ public interface Map {
      * 
      * @return
      */
-    public double getMagnification();
+    public double getScale();
     
 	/**
      * Gets the half angle of the Mars surface map.

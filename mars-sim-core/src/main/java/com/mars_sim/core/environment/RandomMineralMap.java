@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomMineralMap.java
- * @date 2023-06-14
+ * @date 2024-08-30
  * @author Scott Davis
  */
 
@@ -424,13 +424,13 @@ public class RandomMineralMap implements MineralMap {
 	 * @param mag		 the map magnification factor
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates aLocation,
+	public Map<String, Integer> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates aLocation,
 			double mag) {
 		
 		double angle = ANGLE_LIMIT;
 		double magSQ = Math.sqrt(mag);
 		
-		Map<String, Double> newMap = new HashMap<>();
+		Map<String, Integer> newMap = new HashMap<>();
 		
 		boolean emptyMap = true;
 		
@@ -462,7 +462,7 @@ public class RandomMineralMap implements MineralMap {
 				while (j.hasNext()) {
 					String mineralName = j.next();	
 					
-					double conc = 2 * map.get(mineralName);	
+					int conc = 2 * map.get(mineralName);	
 					// Tune the fuzzyRange to respond to the map magnification and mineral concentration
 					double fuzzyRange = conc * magSQ;
 									
@@ -480,13 +480,13 @@ public class RandomMineralMap implements MineralMap {
 							newMap = new HashMap<>();
 							emptyMap = false;
 						}
-						double newConc = 0D;
+						int newConc = 0;
 						if (newMap.containsKey(mineralName)) {
 							// Load the total concentration
 							newConc = newMap.get(mineralName);
 						}
 						
-						newConc = newConc + effect;
+						newConc = (int)(newConc + effect);
 						if (newConc > 100)
 							newConc = 100;
 						

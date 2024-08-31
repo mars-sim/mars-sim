@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MineralMapLayer.java
- * @date 2023-06-20
+ * @date 2024-08-30
  * @author Scott Davis
  */
 
@@ -103,7 +103,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			
 			int[] newMineralArray = new int[Map.MAP_BOX_WIDTH * Map.MAP_BOX_HEIGHT];
 
-			double mag = baseMap.getMagnification();
+			double mag = baseMap.getScale();
 	
 			boolean hasMinerals = false;
 			
@@ -111,7 +111,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 				
 				for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
 									
-					java.util.Map<String, Double> mineralConcentrations = 
+					java.util.Map<String, Integer> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
 										mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), 
@@ -158,7 +158,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 * @param x
 	 * @param y
 	 */
-	private void computeColorMineralArray(java.util.Map<String, Double> mineralConcentrations, int[] newMineralArray, int x, int y) {
+	private void computeColorMineralArray(java.util.Map<String, Integer> mineralConcentrations, int[] newMineralArray, int x, int y) {
 	
 		Iterator<String> i = mineralConcentrations.keySet().iterator();
 		while (i.hasNext()) {

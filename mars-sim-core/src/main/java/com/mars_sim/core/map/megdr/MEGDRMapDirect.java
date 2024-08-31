@@ -39,7 +39,7 @@ public class MEGDRMapDirect extends MEGDRCachedReader
 		byte []data = new byte[2];
 
 		try {
-			mapData.seek(index * 2);
+			mapData.seek(index * 2L);
 			mapData.read(data, 0, 2);
 			
 			return (short)( // NOTE: type cast not necessary for int
@@ -64,7 +64,7 @@ public class MEGDRMapDirect extends MEGDRCachedReader
 		mapData = new RandomAccessFile(mapSource, "r");
 		long fileSize = mapData.length();
 						
-		short mapHeight = (short) Math.sqrt(fileSize / 4);
+		short mapHeight = (short) Math.sqrt(fileSize / 4D);
 		short mapWidth = (short) (mapHeight * 2);
 		
 		logger.info("Reading elevation directly from '" + mapSource.getName() + "' (" + mapWidth + " by " + mapHeight + ").");

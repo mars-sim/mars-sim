@@ -17,6 +17,7 @@ import java.util.Set;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.MapDataUtil;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
@@ -330,7 +331,7 @@ public class TerrainElevation implements Serializable {
 //			height = s.getElevation();
 //		}
 //		else {
-			height = getColorElevation(location.getPhi(), location.getTheta());	
+			height = getColorElevation(location.getPhi(), location.getTheta(), IntegerMapData.RHO_DEFAULT);	
 //		}
 			
 		return height;
@@ -341,11 +342,12 @@ public class TerrainElevation implements Serializable {
 	 * 
 	 * @param phi
 	 * @param theta
+ 	 * @param rho
 	 * @return elevation in km
 	 */
-	public static double getColorElevation(double phi, double theta) {	
+	public static double getColorElevation(double phi, double theta, double rho) {	
 		// Find hue and saturation color components at location.
-		Color color = new Color(mapDataUtil.loadMapData(TOPO_MAP_TYPE, 0).getRGBColorInt(phi, theta));
+		Color color = new Color(mapDataUtil.loadMapData(TOPO_MAP_TYPE, 0, rho).getRGBColorInt(phi, theta));
 		int red = color.getRed();
 		int green = color.getGreen();
 		int blue = color.getBlue();
