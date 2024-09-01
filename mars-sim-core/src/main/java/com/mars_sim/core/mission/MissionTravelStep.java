@@ -131,16 +131,16 @@ public class MissionTravelStep extends MissionStep {
 
         // Must use the same logic in all cases otherwise too few fuel will be loaded
         double amount = vehicle.getFuelNeededForTrip(distance, addOptionals);
-        manifest.addResource(vehicle.getFuelTypeID(), amount, true);
+        manifest.addAmount(vehicle.getFuelTypeID(), amount, true);
          
         if (vehicle.getFuelTypeID() == ResourceUtil.methanolID) {
             // if useMargin is true, include more oxygen
-            manifest.addResource(ResourceUtil.oxygenID, 
+            manifest.addAmount(ResourceUtil.oxygenID, 
             		VehicleController.RATIO_OXIDIZER_METHANOL * amount, true);
         }
         else if (vehicle.getFuelTypeID() == ResourceUtil.methaneID) {
             // if useMargin is true, include more oxygen
-            manifest.addResource(ResourceUtil.oxygenID, 
+            manifest.addAmount(ResourceUtil.oxygenID, 
             		VehicleController.RATIO_OXIDIZER_METHANE * amount, true);
         }
 

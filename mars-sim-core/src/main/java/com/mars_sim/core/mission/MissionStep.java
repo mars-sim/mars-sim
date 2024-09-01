@@ -82,13 +82,13 @@ public abstract class MissionStep extends ProjectStep {
     protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, SuppliesManifest manifest) {
         double personSols = (crew * durationMSol)/1000D; // Consumption rates are in Sols
         personSols *= (ideal ? Vehicle.getLifeSupportRangeErrorMargin() : 1D);
-        manifest.addResource(ResourceUtil.oxygenID,
+        manifest.addAmount(ResourceUtil.oxygenID,
                         PhysicalCondition.getOxygenConsumptionRate() * personSols, true);
 
-		manifest.addResource(ResourceUtil.waterID,
+		manifest.addAmount(ResourceUtil.waterID,
                         PhysicalCondition.getWaterConsumptionRate() * personSols, true);
 
-        manifest.addResource(ResourceUtil.foodID,
+        manifest.addAmount(ResourceUtil.foodID,
 		                PhysicalCondition.getFoodConsumptionRate() * personSols, true);
     }
 

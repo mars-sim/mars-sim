@@ -11,16 +11,16 @@ public class SuppliesManifestTest extends AbstractMarsSimUnitTest{
         final double MAND = 10D;
         var manifest = new SuppliesManifest();
 
-        manifest.addResource(ResourceUtil.argonID, MAND, true);
-        manifest.addResource(ResourceUtil.oxygenID, MAND, true);
-        manifest.addResource(ResourceUtil.nitrogenID, OPT, false);
+        manifest.addAmount(ResourceUtil.argonID, MAND, true);
+        manifest.addAmount(ResourceUtil.oxygenID, MAND, true);
+        manifest.addAmount(ResourceUtil.nitrogenID, OPT, false);
 
-        var mand = manifest.getResources(true);
+        var mand = manifest.getAmounts(true);
         assertEquals("Mandatory Resources", 2, mand.size());
         assertEquals("Argon amount", MAND, mand.get(ResourceUtil.argonID));
         assertEquals("Oxygen amount", MAND, mand.get(ResourceUtil.oxygenID));
 
-        var opt = manifest.getResources(false);
+        var opt = manifest.getAmounts(false);
         assertEquals("Optional Resources", 1, opt.size());
         assertEquals("Nitrogen amount", OPT, opt.get(ResourceUtil.nitrogenID));
     }
@@ -34,14 +34,14 @@ public class SuppliesManifestTest extends AbstractMarsSimUnitTest{
         manifest.addItem(ItemResourceUtil.printerID, MAND, true);
         manifest.addItem(ItemResourceUtil.pneumaticDrillID, OPT, false);
 
-        var mand = manifest.getResources(true);
+        var mand = manifest.getItems(true);
         assertEquals("Mandatory Items", 2, mand.size());
-        assertEquals("Backhoe amount", MAND, mand.get(ItemResourceUtil.backhoeID));
-        assertEquals("Printer amount", MAND, mand.get(ItemResourceUtil.printerID));
+        assertEquals("Backhoe amount", MAND, mand.get(ItemResourceUtil.backhoeID).intValue());
+        assertEquals("Printer amount", MAND, mand.get(ItemResourceUtil.printerID).intValue());
 
-        var opt = manifest.getResources(false);
+        var opt = manifest.getItems(false);
         assertEquals("Optional Items", 1, opt.size());
-        assertEquals("Drill amount", OPT, opt.get(ItemResourceUtil.pneumaticDrillID));
+        assertEquals("Drill amount", OPT, opt.get(ItemResourceUtil.pneumaticDrillID).intValue());
     }
 
     public void testAddEquipment() {

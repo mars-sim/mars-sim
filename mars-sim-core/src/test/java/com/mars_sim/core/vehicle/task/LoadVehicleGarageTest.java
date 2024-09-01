@@ -20,9 +20,9 @@ public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         // Create a loading plan and preload Settlement
         var resources = new SuppliesManifest();
-        resources.addResource(ResourceUtil.oxygenID, 10D, true);
-        resources.addResource(ResourceUtil.waterID, 10D, true);
-        resources.addResource(ResourceUtil.foodID, 10D, true);
+        resources.addAmount(ResourceUtil.oxygenID, 10D, true);
+        resources.addAmount(ResourceUtil.waterID, 10D, true);
+        resources.addAmount(ResourceUtil.foodID, 10D, true);
         LoadControllerTest.loadSettlement(s, resources);
         LoadingController lc = new LoadingController(s, v, resources);
 

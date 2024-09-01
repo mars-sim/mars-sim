@@ -90,8 +90,8 @@ extends TestCase {
 	 */
 	public void testBackgroundLoading() {
 		var requiredResourcesMap = new SuppliesManifest();
-		requiredResourcesMap.addResource(ResourceUtil.oxygenID, 20D, true);
-		requiredResourcesMap.addResource(ResourceUtil.methanolID, 10D, true);
+		requiredResourcesMap.addAmount(ResourceUtil.oxygenID, 20D, true);
+		requiredResourcesMap.addAmount(ResourceUtil.methanolID, 10D, true);
 
 		loadSettlement(settlement, requiredResourcesMap);
 
@@ -209,8 +209,8 @@ extends TestCase {
 	 */
 	public void testLoadRequiredAmountResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addResource(ResourceUtil.foodID, 30D, true);
-		manifest.addResource(ResourceUtil.waterID, 10D, true);
+		manifest.addAmount(ResourceUtil.foodID, 30D, true);
+		manifest.addAmount(ResourceUtil.waterID, 10D, true);
 
 		// Load the manifest
 		testLoading(200, manifest);
@@ -223,7 +223,7 @@ extends TestCase {
 	public void testLoadFailedAmountResources() {
 		var requiredResourcesMap = new SuppliesManifest();
 		// Add 2000kg food to the manifest
-		requiredResourcesMap.addResource(ResourceUtil.foodID, 50D, true);
+		requiredResourcesMap.addAmount(ResourceUtil.foodID, 50D, true);
 
 		LoadingController controller = new LoadingController(settlement, vehicle,
 				requiredResourcesMap);
@@ -248,10 +248,10 @@ extends TestCase {
 	 */
 	public void testLoadOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addResource(ResourceUtil.foodID, 20D, true);
-		manifest.addResource(ResourceUtil.waterID, 10D, true);
+		manifest.addAmount(ResourceUtil.foodID, 20D, true);
+		manifest.addAmount(ResourceUtil.waterID, 10D, true);
 
-		manifest.addResource(ResourceUtil.co2ID, 4D, false);
+		manifest.addAmount(ResourceUtil.co2ID, 4D, false);
 
 		// Load the manifest
 		testLoading(200, manifest);
@@ -262,9 +262,9 @@ extends TestCase {
 	 */
 	public void testLoadMissingOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addResource(ResourceUtil.foodID, 100D, true);
+		manifest.addAmount(ResourceUtil.foodID, 100D, true);
 
-		manifest.addResource(ResourceUtil.co2ID, 4D, false);
+		manifest.addAmount(ResourceUtil.co2ID, 4D, false);
 
 		testLoadOptionalResources(100, manifest,
 								  ResourceUtil.nitrogenID);
@@ -280,11 +280,11 @@ extends TestCase {
 
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5, false);
 
-		manifest.addResource(ResourceUtil.foodID, 100D, true);
+		manifest.addAmount(ResourceUtil.foodID, 100D, true);
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
 
-		manifest.addResource(ResourceUtil.co2ID, 4D, false);
+		manifest.addAmount(ResourceUtil.co2ID, 4D, false);
 		manifest.addItem(pipeWrenchID, 5, false);
 
 		// Load the manifest
@@ -316,8 +316,8 @@ extends TestCase {
 	}
 
 	private void setVehicleCapacity(Vehicle v, SuppliesManifest manifest) {
-		setResourcesCapacity(v, manifest.getResources(true));
-		setResourcesCapacity(v, manifest.getResources(false));
+		setResourcesCapacity(v, manifest.getAmounts(true));
+		setResourcesCapacity(v, manifest.getAmounts(false));
 	}
 
 	/**
@@ -348,7 +348,7 @@ extends TestCase {
 
 		// Add an extra resource that will not be present
 		var extraOptionalResources = new SuppliesManifest(manifest);
-		extraOptionalResources.addResource(missingId, 10D, false);
+		extraOptionalResources.addAmount(missingId, 10D, false);
 
 		loadIt(maxCycles, manifest);
 
@@ -438,9 +438,9 @@ extends TestCase {
 	 */
 	private void checkVehicleResources(Vehicle source, SuppliesManifest manifest) {
 
-		var requiredResourcesMap = new HashMap<>(manifest.getResources(true));
-		requiredResourcesMap.putAll(manifest.getResources(false));
-		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
+		var requiredResourcesMap = new HashMap<>(manifest.getAmounts(true));
+		requiredResourcesMap.putAll(manifest.getAmounts(false));
+		for (Entry<Integer, Double> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				String resourceName = ResourceUtil.findAmountResourceName(key);
@@ -470,14 +470,11 @@ extends TestCase {
 	 * @param target
 	 * @param requiredResourcesMap
 	 */
-	private void setResourcesCapacity(Vehicle target, Map<Integer, Number> requiredResourcesMap) {
+	private void setResourcesCapacity(Vehicle target, Map<Integer, Double> requiredResourcesMap) {
 		EquipmentInventory inv = target.getEquipmentInventory();
 		
-		for (Entry<Integer, Number> v : requiredResourcesMap.entrySet()) {
-			int key = v.getKey();
-			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				inv.setResourceCapacity(key, v.getValue().doubleValue() * 1.01D);
-			}
+		for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
+			inv.setResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
 		}
 	}
 
@@ -487,23 +484,25 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	public static void loadSettlement(Settlement target, SuppliesManifest requiredResourcesMap) {
-		loadSettlementResources(target, requiredResourcesMap.getResources(true));
-		loadSettlementResources(target, requiredResourcesMap.getResources(false));
+		loadSettlementAmounts(target, requiredResourcesMap.getAmounts(true));
+		loadSettlementAmounts(target, requiredResourcesMap.getAmounts(false));
 		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(true));
 		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(false));
+		loadSettlementItems(target, requiredResourcesMap.getItems(true));
+		loadSettlementItems(target, requiredResourcesMap.getItems(false));
 	}
 
-	private static void loadSettlementResources(Settlement target, Map<Integer, Number> resourcesMap) {
-		for (Entry<Integer, Number> resource : resourcesMap.entrySet()) {
-			int key = resource.getKey();
-			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				// Add extra to the stored to give a tolerance
-				double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
-				target.storeAmountResource(key, amount);
-			}
-			else {
-				target.storeItemResource(key, resource.getValue().intValue());
-			}
+	private static void loadSettlementAmounts(Settlement target, Map<Integer, Double> resourcesMap) {
+		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
+			// Add extra to the stored to give a tolerance
+			double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
+			target.storeAmountResource(resource.getKey(), amount);
+		}
+	}
+
+	private static void loadSettlementItems(Settlement target, Map<Integer, Integer> resourcesMap) {
+		for (Entry<Integer, Integer> resource : resourcesMap.entrySet()) {
+			target.storeItemResource(resource.getKey(), resource.getValue().intValue());
 		}
 	}
 }
