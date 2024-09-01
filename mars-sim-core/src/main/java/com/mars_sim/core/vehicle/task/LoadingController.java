@@ -14,18 +14,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -64,10 +62,12 @@ public class LoadingController implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(LoadingController.class.getName());
 
-	private Map<Integer, Number> resourcesManifest;
-	private Map<Integer, Number> optionalResourcesManifest;
+	private Map<Integer, Double> amountManifest;
+	private Map<Integer, Double> optionalAmountManifest;
 	private Map<Integer, Integer> equipmentManifest;
 	private Map<Integer, Integer> optionalEquipmentManifest;
+	private Map<Integer, Integer> itemManifest;
+	private Map<Integer, Integer> optionalItemManifest;
 	private Settlement settlement;
 	private Vehicle vehicle;
 
@@ -80,30 +80,28 @@ public class LoadingController implements Serializable {
 	 * Load a vehicle with a manifest from a Settlement
 	 * @param settlement Source of resources for the load
 	 * @param vehicle Vehicle to load
-	 * @param resources Mandatory resources needed
-	 * @param optionalResources Optional resources needed
-	 * @param equipment Mandatory equipment needed
-	 * @param optionalEquipment Optional equipment needed
+	 * @param manifest Defines what supplies are to be loaded
 	 */
 	public LoadingController(Settlement settlement, Vehicle vehicle,
-							 Map<Integer, Number> resources,
-							 Map<Integer, Number> optionalResources,
-							 Map<Integer, Integer> equipment,
-							 Map<Integer, Integer> optionalEquipment) {
+							 SuppliesManifest manifest) {
 		this.settlement = settlement;
 		this.vehicle = vehicle;
 
 		// Take copies to form the manifest as the quantities will be reduced
-		this.resourcesManifest = new HashMap<>(resources);
-		this.optionalResourcesManifest = new HashMap<>(optionalResources);
-		this.equipmentManifest = new HashMap<>(equipment);
-		this.optionalEquipmentManifest = new HashMap<>(optionalEquipment);
+		this.amountManifest = new HashMap<>(manifest.getAmounts(true));
+		this.optionalAmountManifest = new HashMap<>(manifest.getAmounts(false));
+		this.equipmentManifest = new HashMap<>(manifest.getEquipment(true));
+		this.optionalEquipmentManifest = new HashMap<>(manifest.getEquipment(false));
+		this.itemManifest = new HashMap<>(manifest.getItems(true));
+		this.optionalItemManifest = new HashMap<>(manifest.getItems(false));
 
 		// Reduce what is already in the Vehicle
-		removeVehicleResources(resourcesManifest);
-		removeVehicleResources(optionalResourcesManifest);
+		removeVehicleAmounts(amountManifest);
+		removeVehicleAmounts(optionalAmountManifest);
 		removeVehicleEquipment(equipmentManifest);
 		removeVehicleEquipment(optionalEquipmentManifest);
+		removeVehicleItems(itemManifest);
+		removeVehicleItems(optionalItemManifest);
 	}
 
 	/*
@@ -128,37 +126,49 @@ public class LoadingController implements Serializable {
 	}
 
 	/*
-	 * Remove any resources the Vehicle has from the manifest. Resource completely loaded
+	 * Remove any amount resources the Vehicle has from the manifest. Resource completely loaded
 	 * in the vehicle will be removed from the manifest.
 	 */
-	private void removeVehicleResources(Map<Integer, Number> resources) {
+	private void removeVehicleAmounts(Map<Integer, Double> resources) {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
 		for (Integer resourceId : ids) {
-			double amountLoaded;
-			if (resourceId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				// Load amount resources
-				amountLoaded = vehicle.getAmountResourceStored(resourceId);
-				double capacity = vehicle.getAmountResourceCapacity(resourceId);
-				double amountRequired = resources.get(resourceId).doubleValue();
-				if (capacity < amountRequired) {
-					// So the vehicle can not handle the Manifest volume
-					// Adjust the manifest down
-					resources.put(resourceId, (capacity - amountLoaded));
-					logger.warning(vehicle, "Could not hold "
-							+ amountRequired + " kg "
-							+ ResourceUtil.findAmountResourceName(resourceId)
-							+ " from the manifest "
-							+ "(Capacity: " + capacity + " kg).");
-					amountLoaded = 0;
-				}
-			}
-			else {
-				// Load item resources
-				amountLoaded = vehicle.getItemResourceStored(resourceId);
+			double amountLoaded = vehicle.getAmountResourceStored(resourceId);
+			double capacity = vehicle.getAmountResourceCapacity(resourceId);
+			double amountRequired = resources.get(resourceId).doubleValue();
+			if (capacity < amountRequired) {
+				// So the vehicle can not handle the Manifest volume
+				// Adjust the manifest down
+				resources.put(resourceId, (capacity - amountLoaded));
+				logger.warning(vehicle, "Could not hold "
+						+ amountRequired + " kg "
+						+ ResourceUtil.findAmountResourceName(resourceId)
+						+ " from the manifest "
+						+ "(Capacity: " + capacity + " kg).");
+				amountLoaded = 0;
 			}
 
 			if (amountLoaded > 0) {
 				double newAmount = resources.get(resourceId).doubleValue() - amountLoaded;
+				if (newAmount <= 0D) {
+					resources.remove(resourceId);
+				}
+				else {
+					resources.put(resourceId, newAmount);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Remove any Items the Vehicle has from the manifest. Items completely loaded
+	 * in the vehicle will be removed from the manifest.
+	 */
+	private void removeVehicleItems(Map<Integer, Integer> resources) {
+		Set<Integer> ids = new HashSet<>(resources.keySet());
+		for (Integer resourceId : ids) {
+			int amountLoaded = vehicle.getItemResourceStored(resourceId);
+			if (amountLoaded > 0) {
+				int newAmount = resources.get(resourceId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
 					resources.remove(resourceId);
 				}
@@ -189,22 +199,24 @@ public class LoadingController implements Serializable {
 			settlement.removeVicinityParkedVehicle(vehicle);
 		}
 
-		// Load equipment
+		// Load mandatory first
 		if ((amountLoading > 0D) && !equipmentManifest.isEmpty()) {
 			amountLoading = loadEquipment(amountLoading, equipmentManifest, true);
 		}
-
-		// Load resources
-		if ((amountLoading > 0D) && !resourcesManifest.isEmpty()) {
-			amountLoading = loadResources(worker, amountLoading, resourcesManifest, true);
+		if ((amountLoading > 0D) && !amountManifest.isEmpty()) {
+			amountLoading = loadAmounts(worker, amountLoading, amountManifest, true);
+		}
+		if ((amountLoading > 0D) && !itemManifest.isEmpty()) {
+			amountLoading = loadItems(worker, amountLoading, itemManifest, true);
 		}
 
 		// Load optionals last
-		if ((amountLoading > 0D) && !optionalResourcesManifest.isEmpty()) {
-			amountLoading = loadResources(worker, amountLoading, optionalResourcesManifest, false);
+		if ((amountLoading > 0D) && !optionalAmountManifest.isEmpty()) {
+			amountLoading = loadAmounts(worker, amountLoading, optionalAmountManifest, false);
 		}
-
-		// Load optional equipment
+		if ((amountLoading > 0D) && !optionalItemManifest.isEmpty()) {
+			amountLoading = loadItems(worker, amountLoading, optionalItemManifest, false);
+		}
 		if ((amountLoading > 0D) && !optionalEquipmentManifest.isEmpty()) {
 			amountLoading = loadEquipment(amountLoading, optionalEquipmentManifest, false);
 		}
@@ -235,15 +247,16 @@ public class LoadingController implements Serializable {
 		return (amountLoading > 0D) || completed;
 	}
 
+	
 	/**
-	 * Loads the vehicle with required resources from the settlement.
+	 * Loads the vehicle with required items from the settlement.
 	 *
 	 * @param amountLoading the amount (kg) the person can load in this time period.
 	 * @param manifest Manfiest to load from
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 * @throws Exception if problem loading resources.
 	 */
-	private double loadResources(Worker loader, double amountLoading, Map<Integer, Number> manifest, boolean mandatory) {
+	private double loadItems(Worker loader, double amountLoading, Map<Integer, Integer> manifest, boolean mandatory) {
 
 		String  loaderName = loader.getName();
 
@@ -251,14 +264,36 @@ public class LoadingController implements Serializable {
 		// manifest
 		Set<Integer> resources = new HashSet<>(manifest.keySet());
 		for(Integer resource : resources) {
-			if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				// Load amount resources
-				amountLoading = loadAmountResource(loaderName, amountLoading, resource, manifest, mandatory);
+			// Load amount resources
+			amountLoading = loadItemResource(loaderName, amountLoading, resource, manifest, mandatory);
+
+			// Exhausted the loading amount
+			if (amountLoading <= 0D) {
+				return 0;
 			}
-			else {
-				// Load item resources
-				amountLoading = loadItemResource(loaderName, amountLoading, resource, manifest, mandatory);
-			}
+		}
+		// Return remaining amount that can be loaded by person this time period.
+		return amountLoading;
+	}
+
+	/**
+	 * Loads the vehicle with required amount resources from the settlement.
+	 *
+	 * @param amountLoading the amount (kg) the person can load in this time period.
+	 * @param manifest Manfiest to load from
+	 * @return the remaining amount (kg) the person can load in this time period.
+	 * @throws Exception if problem loading resources.
+	 */
+	private double loadAmounts(Worker loader, double amountLoading, Map<Integer, Double> manifest, boolean mandatory) {
+
+		String  loaderName = loader.getName();
+
+		// Load required resources. Take a cope as load will change the
+		// manifest
+		Set<Integer> resources = new HashSet<>(manifest.keySet());
+		for(Integer resource : resources) {
+			// Load amount resources
+			amountLoading = loadAmountResource(loaderName, amountLoading, resource, manifest, mandatory);
 
 			// Exhausted the loading amount
 			if (amountLoading <= 0D) {
@@ -281,7 +316,7 @@ public class LoadingController implements Serializable {
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 */
 	private double loadAmountResource(String loader, double amountLoading, Integer resource,
-									  Map<Integer, Number> manifest, boolean mandatory) {
+									  Map<Integer, Double> manifest, boolean mandatory) {
 
 		String resourceName = ResourceUtil.findAmountResourceName(resource);
 
@@ -372,7 +407,7 @@ public class LoadingController implements Serializable {
 	 *                      optional.
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 */
-	private double loadItemResource(String loader, double amountLoading, Integer id, Map<Integer, Number> manifest, boolean mandatory) {
+	private double loadItemResource(String loader, double amountLoading, Integer id, Map<Integer, Integer> manifest, boolean mandatory) {
 
 		Part p = ItemResourceUtil.findItemResource(id);
 		boolean usedSupply = false;
@@ -523,9 +558,9 @@ public class LoadingController implements Serializable {
 	public void backgroundLoad(double amountLoading) {
 
 		for (Integer id: BACKGROUND_RESOURCES) {
-			if (resourcesManifest.containsKey(id)) {
+			if (amountManifest.containsKey(id)) {
 				// Load this resource
-				loadAmountResource("Background", amountLoading, id, resourcesManifest, true);
+				loadAmountResource("Background", amountLoading, id, amountManifest, true);
 			}
 		}
 	}
@@ -536,8 +571,9 @@ public class LoadingController implements Serializable {
 	 */
 	public boolean isCompleted() {
 		// Manifest is empty so complete
-		return (resourcesManifest.isEmpty() && equipmentManifest.isEmpty()
-				&& optionalResourcesManifest.isEmpty() && optionalEquipmentManifest.isEmpty())
+		return (amountManifest.isEmpty() && optionalAmountManifest.isEmpty()
+				&& equipmentManifest.isEmpty() && optionalEquipmentManifest.isEmpty()
+				&& itemManifest.isEmpty() && optionalItemManifest.isEmpty())
 				|| vehicleFull;
 	}
 
@@ -549,20 +585,16 @@ public class LoadingController implements Serializable {
 		return retryAttempts <= 0;
 	}
 
-	public Map<Integer, Number> getResourcesManifest() {
-		return Collections.unmodifiableMap(this.resourcesManifest);
+	public Map<Integer, Double> getAmountManifest(boolean mandatory) {
+		return Collections.unmodifiableMap(mandatory ? this.amountManifest : this.optionalAmountManifest);
 	}
 
-	public Map<Integer, Number> getOptionalResourcesManifest() {
-		return Collections.unmodifiableMap(this.optionalResourcesManifest);
+	public Map<Integer, Integer> getEquipmentManifest(boolean mandatory) {
+		return Collections.unmodifiableMap(mandatory ? this.equipmentManifest : this.optionalEquipmentManifest);
 	}
 
-	public Map<Integer, Integer> getEquipmentManifest() {
-		return Collections.unmodifiableMap(this.equipmentManifest);
-	}
-
-	public Map<Integer, Integer> getOptionalEquipmentManifest() {
-		return Collections.unmodifiableMap(this.optionalEquipmentManifest);
+	public Map<Integer, Integer> getItemManifest(boolean mandatory) {
+		return Collections.unmodifiableMap(mandatory ? this.itemManifest : this.optionalItemManifest);
 	}
 
 	/**
@@ -581,27 +613,4 @@ public class LoadingController implements Serializable {
     public Vehicle getVehicle() {
 		return vehicle;
     }
-
-	/**
-	 * Dumps a description of the contents into a String representation.
-	 * 
-	 * @return String description of contents.
-	 */
-	public String dumpContents() {
-		StringBuilder buffer = new StringBuilder();
-		buffer.append("Resources:");
-		outputResourceManifest(resourcesManifest, buffer);		
-		buffer.append("Optional Resources:");
-		outputResourceManifest(optionalResourcesManifest, buffer);	
-
-		return buffer.toString();
-	}
-
-	private static void outputResourceManifest(Map<Integer, Number> manifest, StringBuilder buffer) {
-		for (Entry<Integer, Number> i : manifest.entrySet()) {
-			Good g = GoodsUtil.getGood(i.getKey());
-			buffer.append(g.getName()).append("=").append(i.getValue().toString()).append(' ');
-		}
-		buffer.append("\n");
-	}
 }

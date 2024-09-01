@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.ProjectStep;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -67,7 +68,7 @@ public abstract class MissionStep extends ProjectStep {
      * @param includeOptionals
      * @param resources
      */
-    void getRequiredResources(MissionManifest resources, boolean includeOptionals) {
+    void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {
        // Do nonthing; nothing to add
     }
 
@@ -78,16 +79,16 @@ public abstract class MissionStep extends ProjectStep {
      * @param ideal Calculate the ideal amount which will be more thn the minimum
      * @param manifest Place to hold the order
      */
-    protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, MissionManifest manifest) {
+    protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, SuppliesManifest manifest) {
         double personSols = (crew * durationMSol)/1000D; // Consumption rates are in Sols
         personSols *= (ideal ? Vehicle.getLifeSupportRangeErrorMargin() : 1D);
-        manifest.addResource(ResourceUtil.oxygenID,
+        manifest.addAmount(ResourceUtil.oxygenID,
                         PhysicalCondition.getOxygenConsumptionRate() * personSols, true);
 
-		manifest.addResource(ResourceUtil.waterID,
+		manifest.addAmount(ResourceUtil.waterID,
                         PhysicalCondition.getWaterConsumptionRate() * personSols, true);
 
-        manifest.addResource(ResourceUtil.foodID,
+        manifest.addAmount(ResourceUtil.foodID,
 		                PhysicalCondition.getFoodConsumptionRate() * personSols, true);
     }
 

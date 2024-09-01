@@ -29,6 +29,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Project;
 import com.mars_sim.core.project.ProjectStep;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -401,8 +402,8 @@ public abstract class MissionProject implements Mission {
      * Get the resources needed to complete the mission
      * @return
      */
-    public MissionManifest getResources(boolean includeOptionals) {
-        MissionManifest resources = new MissionManifest();
+    public SuppliesManifest getResources(boolean includeOptionals) {
+        SuppliesManifest resources = new SuppliesManifest();
         List<ProjectStep> steps = control.getRemainingSteps();
         for(ProjectStep ps : steps) {
             if (ps instanceof MissionStep ms) {

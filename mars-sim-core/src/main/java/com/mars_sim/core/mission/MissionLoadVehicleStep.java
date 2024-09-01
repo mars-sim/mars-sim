@@ -12,6 +12,7 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -49,12 +50,8 @@ public class MissionLoadVehicleStep extends MissionStep {
         Vehicle v = vp.getVehicle();
         Settlement settlement = v.getSettlement();
 		if (loadingPlan == null) {
-            MissionManifest manifest = vp.getResources(true);
-			loadingPlan = new LoadingController(v.getSettlement(), v,
-												manifest.getResources(true),
-												manifest.getResources(false),
-                                                manifest.getEquipment(true),
-												manifest.getEquipment(false));	
+            SuppliesManifest manifest = vp.getResources(true);
+			loadingPlan = new LoadingController(v.getSettlement(), v, manifest);	
             
                                                 
             // Try and move the vehicle to garage
