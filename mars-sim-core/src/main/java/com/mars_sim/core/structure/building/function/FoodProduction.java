@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FoodProduction.java
- * @date 2022-07-26
+ * @date 2024-09-01
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -328,11 +328,16 @@ public class FoodProduction extends Function {
 		return result;
 	}
 
-	private void despositOutputs(FoodProductionProcess process) {
+	/**
+	 * Deposits the outputs.
+	 * 
+	 * @param process
+	 */
+	private void depositOutputs(FoodProductionProcess process) {
 		Settlement settlement = building.getSettlement();
 
 		// Produce outputs.
-		for(var item : process.getInfo().getOutputList()) {
+		for (var item : process.getInfo().getOutputList()) {
 			if (FoodProductionUtil.getProcessItemValue(item, settlement, true) > 0D) {
 				int outputId = -1;
 				double outputAmount = item.getAmount();
@@ -387,6 +392,11 @@ public class FoodProduction extends Function {
 		settlement.recordProcess(process.getInfo(), "Food", building);
 	}
 
+	/**
+	 * Returns the used inputs.
+	 * 
+	 * @param process
+	 */
 	private void returnInputs(FoodProductionProcess process) {
 		var settlement = getBuilding().getAssociatedSettlement();
 
@@ -445,7 +455,7 @@ public class FoodProduction extends Function {
 	
 		if (!premature) {
 			// Produce outputs.
-			despositOutputs(process);
+			depositOutputs(process);
 		}
 		else {
 			returnInputs(process);
@@ -454,8 +464,8 @@ public class FoodProduction extends Function {
 		processes.remove(process);
 		
 		// Log process ending.
-		logger.log(getBuilding(), Level.INFO, 20_000,
-				"Ending food production process: " + process.getInfo().getName());
+		logger.log(getBuilding(), Level.INFO, 0,
+				"Ending food production process " + "'" + process.getInfo().getName() + "'.");
 	}
 
 	@Override

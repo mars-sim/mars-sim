@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Manufacture.java
- * @date 2022-07-26
+ * @date 2024-09-01
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -435,11 +435,16 @@ public class Manufacture extends Function {
 		return result;
 	}
 
-	private void despositOutputs(ManufactureProcess process) {
+	/**
+	 * Deposits the outputs.
+	 * 
+	 * @param process
+	 */
+	private void depositOutputs(ManufactureProcess process) {
 		Settlement settlement = building.getSettlement();
 
 		// Produce outputs.
-		for(var item : process.getInfo().getOutputList()) {
+		for (var item : process.getInfo().getOutputList()) {
 			if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, true) > 0D) {
 				int outputId = -1;
 				double outputAmount = item.getAmount();
@@ -521,6 +526,11 @@ public class Manufacture extends Function {
 		settlement.recordProcess(process.getInfo(), "Manufacture", building);
 	}
 
+	/**
+	 * Returns the used inputs.
+	 * 
+	 * @param process
+	 */
 	private void returnInputs(ManufactureProcess process) {
 		Settlement settlement = building.getAssociatedSettlement();
 	
@@ -601,7 +611,7 @@ public class Manufacture extends Function {
 	public void endManufacturingProcess(ManufactureProcess process, boolean premature) {
 
 		if (!premature) {
-			despositOutputs(process);
+			depositOutputs(process);
 		}
 		else {
 			returnInputs(process);
@@ -610,8 +620,8 @@ public class Manufacture extends Function {
 		processes.remove(process);
 
 		// Log process ending.
-		logger.log(getBuilding(), Level.INFO, 20_000,
-				"Ending manufacturing process: " + process.getInfo().getName());
+		logger.log(getBuilding(), Level.INFO, 0,
+				"Ending manufacturing process '" + process.getInfo().getName() + "'.");
 	}
 
 	/**

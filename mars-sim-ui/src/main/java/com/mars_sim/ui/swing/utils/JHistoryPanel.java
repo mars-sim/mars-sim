@@ -145,7 +145,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(0).setMinWidth(TIME_WIDTH);
 		columnModel.getColumn(0).setPreferredWidth(TIME_WIDTH);
-		columnModel.getColumn(1).setPreferredWidth(120);
+		columnModel.getColumn(1).setPreferredWidth(150);
 		
 		table.setRowSelectionAllowed(true);
 
@@ -198,7 +198,8 @@ public abstract class JHistoryPanel<T> extends JPanel {
 	}
 
     /**
-     * This method must be overriden to extract the appropriate values from the item type.
+     * This method must be overridden to extract the appropriate values from the item type.
+     * 
      * @param value
      * @param columnIndex
      * @return
@@ -206,7 +207,8 @@ public abstract class JHistoryPanel<T> extends JPanel {
 	protected abstract Object getValueFrom(T value, int columnIndex);
 
 	/**
-     * This method may be overriden to extract a tooltip for the selected item
+     * This method may be overridden to extract a tooltip for the selected item.
+     * 
      * @param value Value to be rendered as tooltip
      * @return
      */
