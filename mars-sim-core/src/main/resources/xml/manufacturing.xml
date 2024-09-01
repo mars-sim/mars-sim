@@ -1007,7 +1007,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating 10 bags sewn together with fiberglass cloth and plastic sheet liner. -->
-	<process name="manufacture bag" tech="1" skill="1" work-time="10" process-time="5"
+	<process name="Manufacture bag" tech="1" skill="1" work-time="10" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="5" />
@@ -1019,7 +1019,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating a large bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
-	<process name="manufacture large bag" tech="1" skill="1" work-time="20" process-time="5"
+	<process name="Manufacture large bag" tech="1" skill="1" work-time="20" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="2" />
@@ -1030,7 +1030,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
+	<process name="Manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="Aluminum" amount="0.8" />			
@@ -1091,7 +1091,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	
-	<process name="Make eva helmet" tech="2" skill="2" work-time="100" process-time="300"
+	<process name="Make EVA helmet" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="Cane Fiber" amount="0.2">
@@ -1108,7 +1108,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="gasket" number="2" />
 		</inputs>
 		<outputs>
-			<part name="eva helmet" number="1" />
+			<part name="EVA helmet" number="1" />
 		</outputs>
 	</process>
 
@@ -1159,7 +1159,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make eva gloves" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make EVA gloves" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
 			<resource name="Cane Fiber" amount="0.1">
@@ -1170,11 +1170,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fiberglass" number="1" />
 		</inputs>
 		<outputs>
-			<part name="eva gloves" number="2" />
+			<part name="EVA gloves" number="2" />
 		</outputs>
 	</process>
 
-	<process name="Make eva boots" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make EVA boots" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
 			<resource name="Cane Fiber" amount="0.4">
@@ -1186,11 +1186,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fiberglass" number="1" />
 		</inputs>
 		<outputs>
-			<part name="eva boots" number="2" />
+			<part name="EVA boots" number="2" />
 		</outputs>
 	</process>
 
-	<process name="Make eva pads" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make EVA pads" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".7">
 		<inputs>
 			<resource name="Cane Fiber" amount="0.1">
@@ -1201,11 +1201,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fiberglass" number="1" />
 		</inputs>
 		<outputs>
-			<part name="eva pads" number="3" />
+			<part name="EVA pads" number="3" />
 		</outputs>
 	</process>
 
-	<process name="Make eva backpack" tech="2" skill="2" work-time="300" process-time="100"
+	<process name="Make EVA backpack" tech="2" skill="2" work-time="300" process-time="100"
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
@@ -1226,12 +1226,12 @@ Note: 1 kg of H2 is 14.13 liter
 
 		</inputs>
 		<outputs>
-			<part name="eva backpack" number="1" />
+			<part name="EVA backpack" number="1" />
 		</outputs>
 	</process>
 
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
-	<process name="Make eva antenna" tech="2" skill="2" work-time="100" process-time="50"
+	<process name="Make EVA antenna" tech="2" skill="2" work-time="100" process-time="50"
 			power-required=".3">
 		<inputs>
 			<resource name="Polyester Resin" amount=".5">
@@ -1245,7 +1245,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="optical cable" number="1" />
 		</inputs>
 		<outputs>
-			<part name="eva antenna" number="20" />
+			<part name="EVA antenna" number="20" />
 		</outputs>
 	</process>
 
@@ -1274,20 +1274,20 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Assemble EVA suit" tech="2" skill="3" work-time="500" process-time="0"
 			power-required="0.5">
 		<inputs>
-			<part name="eva helmet" number="1" />
+			<part name="EVA helmet" number="1" />
 			<part name="helmet visor" number="1" />
 			<part name="pressure suit" number="1" />
 			<part name="coveralls" number="1" />
 			<part name="Liquid Cooling Garment" number="1" />
 			
-			<part name="eva gloves" number="1" />
-			<part name="eva boots" number="1" />
-			<part name="eva pads" number="1" />
-			<part name="eva backpack" number="1" />
+			<part name="EVA gloves" number="1" />
+			<part name="EVA boots" number="1" />
+			<part name="EVA pads" number="1" />
+			<part name="EVA backpack" number="1" />
 			
-			<part name="eva antenna" number="1" />
-			<part name="eva radio" number="1" />
-			<part name="eva battery" number="1" />
+			<part name="EVA antenna" number="1" />
+			<part name="EVA radio" number="1" />
+			<part name="EVA battery" number="1" />
 			<part name="suit heating unit" number="1" />
 			
 			<part name="electrical wire" number="2" />
@@ -1295,7 +1295,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="biosensor" number="6" />
 		</inputs>
 		<outputs>
-			<equipment name="eva suit" number="1" />
+			<equipment name="EVA suit" number="1" />
 		</outputs>
 	</process>
 
@@ -2293,7 +2293,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Manufacturing a nickel-iron (NiFe) battery for use in EVA suits. -->
 	<!-- http://en.wikipedia.org/wiki/Nickel-iron_battery -->
-	<process name="Manufacture eva battery" tech="2" skill="3" work-time="100" process-time="50"
+	<process name="Manufacture EVA battery" tech="2" skill="3" work-time="100" process-time="50"
 			power-required="1.0">
 		<description> Assume a small EVA battery has the capacity of 0.5kWh.
 		</description>			
@@ -2309,7 +2309,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="6" />
 		</inputs>
 		<outputs>
-			<part name="eva battery" number="3" />
+			<part name="EVA battery" number="3" />
 		</outputs>
 	</process>
 
@@ -3384,17 +3384,17 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- Salvage process for an EVA suit. -->
-	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
-		<part-salvage name="eva helmet" number="1" />
+	<salvage item-name="EVA suit" type="equipment" tech="2" skill="2" work-time="200">
+		<part-salvage name="EVA helmet" number="1" />
 		<part-salvage name="helmet visor" number="1" />
 		<part-salvage name="pressure suit" number="1" />
 		<part-salvage name="coveralls" number="1" />
-		<part-salvage name="eva gloves" number="1" />
-		<part-salvage name="eva boots" number="1" />
-		<part-salvage name="eva backpack" number="1" />
-		<part-salvage name="eva antenna" number="1" />
-		<part-salvage name="eva radio" number="1" />
-		<part-salvage name="eva battery" number="1" />
+		<part-salvage name="EVA gloves" number="1" />
+		<part-salvage name="EVA boots" number="1" />
+		<part-salvage name="EVA backpack" number="1" />
+		<part-salvage name="EVA antenna" number="1" />
+		<part-salvage name="EVA radio" number="1" />
+		<part-salvage name="EVA battery" number="1" />
 		<part-salvage name="suit heating unit" number="1" />
 		<part-salvage name="electrical wire" number="3" />
 		<part-salvage name="wire connector" number="10" />

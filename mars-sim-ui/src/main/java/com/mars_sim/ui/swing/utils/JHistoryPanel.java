@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JHistoryPanel.java
- * @date 2023-07-12
+ * @date 2024-09-01
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.utils;
@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.data.History;
@@ -34,9 +34,7 @@ import com.mars_sim.core.tool.Msg;
  */
 @SuppressWarnings("serial")
 public abstract class JHistoryPanel<T> extends JPanel {
-    /**
-	 *
-	 */
+
 	private static final int TIME_WIDTH = 90;
 
 	/**
@@ -105,7 +103,8 @@ public abstract class JHistoryPanel<T> extends JPanel {
 	private DefaultComboBoxModel<MarsDate> solModel;
 
     /**
-     * This creqtes a panel to display a history details.
+     * This creates a panel to display a history details.
+     * 
      * @param source The source of the History details
      * @param columns Details of the extra columns from the Item type
      */
@@ -142,10 +141,12 @@ public abstract class JHistoryPanel<T> extends JPanel {
 				return getTooltipFrom(model.getRow(rowIndex));
             }
 		};
-		TableColumn timeColumn = table.getColumnModel().getColumn(0);
-		timeColumn.setMinWidth(TIME_WIDTH);
-		timeColumn.setPreferredWidth(TIME_WIDTH);
 
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setMinWidth(TIME_WIDTH);
+		columnModel.getColumn(0).setPreferredWidth(TIME_WIDTH);
+		columnModel.getColumn(1).setPreferredWidth(150);
+		
 		table.setRowSelectionAllowed(true);
 
 		// Create attribute scroll panel
@@ -197,7 +198,8 @@ public abstract class JHistoryPanel<T> extends JPanel {
 	}
 
     /**
-     * This method must be overriden to extract the appropriate values from the item type.
+     * This method must be overridden to extract the appropriate values from the item type.
+     * 
      * @param value
      * @param columnIndex
      * @return
@@ -205,7 +207,8 @@ public abstract class JHistoryPanel<T> extends JPanel {
 	protected abstract Object getValueFrom(T value, int columnIndex);
 
 	/**
-     * This method may be overriden to extract a tooltip for the selected item
+     * This method may be overridden to extract a tooltip for the selected item.
+     * 
      * @param value Value to be rendered as tooltip
      * @return
      */

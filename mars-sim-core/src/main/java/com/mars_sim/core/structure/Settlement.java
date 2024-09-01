@@ -2794,10 +2794,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Record a process completing
+	 * Records a completed process.
+	 * 
 	 * @param name Name of the process
 	 * @param type Type of process
-	 * @param locn When it was compelted
+	 * @param locn On what building it was completed
 	 * @param products The outputs produced
 	 */
     public void recordProcess(ProcessInfo process, String type, Building locn) {
@@ -2805,6 +2806,11 @@ public class Settlement extends Structure implements Temporal,
 		processHistory.add(ph);
     }
 	
+    /**
+     * Returns the process history.
+     * 
+     * @return
+     */
 	public History<CompletedProcess> getProcessHistory() {
 		return processHistory;
 	}
