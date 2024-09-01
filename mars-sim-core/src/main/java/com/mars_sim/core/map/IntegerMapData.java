@@ -226,15 +226,13 @@ import com.mars_sim.core.map.common.FileLocator;
  		BufferedImage cylindricalMapImage = null;
  		
 		try {
-			cylindricalMapImage = ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
+			cylindricalMapImage = // BigBufferedImage.create(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName), BufferedImage.TYPE_INT_RGB); // TYPE_INT_RGB
+					ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
 			
-			// Use getRaster() is fastest
+			// Use getRaster() - the fastest
 		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
 			// See https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
 			
-			final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
-//	 		May try: int[] srcPixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData()
-
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
 //	 		logger.config("loadMapData - " +  imageName + " : " + pixelWidth + " x " + pixelHeight + ".");
@@ -305,11 +303,16 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		    }
 	 		}
 	 		
-	 		else if (hasAlphaChannel) {
-	 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel
-	 			logger.info("hasAlphaChannel: " + hasAlphaChannel);
-	 					
-	 			final int pixelLength = 4;
+	 		else { 
+	 			
+				final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
+//				May try final int[] pixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
+
+	 			if (hasAlphaChannel) {
+		 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel
+		 			logger.info("hasAlphaChannel: " + hasAlphaChannel);
+		 					
+		 			final int pixelLength = 4;
 	 			
 	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
 	 			
@@ -330,39 +333,71 @@ import com.mars_sim.core.map.common.FileLocator;
 //	 				}
 //	 			}
 //	 			else {
-		 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
+		 			
+			 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
+			 				int argb = 0;
+					
+			 				// Note: The color is a 32-bit integer in ARGB format. 
+			 				//           Fully Opaque = 0xFF______
+			 				//      Fully Transparent = 0x00______
+			 				// Also,
+			 				//	   Red   = 0xFFFF0000
+			 				//	   Green = 0xFF00FF00
+			 				//	   Blue  = 0xFF0000FF
+			 				//
+			 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
+			 				
+			 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
+			 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
+			 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
+			 				//
+			 				// 1. value is promoted to an int (ff ff ff fe).
+			 				// 2. 0xff is an int literal (00 00 00 ff).
+			 				// 3. The '&' is applied to yield the desired value for result.
+		
+			 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
+			 				argb += ((int) pixels[pos + 1] & 0xff); // blue
+			 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
+			 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
+			 				
+		//	 				The Red and Blue channel comments are flipped. 
+		//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
+			 				
+		//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
+		//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
+		//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
+			 						
+			 				baseMapPixels[row][col] = argb;
+			 				col++;
+			 				if (col == pixelWidth) {
+			 					col = 0;
+			 					row++;
+			 				}
+			 			}
+	//	 			}
+		 		}
+		 		
+		 		else {
+		 			
+		 		    final int pixelLength = 3;
+		 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
 		 				int argb = 0;
-				
+		 					 				
 		 				// Note: The color is a 32-bit integer in ARGB format. 
 		 				//           Fully Opaque = 0xFF______
 		 				//      Fully Transparent = 0x00______
 		 				// Also,
-		 				//	   Red   = 0xFFFF0000
-		 				//	   Green = 0xFF00FF00
-		 				//	   Blue  = 0xFF0000FF
+		 				//	Red   = 0xFFFF0000
+		 				//	Green = 0xFF00FF00
+		 				//	Blue  = 0xFF0000FF
 		 				//
 		 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
 		 				
-		 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
-		 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
-		 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
-		 				//
-		 				// 1. value is promoted to an int (ff ff ff fe).
-		 				// 2. 0xff is an int literal (00 00 00 ff).
-		 				// 3. The '&' is applied to yield the desired value for result.
-	
-		 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
-		 				argb += ((int) pixels[pos + 1] & 0xff); // blue
-		 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
-		 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
+		 				argb += -16777216; // 255 alpha
+		 				argb += ((int) pixels[pixel] & 0xff); // blue
+		 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
+		 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
 		 				
-	//	 				The Red and Blue channel comments are flipped. 
-	//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
-		 				
-	//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
-	//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
-	//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
-		 						
 		 				baseMapPixels[row][col] = argb;
 		 				col++;
 		 				if (col == pixelWidth) {
@@ -370,37 +405,7 @@ import com.mars_sim.core.map.common.FileLocator;
 		 					row++;
 		 				}
 		 			}
-//	 			}
-	 		}
-	 		
-	 		else {
-	 			
-	 		    final int pixelLength = 3;
-	 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
-	 				int argb = 0;
-	 					 				
-	 				// Note: The color is a 32-bit integer in ARGB format. 
-	 				//           Fully Opaque = 0xFF______
-	 				//      Fully Transparent = 0x00______
-	 				// Also,
-	 				//	Red   = 0xFFFF0000
-	 				//	Green = 0xFF00FF00
-	 				//	Blue  = 0xFF0000FF
-	 				//
-	 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
-	 				
-	 				argb += -16777216; // 255 alpha
-	 				argb += ((int) pixels[pixel] & 0xff); // blue
-	 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
-	 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-	 				
-	 				baseMapPixels[row][col] = argb;
-	 				col++;
-	 				if (col == pixelWidth) {
-	 					col = 0;
-	 					row++;
-	 				}
-	 			}
+		 		}
 	 		}
 	 		
 		} catch (IOException e) {
@@ -448,8 +453,8 @@ import com.mars_sim.core.map.common.FileLocator;
  		// Note: it turns out TYPE_INT_RGB works the best for gray map
  		
 // 		if (meta.isColourful()) {
- 			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
-				BufferedImage. TYPE_INT_RGB); // TYPE_4BYTE_ABGR
+ 			 bImage = // BigBufferedImage.create(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_INT_RGB);
+ 					new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_INT_RGB); // TYPE_INT_RGB, TYPE_INT_ARGB, TYPE_4BYTE_ABGR
 // 		}
 // 		else {
 // 			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
@@ -503,6 +508,9 @@ import com.mars_sim.core.map.common.FileLocator;
  	 */
     public void setRGB(BufferedImage bImage, int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
 
+    	// Note: Reference https://stackoverflow.com/questions/61130264/how-can-i-process-bufferedimage-faster
+    	//       when attempting to speed up the processing
+    	
 		if (!meta.isColourful()) {
 	        // Convert to grayscale
 
