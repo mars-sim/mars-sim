@@ -21,6 +21,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
@@ -29,6 +30,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
@@ -56,6 +58,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private static final String OPEN_GUIDE = "guide";
 	private static final String TUTORIAL = "tutorial";
 	private static final String ABOUT = "about";
+	private static final String NEW = "new";
 	private static final String LAF = "laf";
 	private static final String UNIT_TOOLBAR = "unitbar";
 	private static final String TOOL_TOOLBAR = "toolbar";
@@ -252,16 +255,26 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		helpMenu.addMenuListener(this);
 
 		// Create About Mars Simulation Project menu item
-		helpMenu.add(createMenuItem("mainMenu.about", null, ABOUT, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK, false)));
+		helpMenu.add(createMenuItem("mainMenu.about", "action/about", ABOUT, null,
+										KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(new JSeparator());
-		helpMenu.add(createMenuItem("mainMenu.tutorial", null, TUTORIAL, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK, false)));
+		helpMenu.add(createMenuItem("mainMenu.new", "action/new", NEW, null,
+				KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK, false)));
+
+		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
+										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
 		return helpMenu;
 	}
 
+    /**
+     * Opens the about dialog box.
+     */
+    public void openAboutDialog() {
+    	JOptionPane.showMessageDialog(mainWindow, MarsTerminal.ABOUT_MSG, MarsTerminal.MARS_SIM, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
 	private JMenu createSettingsMenu(MainDesktopPane desktop) {
 
 		// Create settings menu
@@ -585,6 +598,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				break;
 			case ABOUT:
 				newGuideURL = Msg.getString("doc.about"); //$NON-NLS-1$
+				openAboutDialog();		
+				break;
+			case NEW:
+				newGuideURL = Msg.getString("doc.whatsnew"); //$NON-NLS-1$
 				break;
 			case OPEN_GUIDE:
 				newGuideURL = Msg.getString("doc.guide"); //$NON-NLS-1$

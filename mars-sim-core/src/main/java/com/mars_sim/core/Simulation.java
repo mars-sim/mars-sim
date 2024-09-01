@@ -132,7 +132,7 @@ public class Simulation implements ClockListener, Serializable {
 	};
 
 	/** The current year. */
-	public static final String YEAR = "2023";
+	public static final String YEAR = "2024";
 	/** The dashes. */
 	public final String DASHES = " ---------------------------------------------------------";
 

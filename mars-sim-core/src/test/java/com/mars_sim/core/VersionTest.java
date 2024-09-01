@@ -31,7 +31,7 @@ class VersionTest {
     void testDefaultVersion() {
         var build = SimulationRuntime.VERSION;
 
-        assertTrue("Default version", build.getVersion().length() > 0);
+        assertTrue("Default version", build.getVersionTag().length() > 0);
         assertTrue("Default build", build.getBuild().length() > 0);
 
     }

@@ -30,6 +30,7 @@ import com.jogamp.opencl.CLBuffer;
 import com.jogamp.opencl.CLKernel;
 import com.jogamp.opencl.CLProgram;
 import com.mars_sim.core.map.common.FileLocator;
+import com.mars_sim.core.tool.BigBufferedImage;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -226,8 +227,9 @@ import com.mars_sim.core.map.common.FileLocator;
  		BufferedImage cylindricalMapImage = null;
  		
 		try {
-			cylindricalMapImage = // BigBufferedImage.create(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName), BufferedImage.TYPE_INT_RGB); // TYPE_INT_RGB
-					ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
+			cylindricalMapImage = 
+			// Unable to get BigBufferedImage to work : BigBufferedImage.create(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName), BufferedImage.TYPE_INT_ARGB); // TYPE_INT_RGB
+				ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
 			
 			// Use getRaster() - the fastest
 		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
@@ -431,22 +433,11 @@ import com.mars_sim.core.map.common.FileLocator;
 			 return null;
 		 }
 	 
-// 		if (mapImage != null 
-// 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && newRho == rho)) {
-// 			// No need to recreate the mapImage when the mouse has not moved
-// 			return mapImage;
-// 		}
- 		
-		// Set the new phi		
-// 		centerPhiCache = centerPhi;
-		// Set the new theta 		
-// 		centerThetaCache = centerTheta;
+
 		// Set the new map rho
 		setRho(newRho);
  		
-//		logger.log(Level.INFO, "centerPhiCache: " + centerPhiCache + "  centerThetaCache: " + centerThetaCache
-//				+ "  scale: " + newRho);
-		
+
  		// Create a new buffered image to draw the map on.
  		BufferedImage bImage = null;
  				

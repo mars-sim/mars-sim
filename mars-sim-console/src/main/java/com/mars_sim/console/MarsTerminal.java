@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsTerminal.java
- * @date 2021-11-29
+ * @date 2024-09-01
  * @author Manny Kung
  */
 package com.mars_sim.console;
@@ -52,14 +52,12 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
 	/** Icon image filename for frame */
     private static final String ICON_IMAGE = "/icons/lander_hab64.png";
-	private static final String MARS_SIM =
-			  "      Mars Simulation Project\n"
-    		+ "                   "
-			+ SimulationRuntime.VERSION
-			+ "\n"
-    		+ "                   "
-			+ Simulation.YEAR;
-
+    public static final String MARS_SIM = "Mars Simulation Project";
+    public static final String ABOUT_MSG =
+			"     " + "     Version " + SimulationRuntime.VERSION.getVersionTag() + "\n"
+			+ "     " + SimulationRuntime.VERSION.getBuildString() + "\n"
+			+ "     " + "          " + Simulation.YEAR;
+		
 	private static final int DEFAULT_WIDTH = 1024;
 	private static final int DEFAULT_HEIGHT = 600;
 
@@ -187,7 +185,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         frame.setResizable(true);
         
-		setPaneTitle(SimulationRuntime.TITLE);
+		setPaneTitle(SimulationRuntime.SHORT_TITLE);
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -288,8 +286,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         menu.add(clearItem);
 
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
-        menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-        		 MARS_SIM));
+        menuItem.addActionListener(e -> openAboutDialog());
         menu.add(menuItem);
 
         menuBar.add(menu);
@@ -297,6 +294,13 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         frame.setJMenuBar(menuBar);
 
         frame.setVisible(true);
+    }
+    
+    /**
+     * Opens the about dialog box.
+     */
+    public void openAboutDialog() {
+    	JOptionPane.showMessageDialog(frame, ABOUT_MSG, MARS_SIM, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private boolean addAction(String keyStroke, String menuText, Runnable action) {
@@ -328,7 +332,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			case SOCIETY -> "Society Mode";
 		};
 
-		setPaneTitle(SimulationRuntime.TITLE + "  -  " + mode + (isPaused ? "  -  [ P A U S E ]" : ""));
+		setPaneTitle(SimulationRuntime.SHORT_TITLE + "  -  " + mode + (isPaused ? "  -  [ P A U S E ]" : ""));
 	}
 
 	@Override

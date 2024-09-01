@@ -72,7 +72,7 @@ public final class Version {
 	 * 
 	 * @return
 	 */
-	public String getVersion() {
+	public String getVersionTag() {
 		return versionTag;
 	}
 
@@ -108,6 +108,10 @@ public final class Version {
 		return versionTag + " - Build " + build + (isDirty ? "-dirty" : "");
 	}
 
+	public String getBuildString() {
+		return "Build " + build + (isDirty ? "-dirty" : "");
+	}
+	
 	@Override
 	public int hashCode() {
 		return versionTag.hashCode();

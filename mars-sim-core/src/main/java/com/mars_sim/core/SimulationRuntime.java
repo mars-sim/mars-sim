@@ -77,10 +77,11 @@ public class SimulationRuntime {
 			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
 	/** OS architecture string. */
 	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
-	public static final String TITLE = Msg.getString("Simulation.title", VERSION.getDescription()
+	public static final String SHORT_TITLE = Msg.getString("Simulation.title", VERSION.getVersionTag()); 
+	public static final String LONG_TITLE = SHORT_TITLE
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
-			+ ((NUM_CORES == 1) ? " Core" : " Cores")); 
-
+			+ ((NUM_CORES == 1) ? " Core" : " Cores"); 
+	
 	/**
 	 * Private constructor prevents instantiation.
 	 */

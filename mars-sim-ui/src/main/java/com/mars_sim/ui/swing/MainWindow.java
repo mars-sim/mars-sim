@@ -659,7 +659,7 @@ public class MainWindow
 			case SPONSOR -> "Sponsor Mode";
 			case SOCIETY ->  "Society Mode";	
 		};
-		frame.setTitle(SimulationRuntime.TITLE + " -   " + suffix + (isPaused ? "  -  [ P A U S E ]" : ""));
+		frame.setTitle(SimulationRuntime.SHORT_TITLE + "  -  " + suffix + (isPaused ? "  -  [ P A U S E ]" : ""));
 	}
 
 	/**
