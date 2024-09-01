@@ -565,7 +565,7 @@ Check out the most recent release or pre-release build in GitHub
 [Releases](https://github.com/mars-sim/mars-sim/releases) page.
 
 Alternatively, see all our previous and current official release versions at SourceForge
-[Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.6.2/).
+[Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.8.0/).
 
 > [!NOTE]
 > If you prefer, click SF's button below to automatically sense the correct OS platform to download.
