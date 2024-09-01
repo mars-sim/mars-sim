@@ -610,7 +610,7 @@ public class Manufacture extends Function {
 		processes.remove(process);
 
 		// Log process ending.
-		logger.log(getBuilding(), Level.FINEST, 20_000,
+		logger.log(getBuilding(), Level.INFO, 20_000,
 				"Ending manufacturing process: " + process.getInfo().getName());
 	}
 
