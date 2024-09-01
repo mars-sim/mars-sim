@@ -21,6 +21,7 @@ import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.NegotiateTrade;
@@ -34,7 +35,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A mission for trading between two settlements.
@@ -691,8 +691,8 @@ public class Trade extends RoverMission implements CommerceMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange();
-				double secondRange = secondVehicle.getRange();
+				double firstRange = firstVehicle.getEstimatedRange();
+				double secondRange = secondVehicle.getEstimatedRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange <secondRange) {

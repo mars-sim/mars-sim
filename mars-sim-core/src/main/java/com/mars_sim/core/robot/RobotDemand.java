@@ -62,7 +62,7 @@ public class RobotDemand {
      */
     public RobotType getBestNewRobot() {
         // What is the current allocation
-        Collection<Robot> currentRobots = target.getRobots();
+        Collection<Robot> currentRobots = target.getAllAssociatedRobots();
         Map<RobotType,Long>  actual = currentRobots.stream()
                 .collect(Collectors.groupingBy(Robot::getRobotType, Collectors.counting()));
 

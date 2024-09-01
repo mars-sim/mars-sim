@@ -16,9 +16,9 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Direction;
 
 /**
  * The DirectionDisplayPanel class displays the compass direction a vehicle is

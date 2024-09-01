@@ -18,8 +18,8 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Charge task will replenish a robot's battery.
@@ -78,7 +78,7 @@ public class Charge extends Task {
 		
 			if (station != null) {
 				
-				canWalk = walkToRoboticStation(robot, station, true);
+				canWalk = walkToRoboticStation(station, true);
 			}
 			
 			// Future : walk to a nearby building with robotic station even if the station is full
@@ -91,8 +91,8 @@ public class Charge extends Task {
 			
 			isWirelessCharge = true;
 			
-			logger.info(robot, 60_000L, "Switching to wireless charging in "
-					+ robot.getBuildingLocation() + ".");
+//			logger.info(robot, 60_000L, "Switching to wireless charging in "
+//					+ robot.getBuildingLocation() + ".");
 			
 			setDescription(WIRELESS_CHARGING);
 		}
@@ -110,7 +110,7 @@ public class Charge extends Task {
 	 * @param allowFail
 	 * @return
 	 */
-	protected boolean walkToRoboticStation(Robot robot, RoboticStation station, boolean allowFail) {
+	protected boolean walkToRoboticStation(RoboticStation station, boolean allowFail) {
 		// Set the description
 		setDescription(WALKING);
 		
@@ -230,19 +230,8 @@ public class Charge extends Task {
 			}
 			
 			else {
-				
-				if (occupiedStation != null) {
-					deliverPower(sc, occupiedStation, batteryLevel, time, 
+				deliverPower(sc, occupiedStation, batteryLevel, time, 
 							REGULAR_CHARGING, RoboticStation.CHARGE_RATE);	
-				}
-
-				else {
-					logger.warning(robot, "No station found for regular charging.");
-					
-					endCharging();
-					
-					return 0;
-				}
 			}
 		}
 		

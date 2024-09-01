@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Represents a specification of a Building Function in a generic fashion.

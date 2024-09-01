@@ -3,9 +3,9 @@ package com.mars_sim.core.structure.building;
 import java.util.Map;
 
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.BoundedObject;
 
 @SuppressWarnings("serial")
 public class MockBuilding extends Building {

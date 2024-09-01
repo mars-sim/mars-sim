@@ -8,20 +8,25 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.batik.gvt.GraphicsNode;
+
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.structure.building.function.LifeSupport;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import io.github.parubok.text.multiline.MultilineLabel;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing
@@ -31,6 +36,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelGeneral extends BuildingFunctionPanel {
 
 	private static final String ID_ICON = "info";
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	private JLabel airMassLabel;
 	
 	/**
 	 * Constructor.
@@ -63,29 +72,59 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		svgPanel.add(svgLabel);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		addBorder(labelPanel, "Description");
+		var label = new MultilineLabel();
+		labelPanel.add(label);
+		String text = building.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
+		label.setText(text);
+		label.setPreferredWidthLimit(430);
+		label.setLineSpacing(1.2f);
+		label.setMaxLines(30);
+		label.setBorder(new EmptyBorder(5, 5, 5, 5));
+		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
+		topPanel.add(labelPanel, BorderLayout.CENTER);
+		
 		// Prepare spring layout info panel.
 		AttributePanel infoPanel = new AttributePanel(8);
-		topPanel.add(infoPanel, BorderLayout.CENTER);
+		topPanel.add(infoPanel, BorderLayout.SOUTH);
 
 		infoPanel.addRow("Building Type", building.getBuildingType());
 		infoPanel.addRow("Category", building.getCategory().getName());
 		infoPanel.addRow("Construction", building.getConstruction().name());
 
 		// Prepare dimension label
-		infoPanel.addTextField("Position", building.getPosition().getShortFormat(), 
+		infoPanel.addRow("Position", building.getPosition().getShortFormat(), 
 				"The center x and y coordinates of this building, according to the Settlement Map");
-		infoPanel.addTextField("Dimension", building.getLength() + " m x " + building.getWidth() 
+		infoPanel.addRow("Dimension", building.getLength() + " m x " + building.getWidth() 
 			+ " m x 2.5 m", "Length x Width x Height");
-		infoPanel.addTextField("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
+		infoPanel.addRow("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
 				"The floor area in square meters");
 		
 		// Prepare mass label
-		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(building.getBaseMass()), 
+		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(building.getBaseMass()), 
 				"The base mass of this building");
 		
 		// Prepare air mass label
-		infoPanel.addTextField("Air Mass", StyleManager.DECIMAL_KG.format(
-				building.getLifeSupport().getAir().getTotalMass()),
-				"The mass of the air in kg");
+		LifeSupport ls = building.getLifeSupport();
+		if (ls != null)
+			airMassLabel = infoPanel.addRow("Air Mass", StyleManager.DECIMAL_KG2.format(
+				ls.getAir().getTotalMass()), "The mass of the air in kg");
+		else
+			airMassLabel = infoPanel.addRow("Air Mass", 0 + "", "The mass of the air in kg");
+	}
+	
+	/**
+	 * Updates this panel with latest values.
+	 */
+	@Override
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
+		LifeSupport ls = building.getLifeSupport();
+		if (ls != null)
+			airMassLabel.setText(StyleManager.DECIMAL_KG2.format(
+				ls.getAir().getTotalMass()));
 	}
 }

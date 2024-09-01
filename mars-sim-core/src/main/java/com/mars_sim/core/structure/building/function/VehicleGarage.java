@@ -8,10 +8,10 @@ package com.mars_sim.core.structure.building.function;
 
 import java.util.Iterator;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.FunctionSpec;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * The VehicleGarage class is a building function for parking vehicles 

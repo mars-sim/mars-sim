@@ -38,7 +38,11 @@ public class VehicleUnitWindow extends UnitWindow {
 	 */
 	public VehicleUnitWindow(MainDesktopPane desktop, Vehicle vehicle) {
 		// Use UnitWindow constructor
-		super(desktop, vehicle, vehicle.getAssociatedSettlement().getName() + " - " + vehicle.getName(), true);
+		super(desktop, vehicle,  vehicle.getName() 
+				+ " [" + vehicle.getVehicleType().getName() + "]"
+				+ " of " + vehicle.getAssociatedSettlement()
+				+ " (" + (vehicle.getLocationStateType().getName()) + ")"
+				, true);
 		this.vehicle = vehicle;
 		
 		if (vehicle instanceof Crewable crewableVehicle) {
@@ -88,6 +92,13 @@ public class VehicleUnitWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
+		
+		String title = vehicle.getName() 
+				+ " [" + vehicle.getVehicleType().getName() + "]"
+				+ " of " + vehicle.getAssociatedSettlement()
+				+ " (" + (vehicle.getLocationStateType().getName()) + ")";
+		super.setTitle(title);
+		
 		// Check if equipment has been salvaged.
 		if (!salvaged && vehicle.isSalvaged()) {
 			addTabPanel(new SalvageTabPanel(vehicle, desktop));

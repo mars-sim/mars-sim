@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Connection;
 import com.mars_sim.core.person.Person;
@@ -19,9 +20,9 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The ConnectOnline class is a task of connecting online.
@@ -98,7 +99,11 @@ public class ConnectOnline extends Task {
 			return;
 		}
 
-		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
+		int now = getMarsTime().getMillisolInt();
+		
+		this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.LOW, now, getDuration(), NAME);
+   
+		compute.pickSingleNode(0, now);
 		
 		// Note: this task can be done in principle anywhere using tablets and handheld device
 		// but preferably it will look for a suitable location first
@@ -137,7 +142,7 @@ public class ConnectOnline extends Task {
 			return time;
 		}
 		
-		compute.consumeProcessing(time, getMarsTime());
+		compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
 
         // Add experience
         addExperience(time);

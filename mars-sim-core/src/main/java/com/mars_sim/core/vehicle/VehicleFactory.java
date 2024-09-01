@@ -14,7 +14,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Static class to create Vehicles
@@ -30,9 +30,10 @@ public final class VehicleFactory {
     }
     
     /**
-     * Build a new Vehicle for a vehicle specification at a particular Settlement.
+     * Builds a new Vehicle for a vehicle specification at a particular settlement.
+     * 
      * @param unitMgr Owning manager of Units
-     * @param owner Owning Settlemetn fo the new Vehicle
+     * @param owner Owning settlement for the new Vehicle
      * @param specName Specification to create.
      * @return
      */
@@ -47,7 +48,7 @@ public final class VehicleFactory {
 			case LUV:
             	vehicle = new LightUtilityVehicle(name, spec, owner);
 				break;
-			case DELIVERY_DRONE:
+			case DELIVERY_DRONE, CARGO_DRONE:
            		vehicle = new Drone(name, spec, owner);
 				break;
 			case EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER:
@@ -64,7 +65,8 @@ public final class VehicleFactory {
     }
 
 	/**
-	 * Generate a new name for the Vehicle; potentially this may be a preconfigured name
+	 * Generates a new name for the Vehicle; potentially this may be a preconfigured name.
+	 * 
 	 * or an auto-generated one.
 	 * @param type
 	 * @param sponsor Sponsor.
@@ -78,7 +80,10 @@ public final class VehicleFactory {
 			baseName = "LUV";
 		}
 		else if (type == VehicleType.DELIVERY_DRONE) {
-			baseName = "Drone";
+			baseName = "D-Drone";
+		}
+		else if (type == VehicleType.CARGO_DRONE) {
+			baseName = "C-Drone";
 		}
 		else {
 			List<String> possibleNames = sponsor.getVehicleNames();

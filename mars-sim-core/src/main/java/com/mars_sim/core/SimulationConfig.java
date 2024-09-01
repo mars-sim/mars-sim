@@ -27,6 +27,7 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionConfig;
 import com.mars_sim.core.manufacture.ManufactureConfig;
+import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.quotation.QuotationConfig;
@@ -45,7 +46,6 @@ import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.ResourceCache;
 import com.mars_sim.core.vehicle.VehicleConfig;
-import com.mars_sim.mapdata.common.FileLocator;
 
 /**
  * Loads the simulation configuration XML files as DOM documents. Provides

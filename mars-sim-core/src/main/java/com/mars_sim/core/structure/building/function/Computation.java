@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.computing.ComputingTask;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -30,16 +29,24 @@ public class Computation extends Function {
 	private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
 	
 	// Configuration properties
-	private static final double ENTROPY_FACTOR = .001;
+	public static final double ENTROPY_FACTOR = .001;
+	
 	/** 
-	 * The average efficiency of power usage. e.g. 30% power is for computation 
+	 * The average overall efficiency of power usage. e.g. 30% power is for computation 
 	 * and data processing. 70% of power generates for cooling and ventilation.
 	 */
 	private static final double AVERAGE_POWER_EFFICIENCY = .3;
+	
 	/**
 	 * The power demand fraction for each non-load CU [in kW/CU] out of the full load power demand. 
 	 */
 	private static final double NON_LOAD_POWER_USAGE = .15;
+	
+	/**
+	 * The percent of cooling power load for each non-load CU [in kW/CU]. 
+	 */
+	private static final double COOLING_PERCENT = 20;
+	
 	/**
 	 * The fraction of cooling demand to be dissipated as heat [kW]. 
 	 */
@@ -52,15 +59,23 @@ public class Computation extends Function {
 	private final double maxEntropy;
 	/** The highest possible available amount of computing resources [in CUs]. */
 	private final double peakCU;
+	/** The initial power load in kW for each running CU [in kW/CU]. */
+	private final double initialPowerDemand;
 	
+	/** The previous msol. */
+	private int previousMSol;
+	/** The instant cooling load in the system. */
+	private double instantCoolingLoad;
+	/** The amount of heat generated in the system. */
+	private double instantHeatGen;
 	/** The amount of entropy in the system. */
 	private double entropy;
-	/** The amount of computing resources capacity currently available [in CUs]. */
-	private double currentCU;
+	/** The amount of computing resources capacity currently freely available [in CUs]. */
+	private double freeCU;
 	/** 
-	 * The current efficiency of power usage for data center. 
-	 * Use AVERAGE_POWER_EFFICIENCY as the starting figure. 
-	 * As improvements are made, efficiency will go higher. 
+	 * The current overall efficiency of power usage for data center. 
+	 * Notes: Use AVERAGE_POWER_EFFICIENCY as the starting figure. 
+	 * As improvements are made, this overall power efficiency will go higher. 
 	 */
 	private double powerEfficiency;
 	/** The power load in kW for each running CU [in kW/CU]. */
@@ -71,8 +86,9 @@ public class Computation extends Function {
 	private double combinedLoadkW;
 	/** The power demand for each non-load CU [in kW/CU] - Assume 10% of full load. */
 	private double nonLoadkW;
-	/** The schedule demand [in CUs] for the current mission sol. */
-	private Map<Integer, Double> todayDemand;
+	
+	/** The schedule demand [in CUs] for each integer msol. */
+	private Map<Integer, Double> msolDemand;
 
 	/**
 	 * Constructor.
@@ -86,19 +102,24 @@ public class Computation extends Function {
 		super(FunctionType.COMPUTATION, spec, bldg);
 		
 		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
+		
 		maxEntropy = peakCU;
 		
-		currentCU = peakCU; 
+		freeCU = peakCU; 
 		
 		powerEfficiency = AVERAGE_POWER_EFFICIENCY;
+		
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND) * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
-		coolingDemand = powerDemand * (1 - powerEfficiency);	
+		
+		initialPowerDemand = powerDemand;
+		
+		coolingDemand = powerDemand * COOLING_PERCENT / 100;	
 	
 		combinedLoadkW = coolingDemand + powerDemand;
 		// Assume 15% of full load
 		nonLoadkW = NON_LOAD_POWER_USAGE * combinedLoadkW;
 		
-		todayDemand = new HashMap<>();
+		msolDemand = new HashMap<>();
 	}
 
 	/**
@@ -135,15 +156,30 @@ public class Computation extends Function {
 	}
 
 	/**
-	 * Sets the power efficiency.
+	 * Sets the power efficiency
 	 * 
 	 * @param value
 	 */
 	public void setPowerEfficiency(double value) {
 		this.powerEfficiency = value;
-		// Recompute the new power demand and cooling demand
-		powerDemand = powerDemand * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
-		coolingDemand = powerDemand * (1 - powerEfficiency);
+		// Recompute the power demand and cooling demand
+		resetDemands();
+	}
+	
+	/**
+	 * Resets the power and cooling demand.
+	 * 
+	 * @param value
+	 */
+	public void resetDemands() {
+		// Recompute the power demand
+		powerDemand = initialPowerDemand * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
+		// Recompute the cooling demand
+		coolingDemand = powerDemand * COOLING_PERCENT / 100;
+		
+		combinedLoadkW = coolingDemand + powerDemand;
+		// Assume 15% of full load
+		nonLoadkW = NON_LOAD_POWER_USAGE * combinedLoadkW;
 	}
 	
 	/**
@@ -152,7 +188,7 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public double getCurrentCU() {
-		return currentCU;
+		return freeCU;
 	}
 
 	/**
@@ -191,18 +227,18 @@ public class Computation extends Function {
 		return coolingDemand;
 	}
 
-	/**
-	 * Schedules for a computing tasks.
-	 * 
-	 * @param computingTask
-	 * @return
-	 */
-	public boolean scheduleTask(ComputingTask computingTask) {
-		double demand = computingTask.getComputingPower();
-		int beginningMSol = computingTask.getStartTime();
-		int endMSol = beginningMSol + computingTask.getDuration();
-		return scheduleTask(demand, beginningMSol, endMSol);
-	}
+//	/**
+//	 * Schedules for a computing tasks.
+//	 * 
+//	 * @param computingTask
+//	 * @return
+//	 */
+//	public boolean scheduleTask(ComputingTask computingTask) {
+//		double demand = computingTask.getComputingPower();
+//		int beginningMSol = computingTask.getStartTime();
+//		int endMSol = beginningMSol + computingTask.getDuration();
+//		return scheduleTask(demand, beginningMSol, endMSol);
+//	}
 	
 	/**
 	 * Schedules for a computing task.
@@ -219,40 +255,61 @@ public class Computation extends Function {
 		if (duration < 0)
 			duration = endMSol + 1000 - beginningMSol;
 
-		// Test to see if the assigned duration has enough resources
+		// Test to see if the assigned duration has enough resources on each integer msol
 		for (int i = 0; i < duration; i++) {
-			int sol = i + beginningMSol;
-			if (sol > 999) {
-				sol = sol - 1000;
+			int msolInt = i + beginningMSol;
+			if (msolInt > 999) {
+				msolInt = msolInt - 1000;
 			}
-			if (todayDemand.containsKey(sol)) {
-				existing = todayDemand.get(sol);
+			if (msolDemand.containsKey(msolInt)) {
+				existing = msolDemand.get(msolInt);
 			}
+			
+			double peak105Percent = 1.05 * peakCU;
 			// Need to make sure each msol has enough resources
-			double available = peakCU - existing - needed;
-			if (available < 0) {
-				logger.info(getBuilding(), 30_000L, "peakCU: " + Math.round(peakCU * 100.0)/100.0
-						+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-						+ "  need: " + Math.round(needed * 1000.0)/1000.0
-						+ "  av: " + Math.round(available * 1000.0)/1000.0);
+			double newLoad = existing + needed / duration;
+			
+			double over105 = peak105Percent - newLoad;
+			
+			double overZero = peakCU - newLoad;
+			
+			// May allow the load to go above 100%
+			if (over105 < 0) {
+				/*
+				 *  Do NOT delete. For debugging.
+				 */  
+				 	logger.info(getBuilding(), 30_000, "2. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+				 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
+				 
 				
 				return false;
+			} 
+			
+			else if (overZero < 0) {	
+				/*
+				 *  Do NOT delete. For debugging.
+				 */ 
+				 	logger.info(getBuilding(), 30_000, "2. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+				 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
+				 
+				// It is allowed to go beyond within 5%
 			}
 		}
 
 		// Now the actual scheduling
 		for (int i = 0; i < duration; i++) {
-			int sol = i + beginningMSol;
-			if (sol > 999) {
-				sol = sol - 1000;
+			int msolInt = i + beginningMSol;
+			if (msolInt > 999) {
+				msolInt = msolInt - 1000;
 			}
-			if (todayDemand.containsKey(sol)) {
-				existing = todayDemand.get(sol);
+			if (msolDemand.containsKey(msolInt)) {
+				existing = msolDemand.get(msolInt);
 			}
-			todayDemand.put(sol, existing + needed);
-			
-			// Increase the entropy
-			increaseEntropy(needed * ENTROPY_FACTOR);
+			msolDemand.put(msolInt, existing + needed / duration);
 		}
 
 		return true;
@@ -274,31 +331,57 @@ public class Computation extends Function {
 		if (duration < 0)
 			duration = endMSol + 1000 - beginningMSol;
 		
-		// Test to see if the assigned duration has enough resources
+		// Test to see if the assigned duration has enough resources on each integer msol
 		for (int i = 0; i < duration; i++) {
-			int sol = i + beginningMSol;
-			if (sol > 999) {
-				sol = sol - 1000;
+			int msolInt = i + beginningMSol;
+			if (msolInt > 999) {
+				msolInt = msolInt - 1000;
 			}
-			if (todayDemand.containsKey(sol)) {
-				existing = todayDemand.get(sol);
-			}
-			// Need to make sure each msol has enough resources
-			double available = peakCU - existing - needed;
-			if (available < 0) {
-				logger.info(getBuilding(), 30_000L, "peakCU: " + Math.round(peakCU * 100.0)/100.0
-						+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-						+ "  need: " + Math.round(needed * 1000.0)/1000.0
-						+ "  av: " + Math.round(available * 1000.0)/1000.0);
-				
-				return 0;
+			if (msolDemand.containsKey(msolInt)) {
+				existing = msolDemand.get(msolInt);
 			}
 			
-			score += available;
+			double peak105Percent = 1.05 * peakCU;
+			// Need to make sure each msol has enough resources
+			double newLoad = existing + needed / duration;
+			
+			double over105 = peak105Percent - newLoad;
+			
+			double overZero = peakCU - newLoad;
+			
+			// May allow the load to go above 100%
+			if (over105 < 0) {
+
+			/*
+			 *  Do NOT delete. For debugging.
+			 */  
+			 	logger.info(getBuilding(), 30_000, "1. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+			 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+			 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
+			 
+				return 0;
+			} 
+			
+			else if (overZero < 0) {
+			/*
+			 *  Do NOT delete. For debugging.
+			 */ 
+			 	logger.info(getBuilding(), 30_000, "1. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+						+ "  need: " + Math.round(needed * 1000.0)/1000.0
+			 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
+			 
+				// It is allowed to go beyond within 5%
+			}
+				
+			score += overZero;
 		}
 		
 		score = score * getEntropyPenalty();
 		
+//		logger.info(getBuilding(), 30_000, "score: " + score);
+				
 		return score;
 	}
 	
@@ -309,9 +392,26 @@ public class Computation extends Function {
 	 */
 	public void setCU(double value) {
 		double cu = Math.round(value * 100_000.0) / 100_000.0;
-		if (currentCU != cu) {
-			currentCU = cu;
+		if (freeCU != cu) {
+			freeCU = cu;
 			building.getSettlement().fireUnitUpdate(UnitEventType.CONSUMING_COMPUTING_EVENT);
+		}
+	}
+	
+	/**
+	 * Clears the CUs demand on previous integer msol.
+	 * 
+	 * @param msol
+	 */
+	public void clearOldDemand(int previous, int now) {
+		
+		// Future: give players the choice to keep the demand log or to clear it
+
+		for (int i = now - 1; i >= previous; i--) {
+			// Delete past demand on previous msol
+			if (msolDemand.containsKey(i)) {
+				msolDemand.remove(i);
+			}
 		}
 	}
 	
@@ -327,25 +427,20 @@ public class Computation extends Function {
 	
 			if (pulse.isNewIntMillisol()) {
 				
-				increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR * currentCU / 10);
+				increaseEntropy(ENTROPY_FACTOR * (1 + pulse.getElapsed() * (peakCU - freeCU) / 50));
 	
 				double newDemand = 0;
 				int msol = pulse.getMarsTime().getMillisolInt();
-				
-				// Note: give players the choice to keep the demand log or to clear it
-				
-				// Delete past demand on previous sol
-				if (msol - 1 > 0 && todayDemand.containsKey(msol - 1)) {
-					todayDemand.remove(msol - 1);
-				}
-				// Delete past demand on the sol before yestersol 
-				if (msol - 2 > 0 && todayDemand.containsKey(msol - 2)) {
-					todayDemand.remove(msol - 2);
+		
+				if (msolDemand.containsKey(msol)) {
+					newDemand = msolDemand.get(msol);
 				}
 				
-				if (todayDemand.containsKey(msol)) {
-					newDemand = todayDemand.get(msol);
-				}
+				// Clear the old load demand in this center
+				clearOldDemand(previousMSol, msol);
+				// Update previousMSol  
+				previousMSol = msol;
+				
 				if (newDemand > 0) {
 					// Updates the CUs
 					setCU(peakCU - newDemand); 
@@ -356,21 +451,39 @@ public class Computation extends Function {
 				
 				// e.g. at 30% eff, if power = 0.3 kW, cooling = 0.7 kW. total power req = 1 kW.
 				
-				double power = getPowerRequired();
-			
-				double cooling = power / AVERAGE_POWER_EFFICIENCY * (1 - AVERAGE_POWER_EFFICIENCY);
+				double instantPower = getCombinedPowerLoad();
 				
-//				double totalPower = power + cooling;
+				instantCoolingLoad = instantPower * COOLING_PERCENT / 100;
 				
-				double heat = cooling * WASTE_HEAT_FRACTION;
+				instantHeatGen = instantCoolingLoad * WASTE_HEAT_FRACTION;
 				// Dump the generated heat into the building to raise the room temperature
-				dumpExcessHeat(heat);
-
-//				logger.info(building, 30_000, "Actual power used: " + Math.round(totalPower * 100.0)/100.0 + " kW."
-//						+ "  heat dissipated: " + Math.round(heat * 100.0)/100.0 + " kW.");
+				dumpExcessHeat(instantHeatGen);
+			}
+			
+			if (pulse.isNewHalfSol()) {
+				// Auto optimization
+				reduceEntropy(entropy/5);
 			}
 		}
 		return valid;
+	}
+	
+	/**
+	 * Returns the heat generated.
+	 * 
+	 * @return
+	 */
+	public double getInstantHeatGenerated() {
+		return instantHeatGen;
+	}
+	
+	/**
+	 * Returns the instant cooling load.
+	 * 
+	 * @return
+	 */
+	public double getInstantCoolingLoad() {
+		return instantCoolingLoad;
 	}
 	
 	/**
@@ -379,7 +492,7 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public double getUsagePercent() {
-		return (peakCU - currentCU)/peakCU * 100.0;
+		return (peakCU - freeCU)/peakCU * 100.0;
 	}	
 	
 	/**
@@ -449,23 +562,23 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public double getEntropyPerCU() {
-		return entropy/currentCU;
+		return entropy / peakCU;
 	}
-	
+
 	/**
 	 * Gets the amount of power required, based on the current load.
 	 *
 	 * @return power (kW) default zero
 	 */
 	@Override
-	public double getPowerRequired() {
-		double load = currentCU / peakCU;
-		double nonLoad = (peakCU - currentCU) / peakCU;
+	public double getCombinedPowerLoad() {
+		double loadFraction = (peakCU - freeCU) / peakCU;
+		double nonLoadFraction = 1 - loadFraction;
 		
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
 		
-		return load * combinedLoadkW + nonLoad * nonLoadkW;
+		return loadFraction * combinedLoadkW + nonLoadFraction * nonLoadkW;
 	}
 	
 	/**
@@ -473,20 +586,20 @@ public class Computation extends Function {
 	 *
 	 * @return power 
 	 */
-	public double[] getPowerLoadNonLoad() {
-		double load = currentCU / peakCU;
-		double nonLoad = (peakCU - currentCU) / peakCU;
+	public double[] getSeparatePowerLoadNonLoad() {
+		double loadFraction = (peakCU - freeCU) / peakCU;
+		double nonLoadFraction = 1 - loadFraction;
 		
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
 		
-		return new double[] {load * combinedLoadkW, nonLoad * nonLoadkW};
+		return new double[] {loadFraction * combinedLoadkW, nonLoadFraction * nonLoadkW};
 	}
 	
 	@Override
 	public void destroy() {
-		todayDemand.clear();
-		todayDemand = null;
+		msolDemand.clear();
+		msolDemand = null;
 		super.destroy();
 	}
 

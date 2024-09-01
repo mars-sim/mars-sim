@@ -9,7 +9,7 @@ package com.mars_sim.core.environment;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * MarsSurface is the object unit that represents the surface of Mars

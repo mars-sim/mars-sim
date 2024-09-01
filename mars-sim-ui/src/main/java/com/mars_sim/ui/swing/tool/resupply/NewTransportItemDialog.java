@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -80,11 +78,9 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		typeBox.addItem(RESUPPLY_MISSION);
 		typeBox.addItem(ARRIVING_SETTLEMENT);
 		typeBox.setSelectedItem(DEFAULT_MESSAGE);
-		typeBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JComboBox<?> cb = (JComboBox<?>) evt.getSource();
+		typeBox.addActionListener(e -> {
+				JComboBox<?> cb = (JComboBox<?>) e.getSource();
 				setEditingPanel((String) cb.getSelectedItem());
-			}
 		});
 		transportTypePanel.add(typeBox);
 
@@ -112,25 +108,19 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
 		// Create create button.
 		createButton = new JButton("Create");
-		createButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		createButton.addActionListener(e ->
 				// Create transport item and close dialog.
-				createTransportItem();
-			}
-		});
+				createTransportItem());
 		createButton.setEnabled(false);
 		buttonPane.add(createButton);
 
 		// Create cancel button.
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		cancelButton.addActionListener(e -> 
 				// Close dialog.
-				dispose();
+				dispose()
 				//resupplyWindow.setRunning(false);
-			}
-
-		});
+		);
 		buttonPane.add(cancelButton);
 
         // Add to its own tab pane

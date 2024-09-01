@@ -27,11 +27,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
+import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -46,7 +49,7 @@ extends WizardPanel
 implements ActionListener {
 
 	/** The wizard panel name. */
-	private final static String NAME = "Settlers";
+	private static final String NAME = "Settlers";
 
 	// Data members.
 	private PeopleTableModel peopleTableModel;
@@ -60,13 +63,14 @@ implements ActionListener {
 	
 	private JButton addButton;
 	private JButton removeButton;
+	private JButton skipButton;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param wizard the create mission wizard
 	 */
-	MembersPanel(CreateMissionWizard wizard) {
+	public MembersPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor
 		super(wizard);
 
@@ -80,8 +84,11 @@ implements ActionListener {
 		JLabel selectMembersLabel = createTitleLabel("Select members for the mission.");
 		add(selectMembersLabel);
 
+		// Add an empty row
+		add(new JLabel("     "));
+		
 		// Create the available people label.
-		JLabel availablePeopleLabel = new JLabel("Available People", JLabel.CENTER);
+		JLabel availablePeopleLabel = new JLabel("Available People", SwingConstants.CENTER);
 		availablePeopleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(availablePeopleLabel);
 
@@ -157,14 +164,14 @@ implements ActionListener {
 					public void mouseEntered(MouseEvent e) {}
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2 && !e.isConsumed()) {
-							// Q: What is calling addButtonClicked for ?
-							//addButtonClicked();
+
+							addButtonClicked();
+							 
 							int[] selectedRows = peopleTable.getSelectedRows();
 							if (selectedRows.length > 0) {
 								for (int selectedRow : selectedRows)  {
 									Person person = (Person) peopleTableModel.getUnit(selectedRow);
 									getDesktop().showDetails(person);
-									break;
 								}
 							}
 						}
@@ -206,6 +213,13 @@ implements ActionListener {
 		});
 		buttonPane.add(removeButton);
 
+		skipButton = new JButton("Skip");
+		skipButton.setEnabled(true);
+		skipButton.addActionListener(e -> {
+			wizard.buttonClickedNext();
+		});
+		buttonPane.add(skipButton);
+		
 		// Add a vertical strut to make UI space.
 		add(Box.createVerticalStrut(10));
 
@@ -269,14 +283,27 @@ implements ActionListener {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
-	 * @retun true if changes can be committed.
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		Collection<Worker> members = new ConcurrentLinkedQueue<>();
-		for (int x = 0; x < membersTableModel.getRowCount(); x++) {
+		int size = membersTableModel.getRowCount();
+//		if (size == 0) {
+//			int size1 = getWizard().getMissionData().getMixedMembers().size();
+//			if (size1 == 0) {
+//				return false;
+//			}
+//		}
+		for (int x = 0; x < size; x++) {
 			members.add((Worker) membersTableModel.getUnit(x));
 		}
-		getWizard().getMissionData().addMixedMembers(members);			
+//		if (!isTesting) {
+			// Use setMixedMembers here, not addMixedMembers
+			getWizard().getMissionData().setMixedMembers(members);
+//			return true;
+//		}	
 		return true;
 	}
 
@@ -312,10 +339,10 @@ implements ActionListener {
 		else {
 			
 			if (MissionType.DELIVERY == type) {
-				vehicleCapacityLabel.setText("Remaining drone capacity: " + getRemainingVehicleCapacity());
+				vehicleCapacityLabel.setText("Remaining Drone Capacity: " + getRemainingVehicleCapacity());
 			}
 			else {
-				vehicleCapacityLabel.setText("Remaining rover capacity: " + getRemainingVehicleCapacity());
+				vehicleCapacityLabel.setText("Remaining Rover Capacity: " + getRemainingVehicleCapacity());
 			}
 		}
 	}
@@ -331,7 +358,7 @@ implements ActionListener {
 		else if (MissionType.SALVAGE == type) return Integer.MAX_VALUE;
 		else {
 			if (MissionType.DELIVERY == type) {
-				return 1;
+				return Delivery.MAX_MEMBERS;
 			}
 			else {
 				int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
@@ -393,7 +420,7 @@ implements ActionListener {
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
 					else if (column == 5)
-						result = person.getPhysicalCondition().getHealthSituation();
+						result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 				}
 				catch (Exception e) {}
 			}
@@ -521,7 +548,7 @@ implements ActionListener {
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
 					else if (column == 5)
-						result = person.getPhysicalCondition().getHealthSituation();
+					result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 				}
 				catch (Exception e) {}
 			}
@@ -594,7 +621,7 @@ implements ActionListener {
 		int[] selectedRows = peopleTable.getSelectedRows();
 		Collection<Person> people = new ConcurrentLinkedQueue<>();
 		for (int selectedRow : selectedRows) 
-			people.add((Person) peopleTableModel.getUnit(selectedRow));
+			people.add((Person)peopleTableModel.getUnit(selectedRow));
 		peopleTableModel.removePeople(people);
 		membersTableModel.addPeople(people);
 		updateVehicleCapacityLabel();

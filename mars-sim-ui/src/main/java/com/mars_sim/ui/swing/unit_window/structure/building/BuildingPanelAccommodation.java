@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.mars_sim.core.structure.building.function.LivingAccommodation;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -33,6 +33,9 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 
 	private static final String BED_ICON = "bed";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int bedCapCache;
 	private int bedOccupiedCache;
 
@@ -112,6 +115,9 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		// Update bedCapLabel
 		if (bedCapCache != living.getBedCap()) {
 			bedCapCache = living.getBedCap();

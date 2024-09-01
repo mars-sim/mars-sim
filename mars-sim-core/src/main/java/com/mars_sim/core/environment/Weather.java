@@ -20,12 +20,12 @@ import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.MSolDataItem;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /** This class represents the weather properties on Mars. */
 public class Weather implements Serializable, Temporal {
@@ -139,17 +139,17 @@ public class Weather implements Serializable, Temporal {
 	 * @return air density in g/m3.
 	 */
 	public double computeAirDensity(Coordinates location) {
-		// The air density is derived from the equation of state : d = p / .1921 / (t +
-		// 273.1)
-		double result = 1000D * getAirPressure(location)
+		// The air density is derived from the equation of state : 
+		// d = p / .1921 / (t + 273.1)
+		// Multiply by 1000 to convert from kg/m3 to g/m3
+		return 1000D * getAirPressure(location)
 				/ (.1921 * (getTemperature(location) + AirComposition.C_TO_K));
-		return Math.round(result * 100.0) / 100.0;
 	}
 
 	/**
 	 * Gets the air density at a given location.
 	 * 
-	 * @return air density in kg/m3.
+	 * @return air density in g/m3.
 	 */
 	public double getAirDensity(Coordinates location) {
 		return computeAirDensity(location);
@@ -228,8 +228,7 @@ public class Weather implements Serializable, Temporal {
 				newSpeed = stormSpeed;
 			}
 			
-			else { // not a new sol, no need to check for dust storm
-				
+			else { 
 				int msol = clock.getMarsTime().getMillisolInt();
 				
 				// the value of optical depth doesn't need to be refreshed too often
@@ -736,15 +735,18 @@ public class Weather implements Serializable, Temporal {
 			}			
 		}
 
-		if (pulse.isNewSol()) {
-			// Calculate the new sun data for each location based on yestersol
-			coordinateList.forEach(this::calculateSunRecord);
-					
+		if (pulse.isNewHalfSol()) {
+
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(-.01, .01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
 			else if (dailyVariationAirPressure < -.05)
 				dailyVariationAirPressure = -.05;
+		}
+		
+		if (pulse.isNewSol()) {
+			// Calculate the new sun data for each location based on yestersol
+			coordinateList.forEach(this::calculateSunRecord);
 		}
 		
 		return true;
@@ -903,7 +905,7 @@ public class Weather implements Serializable, Temporal {
 		dustStorms.add(ds);
 		s.setDustStorm(ds);
 		newStormID++;
-//		logger.info(s, ds.getName() + " (type " + stormType.getName() + ") was on the radar.");
+		logger.info(s, 30_000, ds.getName() + " (type " + stormType.getName() + ") was visible on radar.");
 		return ds;
 	}
 
@@ -929,7 +931,7 @@ public class Weather implements Serializable, Temporal {
 						+ " (size " + ds.getSize() + " with wind speed "
 						+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.";
 					s.setDustStormMsg(msg);
-					logger.info(s, msg);
+					logger.info(s, 30_000, msg);
 				}
 			}
 		}

@@ -133,17 +133,29 @@ public class Kit extends Equipment
 	 *
 	 * @param obj
 	 */
-	public boolean equals(Kit obj) {
+	@Override
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (this.getClass() != obj.getClass())
 			return false;
-		return this.kitName.equalsIgnoreCase(obj.getKitName())
-			&& this.getIdentifier() == obj.getIdentifier();
+		return this.kitName.equalsIgnoreCase(((Kit)obj).getKitName())
+			&& this.getIdentifier() == ((Kit)obj).getIdentifier();
 	}
 
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		int hashCode = getIdentifier();
+		return hashCode % 32;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

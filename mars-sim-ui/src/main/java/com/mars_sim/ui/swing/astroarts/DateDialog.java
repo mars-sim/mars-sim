@@ -13,8 +13,6 @@ package com.mars_sim.ui.swing.astroarts;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -117,8 +115,7 @@ public class DateDialog extends ModalInternalFrame {
 		buttonSimDate = new JRadioButton("Simulation Date");
 		buttonSimDate.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(buttonSimDate);
-		buttonSimDate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		buttonSimDate.addActionListener(e -> {
 				LocalDateTime earthTime = viewer.getDesktop().getSimulation().getMasterClock().getEarthTime();
 				monthCB.setSelectedIndex(earthTime.getMonthValue() - 1);
 				tfDate.setText(Integer.toString(earthTime.getDayOfMonth()));
@@ -126,7 +123,6 @@ public class DateDialog extends ModalInternalFrame {
 
 				viewer.setSelectedDate(1);
 				viewer.repaint();
-			};
 		});
 		
 		if (viewer.getSelectedDate() == 1) {
@@ -138,9 +134,7 @@ public class DateDialog extends ModalInternalFrame {
 		buttonToday = new JRadioButton("Machine Date");
 		buttonToday.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(buttonToday);	
-		buttonToday.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+		buttonToday.addActionListener(e -> {
 				LocalDate currentdate = LocalDate.now();
 				monthCB.setSelectedIndex(currentdate.getMonth().getValue() - 1);
 				tfDate.setText(Integer.toString(currentdate.getDayOfMonth()));
@@ -148,7 +142,6 @@ public class DateDialog extends ModalInternalFrame {
 
 				viewer.setSelectedDate(2);
 				viewer.repaint();
-			};
 		});
 		
 		if (viewer.getSelectedDate() == 2) {
@@ -160,16 +153,13 @@ public class DateDialog extends ModalInternalFrame {
 		button1986 = new JRadioButton("1986 Halley Return");
 		button1986.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(button1986);
-		button1986.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
+		button1986.addActionListener(e -> {
 					monthCB.setSelectedIndex(2);
 					tfDate.setText(9 + "");
 					tfYear.setText(1986 + ""); 
 					
 					viewer.setSelectedDate(3);
     				viewer.repaint();
-    			}
 		});
 
 		if (viewer.getSelectedDate() == 3) {
@@ -182,16 +172,13 @@ public class DateDialog extends ModalInternalFrame {
 		buttonCustom.setBorder(new EmptyBorder(0, 15, 0, 0));
 		buttonCustom.setSelected(true);
 		chooseDatePanel.add(buttonCustom);
-		buttonCustom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
+		buttonCustom.addActionListener(e -> {
 					monthCB.setSelectedIndex(monthCB.getSelectedIndex());
 					tfDate.setText(tfDate.getText());
 					tfYear.setText(tfYear.getText());  
 					
 					viewer.setSelectedDate(4);
     				viewer.repaint();
-    			}
 		});
 		
 		if (viewer.getSelectedDate() == 4) {
@@ -214,11 +201,9 @@ public class DateDialog extends ModalInternalFrame {
 		
 		buttonOk = new JButton("OK");
 		southPanel.add(buttonOk);
-		buttonOk.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-    				ATime atime = null;
-    				JComponent source = (JComponent) evt.getSource();
+		buttonOk.addActionListener(e -> {
+    				ATime at = null;
+    				JComponent source = (JComponent) e.getSource();
 
     		        if (source == buttonOk) {
     					int nYear = Integer.valueOf(tfYear.getText()).intValue();
@@ -227,27 +212,21 @@ public class DateDialog extends ModalInternalFrame {
     					if (1600 <= nYear && nYear <= 2199 &&
     								1 <= nMonth && nMonth <= 12 &&
     								1 <= nDate  && nDate  <= 31) {
-    						atime = new ATime(nYear, nMonth, (double)nDate, 0.0);
+    						at = new ATime(nYear, nMonth, (double)nDate, 0.0);
     					}
     				
     				}
     				dispose();
-    				viewer.endDateDialog(atime);
+    				viewer.endDateDialog(at);
     				viewer.repaint();
     				//return true;
-    			}
 		});
 	
 		//////////////////////////////////////////////////////////
 		
 		buttonCancel = new JButton("CANCEL");
 		southPanel.add(buttonCancel);
-		buttonCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-    				setVisible(false);
-    			}
-		});
+		buttonCancel.addActionListener(e -> setVisible(false));
 	
 		setSize(new Dimension(200, 250));
 		setPreferredSize(new Dimension(200, 250));		

@@ -25,7 +25,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the StudyFieldSamples task.
@@ -80,7 +80,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		var jobScience = TaskUtil.getPersonJobScience(person);
 
 		// Add probability for researcher's primary study (if any).
-		ScientificStudy primaryStudy = person.getStudy();
+		ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
 		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 			&& !primaryStudy.isPrimaryResearchCompleted()
 			&& StudyFieldSamples.FIELD_SCIENCES.contains(primaryStudy.getScience())) {
@@ -99,7 +99,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		}
 	
 	    // Add probability for each study researcher is collaborating on.
-	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
+	    for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
 	        if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
 	            && !collabStudy.isCollaborativeResearchCompleted(person)) {
 	            ScienceType collabScience = collabStudy.getContribution(person);

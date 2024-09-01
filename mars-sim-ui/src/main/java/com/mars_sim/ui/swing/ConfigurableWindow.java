@@ -14,7 +14,7 @@ import java.util.Properties;
 public interface ConfigurableWindow {
 
     /**
-     * Generate the configurable properties of this window
+     * Generates the configurable properties of this window
      */
     public Properties getUIProps();
 

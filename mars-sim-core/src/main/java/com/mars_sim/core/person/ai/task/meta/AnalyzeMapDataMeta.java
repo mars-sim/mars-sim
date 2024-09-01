@@ -1,18 +1,20 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapDataMeta.java
- * @date 2023-07-04
+ * @date 2024-07-23
  * @author Manny Kung
  */
 
 package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -22,8 +24,7 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the AnalyzeMapData task.
@@ -60,7 +61,7 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
     }
     
 	/**
-	 * Gets the list of Analyse map Tasks that this Person can perform all individually scored.
+	 * Gets the list of analyzing map tasks that this Person can perform all individually scored.
 	 * 
 	 * @param person the Person to perform the task.
 	 * @return List of TasksJob specifications.
@@ -70,35 +71,49 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         	
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 80, 1000)
-			|| !person.isInside()) {
+			|| person.isOutside()) {
         	return EMPTY_TASKLIST;
 		}
 		
-		List<Coordinates> coords = person.getAssociatedSettlement()
-				.getNearbyMineralLocations()
+		int unclaimedSites = person.getAssociatedSettlement().numDeclaredLocation(false);
+			
+		Set<Coordinates> nearbySites = person.getAssociatedSettlement()
+				.getNearbyMineralLocations();	
+	
+		int numNearby = nearbySites.size();
+		
+		Set<ExploredLocation> minableLocs = person.getAssociatedSettlement().getDeclaredLocations()
 				.stream()
-				.collect(Collectors.toList());  	
-		
-		int numCoords = coords.size();
-		
-		List<ExploredLocation> siteList = surfaceFeatures
-				.getAllRegionOfInterestLocations().stream()
-				.filter(site -> site.isMinable()
-						&& coords.contains(site.getLocation()))
-				.collect(Collectors.toList());
+				.filter(el -> el != null && el.isMinable())
+				.collect(Collectors.toSet());
 
 		int numUnimproved = 0;
-		for (ExploredLocation el: siteList) {
+		for (ExploredLocation el: minableLocs) {
 			int est = el.getNumEstimationImprovement();
 			numUnimproved += ExploredLocation.IMPROVEMENT_THRESHOLD - est;
 		}
 				
-		int num = siteList.size();
+		int num = minableLocs.size();
 		if (num == 0)
-			return EMPTY_TASKLIST;
+			num = 1;
 		
-		var result = new RatingScore("mapdata.unimproved", VALUE * numUnimproved / num);
-		result.addBase("mapdata.numSites", numCoords * 2D);
+		int numPotential = 100 - numNearby;
+		
+		if (100 - numNearby <= 0) {
+			numPotential = 0;
+		}
+
+		double unclaimedScore = 200D;
+		
+		if (unclaimedSites > 0) {
+			unclaimedScore = unclaimedScore / unclaimedSites * (1.0 + (int)Math.ceil(unclaimedSites / 5D));
+		}
+			
+		var result = new RatingScore("mapdata.unclaimed", unclaimedScore);
+		
+		result.addBase("mapdata.unimproved", VALUE * numUnimproved / num);
+		
+		result.addBase("mapdata.potential", numPotential);
 
 		result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
 

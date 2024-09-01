@@ -1,12 +1,12 @@
 package com.mars_sim.core.science.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
     public void testChefProposal() {
@@ -69,7 +69,7 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
 
         assertNotNull("Propose task created", t);
 
-        var st = p.getStudy();
+        var st = p.getResearchStudy().getStudy();
         assertNotNull("Study created", st);
         assertEquals("Person is primary researcher", p, st.getPrimaryResearcher());
         assertEquals("Science of study", ScienceType.getJobScience(jobType), st.getScience());

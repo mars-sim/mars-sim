@@ -14,11 +14,11 @@ import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.MapMetaData;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
@@ -27,7 +27,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     // Navigator click range in km.
-    private static double VEHICLE_CLICK_RANGE = 40D;
+    private static final double VEHICLE_CLICK_RANGE = 40D;
     
     // Data members
     private Icon blackMapIcon;

@@ -1,12 +1,12 @@
 package com.mars_sim.core.vehicle.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
     public void testCreateTask() {

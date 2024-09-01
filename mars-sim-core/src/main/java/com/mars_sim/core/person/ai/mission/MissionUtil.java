@@ -9,10 +9,10 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.Iterator;
 
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Helper class that provides numerous assessment method for the state of various

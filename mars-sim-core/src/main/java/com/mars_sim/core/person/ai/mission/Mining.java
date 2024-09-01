@@ -33,13 +33,13 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -544,7 +544,7 @@ public class Mining extends EVAMission
 		double bestValue = 0D;
 
 		try {
-			double roverRange = rover.getRange();
+			double roverRange = rover.getEstimatedRange();
 			double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;
@@ -552,7 +552,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
+			for(ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
@@ -586,7 +586,7 @@ public class Mining extends EVAMission
 		double total = 0;
 
 		try {
-			double roverRange = rover.getRange();
+			double roverRange = rover.getEstimatedRange();
 			double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;
@@ -594,7 +594,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for (ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
+			for (ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature

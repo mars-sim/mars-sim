@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -34,9 +35,9 @@ import javax.swing.table.TableCellRenderer;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
@@ -142,7 +143,7 @@ public class MiningSitePanel extends WizardPanel {
 		centerPane.add(selectedSitePane, BorderLayout.CENTER);
 
 		// Create selected site label.
-		JLabel selectedSiteLabel = new JLabel(" At the Selected Mining Site", JLabel.CENTER);
+		JLabel selectedSiteLabel = new JLabel(" At the Selected Mining Site", SwingConstants.CENTER);
 		StyleManager.applySubHeading(selectedSiteLabel);
 		selectedSiteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(selectedSiteLabel);
@@ -155,12 +156,12 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(coordPane);
 		
 		// Create longitude label.
-		longitudeLabel = new JLabel("", JLabel.RIGHT);
+		longitudeLabel = new JLabel("", SwingConstants.RIGHT);
 		longitudeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		coordPane.add(longitudeLabel);
 
 		// Create latitude label.
-		latitudeLabel = new JLabel("", JLabel.LEFT);
+		latitudeLabel = new JLabel("", SwingConstants.LEFT);
 		latitudeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		coordPane.add(latitudeLabel);
 
@@ -168,7 +169,7 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalStrut(10));
 
 		// Create mineral concentration label.
-		JLabel mineralConcentrationLabel = new JLabel("Estimated Mineral Concentrations:", JLabel.LEFT);
+		JLabel mineralConcentrationLabel = new JLabel("Estimated Mineral Concentrations:", SwingConstants.LEFT);
 		mineralConcentrationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(mineralConcentrationLabel);
 
@@ -188,7 +189,7 @@ public class MiningSitePanel extends WizardPanel {
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(2));
 		
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 				
 		selectedSitePane.add(mineralConcentrationTable.getTableHeader());
@@ -214,7 +215,7 @@ public class MiningSitePanel extends WizardPanel {
 		bottomPane.add(mineralLegendPane, BorderLayout.CENTER);
 
 		// Create mineral legend label.
-		JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+		JLabel mineralLegendLabel = new JLabel("Mineral Legend", SwingConstants.CENTER);
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.
@@ -247,9 +248,11 @@ public class MiningSitePanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		if (selectedSite != null) {
 			getWizard().getMissionData().setMiningSite(selectedSite);
 			return true;
@@ -337,7 +340,7 @@ public class MiningSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 
@@ -378,7 +381,7 @@ public class MiningSitePanel extends WizardPanel {
 			ExploredLocation closestSite = null;
 			double closestRange = Double.MAX_VALUE;
 
-			Iterator<ExploredLocation> i = surfaceFeatures.getAllRegionOfInterestLocations().iterator();
+			Iterator<ExploredLocation> i = surfaceFeatures.getAllPossibleRegionOfInterestLocations().iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();
 				if (!site.isReserved() && site.isMinable() && site.isClaimed() && site.isExplored()) {

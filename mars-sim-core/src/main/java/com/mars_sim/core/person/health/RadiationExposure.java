@@ -24,8 +24,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * <p> Curiosity's Radiation Assessment Detector (RAD)
@@ -377,9 +377,9 @@ public class RadiationExposure implements Serializable, Temporal {
 		
 		// Checks radiation
 		// Note: if a person is outside, it's handled by EVAOperation's isRadiationDetected()
-		if (!person.isOutside()) {
-			isRadiationDetected(pulse.getElapsed());
-		}
+//		if (!person.isOutside()) {
+//			isRadiationDetected(pulse.getElapsed());
+//		}
 			
 		return true;
 	}

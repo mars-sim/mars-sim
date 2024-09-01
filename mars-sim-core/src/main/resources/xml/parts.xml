@@ -343,27 +343,31 @@
 	</part>
 
 	<part name="EVA Battery" type="EVA" mass="1.2" >
-		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, this 
-		 rechargeable battery module is rated for 150 W at 18V.  
+		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
+		 (as of 4 Aug 2024 CATL Condensed battery has 500 Wh/kg)
+		 this rechargeable battery module is rated for 150 W at 18V.  
 		 for providing 8 hrs of electrical power to the EVA suit. 
 		 Energy capacity: 150 W * 8 hrs = 1.2 kWh.  
 		 Weight: 1.2 kWh / 1 kWh/kg = 1.2 kg. 
-		 Amperage: 1.2 kWh / 18 Volt = 66.67 Ah.  
+		 Amperage: 1.2 kWh / 18 Volt = 66.67 Ah.
 		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
+	<!--
+		See https://newatlas.com/aircraft/catl-worlds-largest-ev-battery-manufacturer-aircraft/
+	-->
+	
 	<part name="Battery Module" type="vehicle" mass="15.0">
 		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
-		this 15 kWh rechargeable battery provides 'auxiliary' electrical power to 
-		the vehicle, on top of the primary fuel cell stack. 
-		It's rated to operate at 400V.
-		With 15 kWh capacity, or it's 37.5 Ah (= 15/.4). 
-		Assume 6.43 km/kWh (based on a Tesla Model S battery pack weighing 2240 kg 
-		with 100 kWh capacity that can travel 643 km), 
-		this battery allows traveling a distance of 96.5 km on a single charge.
+		 this 15 kWh rechargeable battery provides 'auxiliary' electrical power to 
+		 the vehicle, on top of the primary fuel cell stack.
+		 With 15 kWh capacity, or it's 37.5 Ah (= 15/.4) and is rated to operate at 400V.
+		 Assume 6.43 km/kWh (based on a Tesla Model S battery pack weighing 2240 kg 
+		 with 100 kWh capacity that can travel 643 km), 
+		 this battery allows traveling a distance of 96.5 km on a single charge.
 		</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="2" max-number="2" />
@@ -385,11 +389,19 @@
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="2" />
-			<entity name="delivery drone" probability="5" max-number="1" />	
 			<entity name="light utility vehicle" probability="5" max-number="1" />						
 		</maintenance-entity-list>
 	</part>
 
+
+	<part name="Drone Chassis Panel" type="vehicle" mass="20.0" >
+		<description>Reinforced fiberglass panels.</description>
+		<maintenance-entity-list>
+			<entity name="delivery drone" probability="5" max-number="1" />	
+			<entity name="cargo drone" probability="5" max-number="1" />							
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="Rover Wheel" type="vehicle" mass="8.9">
 		<description>Rover wheels are made of durable steel wires and Nickel-titanium alloy wires.
 			See 'kinky' wire wheel at https://www.youtube.com/watch?v=vSNtifE0Z2Q
@@ -416,17 +428,45 @@
 			<entity name="farming" probability=".5" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
-	
-	<part name="Rover Generator" type="vehicle" mass="80.0" >
+
+	<part name="Propeller" type="vehicle" mass="2.0" >
+		<description>polycarbonate propeller for drones</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
-			<entity name="fuel power source" probability="5" max-number="1" />
+			<entity name="delivery drone" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Motor Large" type="vehicle" mass="40.0" >
+	<part name="Stepper Motor" type="electrical" mass="1">
+		<description>A 24 V precision motor for use in 3D printing</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="4" />
+			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="solar heating source" probability="1" max-number="2" />
+			<entity name="solar power source" probability="1" max-number="2" />		
+			<entity name="fuel power source" probability="1" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="Motor 5 kW" type="electrical" mass="5.0" >
+		<description>A motor with 5 kW power output.</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="4" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Motor 10 kW" type="vehicle" mass="10.0" >
+		<description>An induction motor with 10 kW power output.</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability="1" max-number="4" />
+			<entity name="light utility vehicle" probability="1" max-number="2" />
+			<entity name="delivery drone" probability="1" max-number="4" />	
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Motor 30 kW" type="vehicle" mass="30.0" >
+		<description>An induction motor with 30 kW power output.</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability="5" max-number="1" />
+			<entity name="fuel power source" probability="1" max-number="1" />
 			<entity name="wind power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -498,21 +538,6 @@
 
 	<part name="Crane Boom" type="attachment" mass="75.0">
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects</description>
-	</part>
-
-	<part name="Motor small" type="electrical" mass="10.0" >
-		<maintenance-entity-list>
-			<entity name="robot" probability="1" max-number="1" />
-			<entity name="light utility vehicle" probability="1" max-number="4" />
-			<entity name="delivery drone" probability="1" max-number="4" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Propeller" type="vehicle" mass="2.0" >
-		<description>polycarbonate propeller for drones</description>
-		<maintenance-entity-list>
-			<entity name="delivery drone" probability="5" max-number="4" />
-		</maintenance-entity-list>
 	</part>
 
 	<part name="Wheel small" type="vehicle"  mass="4.45" >
@@ -847,15 +872,6 @@
 		<maintenance-entity-list>
 			<entity name="farming" probability="2" max-number="2" />
 		</maintenance-entity-list>			
-	</part>
-
-	<part name="Stepper Motor small" type="electrical" mass="2">
-		<description>precision motor for use in 3D printing</description>
-		<maintenance-entity-list>
-			<entity name="manufacture" probability="1" max-number="2" />
-			<entity name="solar heating source" probability="1" max-number="2" />
-			<entity name="solar power source" probability="1" max-number="2" />						
-		</maintenance-entity-list>
 	</part>
 
 	<part name="Methane Fuel cell" type="electronic" mass=".2">

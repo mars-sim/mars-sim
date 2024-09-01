@@ -24,7 +24,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
@@ -161,7 +161,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		achievementTableModel.update();
 
 		// Update total achievement label.
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getResearchStudy().getTotalScientificAchievement());
 		totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
 		primaryCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedPrimaryStudies(person)));
 		collabCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedCollaborativeStudies(person)));
@@ -410,7 +410,7 @@ public class TabPanelScienceStudy extends TabPanel {
 				if (columnIndex == 0)
 					result = science.getName();
 				else if (columnIndex == 1) {
-					result = person.getScientificAchievement(science);
+					result = person.getResearchStudy().getScientificAchievement(science);
 				}
 			}
 			return result;

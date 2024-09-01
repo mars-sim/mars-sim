@@ -9,7 +9,7 @@ package com.mars_sim.core.person.health;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A medication that relieves radiation exposure sickness.

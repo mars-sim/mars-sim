@@ -22,7 +22,7 @@ import javax.json.JsonReader;
 
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
  
 public class ScienceConfig implements Serializable {
 

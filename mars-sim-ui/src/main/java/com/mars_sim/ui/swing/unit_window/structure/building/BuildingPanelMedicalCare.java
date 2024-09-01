@@ -14,7 +14,7 @@ import javax.swing.table.TableModel;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.structure.building.function.MedicalCare;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
@@ -31,6 +31,9 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 
 	private static final String MEDICAL_ICON = "medical";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	// Data members
 	/** The medical care. */
 	private MedicalCare medical;
@@ -94,7 +97,9 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 	 */
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update physician label
 		if (physicianCache != medical.getPhysicianNum()) {
 			physicianCache = medical.getPhysicianNum();

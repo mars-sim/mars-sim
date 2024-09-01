@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -86,7 +87,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		add(availableSupplyPane, BorderLayout.WEST);
 
 		// Create available supply label.
-		availableSupplyLabel = new JLabel("Available supply at ", JLabel.CENTER);
+		availableSupplyLabel = new JLabel("Available supply at ", SwingConstants.CENTER);
 		availableSupplyPane.add(availableSupplyLabel, BorderLayout.NORTH);
 
 		// Create available supply table.
@@ -118,7 +119,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		amountOuterPanel.add(amountControlPane);
 
 		// Create amount label.
-		JLabel amountLabel = new JLabel("Amount", JLabel.CENTER);
+		JLabel amountLabel = new JLabel("Amount", SwingConstants.CENTER);
 		amountControlPane.add(amountLabel, BorderLayout.NORTH);
 
 		// Create left arrow button.
@@ -161,8 +162,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create right arrow button.
 		rightArrowButton = new JButton(">");
 		rightArrowButton.setEnabled(false);
-		rightArrowButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		rightArrowButton.addActionListener(e -> {
 				// Add trade good amount.
 				try {
 					int amount = (Integer) formatter.stringToValue(amountTextField.getText());
@@ -184,7 +184,6 @@ public class EmergencySupplyPanel extends WizardPanel {
 					}
 				} catch (ParseException c) {
 				}
-			}
 		});
 		amountControlPane.add(rightArrowButton, BorderLayout.EAST);
 
@@ -194,7 +193,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		add(cargoPane, BorderLayout.EAST);
 
 		// Create cargo label.
-		JLabel cargoLabel = new JLabel("Cargo", JLabel.CENTER);
+		JLabel cargoLabel = new JLabel("Cargo", SwingConstants.CENTER);
 		cargoPane.add(cargoLabel, BorderLayout.NORTH);
 
 		// Create cargo table.
@@ -226,9 +225,15 @@ public class EmergencySupplyPanel extends WizardPanel {
 	String getPanelName() {
 		return "Emergency Supplies";
 	}
-
+	
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
 	@Override
-	boolean commitChanges() {
+	boolean commitChanges(boolean isTesting) {
 		boolean result = false;
 		try {
 			MissionDataBean missionData = getWizard().getMissionData();

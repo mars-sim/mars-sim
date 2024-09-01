@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitLocationCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -25,7 +25,7 @@ public class UnitLocationCommand extends AbstractUnitCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {

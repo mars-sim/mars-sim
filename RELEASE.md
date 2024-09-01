@@ -8,6 +8,6 @@ This project required Java 17 as a minimum.
 ## Release
 This release contains a ZIP file that contains a pre-built versions of the mars-sim application:
 
-- Swing varient that provides a UI
-- Console varient that runs headless with access via command line SSH.
+- The Swing variant provides a UI
+- The Console variant runs on headless mode with access via command line SSH.
 

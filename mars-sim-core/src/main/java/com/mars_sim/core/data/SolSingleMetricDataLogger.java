@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SolSingleMetricDataLogger.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -39,7 +39,7 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 		current += increment;
 		currentData = current;
 		
-		// For a single dataitem the item needs to be refreshed
+		// For a single data item, the item needs to be refreshed
 		// because current data is not by reference
 		dailyData.set(0, currentData);
 	}

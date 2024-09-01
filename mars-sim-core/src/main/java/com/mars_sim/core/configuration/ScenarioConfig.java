@@ -25,12 +25,12 @@ import org.jdom2.Element;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.Member;
 import com.mars_sim.core.structure.InitialSettlement;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Loads and maintains a repository Scenario instances from XML files.

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DeliveryGoodsPanel.java
- * @date 2021-10-21
+ * @date 2024-07-29
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.mission.create;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -38,6 +39,7 @@ import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.PhaseType;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -47,6 +49,8 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 
 @SuppressWarnings("serial")
 class DeliveryGoodsPanel extends WizardPanel {
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(DeliveryGoodsPanel.class.getName());
 
 	private boolean buyGoods;
 	private JLabel errorMessageLabel;
@@ -62,6 +66,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 	/**
 	 * constructor.
+	 * 
 	 * @param wizard {@link CreateMissionWizard}
 	 * @param buyGoods {@link Boolean}
 	 */
@@ -247,9 +252,11 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	boolean commitChanges(boolean isTesting) {
 		boolean result = false;
 		try {
 			MissionDataBean missionData = getWizard().getMissionData();
@@ -257,19 +264,23 @@ class DeliveryGoodsPanel extends WizardPanel {
 			// Check if enough containers in delivery goods.
 			if (hasEnoughContainers(missionData.getStartingSettlement())) {
 				// Set buy/sell goods.		
-				if (buyGoods) missionData.setBuyGoods(tradeTableModel.getTradeGoods());
-				else missionData.setSellGoods(tradeTableModel.getTradeGoods());
+				if (buyGoods) 
+					missionData.setBuyGoods(tradeTableModel.getTradeGoods());
+				else 
+					missionData.setSellGoods(tradeTableModel.getTradeGoods());
 				result = true;
 			}
 		}
 		catch (Exception e) {
 //			e.printStackTrace(System.err);
+			return false;
 		}
 		return result;
 	}
 
 	/**
 	 * Checks if delivery list has enough containers to hold amount resources.
+	 * 
 	 * @return true if enough containers
 	 * @throws Exception if error checking containers.
 	 */
@@ -317,6 +328,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 	/**
 	 * Gets the number of containers of a type in the delivery list.
+	 * 
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
@@ -330,6 +342,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 	/**
 	 * Gets the wizard panel name.
+	 * 
 	 * @return panel name.
 	 */
 	String getPanelName() {
@@ -365,7 +378,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 		private List<Good> goodsList;
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
 		private GoodsTableModel() {
 			// Use AbstractTableModel constructor.
@@ -374,13 +387,14 @@ class DeliveryGoodsPanel extends WizardPanel {
 			// Populate goods map.
 			goodsList = GoodsUtil.getGoodsList();
 			Collections.sort(goodsList);
-			goodsMap = new HashMap<Good, Integer>(goodsList.size());
+			goodsMap = new HashMap<>(goodsList.size());
 			Iterator<Good> i = goodsList.iterator();
 			while (i.hasNext()) goodsMap.put(i.next(), 0);
 		}
 
 		/**
 		 * Returns the number of rows in the model.
+		 * 
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
@@ -389,6 +403,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Returns the number of columns in the model.
+		 * 
 		 * @return number of columns.
 		 */
 		public int getColumnCount() {
@@ -397,6 +412,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Returns the name of the column at columnIndex.
+		 * 
 		 * @param columnIndex the column index.
 		 * @return column name.
 		 */
@@ -407,6 +423,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * 
 		 * @param row the row whose value is to be queried.
 		 * @param column the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
@@ -441,7 +458,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 					goodsMap.put(good, amount);
 				}
 				catch (Exception e) {
-//					e.printStackTrace(System.err);
+					logger.log(Level.SEVERE, "Issues with updating the goods map: " + e.getMessage());
 				}
 			}
 			fireTableDataChanged();
@@ -449,6 +466,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Checks if good is the same type as the mission vehicle.
+		 * 
 		 * @param good the good to check.
 		 * @return true if same type of vehicle.
 		 */
@@ -465,6 +483,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Adds an amount of a good to the table.
+		 * 
 		 * @param good the good to add.
 		 * @param amount the amount to add.
 		 */
@@ -478,6 +497,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Removes an amount of a good from the table.
+		 * 
 		 * @param good the good to remove.
 		 * @param amount the amount to remove.
 		 */
@@ -509,12 +529,13 @@ class DeliveryGoodsPanel extends WizardPanel {
 			super();
 
 			// Initialize delivery map and list.
-			tradeList = new ArrayList<Good>();
-			tradeMap = new HashMap<Good, Integer>();
+			tradeList = new ArrayList<>();
+			tradeMap = new HashMap<>();
 		}
 
 		/**
 		 * Returns the number of rows in the model.
+		 * 
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
@@ -523,6 +544,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Returns the number of columns in the model.
+		 * 
 		 * @return number of columns.
 		 */
 		public int getColumnCount() {
@@ -531,6 +553,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Returns the name of the column at columnIndex.
+		 * 
 		 * @param columnIndex the column index.
 		 * @return column name.
 		 */
@@ -541,6 +564,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * 
 		 * @param row the row whose value is to be queried.
 		 * @param column the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
@@ -569,6 +593,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Adds an amount of a good to the table.
+		 * 
 		 * @param good the good to add.
 		 * @param amount the amount to add.
 		 */
@@ -583,6 +608,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Removes an amount of a good from the table.
+		 * 
 		 * @param good the good to remove.
 		 * @param amount the amount to remove.
 		 */
@@ -609,14 +635,16 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 		/**
 		 * Gets the delivery goods.
+		 * 
 		 * @return map of goods and integers.
 		 */
 		Map<Good, Integer> getTradeGoods() {
-			return new HashMap<Good, Integer>(tradeMap);
+			return new HashMap<>(tradeMap);
 		}
 
 		/**
 		 * Checks if a vehicle is being traded.
+		 * 
 		 * @return true if vehicle traded.
 		 */
 		private boolean hasTradedVehicle() {

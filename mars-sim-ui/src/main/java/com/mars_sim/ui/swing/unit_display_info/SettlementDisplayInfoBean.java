@@ -8,7 +8,7 @@
 package com.mars_sim.ui.swing.unit_display_info;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.mapdata.MapMetaData;
+import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 

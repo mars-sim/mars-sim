@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -35,10 +36,9 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.ui.swing.ComponentMover;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -65,6 +65,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	private static Map<Integer, JInternalFrame> panels = new ConcurrentHashMap<>();
 
     public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
+		add(unit.getUnitType().getName() + " : " + unit.getName());
+		addSeparator();
     	MainDesktopPane desktop = swindow.getDesktop();
     	
     	switch (unit.getUnitType()) {
@@ -109,11 +111,7 @@ public class PopUpUnitMenu extends JPopupMenu {
         
 		JMenuItem descriptionItem = new JMenuItem(Msg.getString("PopUpUnitMenu.description"));
 
-//        descriptionItem.setForeground(new Color(139,69,19));
         descriptionItem.addActionListener(e -> {
-
-//	           	setOpaque(false);
-//		        setBackground(new Color(0,0,0,128));
 
                 String description = null;
                 String type = null;
@@ -146,7 +144,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	           	b.setOpaque(false);
 		        b.setBackground(new Color(0,0,0,128));
 
-				final JDialog d = SwingHelper.createPoupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+				final JDialog d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
 
 				d.setForeground(Color.WHITE); // orange font
 				d.setFont(new Font("Arial", Font.BOLD, 14));
@@ -154,11 +152,6 @@ public class PopUpUnitMenu extends JPopupMenu {
             	d.setOpacity(0.75f);
 		        d.setBackground(new Color(0,0,0,128));
                 d.setVisible(true);
-
-                // Make panel drag-able
-			    ComponentMover mover = new ComponentMover(d, desktop);
-			    mover.registerComponent(b);
-
              }
         );
 
@@ -175,7 +168,6 @@ public class PopUpUnitMenu extends JPopupMenu {
     private JMenuItem buildDetailsItem(final Unit unit, final MainDesktopPane desktop) {
 		JMenuItem detailsItem = new JMenuItem(Msg.getString("PopUpUnitMenu.details"));
 
-//        detailsItem.setForeground(new Color(139,69,19));
         detailsItem.addActionListener(e -> {
 	            if (unit.getUnitType() == UnitType.VEHICLE
 	            		|| unit.getUnitType() == UnitType.PERSON
@@ -184,7 +176,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            	desktop.showDetails(unit);
 	            }
 	            
-	            // TODO Why is this not a dedicated class ?
 	            else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
 	            	buildConstructionWindow(unit, desktop);
 	            }
@@ -216,10 +207,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 
         JInternalFrame d = new JInternalFrame(
         		unit.getSettlement().getName() + " - " + site,
-        		true,  //resizable
-                false, //not closable
-                true, //not maximizable
-                false); //iconifiable);
+        		true, 
+                false, 
+                true,
+                false); 
 
         d.setIconifiable(false);
         d.setClosable(true);
@@ -233,7 +224,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		panel.add(sitePanel, BorderLayout.CENTER);
 
 		String phase = site.getPhase().getName();
-		JLabel label = new JLabel("Mission Phase : " + phase, JLabel.CENTER);
+		JLabel label = new JLabel("Mission Phase : " + phase, SwingConstants.CENTER);
 		
 		panel.add(label, BorderLayout.SOUTH);
 		
@@ -304,6 +295,7 @@ public class PopUpUnitMenu extends JPopupMenu {
         		
         		if (vehicles != null && !vehicles.isEmpty()) {
 	        		for (Vehicle v: vehicles) {
+	        			// Why is this needed ?
 	        			v.setCoordinates(site.getCoordinates());
 	        		}
         		}
@@ -328,7 +320,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 			if (siteAngle >= 360)
 				siteAngle = 0;
 			site.setFacing(siteAngle);
-			logger.info(site, "Just set facing to " + (int)Math.round(siteAngle) + ".");
+			logger.info(site, "Just set facing to " + siteAngle + ".");
 			repaint();
         });
 
@@ -365,11 +357,4 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		return confirmItem;
 	}
-	
-	
-	public void destroy() {
-		panels.clear();
-		panels = null;
-	}
-
 }

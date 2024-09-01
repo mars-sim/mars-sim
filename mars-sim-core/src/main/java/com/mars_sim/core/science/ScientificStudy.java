@@ -31,7 +31,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A class representing a scientific study.
@@ -124,7 +124,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		this.id = id;
 		this.name = name;
 		this.primaryResearcher = primaryResearcher;
-		primaryResearcher.setStudy(this);
+		primaryResearcher.getResearchStudy().setStudy(this);
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
 
@@ -376,7 +376,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	public void addCollaborativeResearcher(Person researcher, ScienceType science) {
 		synchronized (collaborators) {
 			collaborators.put(researcher.getIdentifier(), new CollaboratorStats(science));
-			researcher.addCollabStudy(this);
+			researcher.getResearchStudy().addCollabStudy(this);
 		}
 		
 		// Fire scientific study update event.
@@ -393,7 +393,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	private void removeCollaborativeResearcher(Person researcher) {
 		synchronized (collaborators) {
 			// Remove research first in case they make a call to this Study
-			researcher.removeCollabStudy(this);
+			researcher.getResearchStudy().removeCollabStudy(this);
 			collaborators.remove(researcher.getIdentifier());
 		}
 		
@@ -796,10 +796,10 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		logger.info(this, "State: " + completionState.getName() + ". Reason: " + reason);
 
 		this.phase = completionState;
-		primaryResearcher.setStudy(null);
+		primaryResearcher.getResearchStudy().setStudy(null);
 
 		for(Person p : getCollaborativeResearchers()) {
-			p.removeCollabStudy(this);
+			p.getResearchStudy().removeCollabStudy(this);
 		}
 		
 		// Fire scientific study update event.
@@ -903,7 +903,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
         double baseAchievement = difficultyLevel;
         
         // Add achievement credit to primary researcher.
-        primaryResearcher.addScientificAchievement(baseAchievement, science);
+        primaryResearcher.getResearchStudy().addScientificAchievement(baseAchievement, science);
         primaryStats.acheivementEarned = baseAchievement;
         ScientificStudyUtil.modifyScientistRelationshipsFromAchievement(primaryResearcher, science, baseAchievement); 
         
@@ -918,7 +918,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
             Person researcher = um.getPersonByID(c.getKey());
             CollaboratorStats cs = c.getValue();
             ScienceType collaborativeScience = cs.contribution;
-            researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
+            researcher.getResearchStudy().addScientificAchievement(collaborativeAchievement, collaborativeScience);
             cs.acheivementEarned = collaborativeAchievement;
             ScientificStudyUtil.modifyScientistRelationshipsFromAchievement(researcher, collaborativeScience, collaborativeAchievement);
             

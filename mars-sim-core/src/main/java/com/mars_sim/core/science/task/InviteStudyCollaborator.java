@@ -27,9 +27,9 @@ import com.mars_sim.core.science.ScientificStudyUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A task for inviting a researcher to collaborate on a scientific study.
@@ -73,7 +73,7 @@ public class InviteStudyCollaborator extends Task {
     	// Skill determined by Study
         super(NAME, person, true, IMPACT, DURATION);
 
-        study = person.getStudy();
+        study = person.getResearchStudy().getStudy();
         if (study == null) {
             logger.severe(person, "Does not have a primary scientific study.");
             endTask();
@@ -138,14 +138,14 @@ public class InviteStudyCollaborator extends Task {
             inviteeValue += skillLevel;
 
             // Modify based on invitee achievement in job science.
-            double achievement = invitee.getScientificAchievement(jobScience);
+            double achievement = invitee.getResearchStudy().getScientificAchievement(jobScience);
             inviteeValue += achievement;
 
             // Modify based on if invitee's job science is not study primary science.
             if (!jobScience.equals(study.getScience())) inviteeValue /= 2D;
 
             // Modify based on invitee total scientific achievement.
-            double totalAchievement = invitee.getTotalScientificAchievement();
+            double totalAchievement = invitee.getResearchStudy().getTotalScientificAchievement();
             inviteeValue += (totalAchievement / 10D);
 
             // Modify based on study researcher's personal opinion of invitee.
@@ -153,7 +153,7 @@ public class InviteStudyCollaborator extends Task {
             inviteeValue *= (opinion / 100D);
 
             // Modify based on current number of studies researcher is currently collaborating on.
-            int numCollaborativeStudies = invitee.getCollabStudies().size();
+            int numCollaborativeStudies = invitee.getResearchStudy().getCollabStudies().size();
             inviteeValue /= (numCollaborativeStudies + 1D);
 
             // Modify based on if researcher and primary researcher are at same settlement.

@@ -31,8 +31,6 @@ public abstract class HeatSource implements Serializable {
 	
 	private double percentHeat;
 	
-	private double time;
-	
 	private HeatSourceType type;
 
 	private HeatMode heatModeCache;
@@ -195,16 +193,6 @@ public abstract class HeatSource implements Serializable {
 	 * @return maintenance work time (millisols).
 	 */
 	public abstract double getMaintenanceTime();
-
-
-	/**
-	 * Sets the time.
-	 * 
-	 * @param time
-	 */
-	public void setTime(double time) {
-		this.time = time;
-	}
 
 	/**
 	 * Prepare object for garbage collection.

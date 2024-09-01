@@ -1,17 +1,18 @@
 /*
  * Mars Simulation Project
  * MineralMap.java
- * @date 2022-07-14
+ * @date 2024-07-25
  * @author Scott Davis
  */
 
 package com.mars_sim.core.environment;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * Interface for mineral maps of Mars.
@@ -59,26 +60,26 @@ public interface MineralMap extends Serializable {
 	 */
 	public String[] getMineralTypeNames();
 
-	
 	/**
-	 * Generates a set of Mineral locations from a starting location.
+	 * Gets the color string of a mineral.
 	 * 
-	 * @param startingLocation
-	 * @param range
+	 * @param mineralName
 	 * @return
 	 */
-	public Set<Coordinates> generateMineralLocations(Coordinates startingLocation, double range);
+	public String getColorString(String mineralTypeName);
 	
 	/**
 	 * Finds a random location with mineral concentrations from a starting location.
 	 * and within a distance range.
 	 * 
-	 * @param startingLocation the starting location.
-	 * @param range            the distance range (km).
-	 * @return location with one or more mineral concentrations or null if none
-	 *         found.
+	 * @param startingLocation the starting location
+	 * @param range            the distance range (km)
+	 * @param sol
+	 * @param foundLocations
+	 * @return location and distance pair
 	 */
-	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range);
+	public Map.Entry<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol, 
+			Collection<Coordinates> foundLocations);
 
 	/**
 	 * Prepares object for garbage collection.

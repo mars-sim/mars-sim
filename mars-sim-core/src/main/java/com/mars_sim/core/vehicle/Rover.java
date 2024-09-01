@@ -19,6 +19,8 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -34,9 +36,7 @@ import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The Rover class represents the rover type of ground vehicle. It contains
@@ -159,7 +159,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	public Rover(String name, VehicleSpec spec, Settlement settlement) {
 		// Use GroundVehicle constructor
 		super(name, spec, settlement, MAINTENANCE_WORK_TIME);
-
+		
 		occupants = new UnitSet<>();
 		robotOccupants = new UnitSet<>();
 
@@ -345,9 +345,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && occupants.add(person)) {
-			person.setContainerUnit(this);
-			return true;
+		if (!isCrewmember(person)) {
+			return occupants.add(person);
 		}
 		return false;
 	}
@@ -371,9 +370,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!isRobotCrewmember(robot) && robotOccupants.add(robot)) {
-			robot.setContainerUnit(this);
-			return true;
+		if (!isRobotCrewmember(robot)) {
+			return robotOccupants.add(robot);
 		}
 		return false;
 	}
@@ -484,8 +482,8 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 
 		double t = getTemperature();
-		if (t < Settlement.lifeSupportValues[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
-				|| t > Settlement.lifeSupportValues[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
+		if (t < Settlement.getLifeSupportValues(0, 4) - Settlement.SAFE_TEMPERATURE_RANGE
+				|| t > Settlement.getLifeSupportValues(1, 4) + Settlement.SAFE_TEMPERATURE_RANGE) {
 			logger.log(this, Level.WARNING, 10_000,
 					"Out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
@@ -923,10 +921,12 @@ public class Rover extends GroundVehicle implements Crewable,
 	 */
 	@Override
 	public double getRange() {
+		// Question: does it account for the return trip ?
+		
 		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
-		double fuelRange = super.getRange() * FUEL_RANGE_FACTOR;
+		double fuelRange = super.getEstimatedRange() * FUEL_RANGE_FACTOR;
 
-		// Battery constribute the range
+		// Battery also contributes to the range
 		double cap = super.getBatteryCapacity();
 		double percent = super.getBatteryPercent();
 		double estFC = super.getEstimatedFuelConsumption();

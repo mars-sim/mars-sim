@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.building.function.Research;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -31,11 +31,10 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	private static final String SCIENCE_ICON = "science";
 
 	private static final String MILLISOLS = " millisols";
-
 	
 	// Data members
-	/** The research building function. */
-	private Research lab;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
 
 	// Data cache
 	/** The number of researchers cache. */
@@ -47,6 +46,8 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	private JLabel entropyLabel;
 	private JLabel entropyPenaltyLabel;
 	
+	/** The research building function. */
+	private Research lab;
 	/**
 	 * Constructor.
 	 * 
@@ -73,9 +74,12 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
+		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+		center.add(topPanel, BorderLayout.NORTH);
+		
 		// Prepare label panel
 		AttributePanel labelPanel = new AttributePanel(6);
-		center.add(labelPanel, BorderLayout.NORTH);
+		topPanel.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
@@ -123,14 +127,17 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.add(specialtyTA);
 		addBorder(listPanel, Msg.getString("BuildingPanelResearch.namesOfSpecialties"));
-		center.add(listPanel, BorderLayout.CENTER);
+		topPanel.add(listPanel, BorderLayout.CENTER);
 	}
 
 	/**
 	 * Updates this panel.
 	 */
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		// Update researchers label if necessary.
 		if (researchersCache != lab.getResearcherNum()) {
 			researchersCache = lab.getResearcherNum();

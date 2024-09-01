@@ -15,13 +15,13 @@ import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * The Unit class is the abstract parent class to all units in the simulation.
@@ -53,7 +53,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	private long lastPulse = 0;
 	
 	private String name;
-	private String description;
+	private String description = "No Description";
 	/** Commander's notes on this unit. */
 	private String notes = "";
 	/** The unit's location tag. */
@@ -129,7 +129,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, int id, int containerId) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.description = name;
+//		this.description = name;
 		this.baseMass = 0;
 		this.identifier = id;
 		this.containerID = containerId;
@@ -147,7 +147,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, Coordinates location) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.description = name;
+//		this.description = name;
 		this.baseMass = 0;
 
 		if (masterClock != null) {
@@ -379,18 +379,16 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		if (getUnitType() == UnitType.SETTLEMENT) {	
 			return location;
 		}
-//		else if (LocationStateType.MARS_SURFACE == currentStateType) {	
-//			return location;
-//		}
-		
-		Unit container = getContainerUnit();
-		if (container.getUnitType() == UnitType.MARS) {	
+	
+		Unit cu = getContainerUnit();
+		if (cu.getUnitType() == UnitType.MARS) {	
+			// Since Mars surface has no coordinates, 
+			// Get from its previously setting location
 			return location;
 		}
 		
-		// For Vehicle, Person, Robot and Equipment,
-		// Get its container unit's coordinates
-		return container.getCoordinates();
+		// Unless it's on Mars surface, get its container unit's coordinates
+		return cu.getCoordinates();
 	}
 
 	/**
@@ -425,9 +423,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
-	 * Person or Robot) If it's on the surface of Mars, then the topmost container
-	 * is MarsSurface.
+	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
 	 *
 	 * @return the unit's topmost container unit
 	 */
@@ -444,9 +441,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
-	 * Person or Robot) If it's on the surface of Mars, then the topmost container
-	 * is MarsSurface.
+	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
 	 *
 	 * @return the unit's topmost container unit
 	 */

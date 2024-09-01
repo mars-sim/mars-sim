@@ -13,17 +13,18 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
 
 /**
  * A map layer showing mineral concentrations.
@@ -52,11 +53,9 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	
 	private MineralMap mineralMap;
 	
-	private java.util.Map<String, Color> mineralColorMap;
+	private SortedMap<String, Color> mineralColorMap;
 
-	private java.util.Set<String> mineralsDisplaySet = new HashSet<>();
-	
-	private java.util.Map<String, Color> mineralColors;
+	private Set<String> mineralsDisplaySet = new HashSet<>();
 	
 	/**
 	 * Constructor
@@ -67,7 +66,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 		mineralMap = Simulation.instance().getSurfaceFeatures().getMineralMap();
 		this.displayComponent = displayComponent;
 	
-		mineralColors = getMineralColors();
+		mineralColorMap = getMineralColors();
 	}
 	
 	/**
@@ -203,7 +202,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 								if (concentration <= 0) {
 									continue;
 								}
-								Color baseColor = mineralColors.get(mineralType);
+								Color baseColor = mineralColorMap.get(mineralType);
 								int index = x + (y * Map.MAP_BOX_WIDTH);
 								addColorToMineralConcentrationArray(index, baseColor, concentration, newMineralArray);
 								addColorToMineralConcentrationArray((index + 1), baseColor, concentration, newMineralArray);
@@ -279,16 +278,27 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 * 
 	 * @return map of names and colors.
 	 */
-	public java.util.Map<String, Color> getMineralColors() {
+	public SortedMap<String, Color> getMineralColors() {
 		
 		if (mineralColorMap == null || mineralColorMap.isEmpty()) {
 			String[] mineralNames = mineralMap.getMineralTypeNames();
-			java.util.Map<String, Color> map = new HashMap<>(mineralNames.length);
-			for (int x = 0; x < mineralNames.length; x++) {
+			int num = mineralNames.length;
+			SortedMap<String, Color> map = new TreeMap<>();
+			for (int x = 0; x < num ; x++) {
 				String mineralTypeName = mineralMap.getMineralTypeNames()[x];
 				// Determine color of a mineral
-				int mineralColor = Color.HSBtoRGB(((float) x / (float) mineralNames.length), .9F, .9F);
-				map.put(mineralTypeName, new Color(mineralColor));
+				// See https://stackoverflow.com/questions/44326765/color-mapping-for-specific-range
+//				float value = 1f * x / num; //this is your value between 0 and 1
+//				float minHue = 255f/255; // 300f corresponds to Magenta // 120f corresponds to Green
+//				float maxHue = 0; //corresponds to red
+//				float hue = value * maxHue + (1 - value) * minHue; // ((float) x + 1 / (float) mineralNames.length)
+//				int mineralColor = Color.HSBtoRGB(hue, .9F, .9F);
+				
+				String rgbString = mineralMap.getColorString(mineralTypeName);
+						
+				Color rgbColor = Color.decode(rgbString);
+				
+				map.put(mineralTypeName, rgbColor);
 			}
 			
 			mineralColorMap = map;

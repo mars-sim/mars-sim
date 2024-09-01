@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TextIOChannel.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -46,7 +46,7 @@ public class TextIOChannel implements UserChannel {
 	}
 
 	/**
-	 * Get user input in response to a prompt
+	 * Gets user input in response to a prompt.
 	 */
 	@Override
 	public String getInput(String prompt) {
@@ -67,7 +67,7 @@ public class TextIOChannel implements UserChannel {
 	}
 
 	/**
-	 * Close the channel to the user.
+	 * Closes the channel to the user.
 	 */
 	@Override
 	public void close() {
@@ -100,7 +100,7 @@ public class TextIOChannel implements UserChannel {
 	}
 
 	/**
-	 * Get any partial uncommited input.
+	 * Gets any partial uncommitted input.
 	 */
 	@Override
 	public String getPartialInput() {

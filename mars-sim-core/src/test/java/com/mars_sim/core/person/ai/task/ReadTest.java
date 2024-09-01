@@ -1,11 +1,11 @@
 package com.mars_sim.core.person.ai.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.meta.ReadMeta;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class ReadTest extends AbstractMarsSimUnitTest{
     public void testCreateTaskRecreation() {

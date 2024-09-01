@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -20,10 +22,8 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.science.task.ScientificStudyFieldWork;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.util.RandomUtil;
 
 
 /**
@@ -85,7 +85,7 @@ public abstract class FieldStudyMission extends EVAMission {
 			// Determine field site location.
 			if (hasVehicle()) {
 				double tripTimeLimit = getRover().getTotalTripTimeLimit(true);
-				determineFieldSite(getVehicle().getRange(), tripTimeLimit);
+				determineFieldSite(getVehicle().getEstimatedRange(), tripTimeLimit);
 			}
 
 			// Add home settlement
@@ -175,7 +175,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if in research phase.
-		ScientificStudy primaryStudy = researcher.getStudy();
+		ScientificStudy primaryStudy = researcher.getResearchStudy().getStudy();
 		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 				&& !primaryStudy.isPrimaryResearchCompleted()
 				&& (science == primaryStudy.getScience())) {
@@ -185,7 +185,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		}
 
 		// Add all collaborative studies in research phase.
-		for( ScientificStudy collabStudy : researcher.getCollabStudies()) {
+		for( ScientificStudy collabStudy : researcher.getResearchStudy().getCollabStudies()) {
 			if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)
 					&& (science == collabStudy.getContribution(researcher))) {

@@ -327,7 +327,7 @@ public class MicroInventory implements Serializable {
 	 *
 	 * @param resource
 	 * @param quantity
-	 * @return quantity that cannot be retrieved
+	 * @return shortfall quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
 		AmountStored s = amountStorage.get(resource);

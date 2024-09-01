@@ -1,12 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * LocationSituation.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Barry Evans
  */
 package com.mars_sim.core.location;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The location status of a person, bot, vehicle and equipment.

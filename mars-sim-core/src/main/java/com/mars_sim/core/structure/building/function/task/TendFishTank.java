@@ -16,8 +16,8 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.farming.Fishery;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The TendFishTank class is a task for tending the fishery in a
@@ -86,15 +86,15 @@ public class TendFishTank extends TendHousekeeping {
 		TaskPhase selected;
 		int rand = RandomUtil.getRandomInt(6);
 		
-		double surplus = fishTank.getSurplusStock();
+//		If surplus is less than zero, do NOT catch any fish double surplus = fishTank.getSurplusStock();
 		
 		// If it hasn't tended the fish for over 500 millisols, do it now
 		if (fishTank.getWeedDemand() > 0) {
 			selected = TENDING;
 		}
-		// If surplus is less than zero, do NOT catch any fish
+
 		// Note: may offer exception in future
-		else if (rand == 0 && doFishing && surplus > 0) {
+		else if (rand == 0 && doFishing && fishTank.canCatchFish()) {
 			// Do fishing
 			selected = CATCHING;
 		}

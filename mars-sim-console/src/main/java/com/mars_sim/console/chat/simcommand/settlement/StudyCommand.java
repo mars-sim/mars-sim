@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StudyCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -18,7 +18,7 @@ import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * Command to display Studies in a Settlement
+ * Command to display scientific studies in a Settlement.
  * This is a singleton.
  */
 public class StudyCommand extends AbstractSettlementCommand {
@@ -30,7 +30,8 @@ public class StudyCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the 
+	 * Outputs the scientific studies in a Settlement.
+	 * 
 	 * @return 
 	 */
 	@Override

@@ -8,7 +8,7 @@ package com.mars_sim.core.structure.building.function;
 
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum FunctionType {
 

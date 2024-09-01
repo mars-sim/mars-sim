@@ -7,7 +7,7 @@
 
 package com.mars_sim.core.person.ai.role;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum RoleType {
 

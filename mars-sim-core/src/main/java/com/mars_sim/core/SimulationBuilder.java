@@ -24,15 +24,15 @@ import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.logging.DiagnosticsManager;
+import com.mars_sim.core.map.common.FileLocator;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.structure.SettlementTemplate;
-import com.mars_sim.mapdata.common.FileLocator;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /*
  * This class is a Factory to bootstrap a new simulation according to

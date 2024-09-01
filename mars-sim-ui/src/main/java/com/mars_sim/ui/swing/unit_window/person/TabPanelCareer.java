@@ -46,7 +46,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -236,7 +236,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Job history
 		JPanel jobHistoryPanel = new JPanel(new BorderLayout(0, 0));
 		historyPanel.add(jobHistoryPanel, BorderLayout.NORTH);
-		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(historyLabel);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 		jobHistoryTableModel = new JobHistoryTableModel(jobHistory);
@@ -257,7 +257,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Role history
 		JPanel roleHistoryPanel = new JPanel(new BorderLayout(0, 0));
 		historyPanel.add(roleHistoryPanel, BorderLayout.SOUTH);
-		JLabel roleLabel = new JLabel("Role History", JLabel.CENTER); //$NON-NLS-1$
+		JLabel roleLabel = new JLabel("Role History", SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(roleLabel);
 		roleHistoryPanel.add(roleLabel, BorderLayout.NORTH);
 		roleHistoryTableModel = new RoleHistoryTableModel(person);

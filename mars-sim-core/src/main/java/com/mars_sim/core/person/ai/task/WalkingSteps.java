@@ -14,6 +14,8 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
@@ -23,8 +25,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A helper class for determining the walking steps from one location to another.
@@ -1247,12 +1247,12 @@ implements Serializable {
                 if (person != null) {
                 	logger.warning(person,  10_000,
                 			"No walkable airlock from airlock exterior to rover in garage in "
-                			+ person.getBuildingLocation().getName());
+                			+ garageBuilding.getName());
                 }
                 else {
                 	logger.warning(robot, 10_000,
                 			"No walkable airlock from airlock exterior to rover in garage in "
-                			+ robot.getBuildingLocation().getName());
+                			+ garageBuilding.getName());
                 }
 
             }
@@ -1408,12 +1408,12 @@ implements Serializable {
                 if (person != null) {
                 	logger.warning(person,  10_000,
                 			"No find walkable airlock from outside to rover in garage in "
-                    		+ person.getBuildingLocation().getName());
+                    		+ garageBuilding.getName());
                 }
                 else {
                 	logger.warning(robot, 10_000,
                 			"No walkable airlock from outside to rover in garage in "
-                    		+ robot.getBuildingLocation().getName());
+                    		+ garageBuilding.getName());
                 }
             }
         }

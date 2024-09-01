@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.function.farming.Fishery;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -27,12 +27,16 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 
 	private static final String FISH_ICON = "fish";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	// Caches
 	private int numFish;
 	private int numIdealFish; 
 	private int maxFish;
 	private int numWeed;
 	
+	private double fishHarvestedCache;
 	private double fishMass;
 	private double weedMass;
 	private double weedDemand;
@@ -42,6 +46,10 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	/** The cache value for the work time done in this greenhouse. */
 	private double workTimeCache;
 	
+	private double ageCache;
+	
+	private JLabel ageLabel;
+	private JLabel fishHarvestedLabel;
 	private JLabel numFishLabel;
 	private JLabel numIdealFishLabel;
 	private JLabel maxFishLabel;
@@ -80,7 +88,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(11);
+		AttributePanel labelPanel = new AttributePanel(13);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 
@@ -96,7 +104,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 				
 		fishMass = tank.getTotalFishMass();	
 		fishMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.fishMass"),
-								 StyleManager.DECIMAL_KG2.format(fishMass), null);
+								 StyleManager.DECIMAL_KG.format(fishMass), null);
 				
 		numIdealFish = tank.getIdealFish();
 		numIdealFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numIdealFish"),
@@ -105,27 +113,35 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		maxFish = tank.getMaxFish();
 		maxFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.maxFish"),
 									Integer.toString(maxFish), null);
-
+		
+		ageCache = tank.getAverageAge()/1000;
+		ageLabel = labelPanel.addRow(Msg.getString("BuildingPanelFishery.age"),
+				StyleManager.DECIMAL2_SOLS.format(ageCache));
+		
+		fishHarvestedCache = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
+		fishHarvestedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.harvestedFish"),
+				StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache),
+									Msg.getString("BuildingPanelFishery.harvestedFish.tooltip"));
 		numWeed = tank.getNumWeed();
 		numWeedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numWeed"),
 									Integer.toString(numWeed), null);
 		
 		weedMass = tank.getTotalWeedMass();	
 		weedMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedMass"),
-								 StyleManager.DECIMAL_KG2.format(weedMass), null);
+								 StyleManager.DECIMAL_KG.format(weedMass), null);
 		
 		weedDemand = tank.getWeedDemand();	
 		weedDemandLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedDemand"),
 								 StyleManager.DECIMAL_PLACES2.format(weedDemand), null);
 		
-		powerReq = tank.getPowerRequired();	
+		powerReq = tank.getCombinedPowerLoad();	
 		powerReqLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.powerReq"),
 								 StyleManager.DECIMAL_KW.format(powerReq), null);
 		
 		// Update the cumulative work time
 		workTimeCache = tank.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
-									StyleManager.DECIMAL_SOLS3.format(workTimeCache),
+									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
 									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
@@ -134,7 +150,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	public void update() {	
-
+		if (!uiDone)
+			initializeUI();
+		
 		int newNumFish = tank.getNumFish();
 		if (numFish != newNumFish) {
 			numFish = newNumFish;
@@ -165,6 +183,18 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			fishMassLabel.setText(StyleManager.DECIMAL_KG.format(newFishMass));
 		}
 		
+		double newFishHarvest = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
+		if (fishHarvestedCache != newFishHarvest) {
+			fishHarvestedCache = newFishHarvest;
+			fishHarvestedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache));
+		}
+		
+		double newAge = tank.getAverageAge()/1000;
+		if (ageCache != newAge) {
+			ageCache = newAge;
+			ageLabel.setText(StyleManager.DECIMAL2_SOLS.format(newAge));
+		}
+
 		double newWeedMass = tank.getTotalWeedMass();
 		if (weedMass != newWeedMass) {
 			weedMass = newWeedMass;
@@ -183,7 +213,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			waterMassLabel.setText(StyleManager.DECIMAL_KG2.format(newWaterMass));
 		}
 		
-		double newPowerReq = tank.getPowerRequired();	
+		double newPowerReq = tank.getCombinedPowerLoad();	
 		if (powerReq != newPowerReq) {
 			powerReq = newPowerReq;
 			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));
@@ -193,7 +223,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		double workTime = tank.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
+			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}
 	}
 	
@@ -215,6 +245,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		numWeedLabel = null;
 		weedMassLabel = null;
 		weedDemandLabel = null;
+		
+		ageLabel = null;
+		fishHarvestedLabel = null;
 		tank = null;
 	}
 }

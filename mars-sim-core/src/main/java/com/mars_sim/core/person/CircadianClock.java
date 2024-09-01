@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The CircadianClock class simulates the circadian rhythm of a person. It

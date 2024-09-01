@@ -19,6 +19,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.Malfunction.Repairer;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
@@ -41,13 +42,16 @@ import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessor;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Helper class with common formatting methods.
  */
 public class CommandHelper {
 	// Width for names
+	
+	public static final String PHASE = "Phase";
+	public static final String ITEM = "Item";
+	public static final String QUANTITY = "Quantity";
 	
 	public static final int MALFUNCTION_WIDTH = 28;
 	public static final int BUILIDNG_WIDTH = 26;
@@ -126,7 +130,7 @@ public class CommandHelper {
 		response.appendHeading(study.getName());
 		response.appendLabeledString("Science", study.getScience().getName());
 		response.appendLabeledString("Lead", study.getPrimaryResearcher().getName());
-		response.appendLabeledString("Phase", study.getPhase().getName());
+		response.appendLabeledString(PHASE, study.getPhase().getName());
 		response.appendLabelledDigit("Level", study.getDifficultyLevel());
 
 		
@@ -149,8 +153,7 @@ public class CommandHelper {
 			}
 			break;
 		
-		case PAPER_PHASE:
-		case RESEARCH_PHASE:
+		case PAPER_PHASE, RESEARCH_PHASE:
 			displayCollaborators(response, study);			
 			break;
 			
@@ -250,26 +253,29 @@ public class CommandHelper {
 		for (int pID : airlock.getOccupants()) {
 			Person p = airlock.getPersonByID(pID);
 			if (p != null) {
-				String direction = null;
-				
-				// Not nice code. Step through the Task stack looking for a Airlock tack
-				Task active = p.getTaskManager().getTask();
-				while ((active != null) && (direction == null)) {
-					if (active.getTaskSimpleName().equalsIgnoreCase("EnterAirlock")) {
-						direction = "In";
-					}
-					else if (active.getTaskSimpleName().equalsIgnoreCase("Exitairlock")) {
-						direction = "Out";
-					}
-					else {
-						active = active.getSubTask();
-					}
-				}
-				
-				response.appendTableRow(p.getName(), (direction != null ? direction : "?"),
-									    p.getSuit() != null ? "Yes" : "No");
+				findDirection(p, response);
 			}
 		}
+	}
+	
+	private static void findDirection(Person p, StructuredResponse response) {
+		String direction = null;
+		// Not nice code. Step through the Task stack looking for a Airlock tack
+		Task active = p.getTaskManager().getTask();
+		while ((active != null) && (direction == null)) {
+			if (active.getTaskSimpleName().equalsIgnoreCase("EnterAirlock")) {
+				direction = "In";
+			}
+			else if (active.getTaskSimpleName().equalsIgnoreCase("Exitairlock")) {
+				direction = "Out";
+			}
+			else {
+				active = active.getSubTask();
+			}
+		}
+		
+		response.appendTableRow(p.getName(), (direction != null ? direction : "?"),
+							    p.getSuit() != null ? "Yes" : "No");
 	}
 	
 	/**
@@ -289,7 +295,7 @@ public class CommandHelper {
 		
 		if (mission instanceof VehicleMission vm) {
 			v = vm.getVehicle();
-			dist = vm.getDistanceProposed();
+			dist = vm.getTotalDistanceProposed();
 			trav = vm.getTotalDistanceTravelled();
 		}
 	
@@ -325,54 +331,60 @@ public class CommandHelper {
 									.collect(Collectors.joining(", ")));
 		
 		if (!mission.isDone()) {
-			response.appendLabeledString("Phase", mission.getPhaseDescription());
+			response.appendLabeledString(PHASE, mission.getPhaseDescription());
 			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTruncatedDateTimeStamp());
 		
 			List<String> names = plist.stream().map(Entity::getName).sorted().toList();
 			response.appendNumberedList("Members", names);
 		
-			// Travel mission has a route
-			if (mission instanceof VehicleMission tm) {
-				List<NavPoint> route = tm.getNavpoints();
-				if (!route.isEmpty()) {
-					response.appendText("Itinerary:");
-					response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Distance", 10,
-										"Description");
-					NavPoint currentNav = tm.getCurrentDestination();
-					for(NavPoint nv : route) {
-						String distance = String.format(KM_FORMAT, nv.getDistance());
-						String prefix = (nv.equals(currentNav) ? "* " : "");
-						if (nv.isSettlementAtNavpoint()) {
-							response.appendTableRow(prefix + nv.getSettlement().getName(), distance, "");
-						}
-						else {
-							response.appendTableRow(nv.getLocation().getFormattedString(),
-									distance,
-									nv.getDescription());
-						}
-					}
-					response.appendBlankLine();				
-				}
-		
-				// Vehicle mission has a loading
-				LoadingController lp = v.getLoadingPlan();
-				if ((lp != null) && !lp.isCompleted()) {
-					response.appendText("Loading from " + lp.getSettlement().getName() + " :");
-					outputResources("Resources", response, lp.getResourcesManifest());	
-					outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
-					outputEquipment("Equipment", response, lp.getEquipmentManifest());	
-					outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
-				}
-			}
+			printMissions(response, mission);
 		}
+		
 		// Mission log
 		response.appendText("Log:");
-		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
+		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, PHASE);
 		for (MissionLog.MissionLogEntry entry : mission.getLog().getEntries()) {
 			response.appendTableRow(entry.getTime().getTruncatedDateTimeStamp(), entry.getEntry());
 		}
 	}
 
+	public static void printMissions(StructuredResponse response, Mission mission) {
+		// Travel mission has a route
+		if (mission instanceof VehicleMission tm) {
+			List<NavPoint> route = tm.getNavpoints();
+			if (!route.isEmpty()) {
+				response.appendText("Itinerary:");
+				response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Distance", 10,
+									"Description");
+				NavPoint currentNav = tm.getCurrentDestination();
+				for(NavPoint nv : route) {
+					String distance = String.format(KM_FORMAT, nv.getPointToPointDistance());
+					String prefix = (nv.equals(currentNav) ? "* " : "");
+					if (nv.isSettlementAtNavpoint()) {
+						response.appendTableRow(prefix + nv.getSettlement().getName(), distance, "");
+					}
+					else {
+						response.appendTableRow(nv.getLocation().getFormattedString(),
+								distance,
+								nv.getDescription());
+					}
+				}
+				response.appendBlankLine();				
+			}
+	
+			// Vehicle mission has a loading
+			var v = tm.getVehicle();
+			var lp = (v != null ? v.getLoadingPlan() : null);
+			if ((lp != null) && !lp.isCompleted()) {
+				response.appendText("Loading from " + lp.getSettlement().getName() + " :");
+				outputResources("Resources", response, lp.getResourcesManifest());	
+				outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
+				outputEquipment("Equipment", response, lp.getEquipmentManifest());	
+				outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
+			}
+		}
+	}
+	
 	/**
 	 * Outputs the equipment in use.
 	 * 
@@ -384,7 +396,7 @@ public class CommandHelper {
 			Map<Integer, Integer> manifest) {
 		if (!manifest.isEmpty()) {
 			response.appendText(title);
-			response.appendTableHeading("Item", 22, "Quantity");
+			response.appendTableHeading(ITEM, 22, ITEM);
 			
 			for(Entry<Integer, Integer> item : manifest.entrySet()) {
 				response.appendTableRow(EquipmentType.convertID2Type(item.getKey()).getName(),
@@ -405,7 +417,7 @@ public class CommandHelper {
 			Map<Integer, Number> resourcesManifest) {
 		if (!resourcesManifest.isEmpty()) {
 			response.appendText(title);
-			response.appendTableHeading("Item", 30, "Quantity");
+			response.appendTableHeading(ITEM, 30, ITEM);
 			
 			for(Entry<Integer, Number> item : resourcesManifest.entrySet()) {
 				int id = item.getKey();
@@ -490,11 +502,10 @@ public class CommandHelper {
 	 * @param context COntext of the conversation
 	 */
 	public static Coordinates getCoordinates(String desc, Conversation context) {
-		double lat1 = 0;
-		double lon1 = 0;
+		double phi = 0;
+		double theta = 0;
 		boolean good = false;
 		
-		//Get lat
 		do {
 			try {
 				String latitudeStr1 = context.getInput("What is the latitude (e.g. 10.03 N, 5.01 S) of the " 
@@ -503,7 +514,7 @@ public class CommandHelper {
 						|| latitudeStr1.isBlank())
 					return null;
 				else {
-					lat1 = Coordinates.parseLatitude2Phi(latitudeStr1);
+					phi = Coordinates.parseLatitude2Phi(latitudeStr1);
 					good = true;
 				}
 			} catch(IllegalStateException e) {
@@ -520,7 +531,7 @@ public class CommandHelper {
 						|| longitudeStr.isBlank())
 					return null;
 				else {
-					lon1 = Coordinates.parseLongitude2Theta(longitudeStr);
+					theta = Coordinates.parseLongitude2Theta(longitudeStr);
 					good = true;
 				}
 			} catch(IllegalStateException e) {
@@ -529,7 +540,7 @@ public class CommandHelper {
 			}
 		} while (!good);
 		
-		return new Coordinates(lat1, lon1);
+		return new Coordinates(phi, theta);
 	}
 
 	/**

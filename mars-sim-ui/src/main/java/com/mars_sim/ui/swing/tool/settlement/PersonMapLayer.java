@@ -13,6 +13,7 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
 /**
  * A settlement map layer for displaying people.
@@ -42,7 +43,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
-		drawWorkers(people, selectedPerson, mapPanel.isShowPersonLabels(), viewpoint);
+		drawWorkers(people, selectedPerson, mapPanel.isOptionDisplayed(DisplayOption.PERSON_LABELS), viewpoint);
 	}
 
 	/**

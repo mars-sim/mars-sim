@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Simulation;
@@ -18,9 +19,9 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -133,17 +134,12 @@ extends TabPanel {
         // Create imgPanel
     	JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 5));
         weatherLabel = new JLabel();
-    	imgPanel.add(weatherLabel, JLabel.CENTER);
+    	imgPanel.add(weatherLabel, SwingConstants.CENTER);
     	centerEastPanel.add(imgPanel, BorderLayout.SOUTH);
 
     	// Prepare temperature panel
         JPanel temperaturePanel = new JPanel(new FlowLayout());
         centerEastPanel.add(temperaturePanel, BorderLayout.CENTER);
-
-        // Prepare temperature label
-//        temperatureValueLabel = new JLabel(StyleManager.DECIMAL_CELCIUS.format(getTemperature()), JLabel.CENTER);
-//        temperatureValueLabel.setOpaque(false);
-//        temperaturePanel.add(temperatureValueLabel);
 
         JPanel metricsPanel = new JPanel(new BorderLayout(5, 5));
         mainPanel.add(metricsPanel, BorderLayout.CENTER);
@@ -207,6 +203,11 @@ extends TabPanel {
      }
 
 
+    /**
+     * Gets the air density in g/m3.
+     * 
+     * @return
+     */
     public double getAirDensity() {
 		return weather.getAirDensity(locationCache);
     }

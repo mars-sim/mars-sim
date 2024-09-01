@@ -70,9 +70,13 @@ public class PersonUnitWindow extends UnitWindow {
 	 */
 	public PersonUnitWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
-		super(desktop, person, person.getName(), true);
+		super(desktop, person, person.getName() 
+				+ " of " + 
+				((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())
+				+ " (" + (person.getLocationStateType().getName()) + ")"
+				, false);
 		this.person = person;
-	
+
 		// Create status panel
 		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
@@ -172,17 +176,6 @@ public class PersonUnitWindow extends UnitWindow {
 		gridPanel.add(jobPanel);
 
 		statusPanel.add(gridPanel, BorderLayout.CENTER);
-		
-//		// Add space agency label and logo
-//		JLabel agencyLabel = getAgencyLabel();
-//		
-//		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
-//		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-//		agencyPanel.add(agencyLabel);
-//
-//		statusPanel.add(agencyPanel, BorderLayout.EAST);
 	}
 	
 	public void initTabPanel(Person person) {
@@ -234,7 +227,13 @@ public class PersonUnitWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-
+		
+		String title = person.getName() 
+				+ " of " + 
+				((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())
+				+ " (" + (person.getLocationStateType().getName()) + ")";
+		super.setTitle(title);
+		
 		if (!deadCache 
 			&& (person.isDeclaredDead()
 			|| person.getPhysicalCondition().isDead())) {
@@ -286,7 +285,7 @@ public class PersonUnitWindow extends UnitWindow {
 		ShiftSlot shiftSlot = person.getShiftSlot();
 		String shiftDesc = TabPanelSchedule.getShiftNote(person.getShiftSlot());
 		String newShift = shiftSlot.getStatusDescription();
-		if (!oldShift.equals(newShift)) {
+		if (!oldShift.equalsIgnoreCase(newShift)) {
 			oldShift = newShift;
 			shiftLabel.setText(TWO_SPACES + newShift);
 			shiftLabel.setToolTipText(shiftDesc);

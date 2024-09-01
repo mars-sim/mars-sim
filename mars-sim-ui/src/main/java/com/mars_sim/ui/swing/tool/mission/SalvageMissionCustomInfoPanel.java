@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.tool.mission;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
@@ -19,9 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
+import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.construction.ConstructionEvent;
@@ -81,13 +79,11 @@ implements ConstructionListener {
 
 		settlementButton = new JButton("   ");
 		settlementPanel.add(settlementButton);
-		settlementButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		settlementButton.addActionListener(e -> {
 				if (mission != null) {
 					Settlement settlement = mission.getAssociatedSettlement();
 					if (settlement != null) getDesktop().showDetails(settlement);
 				}
-			}
 		});
 
 		JPanel stagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));

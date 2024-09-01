@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HistoricalEventCategory.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author stpa
  */
 
@@ -10,7 +10,7 @@ package com.mars_sim.core.events;
 import java.util.Arrays;
 import java.util.List;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum HistoricalEventCategory {
 
@@ -28,13 +28,15 @@ public enum HistoricalEventCategory {
 		this.name = name;
 	}
 
-	/** gets the internationalized name for display in user interface. */
+	/** 
+	 * Gets the internationalized name for display in user interface.
+	 */
 	public String getName() {
 		return this.name;
 	}
 	
 	/**
-	 * gives back a list of all valid values for the HistoricalEventCategory enum.
+	 * Gives back a list of all valid values for the HistoricalEventCategory enum.
 	 */
 	public static List<HistoricalEventCategory> valuesList() {
 		return Arrays.asList(HistoricalEventCategory.values());

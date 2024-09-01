@@ -15,41 +15,41 @@
 # mars-sim 
 
 ## Table of Contents
-* [Introduction](#introduction)  
-   * [Simulation](#simulation)
-   * [Mars Direct Mission Plan](#mars-direct-mission-plan) 
-   * [Settlement Development](#settlement-development)
-   * [Economics](#economics)
-   * [Sponsors](#sponsors)   
-* [Operation Modeling](#operation-modeling)
-   * [Timekeeping](#timekeeping)
-   * [Indoor Atmosphere](#indoor-atmosphere)
-   * [EVA](#eva)
-   * [Radiation](#radiation)
-   * [Job](#job)
-   * [Role](#role)
-   * [Task](#task)
-   * [Work Shift](#work-shift)
-   * [Mission](#mission)
-   * [Weather](#weather)
-   * [Maintenance and Malfunction](#maintenance-and-malfunction)
-* [Creating the Future](#creating-the-future)
-* [Conclusion](#conclusion)
-* [Set up](#set-up)
-   * [Prerequisites](#prerequisites)
-   * [JDK and JavaFX](#jdk-and-javafx)
-   * [OS Platforms](#os-platforms)
-   * [Remote Console Connection](#remote-console-connection)
-* [Outreach](#outreach)
-* [Discussions](#discussions)
-* [Issues and Tickets](#issues-and-tickets)
-* [Contribution](#contribution)
-* [Website](#website)
-* [Wiki](#wiki)
-* [Supported Platforms](#supported-platforms)
-* [Official Codebase](#official-codebase)
-* [Download](#download)
-* [License](#license)
+- [Introduction](#introduction)  
+   - [Simulation](#simulation)
+   - [Mars Direct Mission Plan](#mars-direct-mission-plan) 
+   - [Settlement Development](#settlement-development)
+   - [Economics](#economics)
+   - [Sponsors](#sponsors)   
+- [Operation Modeling](#operation-modeling)
+   - [Timekeeping](#timekeeping)
+   - [Indoor Atmosphere](#indoor-atmosphere)
+   - [EVA](#eva)
+   - [Radiation](#radiation)
+   - [Job](#job)
+   - [Role](#role)
+   - [Task](#task)
+   - [Work Shift](#work-shift)
+   - [Mission](#mission)
+   - [Weather](#weather)
+   - [Maintenance and Malfunction](#maintenance-and-malfunction)
+- [Creating the Future](#creating-the-future)
+- [Conclusion](#conclusion)
+- [Development](#development)
+   - [Set up](#set-up)
+      - [Prerequisites](#prerequisites)
+      - [JDK and JavaFX](#jdk-and-javafx)
+      - [OS Platforms](#os-platforms)
+      - [Remote Console Connection](#remote-console-connection)
+   - [Discussions](#discussions)
+   - [Issues and Tickets](#issues-and-tickets)
+   - [Contribution](#contribution)
+   - [Website](#website)
+   - [Wiki](#wiki)
+   - [Outreach](#outreach)
+   - [Official Codebase](#official-codebase)
+   - [Download](#download)
+   - [License](#license)
 
 ---
 
@@ -327,11 +327,13 @@ in creating a new branch of human society on another planetary surface.
 
 ---
 
-# Set Up
+# Development
+
+## Set Up
 
 Below is a summary of how player may set up one's machine to evaluate and develop mars-sim
 
-## Prerequisites
+### Prerequisites
 
 Currently, mars-sim supports Java 17 and is evaluating the feasibility of supporting Java 21 
 (the latest long-term support (LTS) release) in near future.
@@ -339,7 +341,7 @@ Currently, mars-sim supports Java 17 and is evaluating the feasibility of suppor
 * Requires only JRE 17 for running mars-sim
 * Requires only JDK 17 (or OpenJDK 17) for compiling binary
 
-## JDK and JavaFX
+### JDK and JavaFX
 
 Beginning Java 11, the JRE/JDK package is being decoupled from the graphic
 JavaFX API package.
@@ -382,27 +384,27 @@ If you need JavaFX, we recommend downloading the `Full JDK` 64-bits package.
 running other apps that requires JavaFX.
 
 
-## OS Platforms
+### OS Platforms
 
 mars-sim jar binary currently works on Windows, Linux or macOS based systems. 
 
 Below are the peculiaries of setting up Java in each OS platform.
 
-### Linux
+#### Linux
 
 1. There are shell script command in the bin directory for the console & swing versions.
 
 2. To manage multiple versions of java with the use of a tool called `SDKMan`,
 see this [DZone article](https://dzone.com/articles/how-to-install-multiple-versions-of-java-on-the-sa).
 
-### macOS
+#### macOS
 
 1.  Check if the directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home`.
 See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more instructions.
 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
 
-### Windows
+#### Windows
 
 Choose MSI version that will automatically set up the environment path correctly.
 
@@ -554,13 +556,6 @@ our [domain](https://www.mars-sim.com/) directly.
 
 ## Wiki
 Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub.
-
-
-## Supported Platforms
-* Windows
-* MacOS
-* Linux
-
 
 ## Official Codebase
 * https://github.com/mars-sim/mars-sim

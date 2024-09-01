@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleTableModel.java
- * @date 2021-10-23
+ * @date 2024-07-23
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -10,27 +10,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
-import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
@@ -126,7 +128,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	}
 
 	/**
-	 * Filter the vehicles to a settlement
+	 * Filters the vehicles to a settlement.
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
@@ -144,7 +146,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	@Override
 	protected Object getEntityValue(Vehicle vehicle, int columnIndex) {
 		Object result = null;
-
+		double value = 0.0;
+		
 		switch (columnIndex) {
 			case NAME : 
 				result = vehicle.getName();
@@ -155,7 +158,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case TYPE :
-				result = vehicle.getVehicleType().getName();
+				result = vehicle.getVehicleSpec().getName();
 				break;
 
 			case MODEL :
@@ -163,24 +166,29 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 				
 			case LOCATION : {
-				Settlement settle = vehicle.getSettlement();
-				if (settle != null) {
-					result = settle.getName();
+				Mission mission = vehicle.getMission();
+				if (mission instanceof AbstractVehicleMission vm) {
+					result = vm.getCurrentNavpointDescription();
 				}
 				else {
-					result = vehicle.getCoordinates().getFormattedString();
+					Settlement settle = vehicle.getSettlement();
+					if (settle != null) {
+						result = settle.getName();
+					}
+					else {
+						settle = CollectionUtils.findSettlement(vehicle.getCoordinates());
+						if (settle != null) {
+							result = settle.getName();
+						}
+					}
 				}
+		
 			} break;
 
 			case DESTINATION : {
 				Mission mission = vehicle.getMission();
-				if (mission instanceof VehicleMission vm) {
-					NavPoint destination = vm.getCurrentDestination();
-					if (destination.isSettlementAtNavpoint())
-						result = destination.getSettlement().getName();
-					else
-						result = destination.getDescription()
-							+ " - " + destination.getLocation().getFormattedString();
+				if (mission instanceof AbstractVehicleMission vm) {
+					result = vm.getNextNavpointDescription();
 				}
 			} break;
 
@@ -199,8 +207,13 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case CREW : {
-				if (vehicle instanceof Crewable c)
-					result = c.getCrewNum();
+				if (vehicle instanceof Crewable c) {
+					int num = c.getCrewNum();
+					if (num == 0)
+						result = null;
+					else
+						result = num;
+				}
 			} break;
 
 			case DRIVER :
@@ -208,7 +221,11 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case SPEED :
-				result = vehicle.getSpeed();
+				value = vehicle.getSpeed();
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			// Status is a combination of Mechanical failure and maintenance
@@ -229,28 +246,52 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				if (failure != null) result = failure.getName();
 			} break;
 
-			case WATER : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.waterID);
+			case WATER :
+				value = vehicle.getAmountResourceStored(ResourceUtil.waterID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			case FOOD : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.foodID);
+				value = vehicle.getAmountResourceStored(ResourceUtil.foodID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			case OXYGEN : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
+				value = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			case METHANOL : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.methanolID);
+				value = vehicle.getAmountResourceStored(ResourceUtil.methanolID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
-			case ROCK_SAMPLES : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.rockSamplesID);
+			case ROCK_SAMPLES : ;
+				value = vehicle.getAmountResourceStored(ResourceUtil.rockSamplesID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
-			case ICE : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.iceID);
+			case ICE :
+				value = vehicle.getAmountResourceStored(ResourceUtil.iceID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 			
 			default:

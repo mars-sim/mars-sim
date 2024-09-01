@@ -6,9 +6,9 @@
  */
 package com.mars_sim.core.structure.building.connection;
 
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A hatch on one side of a building connection.

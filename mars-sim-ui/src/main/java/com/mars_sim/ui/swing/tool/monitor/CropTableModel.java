@@ -21,7 +21,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropCategory;
 import com.mars_sim.core.structure.building.function.farming.Farming;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
@@ -105,13 +105,17 @@ public class CropTableModel extends UnitTableModel<Building> {
 		CropCategory cropCat = cropCategoryList.get(cropColumn - FIRST_CROP_CAT);
 
 		int num = 0;
-		for(Crop k : greenhouse.getFarming().getCrops()) {
+		for (Crop k : greenhouse.getFarming().getCrops()) {
 			CropCategory cat = k.getCropSpec().getCropCategory();
 			if (cat.equals(cropCat)) {
 				num++;
 			}
 		}
-		return num;
+		
+		if (num == 0)
+			return null;
+		
+		return num;	
 	}
 
 	/**

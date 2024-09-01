@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -172,7 +173,7 @@ public class ConstructionSitesPanel extends JPanel {
             setBorder(new MarsPanelBorder());
 
             // Create the status panel.
-            statusLabel = new JLabel(" ", JLabel.LEFT);
+            statusLabel = new JLabel(" ", SwingConstants.LEFT);
             add(statusLabel, BorderLayout.NORTH);
             
             // Create the progress bar panel.

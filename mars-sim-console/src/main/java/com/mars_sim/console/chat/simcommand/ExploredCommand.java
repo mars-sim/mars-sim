@@ -19,8 +19,8 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Command to display details of Explored Locations. The locations are filtered
@@ -87,7 +87,7 @@ public class ExploredCommand extends ChatCommand {
 	 */
 	private void displayExploredLocations(Conversation context, SurfaceFeatures surface) {
 
-		Set<ExploredLocation> locations = surface.getAllRegionOfInterestLocations();
+		Set<ExploredLocation> locations = surface.getAllPossibleRegionOfInterestLocations();
 			
 		// Filter the list if in a Settlement
 		if (context.getCurrentCommand() instanceof ConnectedUnitCommand cuc) {

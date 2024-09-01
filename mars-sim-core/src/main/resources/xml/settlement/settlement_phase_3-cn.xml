@@ -12,6 +12,8 @@
             <connection id="21" xloc="4.5" yloc="0.0" />
         </connection-list>
     </building>
+    
+    <!-- H1. Between the first and the second row -->
     <building id="1" type="Hallway" length="4.0" xloc="0.0"
         yloc="6.5" facing="0.0">
         <connection-list>
@@ -19,6 +21,7 @@
             <connection id="2" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
+    
     <building id="2" type="Research Hab" xloc="0.0" yloc="13.0"
         facing="0.0">
         <connection-list>
@@ -27,6 +30,8 @@
             <connection id="9" xloc="-4.5" yloc="0.0" />
         </connection-list>
     </building>
+    
+    <!-- H2. Between the second and the third row -->
     <building id="3" type="Hallway" length="4.0" xloc="0.0"
         yloc="19.5" facing="0.0">
         <connection-list>
@@ -42,7 +47,7 @@
         </connection-list>
     </building>
 
-    <!-- The first row -->
+    <!-- H3. At the first row -->
     <building id="5" type="Hallway" length="3.0" xloc="-6.0"
         yloc="0.0" facing="270.0">
         <connection-list>
@@ -58,6 +63,7 @@
         </connection-list>
     </building>
 
+    <!-- H4. At the first row -->
     <building id="7" type="Hallway" length="3.0" xloc="-18.0"
         yloc="0.0" facing="270.0">
         <connection-list>
@@ -74,7 +80,7 @@
         </connection-list>
     </building>
 
-    <!-- The second row -->
+    <!-- H5. At the second row -->
     <building id="9" type="Hallway" length="3.0" xloc="-6.0"
         yloc="13.0" facing="270.0">
         <connection-list>
@@ -90,6 +96,7 @@
         </connection-list>
     </building>
 
+    <!-- H6. At the second row -->
     <building id="11" type="Hallway" length="3.0" xloc="-18.0"
         yloc="13.0" facing="270.0">
         <connection-list>
@@ -106,7 +113,7 @@
         </connection-list>
     </building>
 
-    <!-- The third row -->
+    <!-- H7. The third row -->
     <building id="13" type="Hallway" length="3.0" xloc="-6.0"
         yloc="26.0" facing="270.0">
         <connection-list>
@@ -122,6 +129,7 @@
         </connection-list>
     </building>
 
+    <!-- H8. The third row -->
     <building id="15" type="Hallway" length="3.0" xloc="-18.0"
         yloc="26.0" facing="270.0">
         <connection-list>
@@ -137,8 +145,7 @@
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse on the first row
-        to that of second row -->
+    <!-- H9. Between the first and the second row -->
     <building id="17" type="Hallway" length="7.0" xloc="-24.0"
         yloc="6.5" facing="0.0">
         <connection-list>
@@ -147,8 +154,7 @@
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse on the second row
-        to that of the third row -->
+    <!-- H10. Between the second and the third row -->
     <building id="18" type="Hallway" length="7.0" xloc="-24.0"
         yloc="19.5" facing="0.0">
         <connection-list>
@@ -157,8 +163,7 @@
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse in the first row
-        to the garage -->
+    <!-- H11. Between the zero and the first row -->
     <building id="19" type="Hallway" length="4.0" xloc="-24.0"
         yloc="-5.0" facing="0.0">
         <connection-list>

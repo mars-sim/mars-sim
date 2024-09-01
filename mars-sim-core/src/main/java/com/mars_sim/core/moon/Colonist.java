@@ -7,7 +7,7 @@ import com.mars_sim.core.person.PersonBuilder;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class Colonist implements Serializable, Entity, SkillOwner {
 

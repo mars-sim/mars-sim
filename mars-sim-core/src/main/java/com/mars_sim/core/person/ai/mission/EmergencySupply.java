@@ -22,6 +22,8 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -34,14 +36,12 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleGarage;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A mission for delivering emergency supplies from one settlement to another.
@@ -370,7 +370,7 @@ public class EmergencySupply extends RoverMission {
 		}
 
 		// Unload rover if necessary.
-		boolean roverUnloaded = getRover().getStoredMass() == 0D;
+		boolean roverUnloaded = getRover().isEmpty();
 		if (!roverUnloaded) {
 			// Random chance of having person unload (this allows person to do other things
 			// sometimes)
@@ -510,7 +510,7 @@ public class EmergencySupply extends RoverMission {
 
 				// Check if settlement is within rover range.
 				double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
-				if (settlementRange <= (rover.getRange() * .8D)) {
+				if (settlementRange <= (rover.getEstimatedRange() * .8D)) {
 
 					// Find what emergency supplies are needed at settlement.
 					Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
@@ -885,8 +885,8 @@ public class EmergencySupply extends RoverMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange();
-				double secondRange = secondVehicle.getRange();
+				double firstRange = firstVehicle.getEstimatedRange();
+				double secondRange = secondVehicle.getEstimatedRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange < secondRange) {

@@ -32,6 +32,7 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -52,11 +53,9 @@ import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The robot class represents operating a robot on Mars.
@@ -81,6 +80,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 
+	private static final String CURRENTLY = "Currently ";
+	
 	/** The string tag of operable. */
 	private static final String OPERABLE = "Operable";
 	/** The string tag of inoperable. */
@@ -144,7 +145,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		this.robotType = spec.getRobotType();
 		this.position = LocalPosition.DEFAULT_POSITION;
 		this.model = spec.getMakeModel();
-
+		
 		// Set base mass
 		setBaseMass(spec.getMass());
 		// Set height
@@ -153,9 +154,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		isSalvaged = false;
 		salvageInfo = null;
 		isInoperable = false;
-		// set description for this robot
-		super.setDescription(OPERABLE);
-
+		
+		// Set description for this robot
+		setDescription("[ " + CURRENTLY + OPERABLE + " ] " + spec.getDescription());
+		
 		// Construct the SystemCondition instance.
 		health = new SystemCondition(this, spec);
 
@@ -303,7 +305,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	// TODO: allow robot parts to be stowed in storage
 	void setInoperable() {
 		// set description for this robot
-		super.setDescription(INOPERABLE);
+		super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
 		botMind.setInactive();
 		toBeSalvaged();
 	}
@@ -1028,17 +1030,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public boolean setContainerUnit(Unit newContainer) {
+	private boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
-				return false;
+			Unit cu = getContainerUnit();
+			
+			if (newContainer.equals(cu)) {
+				return true;
 			}
+	
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(getContainerUnit().getCoordinates());
+				setCoordinates(cu.getCoordinates());
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
@@ -1174,6 +1179,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
 		Unit cu = getContainerUnit();
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
 		UnitType ut = cu.getUnitType();
 
 		if (destination.equals(cu)) {
@@ -1182,34 +1194,37 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-				transferred = ((Crewable)cu).removeRobot(this);
+			if (cu instanceof Crewable c) { //!((Vehicle)cu instanceof Drone)) {
+				transferred = c.removeRobot(this);
 			}
 			else {
-				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeRobot(this);
 		}
-		else if (ut == UnitType.BUILDING) {
-			transferred = true;
-		}
-		else {
+		else if (ut == UnitType.BUILDING
+				|| ut == UnitType.SETTLEMENT) {
 			// Question: should we remove this unit from settlement's robotWithin list
 			// especially if it is still inside the garage of a settlement
 			transferred = ((Settlement)cu).removeRobotsWithin(this);
 			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
 		}
 
-		if (transferred) {
+		if (!transferred) {
+			logger.severe(this, 20_000, "Cannot be retrieved from " + cu + ".");
+			// NOTE: need to revert back to the previous container unit cu
+		}
+		
+		else {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-					transferred = ((Crewable)destination).addRobot(this);
+				if (destination instanceof Crewable c) { //!((Vehicle)destination instanceof Drone)) {
+					transferred = c.addRobot(this);
 				}
 				else {
-					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 20_000, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -1227,21 +1242,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 
 			if (!transferred) {
-				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
-		}
-		else {
-			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action
 		}
 
 		return transferred;

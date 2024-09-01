@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -45,7 +43,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FoodProduction;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -166,12 +164,11 @@ public class TabPanelFoodProduction extends TabPanel {
 		newProcessButton = new JButton(Msg.getString("TabPanelFoodProduction.button.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.createNewProcess")); //$NON-NLS-1$
-		newProcessButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		newProcessButton.addActionListener(e -> {
 				try {
-					Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
-					if (foodFactoryBuilding != null) {
-						FoodProduction foodFactory = foodFactoryBuilding.getFoodProduction();
+					Building b = (Building) buildingComboBox.getSelectedItem();
+					if (b != null) {
+						FoodProduction foodFactory = b.getFoodProduction();
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
 							if (selectedItem instanceof FoodProductionProcessInfo) {
@@ -180,7 +177,7 @@ public class TabPanelFoodProduction extends TabPanel {
 									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
 									update();
 									
-									logger.log(foodFactoryBuilding, Level.CONFIG, 0L, "Player starts the '" 
+									logger.log(b, Level.CONFIG, 0L, "Player starts the '" 
 											+ selectedProcess.getName() + "'.");
 									
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
@@ -192,21 +189,16 @@ public class TabPanelFoodProduction extends TabPanel {
 							}
 						}
 					}
-				} catch (Exception e) {
-					logger.severe(Msg.getString("TabPanelFoodProduction.log.newProcessButton"), e); //$NON-NLS-1$
+				} catch (Exception ex) {
+					logger.severe(Msg.getString("TabPanelFoodProduction.log.newProcessButton"), ex); //$NON-NLS-1$
 				}
-			}
 		});
 		interactionPanel.add(newProcessButton);
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelFoodProduction.checkbox.overrideProduction")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideProduction")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setOverride(OverrideType.FOOD_PRODUCTION, overrideCheckbox.isSelected());
-			}
-		});
+		overrideCheckbox.addActionListener(e -> setOverride(OverrideType.FOOD_PRODUCTION, overrideCheckbox.isSelected()));
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
 		interactionPanel.add(overrideCheckbox);
 	}

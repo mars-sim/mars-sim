@@ -23,8 +23,8 @@
 	<!-- edible - Is the resource edible? -->
 
 	<!-- Life Support Resources -->
-	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true">potable water</resource>
+	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents thermo-stabilized food that can afford long-term storage.</resource>
+	<resource name="Water" type="compound" phase="liquid" life-support="true">Potable water</resource>
 	<resource name="Oxygen" type="element" phase="gas" life-support="true" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
@@ -45,7 +45,7 @@
 	  liquid with a faintly sweet pungent odor like that of ethyl alcohol. 
 	  </resource>
 	 
-	<resource name="Nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
+	<resource name="Nitrogen" type="element" phase="gas">N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
 	<resource name="Carbon monoxide" type="compound" phase="gas" demand=".05" />
@@ -86,10 +86,6 @@
 		formula C3H6. It's a colorless gas with a faint petroleum-like odor and is 
 		flammable, and is often used as fuel.
 		</resource>
-	
-<!-- Elements -->
-	<resource name="Iron powder" type="element" phase="solid" />
-	<resource name="Manganese" type="element" phase="solid" />
 
 <!-- Wastes -->
 	<resource name="Soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
@@ -645,7 +641,7 @@
 		undesired molecules and make it a perfect basis for catalytically active metals.
 	</resource>
 				 		 
-<!-- 10 types of Mineral concentrations.
+<!-- 11 types of Mineral concentrations.
 
     Using instruments on the Mars Reconnaissance Orbiter they found the minerals
     smectite, silica, zeolite, serpentine, carbonate, and chorite that are
@@ -698,6 +694,15 @@
 	 elements present in highest concentrations. Olivine gives its name to the group of minerals
 	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4),
 	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
+	 <resource name="Pyroxene" type="mineral" phase="solid">Pyroxenes have the general formula XY(Si,Al)2O6,
+	 where X represents calcium (Ca), sodium (Na), iron (Fe(II)) or magnesium (Mg) and more rarely zinc, 
+	 manganese or lithium, and Y represents ions of smaller size, such as chromium (Cr), aluminium (Al), 
+	 magnesium (Mg), cobalt (Co), manganese (Mn), scandium (Sc), titanium (Ti), vanadium (V) or even 
+	 iron (Fe(II) or Fe(III)). </resource>
+	<resource name="Sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural
+	 mineral form. It forms crystals in the isometric system very similar to normal rock salt,
+	 halite (NaCl). The two are, in fact, isomorphous. Sylvite is colorless to white with shades
+	 of yellow and red due to inclusions. </resource>
 	<resource name="Taenite" type="mineral" phase="solid">Taenite is a major constituent of iron meteorites.
 	 An alloy of iron and nickel, with nickel proportions of 20% up to 65%. The name is derived
 	 from the Greek meaning band or ribbon. In octahedrites it is found in bands interleaving
@@ -705,11 +710,6 @@
 	 constituent. In octahedrites a fine intermixture with kamacite can occur, which is
 	 called plessite. Taenite is one of four known Fe-Ni meteorite minerals: The others are
 	 kamacite, tetrataenite, and antitaenite.</resource>
-	<resource name="Sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural
-	 mineral form. It forms crystals in the isometric system very similar to normal rock salt,
-	 halite (NaCl). The two are, in fact, isomorphous. Sylvite is colorless to white with shades
-	 of yellow and red due to inclusions. </resource>
-
 
 <!-- Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
 	<resource name="Rock samples" type="rock" phase="solid">Rock samples collected from explored sites.</resource>
@@ -732,7 +732,7 @@
 	<resource name="Meteorite" type="rock" phase="solid">.</resource>
 	<resource name="Scoria" type="rock" phase="solid">.</resource>
 
-<!-- Mineral Elements
+<!-- Elements
 
     On Earth, vast volcanic landscapes are called "Large Igneous Provinces"
     (LIP's); such places are sources of nickel, copper, titanium, iron,
@@ -756,18 +756,21 @@
 	<resource name="Chromium" type="element" phase="solid">An element.</resource>
 	<resource name="Copper" type="element" phase="solid">An element.</resource>
 	<resource name="Gold" type="element" phase="solid">An element.</resource>
-	<resource name="Iron" type="element" phase="solid" demand=".1">An element.</resource>
+	<resource name="Iron powder" type="element" phase="solid" demand=".1">An element.</resource>
 	<resource name="Lithium" type="element" phase="solid">An element.</resource>
 	<resource name="Magnesium" type="element" phase="solid">An element.</resource>
+	<resource name="Manganese" type="element" phase="solid">An element.</resource>
 	<resource name="Nickel" type="element" phase="solid">An element.</resource>
 	<resource name="Phosphorus" type="element" phase="solid">An element.</resource>
 	<resource name="Platinum" type="element" phase="solid">An element.</resource>
 	<resource name="Potassium" type="element" phase="solid">An element.</resource>
+	<resource name="scandium" type="element" phase="solid">An element.</resource>
 	<resource name="Silicon" type="element" phase="solid" demand=".15" >An element.</resource>
 	<resource name="Silver" type="element" phase="solid">An element.</resource>
 	<resource name="Sulfur" type="element" phase="solid">An element.</resource>
 	<resource name="Tin" type="element" phase="solid">An element.</resource>
 	<resource name="Titanium" type="element" phase="solid">An element.</resource>
+	<resource name="vanadium " type="element" phase="solid">An element.</resource>
 	<resource name="Zinc" type="element" phase="solid">An element.</resource>
 
 

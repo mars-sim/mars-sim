@@ -14,7 +14,7 @@ import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Represents a sponsor that owns units such as people, settlement, lunar colonies, etc..

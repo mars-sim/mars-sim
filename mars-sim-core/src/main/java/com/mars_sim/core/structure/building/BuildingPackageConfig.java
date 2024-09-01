@@ -17,7 +17,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
-import com.mars_sim.mapdata.location.BoundedObject;
+import com.mars_sim.core.map.location.BoundedObject;
 
 /**
  * Provides configuration information about the building packages. 

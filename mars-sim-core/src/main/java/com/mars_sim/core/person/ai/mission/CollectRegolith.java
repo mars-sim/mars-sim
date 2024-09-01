@@ -13,13 +13,13 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.ObjectiveType;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class is a mission to travel in a rover to several random locations
@@ -31,7 +31,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	private static final long serialVersionUID = 1L;
 
 	/** Number of large bags required for the mission. */
-	public static final int REQUIRED_LARGE_BAGS = 4;
+	public static final int REQUIRED_LARGE_BAGS = 6;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;

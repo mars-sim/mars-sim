@@ -25,6 +25,8 @@ import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.shift.ShiftSpec;
@@ -41,8 +43,6 @@ import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingPackageConfig;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.BuildingTemplate.BuildingConnectionTemplate;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Provides configuration information about settlements templates. Uses a DOM document to

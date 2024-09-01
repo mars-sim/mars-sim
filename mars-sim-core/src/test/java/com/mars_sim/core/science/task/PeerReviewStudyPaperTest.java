@@ -1,6 +1,7 @@
 package com.mars_sim.core.science.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -8,7 +9,6 @@ import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
     public void testCreateReviewTask() {

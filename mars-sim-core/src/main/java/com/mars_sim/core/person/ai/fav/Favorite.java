@@ -14,7 +14,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.building.function.cooking.HotMeal;
 import com.mars_sim.core.structure.building.function.cooking.MealConfig;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class Favorite implements Serializable {
 

@@ -12,7 +12,7 @@ import javax.swing.Icon;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 

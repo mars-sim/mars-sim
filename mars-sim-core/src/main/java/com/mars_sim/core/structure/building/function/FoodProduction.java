@@ -256,7 +256,7 @@ public class FoodProduction extends Function {
 	}
 
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 		double result = 0D;
 		Iterator<FoodProductionProcess> i = processes.iterator();
 		while (i.hasNext()) {
@@ -269,7 +269,7 @@ public class FoodProduction extends Function {
 
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return getPowerRequired();
+		return getCombinedPowerLoad();
 	}
 
 	@Override
@@ -460,7 +460,7 @@ public class FoodProduction extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		double result = getPowerRequired() * .25;
+		double result = getCombinedPowerLoad() * .25;
 		// Add maintenance for tech level.
 		result *= techLevel * .5;
 		// Add maintenance for num of printers in use.

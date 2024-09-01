@@ -21,6 +21,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -114,8 +115,14 @@ extends WizardPanel {
         errorMessageLabel.setText(" ");
     }
 
-    @Override
-    boolean commitChanges() {
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
+	@Override
+    boolean commitChanges(boolean isTesting) {
         int selectedIndex = researcherTable.getSelectedRow();
         Person selectedResearcher = (Person) researcherTableModel.getUnit(selectedIndex);
         getWizard().getMissionData().setLeadResearcher(selectedResearcher);
@@ -186,7 +193,7 @@ extends WizardPanel {
                         result = (int) (person.getPerformanceRating() * 100D) + "%";
                     }
                     else if (column == 4) {
-                        result = person.getPhysicalCondition().getHealthSituation();
+                        result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
                     }
                 }
                 catch (Exception e) {}

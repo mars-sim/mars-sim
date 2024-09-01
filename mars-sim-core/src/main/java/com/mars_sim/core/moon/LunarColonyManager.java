@@ -19,10 +19,10 @@ import java.util.Set;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class LunarColonyManager implements Serializable, Temporal {
 
@@ -42,6 +42,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 	
 	private static List<Coordinates> coords = new ArrayList<>();
 	
+	private LunarWorld lunarWorld;
+	
 	static {
 //		initialColonyNames.put("Kennedy", "NASA");
 //		initialColonyNames.put("Kararmin", "ISRA");
@@ -50,7 +52,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 		initialColonyNames.put("LunarOne", "SPACEX");
 		
 		colonyNames.put("Kennedy", "NASA");
-		colonyNames.put("Kararmin", "ILRA");
+		colonyNames.put("Kararmin", "ISRA");
 		colonyNames.put("Yue De", "CNSA");
 		colonyNames.put("Barmingrad", "RKA");
 		colonyNames.put("LunarOne", "SPACEX");
@@ -116,7 +118,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 	/**
 	 * Constructor.
 	 */
-	public LunarColonyManager() {	
+	public LunarColonyManager(LunarWorld lunarWorld) {	
+		this.lunarWorld = lunarWorld;
 	}
 	
 	/**
@@ -203,34 +206,29 @@ public class LunarColonyManager implements Serializable, Temporal {
 		return null;
 	}
 	
-//	public void init() {
-//		for (Colony c: colonies) {
-//			c.initPop();
-//		}
-//	}
-	
+
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		long tnow = System.currentTimeMillis();
+		// DEBUG: Calculate the real time elapsed [in milliseconds] long tnow = System.currentTimeMillis();
 
-		if (pulse.isNewHalfSol()) {
-			int rand = RandomUtil.getRandomInt(50);
-			if (rand == 1) {
-				addColony(false);
-			}
-		}
+		lunarWorld.timePassing(pulse);
 		
+		if (pulse.isNewHalfSol() || (RandomUtil.getRandomInt(100) == 1)) {
+			addColony(false);
+		}
+					
 		for (Colony c: colonies) {
 			c.timePassing(pulse);
 		}
 		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		tLast = System.currentTimeMillis();
-//		long elapsedMS = tLast - tnow;
-//		if (elapsedMS > 10)
-//			logger.severe("elapsedMS: " + elapsedMS);
-	
+		/**
+		 * DEBUG: Calculate the real time elapsed [in milliseconds]
+		 * tLast = System.currentTimeMillis();
+		 * long elapsedMS = tLast - tnow;
+		 * if (elapsedMS > 10)
+		 * 	logger.severe("elapsedMS: " + elapsedMS);
+		 */
+
 		return true;
 	}
 

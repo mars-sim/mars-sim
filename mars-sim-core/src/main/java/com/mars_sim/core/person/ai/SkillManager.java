@@ -13,7 +13,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 
 /**

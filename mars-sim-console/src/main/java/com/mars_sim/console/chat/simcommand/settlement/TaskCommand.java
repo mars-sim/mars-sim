@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TaskCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -21,7 +21,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * Command to display task allocation in a Settlement
+ * Command to display task allocation in a Settlement.
  * This is a singleton.
  */
 public class TaskCommand extends AbstractSettlementCommand {
@@ -32,7 +32,8 @@ public class TaskCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
+	 * 
 	 * @return 
 	 */
 	@Override

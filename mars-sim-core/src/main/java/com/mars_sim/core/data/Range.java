@@ -8,7 +8,7 @@ package com.mars_sim.core.data;
 
 import java.io.Serializable;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Represents a configuration attributes that specifes the valid range for a value

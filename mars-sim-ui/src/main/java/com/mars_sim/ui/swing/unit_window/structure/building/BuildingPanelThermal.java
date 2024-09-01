@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.utility.heating.HeatMode;
 import com.mars_sim.core.structure.building.utility.heating.ThermalGeneration;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -29,15 +29,10 @@ extends BuildingFunctionPanel {
 
 	private static final String HEAT_ICON = "heat";
 
-	/** The heat status textfield. */
-	private JLabel statusTF;
-	/** The heat production textfield. */
-	private JLabel producedTF;
-	/** The air heat sink label. */
-	private JLabel airHeatSinkLabel;
-	/** The water heat sink label. */
-	private JLabel waterHeatSinkLabel;
-	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
+
 	// Caches
 	/** The heat production cache. */
 	private double productionCache;
@@ -46,6 +41,14 @@ extends BuildingFunctionPanel {
 	/** The water heat sink cache. */
 	private double waterHeatSinkCache;
 	
+	/** The heat status textfield. */
+	private JLabel statusTF;
+	/** The heat production textfield. */
+	private JLabel producedTF;
+	/** The air heat sink label. */
+	private JLabel airHeatSinkLabel;
+	/** The water heat sink label. */
+	private JLabel waterHeatSinkLabel;
 	
 	/** The heat status cache. */
 	private HeatMode heatStatusCache;
@@ -102,7 +105,10 @@ extends BuildingFunctionPanel {
 	 * Updates this panel with latest Heat Mode status and amount of heat produced.
 	 */
 	@Override
-	public void update() {	
+	public void update() {		
+		if (!uiDone)
+			initializeUI();
+		
 		// Update heat status if necessary.
 //		if (!heatStatusCache.equals(building.getHeatMode())) {
 //			heatStatusCache = building.getHeatMode();			

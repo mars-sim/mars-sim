@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Battery.java
- * @date 2023-04-19
+ * @date 2024-07-20
  * @author Manny Kung
  */
 
@@ -13,34 +13,37 @@ import java.util.logging.Level;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents the modeling of an electrical battery.
  */
 public class Battery implements Serializable {
 
-    /** default serial id. */
+    /** Default serial id. */
     private static final long serialVersionUID = 1L;
     
-	// default logger.
+    /** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName());
 	
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
 //    private static final double MAX_AMP_DRAW = 120;
     
-    /** The standard voltage of this battery pack in kW. */
-    private static final double STANDARD_VOLTAGE = 600;
+	/**The maximum continuous charge rate (within the safety limit) that this battery can handle. */
+	private static final int MAX_C_RATING_CHARGING = 4;
+	
+    /** The standard voltage of this battery pack in volts. */
+    public static final double STANDARD_VOLTAGE = 600;
+    
+    /** The standard voltage of a drone battery pack in volts. */
+    public static final double DRONE_VOLTAGE = 48;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-//    public static final double ENERGY_PER_MODULE = 15.0;
+    // ENERGY_PER_MODULE = 15.0;
     
-    private static final String KWH__ = " kWH  ";
-    private static final String KW__ = " kW  ";
+    private static final String KWH = " kWh  ";
+    private static final String KW = " kW  ";
     
-	/** The max ampere hour of the battery in Ah. */	
-	private final double maxAmpHour;
-	
     // Data members
     /** Is the unit operational ? */
     private boolean operable;
@@ -52,28 +55,38 @@ public class Battery implements Serializable {
     /** The number of battery module. */
     public int numModule;
     
+    
     /** The maximum energy capacity of a standard battery module in kWh. */
     public double energyPerModule;
+    /** The standby power consumption in kW. */
+    private double standbyPower = 0.01;
     /** unit's stress level (0.0 - 100.0). */
     private double systemLoad;
     /** Performance factor. */
     private double performance;
 	/** The percentage that triggers low power warning. */
-    private double lowPowerPercent = 10;
+    private double lowPowerPercent = 5;
+    
 	/** The current energy stored in kWh. */
 	private double kWhStored;
-    /** The standby power consumption in kW. */
-    private double standbyPower = 0.01;
 	/** The energy storage capacity [in kWh, not Wh] capacity. */
 	private double energyStorageCapacity;
 	/** 
-	 * The rating [in ampere-hour or Ah] of the battery in terms of its charging/discharging ability at 
-	 * a particular C-rating. An amp is a measure of electrical current. The hour 
+	 * The capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
+	 * a particular C-rating. 
+	 * 
+	 * Note: An amp is a measure of electrical current. The hour 
 	 * indicates the length of time that the battery can supply this current.
-	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
+	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour.
 	 */
-	private double ampHour;
+	private double ampHourStored;
 
+	/** 
+	 * The full capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
+	 * a particular C-rating.
+	 */
+	private double ampHourFullCapacity;
+	
 	private Unit unit;
 	
     /**
@@ -90,9 +103,7 @@ public class Battery implements Serializable {
         this.numModule = numModule;
         this.energyPerModule = energyPerModule;
         energyStorageCapacity = energyPerModule * numModule;
-        ampHour = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
-        // Save max Ah at the start
-        maxAmpHour = ampHour;
+        ampHourStored = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
 		// At the start of sim, set to a random value
         kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
  
@@ -104,11 +115,17 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Updates the Amp Hour rating.
+     * Updates the Amp Hour stored capacity [in Ah].
      */
-    private void updateAmpHourRating() {
-    	ampHour = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 
-    	// maxAmpHour * kWhStored / energyStorageCapacity; 
+    private void updateAmpHourCapacity() {
+    	ampHourStored = 1000 * kWhStored / STANDARD_VOLTAGE; 
+    }
+    
+    /**
+     * Updates the full Amp Hour capacity [in Ah].
+     */
+    private void updateFullAmpHourCapacity() {
+    	ampHourFullCapacity = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 
     }
     
     /**
@@ -134,102 +151,130 @@ public class Battery implements Serializable {
      * @return
      */
     private double getMaxPowerDraw(double time) {
-    	return Math.min(kWhStored / time, ampHour * STANDARD_VOLTAGE / time);
+    	// Note: Need to find the physical formula for max power draw
+    	return ampHourStored * STANDARD_VOLTAGE / time / 1000;
     }
     
     /**
-     * Gets the maximum power [in kW] to be pumped in during charging.
+     * Gets the maximum power [in kW] that is allowed during charging.
      * 
      * @param time in hours
-     * @return
+     * @return maximum power [in kW]
      */
-    public double getMaxPowerCharging(double time) {
-    	return Math.min((energyStorageCapacity - kWhStored) / time, ampHour * maxAmpHour * STANDARD_VOLTAGE / time);
+    public double getMaxPowerCharging(double hours) {
+    	// Note: Need to find the physical formula for max power charge
+    	return MAX_C_RATING_CHARGING * ampHourStored * STANDARD_VOLTAGE / hours / 1000;
     }
+    
+    /**
+     * Gets the maximum energy [in kWh] that can be accepted during charging.
+     * 
+     * @param time in hours
+     * @return maximum energy [in kWh]
+     */
+    public double getMaxEnergyCharging(double hours) {
+    	// Note: Need to find the physical formula for max power charge
+    	return getMaxPowerCharging(hours) * 3600;
+    }
+    
     
     /**
      * Gets a given amount of energy within an interval of time from the battery.
      * 
      * @param amount amount of energy to consume [in kWh]
      * @param time in hrs
-     * @return energy to be delivered
+     * @return energy to be delivered [in kWh]
      */
     public double requestEnergy(double kWh, double time) {
-    	if (!isLowPower) {
-    		double powerRequest = kWh / time;
-    		
-    		double powerMax = getMaxPowerDraw(time);
-    				
-    		double energyToDeliver = 0;
-	    	double energyCanSupply = energyStorageCapacity - energyStorageCapacity * lowPowerPercent / 100;
-	    	if (energyCanSupply <= 0)
-	    		return 0;
-	    	
-//    		double powerAvailable = 0;
-//    		if (powerRequest <= powerMax)
-//    			powerAvailable = powerRequest;
-//    		else
-//    			powerAvailable = powerMax;
-	    	
-    		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
-
-          	logger.log(unit, Level.INFO, 20_000, 
-          			"[Battery Status] "
-          	       	+ "currentEnergy: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH__
-          			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH__
-                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH__
-                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH__
-                	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
-          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW__
-          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__
-           	);
-           	
-	    	kWhStored -= energyToDeliver; 
-	    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-
-            updateLowPowerMode();
-                
-            updateAmpHourRating();
-            
-            return energyToDeliver;
-    	}
     	
-		return 0;
+		double powerRequest = kWh / time;
+		
+		double powerMax = getMaxPowerDraw(time);
+				
+		double energyToDeliver = 0;
+		
+		boolean lowBatteryAlarm = false;
+				
+    	double energyCanSupply = energyStorageCapacity;
+    	
+    	if (energyCanSupply <= 0.001)
+    		logger.log(unit, Level.INFO, 20_000, 
+          			"No more battery. energyStorageCapacity: " + Math.round(energyStorageCapacity * 1_000.0)/1_000.0 + KWH);
+    		
+		if (kWhStored < energyStorageCapacity * lowPowerPercent / 100)
+			lowBatteryAlarm = true;
+
+		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, 
+						Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
+
+    	if (lowBatteryAlarm) {
+			logger.log(unit, Level.WARNING, 20_000, 
+      			"[Low Battery Alarm] "
+                + "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH
+      	       	+ "kWhStored: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH
+      			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
+              	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
+            	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
+      			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW
+      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW);
+    	}
+       	
+       	
+    	kWhStored -= energyToDeliver; 
+    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+        updateLowPowerMode();
+            
+        updateAmpHourCapacity();
+        
+        return energyToDeliver;
     }
 
     /**
-     * Provides a given amount of energy to the battery within an interval of time.
+     * Estimates how much energy will be accepted given the maximum charging rate and an interval of time.
      * 
-     * @param amount amount of energy to consume [in kWh]
-     * @param time in hrs
-     * @return energy to be delivered
+     * @param hours time in hrs
+     * @return energy to be delivered [in kWh]
      */
-    public double provideEnergy(double kWh, double time) {
-    	// FUTURE: Consider the effect of the charging rate and the time parameter
-    	
-    	double percent = kWhStored / energyStorageCapacity;
+    public double estimateChargeBattery(double hours) {
+   
+    	double percentStored = kWhStored / energyStorageCapacity * 100;
     	double energyAccepted = 0;
     	double percentAccepted = 0;
-    	if (percent >= 100)
+    	if (percentStored >= 100)
     		return 0;
     	
-    	else {
-    		percentAccepted = 100 - percent;
-    		energyAccepted = percentAccepted / 100.0 * energyStorageCapacity;
+		percentAccepted = 100 - percentStored;
+		energyAccepted = percentAccepted / 100.0 * energyStorageCapacity;
 
-    		if (kWh < energyAccepted) {
-    			energyAccepted = kWh;
-    		}
-    		
-        	kWhStored += energyAccepted;
-    		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+	 	// Consider the effect of the charging rate and the time parameter
+    	double maxChargeEnergy = getMaxEnergyCharging(hours);
+		
+    	return Math.min(maxChargeEnergy, energyAccepted);
+    }
+    
+    /**
+     * Provides a given amount of energy to the battery within an interval of time.
+     * 
+     * @param kWhPumpedIn amount of energy to consume [in kWh]
+     * @param hours time in hrs
+     * @return energy accepted for charging [in kWh]
+     */
+    public double chargeBattery(double kWhPumpedIn, double hours) {
+		
+    	double maxChargeEnergy = estimateChargeBattery(hours);
+		
+    	double energyAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
+		
+    	kWhStored += energyAccepted;
 
-            updateLowPowerMode();
-            
-            updateAmpHourRating();
-            
-        	return energyAccepted;
-    	}
+        updateAmpHourCapacity();
+
+        updateLowPowerMode();
+        
+		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+    	return energyAccepted;
     }
     
     /**

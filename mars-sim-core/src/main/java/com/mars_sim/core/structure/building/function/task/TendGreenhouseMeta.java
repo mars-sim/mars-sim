@@ -27,7 +27,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.core.structure.building.function.farming.Farming;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the Tend Greenhouse task.
@@ -41,7 +41,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         private Farming farm;
 
         public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, RatingScore score) {
-            super(owner, "Tend Crop", farm.getBuilding(), score);
+            super(owner, "Tend Crops", farm.getBuilding(), score);
             this.farm = farm;
 
             setDemand(demand);

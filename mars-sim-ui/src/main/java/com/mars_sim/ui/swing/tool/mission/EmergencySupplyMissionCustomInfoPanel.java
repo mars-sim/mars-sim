@@ -17,13 +17,14 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.person.ai.mission.EmergencySupply;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 
 /**
@@ -48,7 +49,7 @@ extends MissionCustomInfoPanel {
 		setLayout(new BorderLayout());
 
 		// Create the emergency supplies label.
-		JLabel emergencySuppliesLabel = new JLabel(Msg.getString("EmergencySupplyMissionCustomInfoPanel.emergencySupplies"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel emergencySuppliesLabel = new JLabel(Msg.getString("EmergencySupplyMissionCustomInfoPanel.emergencySupplies"), SwingConstants.LEFT); //$NON-NLS-1$
 		add(emergencySuppliesLabel, BorderLayout.NORTH);
 
 		// Create a scroll pane for the emergency supplies table.

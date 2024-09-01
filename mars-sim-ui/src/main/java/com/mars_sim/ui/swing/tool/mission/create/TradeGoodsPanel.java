@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -64,6 +65,7 @@ class TradeGoodsPanel extends WizardPanel {
 
 	/**
 	 * constructor.
+	 * 
 	 * @param wizard {@link CreateMissionWizard}
 	 * @param buyGoods {@link Boolean}
 	 */
@@ -91,7 +93,7 @@ class TradeGoodsPanel extends WizardPanel {
 		add(availableGoodsPane, BorderLayout.WEST);
 
 		// Create available goods label.
-		availableGoodsLabel = new JLabel("Available goods at ", JLabel.CENTER);
+		availableGoodsLabel = new JLabel("Available goods at ", SwingConstants.CENTER);
 		availableGoodsPane.add(availableGoodsLabel, BorderLayout.NORTH);
 
 		// Create available goods table.
@@ -125,7 +127,7 @@ class TradeGoodsPanel extends WizardPanel {
 		amountOuterPanel.add(amountControlPane);
 
 		// Create amount label.
-		JLabel amountLabel = new JLabel("Amount", JLabel.CENTER);
+		JLabel amountLabel = new JLabel("Amount", SwingConstants.CENTER);
 		amountControlPane.add(amountLabel, BorderLayout.NORTH);
 
 		// Create left arrow button.
@@ -205,7 +207,7 @@ class TradeGoodsPanel extends WizardPanel {
 		add(tradedGoodsPane, BorderLayout.EAST);
 
 		// Create traded goods label.
-		JLabel tradedGoodsLabel = new JLabel("Selling Goods", JLabel.CENTER);
+		JLabel tradedGoodsLabel = new JLabel("Selling Goods", SwingConstants.CENTER);
 		if (buyGoods) tradedGoodsLabel.setText("Buying Goods");
 		tradedGoodsPane.add(tradedGoodsLabel, BorderLayout.NORTH);
 
@@ -250,9 +252,11 @@ class TradeGoodsPanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		boolean result = false;
 		try {
 			MissionDataBean missionData = getWizard().getMissionData();

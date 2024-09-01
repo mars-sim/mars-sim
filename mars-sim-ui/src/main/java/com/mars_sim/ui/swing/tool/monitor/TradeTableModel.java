@@ -21,8 +21,8 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 
@@ -57,26 +57,25 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[CAT_COL] = new ColumnSpec ("Category", String.class);
 		COLUMNS[TYPE_COL] = new ColumnSpec ("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
-		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flatten", Number.class);
+		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Number.class);
 		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class);
 		COLUMNS[TRADE_COL] = new ColumnSpec ("Trade", Double.class);
 		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class);
 		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class);
 		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Double.class);
-		COLUMNS[MASS_COL] = new ColumnSpec ("Tot Mass [kg]", Double.class);
+		COLUMNS[MASS_COL] = new ColumnSpec ("kg Mass", Double.class);
 		COLUMNS[MARKET_COL] = new ColumnSpec ("National VP", Double.class);
 		COLUMNS[VALUE_COL] = new ColumnSpec ("Local VP", Double.class);
-		COLUMNS[COST_COL] = new ColumnSpec ("Cost [$]", Double.class);
-		COLUMNS[PRICE_COL] = new ColumnSpec ("Price [$]", Double.class);
+		COLUMNS[COST_COL] = new ColumnSpec ("$ Cost", Double.class);
+		COLUMNS[PRICE_COL] = new ColumnSpec ("$ Price", Double.class);
 	}
 
 	/**
 	 * Constructor 2.
-	 * 
 	 */
 	public TradeTableModel() {
-		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting",COLUMNS,
+		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting", COLUMNS,
 						GoodsUtil.getGoodsList());
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
@@ -102,7 +101,8 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	}
 
 	/**
-	 * get the value for a Good property
+	 * Gets the value for a Good property.
+	 * 
 	 * @param selectedGood Good selected
 	 * @param columnIndex COlumn to get
 	 */

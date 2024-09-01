@@ -9,9 +9,9 @@ package com.mars_sim.core.events;
 import java.io.Serializable;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class represents a time based event that has occurred in the simulation.

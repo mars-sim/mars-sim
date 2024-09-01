@@ -102,7 +102,7 @@ public class ScientificStudyManager
 		List<Person> pList = new ArrayList<>(settlement.getAllAssociatedPeople());
 
 		for (Person p : pList) {
-			for(ScientificStudy study : p.getCollabStudies()) {
+			for(ScientificStudy study : p.getResearchStudy().getCollabStudies()) {
 				if (allSubject || (type == study.getScience())) {
 						result.add(study);
 				}
@@ -175,9 +175,9 @@ public class ScientificStudyManager
 	 */
 	public List<ScientificStudy> getAllStudies(Person researcher) {
 		List<ScientificStudy> results = new ArrayList<>();
-		results.addAll(researcher.getCollabStudies());
-		if (researcher.getStudy() != null) {
-			results.add(researcher.getStudy());
+		results.addAll(researcher.getResearchStudy().getCollabStudies());
+		if (researcher.getResearchStudy().getStudy() != null) {
+			results.add(researcher.getResearchStudy().getStudy());
 		}
 		return results;
 	}

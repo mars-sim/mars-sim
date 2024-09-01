@@ -50,11 +50,8 @@ public class LineBreakPanel extends JPanel {
     // index of the first character after the end of the paragraph.
     private int paragraphEnd;
 
-//	private Font FONT_SANS_SERIF_1 = new Font(Font.SANS_SERIF, Font.BOLD, 13);
-	
     private static final 
-        Hashtable<TextAttribute, Object> map =
-           new Hashtable<TextAttribute, Object>();
+        Hashtable<TextAttribute, Object> map = new Hashtable<>();
 
     static {
         map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
@@ -79,19 +76,14 @@ public class LineBreakPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
-//		setPreferredSize(new Dimension(getWidth() - 10, getHeight() - 10));
-		
 		setBackground(new Color(0, 0, 0, 128));
-//        setBackground(new Color(51, 25, 0, 128));
-        
+      
 		int x = MARGIN_WIDTH;
 		int y = MARGIN_HEIGHT;
 		int w = getWidth() - MARGIN_WIDTH * 2;
 		int h = getHeight() - MARGIN_HEIGHT * 2;
 		int arc = 15;
 
-//		Graphics2D g = (Graphics2D) g;
 		Graphics2D g2 = (Graphics2D) g.create();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setColor(new Color(51, 25, 0, 128));
@@ -99,26 +91,11 @@ public class LineBreakPanel extends JPanel {
 		g2.setStroke(new BasicStroke(3f));
 		g2.setColor(Color.orange);
 		g2.drawRoundRect(x, y, w, h, arc, arc);
-//		g2.dispose();
-//	}
-//	
-//    public void paintComponent(Graphics g) {
-
-//    	super.paintComponent(g);
-//       	setOpaque(false);
-//        setBackground(new Color(0,0,0,128));
- 
-//        Graphics2D g2d = (Graphics2D)g;
-//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		g2d.setRenderingHint(
-//		        RenderingHints.KEY_TEXT_ANTIALIASING,
-//		        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		g2.setRenderingHint(
 		        RenderingHints.KEY_TEXT_ANTIALIASING,
 		        RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 		g2.setColor(Color.white);
-		
-		
+			
         // Create a new LineBreakMeasurer from the paragraph.
         // It will be cached and re-used.
 		for (int i=0; i<vanGogh.size(); i++) {

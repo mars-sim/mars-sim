@@ -19,7 +19,7 @@ import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class Population implements Serializable, Temporal {
 

@@ -51,6 +51,24 @@ public class ParameterManagerTest extends TestCase {
         assertEquals("Integer value", LOW_INT, mgr.getIntValue(CATEGORY, KEY1, 0));
     }
 
+    public void testUpdateIntValue() {
+        var mgr = new ParameterManager();
+ 
+         mgr.putValue(CATEGORY, KEY1, LOW_INT);
+         assertEquals("Integer value", LOW_INT, mgr.getIntValue(CATEGORY, KEY1, 0));
+
+         mgr.putValue(CATEGORY, KEY1, HIGH_INT);
+         assertEquals("Integer after update", HIGH_INT, mgr.getIntValue(CATEGORY, KEY1, 0));
+     }
+
+     public void testRemoveIntValue() {
+        var mgr = new ParameterManager();
+ 
+         mgr.putValue(CATEGORY, KEY1, LOW_INT);
+        mgr.removeValue(CATEGORY, KEY1);
+         assertEquals("Integer after removal", 0, mgr.getIntValue(CATEGORY, KEY1, 0));
+     }
+     
     public void testPurCategories() {
         var mgr = new ParameterManager();
 

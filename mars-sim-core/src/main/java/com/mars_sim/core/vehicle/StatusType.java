@@ -1,13 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * StatusType.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-07-20
  * @author Manny Kung
  *
  */
 package com.mars_sim.core.vehicle;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Vehicle status types. They can be either primary or secondary.
@@ -16,6 +16,7 @@ import com.mars_sim.tools.Msg;
 public enum StatusType {
 	
 	GARAGED 			(true),
+	HOVERING 			(true),
 	MAINTENANCE 		(false),
 	MALFUNCTION 		(false),
 	MOVING 				(true),

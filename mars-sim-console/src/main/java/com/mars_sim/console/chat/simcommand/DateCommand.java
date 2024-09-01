@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DateCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -32,7 +32,7 @@ public class DateCommand extends ChatCommand {
 	}
 
 	/**
-	 * Output the current simulation date time.
+	 * Outputs the current simulation date time.
 	 */
 	@Override
 	public boolean execute(Conversation context, String input) {

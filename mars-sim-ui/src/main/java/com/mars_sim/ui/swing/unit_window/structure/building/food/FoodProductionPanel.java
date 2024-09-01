@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
@@ -89,14 +90,14 @@ public class FoodProductionPanel extends JPanel {
 		if (name.length() > processStringWidth)
 			name = name.substring(0, processStringWidth) + "...";
 		// 2014-11-19 Capitalized process names
-		JLabel nameLabel = new JLabel(name, JLabel.CENTER);
+		JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
 		namePane.add(nameLabel);
 
 		if (showBuilding) {
 			// Prepare building name label.
 			// 2014-11-19 Changed from getName() to getName()
 			String buildingName = process.getKitchen().getBuilding().getName();
-			JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
+			JLabel buildingNameLabel = new JLabel(buildingName, SwingConstants.CENTER);
 			add(buildingNameLabel);
 		}
 
@@ -105,7 +106,7 @@ public class FoodProductionPanel extends JPanel {
 		add(workPane);
 
 		// Prepare work label.
-		JLabel workLabel = new JLabel("Work: ", JLabel.LEFT);
+		JLabel workLabel = new JLabel("Work: ", SwingConstants.LEFT);
 		workPane.add(workLabel);
 
 		// Prepare work progress bar.
@@ -119,7 +120,7 @@ public class FoodProductionPanel extends JPanel {
 		add(timePane);
 
 		// Prepare time label.
-		JLabel timeLabel = new JLabel("Time: ", JLabel.LEFT);
+		JLabel timeLabel = new JLabel("Time: ", SwingConstants.LEFT);
 		timePane.add(timeLabel);
 
 		// Prepare time progress bar.

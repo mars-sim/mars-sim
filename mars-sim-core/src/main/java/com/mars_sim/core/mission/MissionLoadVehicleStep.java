@@ -13,11 +13,11 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleEVA;
 import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This mission step is responsible for loading a vehicle ready for a new Mission.

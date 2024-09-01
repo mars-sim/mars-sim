@@ -20,7 +20,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.Treatment;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A task for performing a medical treatment at a medical station.

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.configuration.UserConfigurable;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class defines the attribute of a country. It also store commonly 

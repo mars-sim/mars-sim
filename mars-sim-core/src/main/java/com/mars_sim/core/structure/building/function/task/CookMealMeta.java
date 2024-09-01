@@ -24,7 +24,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the CookMeal task.
@@ -84,7 +84,7 @@ public class CookMealMeta extends FactoryMetaTask {
         		score.addBase("clealiness", (kitchen.getCleanliness() + 1) * 10);
             
         		double att = person.getNaturalAttributeManager()
-        				.getAttribute(NaturalAttributeType.CREATIVITY) / 20;
+        				.getAttribute(NaturalAttributeType.CREATIVITY) / 20.0;
         		
                 score.addModifier("attribute", att);
                 

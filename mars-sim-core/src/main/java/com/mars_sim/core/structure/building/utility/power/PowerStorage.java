@@ -16,7 +16,7 @@ import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The PowerStorage class is a building function depicting the interworking of a grid battery for energy storage.
@@ -336,7 +336,7 @@ public class PowerStorage extends Function {
 
 	
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 			return 0;
 	}
 

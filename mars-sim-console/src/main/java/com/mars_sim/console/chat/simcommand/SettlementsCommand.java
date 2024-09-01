@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettelemntsCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -16,7 +16,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * Command to display Settlement stats
+ * Command to display Settlement stats.
  * This is a singleton.
  */
 public class SettlementsCommand extends ChatCommand {

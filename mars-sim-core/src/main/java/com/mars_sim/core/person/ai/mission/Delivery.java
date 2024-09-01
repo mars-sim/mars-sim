@@ -51,7 +51,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
-	private static final int MAX_MEMBERS = 3;
+	public static final int MAX_MEMBERS = 3;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 
@@ -501,8 +501,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange();
-				double secondRange = secondVehicle.getRange();
+				double firstRange = firstVehicle.getEstimatedRange();
+				double secondRange = secondVehicle.getEstimatedRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange < secondRange) {

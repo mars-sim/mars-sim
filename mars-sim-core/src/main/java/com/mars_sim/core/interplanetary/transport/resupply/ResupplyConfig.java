@@ -19,13 +19,13 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartPackageConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.BuildingTemplate;
-import com.mars_sim.mapdata.location.BoundedObject;
 
 /**
  * Provides configuration information about settlement resupply missions. Uses a

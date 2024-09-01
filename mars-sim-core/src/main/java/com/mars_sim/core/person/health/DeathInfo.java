@@ -13,6 +13,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.Mind;
@@ -22,8 +23,7 @@ import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents the status of a Person when death occurs. It records
@@ -126,7 +126,7 @@ public class DeathInfo implements Serializable {
 		if (problem == null) {
 			
 			// Double check if there are any medical complains
-			Complaint serious = person.getPhysicalCondition().getMostSerious();
+			var serious = person.getPhysicalCondition().getMostSerious();
 			if (serious != null) {
 				this.illness = serious.getType();
 				healthCondition = 0;

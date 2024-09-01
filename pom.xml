@@ -16,7 +16,7 @@
 		<release>17</release>
 		<project.version>3.8.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
-		<junit-jupiter.version>5.10.2</junit-jupiter.version>
+		<junit-jupiter.version>5.10.3</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
         <junit.version>4.13.2</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -26,10 +26,10 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<libgdx.version>1.12.1</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
-		<slf4j.version>2.0.13</slf4j.version>
+		<slf4j.version>2.0.16</slf4j.version>
 		<commons-cli.version>1.8.0</commons-cli.version>
 		<commons-io.version>2.16.1</commons-io.version>
-		<commons-lang3.version>3.14.0</commons-lang3.version>
+		<commons-lang3.version>3.16.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>	
 		<jacoco.version>0.8.12</jacoco.version>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -78,7 +78,6 @@
 				<module>mars-sim-core</module>
 				<module>mars-sim-ui</module>
 				<module>mars-sim-dist</module>
-				<module>mars-sim-base</module>
 				<module>mars-sim-fxgl</module>
 				<module>mars-sim-libgdx</module>
 			</modules>
@@ -162,7 +161,7 @@
 				<plugin>
 				    <groupId>org.codehaus.mojo</groupId>
 				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.16.2</version>
+				    <version>2.17.1</version>
 				    <configuration>
 				        <generateBackupPoms>false</generateBackupPoms>
 				    </configuration>

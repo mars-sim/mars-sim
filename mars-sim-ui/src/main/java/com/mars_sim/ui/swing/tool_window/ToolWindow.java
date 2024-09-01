@@ -19,9 +19,6 @@ import com.mars_sim.ui.swing.MainWindow;
  */
 @SuppressWarnings("serial")
 public abstract class ToolWindow extends JInternalFrame {
-
-	// Data members
-	private static final String SPACE = "          ";
 	
 	/** True if window is open. */
 	protected boolean opened;
@@ -35,13 +32,14 @@ public abstract class ToolWindow extends JInternalFrame {
 	/**
 	 * Constructor.
 	 *
-	 * @param name    the name of the tool
+	 * @param name    the internal name of the tool
+	 * @param title  The window title
 	 * @param desktop the main desktop.
 	 */
-	protected ToolWindow(String name, MainDesktopPane desktop) {
+	protected ToolWindow(String name, String title, MainDesktopPane desktop) {
 
 		// use JInternalFrame constructor
-		super(SPACE + name, true, // resizable
+		super(title, true, // resizable
 				true, // closable
 				false, // maximizable
 				false // iconifiable
@@ -114,7 +112,9 @@ public abstract class ToolWindow extends JInternalFrame {
 	}
 	
 	/**
-	 * Update window. This is overridden by subclasses
+	 * Updates window. 
+	 * Note: This is overridden by subclasses.
+	 * 
 	 * @param pulse Clock step advancement
 	 */
 	public void update(ClockPulse pulse) {

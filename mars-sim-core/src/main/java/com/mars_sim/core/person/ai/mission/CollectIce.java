@@ -12,12 +12,12 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class is a mission to travel in a rover to several random locations
@@ -29,7 +29,7 @@ public class CollectIce extends CollectResourcesMission {
 	private static final long serialVersionUID = 1L;
 
 	/** Number of barrels required for the mission. */
-	public static final int REQUIRED_BARRELS = 4;
+	public static final int REQUIRED_BARRELS = 6;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;

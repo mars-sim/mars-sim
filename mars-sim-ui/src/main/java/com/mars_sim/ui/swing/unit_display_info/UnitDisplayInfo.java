@@ -13,7 +13,7 @@ import java.awt.Font;
 import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.mapdata.MapMetaData;
+import com.mars_sim.core.map.MapMetaData;
 
 /**
  * Provides display information about a unit.

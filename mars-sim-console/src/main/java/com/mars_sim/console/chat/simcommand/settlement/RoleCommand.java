@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoleCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -22,7 +22,7 @@ public class RoleCommand extends AbstractSettlementCommand {
 	public static final ChatCommand ROLE = new RoleCommand();
 
 	private RoleCommand() {
-		super("rl", "role", "Settlement allocaiton of Roles");
+		super("rl", "role", "Settlement allocation of roles");
 	}
 
 	@Override

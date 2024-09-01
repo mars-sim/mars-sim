@@ -34,8 +34,8 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FoodProduction;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A task for working on a food production process.

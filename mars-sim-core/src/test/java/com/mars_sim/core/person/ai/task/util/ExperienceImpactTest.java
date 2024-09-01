@@ -234,4 +234,24 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         assertEquals("No effort experience", PhysicalEffort.NONE, noEffort.getEffortRequired());
     }
 
+    public void testEffort() {
+        assertEffort(PhysicalEffort.HIGH, PhysicalEffort.LOW);
+        assertEffort(PhysicalEffort.HIGH, PhysicalEffort.NONE);
+        assertEffort(PhysicalEffort.LOW, PhysicalEffort.NONE);
+
+        assertFalse("Physical effort HIGH == HIGH", ExperienceImpact.isEffortHigher(PhysicalEffort.HIGH,
+                             PhysicalEffort.HIGH));
+        assertFalse("Physical effort LOW == LOW", ExperienceImpact.isEffortHigher(PhysicalEffort.LOW,
+                             PhysicalEffort.LOW));
+        assertFalse("Physical effort NONE == NONE", ExperienceImpact.isEffortHigher(PhysicalEffort.NONE,
+                             PhysicalEffort.NONE));
+
+    }
+
+    private void assertEffort(PhysicalEffort higher, PhysicalEffort lower) {
+        assertTrue("Physical effort " + higher.name() + " > " + lower.name(),
+                        ExperienceImpact.isEffortHigher(higher, lower));
+        assertFalse("Physical effort " + lower.name() + " > " + higher.name(),
+                        ExperienceImpact.isEffortHigher(lower, higher));
+    }
 }

@@ -31,8 +31,8 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the ObserveAstronomicalObjects task.
@@ -134,7 +134,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 
         // Add probability for researcher's primary study (if any).
         ScientificStudy s = (ScientificStudy) st.getFocus();
-        if (s.equals(p.getStudy())) {
+        if (s.equals(p.getResearchStudy().getStudy())) {
             // Lead researcher and it's astronomy
             if ((ScienceType.ASTRONOMY == s.getScience())
                 && !s.isPrimaryResearchCompleted()) {

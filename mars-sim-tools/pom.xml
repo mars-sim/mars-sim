@@ -20,17 +20,17 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>6.1.8</version>
+      <version>6.1.12</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.mustache.java</groupId>
       <artifactId>compiler</artifactId>
-      <version>0.9.13</version>
+      <version>0.9.14</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.17.2</version>
+      <version>1.18.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -22,7 +22,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the SalvageGood task.

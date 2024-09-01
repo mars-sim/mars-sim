@@ -9,8 +9,8 @@ package com.mars_sim.core.person.ai.mission;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class represents the historical actions involving missions.

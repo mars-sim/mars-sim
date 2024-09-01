@@ -14,8 +14,8 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class is a task for investigating what system to optimize.
@@ -39,7 +39,7 @@ public class OptimizeSystem extends Task {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
-	private static final double FACTOR = .05;
+	private static final double FACTOR = .001;
 
 	private double totalEntropyReduce;
 	
@@ -73,15 +73,7 @@ public class OptimizeSystem extends Task {
 		}
 		
 		else if (person.isInVehicle()) {
-			// If person is in a settlement, try to find a server node.
-//			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person);
-//			if (node != null) {
-//				// May be done remotely in a vehicle
-//				// Walk to the passenger spot
-////				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
-//			}
-//			else
-				endTask();
+			endTask();
 		}
 		
 		else
@@ -119,10 +111,8 @@ public class OptimizeSystem extends Task {
 		}
 		
 		double modTime = time * FACTOR * com;
-		
-		double points = RandomUtil.getRandomDouble(modTime);
-		
-		totalEntropyReduce += node.reduceEntropy(Math.min(modTime/50, points));	
+			
+		totalEntropyReduce += node.reduceEntropy(modTime);	
 
 		// Add experience
 		addExperience(time);

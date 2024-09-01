@@ -8,14 +8,13 @@ package com.mars_sim.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -60,7 +59,7 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
         contentPanel.add(rescueVehiclePanel);
 
         // Create rescue vehicle title label.
-        JLabel rescueVehicleTitleLabel = new JLabel("Vehicle to Rescue : ", JLabel.LEFT);
+        JLabel rescueVehicleTitleLabel = new JLabel("Vehicle to Rescue : ", SwingConstants.LEFT);
         rescueVehiclePanel.add(rescueVehicleTitleLabel);
 
         // Create rescue vehicle button.
@@ -69,23 +68,18 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		wrapper0.add(rescueVehicleButton);
 		contentPanel.add(wrapper0);
         //contentPanel.add(rescueVehicleButton);
-        rescueVehicleButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Open window for vehicle to be rescued.
-                openRescueVehicleWindow();
-            }
-        });
+        rescueVehicleButton.addActionListener(e -> openRescueVehicleWindow());
 
         // Create status panel.
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         contentPanel.add(statusPanel);
 
         // Create vehicle status title label.
-        JLabel vehicleStatusTitleLabel = new JLabel("Vehicle Status : ", JLabel.RIGHT);
+        JLabel vehicleStatusTitleLabel = new JLabel("Vehicle Status : ", SwingConstants.RIGHT);
         statusPanel.add(vehicleStatusTitleLabel);
 
         // Create vehicle status value label.
-        vehicleStatusValueLabel = new JLabel("", JLabel.LEFT);
+        vehicleStatusValueLabel = new JLabel("", SwingConstants.LEFT);
         JPanel wrapper1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper1.add(vehicleStatusValueLabel);
 		contentPanel.add(wrapper1);
@@ -95,11 +89,11 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
         contentPanel.add(malfunctionPanel);
 
         // Create malfunction title panel.
-        JLabel malfunctionTitleLabel = new JLabel("Vehicle Malfunctions : ", JLabel.RIGHT);
+        JLabel malfunctionTitleLabel = new JLabel("Vehicle Malfunctions : ", SwingConstants.RIGHT);
         malfunctionPanel.add(malfunctionTitleLabel);
 
         // Create malfunction list label.
-        malfunctionListLabel = new JLabel("", JLabel.LEFT);
+        malfunctionListLabel = new JLabel("", SwingConstants.LEFT);
         JPanel wrapper2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper2.add(malfunctionListLabel);
 		contentPanel.add(wrapper2);

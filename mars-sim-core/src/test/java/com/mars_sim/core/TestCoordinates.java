@@ -2,9 +2,9 @@ package com.mars_sim.core;
 
 import java.text.DecimalFormat;
 
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.tool.Msg;
 
 import junit.framework.TestCase;
 

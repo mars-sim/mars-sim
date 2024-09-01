@@ -57,13 +57,17 @@ public class ManufactureProcessInfo extends ProcessInfo {
 	
 			AmountResource ar = ResourceUtil.findAmountResource(name);
 			if (ar != null) {
-				mass += item.getAmount();
+				double amt = item.getAmount();
+				mass += amt;
+//				System.out.println(name + " " + amt + " kg");
 			}		
 			else {
 				ItemResource ir = ItemResourceUtil.findItemResource(name);
 				if (ir != null) {
 					double quantity = item.getAmount();
-					mass += quantity * ir.getMassPerItem();
+					double massPerItem = ir.getMassPerItem();
+					mass += quantity * massPerItem;
+//					System.out.println(name + " x" + quantity + " (" + massPerItem + " kg each)");
 				}
 //				else {
 //					BinType type = BinType.convertName2Enum(name);
@@ -75,7 +79,7 @@ public class ManufactureProcessInfo extends ProcessInfo {
 //				}
 			}
 		}
-		
+//		System.out.println("Total: " + mass);
 		return mass;
 	}
 	

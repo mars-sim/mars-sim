@@ -31,6 +31,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -53,8 +54,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 
 /**
@@ -96,7 +96,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
 	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);
 
-
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
@@ -110,16 +109,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
-
+	/** Unique identifier  */
+	protected int identifier;
 	
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
 	private boolean aborted = false;
-
-	/** Unique identifier  */
-	protected int identifier;
 	
 	/** The Name of this mission. */
 	private String missionName;
@@ -212,18 +209,18 @@ public abstract class AbstractMission implements Mission, Temporal {
 			else
 				appendStr = "' with " + n + " others.";
 
-			String article = "a ";
+//			String article = "a ";
 
 			String missionStr = missionName;
 
 			if (!missionStr.toLowerCase().contains("mission"))
 				missionStr = missionName + " mission";
 
-			if(Conversion.isVowel(missionName))
-				article = "an ";
+//			if(Conversion.isVowel(missionName))
+//				article = "an ";
 
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + article + missionStr + appendStr + ".");
+					"Began organizing " + missionStr + appendStr);
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -306,6 +303,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return clock.getMarsTime();
 	}
 	
+	/**
+	 * Gets the master clock instance.
+	 * 
+	 * @return
+	 */
 	protected MasterClock getMasterClock() {
 		return clock;
 	}
@@ -331,7 +333,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Registers this historical mission event about a Member
+	 * Registers this historical mission event about a member.
 	 * 
 	 * @param member
 	 * @param type
@@ -366,11 +368,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	/**
 	 * A Member leaves the Mission and adjust his work shift.
+	 * Note: should use removeMember() to call memberLeave().
 	 */
-	protected final void memberLeave(Worker member) {
+	private final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
+			
+			logger.info(person, "Removed from " + member.getMission() + ".");
+			
 			member.setMission(null);
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
@@ -485,7 +491,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Get the Stage
+	 * Gets the Stage.
 	 */
 	@Override
 	public Stage getStage() {
@@ -537,6 +543,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
 	}
 
+	/**
+	 * Adds a mission log.
+	 * 
+	 * @param entry
+	 */
 	protected void addMissionLog(String entry) {
 		log.addEntry(entry);
 	}
@@ -769,10 +780,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 		done = true; 
 		
 		StringBuilder status = new StringBuilder();
-		status.append("Ended the ")
+		
+		if (listOfStatuses.isBlank() || listOfStatuses == null) {
+			status.append("Ended the ")
 			.append(getName())
-			.append(" with the status flag(s): ")
+			.append(" without status flags.");
+		}
+		else {
+			status.append("Ended the ")
+			.append(getName())
+			.append(" with status flag(s): ")
 			.append(listOfStatuses).append(".");
+		}
+
 		logger.info(startingMember, status.toString());
 
 		// Disband the members
@@ -783,7 +803,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// Take a copy as Worker will deregister themselves
 			List<Worker> oldMembers = new ArrayList<>(members);
 			for(Worker member : oldMembers) {
-				memberLeave(member);
+				removeMember(member);
 			}	
 			members.clear();
 		}
@@ -803,14 +823,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null) {
 
 			if (currentTask.getName().equals(task.getName())){
-//	      		logger.info(person, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+	      		logger.info(person, 4_000, "Already doing '" + currentTask.getName() + "' as of this moment.");
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
 			}
 
 			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 4_000, "Currently asleep. Not available to perform other tasks.");
+	      		logger.info(person, 4_000, "Currently asleep. Not available to be assigned with other tasks.");
 				// If the person is asleep, 
 				// do not assign this task.
 	      		
@@ -819,8 +839,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 		}
 		
-		if (person.isSuperUnfit()) {
-			logger.warning(person, 4_000, "Super unfit to perform '" + task + ".");
+		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
+			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + ".");
 			return false;
 		}
 		
@@ -828,7 +848,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				|| person.getPerformanceRating() > 0D;
 		
         if (canPerformTask) {
-			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task);
+			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task, false);
 		}
 
 
@@ -843,11 +863,65 @@ public abstract class AbstractMission implements Mission, Temporal {
 //				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(person, 4_000, "Unable to perform '" + task.getName() + "'.");
+			logger.info(person, 4_000, "Unable to assign with '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}
 
+	/**
+	 * Checks if a person has any issues in starting a new task.
+	 *
+	 * @param person the person to assign to the task
+	 * @param task   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	protected boolean assignTask(Person person, Task task, boolean allowSameTask) {
+		// If task is physical effort driven and person too ill, do not assign task.
+		Task currentTask = person.getMind().getTaskManager().getTask();
+
+		if (currentTask != null) {
+
+			if (currentTask.getName().equals(Sleep.NAME)) {
+	      		logger.info(person, 4_000, "Currently asleep. Not available to be assigned with other tasks.");
+				// If the person is asleep, 
+				// do not assign this task.
+	      		
+	      		// Note: what if it's an emergency that one must wake up and respond ?
+				return false;
+			}
+		}
+		
+		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
+			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + ".");
+			return false;
+		}
+		
+		boolean canPerformTask = !task.isEffortDriven() 
+				|| person.getPerformanceRating() > 0D;
+		
+        if (canPerformTask) {
+			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task, allowSameTask);
+		}
+
+
+		if (canPerformTask) {
+			/**
+			 * Do not delete. Reserve for debugging.
+			 */
+//			if (currentTask != null) {
+//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//			}
+//			else
+//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
+		}
+		else
+			logger.info(person, 4_000, "Unable to assign with '" + task.getName() + "'.");
+
+		return canPerformTask;
+	}
+
+	
 	/**
 	 * Adds a new task for a robot in the mission. Task may be not assigned if the
 	 * robot has a malfunction.
@@ -864,7 +938,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(20)) {
+		if (!task.getName().equalsIgnoreCase(Charge.NAME) 
+				&& !robot.getSystemCondition().isBatteryAbove(20)) {
 			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
 			return false;
 		}
@@ -886,7 +961,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 		}
 
-		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
+		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task, false);
 		
 		if (canPerformTask) {
 			/**
@@ -904,6 +979,64 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return canPerformTask;
 	}
 
+	/**
+	 * Adds a new task for a robot in the mission. Task may be not assigned if the
+	 * robot has a malfunction.
+	 *
+	 * @param robot the robot to assign to the task
+	 * @param task  the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	protected boolean assignTask(Robot robot, Task task, boolean allowSameTask) {
+
+		// If robot is malfunctioning, it cannot perform task.
+		if (robot.getMalfunctionManager().hasMalfunction()) {
+			logger.info(robot, 4_000, "Malfunctioned and cannot be assigned with '" + task.getName() + "'.");
+			return false;
+		}
+
+		if (!task.getName().equalsIgnoreCase(Charge.NAME) 
+				&& !robot.getSystemCondition().isBatteryAbove(20)) {
+			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
+			return false;
+		}
+
+		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
+		
+		if (currentTask != null) {
+
+			if (currentTask.getName().equals(task.getName())) {
+//				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+				// If the robot has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+			}
+			
+			else if (currentTask.getName().equals(Charge.NAME)) {
+				logger.info(robot, 4_000, "Still charging and cannot be assigned with '" + task.getName() + "'.");
+				return false;
+			}
+		}
+
+		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task, allowSameTask);
+		
+		if (canPerformTask) {
+			/**
+			 * Do not delete. Reserve for debugging.
+			 */
+//			if (currentTask != null) {
+//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//			}
+//			else
+//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
+		}
+		else
+			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");
+		
+		return canPerformTask;
+	}
+	
 	/**
 	 * Checks to see if any of the people in the mission have any dangerous medical
 	 * problems that require treatment at a settlement. Also any environmental

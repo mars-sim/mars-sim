@@ -6,13 +6,13 @@
  */
 package com.mars_sim.core.structure.building.function;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * This class is a building function for extra vehicular activity.
@@ -138,7 +138,7 @@ public class EVA extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 		return 0.75;
 	}
 

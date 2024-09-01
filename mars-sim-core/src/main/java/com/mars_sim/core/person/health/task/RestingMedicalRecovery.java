@@ -19,7 +19,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A task for resting at a medical station bed to recover from a health problem

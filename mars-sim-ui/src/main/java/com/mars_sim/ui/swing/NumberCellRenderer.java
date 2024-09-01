@@ -24,8 +24,10 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final String BASE = "#,###,##0";
+
 	private static final Map<Integer,DecimalFormat> FORMATS = new HashMap<>();
+	
+	private String base = "#,###,##0";
 	
 	private DecimalFormat formatter;
 	
@@ -33,26 +35,37 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 	 * Constructor.
 	 */
 	public NumberCellRenderer() {
-		this(1);
+		this(1, null);
 	}
 
 	/**
 	 * Constructor.
 	 */
 	public NumberCellRenderer(int decimal, boolean showDecimalPlace) {
-		this(decimal);
+		this(decimal, null);
 	}
 
 	/**
 	 * Constructor.
 	 */
-	public NumberCellRenderer(int digits) {
+	public NumberCellRenderer(int decimal) {
+		this(decimal, null);
+	}
+	
+	/**
+	 * Constructor.
+	 */
+	public NumberCellRenderer(int digits, String preSymbol) {
 		// Use DefaultTableCellRenderer constructor
 		super();
 		formatter = FORMATS.get(digits);
 		if (formatter == null) {
-			// Build the format strng by adding zero's to the BASE
-			StringBuilder format = new StringBuilder(BASE);
+			
+			if (preSymbol != null) {
+				base = preSymbol + base;
+			}
+			// Build the format string by adding zero's to the BASE
+			StringBuilder format = new StringBuilder(base);
 			if (digits > 0) {
 				format.append('.');
 				for(int i = 0; i < digits; i++) {

@@ -15,7 +15,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class LunarProject implements Serializable {
 

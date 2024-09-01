@@ -12,7 +12,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.function.WasteProcessing;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 
@@ -24,7 +24,10 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 
 	private static final String RECYCLE_ICON = "recycle";
-	
+
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	// Data members
 	private WasteProcessing processor;
 	private ResourceProcessPanel processPanel;
@@ -62,7 +65,10 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 
 	
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		processPanel.update();
 	}
 }

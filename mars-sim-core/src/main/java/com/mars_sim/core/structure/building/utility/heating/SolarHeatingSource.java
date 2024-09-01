@@ -7,8 +7,8 @@
 package com.mars_sim.core.structure.building.utility.heating;
 
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class accounts for the effect of temperature via 

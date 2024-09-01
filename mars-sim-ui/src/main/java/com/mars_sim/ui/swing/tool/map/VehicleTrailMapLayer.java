@@ -12,12 +12,12 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapLayer;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
-import com.mars_sim.mapdata.map.MapLayer;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.
@@ -48,8 +48,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		// Set trail color
-		Color c = (baseMap.getMapMetaData().isColourful() ? Color.BLACK : new Color(0, 96, 0));
-		g.setColor(c);
+		g.setColor((baseMap.getMapMetaData().isColourful() ? Color.BLACK : new Color(0, 96, 0)));
 
 		// Draw trail
 		if (singleVehicle != null)
@@ -75,19 +74,18 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 		double angle = baseMap.getHalfAngle();
 
 		// Draw trail.
-		IntPoint oldSpot = null;
+		IntPoint oldpt = null;
 		Iterator<Coordinates> j = (new ArrayList<>(vehicle.getTrail())).iterator();
 		while (j.hasNext()) {
-			Coordinates trailSpot = j.next();
-			if (trailSpot != null) {
-				if (mapCenter.getAngle(trailSpot) < angle) {
-					IntPoint spotLocation = MapUtils.getRectPosition(trailSpot, mapCenter, baseMap);
-					if ((oldSpot == null))
-						g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
-					else if (!spotLocation.equals(oldSpot))
-						g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
-					oldSpot = spotLocation;
-				}
+			Coordinates c = j.next();
+			if (c != null
+				&& mapCenter.getAngle(c) < angle) {
+					IntPoint pt = MapUtils.getRectPosition(c, mapCenter, baseMap);
+					if (oldpt == null)
+						g.drawRect(pt.getiX(), pt.getiY(), 1, 1);
+					else if (!pt.equals(oldpt))
+						g.drawLine(oldpt.getiX(), oldpt.getiY(), pt.getiX(), pt.getiY());
+					oldpt = pt;
 			}
 		}
 	}

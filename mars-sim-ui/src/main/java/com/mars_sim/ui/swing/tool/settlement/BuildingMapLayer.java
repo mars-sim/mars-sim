@@ -27,6 +27,7 @@ import com.mars_sim.core.structure.building.connection.Hatch;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -35,6 +36,10 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 public class BuildingMapLayer extends AbstractMapLayer {
 
 	private static final String HATCH = "hatch";
+	private static final String HALLWAY = "Hallway";
+	private static final String H = "H";
+	private static final String TUNNEL = "Tunnel";
+	private static final String T = "T";
 	
     // Static members
     private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 6); 
@@ -90,7 +95,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
         if (settlement != null) {  
-            boolean bldgLabels = mapPanel.isShowBuildingLabels();
+            boolean bldgLabels = mapPanel.isOptionDisplayed(DisplayOption.BUILDING_LABELS);
             Set<FunctionType> spotLabels = mapPanel.getShowSpotLabels();
 
             // Display svg images of all buildings in the entire settlement
@@ -137,7 +142,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
 
         if (showLabel) {
-            String[] words = building.getName().split(" ");
+            String[] words = building.getName().replace(HALLWAY, H).replace(TUNNEL, T).split(" ");
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 
             drawCenteredMultiLabel(words, LABEL_FONT, building.getPosition(),

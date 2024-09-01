@@ -23,7 +23,7 @@ import com.mars_sim.core.structure.building.function.HouseKeeping;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This function that is responsible for farming algae.
@@ -51,7 +51,8 @@ public class AlgaeFarming extends Function {
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 
 	public static final int HARVESTED_ALGAE_ID = ResourceUtil.spirulinaID;
-	public static final int PRODUCED_ALGAE_ID = HARVESTED_ALGAE_ID + 1; // id: 362
+	// 
+	public static final int PRODUCED_ALGAE_ID = 0;
 	
 	private static final int LIGHT_FACTOR = 0;
 	private static final int TEMPERATURE_FACTOR = 2;	
@@ -146,7 +147,7 @@ public class AlgaeFarming extends Function {
 	// The rate of adding food when tending the pond 
 	private static final double ADD_FOOD_RATE = 0.75;
 	// Tend time for food
-	private static final double TEND_TIME_FOR_FOOD = 0.2D;
+	private static final double TEND_TIME_FOR_FOOD = 10D;
 	/** The ideal amount of algae as a percentage. **/
 	private static final double IDEAL_PERCENTAGE = 0.8D;
 	
@@ -262,7 +263,8 @@ public class AlgaeFarming extends Function {
 		
 	    logger.log(building, Level.CONFIG, 0, "Spirulina: " 
 	    		+ Math.round(currentAlgae * 10.0)/10.0 
-	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0);
+	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0
+	    		+ " kg.  tender time: " + Math.round(tendertime * 100.0)/100.0);
 	}
 
 
@@ -367,7 +369,7 @@ public class AlgaeFarming extends Function {
 	 * @param id The resource id
 	 * @return average consumed or produced in kg/sol
 	 */
-	public double computeDaily(int id) {
+	public double computeDailyAverage(int id) {
 		return resourceLog.getDailyAverage(id);
 	}
 	
@@ -811,7 +813,7 @@ public class AlgaeFarming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 		// Power (kW) required for normal operations.
 		return waterMass * POWER_PER_LITRE 
 				+ getCurrentAlgae() * POWER_PER_KG_ALGAE 
@@ -826,7 +828,7 @@ public class AlgaeFarming extends Function {
 	 */
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return getPowerRequired() * .1;
+		return getCombinedPowerLoad() * .1;
 	}
 
 	@Override
@@ -885,6 +887,8 @@ public class AlgaeFarming extends Function {
 		addCumulativeWorkTime(workTime);
 		
 		if (getCurrentNutrientRatio() < NUTRIENT_RATIO) {
+			// Future: need to synthesize real Amount Resource algae nutrient 
+			// for feeding algae
 			currentFood += workTime * ADD_FOOD_RATE * NUTRIENT_RATIO / getCurrentNutrientRatio();
 		}
 
@@ -892,10 +896,12 @@ public class AlgaeFarming extends Function {
 
 		if (tendertime < 0) {
 			surplus = Math.abs(tendertime);
+			// Reset tendertime value
 			tendertime = currentFood * TEND_TIME_FOR_FOOD;
-			logger.log(building, Level.INFO, 10_000, 
-					"Algae fully tended for " 
-					+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
+			logger.log(building, Level.INFO, 5_000, 
+					"Tended one batch of nutrients for the algae (" 
+					+ Math.round(tendertime * 10.0)/10.0 + " millisols).");
+			// Reset foodAge
 			foodAge = 0;
 		}
 		

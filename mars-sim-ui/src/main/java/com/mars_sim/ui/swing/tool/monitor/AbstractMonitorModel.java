@@ -8,7 +8,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**

@@ -22,10 +22,10 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Provides configuration information about settlement buildings. Uses a DOM

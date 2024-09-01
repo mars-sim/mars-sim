@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMissions.java
- * @date 2022-07-09
+ * @date 2024-07-22
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -11,14 +11,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,14 +32,16 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.unit_window.vehicle.TabPanelMission;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>
@@ -54,28 +56,46 @@ extends TabPanel {
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
 	private static final String FLAG_ICON = "mission";
+
+	// Data members	
+	private JLabel siteLabel;
+	private JLabel numROIsLabel;
+	private JLabel siteMeanLabel;
+	private JLabel siteSDevLabel;
 	
-	// Data members
+	private JLabel claimedSiteLabel;
+	private JLabel claimedMeanLabel;
+	private JLabel claimedSDevLabel;
+	
+	private JLabel unclaimedSiteLabel;
+	private JLabel unclaimedMeanLabel;
+	private JLabel unclaimedSDevLabel;
+	
+	private JList<Mission> missionList;
+	
+	private DefaultListModel<Mission> missionListModel;
+	
+	private JButton missionButton;
+	private JButton monitorButton;
+	
+	private JCheckBox overrideCheckbox;
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 
 	private List<Mission> missionsCache;
-	private DefaultListModel<Mission> missionListModel;
-	private JList<Mission> missionList;
-	private JButton missionButton;
-	private JButton monitorButton;
-	private JCheckBox overrideCheckbox;
 
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param settlement {@link Settlement} the settlement this tab panel is for.
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public TabPanelMissions(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelMissions.title"),
 			ImageLoader.getIconByName(FLAG_ICON),
 			Msg.getString("TabPanelMissions.title"), //$NON-NLS-1$
 			settlement, desktop
@@ -88,6 +108,41 @@ extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 
+		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+		content.add(topPanel, BorderLayout.NORTH);
+		
+		int site[] = settlement.getStatistics(0);
+		int claimed[] = settlement.getStatistics(1);
+		int unclaimed[] = settlement.getStatistics(2);
+		
+		AttributePanel sitePanel = new AttributePanel(4, 1);
+		topPanel.add(sitePanel, BorderLayout.NORTH);
+		sitePanel.setBorder(BorderFactory.createTitledBorder("Nearby Sites"));
+		
+		siteLabel = sitePanel.addRow("Sites Found", settlement.numNearbyMineralLocations() + "");
+		numROIsLabel = sitePanel.addRow("Declared ROIs", settlement.numDeclaredLocation() + "");
+		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(site[0])); 
+		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(site[1]));
+		
+		
+		AttributePanel twoPanel = new AttributePanel(3, 1);
+		topPanel.add(twoPanel, BorderLayout.CENTER);
+		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
+		
+		claimedSiteLabel = twoPanel.addRow("Sites", settlement.numDeclaredLocation(true) + "");
+		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(claimed[0]));
+		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(claimed[0]));
+		
+		
+		AttributePanel unclaimPanel = new AttributePanel(3, 1);
+		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
+		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
+		
+		unclaimedSiteLabel = unclaimPanel.addRow("Sites", settlement.numDeclaredLocation(false) + "");		
+		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		
+		
 		// Create center panel.
 		JPanel centerPanel = new JPanel(new BorderLayout());
 		content.add(centerPanel, BorderLayout.CENTER);
@@ -101,6 +156,12 @@ extends TabPanel {
 		buildBottomPanel(content);
 	}
 		
+	/**
+	 * Builds the scroll panel.
+	 * 
+	 * @param centerPanel
+	 * @param missionListPanel
+	 */
 	public void buildScrollPanel(JPanel centerPanel, JPanel missionListPanel) {
 		MissionManager missionManager = getSimulation().getMissionManager();
 
@@ -129,6 +190,11 @@ extends TabPanel {
 		missionScrollPanel.setViewportView(missionList);
 	}
 	
+	/**
+	 * Builds the button panel.
+	 * 
+	 * @param centerPanel
+	 */
 	private void buildButtonPanel(JPanel centerPanel) {
 		// Create button panel.
 		JPanel buttonPanel = new JPanel(new BorderLayout());
@@ -144,11 +210,7 @@ extends TabPanel {
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		missionButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.mission")); //$NON-NLS-1$
 		missionButton.setEnabled(false);
-		missionButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				openMissionTool();
-			}
-		});
+		missionButton.addActionListener(e -> openMissionTool());
 		innerButtonPanel.add(missionButton);
 
 		// Create monitor button.
@@ -156,14 +218,15 @@ extends TabPanel {
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.setEnabled(false);
-		monitorButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				openMonitorTool();
-			}
-		});
+		monitorButton.addActionListener(e -> openMonitorTool());
 		innerButtonPanel.add(monitorButton);
 	}
 	
+	/**
+	 * Builds the bottom panel.
+	 * 
+	 * @param content
+	 */
 	private void buildBottomPanel(JPanel content) {
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -172,17 +235,33 @@ extends TabPanel {
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelMissions.checkbox.overrideMissionCreation")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelMissions.tooltip.overrideMissionCreation")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setMissionCreationOverride(overrideCheckbox.isSelected());
-			}
-		});
+		overrideCheckbox.addActionListener(e -> setMissionCreationOverride(overrideCheckbox.isSelected()));
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MISSION));
 		bottomPanel.add(overrideCheckbox);
 	}
 
 	@Override
 	public void update() {
+		
+		int site[] = settlement.getStatistics(0);
+		int claimed[] = settlement.getStatistics(1);
+		int unclaimed[] = settlement.getStatistics(2);
+		
+		siteLabel.setText(settlement.numNearbyMineralLocations() + "");
+		numROIsLabel.setText(settlement.numDeclaredLocation() + "");
+		siteMeanLabel.setText(StyleManager.DECIMAL_KM.format(site[0]));
+		siteSDevLabel.setText(StyleManager.DECIMAL_KM.format(site[0]));
+		
+		claimedSiteLabel.setText(settlement.numDeclaredLocation(true) + "");
+		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed[0]));
+		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed[0]));
+		
+		
+		unclaimedSiteLabel.setText(settlement.numDeclaredLocation(false) + "");		
+		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		
+		
 		// Get all missions for the settlement.
 		List<Mission> missions = getSimulation().getMissionManager().getMissionsForSettlement(settlement);
 
@@ -231,6 +310,7 @@ extends TabPanel {
 
 	/**
 	 * Sets the settlement mission creation override flag.
+	 * 
 	 * @param override the mission creation override flag.
 	 */
 	private void setMissionCreationOverride(boolean override) {
@@ -238,7 +318,7 @@ extends TabPanel {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {

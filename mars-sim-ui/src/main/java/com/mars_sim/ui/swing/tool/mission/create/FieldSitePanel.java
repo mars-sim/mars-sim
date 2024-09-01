@@ -6,9 +6,9 @@
  */
 package com.mars_sim.ui.swing.tool.mission.create;
 
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.*;
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
@@ -80,7 +80,7 @@ public class FieldSitePanel extends WizardPanel {
         add(mapPane);
         
         // Create the location label.
-        locationLabel = new JLabel("Location: ", JLabel.CENTER);
+        locationLabel = new JLabel("Location: ", SwingConstants.CENTER);
         locationLabel.setFont(locationLabel.getFont().deriveFont(Font.BOLD));
         locationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(locationLabel);
@@ -104,8 +104,14 @@ public class FieldSitePanel extends WizardPanel {
         navLayer.clearNavpointPositions();
     }
 
-    @Override
-    boolean commitChanges() {
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
+	@Override
+    boolean commitChanges(boolean isTesting) {
         IntPoint navpointPixel = navLayer.getNavpointPosition(0);
         Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - Map.HALF_MAP_BOX, 
                 navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
@@ -121,7 +127,7 @@ public class FieldSitePanel extends WizardPanel {
     @Override
     void updatePanel() {
         try {
-            double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+            double range = (getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER) / 2D;
             pixelRange = convertRadiusToMapPixels(range);
             ellipseLayer.setEllipseDetails(new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), 
             		new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), (pixelRange * 2));
@@ -166,7 +172,7 @@ public class FieldSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 	

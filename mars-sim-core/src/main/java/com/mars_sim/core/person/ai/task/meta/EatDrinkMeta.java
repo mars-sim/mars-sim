@@ -25,8 +25,8 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * Meta task for the EatNDrink task.

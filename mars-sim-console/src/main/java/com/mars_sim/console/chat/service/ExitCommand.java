@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExitCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -12,7 +12,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.TopLevel;
 
 /**
- * A stateless command that exit and leaves the current conversation
+ * A stateless command that exit and leaves the current conversation.
  */
 public class ExitCommand extends ChatCommand {
 
@@ -29,11 +29,11 @@ public class ExitCommand extends ChatCommand {
 	String toExit = context.getInput("Exit the console session (Y/N)?");
         
         if ("Y".equalsIgnoreCase(toExit)) {
-            context.println("Exitting...");
+            context.println("Exiting...");
 			context.setCompleted();
         }
         else {
-        	context.println("OK, exit skipped");
+        	context.println("OK, exit skipped.");
         }
         return true;
 

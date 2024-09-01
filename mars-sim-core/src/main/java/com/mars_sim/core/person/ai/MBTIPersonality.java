@@ -21,7 +21,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /*
  * Jung's typology theories postulated a sequence of four cognitive functions

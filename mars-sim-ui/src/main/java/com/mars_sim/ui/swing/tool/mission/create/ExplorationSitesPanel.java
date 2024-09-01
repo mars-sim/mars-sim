@@ -29,14 +29,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.Map;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
@@ -65,9 +66,9 @@ class ExplorationSitesPanel extends WizardPanel {
 	
 	// Data members.
 	private MapPanel mapPane;
-	private EllipseLayer ellipseLayer;
-	private NavpointEditLayer navLayer;
-	private MineralMapLayer mineralLayer;
+	private transient EllipseLayer ellipseLayer;
+	private transient NavpointEditLayer navLayer;
+	private transient MineralMapLayer mineralLayer;
 
 	private IntPoint navOffset;
 	private JPanel siteListPane;
@@ -118,12 +119,14 @@ class ExplorationSitesPanel extends WizardPanel {
 		// Create the map panel.
 		mapPane = new MapPanel(desktop, 200L);
 		mineralLayer = new MineralMapLayer(mapPane);
+		ellipseLayer = new EllipseLayer(Color.GREEN);
+		navLayer = new NavpointEditLayer(mapPane, true);
 		
 		mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
 		mapPane.addMapLayer(new UnitLabelMapLayer(), 2);
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 3);
-		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, true), 4);
+		mapPane.addMapLayer(ellipseLayer, 3);
+		mapPane.addMapLayer(navLayer, 4);
 		
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
@@ -136,10 +139,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapMainPane.add(instructionLabelPane, BorderLayout.SOUTH);
 
 		// Create the instruction labels.
-		JLabel instructionLabel1 = new JLabel(" Note 1: drag the navpoint flag to a desired site.", JLabel.LEFT);
+		JLabel instructionLabel1 = new JLabel(" Note 1: drag the navpoint flag to a desired site.", SwingConstants.LEFT);
 		instructionLabelPane.add(instructionLabel1);
 
-		JLabel instructionLabel2 = new JLabel(" Note 2: click 'Add Site' button for a new site.", JLabel.LEFT);
+		JLabel instructionLabel2 = new JLabel(" Note 2: click 'Add Site' button for a new site.", SwingConstants.LEFT);
 		instructionLabelPane.add(instructionLabel2);
 
 		// Create the site panel.
@@ -167,17 +170,15 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create the add button.
 		addButton = new JButton("Add Site");
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		addButton.addActionListener(e -> {
 				// Add a new exploration site to the mission.
-				SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
-				siteListPane.add(sitePane);
+				SitePanel p = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
+				siteListPane.add(p);
 				navLayer.addNavpointPosition(
-						MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
+						MapUtils.getRectPosition(p.getSite(), getCenterCoords(), mapPane.getMap()));
 				mapPane.repaint();
 				addButton.setEnabled(canAddMoreSites());
 				validate();
-			}
 		});
 		addButtonPane.add(addButton);
 
@@ -191,7 +192,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		bottomPane.add(mineralLegendPane);
 
 		// Create mineral legend label.
-		JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+		JLabel mineralLegendLabel = new JLabel("Mineral Legend", SwingConstants.CENTER);
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.
@@ -226,9 +227,11 @@ class ExplorationSitesPanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		getWizard().getMissionData().setExplorationSites(getSites());
 		return true;
 	}
@@ -312,7 +315,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private double getRange() {
 		// Use range modifier.
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 		return range;
 	}
 
@@ -323,7 +326,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private double getMissionTimeLimit() {
 		Rover rover = getWizard().getMissionData().getRover();
-		int memberNum = getWizard().getMissionData().getMixedMembers().size();
+		int memberNum = getWizard().getMissionData().getAllMembers().size();
 		try {
 			return rover.getTotalTripTimeLimit(memberNum, true);
 		} catch (Exception e) {

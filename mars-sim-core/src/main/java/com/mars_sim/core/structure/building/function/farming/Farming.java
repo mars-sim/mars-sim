@@ -39,7 +39,7 @@ import com.mars_sim.core.structure.building.function.task.TendGreenhouse;
 import com.mars_sim.core.structure.building.utility.power.PowerMode;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -830,9 +830,13 @@ public class Farming extends Function {
 
 			// Determine the production level.
 			double productionLevel = 0D;
-			if (building.getPowerMode() == PowerMode.FULL_POWER)
+			PowerMode powerMode = building.getPowerMode();
+			
+//			logger.info(building, "powerMode: " + powerMode);
+			
+			if (powerMode == PowerMode.FULL_POWER)
 				productionLevel = 1D;
-			else if (building.getPowerMode() == PowerMode.LOW_POWER)
+			else if (powerMode == PowerMode.LOW_POWER)
 				productionLevel = .5D;
 
 			double solarIrradiance = surface.getSolarIrradiance(building.getSettlement().getCoordinates());
@@ -928,7 +932,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 		// Power (kW) required for normal operations.
 		double powerRequired = 0D;
 
@@ -995,6 +999,15 @@ public class Farming extends Function {
 		return maxGrowingArea;
 	}
 
+	/**
+	 * Gets the remaining growing area in this building function.
+	 *
+	 * @return remaining area in square meters
+	 */
+	public double getRemainingArea() {
+		return remainingArea;
+	}
+	
 	/**
 	 * Gets the average number of growing cycles for a crop per orbit.
 	 */

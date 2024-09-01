@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 
-import com.mars_sim.mapdata.common.FileLocator;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.map.common.FileLocator;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A singleton that represents the runtimeenvironment of the Simulation.

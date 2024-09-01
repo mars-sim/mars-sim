@@ -50,7 +50,8 @@ public class RobotConfig {
 	private static final String MAX_CAPACITY = "max-capacity";
 	private static final String HEIGHT = "height";
 	private static final String MASS = "mass";
-
+	private static final String DESCRIPTION = "description";
+	
 	// min-air-pressure
 	private double minap;
 	// min-temperature
@@ -114,7 +115,11 @@ public class RobotConfig {
 			int height = ConfigHelper.getOptionalAttributeInt(listElement, HEIGHT, 150);
 			int mass = ConfigHelper.getOptionalAttributeInt(listElement, MASS, 100);
 
-
+			// Description
+			
+			Element descriptionListElement = listElement.getChild(DESCRIPTION);
+			String description = descriptionListElement.getText();
+			
 			// Attributes
 			Element attributeListElement = listElement.getChild(ROBOTIC_ATTRIBUTE_LIST);
 			Map<NaturalAttributeType, Integer> attributeMap = new HashMap<>();
@@ -144,7 +149,7 @@ public class RobotConfig {
 			}
 
 			RobotSpec spec = new RobotSpec(
-					robotType, robotMake, 
+					robotType, robotMake, description,
 					standbyPower, rate, lowPower, maxCapacity,
 					height, mass,
 					attributeMap,

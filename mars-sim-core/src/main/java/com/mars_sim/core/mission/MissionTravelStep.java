@@ -7,6 +7,7 @@
 package com.mars_sim.core.mission;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -17,11 +18,10 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.GroundVehicle;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
+import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This is a step in a Mission that travels from one location to another.
@@ -61,7 +61,8 @@ public class MissionTravelStep extends MissionStep {
                 // surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
                 // This is temporary fix pending #474 which will revisit transfers
                 if (!base.equals(vehicle.getContainerUnit())) {
-                    vehicle.setContainerUnit(base);
+					// Avoid calling vehicle.setContainerUnit(base)
+					vehicle.transfer(base);
                     logger.severe(vehicle, "Forced its container unit to become its home base.");
                 }
             }
@@ -125,18 +126,25 @@ public class MissionTravelStep extends MissionStep {
     void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
 
         Vehicle vehicle = getVehicle();
-        double distance = destination.getDistance() - getDistanceCovered();
+        double distance = destination.getPointToPointDistance() - getDistanceCovered();
         MissionVehicleProject mvp = (MissionVehicleProject) getMission();
 
         // Must use the same logic in all cases otherwise too few fuel will be loaded
         double amount = vehicle.getFuelNeededForTrip(distance, addOptionals);
         manifest.addResource(vehicle.getFuelTypeID(), amount, true);
-        
-        // if useMargin is true, include more oxygen
-        manifest.addResource(ResourceUtil.oxygenID, VehicleController.RATIO_OXIDIZER_FUEL * amount,
-                            true);
+         
+        if (vehicle.getFuelTypeID() == ResourceUtil.methanolID) {
+            // if useMargin is true, include more oxygen
+            manifest.addResource(ResourceUtil.oxygenID, 
+            		VehicleController.RATIO_OXIDIZER_METHANOL * amount, true);
+        }
+        else if (vehicle.getFuelTypeID() == ResourceUtil.methaneID) {
+            // if useMargin is true, include more oxygen
+            manifest.addResource(ResourceUtil.oxygenID, 
+            		VehicleController.RATIO_OXIDIZER_METHANE * amount, true);
+        }
 
-        if (vehicle instanceof Rover) {
+        if (VehicleType.isRover(vehicle.getVehicleType())) {
             double travelDuration = mvp.getEstimateTravelTime(distance);
 
             addLifeSupportResource(mvp.getMembers().size(), travelDuration, addOptionals, manifest);

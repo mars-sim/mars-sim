@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**

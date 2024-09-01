@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Class represents a set of TaskJob that can be used to select a new Task for a Work. 
@@ -24,7 +24,7 @@ public class TaskCache {
     private TaskJob lastSelected;
 
     /**
-     * Create a cache of Tasks. A cache can work in transient mode where selected entries are removed.
+     * Creates a cache of Tasks. A cache can work in transient mode where selected entries are removed.
      * A static mode means entries are fixed and never removed.
      * 
      * @param context Descriptive context of the purpose
@@ -38,7 +38,8 @@ public class TaskCache {
     }
 
     /**
-     * Add a new potetential TaskJob to the cache.
+     * Adds a new potential TaskJob to the cache.
+     * 
      * @param job The new potential Task.
      */
 	public void put(TaskJob job) {
@@ -47,7 +48,8 @@ public class TaskCache {
 	}
 
     /**
-     * Add a list of Jobs to the cache. Only select those that have a +vr score.
+     * Adds a list of Jobs to the cache. Only select those that have a +ve score.
+     * 
      * @param jobs
      */
     public void add(List<TaskJob> jobs) {
@@ -60,14 +62,15 @@ public class TaskCache {
     }
 
     /**
-     * When was this cache instance created.
+     * Gets when this cache instance was created.
      */
     public MarsTime getCreatedOn() {
         return createdOn;
     }
 
     /**
-     * Get the total probability score for all tasks.
+     * Gets the total probability score for all tasks.
+     * 
      * @return
      */
     public double getTotal() {
@@ -75,7 +78,8 @@ public class TaskCache {
     }
 
     /**
-     * Get the context where this cache was created.
+     * Gets the context where this cache was created.
+     * 
      * @return
      */
     public String getContext() {
@@ -83,21 +87,21 @@ public class TaskCache {
     }
 
     /**
-     * Get the jobs registered
+     * Gets the jobs registered.
      */
     public List<TaskJob> getTasks() {
         return tasks;
     }
 
     /**
-     * What was the last entry selected and removed from this cache?
+     * Gets the last entry selected and removed from this cache.
      */
     public TaskJob getLastSelected() {
         return lastSelected;
     }
 
     /** 
-     * Choose a Task to work at random.
+     * Chooses a task to work at random.
     */
     TaskJob getRandomSelection() {		
         TaskJob lastEntry = null;
@@ -108,7 +112,7 @@ public class TaskCache {
         for (TaskJob entry: tasks) {
             double probWeight = entry.getScore().getScore();
             if (r <= probWeight) {
-                // THis is a transient cache so remove the selected entry
+                // This is a transient cache so remove the selected entry
                 if (createdOn != null) {
                     lastSelected = entry;
                     tasks.remove(entry);

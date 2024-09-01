@@ -15,6 +15,7 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.SkillType;
@@ -30,11 +31,10 @@ import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.ClassicAirlock;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The ExitAirlock class is a Task for EVA egress, namely, exiting an airlock of a settlement or vehicle
@@ -1279,7 +1279,9 @@ public class ExitAirlock extends Task {
 		}
 		
 		// Check if person is incapacitated.
-		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
+		if (person.getPerformanceRating() <= MIN_PERFORMANCE
+				|| person.getPhysicalCondition().hasSeriousMedicalProblems()
+				) {
 			// May need to relocate the following code to a proper place
 			
 			// Prevent the logger statement below from being repeated multiple times
@@ -1288,22 +1290,28 @@ public class ExitAirlock extends Task {
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
 			try {
-				if (person.isInVehicle()) {
-					Settlement nearbySettlement = unitManager.findSettlement(person.getVehicle().getCoordinates());
-					if (nearbySettlement != null) {				
+
+				if (person.isInVehicle() 
+						&& (person.getVehicle().isInSettlementVicinity()
+							|| person.getVehicle().isInSettlement())) {
+					Settlement settlement = person.getVehicle().getSettlement();
+//					Settlement nearbySettlement = unitManager.findSettlement(person.getVehicle().getCoordinates());
+//					if (nearbySettlement != null) {
+						logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
 						// Attempt a rescue operation
-						person.rescueOperation((Rover) person.getVehicle(), nearbySettlement);
+						person.rescueOperation((Rover) person.getVehicle(), settlement);
 						// Note: rescueOperation() is more like a hack, rather than a legitimate way 
 						// of transferring a person through the airlock into the settlement 
-					}	
+//					}	
 				}
 				
-				else if (person.isOutside()) {
-					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
-					if (nearbySettlement != null)
-						// Attempt a rescue operation
-						person.rescueOperation(null, ((Building) (airlock.getEntity())).getSettlement());
-				}
+//				else if (person.isOutside()) {
+//					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
+//					if (nearbySettlement != null)
+//						logger.info(person, 4_000, "Starting a rescue operation near " + nearbySettlement.getName() + ".");  
+//						// Attempt a rescue operation
+//						person.rescueOperation(null, ((Building) (airlock.getEntity())).getSettlement());
+//				}
 
 			} catch (Exception e) {
 				logger.severe(person, 4_000, "Could not get new action: ", e);

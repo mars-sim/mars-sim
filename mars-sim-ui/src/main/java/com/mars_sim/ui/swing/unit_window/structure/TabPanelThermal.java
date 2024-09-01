@@ -8,8 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +32,7 @@ import com.mars_sim.core.structure.building.utility.heating.HeatSource;
 import com.mars_sim.core.structure.building.utility.heating.SolarHeatingSource;
 import com.mars_sim.core.structure.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.structure.building.utility.heating.ThermalSystem;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -203,11 +201,7 @@ public class TabPanelThermal extends TabPanelTable {
 		// Create override check box.
 		checkbox = new JCheckBox(Msg.getString("TabPanelThermalSystem.checkbox.value")); //$NON-NLS-1$
 		checkbox.setToolTipText(Msg.getString("TabPanelThermalSystem.checkbox.tooltip")); //$NON-NLS-1$
-		checkbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setNonGenerating(checkbox.isSelected());
-			}
-		});
+		checkbox.addActionListener(e -> setNonGenerating(checkbox.isSelected()));
 		checkbox.setSelected(false);
 		checkboxPane.add(checkbox);
 		
@@ -413,7 +407,7 @@ public class TabPanelThermal extends TabPanelTable {
 			dotGreen_full = ImageLoader.getIconByName("dot/green"); 
 			dotGreen_half = ImageLoader.getIconByName("dot/green_half"); 
 			dotGreen_quarter = ImageLoader.getIconByName("dot/green_quarter"); 
-			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_threeQuarter");
+			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_three_quarter");
 		}
 
 		public int getRowCount() {

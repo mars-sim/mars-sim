@@ -89,7 +89,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 			}
 		}
 
-		// Output entrires which will be order via TreeMap
+		// Output entries which will be order via TreeMap
 		buffer.appendTableHeading("Equipment", 20, "Stored (kg)");
 		for(String name : entries.keySet()) {
 			buffer.appendTableRow(name, entries.get(name));			

@@ -21,7 +21,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;

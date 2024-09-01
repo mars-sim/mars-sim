@@ -12,10 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -56,22 +53,22 @@ import javax.swing.table.TableColumn;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementConfig;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.StyleManager;
@@ -242,7 +239,7 @@ public class SimulationConfigEditor {
 
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr();
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), SwingConstants.CENTER); //$NON-NLS-1$
 			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 
@@ -250,19 +247,19 @@ public class SimulationConfigEditor {
 			topPanel.add(ccPanel);
 
 			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
-					commanderName), JLabel.LEFT); //$NON-NLS-1$
+					commanderName), SwingConstants.LEFT); //$NON-NLS-1$
 			ccPanel.add(commanderLabel);
 
 			ccPanel.add(new JLabel());
 
 			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
-					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
+					sponsor)  + "                 ", SwingConstants.RIGHT); //$NON-NLS-1$
 			ccPanel.add(sponsorLabel);
 
 		}
 
 		else {
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), SwingConstants.CENTER); //$NON-NLS-1$
 			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 		}
@@ -293,21 +290,13 @@ public class SimulationConfigEditor {
 		// Create add settlement button.
 		JButton addButton = new JButton(ImageLoader.getIconByName("action/add")); //$NON-NLS-1$
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				addNewRows();
-			}
-		});
+		addButton.addActionListener(e -> addNewRows());
 		configurationButtonInnerTopPanel.add(addButton);
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(ImageLoader.getIconByName("action/remove")); //$NON-NLS-1$
 		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
-		removeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				removeSelectedSettlements();
-			}
-		});
+		removeButton.addActionListener(e -> removeSelectedSettlements());
 		configurationButtonInnerTopPanel.add(removeButton);
 
 		// Create bottom panel.
@@ -315,7 +304,7 @@ public class SimulationConfigEditor {
 		f.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create error label.
-		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
+		errorLabel = new JLabel("", SwingConstants.CENTER); //$NON-NLS-1$
 		errorLabel.setForeground(Color.RED);
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 
@@ -352,19 +341,11 @@ public class SimulationConfigEditor {
 		// Add an Export button
 		JButton exportButton = new JButton(ImageLoader.getIconByName("action/export")); //$NON-NLS-1$
 		exportButton.setToolTipText("Export");
-		exportButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				exportScenario();
-			}
-		});
+		exportButton.addActionListener(e -> exportScenario());
 		configControl.getPane().add(exportButton);
 		JButton importButton = new JButton(ImageLoader.getIconByName("action/import")); //$NON-NLS-1$
 		importButton.setToolTipText("Import");
-		importButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				importScenario();
-			}
-		});
+		importButton.addActionListener(e -> importScenario());
 		configControl.getPane().add(importButton);
 		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
 
@@ -375,16 +356,14 @@ public class SimulationConfigEditor {
 
 		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
-			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
+			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), SwingConstants.LEFT); //$NON-NLS-1$
 			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
 		}
 
 		// Create the start button.
 		startButton = new JButton(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
 		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
-		startButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent evt) {
+		startButton.addActionListener(e -> {
 				// Make sure any editing cell is completed, then check if error.
 				TableCellEditor editor = settlementTable.getCellEditor();
 				if (editor != null) {
@@ -401,7 +380,6 @@ public class SimulationConfigEditor {
 					// Close simulation config editor
 					closeWindow();
 				}
-			}
 		});
 
 		bottomButtonPanel.add(startButton);
@@ -409,30 +387,19 @@ public class SimulationConfigEditor {
 		// Edit Authority button.
 		JButton authorityButton = new JButton(ImageLoader.getIconByName("sponsor")); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
-		authorityButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				editAuthorities();
-			}
-		});
+		authorityButton.addActionListener(e -> editAuthorities());
 
 		// Edit Crew button.
 		JButton crewButton = new JButton(ImageLoader.getIconByName("people")); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
-		crewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				editCrewProfile();
-			}
-		});
+		crewButton.addActionListener(e -> editCrewProfile());
 
 		// Set a check box for enabling/disable the alpha crew button
 		JCheckBox cb = new JCheckBox(Msg.getString("SimulationConfigEditor.button.useCrews")); //$NON-NLS-1$
 		cb.setSelected(useCrew);
-		cb.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
+		cb.addItemListener(e -> {
             	 useCrew = (e.getStateChange() == ItemEvent.SELECTED);
         		 crewButton.setEnabled(useCrew);
-             }
         });
 
 		bottomButtonPanel.add(cb);

@@ -27,8 +27,8 @@ import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 /**
@@ -77,7 +77,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         // Create the settlement table model.
         settlementTableModel = new SettlementTableModel();
         
-        // Create the settlement table.
+        // Create the settlement table
         settlementTable = new JTable(settlementTableModel);
 		settlementTable.setAutoCreateRowSorter(true);        
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
@@ -135,12 +135,26 @@ class ConstructionSettlementPanel extends WizardPanel {
         errorMessageLabel.setText(" ");
     }
 
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
     @Override
-    boolean commitChanges() {
+    boolean commitChanges(boolean isTesting) {
         int selectedIndex = settlementTable.getSelectedRow();
+        if (selectedIndex < 0)
+        	return false;
         Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
-        getWizard().getMissionData().setConstructionSettlement(selectedSettlement);
-        return true;
+        if (selectedSettlement == null)
+        	return false;
+        
+//		if (!isTesting) {
+			getWizard().getMissionData().setConstructionSettlement(selectedSettlement);
+//			return true;
+//		}	
+	       return true;
     }
 
     @Override

@@ -21,13 +21,14 @@ public abstract class ResourceAbstract implements Resource, Serializable {
 
 	private int id;
 	private String name;
-	private String description;
+	private String description = "No Description";
 
 	protected ResourceAbstract(String name, int id, String description) {
 		super();
 		this.name = name;
 		this.id = id;
-		this.description = description;
+		if (!description.isBlank())
+			this.description = description;
 	}
 
 	/**

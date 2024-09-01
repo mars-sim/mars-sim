@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.person;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This represents the characteristic of a specific population.

@@ -15,6 +15,8 @@ import java.util.Set;
 import org.jdom2.Element;
 
 import com.mars_sim.core.data.Range;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.PopulationCharacteristics;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -24,8 +26,6 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.time.EventSchedule;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Provides methods applicable to all Config classes.

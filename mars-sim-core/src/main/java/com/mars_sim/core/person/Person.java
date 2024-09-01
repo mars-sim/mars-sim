@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +40,7 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -69,10 +69,7 @@ import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.science.Researcher;
-import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.core.science.StudyStatus;
+import com.mars_sim.core.science.ResearchStudy;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -82,18 +79,16 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, Researcher, Appraiser {
+public class Person extends Unit implements Worker, Temporal, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -193,22 +188,20 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	private Authority ra;
 	/** The bed location of the person */
 	private AllocatedSpot bed;
-	/** The person's current scientific study. */
-	private ScientificStudy study;
+
 	/** The person's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
+	/** The person's research instance. */
+	private ResearchStudy research;
 	
-	/** The person's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<>();
 	/** The person's mission experiences. */
 	private Map<MissionType, Integer> missionExperiences;
 	/** The person's list of prior trainings */
 	private List<TrainingType> trainings;
-	/** The person's list of collaborative scientific studies. */
-	private Set<ScientificStudy> collabStudies;
 
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
+	
 	private ShiftSlot shiftSlot;
 
 	/**
@@ -247,8 +240,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 		// Add this person as a citizen
 		settlement.addACitizen(this);
-		// Set the container unit
-//		setContainerUnit(settlement);
 
 		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
@@ -281,15 +272,17 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		missionExperiences = new EnumMap<>(MissionType.class);
 		// Create the EVA hours map
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-		// Create a set of collaborative studies
-		collabStudies = new HashSet<>();
+
 
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
 		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
+		
+		// Construct the ResearchStudy instance
+		research = new ResearchStudy();
 	}
 
-	/*
+	/**
 	 * Uses static factory method to create an instance of PersonBuilder.
 	 *
 	 * @param name
@@ -301,8 +294,9 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	}
 
 	/**
-	 * Computes a person's chromosome map based on the characterisitics of their nation.
-	 * @param nationPeople The population characteristcs.
+	 * Computes a person's chromosome map based on the characteristics of their nation.
+	 * 
+	 * @param nationPeople The population characteristics.
 	 */
 	private void setupChromosomeMap(PopulationCharacteristics nationPeople) {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -322,6 +316,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 	/**
 	 * Computes a person's carrying capacity and attributes and its chromosome.
+	 * 
+	 * @param personConfig
 	 */
 	private void setupCarryingCapAttributeTrait(PersonConfig personConfig) {
 		// Note: set up a set of genes that was passed onto this person
@@ -647,10 +643,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		// Set the mind of the person to inactive
 		mind.setInactive();
 
-		if (study != null) {
-			study.setCompleted(StudyStatus.CANCELLED, getName() + " primary researcher was dead");
-			study = null;
-		}
+		research.terminateStudy();
 
 		// Throw unit event
 		fireUnitUpdate(UnitEventType.DEATH_EVENT);
@@ -716,9 +709,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		}
 
 		// Primary researcher; my responsibility to update Study
-		if (study != null) {
-			study.timePassing(pulse);
-		}
+		research.timePassing(pulse);
 
 		EVASuit suit = getSuit();
 		// Record the use of it
@@ -1029,97 +1020,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		return unitManager.getSettlementByID(buriedSettlement);
 	}
 
-	/**
-	 * Set the study that this Person is the lead on.
-	 * 
-	 * @param scientificStudy
-	 */
-	@Override
-	public void setStudy(ScientificStudy scientificStudy) {
-		this.study = scientificStudy;
-	}
-
-	
-	/**
-	 * Gets the scientific study instance.		
-	 */
-	@Override
-	public ScientificStudy getStudy() {
-		return study;
-	}
-
-	/**
-	 * Gets the collaborative study sets.
-	 */
-	@Override
-	public Set<ScientificStudy> getCollabStudies() {
-		return collabStudies;
-	}
-	
-	/**
-	 * Adds the collaborative study.
-	 * 
-	 * @param study
-	 */
-	@Override
-	public void addCollabStudy(ScientificStudy study) {
-		this.collabStudies.add(study);
-	}
-
-	/**
-	 * Removes the collaborative study.
-	 * 
-	 * @param study
-	 */
-	@Override
-	public void removeCollabStudy(ScientificStudy study) {
-		this.collabStudies.remove(study);
-	}
-
-	/**
-	 * Gets the person's achievement credit for a given scientific field.
-	 *
-	 * @param science the scientific field.
-	 * @return achievement credit.
-	 */
-	@Override
-	public double getScientificAchievement(ScienceType science) {
-		double result = 0D;
-		if (science == null)
-			return result;
-		if (scientificAchievement.containsKey(science)) {
-			result = scientificAchievement.get(science);
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the person's total scientific achievement credit.
-	 *
-	 * @return achievement credit.
-	 */
-	@Override
-	public double getTotalScientificAchievement() {
-		double result = 0d;
-		for (double value : scientificAchievement.values()) {
-			result += value;
-		}
-		return result;
-	}
-
-	/**
-	 * Adds achievement credit to the person in a scientific field.
-	 *
-	 * @param achievementCredit the achievement credit.
-	 * @param science           the scientific field.
-	 */
-	@Override
-	public void addScientificAchievement(double achievementCredit, ScienceType science) {
-		if (scientificAchievement.containsKey(science)) {
-			achievementCredit += scientificAchievement.get(science);
-		}
-		scientificAchievement.put(science, achievementCredit);
-	}
 
 
 	/**
@@ -1215,7 +1115,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 * @param bed2 The assignment
 	 */
 	public void setBed(AllocatedSpot bed2) {
-		this.bed = bed2;	}
+		this.bed = bed2;	
+	}
 
 	/**
 	 * Does this person have an assigned bed ?
@@ -1771,12 +1672,13 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public boolean setContainerUnit(Unit newContainer) {
+	private boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			Unit cu = getContainerUnit();
+			// Gets the old container unit
+			Unit oldCU = getContainerUnit();
 			
-			if (newContainer.equals(cu)) {
-				return false;
+			if (newContainer.equals(oldCU)) {
+				return true;
 			}
 			
 			// 1. Set Coordinates
@@ -1784,34 +1686,34 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(cu.getCoordinates());
+				setCoordinates(oldCU.getCoordinates());
 			}
 			else {
 				setCoordinates(newContainer.getCoordinates());
 			}
 			
 			// 2. Set new LocationStateType
-			if (cu != null) { 
+			if (oldCU != null) {
 				// 2a. If the previous cu is a settlement
 				//     and this person's new cu is mars surface,
 				//     then location state is within settlement vicinity
-				if (cu.getUnitType() == UnitType.SETTLEMENT
+				if (oldCU.getUnitType() == UnitType.SETTLEMENT
 					&& newContainer.getUnitType() == UnitType.MARS) {
 						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}	
 				// 2b. If the previous cu is a vehicle
 				//     and the previous cu is in settlement vicinity
 				//     then the new location state is settlement vicinity
-				else if (cu.getUnitType() == UnitType.VEHICLE
-						&& cu.isInSettlementVicinity()
+				else if (oldCU.getUnitType() == UnitType.VEHICLE
+						&& oldCU.isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}
 				// 2c. If the previous cu is a vehicle
 				//     and the previous cu vehicle is outside on mars surface
 				//     then the new location state is vehicle vicinity
-				else if ((cu.getUnitType() == UnitType.VEHICLE)
-						&& cu.isOutside()
+				else if ((oldCU.getUnitType() == UnitType.VEHICLE)
+						&& oldCU.isOutside()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.VEHICLE_VICINITY;
 				}
@@ -1902,6 +1804,13 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
 		Unit cu = getContainerUnit();
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
 		UnitType ut = cu.getUnitType();
 
 		if (destination.equals(cu)) {
@@ -1910,41 +1819,45 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-				transferred = ((Crewable)cu).removePerson(this);
+			if (cu instanceof Crewable c) { //!(VehicleType.isDrone(((Vehicle)cu).getVehicleType()))) { 
+				transferred = c.removePerson(this);
 			}
 			else {
-				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
-		else if (ut == UnitType.BUILDING) {
-			transferred = true;
-		}
-		else if (ut == UnitType.SETTLEMENT) {
+		else if (ut == UnitType.BUILDING 
+				|| ut == UnitType.SETTLEMENT) {
 			// Q1: should one remove this person from settlement's peopleWithin list,
-			//     especially if he is still inside the garage of a settlement ?
+			//     especially if he is still inside a vehicle in the garage of a settlement ?
 			// Q2: should it be the vehicle's responsibility to remove the person from the settlement
 			//     as the vehicle leaves the garage ?
 			transferred = ((Settlement)cu).removePeopleWithin(this);
 			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}
 
-		if (transferred) {
+		if (!transferred) {
+			logger.severe(this, 20_000, "Cannot be retrieved from " + cu + ".");
+			// NOTE: need to revert back to the previous container unit cu
+		}
+		
+		else {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (destination instanceof Crewable cr) {
-					transferred = cr.addPerson(this);
+				if (destination instanceof Crewable c) {
+					transferred = c.addPerson(this);
 				}
 				else {
-					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 20_000, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
+			
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addToIndoor(this);
 				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
@@ -1952,29 +1865,25 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
-				BuildingManager.setToBuilding(this, (Building)destination);
 				transferred = ((Building)destination).getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
+				BuildingManager.setToBuilding(this, (Building)destination);
 				destination = (((Building)destination)).getSettlement();
 			}
 
 			if (!transferred) {
-				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type for old container
 				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
-		}
-		else {
-			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action
 		}
 
 		return transferred;
@@ -2177,7 +2086,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	}
 	
 	/**
-	 * Rescues the person from the rover.
+	 * Rescues the person from the rover in settlement vicinity.
+	 * 
 	 * Note: this is more like a hack, rather than a legitimate 
 	 * way of transferring a person through the airlock into the settlement.			
 	 *
@@ -2252,6 +2162,15 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	}
 	
 	/**
+	 * Gets the research study instance.
+	 * 
+	 * @return
+	 */
+	public ResearchStudy getResearchStudy() {
+		return research;
+	}
+	
+	/**
 	 * Reinitialize references after loading from a saved sim.
 	 */
 	public void reinit() {
@@ -2303,9 +2222,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 		skillManager.destroy();
 		skillManager = null;
-
-		scientificAchievement.clear();
-		scientificAchievement = null;
 	}
 
 	public static double getAverageWeight() {

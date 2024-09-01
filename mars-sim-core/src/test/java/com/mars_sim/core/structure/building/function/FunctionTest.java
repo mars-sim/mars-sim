@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class FunctionTest extends AbstractMarsSimUnitTest {
 

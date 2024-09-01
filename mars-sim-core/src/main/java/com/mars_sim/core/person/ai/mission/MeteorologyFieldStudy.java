@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -18,7 +19,6 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.task.MeteorologyStudyFieldWork;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * A mission to do meteorology research at a remote field location for a scientific

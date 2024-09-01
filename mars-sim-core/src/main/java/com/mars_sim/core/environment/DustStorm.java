@@ -11,9 +11,10 @@ import java.io.Serializable;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.air.AirComposition;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class DustStorm implements Serializable {
 
@@ -66,6 +67,8 @@ public class DustStorm implements Serializable {
 
 	private String name;
 
+	private MarsTime startTime;
+				
 	private Coordinates location;
 
 	// In case of dust devil, for simplicity, height = size
@@ -76,19 +79,26 @@ public class DustStorm implements Serializable {
 
 	private DustStormType type;
 
-	
+	/**
+	 * Constructor.
+	 * 
+	 * @param type
+	 * @param id
+	 * @param weather
+	 * @param origin
+	 */
 	public DustStorm(DustStormType type, int id, Weather weather,
-					 Settlement s) {
+					 Settlement origin) {
 		this.id = id;
-		this.settlementId = s.getIdentifier();
-		this.location = s.getCoordinates();
+		this.settlementId = origin.getIdentifier();
+		this.location = origin.getCoordinates();
 		setType(type);
 		
 		// Logic only assigns a meaningful size & speed for DUST_DEVIL
 		if (type == DustStormType.DUST_DEVIL) {
 			double meanPressure = (DEFAULT_MEAN_PRESSURE
-					+ weather.calculateAirPressure(s.getCoordinates(), HEIGHT)) / 2D;
-			double t = s.getOutsideTemperature() + AirComposition.C_TO_K;
+					+ weather.calculateAirPressure(origin.getCoordinates(), HEIGHT)) / 2D;
+			double t = origin.getOutsideTemperature() + AirComposition.C_TO_K;
 			speed = Math.sqrt(R * t * DEFAULT_DELTA_PRESSURE / meanPressure);
 			size = 1 + RandomUtil.getRandomInt(3);
 		}
@@ -106,6 +116,33 @@ public class DustStorm implements Serializable {
 	public double getSpeed() {
 		return speed;
 	}
+	
+	/**
+	 * Gets the timestamp it starts.
+	 * 
+	 * @return start time
+	 */
+	protected MarsTime getStartTime() {
+		return startTime;
+	}
+	
+//	/**
+//     * Gets the distance to the destination.
+//     * 
+//     * @return distance (km)
+//     */
+//    protected double getDistanceToDestination() {
+//    	return getCoordinates().getDistance(destination);
+//    }
+//    
+//	public void travel(double millisols) {
+//	
+//        // Find the distance to destination.
+//        double dist2Dest = getDistanceToDestination();
+//        
+//        // Find current direction and update vehicle.
+//        setDirection(getCoordinates().getDirectionToPoint(destination));	
+//	}
 
 	// Almost all of the planet-encircling storms have been observed to start in one
 	// of two regions (a-d, e) on Mars:
@@ -143,6 +180,8 @@ public class DustStorm implements Serializable {
 		int newSize = 0;
 		double newSpeed = speed;
 
+		// Future: account for how it would move from place to place by the speed and direction it would travel
+		
 		// a dust devil column can tower kilometers high and hundreds of meters wide,
 		// 10 times larger than any tornado on Earth. Red-brown sand and dust whipping
 		// around faster than 30 meters per second
@@ -154,26 +193,26 @@ public class DustStorm implements Serializable {
 			newSize = s + change;
 
 			// arbitrary speed determination
-			newSpeed = 8 + .5 * newSize;
+			newSpeed = 1 + .05 * newSize;
 			break;
 		
 
 		case LOCAL:
-			int up1 = RandomUtil.getRandomInt(0, 50);
-			int down1 = RandomUtil.getRandomInt(0, 50);
+			int up1 = RandomUtil.getRandomInt(0, 5);
+			int down1 = RandomUtil.getRandomInt(0, 5);
 			int s1 = size;
 
 			newSize = s1 + up1 - down1;
 			// arbitrary speed determination
-			newSpeed = 15 + .05 * newSize;
+			newSpeed = 10 + .1 * newSize;
 			break;
 			
 		case REGIONAL:
 			// Typically, within 10-15 days a storm can become planet-encircling
 			// Source: http://mars.jpl.nasa.gov/odyssey/mgs/sci/fifthconf99/6011.pdf
 			// Assuming it can grow up to 100 km per sol
-			int up2 = RandomUtil.getRandomInt(0, 100);
-			int down2 = RandomUtil.getRandomInt(0, 100);
+			int up2 = RandomUtil.getRandomInt(0, 10);
+			int down2 = RandomUtil.getRandomInt(0, 10);
 			int s2 = size;
 
 			newSize = s2 + up2 - down2;
@@ -191,13 +230,13 @@ public class DustStorm implements Serializable {
 			}
 			
 			// arbitrary speed determination
-			newSpeed = 100 + .02 * newSize;
+			newSpeed = 50 + .5 * newSize;
 			break;
 		
 
 		case PLANET_ENCIRCLING:
-			int up3 = RandomUtil.getRandomInt(0, 500);
-			int down3 = RandomUtil.getRandomInt(0, 500);
+			int up3 = RandomUtil.getRandomInt(0, 50);
+			int down3 = RandomUtil.getRandomInt(0, 50);
 			int s3 = size;
 
 			newSize = s3 + up3 - down3;
@@ -205,7 +244,7 @@ public class DustStorm implements Serializable {
 			if (newSize > 6787 * Math.PI)
 				newSize = (int) (6787 * Math.PI);
 			// arbitrary speed determination
-			newSpeed = 200 + .01 * newSize;
+			newSpeed = 200 + .5 * newSize;
 			break;
 		}
 
@@ -241,6 +280,11 @@ public class DustStorm implements Serializable {
 		return size;
 	}
 
+	/**
+	 * Sets the type.
+	 * 
+	 * @param newType
+	 */
 	private void setType(DustStormType newType) {
 		String newName = null;
 		switch(newType) {

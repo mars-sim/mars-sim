@@ -20,8 +20,8 @@ import org.apache.commons.io.FileUtils;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.UIConfig;
 

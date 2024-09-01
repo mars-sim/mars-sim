@@ -24,7 +24,7 @@ import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.HouseKeeping;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Fishery function that is responsible for aquatic farming
@@ -52,33 +52,36 @@ public class Fishery extends Function {
 													"Valves"};
 	
 	/** Time before weed need tendering. */
-	private static final int WEED_DEMAND = 500;
-	
+	private static final int WEED_DEMAND = 250;
+	/** The id for fish meat. */
+	public static final int FISH_MEAT_ID = ResourceUtil.fishMeatID;
 	/** Convert from kg to ounce. */
 	public static final double KG_PER_OUNCE = 0.02834952;
 	/** Convert from ounce to kg. */
 	public static final double OUNCE_PER_KG = 35.27396195;
-	/** Initial size of each weed, in ounces. */ 
-	public static final double WEED_SIZE = 15;
-	/** Growth rate of weeds, in ounces/millisols. */  
-	public static final double WEED_GROWTH_RATE = 0.005;
-	/** Fish size, in ounces. */ 
-	public static final double FISH_WEIGHT = 50; 
+	/** Typical adult weed size, in ounces. */ 
+	public static final double WEED_OUNCES = 15;
+	/** Typical adult fish size, in ounces. */ 
+	public static final double FISH_OUNCES = 50; 
 	/** Fish length in cm. */
 	public static final int FISH_LENGTH = 30; 
+	/** Growth rate of weeds, in ounces/millisols. */  
+	public static final double WEED_GROWTH_RATE = 0.005;
 	/** Growth rate of fish in ounces/millisol. */
-	private static final double FISH_RATE = 0.0002D;
-	/** A fish must eat FRACTION times its size during a frame, or it will die. */
-	public static final double FRACTION = 0.4;
+	private static final double FISH_GROWTH_RATE = 0.0025;
+	/** A fish eats a fraction of its size. */
+	public static final double EAT_FRACTION = 0.2;
 	
 	// Note: At the end of each millisol, some fish have babies. 
 	// The total number of a newly borne fish is the current number of fish 
 	// times the BIRTH_RATE (rounded down to an integer)
 	/** Birth rate of fish in kg/millisol. */
-	public static final double BIRTH_RATE = 0.008 / 1000;
+	public static final double FISH_BIRTH_RATE = 0.01 / 1000;
+	
+	public static final double WEED_BIRTH_RATE = 0.01 / 1000;
 	
 	/** Average number of weeds nibbled by a fish per frame. */
-	private static final double AVERAGE_NIBBLES = 0.0025;
+	private static final double AVERAGE_NIBBLES = 0.1;
 	/** kW per litre of water. */
 	private static final double POWER_PER_LITRE = 0.0001D;
 	/** kW per fish. */
@@ -86,14 +89,16 @@ public class Fishery extends Function {
 	/** kW per weed mass. */
 	private static final double POWER_PER_WEED_MASS = 0.002D;
 	/** Tend time per weed. */
-	private static final double TIME_PER_WEED = .8D;
+	private static final double TIME_PER_WEED = 10D;
 	/** Adult fish length per litre. Cold water is 2.5cm per 4.55 litre. */
 	private static final double FISHSIZE_LITRE = (2.5D/4.55D); 
 	/** Number of fish as a percentage of maximum. */
-	private static final double IDEAL_PERCENTAGE = 0.8D;
+	private static final double IDEAL_FRACTION = 0.8D;
 
 	/** Size of tank in litres. */
 	private int tankSize;
+	/** Maximum number of weeds. */
+	private int maxWeed;
 	/** Maximum number of fish. */
 	private int maxFish;
 	/** Optimal number of fish.*/
@@ -101,12 +106,14 @@ public class Fishery extends Function {
 	
 	/** The initial ratio of fish and water [in kg/L] . */	
 	private final double fishToWaterMassRatio;
-	/** Current overall health of fish (from 0 to 1). */	
+	/** Current overall health of this fishery environment (from 0 to 1). */	
 	private double health = 1;
 	/** The cumulative time spent in this greenhouse [in sols]. */
 	private double cumulativeWorkTime;	
 	/** The amount iteration for birthing fish */
-	private double birthIterationCache;
+	private double fishBirthCache;
+	/** The amount iteration for birthing weed */
+	private double weedBirthCache;
 	/** The amount iteration for nibbling weed */
 	private double nibbleIterationCache;
 	/** How long has the weed been tendered. */
@@ -117,14 +124,14 @@ public class Fishery extends Function {
 	private double waterMass;
 	
 	/** A list of our fish. */
-	private List<Herbivore> fish;   
+	private List<Fish> fish;   
 	/** A list of our weeds. */
 	private List<Plant> weeds;
 	
 	/** Keep track of cleaning and inspections. */
 	private HouseKeeping houseKeeping;
 	
-	/** The resource logs for growing algae in this facility [kg/sol]. */
+	/** The resource logs for growing fish in this facility [kg/sol]. */
 	private SolMetricDataLogger<Integer> resourceLog = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
 	
@@ -147,43 +154,57 @@ public class Fishery extends Function {
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
 		
-		idealFish = (int)(maxFish * IDEAL_PERCENTAGE);
+		idealFish = (int)(maxFish * IDEAL_FRACTION);
 		
 		// For now, fishToWaterMassRatio is 0.0146
 		fishToWaterMassRatio = 1.0 * idealFish / tankSize; 
 
-	    int numFish = (int)RandomUtil.getRandomDouble(idealFish * 0.5, idealFish * 0.75);
+	    int numFish = (int)RandomUtil.getRandomDouble(idealFish * 0.5, idealFish);
 
-	    int numWeeds = numFish * 10;
+	    int numWeeds = numFish * RandomUtil.getRandomInt(4, 6);
 	    
-		tendertime = numWeeds * TIME_PER_WEED;
+	    maxWeed = idealFish * RandomUtil.getRandomInt(4, 6);
+	    		
+		tendertime = RandomUtil.getRandomDouble(.75, 1.25) * Math.min(TIME_PER_WEED, numFish / 10.0);
 
 		weedAge = 0;
 		
 		fish = new ArrayList<>(numFish);
 	    weeds = new ArrayList<>(numWeeds);
 	    
-	    int i;
 	    // Initialize the bags of fish and weeds
-	    for (i = 0; i < numFish; i++) {
-	    	double weight = RandomUtil.getRandomDouble(FISH_WEIGHT *.75, FISH_WEIGHT * 1.25);
-	    	double eatingRate = RandomUtil.getRandomDouble(weight * FRACTION *.75, weight * FRACTION * 1.25);
-	    	fish.add(new Herbivore(weight,  
-	    		   RandomUtil.getRandomDouble(FISH_RATE *.75, FISH_RATE * 1.25), 
+	    for (int i = 0; i < numFish; i++) {
+	    	// Assume the fish are young
+	    	double weight = RandomUtil.getRandomDouble(FISH_OUNCES *.75, FISH_OUNCES * 1.25) / 20;
+	    	double eatingRate = RandomUtil.getRandomDouble(weight * EAT_FRACTION *.9, weight * EAT_FRACTION * 1.1);
+	    	fish.add(new Fish(weight,  
+	    		   RandomUtil.getRandomDouble(FISH_GROWTH_RATE *.9, FISH_GROWTH_RATE * 1.1), 
 	    		   eatingRate));
 	    }
-	    for (i = 0; i < numWeeds; i++) {
-	    	double weight = RandomUtil.getRandomDouble(WEED_SIZE *.75, WEED_SIZE * 1.25);
-	    	double growthRate = RandomUtil.getRandomDouble(WEED_GROWTH_RATE *.75, WEED_GROWTH_RATE * 1.25);
+	    for (int i = 0; i < numWeeds; i++) {
+	    	double weight = RandomUtil.getRandomDouble(WEED_OUNCES *.75, WEED_OUNCES * 1.25) / 20;
+	    	double growthRate = RandomUtil.getRandomDouble(WEED_GROWTH_RATE *.9, WEED_GROWTH_RATE * 1.1);
 	    	weeds.add(new Plant(weight, growthRate));
 	    }
 	    
 	    // The amount of water in kg
 	 	waterMass = tankSize * ((double)fish.size() / maxFish);
 	    
-	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + "  # of weeds: " + numWeeds + ".");
+	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + " (" +  
+	    		Math.round(getTotalFishMass() * 10.0)/10.0	
+	    		+  " kg).  # of weeds: " + numWeeds + " ("
+	    		+ Math.round(getTotalWeedMass() * 10.0)/10.0 + " kg).");
 	}
 
+	/**
+	 * Updates the eating rate as the fish grow.
+	 */
+	public void updateEatingRate() {
+		for (var f: fish) {
+			double eatingRate = RandomUtil.getRandomDouble(f.getSize() * EAT_FRACTION *.9, f.getSize() * EAT_FRACTION * 1.1);
+			f.setNeed(eatingRate);
+		}
+	}
 
 	/**
 	 * Gets the value of the function for a named building type.
@@ -232,7 +253,7 @@ public class Fishery extends Function {
 			double time = pulse.getElapsed();
 			
 		    // Account for fish and weeds
-		    simulatePond(time);
+		    simulatePond(pulse);
 
 		    double degradeValue = time / 1000;
 			// degrade the cleanliness
@@ -241,86 +262,159 @@ public class Fishery extends Function {
 			houseKeeping.degradeInspected(degradeValue);
 			
 			weedAge += time;
+			
+			if (pulse.isNewHalfSol()) {
+				// As the fish grow, increase eating
+				updateEatingRate();
+			}
 		}
 		return valid;
 	}
 	
 	/**
+	 * Gets the average age of all fish.
+	 * 
+	 * @return
+	 */
+	public double getAverageAge() {
+		int num = fish.size();
+		double age = 0;
+		for (Fish f : fish) {
+			age += f.getAge();
+		}
+		if (num == 0)
+			return 0;
+		return age / num;
+	}
+	   
+	   
+	/**
 	* Simulates life in the pond.
 	* 
-	* @param time
+	* @param pulse
 	**/
-	private void simulatePond(double time) {
-	   int i;
-	   int index;
-	   
-	   Herbivore nextFish;
-	   Plant nextWeed;
+	private void simulatePond(ClockPulse pulse) {
+	   double time = pulse.getElapsed();
 	
+	   // Simulate the fish's growing cycle
+	   ListIterator<Fish> it = fish.listIterator();
+	   while(it.hasNext()) {
+		  Fish f = it.next();
+	      f.growPerFrame(time);
+	      // If a fish has no food to eat within a period of time, it will die
+	      if (!f.isAlive())
+	         it.remove();
+	   }
+	
+	   // Simulate the weed's natural growth cycle
+	   ListIterator<Plant> ii = weeds.listIterator();
+	   while(ii.hasNext()) {
+		  Plant p = ii.next();
+	      p.growPerFrame(time);
+	      // If a weed has been eaten to the point it was shrunk to size 0, it will die
+	      if (!p.isAlive())
+	         it.remove();
+	   }
+	   
 	   int numFish = fish.size();
 	   int numWeeds = weeds.size();
+	   
 	   // Have randomly selected fish nibble on randomly selected plants
 	   nibbleIterationCache += AVERAGE_NIBBLES * time * numFish;
 	   
-	   if (nibbleIterationCache > numFish) {
+	   // If nibbleIterationCache is greater than half of numFish 
+	   if (nibbleIterationCache >= numFish * EAT_FRACTION) {
+
 		   int feedIterations = (int)nibbleIterationCache;
-		   feedIterations = Math.min(feedIterations, numFish * 3);
-		   feedIterations = Math.max(feedIterations, numFish);
+		   if (feedIterations == 0)
+			   feedIterations = numFish / 2;
+		   feedIterations = Math.min(feedIterations, numFish * 2);
+		   feedIterations = Math.max(feedIterations, numFish * 6);
 		   feedIterations = Math.min(feedIterations, numWeeds);
-
+//		   logger.info(building, 60_000, "nibbleIterationCache: " + Math.round(nibbleIterationCache * 10.0)/10.0  + "  feedIterations: " + feedIterations + ".");
 		   nibbleIterationCache = nibbleIterationCache - feedIterations;
-
-		   for (i = 0; i < feedIterations; i++) {
-			   index = RandomUtil.getRandomInt(numFish-1);
-			   nextFish = fish.get(index);
+		   if (nibbleIterationCache < 0)
+			   nibbleIterationCache = 0;
+		   
+		   if (feedIterations - numFish > 0) {	
+			   // Ensure each Fish get the chance to nibble on a weed
+			   for (int i = 0; i < numFish ; i++) {
+				   Fish f = fish.get(i);
+				   int index = RandomUtil.getRandomInt(numWeeds-1);
+				   Plant nextWeed = weeds.get(index);
+				   f.nibble(nextWeed);
+				   feedIterations--;
+			   } 
+		   }
+		   
+		   // Simulate the rest of the fish randomly to nibble on a weed
+		   for (int i = 0; i < feedIterations; i++) {
+			   // Future: When picking a fish to eat, pick one that's hungry
+			   int index = RandomUtil.getRandomInt(numFish-1);
+			   Fish nextFish = fish.get(index);
 			   index = RandomUtil.getRandomInt(numWeeds-1);
-			   nextWeed = weeds.get(index);
+			   Plant nextWeed = weeds.get(index);
 			   nextFish.nibble(nextWeed);
 		   } 
+		   	    
+		   // Create some new fish, according to the BIRTH_RATE constant
+		   if (fish.size() < maxFish * RandomUtil.getRandomDouble(.9, 1.1)) {
+			   fishBirthCache += FISH_BIRTH_RATE * time * fish.size() * health
+					   * (2 + .01 * RandomUtil.getRandomInt(-15, 15));
+			   if (fishBirthCache > 1) {
+					int newFish = (int)fishBirthCache;
+					fishBirthCache = fishBirthCache - newFish;
+					addFish(newFish);
+			   }
+		   }	   
 		   
-		   // Simulate the fish
-		   ListIterator<Herbivore> it = fish.listIterator();
-		   while(it.hasNext()) {
-			  nextFish = it.next();
-		      nextFish.growPerFrame(time);
-		      if (!nextFish.isAlive())
-		         it.remove();
-		   }
-		
-		   // Simulate the weeds
-		   for (Plant p : weeds) {
-			   p.growPerFrame();
-		   }
+		   // Create some new fish, according to the BIRTH_RATE constant
+		   if (weeds.size() < maxWeed * RandomUtil.getRandomDouble(.9, 1.1)) {
+			   weedBirthCache += WEED_BIRTH_RATE * time * weeds.size() * health
+					   * (1.5 + .01 * RandomUtil.getRandomInt(-15, 15));
+			   if (weedBirthCache > 1) {
+					int newWeed = (int)weedBirthCache;
+					weedBirthCache = weedBirthCache - newWeed;
+					addWeed(newWeed);
+			   }
+		   }	
 	   }
-	
-	   // Create some new fish, according to the BIRTH_RATE constant
-	   if (fish.size() < maxFish * 1.1) {
-		   birthIterationCache += BIRTH_RATE * time * fish.size() * health
-				   * (1 + .01 * RandomUtil.getRandomInt(-15, 15));
-		   if (birthIterationCache > 1) {
-				int newFish = (int)birthIterationCache;
-				birthIterationCache = birthIterationCache - newFish;
-				addFish(newFish);
-		   }
-	   }	   
 	}
 
+	/**
+	 * Adds fish.
+	 * 
+	 * @param numFish
+	 */
     public void addFish(int numFish) {
 		for (int i = 0; i < numFish; i++) {
 			// Assume the beginning weight of a baby fish is 1/30 of an adult fish
-			double weight = RandomUtil.getRandomDouble(FISH_WEIGHT / 30 *.75, FISH_WEIGHT / 30 * 1.25);
-			double eatingRate = RandomUtil.getRandomDouble(weight * FRACTION *.75, weight * FRACTION * 1.25);
-			fish.add(new Herbivore(weight,  
-					RandomUtil.getRandomDouble(FISH_RATE *.75, FISH_RATE * 1.25), 
+			double weight = RandomUtil.getRandomDouble(FISH_OUNCES / 30 *.75, FISH_OUNCES / 30 * 1.25);
+			double eatingRate = RandomUtil.getRandomDouble(weight * EAT_FRACTION *.9, weight * EAT_FRACTION * 1.1);
+			fish.add(new Fish(weight,  
+					RandomUtil.getRandomDouble(FISH_GROWTH_RATE *.9, FISH_GROWTH_RATE * 1.1), 
 					eatingRate));
 		}
 
-		logger.info(building, "New # of fish added: " + numFish + ".");
-			
-		// Record the new fish
-		addResourceLog(numFish, ResourceUtil.fishMeatID);
+		logger.info(building, "# of fish just given birth: " + numFish + ".");
     }
 	
+	/**
+	 * Adds weeds.
+	 * 
+	 * @param numWeed
+	 */
+    public void addWeed(int numWeed) {
+		for (int i = 0; i < numWeed; i++) {
+			// Assume the beginning weight of a baby weed is 1/20 of an adult weed		
+			double weight = RandomUtil.getRandomDouble(WEED_OUNCES *.75 / 20, WEED_OUNCES * 1.25);
+	    	double growthRate = RandomUtil.getRandomDouble(WEED_GROWTH_RATE *.9, WEED_GROWTH_RATE * 1.1);
+	    	weeds.add(new Plant(weight, growthRate));
+		}
+
+		logger.info(building, "# of weed just given birth: " + numWeed + ".");
+    }
+    
 	/**
 	* Calculates the total mass of a collection of Organism.
 	* 
@@ -338,7 +432,7 @@ public class Fishery extends Function {
 	   
 	   for (Organism next : organisms) {
 	      if (next != null)
-	         answer += next.getSize( );
+	         answer += next.getSize();
 	   }
 	   return answer;
 	}
@@ -350,7 +444,7 @@ public class Fishery extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 		// Power (kW) required for normal operations.
 		return waterMass * POWER_PER_LITRE 
 				+ getNumFish() * POWER_PER_FISH 
@@ -364,7 +458,7 @@ public class Fishery extends Function {
 	 */
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return getPowerRequired() * .1;
+		return getCombinedPowerLoad() * .1;
 	}
 
 	@Override
@@ -420,25 +514,34 @@ public class Fishery extends Function {
 		// Record the work time
 		addCumulativeWorkTime(workTime);
 		
-		// Grow the weeds
-		for (Plant p : weeds) {
-			p.growPerFrame();
-		}
-
+		int numFish = fish.size();
+		
+		// Tending the weed attract fish to come to nibble more
+		nibbleIterationCache += AVERAGE_NIBBLES * workTime * numFish;
+		
 		tendertime -= workTime;
 
 		if (tendertime < 0) {
 			surplus = Math.abs(tendertime);
-			tendertime = ((double)weeds.size() / fish.size()) * TIME_PER_WEED;
-			logger.log(building, Level.INFO, 10_000L, 
-					"Weeds fully tended for " 
-						+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
+			tendertime = RandomUtil.getRandomDouble(.75, 1.25) * Math.min(TIME_PER_WEED, numFish / 10.0);
+			logger.log(building, Level.INFO, 5_000, 
+					"Tended weeds for the fish (" 
+						+ Math.round(tendertime * 10.0)/10.0 + " millisols).");
 			weedAge = 0;
 		}
 		
 		return surplus;
 	}
 
+	/**
+	 * Is it the right time to harvest a fish ?
+	 * 
+	 * @return
+	 */
+	public boolean canCatchFish() {
+		return fish.size() >= idealFish * RandomUtil.getRandomDouble(.9, 1.1);
+	}
+	
 	/**
 	 * Catches some fish.
 	 * 
@@ -447,16 +550,23 @@ public class Fishery extends Function {
 	 * @return
 	 */
 	public double catchFish(Worker fisher, double workTime) {
-		if (fish.size() <= idealFish) {
+		if (!canCatchFish()) {
 			return workTime;
 		}
 		
 		// Random
 		int rand = RandomUtil.getRandomInt(fish.size());
 		if (rand > idealFish) {
+
+			Fish removed = fish.remove(0);
+			double mass = removed.getSize() / OUNCE_PER_KG;
 			// Catch one
-			logger.info(fisher, "One fish caught. Stock:" + fish.size());
-			Herbivore removed = fish.remove(1);
+			logger.info(fisher, "One fish caught. Mass: " 
+					+ Math.round(mass * 10.0)/10.0 
+					+ " kg. Stock:" + fish.size());
+			
+			// Record as a harvest
+			addResourceLog(mass, ResourceUtil.fishMeatID);
 			
 			// Fish stored as KG, 90% is useful
 			store((removed.getSize() * 0.9D) * KG_PER_OUNCE, ResourceUtil.fishMeatID, "Fishery::catchFish");
@@ -510,14 +620,13 @@ public class Fishery extends Function {
 		resourceLog.increaseDataPoint(id, amount);
 	}
 	
-
 	/**
 	 * Computes the daily average of a particular resource.
 	 * 
 	 * @param id The resource id
 	 * @return average consumed or produced in kg/sol
 	 */
-	public double computeDaily(int id) {
+	public double computeDailyAverage(int id) {
 		return resourceLog.getDailyAverage(id);
 	}
 	

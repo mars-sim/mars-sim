@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FutureEventCommand.java
- * @version 3.5.0 023-01-01
+ * @date 2024-08-10
  * @author Barry Evans
  */
 

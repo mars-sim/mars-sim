@@ -10,11 +10,11 @@
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
 	<properties>
-		<flatlaf.version>3.4.1</flatlaf.version>
-		<jfreechart.version>1.5.4</jfreechart.version>
+		<flatlaf.version>3.5.1</flatlaf.version>
+		<jfreechart.version>1.5.5</jfreechart.version>
 		<jide-oss.version>3.7.15</jide-oss.version>
 
-		<mainClass>com.mars_sim.ui.main.MarsProject</mainClass>
+		<mainClass>com.mars_sim.ui.swing.main.MarsProject</mainClass>
 		<target.name>mars-sim-swing-${project.version}</target.name>
 	</properties>
 	<dependencies>
@@ -35,11 +35,20 @@
 		</dependency>	
 
 		<dependency>
+		    <groupId>io.github.parubok</groupId>
+		    <artifactId>multiline-label</artifactId>
+		    <version>1.20</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>${jfreechart.version}</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>org.httprpc</groupId>
+		    <artifactId>sierra</artifactId>
+		    <version>2.3.1</version>
+		</dependency>
 		<dependency>
 		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
 		    <artifactId>SteelSeries</artifactId>
@@ -56,6 +65,11 @@
 		    <version>0.0.17.4</version>
 		</dependency>
 	
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-intellij-themes</artifactId>
+			<version>${flatlaf.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-swingx</artifactId>

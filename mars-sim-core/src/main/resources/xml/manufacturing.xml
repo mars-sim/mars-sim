@@ -963,7 +963,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="aluminum oxide" amount=".5" />
 			<resource name="lime" amount="2" />
-			<resource name="iron" amount="2" />
+			<resource name="iron powder" amount="2" />
 			<resource name="copper" amount="2" />
 			<part name="steel ingot" number="1" />
 		</inputs>
@@ -1432,33 +1432,11 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="acetylene" amount="0.1" />	
-			<resource name="iron" amount="1.0" />						
+			<resource name="iron powder" amount="1.0" />						
 			<part name="steel ingot" number="2" />
 		</inputs>
 		<outputs>
 			<part name="pipe wrench" number="6" />
-		</outputs>
-	</process>
-
-	<process name="Assemble rover generator" tech="2" skill="3" work-time="400" process-time="400"
-			power-required="1.0">
-		<inputs>
-			<resource name="acetylene" amount="0.3" />
-			<part name="steel ingot" number="10" />
-			<part name="valve" number="6" />
-			<part name="gasket" number="6" />
-			<part name="plastic tubing" number="6" />
-			<part name="steel pipe" number="4" />
-			<part name="power cable" number="2" />
-			<part name="spark plug" number="6" />
-			<part name="lubricant bottle" number="5" />
-			<part name="coolant bottle" number="2" />
-			<part name="electrical wire" number="3" />
-			<part name="wire connector" number="3" />
-			<part name="timing belt" number="1" />
-		</inputs>
-		<outputs>
-			<part name="rover generator" number="1" />
 		</outputs>
 	</process>
 
@@ -1478,50 +1456,67 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Manufacture small stepper motor" tech="3" skill="3" work-time="200" process-time="200"
+	<process name="Manufacture Stepper Motor" tech="3" skill="3" work-time="400" process-time="200"
 			power-required=".2">
 		<inputs>
 			<part name="iron sheet" number="1" />
 			<part name="iron ingot" number="1" />
-			<part name="copper wire" number="10" />
+			<part name="copper wire" number="8" />
 			<part name="steel sheet" number="1" />
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="4" />
+			<part name="electrical wire" number="8" />
+			<part name="wire connector" number="8" />
 			<part name="logic board" number="1" />
 
 		</inputs>
 		<outputs>
-			<part name="stepper motor small" number="4" />
+			<part name="Stepper Motor" number="4" />
 		</outputs>
 	</process>
 
-	<process name="Manufacture small motor" tech="3" skill="3" work-time="200" process-time="200"
+	<process name="Manufacture 5 kW Motor" tech="3" skill="3" work-time="300" process-time="200"
 			power-required=".2">
 		<inputs>
 			<part name="iron sheet" number="1" />
 			<part name="iron ingot" number="1" />
-			<part name="copper wire" number="10" />
-			<part name="steel sheet" number="1" />
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="4" />
+			<part name="copper wire" number="9" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="9" />
+			<part name="wire connector" number="9" />
 		</inputs>
 		<outputs>
-			<part name="motor small" number="4" />
+			<part name="Motor 5 kW" number="3" />
 		</outputs>
 	</process>
 
-	<process name="Manufacture large motor" tech="2" skill="3" work-time="200" process-time="200"
+<!-- Note: each steel sheet weights 7.8 kg. each iron sheet weights 7.85 kg. Each iron ingot weights 7 kg. -->
+
+	<process name="Manufacture 10 kW Motor" tech="3" skill="3" work-time="200" process-time="200"
+			power-required=".2">	
+		<inputs>
+			<part name="iron sheet" number="1" />
+			<part name="iron ingot" number="1" />
+			<part name="copper wire" number="12" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="12" />
+			<part name="wire connector" number="12" />
+		</inputs>
+		<outputs>
+			<part name="Motor 10 kW" number="2" />
+		</outputs>
+	</process>
+
+	<process name="Manufacture 30 kW Motor" tech="3" skill="3" work-time="150" process-time="200"
 			power-required=".3">
 		<inputs>
 			<part name="iron sheet" number="2" />
 			<part name="iron ingot" number="2" />
-			<part name="copper wire" number="25" />
-			<part name="steel sheet" number="2" />
-			<part name="electrical wire" number="4" />
-			<part name="wire connector" number="8" />
+			<part name="copper wire" number="22" />
+			<part name="steel sheet" number="3" />
+			<part name="electrical wire" number="24" />
+			<part name="wire connector" number="24" />
 		</inputs>
 		<outputs>
-			<part name="motor large" number="1" />
+			<part name="Motor 30 kW" number="1" />
 		</outputs>
 	</process>
 
@@ -1530,7 +1525,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="Polycarbonate Resin" amount="1.5" />
 			<resource name="titanium" amount=".25" />
-			<resource name="iron" amount=".25" />			
+			<resource name="iron powder" amount=".25" />			
 		</inputs>
 		<outputs>
 			<part name="propeller" number="1" />
@@ -1710,6 +1705,37 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>-->
 
+	<process name="Assemble Cargo Drone" tech="3" skill="3" work-time="1000" process-time="750"
+			power-required="2.5">
+		<inputs>
+			<resource name="acetylene" amount="2.0" />			
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="optical lens" number="2" />
+			<part name="vehicle frame small" number="1" />
+			<part name="aluminum sheet" number="3" />
+			<part name="drone chassis panel" number="3" />
+			<part name="Motor 10 kW" number="4" />
+			<part name="methane fuel cell stack" number="2" />
+			<part name="battery module" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="plastic tubing" number="2" />
+			<part name="plastic pipe" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
+			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />						
+		</inputs>
+		<outputs>
+			<vehicle name="cargo drone" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="Assemble Delivery Drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
@@ -1719,8 +1745,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="optical lens" number="2" />
 			<part name="vehicle frame small" number="1" />
 			<part name="aluminum sheet" number="2" />
-			<part name="vehicle chassis panel" number="2" />
-			<part name="motor small" number="4" />
+			<part name="drone chassis panel" number="2" />
+			<part name="Motor 10 kW" number="4" />
 			<part name="methanol fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
@@ -1729,8 +1755,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic pipe" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
 			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />
+			<part name="water tank" number="1" />	
 			<part name="fuel pump" number="1" />
 			<part name="propeller" number="4" />	
 			<part name="CMOS sensor" number="8" />						
@@ -1741,7 +1768,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<process name="Assemble LUV" tech="3" skill="3" work-time="1000" process-time="500"
-			power-required="2.0">
+			power-required="1.5">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
 			<resource name="polystyrene" amount="5" />	
@@ -1750,7 +1777,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="vehicle frame small" number="2" />
 			<part name="vehicle chassis panel" number="3" />
 			<part name="aluminum sheet" number="5" />			
-			<part name="motor small" number="4" />
+			<part name="Motor 10 kW" number="2" />
 			<part name="methanol fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
@@ -1786,8 +1813,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover windshield" number="2" />
 			<part name="window" number="2" />
 			<part name="winch" number="1" />
-			<part name="rover generator" number="1" />
-			<part name="motor large" number="3" />			
+			<part name="Motor 30 kW" number="3" />			
 			<part name="methanol fuel cell stack" number="4" />
 			<part name="battery module" number="2" />
 			<part name="gas tank" number="2" />	
@@ -1826,8 +1852,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover windshield" number="1" />
 			<part name="window" number="5" />
 			<part name="winch" number="1" />
-			<part name="rover generator" number="1" />
-			<part name="motor large" number="4" />			
+			<part name="Motor 30 kW" number="5" />			
 			<part name="methanol fuel cell stack" number="5" />
 			<part name="battery module" number="4" />
 			<part name="gas tank" number="4" />
@@ -1865,8 +1890,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover windshield" number="1" />
 			<part name="window" number="2" />
 			<part name="winch" number="1" />
-			<part name="rover generator" number="1" />
-			<part name="motor large" number="5" />			
+			<part name="Motor 30 kW" number="5" />			
 			<part name="methanol fuel cell stack" number="6" />
 			<part name="battery module" number="5" />
 			<part name="gas tank" number="4" />
@@ -2076,7 +2100,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="2" />
-			<part name="motor small" number="1" />
+			<part name="Motor 5 kW" number="1" />
 			<part name="steel wire" number="1" />
 		</inputs>
 		<outputs>
@@ -2101,7 +2125,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel sheet" number="4" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="2" />
-			<part name="motor small" number="1" />
+			<part name="Motor 5 kW" number="1" />
 			<part name="steel wire" number="5" />
 		</inputs>
 		<outputs>
@@ -2337,7 +2361,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Assemble drilling rig" tech="2" skill="2" work-time="50" process-time="0.0"
 			power-required="1.0">
 		<inputs>
-			<part name="motor large" number="1" />
+			<part name="Motor 30 kW" number="1" />
 			<part name="steel cable" number="4" />
 			<part name="steel sheet" number="1" />
 		</inputs>
@@ -2412,7 +2436,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum wire" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="3" />
-			<part name="motor small" number="1" />
+			<part name="Motor 5 kW" number="1" />
 		</inputs>
 		<outputs>
 			<part name="air compressor" number="1" />
@@ -2427,7 +2451,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="5" />
 			<part name="plastic sheet" number="1" />
-			<part name="motor small" number="1" />
+			<part name="Stepper Motor" number="1" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
@@ -2478,7 +2502,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="3" />
 			<part name="plastic sheet" number="1" />
-			<part name="motor small" number="1" />
+			<part name="Stepper Motor" number="1" />
 		</inputs>
 		<outputs>
 			<part name="ventilation fan" number="1" />
@@ -2766,7 +2790,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="carbon dioxide laser" number="2" />
 			<part name="fiberglass" number="2" />
 			<part name="glass sheet" number="1" />
-			<part name="stepper motor small" number="3" />
+			<part name="Stepper Motor" number="3" />
 			<part name="timing belt" number="3" />
 			<part name="optical prism" number="3" />
 			<part name="diode" number="5" />
@@ -2941,7 +2965,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="manganese" amount=".1" />	
 			<resource name="nickel" amount=".1" />	
-			<resource name="iron" amount=".1" />		
+			<resource name="iron powder" amount=".1" />		
 			<resource name="Aluminum" amount=".1" />								
 			<resource name="glass" amount="4.2" />	
 			<resource name="oxygen" amount=".5" />				
@@ -2996,6 +3020,20 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kWe.
+			
+			Two steps : 
+			           Reforming: CH4 + 2H2O -> CO2 + 4H2
+			 Fuel cell operation: 4H2 + 2O2 -> 4H2O 
+			             Overall: CH4 + 2O2 -> CO2 + 4H2 + 2H2O
+			
+			References : 
+			1. http://large.stanford.edu/courses/2023/ph240/thierstein2/
+			2. https://www.mtu.edu/news/2023/04/an-energy-breakthrough-tech-researchers-create-new-type-of-fuel-cell.html
+			3. https://www.nature.com/articles/s41467-023-43388-8
+			4. https://www.sciencedirect.com/science/article/pii/S0959652621000974
+			5. https://www.greenh2world.com/post/methane-fuel-cells-powering-the-future-with-clean-energy
+			6. https://pubs.rsc.org/en/content/articlelanding/2017/ra/c7ra05245f
+			
 		</description>
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -3015,6 +3053,18 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kW.
+			
+			For Direct methanol fuel cells (DMFCs),
+			1. Anode reaction: CH3OH + H2O → 6H+ + 6e- + CO2
+			2. Cathode reaction: 3/2O2 + 6H+ + 6e- → 3H2O
+			3. Overall reaction: CH3OH + 3/2O2 → 2H2O + CO2
+
+			For indirect methanol fuel cells,
+			a. Entity 1: Steam Reforming Reaction
+				Chemical Formula: CH₃OH + H₂O → CO + 3H₂
+			b. Entity 2: Fuel Cell Reaction
+				Overall Reaction: 3H₂ + CO₂ → 3H₂O + electrical energy
+				
 		</description>
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -3066,7 +3116,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="aluminum oxide" amount="0.1" />
 			<resource name="zinc" amount="0.1" />
 			<resource name="nickel" amount="0.1" />
-			<resource name="iron" amount="0.1" />
+			<resource name="iron powder" amount="0.1" />
 			<resource name="Carbon" amount="1" />
 		</inputs>
 		<outputs>
@@ -3082,7 +3132,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="aluminum oxide" amount="0.1" />
 			<resource name="zinc" amount="0.05" />
 			<resource name="nickel" amount="0.05" />
-			<resource name="iron" amount="0.05" />
+			<resource name="iron powder" amount="0.05" />
 			<resource name="Carbon" amount="1" />
 			<resource name="silicon" amount="1" />
 		</inputs>
@@ -3101,7 +3151,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Aluminum" amount="0.1" />
 			<resource name="aluminum oxide" amount="0.1" />
 			<resource name="silicon" amount="1" />
-			<resource name="iron" amount="0.1" />
+			<resource name="iron powder" amount="0.1" />
 		</inputs>
 		<outputs>
 			<part name="diode" number="200" />
@@ -3113,7 +3163,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="3">
 		<inputs>
 			<resource name="copper" amount="0.2" />
-			<resource name="iron" amount="0.2" />
+			<resource name="iron powder" amount="0.2" />
 			<resource name="Aluminum" amount="0.1" />
 			<part name="plastic sheet" number="1" />
 			<part name="resistor" number="40" />
@@ -3131,7 +3181,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1">
 		<inputs>
 			<resource name="copper" amount="0.2" />
-			<resource name="iron" amount="0.2" />
+			<resource name="iron powder" amount="0.2" />
 			<resource name="Aluminum" amount="0.1" />
 			<part name="steel sheet" number="1" />
 			<part name="heating element" number="6" />
@@ -3351,6 +3401,31 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
+	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="2" work-time="600">			
+		<part-salvage name="navigation circuit board" number="1" />
+		<part-salvage name="communications circuit board" number="1" />
+		<part-salvage name="optical lens" number="2" />
+		<part-salvage name="vehicle frame small" number="1" />
+		<part-salvage name="aluminum sheet" number="3" />
+		<part-salvage name="vehicle chassis panel" number="3" />
+		<part-salvage name="Motor 10 kW" number="4" />
+		<part-salvage name="methane fuel cell stack" number="2" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="plastic tubing" number="2" />
+		<part-salvage name="plastic pipe" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="gas tank" number="1" />	
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="propeller" number="4" />	
+		<part-salvage name="CMOS sensor" number="8" />						
+	</salvage>
+
+
 	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
@@ -3358,7 +3433,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="aluminum sheet" number="1" />
 		<part-salvage name="vehicle chassis panel" number="2" />
-		<part-salvage name="motor small" number="4" />
+		<part-salvage name="Motor 10 kW" number="4" />
 		<part-salvage name="methanol fuel cell stack" number="2" />
 		<part-salvage name="battery module" number="1" />
 		<part-salvage name="electrical wire" number="10" />
@@ -3367,6 +3442,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="plastic pipe" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="gas tank" number="1" />	
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="water tank" number="1" />
 		<part-salvage name="fuel pump" number="1" />
@@ -3377,7 +3453,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="2" work-time="800">
 		<part-salvage name="vehicle frame small" number="1" />
-		<part-salvage name="motor small" number="4" />
+		<part-salvage name="Motor 10 kW" number="2" />
 		<part-salvage name="battery module" number="1" />
 		<part-salvage name="methane fuel cell stack" number="1" />		
 		<part-salvage name="utility vehicle control panel" number="1" />
@@ -3400,9 +3476,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="window" number="2" />
 		<part-salvage name="winch" number="1" />
-		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methanol fuel cell stack" number="4" />		
-		<part-salvage name="motor large" number="3" />
+		<part-salvage name="Motor 30 kW" number="3" />
 		<part-salvage name="battery module" number="2" />
 		<part-salvage name="rover control panel" number="1" />		
 		<part-salvage name="fuel tank" number="2" />
@@ -3433,9 +3508,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="window" number="4" />
 		<part-salvage name="winch" number="1" />
-		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methanol fuel cell stack" number="5" />
-		<part-salvage name="motor large" number="4" />
+		<part-salvage name="Motor 30 kW" number="5" />
 		<part-salvage name="battery module" number="4" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="4" />
@@ -3466,9 +3540,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="window" number="2" />
 		<part-salvage name="winch" number="1" />
-		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methanol fuel cell stack" number="6" />
-		<part-salvage name="motor large" number="5" />
+		<part-salvage name="Motor 30 kW" number="5" />
 		<part-salvage name="battery module" number="5" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="4" />

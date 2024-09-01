@@ -26,7 +26,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the DigLocal task.
@@ -42,7 +42,7 @@ public abstract class DigLocalMeta extends MetaTask
 		private static final long serialVersionUID = 1L;
 
         public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
-            super(owner, owner.getName(), null, score);
+            super(owner, owner.getName().replaceFirst("ging", ""), null, score);
             setDemand(total);
             setEVA(true); // Enable the EVA based assessments
         }
@@ -77,7 +77,7 @@ public abstract class DigLocalMeta extends MetaTask
 	}
 
     /**
-     * Computes the probability of doing this task for a Settlement
+     * Computes the probability of doing this task for a Settlement.
      * 
      * @param resourceId The id of the resource being dug
      * @param settlement
@@ -132,7 +132,8 @@ public abstract class DigLocalMeta extends MetaTask
 
     
 	/**
-	 * Get the number of Persons doing EVAOperations in a Settlement
+	 * Gets the number of Persons doing EVAOperations in a Settlement.
+	 * 
 	 * @param settlement
 	 * @return
 	 */
@@ -143,7 +144,7 @@ public abstract class DigLocalMeta extends MetaTask
 	}
 
     /**
-     * Assess a Person for a specific SettlementTask of this type.
+     * Assesses a person for a specific SettlementTask of this type.
      * 
      * @param t The Settlement task being evaluated
      * @param p Person in question
@@ -167,12 +168,13 @@ public abstract class DigLocalMeta extends MetaTask
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
+        double thirst = condition.getThirst();
         double exerciseMillisols = p.getCircadianClock().getTodayExerciseTime();
         
         var result = new RatingScore(t.getScore());
     
         // Add a negative base to model Person fitness
-        result.addBase("fitness", -(stress * 2 + fatigue/2 + hunger/2 + exerciseMillisols));
+        result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols));
 
         result = assessPersonSuitability(result, p);
 
@@ -184,14 +186,18 @@ public abstract class DigLocalMeta extends MetaTask
 
     /**
      * Creates a specific Task of the appropriate digging activity.
+     * 
      * @param person
      * @return
      */
     protected abstract Task createTask(Person person);
 
     /**
-     * Get a modifier based on the Shift start time. This is based on how far through the shift a person is;
+     * Gets a modifier based on the Shift start time. This is based on how far through the shift a person is;
      * it is weighted towards the 1st 50% of the shift.
+     * 
+     * @param person
+     * @return
      */
     private static double getShiftModifier(Person person) {
         double completed = person.getShiftSlot().getShift().getShiftCompleted(getMarsTime().getMillisolInt());

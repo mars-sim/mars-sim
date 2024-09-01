@@ -8,15 +8,17 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -24,6 +26,8 @@ import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import io.github.parubok.text.multiline.MultilineLabel;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a vehicle.
@@ -35,7 +39,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 
 	private Vehicle vehicle;
 	
-	private JLabel fuelLabel;
+	private JLabel fuelTankLabel;
 	private JLabel batteryPercentLabel;
 	private JLabel currentMassLabel;
 	private JLabel remainCapLabel;
@@ -82,13 +86,26 @@ public class TabPanelGeneralVehicle extends TabPanel {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}	
 		
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		addBorder(labelPanel, "Description");
+		var label = new MultilineLabel();
+		labelPanel.add(label);
+		String text = vehicle.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
+		label.setText(text);
+		label.setPreferredWidthLimit(430);
+		label.setLineSpacing(1.2f);
+		label.setMaxLines(30);
+		label.setBorder(new EmptyBorder(5, 5, 5, 5));
+		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
+		panel.add(labelPanel, BorderLayout.CENTER);
+		
 		// Prepare attribute panel.
 		AttributePanel infoPanel = new AttributePanel(15);
 		
 		panel.add(infoPanel, BorderLayout.SOUTH);
 		
 		infoPanel.addRow("Name", vehicle.getName());
-		infoPanel.addRow("Type", vehicle.getVehicleType().getName());
+		infoPanel.addRow("Type", vehicle.getSpecName());
 		infoPanel.addRow("Model", vehicle.getModelName());
 		
 		// FUTURE: 
@@ -96,10 +113,10 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		// add country
 		// add maintainer
 		
-		infoPanel.addRow( "Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
+		infoPanel.addRow("Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
 
-		currentMassLabel = infoPanel.addRow("Current Weight", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
-		infoPanel.addRow("Base Weight", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
+		currentMassLabel = infoPanel.addRow("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
+		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
 		
 		remainCapLabel = infoPanel.addRow("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		infoPanel.addRow("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()));
@@ -110,13 +127,13 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		
 		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
 		
-		fuelLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+		fuelTankLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
 				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
 		
 		infoPanel.addRow("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap));
 		
-		infoPanel.addRow( "Cell Stack", vehicle.getFuellCellStack() + "");	
-		infoPanel.addRow( "Battery Module", vehicle.getBatteryModule() + "");	
+		infoPanel.addRow("Cell Stack", vehicle.getFuellCellStack() + "");	
+		infoPanel.addRow("Battery Module", vehicle.getBatteryModule() + "");	
 		batteryPercentLabel = infoPanel.addRow("Battery Percent", 
 				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 		infoPanel.addRow("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()));	
@@ -132,8 +149,8 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		
 		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
-		fuelLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
-				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
+		fuelTankLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled Up)");
 		
 		batteryPercentLabel.setText(StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 	}

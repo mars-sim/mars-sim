@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.tool.NumberRenderer;
 
 /**
@@ -19,6 +20,8 @@ import com.mars_sim.ui.swing.tool.NumberRenderer;
 public class TradeTab extends TableTab {
 	private static final String TRADE_ICON = "trade";
 
+	private NumberCellRenderer currency = new NumberCellRenderer(2, "$ ");
+	
 	/**
 	 * constructor.
 	 * 
@@ -34,11 +37,11 @@ public class TradeTab extends TableTab {
 			TableCellRenderer renderer;
 			switch(i) {
 				case TradeTableModel.PRICE_COL:
-					renderer = NumberRenderer.getCurrencyRenderer();
+					renderer = currency;
 					break;
 
 				case TradeTableModel.COST_COL:
-					renderer = NumberRenderer.getCurrencyRenderer();
+					renderer = currency;
 					break;
 
 				case TradeTableModel.QUANTITY_COL:

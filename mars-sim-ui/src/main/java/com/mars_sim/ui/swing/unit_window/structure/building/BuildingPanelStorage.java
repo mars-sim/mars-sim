@@ -20,7 +20,7 @@ import javax.swing.table.TableModel;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.Storage;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
@@ -109,6 +109,9 @@ public class BuildingPanelStorage extends TabPanelTable {
 
 	}
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	private Storage storage;
 
 
@@ -149,4 +152,13 @@ public class BuildingPanelStorage extends TabPanelTable {
 		// Prepare medical table model
 		return new StorageTableModel(storage);
 	}
+	/**
+	 * Updates this panel.
+	 */
+	@Override
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+	}
+	
 }

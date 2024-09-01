@@ -3,7 +3,7 @@
 	<!ELEMENT medical (medical-complaint-list, treatment-list)>
 	<!ELEMENT medical-complaint-list (medical-complaint*)>
 	<!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability?, 
-				performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?,
+				performance-percent, bed-rest-recovery, environmental?, treatment-type?, degrade-complaint?,
 				effort-influence?)>
 	<!ATTLIST medical-complaint name CDATA #REQUIRED>
 	<!ELEMENT seriousness EMPTY>
@@ -21,6 +21,9 @@
 	<!ATTLIST treatment-type value CDATA #REQUIRED>
 	<!ELEMENT bed-rest-recovery EMPTY>
 	<!ATTLIST bed-rest-recovery value (true|false) #REQUIRED>
+	<!ELEMENT environmental EMPTY>
+	<!ATTLIST environmental value (true|false) "false" >
+	
 	<!ELEMENT degrade-complaint EMPTY>
 	<!ATTLIST degrade-complaint value CDATA #REQUIRED>
 	<!ELEMENT treatment-list (treatment*)>

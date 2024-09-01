@@ -22,6 +22,8 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -29,8 +31,6 @@ import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.PilotDrone;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleGarage;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 public abstract class DroneMission extends AbstractVehicleMission {
 
@@ -103,7 +103,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			boolean usable = !drone.isReservedForMission();
             usable = usable && (allowMaintReserved || !drone.isReserved());
 			usable = usable && drone.isVehicleReady();
-			usable = usable && (drone.getStoredMass() == 0);
+			usable = usable && (drone.isEmpty());
 
 			if (usable) {
 				double range = drone.getRange();
@@ -143,20 +143,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		
-		if (member instanceof Robot robot 
-				&& robot.getSystemCondition().getBatteryLevel() < 5) {
-			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryLevel() + " %");
-			
-        	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
-        	if (canCharge) {
-        		logger.log(member, Level.INFO, 4_000,
-            			"Instructed to charge up the battery ahead of piloting " + getVehicle() + ".");
-            	
-    			return null;
-        	}
-		}
-
-        else if (member instanceof Person person
+        if (member instanceof Person person
 				&& person.isSuperUnfit()){
         	// For humans
         	logger.warning(person, 4_000, "Not norminally fit to pilot " + getVehicle() + ".");
@@ -169,10 +156,28 @@ public abstract class DroneMission extends AbstractVehicleMission {
     			return null;
         	}
         }
+        
+        else if (member instanceof Robot robot 
+				&& robot.getSystemCondition().getBatteryLevel() < 5) {
+			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryLevel() + " %");
+			
+        	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
+        	if (canCharge) {
+        		logger.log(member, Level.INFO, 4_000,
+            			"Instructed to charge up the battery ahead of piloting " + getVehicle() + ".");
+            	
+    			return null;
+        	}
+		}
 				
 		Drone d = getDrone();
-		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)
-				&& !d.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
+		if (d.haveStatusType(StatusType.OUT_OF_FUEL)
+				&& d.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
+			logger.warning(d, 4_000, "Out of fuel and battery power. Quit assigning the piloting task.");
+			return null;
+		}
+		
+		else {
 			if (lastOperateVehicleTaskPhase != null) {
 				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -180,10 +185,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance());
 			}
-		}
-		else {
-			logger.warning(d, 4_000, "Out of fuel and battery power. Quit assigning the piloting task.");
-			return null;
 		}
 
 		return result;
@@ -199,14 +200,14 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			logger.warning(Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -246,71 +247,79 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 		Vehicle v = getVehicle();
 		
+		if (v == null)
+			return;
+		
 		logger.log(v, Level.INFO, 10_000,
 				"Disemabarked at " + disembarkSettlement.getName() + ".");
 
 		Drone drone = (Drone) v;
 
-		if (v != null) {
-			Settlement currentSettlement = v.getSettlement();
-			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
-				// If drone has not been parked at settlement, park it.
-				v.transfer(disembarkSettlement);
-			}
+		Settlement currentSettlement = v.getSettlement();
+		if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
+			// If drone has not been parked at settlement, park it.
+			v.transfer(disembarkSettlement);
+		}
 
-			// Add vehicle to a garage if available.
-			boolean canGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
-			if (!canGarage) {
-				// Park in the vicinity of the settlement outside
-				v.findNewParkingLoc();
-			}
-				
-			// Unload drone if necessary.
-			boolean droneUnloaded = drone.getStoredMass() == 0D;
+		// Add vehicle to a garage if available.
+		boolean canGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+		if (!canGarage) {
+			// Park in the vicinity of the settlement outside
+			v.findNewParkingLoc();
+		}
+			
+		unloadReleaseDrone(disembarkSettlement, drone);
+	}
+	
+	/**
+	 * Unloads and releases the drone.
+	 * 
+	 * @param disembarkSettlement
+	 * @param drone
+	 */
+	private void unloadReleaseDrone(Settlement disembarkSettlement, Drone drone) {
 
-			if (!droneUnloaded) {
+		if (!drone.isEmpty()) {
 
-				boolean result = false;
-				// Alert the people in the disembarked settlement to unload cargo
-				for (Person person: disembarkSettlement.getIndoorPeople()) {
-					if (person.isInSettlement()) {
+			boolean result = false;
+			// Alert the people in the disembarked settlement to unload cargo
+			for (Person person: disembarkSettlement.getIndoorPeople()) {
+				if (person.isInSettlement()
+					|| RandomUtil.lessThanRandPercent(50)) {
 						// Note : Random chance of having person unload (this allows person to do other things
 						// sometimes)
-						if (RandomUtil.lessThanRandPercent(50)) {
-							result = unloadCargo(person, drone);
-						}
-					}
-					if (result)
-						break;
+						result = assignUnloadingCargo(person, drone);
+						if (result)
+							break;
 				}
 			}
+		}
 
-			else {
-				// End the phase.
+		else {
+			// End the phase.
 
-				// If the rover is in a garage, put the rover outside.
-				BuildingManager.removeFromGarage(v);
-
-				// Leave the vehicle.
-				releaseVehicle(getVehicle());
-				setPhaseEnded(true);
-			}
+			// If the drone is in a garage, put the drone outside.
+			BuildingManager.removeFromGarage(drone);
+			// Release the drone
+			releaseVehicle(drone);
+			
+			setPhaseEnded(true);
 		}
 	}
 
 	/**
-	 * Gives a person the task from unloading the drone.
+	 * Assigns a person the task from unloading the drone.
 	 *
 	 * @param p
 	 * @param drone
 	 */
-	private boolean unloadCargo(Person person, Drone drone) {
+	private boolean assignUnloadingCargo(Person person, Drone drone) {
 		boolean result = false;
 		
 		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(drone)) {
-			assignTask(person, new UnloadVehicleGarage(person, drone));
+			result = assignTask(person, new UnloadVehicleGarage(person, drone));
 		} else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
-			assignTask(person, new UnloadVehicleEVA(person, drone));
+			result = assignTask(person, new UnloadVehicleEVA(person, drone));
 		}
 
 		return result;
@@ -327,12 +336,13 @@ public abstract class DroneMission extends AbstractVehicleMission {
 
 	@Override
 	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
-		// Get all people qualified for the mission.
-		Iterator<Robot> r = getStartingSettlement().getRobots().iterator();
+		// Get a delivery bot qualified for the mission.
+		Iterator<Robot> r = getStartingSettlement().getAllAssociatedRobots().iterator();
 		while (r.hasNext()) {
 			Robot robot = r.next();
 			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
 				addMember(robot);
+				break;
 			}
 		}
 

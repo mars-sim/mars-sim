@@ -28,7 +28,7 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
@@ -147,7 +147,8 @@ public class MalfunctionTabPanel extends TabPanel {
 		}
 
 		/**
-         * This maps the column index into the logical property
+         * This maps the column index into the logical property.
+         * 
          * @param column
          * @return
          */
@@ -202,11 +203,15 @@ public class MalfunctionTabPanel extends TabPanel {
 		}
 	}
 	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	private boolean showSource;
+	
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
 	
 	private MalfunctionTableModel model;
-	private boolean showSource;
+
 	private Settlement settlement;
 
 	/**
@@ -216,11 +221,10 @@ public class MalfunctionTabPanel extends TabPanel {
 	 * @param desktop         The main desktop.
 	 */
 	public MalfunctionTabPanel(Malfunctionable malfunctionable, MainDesktopPane desktop) {
-
 		super(
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			desktop
 		);
 
@@ -237,9 +241,9 @@ public class MalfunctionTabPanel extends TabPanel {
 	 */
 	public MalfunctionTabPanel(Settlement settlement, MainDesktopPane desktop) {
 		super(
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			desktop
 		);
 		this.settlement = settlement;
@@ -369,7 +373,9 @@ public class MalfunctionTabPanel extends TabPanel {
 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		List<Malfunction> newMalfunctions;
 		if (malfunctionable != null) {
 			newMalfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();

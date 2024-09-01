@@ -32,6 +32,7 @@ import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.moon.Moon;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -41,7 +42,6 @@ import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**

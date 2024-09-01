@@ -2,6 +2,7 @@ package com.mars_sim.core.activities;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.social.RelationshipType;
@@ -10,7 +11,6 @@ import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.EventSchedule;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 

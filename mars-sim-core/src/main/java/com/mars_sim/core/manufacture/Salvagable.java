@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Salvagable.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 
@@ -19,7 +19,8 @@ public interface Salvagable {
     public boolean isSalvaged();
     
     /**
-     * Indicate the start of a salvage process on the item.
+     * Indicates the start of a salvage process on the item.
+     * 
      * @param info the salvage process info.
      * @param settlement the settlement where the salvage is taking place.
      */
@@ -27,6 +28,7 @@ public interface Salvagable {
     
     /**
      * Gets the salvage info.
+     * 
      * @return salvage info or null if item not salvaged.
      */
     public SalvageInfo getSalvageInfo();

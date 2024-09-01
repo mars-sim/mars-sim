@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * A unit test suite for the WalkOutside task class.

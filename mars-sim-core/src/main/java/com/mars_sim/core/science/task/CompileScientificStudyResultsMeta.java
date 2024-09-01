@@ -24,7 +24,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the CompileScientificStudyResults task.
@@ -67,7 +67,7 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
         // Add probability for researcher's primary study (if any).
         double base = 0D;
         ScienceType targetScience = null;
-        ScientificStudy primaryStudy = person.getStudy();
+        ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
         if ((primaryStudy != null)
             && StudyStatus.PAPER_PHASE == primaryStudy.getPhase()
             && !primaryStudy.isPrimaryPaperCompleted()) {
@@ -83,7 +83,7 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
         }
 
 	    // Add probability for each study researcher is collaborating on.
-	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
+	    for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
             if (StudyStatus.PAPER_PHASE.equals(collabStudy.getPhase())
                     && !collabStudy.isCollaborativePaperCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);

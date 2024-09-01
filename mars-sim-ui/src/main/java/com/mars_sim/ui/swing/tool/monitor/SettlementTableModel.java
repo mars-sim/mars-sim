@@ -20,10 +20,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.Computation;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -266,24 +263,20 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @return
 	 */
 	private static String displayComputingResources(BuildingManager bm) {
-		double max = 0;
-		double units = 0;
-		Set<Building> nodeBldgs = bm.getBuildingSet(FunctionType.COMPUTATION);
-		for (Building b: nodeBldgs) {
-			Computation node = b.getComputation();
-			units += node.getCurrentCU();
-			max += node.getPeakCU();
-		}
-		
-		if (max == 0) {
+
+		double[] combined = bm.getPeakCurrentPercent();
+		double peak = combined[1];
+		double current = combined[0];
+
+		if (current == 0 || peak == 0) {
 			return "";
 		}
-		double percent = units / max * 100;
+		double percentAvailable = current / peak * 100;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append(Math.round(units *10.0)/10.0)
+		sb.append(Math.round(current * 10.0)/10.0)
 		.append(" (")
-		.append(Math.round(percent *10.0)/10.0)
+		.append(Math.round(percentAvailable * 10.0)/10.0)
 		.append(" %)");
 		
 		return sb.toString();

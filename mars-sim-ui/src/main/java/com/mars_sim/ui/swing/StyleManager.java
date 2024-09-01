@@ -28,8 +28,11 @@ import javax.swing.plaf.ColorUIResource;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
 import com.formdev.flatlaf.util.HSLColor;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * This class provides a means to control the styles used in the UI.
@@ -39,7 +42,8 @@ public class StyleManager {
     private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
 
-    // Shared generic formatters
+    // Shared generic formatters 
+    public static final DecimalFormat CURRENCY_PLACES1 = new DecimalFormat("$ #,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
@@ -49,31 +53,50 @@ public class StyleManager {
     // Unit specific formatters
     public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
     public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.0 Liter");
-    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.0 km/kg");
-    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.0 Wh/km");
-    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.0 Wh/kg");
+    
+    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
+    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
+    public static final DecimalFormat DECIMAL_KWH_KM = new DecimalFormat("#,##0.000 kWh/km");
+    
+    public static final DecimalFormat DECIMAL_KWH_KG = new DecimalFormat("#,##0.00 kWh/kg");
+    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
+    
     public static final DecimalFormat DECIMAL_M2 = new DecimalFormat("#,##0.00 m\u00B2");
     public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 "
 									+ Msg.getString("unit.meterperssecsquared")); //$NON-NLS-1$   
     public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.meterpersec")); //$NON-NLS-1$
+    
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
-    public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
+    public static final DecimalFormat DECIMAL_M = new DecimalFormat("#,##0.00 m");
+    
+    public static final DecimalFormat DECIMAL_KPH = new DecimalFormat("##0.00 kph");
+    
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
     public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
+    
+    public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
+    public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
+	
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
+    public static final DecimalFormat DECIMAL2_KWH = new DecimalFormat("#,##0.00 kWh");
+    public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
+    
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
-    public static final DecimalFormat DECIMAL_PERC1 = new DecimalFormat("0.0 '%'");
-    public static final DecimalFormat DECIMAL_PERC2 = new DecimalFormat("0.00 '%'");
-    public static final DecimalFormat DECIMAL_SOLS0 = new DecimalFormat("#,##0 Sols");
-    public static final DecimalFormat DECIMAL_SOLS1 = new DecimalFormat("#,##0.0 Sols");
-    public static final DecimalFormat DECIMAL_SOLS3 = new DecimalFormat("#,##0.000 Sols");
+    public static final DecimalFormat DECIMAL1_PERC = new DecimalFormat("0.0 '%'");
+    public static final DecimalFormat DECIMAL2_PERC = new DecimalFormat("0.00 '%'");
+    public static final DecimalFormat DECIMAL_SOLS = new DecimalFormat("#,##0 sols");
+    public static final DecimalFormat DECIMAL1_SOLS = new DecimalFormat("#,##0.0 sols");
+    public static final DecimalFormat DECIMAL2_SOLS = new DecimalFormat("#,##0.00 sols");
+    public static final DecimalFormat DECIMAL3_SOLS = new DecimalFormat("#,##0.000 sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
     public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
     public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0.0 msol");
+    public static final DecimalFormat DECIMAL2_MSOL = new DecimalFormat("#,##0.00 msol");
+    
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.wattpermetersquared")); //$NON-NLS-1$
@@ -86,15 +109,25 @@ public class StyleManager {
 
     
     // Supported LAFs
-    private static final String DARK = "Flat Dark";
-    private static final String LIGHT = "Flat Light";
-    private static final String LIGHT_BLUE = LIGHT + " - Blue";
-    private static final String LIGHT_RED = LIGHT + " - Red";
-    private static final String LIGHT_ORANGE = LIGHT + " - Orange";
-    private static final String LIGHT_GREEN = LIGHT + " - Green";
-    private static final String SYSTEM = "Default System";
-    private static final String [] LAF_STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
-
+    public static final String HIBERBEE_DARK = "Hiberbee Dark";
+    public static final String SOLARIZED_LIGHT = "Solarized Light";
+    public static final String SOLARIZED_DARK = "Solarized Dark";
+    public static final String DARK = "Flat Dark";
+    public static final String LIGHT = "Flat Light";
+    public static final String LIGHT_BLUE = LIGHT + " - Blue";
+    public static final String LIGHT_RED = LIGHT + " - Red";
+    public static final String LIGHT_ORANGE = LIGHT + " - Orange";
+    public static final String LIGHT_GREEN = LIGHT + " - Green";
+    public static final String SYSTEM = "Default System";
+    private static final String [] LAF_STYLES = {
+    		LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, SOLARIZED_LIGHT,
+    		DARK, HIBERBEE_DARK, SOLARIZED_DARK, SYSTEM};
+    private static final String [] LAF_LIGHT_STYLES = {
+    		LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, SOLARIZED_LIGHT};
+    private static final String [] LAF_DARK_STYLES = {
+    		DARK, HIBERBEE_DARK, SOLARIZED_DARK, SYSTEM};
+    private static final String [] LAF_SYSTEM_STYLES = {SYSTEM};
+    
     // Constants for font definition
     private static final String UIMANAGER_FONT = "defaultFont";
     private static final String DEFAULT_FONT_STYLE = "defaultFont";
@@ -151,7 +184,7 @@ public class StyleManager {
     }
 
     private StyleManager() {
-        // Stop instatiation
+        // Stop instantiation
     }
     
     /**
@@ -160,7 +193,28 @@ public class StyleManager {
     public static String[] getAvailableLAF() {
         return LAF_STYLES;
     }
-
+    
+    /**
+     * Gets available light color LAF.
+     */
+    public static String[] getAvailableLightLAF() {
+        return LAF_LIGHT_STYLES;
+    }
+    
+    /**
+     * Gets available dark color LAF.
+     */
+    public static String[] getAvailableDarkLAF() {
+        return LAF_DARK_STYLES;
+    }
+    
+    /**
+     * Gets available system color LAF.
+     */
+    public static String[] getAvailableSystemLAF() {
+        return LAF_SYSTEM_STYLES;
+    }
+    
     /**
      * Which LAF has been selected.
      */
@@ -195,11 +249,26 @@ public class StyleManager {
                 case LIGHT: 
                     lafClass = FlatLightLaf.class.getName();
                     break;
-
+	
+                case SOLARIZED_LIGHT:
+                	lafClass = FlatSolarizedLightIJTheme.class.getName();
+                	FlatSolarizedLightIJTheme.setup();
+                    break;
+                    
                 case DARK:
                     lafClass = FlatDarkLaf.class.getName();
                     break;
+                    
+                case HIBERBEE_DARK:
+                    lafClass = FlatHiberbeeDarkIJTheme.class.getName();
+                    FlatHiberbeeDarkIJTheme.setup();
+                    break;
 
+                case SOLARIZED_DARK:
+                	lafClass = FlatSolarizedDarkIJTheme.class.getName();
+                	FlatSolarizedDarkIJTheme.setup();
+                    break;
+                    
                 case SYSTEM:
                     lafClass = UIManager.getSystemLookAndFeelClassName();
                     accentColor = null;   // No accent colouring for system

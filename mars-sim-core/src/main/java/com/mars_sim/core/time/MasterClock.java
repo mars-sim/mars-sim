@@ -76,7 +76,7 @@ public class MasterClock implements Serializable {
 	private static final int NEW_SLEEP = 100;
 	
 	/** The maximum pulse time allowed in one frame for a task phase. */
-	public static final double MAX_PULSE_WIDTH = .855 * 3;
+	public static final double MAX_PULSE_WIDTH = .082;
 	
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
@@ -476,7 +476,6 @@ public class MasterClock implements Serializable {
 	}
 
 
-
 	/**
 	 * Adds earth time and mars time.
 	 *
@@ -531,7 +530,6 @@ public class MasterClock implements Serializable {
 				nextPulseTime -= deltaPulseTime;
 				if (nextPulseTime < minMilliSolPerPulse)
 					nextPulseTime = minMilliSolPerPulse;
-
 				// Adjust the time pulses and get the deviation
 				nextPulseDeviation = adjustPulseWidth();
 			}
@@ -551,21 +549,15 @@ public class MasterClock implements Serializable {
 				if (realElapsedMillisec != 0.0)
 					actualTR = 0.9 * actualTR + 0.1 * earthMillisec / realElapsedMillisec;
 
-				if (!listenerExecutor.isTerminated()
-					&& !listenerExecutor.isShutdown()) {
-
+				if (!listenerExecutor.isTerminated() && !listenerExecutor.isShutdown()) {
 					// Update the uptimer
 					uptimer.updateTime(realElapsedMillisec);
-
 					// Gets the timestamp for the pulse
-					timestampPulseStart();
-					
+					timestampPulseStart();				
 					// Add time to the Earth clock.
 					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
-
 					// Add time pulse to Mars clock.
 					marsTime = marsTime.addTime(nextPulseTime);
-
 					// Run the clock listener tasks that are in other package
 					fireClockPulse(nextPulseTime);
 				}
@@ -713,6 +705,7 @@ public class MasterClock implements Serializable {
 		}
 		if (newPulse != oldPulse) {
 			Task.setStandardPulseTime(newPulse);
+//			logger.info(5_000L, "New standard pulse time is " + Math.round(newPulse * 1000.0)/1000.0);
 		}
 
 		// Returns the deviation ratio
@@ -821,7 +814,7 @@ public class MasterClock implements Serializable {
 		}
 		else {
 			// Identify if it just passes half a sol
-			isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);
+			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
 		}
 
 
@@ -839,13 +832,14 @@ public class MasterClock implements Serializable {
 			isNewHalfMillisol = true;
 		}
 		else {
+			// Find the decimal part of the past millisol and current millisol
 			int intPartLast = (int)lastMillisol;
 			double decimalPartLast = lastMillisol - intPartLast;
 			int intPartCurrent = (int)currentMillisol;
 			double decimalPartCurrent = currentMillisol - intPartCurrent;
 			
 			// Identify if it just passes half a millisol
-			isNewHalfMillisol = isNewIntMillisol || (decimalPartLast < .5 && decimalPartCurrent >= .5);
+			isNewHalfMillisol = decimalPartLast < .5 && decimalPartCurrent >= .5;
 		}
 		
 		

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ThermionicNuclearPowerSource.java
- * @date 2023-06-02
+ * @date 2024-08-03
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -132,4 +132,15 @@ public class ThermionicNuclearPowerSource extends PowerSource
 	public double getMaintenanceTime() {
 	    return maintenanceTime;
 	}
+	
+	 /**
+	   * Requests an estimate of the power produced by this power source.
+	   * 
+	   * @param percent The percentage of capacity of this power source
+	   * @return power (kWe)
+	   */
+	 @Override
+	 public double requestPower(double percent) {
+		 return currentPowerElectrical;
+	 }
 }

@@ -18,6 +18,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
@@ -26,11 +27,10 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * The VehicleMaintenance interface is a building function for a building
@@ -330,8 +330,8 @@ public abstract class VehicleMaintenance extends Function {
 		// FUTURE: should be done in a task to relocate the vehicle by either a person
 		// or by AI that costs a minute amount of CUs.
 		
-		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-			FlyerLocation loc = getFlyerParkedLocation((Flyer)vehicle);
+		if (vehicle instanceof Drone d) {
+			FlyerLocation loc = getFlyerParkedLocation(d);
 			if (loc != null) {
 				loc.clearParking();
 			}

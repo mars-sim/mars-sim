@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonTableModel.java
- * @date 2022-08-20
+ * @date 2024-07-21
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -22,6 +22,7 @@ import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
@@ -32,8 +33,8 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
@@ -316,7 +317,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 					if (pc.isStarving())
 						result = STARVING;
 					else
-						result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
+						result = PhysicalConditionFormat.getHungerStatus(pc, false);
 				}
 			}
 			break;
@@ -327,24 +328,24 @@ public class PersonTableModel extends UnitTableModel<Person> {
 					if (pc.isDehydrated())
 						result = DEHYDRATED;
 					else
-						result = PhysicalCondition.getThirstyStatus(pc.getThirst());
+						result = PhysicalConditionFormat.getThirstyStatus(pc, false);
 				}
 			}
 			break;
 
 			case FATIGUE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalCondition.getFatigueStatus(person.getPhysicalCondition().getFatigue());
+					result = PhysicalConditionFormat.getFatigueStatus(person.getPhysicalCondition(), false);
 				break;
 
 			case STRESS:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalCondition.getStressStatus(person.getPhysicalCondition().getStress());
+					result = PhysicalConditionFormat.getStressStatus(person.getPhysicalCondition(), false);
 				break;
 
 			case PERFORMANCE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalCondition.getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
+					result = PhysicalConditionFormat.getPerformanceStatus(person.getPhysicalCondition(), false);
 				break;
 
 			case EMOTION: 
@@ -353,7 +354,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				break;
 
 			case HEALTH: 
-				result = person.getPhysicalCondition().getHealthSituation();
+				result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 				break;
 
 			case LOCATION:
@@ -386,7 +387,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				if (!person.getPhysicalCondition().isDead()) {
 					ShiftSlot shift = person.getShiftSlot();		
 					if (shift.getStatus() == WorkStatus.ON_CALL) {
-						result = "On Call";
+						result = WorkStatus.ON_CALL.getName();
 					}
 					else {
 						result = shift.getStatusDescription();

@@ -8,7 +8,7 @@
 package com.mars_sim.core.person.ai.mission;
 
 import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 import java.io.Serializable;
 

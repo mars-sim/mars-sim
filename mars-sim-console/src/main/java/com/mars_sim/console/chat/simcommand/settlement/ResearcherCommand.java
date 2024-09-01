@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResearcherCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -42,7 +42,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			response.appendBlankLine();
 			response.appendLabeledString("Job",p.getMind().getJob().getName());
 
-			ScientificStudy ss = p.getStudy();
+			ScientificStudy ss = p.getResearchStudy().getStudy();
 			String priName = "None";
 			String priPhase = "";
 			if (ss != null) {
@@ -51,7 +51,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			}
 			response.appendLabeledString("Ongoing Primary Study", priName + " - " + priPhase);
 
-			Set<ScientificStudy> cols = p.getCollabStudies();
+			Set<ScientificStudy> cols = p.getResearchStudy().getCollabStudies();
 			if (!cols.isEmpty()) {
 				response.appendBlankLine();
 				response.appendTableHeading("Collaborative Study", 22, "Phase");
@@ -66,7 +66,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			response.appendTableHeading("Subject", 15, "Achievement Score");
 
 			for (ScienceType t : sciences) {
-				double score = p.getScientificAchievement(t);
+				double score = p.getResearchStudy().getScientificAchievement(t);
 				response.appendTableRow(t.getName(), score);
 			}
 			

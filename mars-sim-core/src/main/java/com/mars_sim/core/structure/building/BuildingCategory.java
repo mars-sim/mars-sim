@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.structure.building;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum BuildingCategory {
 

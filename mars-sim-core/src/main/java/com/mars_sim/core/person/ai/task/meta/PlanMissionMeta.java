@@ -23,7 +23,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The Meta task for the PlanMission task.
@@ -53,7 +53,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
-    private static final double START_FACTOR = 50;
+    private static final double START_FACTOR = 100;
   
 
     public PlanMissionMeta() {

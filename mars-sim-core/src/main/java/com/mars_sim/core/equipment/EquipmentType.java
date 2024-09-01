@@ -7,7 +7,7 @@
 package com.mars_sim.core.equipment;
 
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 
 /**

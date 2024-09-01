@@ -12,6 +12,7 @@ import java.awt.Component;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -72,7 +73,7 @@ abstract class WizardPanel extends JPanel {
 	 * Create a label to be used as the title of a Wizard panel
 	 */
 	protected static JLabel createTitleLabel(String text) {
-		JLabel label = new JLabel(text,	JLabel.CENTER);
+		JLabel label = new JLabel(text,	SwingConstants.CENTER);
 		StyleManager.applySubHeading(label);
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		return label;
@@ -82,7 +83,7 @@ abstract class WizardPanel extends JPanel {
 	 * Create an empty label to be used as an error
 	 */
 	protected static JLabel createErrorLabel() {
-		JLabel errorMessageLabel = new JLabel(" ", JLabel.CENTER);
+		JLabel errorMessageLabel = new JLabel(" ", SwingConstants.CENTER);
         errorMessageLabel.setForeground(Color.RED);
         errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -98,10 +99,12 @@ abstract class WizardPanel extends JPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	abstract boolean commitChanges();
+	abstract boolean commitChanges(boolean isTesting);
 
+	
 	/**
 	 * Clear information on the wizard panel.
 	 */

@@ -21,8 +21,8 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for display a table and a information panel

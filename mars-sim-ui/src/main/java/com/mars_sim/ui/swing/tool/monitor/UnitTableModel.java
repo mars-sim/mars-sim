@@ -81,7 +81,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 
 	
 	/**
-	 * Sets whether the changes to the Entities should be monitor for change. Set up the 
+	 * Sets whether the changes to the Entities should be monitor for change. Sets up the 
 	 * Unitlisteners for the Units in the table.
 	 * 
 	 * @param activate 
@@ -103,7 +103,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	}
 
 	/**
-	 * Adds a unit to the model. Attach a listener to the Unit.
+	 * Adds a unit to the model. Attaches a listener to the Unit.
 	 *
 	 * @param newUnit Unit to add to the model.
 	 */

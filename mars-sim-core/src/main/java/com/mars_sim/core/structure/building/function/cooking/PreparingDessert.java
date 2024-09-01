@@ -33,7 +33,7 @@ import com.mars_sim.core.structure.building.function.task.PrepareDessert;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The PreparingDessert class is a building function for making dessert.
@@ -689,7 +689,7 @@ public class PreparingDessert extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 		return getNumCooks() * 10D;
 	}
 

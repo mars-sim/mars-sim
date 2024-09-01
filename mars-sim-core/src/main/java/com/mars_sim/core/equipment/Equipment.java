@@ -34,9 +34,9 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
-	/** default serial id. */
+	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
+	/** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
 
 	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
@@ -86,6 +86,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		registeredOwner = -1;
 	}
 
+	/**
+	 * Sets the equipment's description.
+	 *
+	 * @param description new description.
+	 */
+	protected void setDescription(String description) {
+		super.setDescription(description);
+	}
+	
 	/**
 	 * Returns the mass of Equipment. The base mass plus the mass of whatever it is carrying.
 	 */
@@ -279,6 +288,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return registeredOwner;
 	}
 	
+	/**
+	 * Gets the equipment type.
+	 * 
+	 * @return
+	 */
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
 	}
@@ -493,8 +507,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		boolean canRetrieve = false;
 		boolean canStore = false;
 		Unit cu = getContainerUnit();
-
-		if (cu instanceof EquipmentOwner deo) {
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
+		else if (cu instanceof EquipmentOwner deo) {
 			canRetrieve = deo.removeEquipment(this);
 		}
 		else {
@@ -541,9 +561,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		

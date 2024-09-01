@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploredLocation.java
- * @date 2023-06-30
+ * @date 2024-07-23
  * @author Scott Davis
  */
 
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A class representing an Region of Interest for further exploration. It contains information on
@@ -382,6 +382,14 @@ public class ExploredLocation implements Serializable {
 		return settlement;
 	}
 
+	/**
+	 * Gets the distance from the settlement to this location.
+	 * 
+	 * @return
+	 */
+	public double getDistance() {
+		return distance;
+	}
 
 	/**
 	 * Prepares object for garbage collection.

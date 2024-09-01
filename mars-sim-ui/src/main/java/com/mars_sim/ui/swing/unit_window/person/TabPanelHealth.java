@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelHealth.java
- * @date 2022-07-21
+ * @date 2024-07-21
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.person;
@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,12 +34,14 @@ import javax.swing.table.TableColumnModel;
 import com.mars_sim.core.person.CircadianClock;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -48,6 +49,7 @@ import com.mars_sim.ui.swing.tool.SpringUtilities;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -83,17 +85,13 @@ extends TabPanel {
 	private int leptinTCache;
 	private int ghrelinCache;
 	private int ghrelinTCache;
-	
 	private int maxDailyEnergy;
 	
 	private double muscleTor;
 	private double muscleHealth;
 	private double muscleSoreness;
-	
 	private double appetite;
-
 	private double bodyMassDev;
-	
 	
 	private JLabel thirstLabel;
 	private JLabel fatigueLabel;
@@ -119,11 +117,13 @@ extends TabPanel {
 	private JLabel sleepTF;
 	private JLabel bedTF;
 
-	private MedicationTableModel medicationTableModel;
-	private HealthProblemTableModel healthProblemTableModel;
+
 	private RadiationTableModel radiationTableModel;
 	private SleepExerciseTableModel sleepExerciseTableModel;
 	private FoodTableModel foodTableModel;
+	private HealthProblemTableModel healthProblemTableModel;
+	private MedicationTableModel medicationTableModel;
+	private HealthLogTableModel healthLogTableModel;
 	
 	/** The Person instance. */
 	private Person person = null;
@@ -159,6 +159,7 @@ extends TabPanel {
         JTable radiationTable;
         JTable medicationTable;
         JTable healthProblemTable;
+        JTable healthLogTable;
         JTable sleepExerciseTable;
         JTable foodTable;
 				
@@ -262,8 +263,10 @@ extends TabPanel {
 		                                10, 10,        //initX, initY
 		                                5, 3);       //xPad, yPad
 	
-		content.add(northPanel, BorderLayout.NORTH);
+		content.add(northPanel, BorderLayout.NORTH);	
 		
+		//////////////////////////////
+	
 		// Prepare middle panel
         JPanel midPanel = new JPanel(new BorderLayout());
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.Y_AXIS));
@@ -272,7 +275,9 @@ extends TabPanel {
 		// Prepare bottom panel
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
 		content.add(bottomPanel, BorderLayout.SOUTH);
-		
+			
+		//////////////////////////////
+	
 		// Prepare sleep time panel
 		JPanel sleepPanel = new JPanel(new BorderLayout(0, 0));
 		midPanel.add(sleepPanel, BorderLayout.NORTH);
@@ -374,8 +379,7 @@ extends TabPanel {
 		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		radiationPanel.add(linkPane, BorderLayout.SOUTH);
 		
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
+		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		linkPane.add(wikiButton, SwingConstants.CENTER);
 		wikiButton.setAlignmentX(.5f);
 		wikiButton.setAlignmentY(.5f);
@@ -434,60 +438,6 @@ extends TabPanel {
 		
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-		
-		/////////////////////////////////////////////////////////	
-			
-		// Prepare medication panel.
-		JPanel medicationPanel = new JPanel(new BorderLayout());
-		bottomPanel.add(medicationPanel, BorderLayout.SOUTH);
-		
-		// Prepare medication label.
-		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(medicationLabel);
-		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
-	
-		// Prepare medication scroll panel
-		JScrollPane medicationScrollPanel = new JScrollPane();
-		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
-	
-		// Prepare medication table model.
-		medicationTableModel = new MedicationTableModel(condition);
-	
-		// Prepare medication table.
-		medicationTable = new JTable(medicationTableModel);
-		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
-		medicationTable.setRowSelectionAllowed(true);
-		medicationScrollPanel.setViewportView(medicationTable);
-	
-		// Add sorting
-		medicationTable.setAutoCreateRowSorter(true);
-	
-		//////////////////////////////
-		
-		// Prepare health problem panel
-		JPanel healthProblemPanel = new JPanel(new BorderLayout(0, 0));
-		bottomPanel.add(healthProblemPanel, BorderLayout.CENTER);
-		
-		// Prepare health problem label
-		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(healthProblemLabel);
-		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
-
-		// Prepare health problem scroll panel
-		JScrollPane healthProblemScrollPanel = new JScrollPane();
-		healthProblemPanel.add(healthProblemScrollPanel, BorderLayout.CENTER);
-
-		// Prepare health problem table model
-		healthProblemTableModel = new HealthProblemTableModel(condition);
-
-		// Create health problem table
-		healthProblemTable = new JTable(healthProblemTableModel);
-		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
-		healthProblemTable.setRowSelectionAllowed(true);
-		healthProblemScrollPanel.setViewportView(healthProblemTable);
-
-		// Add sorting
-		healthProblemTable.setAutoCreateRowSorter(true);
 	
 		/////////////////////////////////////////////////////////
 		
@@ -513,10 +463,105 @@ extends TabPanel {
 			attributePanel.addTextField(type.getName(), Math.round(riskMap.get(type) * 100.0)/100.0 + " %", null);
 		}
 
+		
+		//////////////////////////////
+		
+		JPanel southPanel = new JPanel(new BorderLayout());
+		bottomPanel.add(southPanel, BorderLayout.CENTER);
+			
+		//////////////////////////////
+	
+		// Prepare health problem panel
+		JPanel healthProblemPanel = new JPanel(new BorderLayout(0, 0));
+		southPanel.add(healthProblemPanel, BorderLayout.NORTH);
+		
+		// Prepare health problem label
+		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(healthProblemLabel);
+		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
+
+		// Prepare health problem scroll panel
+		JScrollPane healthProblemScrollPanel = new JScrollPane();
+		healthProblemPanel.add(healthProblemScrollPanel, BorderLayout.CENTER);
+
+		// Prepare health problem table model
+		healthProblemTableModel = new HealthProblemTableModel(condition);
+
+		// Create health problem table
+		healthProblemTable = new JTable(healthProblemTableModel);
+		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+		healthProblemTable.setRowSelectionAllowed(true);
+		healthProblemScrollPanel.setViewportView(healthProblemTable);
+
+		// Add sorting
+		healthProblemTable.setAutoCreateRowSorter(true);
+	
+		
+		/////////////////////////////////////////////////////////	
+
+		
+		// Prepare medication panel.
+		JPanel medicationPanel = new JPanel(new BorderLayout());
+		southPanel.add(medicationPanel, BorderLayout.CENTER);
+		
+		// Prepare medication label.
+		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(medicationLabel);
+		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
+	
+		// Prepare medication scroll panel
+		JScrollPane medicationScrollPanel = new JScrollPane();
+		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
+	
+		// Prepare medication table model.
+		medicationTableModel = new MedicationTableModel(condition);
+	
+		// Prepare medication table.
+		medicationTable = new JTable(medicationTableModel);
+		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+		medicationTable.setRowSelectionAllowed(true);
+		medicationScrollPanel.setViewportView(medicationTable);
+	
+		// Add sorting
+		medicationTable.setAutoCreateRowSorter(true);
+		
+		//////////////////////////////
+				
+		// Prepare health problem panel
+		JPanel healthLogPanel = new JPanel(new BorderLayout(0, 0));
+		southPanel.add(healthLogPanel, BorderLayout.SOUTH);
+		
+		// Prepare health problem label
+		JLabel healthLogLabel = new JLabel(Msg.getString("TabPanelHealth.healthLog"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(healthLogLabel);
+		healthLogPanel.add(healthLogLabel, BorderLayout.NORTH);
+		
+		// Prepare health problem scroll panel
+		JScrollPane healthLogScrollPanel = new JScrollPane();
+		healthLogPanel.add(healthLogScrollPanel, BorderLayout.CENTER);
+		
+		// Prepare health problem table model
+		healthLogTableModel = new HealthLogTableModel(condition);
+		
+		// Create health problem table
+		healthLogTable = new JTable(healthLogTableModel);
+		healthLogTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
+		healthLogTable.setRowSelectionAllowed(true);
+		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeCellRenderer());
+		healthLogScrollPanel.setViewportView(healthLogTable);
+		
+		// Add sorting
+		healthLogTable.setAutoCreateRowSorter(true);
+				
 		// Update at least one before displaying it
 		update();
 	}
 
+	/**
+	 * Updates the sleep time.
+	 * 
+	 * @return
+	 */
 	private StringBuilder updateSleepTime() {	
 		// Checks the 3 best sleep time
     	int [] bestSleepTime = person.getPreferredSleepHours();
@@ -635,7 +680,7 @@ extends TabPanel {
 		double muscleSoreness0 = Math.round(condition.getMuscleSoreness()*10.0)/10.0;
 		if (muscleSoreness != muscleSoreness0) {
 			muscleSoreness = muscleSoreness0;
-			muscleHealthLabel.setText(StyleManager.DECIMAL_PLACES1.format(muscleSoreness0));
+			muscleSorenessLabel.setText(StyleManager.DECIMAL_PLACES1.format(muscleSoreness0));
 		}
 
 		double appetite0 = Math.round(condition.getAppetite()*10.0)/10.0;
@@ -668,21 +713,26 @@ extends TabPanel {
 			bedText = allocatedBed.getSpotDescription();
 		}
  		bedTF.setText(bedText);
-
-		// Update medication table model.
-		medicationTableModel.update(condition);
-
-		// Update health problem table model.
-		healthProblemTableModel.update(condition);
-
-		// Update radiation dose table model
-		radiationTableModel.update();
 		
 		// Update sleep time table model
 		sleepExerciseTableModel.update(circadianClock);
 		
 		// Update food table model
 		foodTableModel.update(condition);
+
+		// Update radiation dose table model
+		radiationTableModel.update();
+		
+		// Update medication table model.
+		medicationTableModel.update(condition);
+
+		// Update health problem table model.
+		var problemsChanged = healthProblemTableModel.update(condition);
+		
+		// Update health log table model.
+		if (problemsChanged) {
+			healthLogTableModel.update();
+		}
 	}
 
 	/**
@@ -813,17 +863,76 @@ extends TabPanel {
 			}
 		}
 
-		public void update(PhysicalCondition condition) {
+		public boolean update(PhysicalCondition condition) {
+			var changed = false;
+
 			// Make sure problems cache is current.
 			if (problemsCache.size() != condition.getProblems().size()) {
 				problemsCache = new ArrayList<>(condition.getProblems());
+				changed = true;
 			}
 			isDead = condition.isDead();
 
 			fireTableDataChanged();
+			return changed;
 		}
 	}
 
+	/**
+	 * Internal class used as model for the health log table.
+	 */
+	private static class HealthLogTableModel extends AbstractTableModel {
+
+	
+		private List<CuredProblem> history;
+
+		private HealthLogTableModel(PhysicalCondition condition) {
+			history = condition.getHealthHistory();
+		}
+
+		@Override
+		public int getRowCount() {
+			return history.size();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 3;
+		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == 0) {
+				return String.class;
+			}
+			return MarsTime.class;
+		}
+
+		@Override
+		public String getColumnName(int columnIndex) {
+			return switch(columnIndex) {
+				case 0 -> Msg.getString("TabPanelHealth.column.complaint");
+				case 1 -> Msg.getString("TabPanelHealth.column.startedon");
+				case 2 -> Msg.getString("TabPanelHealth.column.curedon");
+				default -> null;
+			};
+		}
+
+		public Object getValueAt(int row, int column) {
+			var h = history.get(row);
+			
+			return switch(column) {
+				case 0 -> h.complaint().getName();
+				case 1 -> h.start();
+				case 2 -> h.cured();
+				default -> null;
+			};
+		}
+
+		public void update() {			
+			fireTableDataChanged();
+		}
+	}
 	
 	/**
 	 * Internal class used as model for the sleep time table.

@@ -26,7 +26,8 @@ public class MissionWeightParameters extends ParameterCategory {
     }
 
     /**
-     * Calculate the possible keys based the range of MissionTypes.
+     * Calculates the possible keys based the range of MissionTypes.
+     * 
      * @return Map from id to the corresponding Spec
      */
     @Override
@@ -35,7 +36,7 @@ public class MissionWeightParameters extends ParameterCategory {
     }
 
     /**
-     * Create a set of Parameter specs based on the range of MissionTypes.
+     * Creates a set of Parameter specs based on the range of MissionTypes.
 
      * @param t The type of each spec
      * @return

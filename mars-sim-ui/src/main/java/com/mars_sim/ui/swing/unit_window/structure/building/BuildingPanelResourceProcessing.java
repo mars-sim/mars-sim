@@ -12,7 +12,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.function.ResourceProcessing;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 
@@ -23,8 +23,11 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 
-	private static final String CHEMICAL_ICON = "chemical";
+	private static final String ICON = "resource";
 	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	// Data members
 	private ResourceProcessing processor;
 	private ResourceProcessPanel processPanel;
@@ -40,7 +43,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelResourceProcessing.title"),
-			ImageLoader.getIconByName(CHEMICAL_ICON),
+			ImageLoader.getIconByName(ICON),
 			processor.getBuilding(), 
 			desktop
 		);
@@ -61,7 +64,10 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	}
 	
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		processPanel.update();
 	}
 }

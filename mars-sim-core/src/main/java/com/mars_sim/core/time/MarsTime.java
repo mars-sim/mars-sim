@@ -248,7 +248,6 @@ public class MarsTime implements Serializable {
 	 * @param sol
 	 * @param millisol
 	 * @param missionSol
-	 * @param totalMillisols
 	 */
 	private MarsTime(int orbit, int month, int sol, double millisol, int missionSol, double totalMillisols) {
 		// Set date/time to given parameters.
@@ -308,7 +307,7 @@ public class MarsTime implements Serializable {
 	 */
 	public MarsTime addTime(double addedMillisols) {
 
-		double newTotalMillisols = totalMillisols + addedMillisols;
+//		double newTotalMillisols = totalMillisols + addedMillisols;
 		double newMillisols = millisol + addedMillisols;
 		int newOrbit = orbit;
 		int newMissionSol = missionSol;
@@ -320,10 +319,12 @@ public class MarsTime implements Serializable {
 				newMillisols -= 1000D;
 				newSolOfMonth++;
 				newMissionSol++;
+							
 				if (newSolOfMonth > MarsTimeFormat.getSolsInMonth(newMonth, newOrbit)) {
 					newSolOfMonth = 1;
 					newMonth++;
 				}
+				
 				if (newMonth > MONTHS_PER_ORBIT) {
 					newMonth = 1;
 					newOrbit++;
@@ -331,22 +332,29 @@ public class MarsTime implements Serializable {
 			}
 		}
 		else if (addedMillisols < 0D) {
+			// Future: how do we handle a Mars date before sol 0 ?
+			// e.g. A transport item was launched on 01-Edal--57:074, arriving at 01-Edal-09:074.
+			// e.g. A transport item was launched on 01-Adir--65:074, arriving at 01-Adir-01:074.
+			
 			while (newMillisols < 0D) {
 				newMillisols += 1000D;
-				newSolOfMonth -= 1;
-				newMissionSol -= 1;
-				if (solOfMonth < 1) {
-					newMonth -= 1;
-					newSolOfMonth = MarsTimeFormat.getSolsInMonth(newMonth, newOrbit);
-				}
+				newSolOfMonth--;
+				newMissionSol--;
+				
 				if (newMonth < 1) {
 					newMonth = MONTHS_PER_ORBIT;
-					newOrbit -= 1;
+					// Future: how to handle -ve orbit years ?  
+					newOrbit--;
+				}
+				
+				if (newSolOfMonth < 1) {
+					newMonth--;
+					newSolOfMonth = MarsTimeFormat.getSolsInMonth(newMonth, newOrbit);
 				}
 			}
 		}
 
-		return new MarsTime(newOrbit, newMonth, newSolOfMonth, newMillisols, newMissionSol, newTotalMillisols);
+		return new MarsTime(newOrbit, newMonth, newSolOfMonth, newMillisols, newMissionSol); //, newTotalMillisols);
 	}
 
 	/**

@@ -12,6 +12,8 @@ import com.mars_sim.core.UnitIdentifer;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.EquipmentOwner;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -20,8 +22,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 

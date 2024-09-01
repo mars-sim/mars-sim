@@ -57,6 +57,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -66,8 +67,7 @@ import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 

@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.task.BudgetResources.ReviewGoal;
 import com.mars_sim.core.structure.task.BudgetResourcesMeta.BudgetResourcesJob;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
     public void testCreateSettlementwaterReviewTask() {

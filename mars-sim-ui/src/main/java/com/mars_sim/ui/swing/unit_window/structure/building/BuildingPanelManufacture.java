@@ -41,7 +41,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.Manufacture;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.structure.ManufacturePanel;
@@ -61,6 +61,9 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	private static final Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
 
 	private static final String MANU_ICON = "manufacture";
+	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
 	
 	private static int processStringWidth = 170;
 
@@ -199,7 +202,10 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	}
 
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 
 		// Update processes and salvage processes if necessary.
 		List<ManufactureProcess> processes =  new ArrayList<>(workshop.getProcesses());

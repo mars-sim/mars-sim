@@ -6,6 +6,8 @@ import org.junit.Before;
 
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -27,8 +29,6 @@ import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
 
@@ -86,6 +86,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
+
 	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec("explorer rover"),
 								settlement);
 		if (parked != null) {
@@ -248,7 +249,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	/**
-	 * Executes a Task for a number of steps or phase changes
+	 * Executes a Task for a number of steps or phase changes.
+	 * Note: for maven testing.
 	 * 
 	 * @param person
 	 * @param task
@@ -270,7 +272,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	/**
-	 * Executes a Task for a number of steps or subtask is Done
+	 * Executes a Task for a number of steps or subtask is Done.
 	 * 
 	 * @param person
 	 * @param task
@@ -294,7 +296,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
      * Creates a Clock pulse that just contains a MarsClock at a specific time.
      * 
      * @param missionSol Sol in the current mission
-     * @param mSol MSol throught the day
+     * @param mSol MSol throughout the day
      * @param newSol Is the new Sol flag set
      * @return
      */
@@ -303,6 +305,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return createPulse(marsTime, newSol, newHalfSol);
 	}
 
+	/**
+     * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * 
+     * @param marsTime
+     * @param newSol Is it a new sol ?
+     * @param newHalfSol Has half a sol just passed ? 
+     * @return
+     */
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		var master = sim.getMasterClock();
 		master.setMarsTime(marsTime);
@@ -310,7 +320,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
     }
 
 	/**
-	 * Better Assert method 
+	 * Better Assert method .
 	 */
 	public static void assertGreaterThan(String message, double minValue, double actual) {
 		if (actual <= minValue) {

@@ -11,10 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -32,26 +28,27 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.icons.FlatSearchWithHistoryIcon;
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.icons.FlatSearchWithHistoryIcon;
 
 
 /**
@@ -63,8 +60,9 @@ public class SearchWindow
 extends ToolWindow {
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("SearchWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "search";
 	public static final String ICON = "action/find";
+    public static final String TITLE = Msg.getString("SearchWindow.title");
 
 	/** True if unitList selection events should be ignored. */
 	private boolean lockUnitList;
@@ -101,7 +99,7 @@ extends ToolWindow {
 	public SearchWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 		unitManager = desktop.getSimulation().getUnitManager();
 	
 		// Initialize locks
@@ -133,11 +131,7 @@ extends ToolWindow {
 		searchForSelect = new JComboBox<>(categories);
 		searchForSelect.setRenderer(new UnitTypeRenderer());
 		searchForSelect.setSelectedIndex(0);
-		searchForSelect.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent event) {
-				changeCategory((UnitType) searchForSelect.getSelectedItem());
-			}
-		});
+		searchForSelect.addItemListener(event -> changeCategory((UnitType) searchForSelect.getSelectedItem()));
 		searchForPane.add(searchForSelect);
 
 		// Create select unit panel
@@ -193,7 +187,7 @@ extends ToolWindow {
 				if (event.getClickCount() == 2) search();
 				else if (!lockUnitList) {
 					// Change search text to selected name.
-					String selectedUnitName = ((Unit) unitList.getSelectedValue()).getName();
+					String selectedUnitName = unitList.getSelectedValue().getName();
 					lockSearchText = true;
 					if (!selectTextField.getText().equals(selectedUnitName))
 						selectTextField.setText(selectedUnitName);
@@ -225,7 +219,7 @@ extends ToolWindow {
 		selectOptionsPane.add(settlementCheck);
 
 		// Create status label
-		statusLabel = new JLabel(" ", JLabel.CENTER); //$NON-NLS-1$
+		statusLabel = new JLabel(" ", SwingConstants.CENTER); //$NON-NLS-1$
 		statusLabel.setBorder(new EtchedBorder());
 		bottomPane.add(statusLabel, BorderLayout.CENTER);
 
@@ -235,11 +229,7 @@ extends ToolWindow {
 
 		// Create search button
 		searchButton = new JButton(Msg.getString("SearchWindow.button.search")); //$NON-NLS-1$
-		searchButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				search();
-			}
-		});
+		searchButton.addActionListener(e -> search());
 		searchButton.setEnabled(false);
 		searchButton.setToolTipText(Msg.getString("SearchWindow.button.toolTip"));
 		searchButtonPane.add(searchButton);

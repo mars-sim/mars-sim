@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FlyerPanel.java
- * @date 2021-10-21
+ * @date 2024-07-30
  * @author Manny Kung
  */
 
@@ -29,10 +29,10 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 
@@ -150,17 +150,34 @@ class FlyerPanel extends WizardPanel {
 	}
 
 	/**
+	 * Checks if it's already been reserved or under maintenance.
+	 * 
+	 * @return
+	 */
+	private boolean checkReserveMaint(Drone drone) {
+		if (drone.isReserved()) 
+			return true;
+		return false;
+	}
+	
+	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @retun true if changes can be committed.
 	 */
-	boolean commitChanges() {
+    @Override
+	boolean commitChanges(boolean isTesting) {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Drone selectedVehicle = (Drone) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().getMissionData().setDrone(selectedVehicle);
-		
-		// Reserve the vehicle
-		
+		if (selectedVehicle == null)
+			return false;
+		if (selectedVehicle != null && checkReserveMaint(selectedVehicle))
+			return false;
+		else if (!isTesting) {
+			getWizard().getMissionData().setDrone(selectedVehicle);
+			return true;
+		}	
 		return true;
 	}
 
@@ -201,8 +218,10 @@ class FlyerPanel extends WizardPanel {
 				columns.add("Type");
 				columns.add("Range");
 				columns.add("Cargo Cap.");
+				
 				columns.add("Mass");
 				columns.add("Status");
+				columns.add("Reserved");
 				columns.add("Mission");
 			}
 		}
@@ -224,16 +243,18 @@ class FlyerPanel extends WizardPanel {
 					if (column == 0)
 						result = vehicle.getName();
 					else if (column == 1)
-						result = vehicle.getDescription();
+						result = vehicle.getVehicleSpec().getName();
 					else if (column == 2)
-						result = (int) vehicle.getRange();
+						result = (int) vehicle.getEstimatedRange();
 					else if (column == 3)
 						result = (int) vehicle.getCargoCapacity();
 					else if (column == 4)
 						result = (int) vehicle.getStoredMass();
 					else if (column == 5)
 						result = vehicle.printStatusTypes();
-					else if (column == 6) {
+					else if (column == 6)
+						result = Conversion.capitalize(vehicle.isReserved() + "");
+					else if (column == 7) {
 						Mission mission = vehicle.getMission();
 						if (mission != null)
 							result = mission.getName();
@@ -257,7 +278,7 @@ class FlyerPanel extends WizardPanel {
 			Iterator<Vehicle> i = vehicles.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				if (vehicle instanceof Drone)
 					units.add(vehicle);
 			}
 			fireTableDataChanged();
@@ -274,11 +295,15 @@ class FlyerPanel extends WizardPanel {
 			boolean result = false;
 			Drone vehicle = (Drone) getUnit(row);
 
-			if (column == 7) {
-				if (vehicle.getStoredMass() > 0D)
+			if (column == 6) {
+				if (vehicle.isReserved())
 					result = true;
-			} else if (column == 8) {
-				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) && (vehicle.getPrimaryStatus() != StatusType.GARAGED))
+			} else if (column == 4) {
+				if (!vehicle.isEmpty())
+					result = true;
+			} else if (column == 5) {
+				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 
+						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
 					result = true;
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
@@ -286,7 +311,7 @@ class FlyerPanel extends WizardPanel {
                     result = !vehicle.haveStatusType(StatusType.MAINTENANCE);
 				}
 				
-			} else if (column == 9) {
+			} else if (column == 7) {
 				Mission mission = vehicle.getMission();
 				if (mission != null)
 					result = true;

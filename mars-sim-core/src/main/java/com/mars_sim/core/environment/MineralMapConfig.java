@@ -19,6 +19,7 @@ public class MineralMapConfig {
 
 	// Element names
 	private static final String MINERAL = "mineral";
+	private static final String COLOR = "color";
 	private static final String NAME = "name";
 	private static final String FREQUENCY = "frequency";
 	private static final String LOCALE_LIST = "locale-list";
@@ -64,10 +65,12 @@ public class MineralMapConfig {
 		for (Element mineral : minerals) {
 			// Get mineral name.
 			String name = mineral.getAttributeValue(NAME).trim();
+			// Get color string.
+			String color = mineral.getAttributeValue(COLOR).trim();
 			// Get frequency.
 			String frequency = mineral.getAttributeValue(FREQUENCY).trim();
 			// Create mineralType.
-			MineralType mineralType = new MineralType(name, frequency);
+			MineralType mineralType = new MineralType(name, color, frequency);
 			// Get locales.
 			Element localeList = mineral.getChild(LOCALE_LIST);
 			List<Element> locales = localeList.getChildren(LOCALE);
@@ -100,11 +103,13 @@ public class MineralMapConfig {
 		private static final long serialVersionUID = 1L;
 
 		String name;
+		String color;
 		String frequency;
 		private List<String> locales;
 
-		private MineralType(String name, String frequency) {
+		private MineralType(String name, String color, String frequency) {
 			this.name = name;
+			this.color = color;
 			this.frequency = frequency;
 			locales = new ArrayList<>(3);
 		}
@@ -119,6 +124,10 @@ public class MineralMapConfig {
 		
 		public String toString() {
 			return name;
+		}
+		
+		public String getColorString() {
+			return color;
 		}
 	}
 }

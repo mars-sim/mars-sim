@@ -36,9 +36,12 @@ public class ThermalGeneration extends Function {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ThermalGeneration.class.getName());
 	
-//	private static final double HEAT_MATCH_MOD = 1;
+	private static final double THRESHOLD = .1;
 	
 	// Data members.
+	/** The flag for checking if the simulation has just started. */
+	private boolean justLoaded = true;
+	
 	private double heatGeneratedCache;
 	
 	private double heatSurplusCache;
@@ -207,7 +210,7 @@ public class ThermalGeneration extends Function {
 	 */
 	private double[] calculateHeatGen(double heatLoad, double time) {
 		// Assume heatLoad is positive to begin with
-		
+//		logger.info(building, 5_000 , "heatLoad: " + Math.round(heatLoad * 100.0)/100.0);
 		double remainHeatReq = heatLoad;
 		double heatGen = 0D;
 		double heat[] = new double[2];
@@ -448,7 +451,8 @@ public class ThermalGeneration extends Function {
 			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
-				fuelHeatSource.setTime(time);
+				((FuelHeatSource)fuelHeatSource).setTime(time);
+				((FuelHeatSource)fuelHeatSource).toggleON();
 		    	fHeat = fuelHeatSource.requestHeat(heatMode.getPercentage());
 				
 				if (Double.isNaN(fHeat) || Double.isInfinite(fHeat)) {
@@ -511,22 +515,25 @@ public class ThermalGeneration extends Function {
 	/**
 	 * Moderate the time for heating.
 	 * 
-	 * @param time time in millisols
+	 * @param pulse
 	 * @throws Exception if error during action.
 	 */
-	private void moderateTime(double time) {
-		double remaining = time;
+	private void moderateTime(ClockPulse pulse) {
+		double remaining = pulse.getElapsed();
 		double pTime = Task.getStandardPulseTime();
-		while (remaining > 0 && pTime > 0) {
+		if (pTime == 0.0) {
+			pTime = remaining;
+		}
+		while (remaining > 0) {
 			if (remaining > pTime) {
 				// Consume the pulse time.
-				transferHeat(pTime);
+				transferHeat(pulse, pTime);
 				// Reduce the total time by the pulse time
 				remaining -= pTime;
 			}
 			else {
 				// Consume the pulse time.
-				transferHeat(remaining);
+				transferHeat(pulse, remaining);
 				// Reduce the total time by the pulse time
 				remaining = 0;
 			}
@@ -539,11 +546,17 @@ public class ThermalGeneration extends Function {
 	 * @param millisols time in millisols
 	 * @throws Exception if error during action.
 	 */
-	private void transferHeat(double millisols) {
+	private void transferHeat(ClockPulse pulse, double millisols) {
+		
+		if (pulse.getMarsTime().getMillisol() < .2)
+			return;
+		
 		// Call heating's timePassing
 		heating.timePassing(millisols);
 		
-		// Note: Since devT = tPreset - currentT
+		double nowT = building.getCurrentTemperature();
+		
+		// Note: Since devT = tPreset - nowT
 		// and heatReq = convFactor * devT,
 		
 		// If heatReq is -ve, then devT is -ve, currentT is higher than normal
@@ -557,69 +570,178 @@ public class ThermalGeneration extends Function {
 		
 		// preNetHeat is +ve, then gain is greater than loss
 		double preNetHeat = heating.getPreNetHeat();
+		
+		// airheatsink in kW. If +ve, it traps heat in a room
+		double airHeatSink = heating.getAirHeatSink();
+		
+		// waterheatsink in kW. If +ve, it traps heat in a room
+		// Trapped heat as a form of air heat sink is okay
+		double waterHeatSink = heating.getWaterHeatSink();
+	
+		double devT = building.getDevTemp();
+		if (devT < -25)
+			devT = -25;
+		else if (devT > 25)
+			devT = 25;
+		// Note: devT = tPreset - newT;
+
+		// if devT is -ve, too hot. Lower heatGen
+		// if devT is +ve, too cold. Raise heatGen
+
+		double mHeatReq = 0;
+		double mod = devT / 10 + 1;
+		double f = 1;
+		if (devT < 0) {
+			// too hot, lower heatGen
+			// mod from 0.0 to 1.0
+		
+			if (heatReq < 0) {	
+				// too hot
+				// heatReq: -ve
+				// mod: +ve/-ve
+				// mod: +ve/-ve
+				mHeatReq = heatReq * mod * mod * 0.2;
+				f = mod;
+				// mHeatReq is -ve
+			}
+			else if (heatReq == 0.0) {
+				mHeatReq = 0;
+				// mHeatReq is -ve
+			}
+			else if (heatReq > 0) {
+				// hot but need more heat
+				// heatReq: +ve
+				// mod: +ve/-ve
+				mHeatReq = 0; //heatReq * mod * 0.5;
+				// mHeatReq is -ve
+			}
+			
+			waterHeatSink = 0;
+			airHeatSink = 0;
+		}
+		else if (devT >= 0) {
+			// too cold. Raise heatGen
+			// mod from 1.0 to 2.0 to ...
+	
+			if (heatReq < 0) {	
+				// cold but doesn't need more heat
+				// heatReq: -ve
+				// mod: +ve
+				mHeatReq = heatReq * mod * -1.5;
+				// mHeatReq is -ve
+			}
+			else if (heatReq == 0.0) {
+				// heatReq: 0
+				// mod: +ve
+				mHeatReq = mod * mod * 2.5;
+				// new heatReq is +ve, do NOT make it -ve
+			}
+			else if (heatReq > 0) {
+				// too cold
+				// heatReq: +ve
+				// mod: +ve
+				// mod: +ve
+				mHeatReq = heatReq * mod * mod * 2.5;
+				// new heatReq is +ve
+			}
+			
+			// if airHeatSink is +ve, it's okay to reduce it. 
+			// Trapped heat as a form of air heat sink is okay
+			double mAir = devT / 2 * airHeatSink * .1;
+			if (mAir > 3)
+				airHeatSink = 3;
+			else if (airHeatSink <= 0)
+				airHeatSink = -1.5 + airHeatSink * .1;			
+			
+			// if waterHeatSink is +ve, it's okay to reduce it. 
+			// Trapped heat as a form of water heat sink is okay
+			double mWater = devT / 2 * waterHeatSink * .1;
+			if (mWater > 3)
+				waterHeatSink = 3;
+			else if (waterHeatSink <= 0)
+				waterHeatSink = -1.5 + waterHeatSink * .1;
+		}
 
 		double heatGen = 0;
 		double remainHeatReq = 0;
+
+		double finalHeatReq = mHeatReq - f * (.1 * preNetHeat + .15 * postNetHeat + airHeatSink + waterHeatSink);
 		
-		if (heatReq <= 0) {
-			// Still let it call calculateHeatGen in order to turn off heat sources
-			double heat[] = calculateHeatGen(0, millisols);	
+		if (finalHeatReq <= THRESHOLD) {
+			// input zero heat req in order to reset all heat sources to zero
+			double heat[] = calculateHeatGen(0, millisols);
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
-		
-			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
-				logger.warning(building, 1_000L , "1. heatGen: " 
-						+ Math.round(heatGen * 1000.0)/1000.0
-						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-						+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
-						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
-						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
-						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
-						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0);
-			}
+			// Update heat generated in Heating
+			heating.insertHeatGenerated(heatGen);
+			// Update heat generated in ThermalGeneration
+			setGeneratedHeat(heatGen);
+			
+			double heatSurplus = -remainHeatReq;
+			// Update heat surplus in ThermalGeneration
+			setHeatSurplus(heatSurplus);
+			
+//			logger.warning(building, 0, "3. heatGen: " + Math.round(heatGen * 1000.0)/1000.0		
+//					+ "  finalHeatReq: " + Math.round(finalHeatReq * 1000.0)/1000.0
+//					+ "  T: " + Math.round(nowT * 10.0)/10.0
+//					+ "  devT: " + Math.round(devT * 10.0)/10.0
+//					+ "  mod: " + Math.round(mod * 1000.0)/1000.0
+//					+ "  mHeatReq: " + Math.round(mHeatReq * 100.0)/100.0
+//					+ "  heatReq: " + Math.round(heatReq * 100.0)/100.0
+//					+ "  remainHeatReq: " + Math.round(remainHeatReq * 100.0)/100.0
+//					+ "  preNetHeat: " + Math.round(preNetHeat * 100.0)/100.0
+//					+ "  postNetHeat: " + Math.round(postNetHeat * 100.0)/100.0
+//					+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+//					);
+			return;
 		}
-		else {
-
-			double finalHeatReq = heatReq - .1 * postNetHeat - .05 * preNetHeat;
-			
-			// Find out how much heat can be generated to match this requirement
-			double heat[] = calculateHeatGen(finalHeatReq, millisols);
-			heatGen = heat[0];
-			remainHeatReq = heat[1];
-			
-			if (remainHeatReq > 0.05) {
-				logger.warning(building, 10_000L , "2. Unmet remaining heat req: " 
-						+ Math.round(remainHeatReq) + " kW.");
-			}
-			
-			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
-				logger.warning(building, 1_000L , "3. heatGen: " 
-						+ Math.round(heatGen * 1000.0)/1000.0
-						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-						+ "  time: " + Math.round(millisols * 1000.0)/1000.0
-						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
-						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
-						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
-						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0
-						+ "  finalHeatReq: " + Math.round(finalHeatReq * 1000.0)/1000.0);
-			}
-		}		
 		
-
+		// Find out how much heat can be generated to match this requirement
+		double heat[] = calculateHeatGen(finalHeatReq, millisols);
+		heatGen = heat[0];
+		remainHeatReq = heat[1];
 		
-		// Update heat generated continuously
+		if (remainHeatReq > 0.5) {
+			logger.warning(building, 10_000L , "2. Unmet remaining heat req: " 
+					+ Math.round(remainHeatReq * 100.0)/100.0 + " kW.");
+		}
+			
+		// Update heat generated in Heating
 		heating.insertHeatGenerated(heatGen);
+		// Update heat generated in ThermalGeneration
 		setGeneratedHeat(heatGen);
 		
-		// Note that the following can happen : 
-		// Lander Hab 1 - heatGen: 39.655 > 50 kW.  heatReq: 5.02  remainHeatReq: -9.589  finalHeatReq: 30.066
-		// Lander Hab 1 - diffHeatGainLoss: 38.797181908421216 > 20.
-		// This will cause an over-abundance of heat gain.
-		// Need to be cautious about remainHeatReq not exceeding a certain amount
-		
 		double heatSurplus = -remainHeatReq;
-
+		// Update heat surplus in ThermalGeneration
 		setHeatSurplus(heatSurplus);
+		
+		if (devT >= 20 || devT <= -20 
+			|| nowT >= 40 || nowT <= 10 
+			|| heatGen >= 40
+			|| heatReq >= 40 || heatReq <= -40)
+//			building.getBuildingType().contains("Large Greenhouse"))
+			logger.warning(building, 0, "3. heatGen: " + Math.round(heatGen * 100.0)/100.0		
+					+ "  finalHeatReq: " + Math.round(finalHeatReq * 100.0)/100.0
+					+ "  T: " + Math.round(nowT * 10.0)/10.0
+					+ "  devT: " + Math.round(devT * 10.0)/10.0
+					+ "  mod: " + Math.round(mod * 1000.0)/1000.0
+					+ "  mHeatReq: " + Math.round(mHeatReq * 100.0)/100.0
+					+ "  heatReq: " + Math.round(heatReq * 100.0)/100.0
+					+ "  remainHeatReq: " + Math.round(remainHeatReq * 100.0)/100.0
+					+ "  preNetHeat: " + Math.round(preNetHeat * 100.0)/100.0
+					+ "  postNetHeat: " + Math.round(postNetHeat * 100.0)/100.0
+					+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+					);
+	}
+	
+	/**
+	 * Sets the heat surplus (excess heat generated) and call unitUpdate.
+	 * 
+	 * @return heat in kW.
+	 */
+	public void setHeatSurplus(double heat)  {
+		heatSurplusCache = heat;
+		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT);
 	}
 	
 	/**
@@ -631,20 +753,21 @@ public class ThermalGeneration extends Function {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {			
-			moderateTime(pulse.getElapsed());
+		if (valid) {
+
+			// Run at the start of the sim once only
+			if (justLoaded				
+					&& pulse.getMarsTime().getMissionSol() == 1
+						&& pulse.getMarsTime().getMillisolInt() >= 1) {
+							// Reset justLoaded
+							justLoaded = false;
+			}
+
+			if (!justLoaded) {
+				moderateTime(pulse);
+			}
 		}
 		return valid;
-	}
-
-	/**
-	 * Sets the heat surplus (excess heat generated) and call unitUpdate.
-	 * 
-	 * @return heat in kW.
-	 */
-	public void setHeatSurplus(double heat)  {
-		heatSurplusCache = heat;
-		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT);
 	}
 	
 	/**

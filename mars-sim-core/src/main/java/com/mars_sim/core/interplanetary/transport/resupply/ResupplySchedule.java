@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResupplySchedule.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 package com.mars_sim.core.interplanetary.transport.resupply;
@@ -25,7 +25,8 @@ public class ResupplySchedule implements Serializable {
 
     
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param maximum
      * @param frequency
      */
@@ -37,6 +38,7 @@ public class ResupplySchedule implements Serializable {
 
     /**
      * Gets the template name.
+     * 
      * @return name.
      */
     public String getName() {
@@ -44,7 +46,8 @@ public class ResupplySchedule implements Serializable {
     }
 
     /**
-     * Gets the schedule for this resupluy
+     * Gets the schedule for this resupply.
+     * 
      * @return arrival time (Sols).
      */
     public EventSchedule getSchedule() {
@@ -52,7 +55,7 @@ public class ResupplySchedule implements Serializable {
     }
 
     /**
-     * The payload to be delivered every schedule
+     * The payload to be delivered every schedule.
      */
     public SupplyManifest getManifest() {
         return supplies;
@@ -60,6 +63,7 @@ public class ResupplySchedule implements Serializable {
 
     /**
      * The number of resupply missions that are active with this schedule.
+     * 
      * @return
      */
     public int getActiveMissions() {

@@ -39,7 +39,7 @@ public class UpTimer implements Serializable {
 
 	// Data members
 	/** The last up time. Sets to 1 in case it gets divided by 0 right away. */
-	private long uptime = 1;
+	private double uptime = 1;
 
     public UpTimer() {
     }
@@ -66,7 +66,7 @@ public class UpTimer implements Serializable {
      * @return simulation running time formatted in a string. e.g. "00h 06m 32s"
      */
     public String getUptime() {
-    	long uptimeSec = uptime/1000;
+    	long uptimeSec = Math.round(uptime/1000);
     	
        	StringBuilder result = new StringBuilder();
        	long days = uptimeSec / SECS_PER_DAY;

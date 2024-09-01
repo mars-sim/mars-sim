@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Exploration.java
- * @date 2024-07-18
+ * @date 2024-07-23
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -29,11 +31,9 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Exploration class is a mission to travel in a rover to several random
@@ -42,7 +42,8 @@ import com.mars_sim.tools.util.RandomUtil;
 public class Exploration extends EVAMission
 	implements SiteMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, 
+			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -61,9 +62,9 @@ public class Exploration extends EVAMission
 	private static final String EXPLORATION_SITE = "Exploration Site ";
 
 	/** Number of specimen containers required for the mission. */
-	public static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
 	/** Amount of time to explore a site. */
-	private static final double STANDARD_TIME_PER_SITE = 750.0;
+	private static final double STANDARD_TIME_PER_SITE = 500.0;
 	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 	
@@ -98,6 +99,7 @@ public class Exploration extends EVAMission
 		super(MISSION_TYPE, startingPerson, null,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
+		this.amountCollectedBySite = new HashMap<>();
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.explorationSiteCompletion = new HashMap<>();
 		
@@ -122,7 +124,7 @@ public class Exploration extends EVAMission
 			int sol = getMarsTime().getMissionSol();
 			numSites = 2 + (int)(1.0 * sol / 20);
 			
-			List<Coordinates> sitesToClaim = determineExplorationSites(getVehicle().getRange(),
+			List<Coordinates> sitesToClaim = determineExplorationSites(getVehicle().getEstimatedRange(),
 					getRover().getTotalTripTimeLimit(true),
 					numSites, skill);
 
@@ -155,6 +157,7 @@ public class Exploration extends EVAMission
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
+		this.amountCollectedBySite = new HashMap<>();
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.explorationSiteCompletion = new HashMap<>();
 		
@@ -194,12 +197,6 @@ public class Exploration extends EVAMission
 		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX, newContainerNum);
 	
-
-		// Configure the sites to be explored with mineral concentration during the stage of mission planning
-		for (Coordinates c : explorationSites) {
-			declareARegionOfInterest(c, skill);
-		}
-
 		// Set exploration navpoints.
 		addNavpoints(explorationSites, (i -> EXPLORATION_SITE + (i+1)));
 
@@ -247,24 +244,23 @@ public class Exploration extends EVAMission
 		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
 		
 		// Creates an random site
-		
 		Coordinates location = determineFirstSiteCoordinate();
 		if (location == null) {
-			logger.info(getStartingSettlement(), "location is null.");
+			logger.info(getStartingSettlement(), "No site is found.");
 			return null;
 		}
 		
-		return declareARegionOfInterest(location, 0);
+		return declareARegionOfInterest(location, 2);
 	}
 
 	/**
-	 * Determine the coordinate of the first exploration site.
+	 * Determines the coordinate of the first exploration site.
 	 *
 	 * @return
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
 		double range = getVehicle().getRange();
-		return getStartingSettlement().determineFirstSiteCoordinate(range, 1);
+		return getStartingSettlement().getNextClosestMineralLoc(range);
 	}
 	
 	/**
@@ -277,7 +273,7 @@ public class Exploration extends EVAMission
 
 		// Update exploration site completion.
 		double timeDiff = getPhaseDuration();
-		double completion = timeDiff / STANDARD_TIME_PER_SITE;
+		double completion = timeDiff / STANDARD_TIME_PER_SITE * 2;
 		if (completion > 1D) {
 			completion = 1D;
 		}
@@ -290,9 +286,6 @@ public class Exploration extends EVAMission
 			currentSite = retrieveASiteToClaim();
 			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
-		
-		if (currentSite == null)
-			return false;
 		
 		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
 
@@ -408,11 +401,12 @@ public class Exploration extends EVAMission
 			
 			currentLocation = determineFirstSiteCoordinate(dist, areologySkill);
 			
-			// Creates an initial explored site in SurfaceFeatures
-			el = declareARegionOfInterest(currentLocation, areologySkill);
+			if (currentLocation != null) {
+				// Creates an initial explored site in SurfaceFeatures
+				el = declareARegionOfInterest(currentLocation, areologySkill);
+			}
 		}
-
-		
+	
 		if (currentLocation != null) {
 			unorderedSites.add(currentLocation);
 		}
@@ -497,7 +491,9 @@ public class Exploration extends EVAMission
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = surfaceFeatures.getAllRegionOfInterestLocations().stream()
+		List<Coordinates> candidateLocs = home.getDeclaredLocations()
+				//surfaceFeatures.getAllPossibleRegionOfInterestLocations()
+				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
@@ -511,6 +507,13 @@ public class Exploration extends EVAMission
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Gets the total distances of going to all sites.
+	 * 
+	 * @param startingLoc
+	 * @param sites
+	 * @return
+	 */
 	private static double getTotalDistance(Coordinates startingLoc, List<Coordinates> sites) {
 		double result = 0D;
 
@@ -548,7 +551,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Estimate the time needed at an EVA site.
+	 * Estimates the time needed at an EVA site.
 	 * 
 	 * @param buffer Add a buffer allowance
 	 * @return Estimated time per EVA site
@@ -586,7 +589,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Return the average site score of all exploration sites
+	 * Returns the average site score of all exploration sites.
 	 */
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {

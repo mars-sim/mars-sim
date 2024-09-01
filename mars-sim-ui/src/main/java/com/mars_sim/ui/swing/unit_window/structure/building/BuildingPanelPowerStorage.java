@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.utility.power.PowerStorage;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -29,16 +29,20 @@ extends BuildingFunctionPanel {
 
 	private static final String ENERGY_ICON = "energy";
 	
-	private JLabel storedTF;
-	private JLabel capTF;
-
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private double capacityCache;
 	private double storedCache;
 	
+	private JLabel storedTF;
+	private JLabel capTF;
+
 	private PowerStorage storage;
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param storage The power storage building function.
 	 * @param desktop The main desktop.
 	 */
@@ -56,7 +60,7 @@ extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -76,7 +80,10 @@ extends BuildingFunctionPanel {
 	}
 
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 
 		// Update capacity label if necessary.
 		double newCapacity = storage.getCurrentMaxCapacity();
@@ -94,7 +101,7 @@ extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {

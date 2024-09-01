@@ -77,7 +77,7 @@ extends TestCase {
 		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();
 		
 		settlement.addACitizen(person);
-
+	
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
 

@@ -13,7 +13,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class represents the System Condition of a robot.
@@ -206,7 +206,7 @@ public class SystemCondition implements Serializable {
 		if (vOut <= 0)
 			return 0;
 
-		double ampHr = getAmpHourRating();
+		double ampHr = getAmpHour();
 //		double hr = time * HOURS_PER_MILLISOL;
 		
 		// Use Peukert's Law for lithium ion battery to dampen the power delivery when 
@@ -507,7 +507,7 @@ public class SystemCondition implements Serializable {
     	}
     }
 	
-	public double getAmpHourRating() {
+	public double getAmpHour() {
 		return ampHour;
 	}
 	

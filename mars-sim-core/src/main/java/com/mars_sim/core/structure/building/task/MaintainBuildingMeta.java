@@ -26,8 +26,8 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for maintaining buildings.
@@ -46,7 +46,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 
 
         public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, RatingScore score) {
-			super(owner, "Building Maintenance " + (eva ? "via EVA " : ""), target, score);
+			super(owner, "Maintain Buildings " + (eva ? "via EVA " : ""), target, score);
 			setEVA(eva);
         }
 

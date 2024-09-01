@@ -35,6 +35,7 @@ import com.mars_sim.core.person.ai.task.util.TaskParameters;
 import com.mars_sim.core.structure.ProcessParameters;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -82,9 +83,9 @@ public class TabPanelPreferences extends TabPanelTable {
 	public TabPanelPreferences(Settlement unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
-			null,
+			Msg.getString("TabPanelPreferences.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(ICON),
-			"Preferences", //$NON-NLS-1$
+			Msg.getString("TabPanelPreferences.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 		mgr = unit.getPreferences();
@@ -92,7 +93,7 @@ public class TabPanelPreferences extends TabPanelTable {
 	}
 	
 	/**
-	 * Info panel contains the controls to add/modifiy preferences
+	 * Info panel contains the controls to add/modify preferences
 	 */
 	@Override
 	protected JPanel createInfoPanel() {
@@ -219,7 +220,7 @@ public class TabPanelPreferences extends TabPanelTable {
 		}
 
 		/**
-		 * Adds an entry to the table and the underlying manager
+		 * Adds an entry to the table and the underlying manager.
 		 */
 		public void addEntry(RenderableKey newKey, Serializable value) {
 			if (!items.contains(newKey)) {
@@ -231,7 +232,7 @@ public class TabPanelPreferences extends TabPanelTable {
 		}
 
 		/**
-		 * Remove an entry to the table and the underlying manager
+		 * Removes an entry to the table and the underlying manager.
 		 */
 		public void removeEntry(RenderableKey newKey) {
 			int idx = items.indexOf(newKey);

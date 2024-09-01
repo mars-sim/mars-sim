@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2023-10-11
+ * @date 2024-07-29
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.commander;
@@ -71,13 +71,15 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.farming.Farming;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
@@ -90,8 +92,9 @@ public class CommanderWindow extends ToolWindow {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CommanderWindow.class.getName());
 
-	public static final String NAME = "Command Dashboard";
+	public static final String NAME = "dashboard";
 	public static final String ICON = "dashboard";
+    public static final String TITLE = "Command Dashboard";
 
 	private static final String DIPLOMATIC_TAB = "Diplomatic";
 
@@ -110,6 +113,39 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
 
+
+	private JTabbedPane tabPane;
+	/** Person Combo box */	
+	private JComboBoxMW<Person> personBox;
+	/** Settlement Combo box */
+	private JComboBox<Settlement> settlementBox;
+	/** Settlement Combo box */
+	private JComboBox<Building> buildingBox;
+	/** Number JSpinner */
+	private JSpinner areaSpinner;
+	
+	private ListModel listModel;
+	private JList<PendingTask> list;
+	private JTextArea logBookTA;
+
+	private JPanel policyMainPanel;
+	private JPanel tradingPartnersPanel;
+	
+	/** Check box for overriding EVA. */
+	private JCheckBox overrideDigLocalRegolithCB;
+	/** Check box for overriding EVA. */
+	private JCheckBox overrideDigLocalIceCB;
+	
+	private JScrollPane listScrollPanel;
+
+	private JRadioButton r0;
+	private JRadioButton r1;
+	private JRadioButton r2;
+	private JRadioButton r3;
+	private JRadioButton r4;
+
+	private JButton prefButton;
+	
 	private Map<Colony, Integer> popCaches = new HashMap<>();
 	private Map<Colony, Integer> bedCaches = new HashMap<>();
 	private Map<Colony, Integer> touristCaches = new HashMap<>();
@@ -145,36 +181,6 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, Double> researcherRateCaches = new HashMap<>();
 	private Map<Colony, Double> engineerRateCaches = new HashMap<>();
 	
-	private JTabbedPane tabPane;
-	/** Person Combo box */	
-	private JComboBoxMW<Person> personBox;
-	/** Settlement Combo box */
-	private JComboBox<Settlement> settlementBox;
-	/** Settlement Combo box */
-	private JComboBox<Building> buildingBox;
-	/** Number JSpinner */
-	private JSpinner areaSpinner;
-	
-	private ListModel listModel;
-	private JList<PendingTask> list;
-	private JTextArea logBookTA;
-
-	private JPanel policyMainPanel;
-
-	/** Check box for overriding EVA. */
-	private JCheckBox overrideDigLocalRegolithCB;
-	
-	/** Check box for overriding EVA. */
-	private JCheckBox overrideDigLocalIceCB;
-	
-	private JScrollPane listScrollPanel;
-
-	private JRadioButton r0;
-	private JRadioButton r1;
-	private JRadioButton r2;
-	private JRadioButton r3;
-	private JRadioButton r4;
-	
 	private Map<Colony, JLabel> popLabels = new HashMap<>();
 	private Map<Colony, JLabel> bedLabels = new HashMap<>();
 	private Map<Colony, JLabel> touristLabels = new HashMap<>();
@@ -200,6 +206,12 @@ public class CommanderWindow extends ToolWindow {
 	
 	private Map<Colony, JLabel> researchAreaLabels = new HashMap<>();
 	private Map<Colony, JLabel> developmentAreaLabels = new HashMap<>();
+
+	private Map<String, Settlement> tradingPartners;
+	
+	private List<Building> greenhouseBldgs;
+	
+	private List<Colony> colonyList;
 	
 	private Person cc;
 
@@ -210,13 +222,6 @@ public class CommanderWindow extends ToolWindow {
 	
 	private UnitManager unitManager;
 
-	private JPanel tradingPartnersPanel;
-	
-	private Map<String, Settlement> tradingPartners;
-	
-	private List<Building> greenhouseBldgs;
-	
-	private List<Colony> colonyList;
 	
 
 	/**
@@ -226,7 +231,7 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	public CommanderWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		this.masterClock = desktop.getSimulation().getMasterClock();
 		unitManager = desktop.getSimulation().getUnitManager();
@@ -374,7 +379,10 @@ public class CommanderWindow extends ToolWindow {
 			// Set the box opaque
 			settlementBox.setOpaque(false);
 
+			// Modify trading settlements in Mission Tab
 			setupTradingSettlements();
+			// Modify preference settlement in Mission Tab			
+			prefButton.setText("Open " + s.getName() + " Preference tab");
 		}
 	}
 
@@ -519,34 +527,7 @@ public class CommanderWindow extends ToolWindow {
 				AttributePanel rdGrid = new AttributePanel(5, 2);
 				popPanel.add(rdGrid, BorderLayout.CENTER);
 				rdGrid.setBorder(BorderFactory.createTitledBorder(" Research and Development"));
-				
-				double researchDemandCache = c.getResearchDemand();
-				researchDemandCaches.put(c, researchDemandCache);
-				String researchDemandCacheString = Math.round(researchDemandCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel researchDemandLabel = rdGrid.addRow("Research Demand", researchDemandCacheString + "");
-				researchDemandLabels.put(c, researchDemandLabel);
-				
-				double developmentDemandCache = c.getDevelopmentDemand();
-				developmentDemandCaches.put(c, developmentDemandCache);
-				String developmentDemandCacheString = Math.round(developmentDemandCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel developmentDemandLabel = rdGrid.addRow("Development Demand", developmentDemandCacheString + "");
-				developmentDemandLabels.put(c, developmentDemandLabel);
-				
-				double researchValueCache = c.getTotalResearchValue();
-				researchValueCaches.put(c, researchValueCache);
-				String researchValueCacheString = Math.round(researchValueCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel researchValueLabel = rdGrid.addRow("Research Values", researchValueCacheString + "");
-				researchValueLabels.put(c, researchValueLabel);
-				
-				double developmentValueCache = c.getTotalDevelopmentValue();
-				developmentValueCaches.put(c, developmentValueCache);
-				String developmentValueCacheString = Math.round(developmentValueCache * 100.0)/100.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel developmentValueLabel = rdGrid.addRow("Development Values", developmentValueCacheString + "");
-				developmentValueLabels.put(c, developmentValueLabel);
+	
 				
 				int numResearchCache = c.getNumResearchProjects();
 				numResearchCaches.put(c, numResearchCache);
@@ -560,20 +541,6 @@ public class CommanderWindow extends ToolWindow {
 				JLabel numDevelopmentLabel = rdGrid.addRow("# Development Proj", numDevelopmentCacheString + "");
 				numDevelopmentLabels.put(c, numDevelopmentLabel);
 				
-				double activenessResearchCache = c.getAverageResearchActiveness();
-				activenessResearchCaches.put(c, activenessResearchCache);
-				String activenessResearchCacheString = Math.round(activenessResearchCache * 10.0)/10.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel activenessResearchLabel = rdGrid.addRow("Research Activeness", activenessResearchCacheString + "");
-				activenessResearchLabels.put(c, activenessResearchLabel);
-				
-				double activenessDevelopmentCache = c.getAverageDevelopmentActiveness();
-				activenessDevelopmentCaches.put(c, activenessDevelopmentCache);
-				String activenessDevelopmentCacheString = Math.round(activenessDevelopmentCache * 10.0)/10.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
-				JLabel activenessDevelopmentLabel = rdGrid.addRow("Development Activeness", activenessDevelopmentCacheString + "");
-				activenessDevelopmentLabels.put(c, activenessDevelopmentLabel);
-			
 				double researchAreaCache = c.getResearchArea();
 				double researchAreaGrowthRateCache = c.getResearchAreaGrowthRate();
 				researchAreaCaches.put(c, researchAreaCache);
@@ -591,6 +558,48 @@ public class CommanderWindow extends ToolWindow {
 						+ " (" + Math.round(developmentAreaGrowthRateCache * 100.0)/100.0 + ")";
 				JLabel developmentAreaLabel = rdGrid.addRow("Development Facility Area", developmentAreaCacheString + "");
 				developmentAreaLabels.put(c, developmentAreaLabel);
+				
+				double activenessResearchCache = c.getAverageResearchActiveness();
+				activenessResearchCaches.put(c, activenessResearchCache);
+				String activenessResearchCacheString = Math.round(activenessResearchCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel activenessResearchLabel = rdGrid.addRow("Research Activeness", activenessResearchCacheString + "");
+				activenessResearchLabels.put(c, activenessResearchLabel);
+				
+				double activenessDevelopmentCache = c.getAverageDevelopmentActiveness();
+				activenessDevelopmentCaches.put(c, activenessDevelopmentCache);
+				String activenessDevelopmentCacheString = Math.round(activenessDevelopmentCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel activenessDevelopmentLabel = rdGrid.addRow("Development Activeness", activenessDevelopmentCacheString + "");
+				activenessDevelopmentLabels.put(c, activenessDevelopmentLabel);
+						
+				double researchDemandCache = c.getResearchDemand();
+				researchDemandCaches.put(c, researchDemandCache);
+				String researchDemandCacheString = Math.round(researchDemandCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel researchDemandLabel = rdGrid.addRow("Research Demand", researchDemandCacheString + "");
+				researchDemandLabels.put(c, researchDemandLabel);
+				
+				double developmentDemandCache = c.getDevelopmentDemand();
+				developmentDemandCaches.put(c, developmentDemandCache);
+				String developmentDemandCacheString = Math.round(developmentDemandCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel developmentDemandLabel = rdGrid.addRow("Development Demand", developmentDemandCacheString + "");
+				developmentDemandLabels.put(c, developmentDemandLabel);
+				
+				double researchValueCache = c.getTotalResearchValue();
+				researchValueCaches.put(c, researchValueCache);
+				String researchValueCacheString = Math.round(researchValueCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel researchValueLabel = rdGrid.addRow("Research Values", researchValueCacheString + "");
+				researchValueLabels.put(c, researchValueLabel);
+				
+				double developmentValueCache = c.getTotalDevelopmentValue();
+				developmentValueCaches.put(c, developmentValueCache);
+				String developmentValueCacheString = Math.round(developmentValueCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 100.0)/100.0 + ")";
+				JLabel developmentValueLabel = rdGrid.addRow("Development Values", developmentValueCacheString + "");
+				developmentValueLabels.put(c, developmentValueLabel);
 			}	
 		}
 	}
@@ -1136,8 +1145,29 @@ public class CommanderWindow extends ToolWindow {
 		r2.addActionListener(actionListener);
 		r3.addActionListener(actionListener);
 
+		JPanel prefPanel = new JPanel(new FlowLayout());
+		panel.add(prefPanel, BorderLayout.CENTER);
+		prefPanel.setBorder(BorderFactory.createTitledBorder("Preferences"));
+		prefPanel.setToolTipText("Modify your settlement preference");
+		
+		prefButton = new JButton();
+		prefPanel.add(prefButton);
+		prefButton.setText("Go to " + settlement.getName() + " Preference tab");
+		prefButton.addActionListener(e -> {
+			Settlement selected = (Settlement) settlementBox.getSelectedItem();
+			UnitWindow window = getDesktop().openUnitWindow(selected);
+			TabPanel tab = window.openTab(Msg.getString("TabPanelPreferences.title")); //$NON-NLS-1$
+			if (tab != null) {
+				logger.info(selected, "The Preference tab is opened.");
+			}
+			repaint();
+		});
+
 	}
 
+	/**
+	 * Sets up trading settlements.
+	 */
 	private void setupTradingSettlements() {
 		tradingPartnersPanel.removeAll();
 
@@ -1156,6 +1186,9 @@ public class CommanderWindow extends ToolWindow {
 		}
 	}
 
+	/**
+	 * Action Listener for trading mission policy.
+	 */
 	class PolicyRadioActionListener implements ActionListener {
 	    @Override
 	    public void actionPerformed(ActionEvent event) {
@@ -1180,6 +1213,9 @@ public class CommanderWindow extends ToolWindow {
 	    }
 	}
 
+	/**
+	 * Creates the resource panel.
+	 */
 	private void createResourcePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(RESOURCE_TAB, panel);

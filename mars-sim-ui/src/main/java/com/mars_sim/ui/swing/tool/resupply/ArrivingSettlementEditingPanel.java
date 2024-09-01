@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
@@ -29,6 +27,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -44,13 +43,13 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.SpringUtilities;
@@ -146,7 +145,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Create name title label.
 		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.settlementName"), //$NON-NLS-1$
-				JLabel.TRAILING);
+				SwingConstants.TRAILING);
 		// namePane.add(nameTitleLabel);
 		topSpring.add(nameTitleLabel);
 
@@ -164,7 +163,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Create template title label.
 		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.layoutTemplate"), //$NON-NLS-1$
-				JLabel.TRAILING);
+				SwingConstants.TRAILING);
 		// templatePane.add(templateTitleLabel);
 		topSpring.add(templateTitleLabel);
 
@@ -175,18 +174,14 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		if (settlement != null) {
 			templateCB.setSelectedItem(settlement.getTemplate());
 		}
-		templateCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				updateTemplateDependentFields((String) templateCB.getSelectedItem());
-			}
-		});
+		templateCB.addActionListener(e -> updateTemplateDependentFields((String) templateCB.getSelectedItem()));
 		
 		// templatePane.add(templateCB);
 		topSpring.add(templateCB);
 
 		// 2017-02-11 Create sponsor label.
 		JLabel sponsorTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.sponsoringAgency"), //$NON-NLS-1$
-				JLabel.TRAILING);
+				SwingConstants.TRAILING);
 		topSpring.add(sponsorTitleLabel);
 
 		// Create sponsor CB
@@ -266,12 +261,10 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		arrivalDateRB = new JRadioButton();
 		dateTypeRBGroup.add(arrivalDateRB);
 		arrivalDateRB.setSelected(true);
-		arrivalDateRB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
+		arrivalDateRB.addActionListener(e -> {
+				JRadioButton rb = (JRadioButton) e.getSource();
 				setEnableArrivalDatePane(rb.isSelected());
 				setEnableTimeUntilArrivalPane(!rb.isSelected());
-			}
 		});
 		arrivalDateSelectionPane.add(arrivalDateRB);
 
@@ -347,12 +340,10 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Create time until arrival radio button.
 		timeUntilArrivalRB = new JRadioButton();
 		dateTypeRBGroup.add(timeUntilArrivalRB);
-		timeUntilArrivalRB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
+		timeUntilArrivalRB.addActionListener(e -> {
+				JRadioButton rb = (JRadioButton) e.getSource();
 				setEnableTimeUntilArrivalPane(rb.isSelected());
 				setEnableArrivalDatePane(!rb.isSelected());
-			}
 		});
 		timeUntilArrivalPane.add(timeUntilArrivalRB);
 
@@ -382,22 +373,15 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Create landing location panel.
 		JPanel landingLocationPane = new JPanel(new SpringLayout());// new GridLayout(2, 5, 0, 10));
-		// landingLocationPane.setSize(300, 100);
-		// landingLocationPane.setMaximumSize(new Dimension(300, 100));
-		// landingLocationPane.setMinimumSize(new Dimension(300, 100));
+
 		landingLocationPane
 				.setBorder(new TitledBorder(Msg.getString("ArrivingSettlementEditingPanel.landingLocation"))); //$NON-NLS-1$
 
 		southPane.add(landingLocationPane);
 		southPane.add(emptyLabel);
 
-		// Create latitude panel.
-		// JPanel latitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		// landingLocationPane.add(latitudePane);
-
 		// Create latitude title label.
-		JLabel latitudeTitleLabel = new JLabel(Msg.getString("direction.latitude"), JLabel.TRAILING); //$NON-NLS-1$
-		// latitudePane.add(latitudeTitleLabel);
+		JLabel latitudeTitleLabel = new JLabel(Msg.getString("direction.latitude"), SwingConstants.TRAILING); //$NON-NLS-1$
 		landingLocationPane.add(latitudeTitleLabel);
 
 		// Create latitude text field.
@@ -414,8 +398,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		latitudeDirectionCB.addItem(deg + Msg.getString("direction.southShort")); //$NON-NLS-1$
 		if (settlement != null) {
 			String latString = settlement.getLandingLocation().getFormattedLatitudeString();
-			// System.out.println("ArrivingSettlementEditingPanel : latString is " +
-			// latString);
 			// Remove last two characters from formatted latitude string.
 			String cleanLatString = latString.substring(0, latString.length() - 3);
 			latitudeTF.setText(cleanLatString);
@@ -427,27 +409,15 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// latitudePane.add(latitudeDirectionCB);
 		landingLocationPane.add(latitudeDirectionCB);
 
-		// Create longitude panel.
-		// JPanel longitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		// landingLocationPane.add(longitudePane);
-
 		// Create longitude title label.
-		JLabel longitudeTitleLabel = new JLabel(Msg.getString("direction.longitude"), JLabel.TRAILING); //$NON-NLS-1$
-		// longitudePane.add(longitudeTitleLabel);
+		JLabel longitudeTitleLabel = new JLabel(Msg.getString("direction.longitude"), SwingConstants.TRAILING); //$NON-NLS-1$
+
 		landingLocationPane.add(longitudeTitleLabel);
-		// landingLocationPane.add(emptyLabel);
-		// landingLocationPane.add(emptyLabel);
 
 		// Create longitude text field.
 		longitudeTF = new JTextField(4);
 		longitudeTitleLabel.setLabelFor(longitudeTF);
-//		if (settlement != null) {
-//			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
-//			System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
-//			// Remove last three characters from formatted longitude string.
-//			String cleanLonString = lonString.substring(0, lonString.length() - 3);
-//			longitudeTF.setText(cleanLonString);
-//		}
+
 
 		longitudeTF.setHorizontalAlignment(JTextField.RIGHT);
 		// longitudePane.add(longitudeTF);
@@ -459,8 +429,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.eastShort")); //$NON-NLS-1$
 		if (settlement != null) {
 			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
-			// System.out.println("ArrivingSettlementEditingPanel : lonString is " +
-			// lonString);
 			// Remove last three characters from formatted longitude string.
 			String cleanLonString = lonString.substring(0, lonString.length() - 3);
 			longitudeTF.setText(cleanLonString);
@@ -468,10 +436,8 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			String dirString = lonString.substring(lonString.length() - 1, lonString.length());
 			longitudeDirectionCB.setSelectedItem(dirString);
 		}
-		// longitudePane.add(longitudeDirectionCB);
+
 		landingLocationPane.add(longitudeDirectionCB);
-		// landingLocationPane.add(emptyLabel);
-		// landingLocationPane.add(emptyLabel);
 
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(landingLocationPane, 2, 3, // rows, cols
@@ -490,7 +456,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Set the components of the arrival date pane to be enabled or disabled.
+	 * Sets the components of the arrival date pane to be enabled or disabled.
 	 * 
 	 * @param enable true if enable components, false if disable components.
 	 */
@@ -505,7 +471,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Set the components of the time until arrival pane to be enabled or disabled.
+	 * Sets the components of the time until arrival pane to be enabled or disabled.
 	 * 
 	 * @param enable true if enable components, false if disable components.
 	 */

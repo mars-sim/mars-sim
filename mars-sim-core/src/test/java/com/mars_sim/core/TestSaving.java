@@ -64,7 +64,7 @@ public class TestSaving extends TestCase implements SimulationListener {
 
 
         Person laterP = sim.getUnitManager().getPersonByID(p.getIdentifier());
-        assertEquals("Has complaint", complaint, laterP.getPhysicalCondition().getMostSerious());
+        assertEquals("Has complaint", complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint());
     }
 
     @Override

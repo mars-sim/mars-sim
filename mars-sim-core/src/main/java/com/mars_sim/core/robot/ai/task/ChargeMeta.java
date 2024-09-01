@@ -11,8 +11,8 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the Charge task.

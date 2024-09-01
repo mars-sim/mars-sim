@@ -22,9 +22,9 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The CollectResources class is a task for collecting resources at a site with
@@ -130,10 +130,11 @@ public class CollectResources extends EVAOperation {
 				Container container = person.findContainer(containerType, false, resourceType); 
 				if (container != null) {
 					boolean done = container.transfer(rover);
-					if (done)
-						logger.info(person, 0, "Returned an extra " + containerType.getName().toLowerCase() + " from person back to rover.");
+					if (done) {
+//						logger.info(person, 5000, "Returned an extra " + containerType.getName().toLowerCase() + " from person back to rover.");
+					}
 					else
-						logger.warning(person, 0, "Unable to transfer a " + containerType.getName().toLowerCase() + " from person back to rover.");
+						logger.warning(person, 5000, "Unable to transfer a " + containerType.getName().toLowerCase() + " from person back to rover.");
 				}	
 			}
 		}
@@ -155,7 +156,7 @@ public class CollectResources extends EVAOperation {
 		
 		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) 
 				* (.5 * (eva + prospecting) + .2) ;
-		logger.info(person, 20_000, mission.getName() +  " collection rate: " + Math.round(compositeRate * 10.0)/10.0);
+		logger.info(person, 5000, mission.getName() +  " - Collection rate: " + Math.round(compositeRate * 10.0)/10.0);
 	}
 	
 	/**
@@ -199,10 +200,10 @@ public class CollectResources extends EVAOperation {
 		if (container != null) {
 			boolean success = container.transfer(person);
 			if (success) {
-				logger.info(person, 5000, "Getting hold of a " + containerType.getName().toLowerCase() + " from rover.");
+//				logger.info(person, 5000, "Getting hold of a " + containerType.getName().toLowerCase() + " from rover.");
 			}
 			else 
-				logger.warning(person, "Unable to transfer a " + containerType.getName().toLowerCase() + " from rover to person.");
+				logger.warning(person, 5000, "Unable to transfer a " + containerType.getName().toLowerCase() + " from rover to person.");
 			return success;
 		} 
 		else
@@ -289,7 +290,7 @@ public class CollectResources extends EVAOperation {
 			checkLocation("Samples collected exceeded set limits.");
 		}
 		
-//		logger.info(person, 30_000, "sampleLimit: " + Math.round(sampleLimit * 100.0)/100.0
+//		logger.info(person, 5000, "sampleLimit: " + Math.round(sampleLimit * 100.0)/100.0
 //				+ "  samplesCollected: " + Math.round(samplesCollected * 100.0)/100.0
 //				+ "  collectedAtThisSite: " + Math.round(collectedAtThisSite * 100.0)/100.0 
 //				+ "  targettedAmount: " + Math.round(targettedAmount * 100.0)/100.0
@@ -420,14 +421,14 @@ public class CollectResources extends EVAOperation {
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done) {
-						logger.info(person, 0, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
+//						logger.info(person, 5000, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
 						double amount = container.getAmountResourceStored(resourceType);
 						if (amount > 0) {
 							unloadContainer(container, amount, getTimeCompleted());
 						}
 					}
 					else
-						logger.warning(person, "Unable to transfer a " + containerType.getName().toLowerCase()  + " from person back to rover.");
+						logger.warning(person, 5000, "Unable to transfer a " + containerType.getName().toLowerCase()  + " from person back to rover.");
 				}	
 			}
 		}

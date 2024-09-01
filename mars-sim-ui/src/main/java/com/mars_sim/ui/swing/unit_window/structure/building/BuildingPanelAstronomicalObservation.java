@@ -8,15 +8,13 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
@@ -31,7 +29,9 @@ extends BuildingFunctionPanel {
 	
 	private static final String TELESCOPE_ICON = "astro";
 
-	// Data members
+	// Data members	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int currentObserversAmount;
 
 	private JLabel observersLabel;
@@ -86,18 +86,16 @@ extends BuildingFunctionPanel {
 		starMap.setIcon(ImageLoader.getIconByName(OrbitViewer.ICON));
 		starMap.setToolTipText("Open the Orbit Viewer");
 
-		starMap.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					getDesktop().openToolWindow(OrbitViewer.NAME);
-				}
-			});
+		starMap.addActionListener(e -> getDesktop().openToolWindow(OrbitViewer.NAME));
 		buttonPane.add(starMap);
 		center.add(buttonPane, BorderLayout.CENTER);
 	}
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		if (currentObserversAmount != function.getObserverNum()) {
 			currentObserversAmount = function.getObserverNum();
 			observersLabel.setText(Integer.toString(currentObserversAmount));

@@ -1,13 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * DustStormType.java
- * @version 3.2.0 2021-06-20
+natural attributes.
  * @author Manny Kung
  */
 
 package com.mars_sim.core.environment;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum DustStormType {
 

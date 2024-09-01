@@ -13,7 +13,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.function.HouseKeeping;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The TendFishTank class is a task for tending the fishery in a
@@ -91,6 +91,9 @@ public abstract class TendHousekeeping extends Task {
 		
 		if (completedTime > MAX_INSPECT_TIME) {
 			keeping.inspected(goal, completedTime);
+			
+			logger.info(worker, 60_000, Msg.getString("Task.description.tendHousekeeping.inspect.detail", 
+					goal) + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
 			endTask();
 		}
 			
@@ -105,7 +108,7 @@ public abstract class TendHousekeeping extends Task {
 	 */
 	protected void updateDescription(String text) {
 		setDescription(text);
-		logger.fine(worker, 30_000L, text);
+		logger.info(worker, 60_000, text + ".");
 	}
 	
 	/**
@@ -131,6 +134,9 @@ public abstract class TendHousekeeping extends Task {
 		
 		if (completedTime > MAX_CLEANING_TIME) {
 			keeping.cleaned(goal, completedTime);
+			
+			logger.info(worker, 60_000, Msg.getString("Task.description.tendHousekeeping.clean.detail", 
+					goal) + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
 			endTask();
 		}
 			

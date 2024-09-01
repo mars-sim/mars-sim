@@ -20,9 +20,9 @@ import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A task for the EVA operation of exploring a site.
@@ -46,8 +46,8 @@ public class ExploreSite extends EVAOperation {
 	/** The average labor time it takes to find the resource. */
 	public static final double LABOR_TIME = 50D;
 
-	private static final double AVERAGE_ROCK_COLLECTED_SITE = 80 + RandomUtil.getRandomDouble(-20, 20);
-	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-3, 5);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 200 + RandomUtil.getRandomDouble(-20, 20);
+	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-3, 3);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
@@ -56,7 +56,7 @@ public class ExploreSite extends EVAOperation {
 	private int rockId = -1;
     
     private double totalCollected = 0;
-	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
+	private double rocksToBeCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	
 	private Exploration mission;
 	private ExploredLocation site;
@@ -81,9 +81,18 @@ public class ExploreSite extends EVAOperation {
 		this.rover = rover;
 		this.mission = mission;
 
+		if (site == null) {
+			logger.severe(person, 5_000, "Site not available.");
+			endTask();
+		}
+		
 		// Determine location for field work.
 		setRandomOutsideLocation(rover);
 
+		// Box is empty so choose a rock type at random
+		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
+		rockId = ResourceUtil.rockIDs[randomNum];
+	
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {
 			boolean hasBox = takeSpecimenContainer();
@@ -91,8 +100,12 @@ public class ExploreSite extends EVAOperation {
 			if (!hasBox) {
 				// If specimen containers are not available, end task.
 				logger.log(person, Level.WARNING, 5_000,
-						"No more specimen box for collecting rock samples.");
+						"No more specimen box for collecting rocks.");
 				endTask();
+			}
+			else {
+				logger.info(person, 5_000, "Expected to collect " 
+						+ Math.round(rocksToBeCollected * 10.0)/10.0 + " kg rocks.");
 			}
 		}		
 	}
@@ -162,14 +175,19 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
+		if (site == null) {
+			logger.severe(person, 5_000, "Site unavailable.");
+			endTask();
+		}
+		
 		if (checkReadiness(time) > 0)
 			return time;
 
 		// Add to the cumulative combined site time
 		((Exploration)person.getMission()).addSiteTime(time);
 		
-		if (totalCollected >= AVERAGE_ROCK_COLLECTED_SITE) {
-			checkLocation("Rock samples collected exceeded set average.");
+		if (totalCollected > AVERAGE_ROCK_COLLECTED_SITE) {
+			checkLocation("Rocks collected exceeded set average.");
 			return time;
 		}
 
@@ -183,7 +201,7 @@ public class ExploreSite extends EVAOperation {
 			// Collect rocks.
 			collectRocks(time);
 		}
-		else {
+		else if (site != null){
 			site.improveCertainty(skill);
 			
 			// Checks if the site has been claimed
@@ -211,10 +229,11 @@ public class ExploreSite extends EVAOperation {
 	 * @throws Exception if error collecting rock samples.
 	 */
 	private void collectRocks(double time) {
+		
 		if (hasSpecimenContainer()) {
-			
-			double siteTime = ((Exploration)person.getMission()).getSiteTime();
-			double chance = numSamplesCollected * siteTime / 8000.0;
+
+//			double siteTime = ((Exploration)person.getMission()).getSiteTime();
+			double chance = rocksToBeCollected / 250;
 			
 			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
 			if (probability > .9)
@@ -222,18 +241,11 @@ public class ExploreSite extends EVAOperation {
 			logger.info(person, 10_000, "Collecting rock probability: " + Math.round(probability * 100.0)/100.0);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-				
-				if (rockId == -1) {
-					// Box is empty so choose a rock type at random
-					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-					rockId = ResourceUtil.rockIDs[randomNum];
-					// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
-				}
-				
+			
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 				
 				if (box != null) {
-					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
+					double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
 					double cap = box.getAmountResourceRemainingCapacity(rockId);
 					if (mass <= cap) {
 						double excess = box.storeAmountResource(rockId, mass);
@@ -241,7 +253,7 @@ public class ExploreSite extends EVAOperation {
 						double collected = mass - excess;
 						totalCollected += collected;
 						logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
-								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + ".");
+								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 					}
 					else {
 						//mass = cap;
@@ -347,7 +359,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private boolean takeSpecimenContainer() {
 		
-		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, true, rockId);
 		if (container != null) {
 			return container.transfer(person);
 		}
@@ -363,6 +375,15 @@ public class ExploreSite extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
+		
+		// Remove pressure suit and put on garment
+		if (person.unwearPressureSuit(rover)) {
+			person.wearGarment(rover);
+		}
+	
+		// Assign thermal bottle
+		person.assignThermalBottle();
+				
 		super.clearDown();
 	}
 }

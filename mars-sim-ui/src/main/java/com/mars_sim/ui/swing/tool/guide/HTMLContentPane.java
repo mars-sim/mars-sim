@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The HTMLContentPane class provides an HTML pane for displaying the help files

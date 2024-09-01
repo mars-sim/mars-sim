@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleMission.java
- * @date 2022-09-10
+ * @date 2024-08-01
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
@@ -25,7 +25,7 @@ public interface VehicleMission extends Mission {
 	 * 
 	 * @return distance (km)
 	 */
-    double getDistanceProposed();
+    double getTotalDistanceProposed();
     
     /**
 	 * Gets the actual total distance traveled during the mission so far.
@@ -43,6 +43,11 @@ public interface VehicleMission extends Mission {
      * Gets the remaining distance for the current travel leg.
      */
     double getDistanceCurrentLegRemaining();
+
+    /**
+     * Gets the remaining distance for the current travel leg.
+     */
+    double getDistanceCurrentLegTravelled();
 
     /**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.

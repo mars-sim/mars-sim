@@ -44,6 +44,7 @@ public class DroneDisplayInfoBean extends VehicleDisplayInfoBean {
 
     /**
      * Gets a sound appropriate for this unit.
+     * 
      * @param unit the unit to display.
      * @return sound filepath for unit or empty string if none.
      */

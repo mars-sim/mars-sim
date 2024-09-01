@@ -4,11 +4,11 @@ package com.mars_sim.core.vehicle.task;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 public class UnloadHelperTest extends AbstractMarsSimUnitTest{
     public void testReleaseTowedVehicle() {

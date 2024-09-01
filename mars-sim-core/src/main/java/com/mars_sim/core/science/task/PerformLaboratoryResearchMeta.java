@@ -24,7 +24,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for the PerformLaboratoryResearch task.
@@ -66,7 +66,7 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
     @Override
 	public List<TaskJob> getTaskJobs(Person person) {
 
-        ScientificStudy primaryStudy = person.getStudy();
+        ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
         if ((primaryStudy == null) || !person.isInSettlement()
             || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
         	return EMPTY_TASKLIST;
@@ -80,7 +80,7 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
         }
 
 	    // Add probability for each study researcher is collaborating on.
-	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
+	    for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
             if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
                     && !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);

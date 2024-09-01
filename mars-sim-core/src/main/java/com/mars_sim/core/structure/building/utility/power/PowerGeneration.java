@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGeneration.java
- * @date 2024-06-28
+ * @date 2024-08-03
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -69,11 +69,11 @@ public class PowerGeneration extends Function {
 					break;
 					
 				case SOLAR_POWER:
-					powerSource = new SolarPowerSource(power);
+					powerSource = new SolarPowerSource(building, power);
 					break;
 					
 				case SOLAR_THERMAL:
-					powerSource = new SolarThermalPowerSource(power);
+					powerSource = new SolarThermalPowerSource(building, power);
 					break;
 					
 				case FUEL_POWER:
@@ -83,7 +83,7 @@ public class PowerGeneration extends Function {
 					break;
 					
 				case WIND_POWER:
-					powerSource = new WindPowerSource(power);				
+					powerSource = new WindPowerSource(building, power);				
 					break;
 					
 				case AREOTHERMAL_POWER:

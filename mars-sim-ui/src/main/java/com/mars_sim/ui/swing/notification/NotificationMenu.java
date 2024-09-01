@@ -25,7 +25,7 @@ import javax.swing.JSeparator;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.MainWindowMenu;
 
@@ -157,11 +157,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		p.setOpaque(false);
 		p.add(b);
 		p.add(l);
-			b.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent evt) {
-		    	isSetQueueToEmpty = true;
-		    }
-		});
+			b.addActionListener(e -> isSetQueueToEmpty = true);
 		
 		notificationMenu.add(p);
 		

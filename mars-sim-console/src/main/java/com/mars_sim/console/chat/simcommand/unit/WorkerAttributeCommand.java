@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WorkerAttributeCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -18,7 +18,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 
 /** 
- * 
+ * A command that display the natural attributes of a worker.s
  */
 public class WorkerAttributeCommand extends AbstractUnitCommand {
 	
@@ -27,7 +27,7 @@ public class WorkerAttributeCommand extends AbstractUnitCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the unit.
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Unit target) {
@@ -38,7 +38,7 @@ public class WorkerAttributeCommand extends AbstractUnitCommand {
 			nManager = ((Worker)target).getNaturalAttributeManager();
 		}
 		else {
-			context.println("Sorry I doing have any Attributes");
+			context.println("Sorry I doing have any natural attributes.");
 			return false;
 		}
 

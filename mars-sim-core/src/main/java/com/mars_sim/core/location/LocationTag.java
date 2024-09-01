@@ -13,17 +13,16 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * The LocationTag class stores the location information of an object.
- *
  */
 public class LocationTag implements LocationState, Serializable {
 
@@ -367,8 +366,11 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public Settlement findSettlementVicinity() {
 		
-		if (unit instanceof Person && ((Person) unit).isBuried())
-			return ((Person) unit).getBuriedSettlement();
+		if (unit instanceof Person p && p.isBuried())
+			return p.getBuriedSettlement();
+		
+		if (unit instanceof Vehicle v && v.getSettlement() != null)
+			return v.getSettlement();
 		
 		Coordinates c = unit.getCoordinates();
 
@@ -406,7 +408,7 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/**
-	 * Checks if an unit is in the vicinity of a settlement
+	 * Checks if an unit is in the vicinity of a settlement.
 	 *
 	 * @return true if it is
 	 */
@@ -426,7 +428,7 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/*
-	 * Gets the unit's location state type
+	 * Gets the unit's location state type.
 	 */
 	public LocationStateType getType() {
 		return unit.getLocationStateType();
@@ -435,7 +437,6 @@ public class LocationTag implements LocationState, Serializable {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

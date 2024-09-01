@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * This static class provides methods to render a RatingScore.

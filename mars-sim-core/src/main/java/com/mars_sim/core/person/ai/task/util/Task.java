@@ -25,6 +25,8 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -49,10 +51,8 @@ import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Task class is an abstract parent class for tasks that allow people to do
@@ -75,7 +75,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The standard stress effect of a task within a person's job. */
 	private static final double SKILL_STRESS_MODIFIER = .1D;
     /** The standard amount of millisols to be consumed in a phase. */
-	public static double standardPulseTime;
+	private static double standardPulseTime = MAX_PULSE_WIDTH;
 
 	// Data members
 	/** True if task is finished. */
@@ -1441,8 +1441,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return false;
 	}
 	
-
-	
 	/**
 	 * Sets the standard pulse time.
 	 * 
@@ -1518,7 +1516,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		masterClock = s.getMasterClock();
 				
 		// Set standard pulse time to a quarter of the value of the current pulse width
-		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime());
+		setStandardPulseTime(Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime()));
 		
 		eventManager = s.getEventManager();
 		unitManager = s.getUnitManager();

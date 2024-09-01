@@ -17,8 +17,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * This class represents a medical station. It provides a number of treatments

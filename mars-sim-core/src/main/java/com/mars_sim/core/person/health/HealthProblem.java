@@ -8,13 +8,13 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.time.MarsTime;
 
 /**
  * This class represents a Health problem being suffered by a Person. The class
@@ -29,19 +29,19 @@ public class HealthProblem implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(HealthProblem.class.getName());
 
 	private HealthProblemState state; // State of problem
+	private MarsTime started;
 
 	private double timePassed; // Current time of state
 	private double duration; // Length of the current state
 
 	private boolean requiresBedRest; // Does recovery require bed rest?
 
-	private ComplaintType type;
 	private Person sufferer; // Person
 	private MedicalAid usedAid; // Any aid being used
 
-	private transient Complaint complaint;
-	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
-	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
+	private ComplaintReference complaint;
+	private static HistoricalEventManager eventManager;
+	
 	
 	/**
 	 * Constructor. Creates a new Health Problem that relates to a single Physical Condition
@@ -52,12 +52,12 @@ public class HealthProblem implements Serializable {
 	 * @param person    The person whose physical condition being effected.
 	 */
 	public HealthProblem(ComplaintType complaintType, Person person) {
-		type = complaintType;
 		sufferer = person;
 		timePassed = 0D;
 		state = HealthProblemState.DEGRADING;
-		complaint = medicalManager.getComplaintByName(complaintType);
-		duration = complaint.getDegradePeriod();
+		complaint = new ComplaintReference(complaintType);
+		duration = getComplaint().getDegradePeriod();
+		started = eventManager.getClock().getMarsTime();
 		usedAid = null;
 		requiresBedRest = false;
 
@@ -75,8 +75,10 @@ public class HealthProblem implements Serializable {
 	 */
 	public void setState(HealthProblemState newState) {
 		state = newState;
-		sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, medicalManager.getComplaintByName(type));
-		logger.fine(getSufferer(), "Problem " + type.getName() + " now " + newState);
+
+		var c = getComplaint();
+		sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, c);
+		logger.fine(getSufferer(), "Problem " + c.getName() + " now " + newState);
 	}
 
 	/**
@@ -108,10 +110,7 @@ public class HealthProblem implements Serializable {
 	 * @return Complaint.
 	 */
 	public Complaint getComplaint() {
-		if (complaint == null) {
-			complaint = medicalManager.getComplaintByName(type);
-		}
-		return complaint;
+		return complaint.getComplaint();
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class HealthProblem implements Serializable {
 	 * @return Complaint Type.
 	 */
 	public ComplaintType getType() {
-		return type;
+		return complaint.getType();
 	}
 	
 	/**
@@ -137,7 +136,7 @@ public class HealthProblem implements Serializable {
 	public double getPerformanceFactor() {
 		if (usedAid != null)
 			return 0D;
-		return medicalManager.getComplaintByName(type).getPerformanceFactor();
+		return getComplaint().getPerformanceFactor();
 	}
 
 	/**
@@ -188,7 +187,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		eventManager.registerNewEvent(treatedEvent);
 
-		logger.info(getSufferer(), "Began to receive treatment for " + type + ".");
+		logger.info(getSufferer(), "Began to receive treatment for " + getComplaint().getName() + ".");
 	}
 
 	/**
@@ -308,14 +307,15 @@ public class HealthProblem implements Serializable {
 					usedAid = null;
 				}
 
+				var name = getComplaint().getName();
 				if (nextPhase == null) {
 					logger.info(sufferer, "Suffered from '" 
-								+ type.toString() + "' too long and was dead.");
+								+ name + "' too long and was dead.");
 					setState(HealthProblemState.DEAD);
 					condition.recordDead(this, false, "My suffering is over. Good bye!");
 				} else {
 					logger.info(sufferer, "Suffered from '" 
-							+ type.toString() + "', which was just degraded to " + nextPhase + ".");
+							+ name + "', which was just degraded to " + nextPhase + ".");
 					result = nextPhase;
 				}
 			}
@@ -325,6 +325,15 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
+	 * Convert this problem into a cured report
+	 * @param now
+	 * @return
+	 */
+	public CuredProblem toCured(MarsTime now) {
+		return new CuredProblem(started, now, complaint);
+	}
+	
+	/**
 	 * This method generates a string representation of this problem. It contains
 	 * the illness and the health rating.
 	 * 
@@ -333,7 +342,7 @@ public class HealthProblem implements Serializable {
 	@Override
 	public String toString() {
 		return "Sufferer=" + getSufferer().getName()
-				+ " Problem=" + type
+				+ " Problem=" + getComplaint().getName()
 				+ " State=" + state;
 	}
 	
@@ -344,7 +353,7 @@ public class HealthProblem implements Serializable {
 	 * @param h {@link HistoricalEventManager}
 	 */
 	public static void initializeInstances(MedicalManager m, HistoricalEventManager h) {
-		medicalManager = m;
+		ComplaintReference.initializeInstances(m);
 		eventManager = h;
 	}
 

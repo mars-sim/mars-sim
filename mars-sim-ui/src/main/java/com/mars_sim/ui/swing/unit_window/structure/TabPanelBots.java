@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
@@ -86,7 +86,7 @@ public class TabPanelBots extends TabPanel {
 		robotList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {
 			@Override
 			protected Collection<Robot> getData() {
-				return settlement.getRobots();
+				return settlement.getAllAssociatedRobots();
 			}			
 		};
 		addBorder(robotList, "Robots");

@@ -21,9 +21,9 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A task for proposing a new scientific study.
@@ -51,7 +51,7 @@ public class ProposeScientificStudy extends Task {
 	 * @return
 	 */
 	static Task createTask(Person p) {
-		var study = p.getStudy();
+		var study = p.getResearchStudy().getStudy();
 		if (study == null) {		
 			// Create new scientific study.
 			study = createStudy(p);

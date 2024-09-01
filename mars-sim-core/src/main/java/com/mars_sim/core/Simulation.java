@@ -62,7 +62,6 @@ import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -86,7 +85,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.SystemDateTime;
 import com.mars_sim.core.tool.CheckSerializedSize;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
@@ -292,7 +291,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager();
+		lunarColonyManager = new LunarColonyManager(lunarWorld);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -326,7 +325,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager();
+		lunarColonyManager = new LunarColonyManager(lunarWorld);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -361,8 +360,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		medicalManager = new MedicalManager();
 		MedicalManager.initializeInstances(mc);
-		PhysicalCondition.initializeInstances(masterClock, medicalManager,
-								simulationConfig.getPersonConfig());
 
 		malfunctionFactory = new MalfunctionFactory();
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
@@ -386,6 +383,10 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceProcess.initializeInstances(masterClock);
 
 		eventManager = new HistoricalEventManager(masterClock);
+		PhysicalCondition.initializeInstances(masterClock, medicalManager,
+							simulationConfig.getPersonConfig(), eventManager);
+
+
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
 
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
@@ -427,7 +428,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager();
+		lunarColonyManager = new LunarColonyManager(lunarWorld);
 	
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -473,7 +474,8 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
-										simulationConfig.getPersonConfig());
+										simulationConfig.getPersonConfig(), eventManager);
+
 
 		scientificStudyManager = new ScientificStudyManager(masterClock);
 		// Re-initialize ScientificStudy
@@ -597,11 +599,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		transportManager.reinitalizeInstances(this);
 	
-		
-		// Re-initialize OuterSpace instance
-		OuterSpace outerSpace = unitManager.getOuterSpace();
-		// Re-initialize OuterSpace instance
-		Moon moon = unitManager.getMoon();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 		
@@ -610,7 +607,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
-								simulationConfig.getPersonConfig());
+								simulationConfig.getPersonConfig(), eventManager);
 		
 		// Re-nitialize ScientificStudy
 		ScientificStudy.initializeInstances(masterClock, simulationConfig.getScienceConfig());
@@ -682,8 +679,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Rediscover the MissionControls
 		AuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
-			
-		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
@@ -1419,10 +1414,8 @@ public class Simulation implements ClockListener, Serializable {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
-			// Will call each nation's timePassing(pulse) once per pulse
-			
-			lunarWorld.timePassing(pulse);
-			
+			// Future: Will call each nation's timePassing(pulse) once per pulse
+		
 			lunarColonyManager.timePassing(pulse);
 			
 			orbitInfo.timePassing(pulse);

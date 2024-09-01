@@ -581,12 +581,6 @@
 			<output resource="nickel" rate="5.0" />
 	</process>
 
-	<process name="Do Taenite smelting" power-required="1.3" >
-			<input resource="taenite" rate="50.0" />
-			
-			<output resource="iron powder" rate="20.0" />
-			<output resource="nickel" rate="30.0" />
-	</process>
 
 	<process name="Do Chalcopyrite smelting" power-required="1.3" >
 			<input resource="chalcopyrite" rate="50.0" />
@@ -606,6 +600,29 @@
 			<output resource="brine water" rate="4.1" />
 	</process>
 	
+	<process name="Do Pyroxene smelting" power-required="1.3" >
+			<input resource="pyroxene" rate="50.0" />
+		
+			<output resource="calcium" rate="2" />	
+			<output resource="sodium" rate="2" />
+			<output resource="iron powder" rate="2" />	
+			<output resource="magnesium" rate="2" />
+
+			<output resource="Chromium" rate="2" />
+			<output resource="Lithium" rate="2" />	
+			<output resource="Manganese" rate="2" />	
+					
+			<output resource="titanium" rate="2" />	
+			<output resource="zinc" rate="2" />
+			<output resource="scandium" rate="2" />	
+			<output resource="vanadium" rate="2" />	
+			
+			<output resource="aluminum" rate="2" />		
+			<output resource="silicon" rate="4" />				
+			
+			<output resource="oxygen" rate="22" />
+	</process>
+	
 	<process name="Do Sylvite smelting" power-required="1.3" >
 			<input resource="sylvite" rate="50.0" />
 			
@@ -613,6 +630,14 @@
 			<output resource="chlorine" rate="23.8" />
 	</process>
 
+
+	<process name="Do Taenite smelting" power-required="1.3" >
+			<input resource="taenite" rate="50.0" />
+			
+			<output resource="iron powder" rate="20.0" />
+			<output resource="nickel" rate="30.0" />
+	</process>
+	
 	<process name="Extract minerals from Basaltic deposits" power-required="0.1" >
 		<description>
 			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
@@ -990,10 +1015,10 @@
 			
 			Overall reaction can be represented as:
 			
-			1. Ethylene production
+			1. Ethylene production: 
 			CH3OH  → C2H4 + 4H2O 
 			(need to balance it)
-			2. Propylene production
+			2. Propylene production: 
 			CH3OH → 2C3H6 + 6H2O 
 			(need to balance it)
 						
@@ -1035,10 +1060,6 @@
 	system (FOST) as well as Synthetic Biological Membrane (SBM)
 	developed at NASA Ames.
 
-	We assume a waste processor capable of daily processsing
-	40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
-	water and 2 kg of solid waste. Note that .5 kg of water is lost
-	through evaporation.
 	-->
 	<!-- Grey Water Recycling process for cleaning grey water. -->
 	<process name="Grey Water Processor" power-required=".32" >
@@ -1061,8 +1082,13 @@
 		<!-- rate: the rate (kg/sol) the resource is produced -->
 		<!-- ambient: true if resource is vented outside -->
 		<!--          false if kept by settlement's inventory. -->
-		<output resource="water" rate="38" />
-		<output resource="solid waste" rate="2" />
+		<output resource="nitrogen" rate=".2" />
+		<output resource="nitrite" rate=".2" />
+		<output resource="nitrate" rate=".2" />
+		<output resource="ammonia" rate=".2" />
+		<output resource="phosphorus" rate=".2" />
+		<output resource="water" rate="39" />
+
 	</process>
 
 	<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
@@ -1089,17 +1115,13 @@
 		<!-- Residual requirement for using chlorine in water treatment
 				is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
 				requires 20 mg of Cl gas -->
-		<input resource="chlorine" rate=".00002" />
+		<input resource="chlorine" rate=".00001" />
 		<input resource="nitrospira spp" rate="0.02" />
 		<input resource="nitrosomonas spp" rate="0.02" />
 
-		<output resource="grey water" rate="3.5" />
-		<output resource="water" rate="5" />
+		<output resource="grey water" rate="7" />
+		<output resource="solid waste" rate="2" />
 		<output resource="toxic waste" rate="1" />
-		<output resource="nitrogen" rate=".25" />
-		<output resource="nitrite" rate=".5" />
-		<output resource="nitrate" rate=".5" />
-		<output resource="phosphorus" rate=".25" />
 	</process>
 
 	<!-- For Waste Management

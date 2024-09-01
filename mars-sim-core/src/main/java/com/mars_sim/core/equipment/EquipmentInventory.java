@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -148,6 +150,15 @@ public class EquipmentInventory
 		return Collections.unmodifiableSet(containerSet);
 	}
 
+	/**
+	 * Gets the container set.
+	 *
+	 * @return
+	 */
+	public Set<Equipment> getContainerCopySet() {
+		return Set.copyOf(containerSet);
+	}
+	
 	/**
 	 * Gets the EVA suit set.
 	 * 
@@ -299,7 +310,7 @@ public class EquipmentInventory
 	 *
 	 * @param resource
 	 * @param quantity
-	 * @return quantity that cannot be retrieved
+	 * @return shortfall quantity that cannot be retrieved
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
@@ -456,6 +467,26 @@ public class EquipmentInventory
 								.count();
 	}
 
+	/**
+	 * Finds the number of empty containers (from a copy set of containers) of a particular equipment type.
+	 * Note: this method is experimental 
+	 * 
+	 * @param containerType
+	 * @param brandNew
+	 * @return
+	 */
+	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		Set<Equipment> copy = new HashSet<>();
+		for (Equipment e : containerSet) {
+			// Use org.apache.commons.lang3.SerializationUtils to do a deep copy of containerSet's elements
+		    copy.add(SerializationUtils.clone(e));
+		}
+		
+		return (int) copy.stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+								.count();
+	}
+	
+	
 	/**
 	 * Finds the number of containers of a particular type.
 	 *

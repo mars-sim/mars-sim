@@ -23,6 +23,8 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.Construction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -45,15 +47,13 @@ import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.structure.construction.ConstructionValues;
 import com.mars_sim.core.structure.construction.ConstructionVehicleType;
 import com.mars_sim.core.structure.task.DigLocalRegolith;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Mission for construction a stage for a settlement building. TODO externalize
@@ -981,7 +981,7 @@ public class ConstructionMission extends AbstractMission
 			Vehicle vehicleTarget = null;
 			Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
 			if (vehicle != null) {
-				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
+				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
 				if (vehicleTarget != null) {
 					if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
 						result = true;

@@ -24,6 +24,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
@@ -40,7 +41,7 @@ import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.structure.construction.ConstructionVehicleType;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -110,7 +111,7 @@ implements ConstructionListener {
         // Add tooltip.
         processPanel.setToolTipText(getToolTipString());
         
-        JLabel progressLabel = new JLabel("Site Completion", JLabel.CENTER);
+        JLabel progressLabel = new JLabel("Site Completion", SwingConstants.CENTER);
         processPanel.add(progressLabel);
         
         JProgressBar progressBar = new JProgressBar();

@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.ui.swing.tool.NumberRenderer;
+import com.mars_sim.ui.swing.NumberCellRenderer;
 
 /**
  * This class represents an inventory of food at settlements displayed within
@@ -19,7 +19,9 @@ import com.mars_sim.ui.swing.tool.NumberRenderer;
 public class FoodInventoryTab extends TableTab {
 
 	private static final String FOOD_ICON = "food";
-
+	
+	private NumberCellRenderer currency = new NumberCellRenderer(2, "$ ");
+	
 	/**
 	 * constructor.
 	 *
@@ -35,7 +37,7 @@ public class FoodInventoryTab extends TableTab {
 			switch(i) {
 				case FoodInventoryTableModel.COST_COL:
 				case FoodInventoryTableModel.PRICE_COL:
-					r = NumberRenderer.getCurrencyRenderer();
+					r = currency; //NumberRenderer.getCurrencyRenderer();
 					break;
 
 				case FoodInventoryTableModel.MASS_COL:

@@ -17,7 +17,7 @@ import com.mars_sim.core.structure.building.ResourceProcessEngine;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
@@ -168,11 +168,11 @@ public class ResourceProcess implements Serializable {
 			return 0;
 	}
 		
-	public double getScore() {
+	public double getOverallScore() {
 		return score;
 	}
 	
-	public void setScore(double score) {
+	public void setOverallScore(double score) {
 		this.score = score;
 	}
 	
@@ -501,16 +501,16 @@ public class ResourceProcess implements Serializable {
 	 * @return false if any input resources are empty.
 	 */
 	public boolean isInputsPresent(Settlement settlement) {
-
+		double stored = 0;
 		for(int resource: getInputResources()) {
 			if (!isAmbientInputResource(resource)) {
-				double stored = settlement.getAmountResourceStored(resource);
-				if (stored < SMALL_AMOUNT) {
-					return false;
-				}
+				stored += settlement.getAmountResourceStored(resource);
 			}
 		}
-
+		if (stored < SMALL_AMOUNT) {
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -522,14 +522,13 @@ public class ResourceProcess implements Serializable {
 	 * @return true if any output resources are empty.
 	 */
 	public boolean isOutputsEmpty(Settlement settlement) {
-
-		for(int resource : getOutputResources()) {
-			double stored = settlement.getAmountResourceStored(resource);
-			if (stored < SMALL_AMOUNT) {
-				return true;
-			}
+		double stored = 0;
+		for (int resource : getOutputResources()) {
+			stored += settlement.getAmountResourceStored(resource);
 		}
-
+		if (stored < SMALL_AMOUNT) {
+			return true;
+		}
 		return false;
 	}
 

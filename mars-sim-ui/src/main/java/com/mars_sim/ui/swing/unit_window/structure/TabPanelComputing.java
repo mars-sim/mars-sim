@@ -20,7 +20,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -39,8 +39,9 @@ public class TabPanelComputing extends TabPanelTable {
 	private static final String COMPUTING_ICON = "computing";
 	private static final String CU = " CUs";
 	private static final String SLASH = " / ";
+	private static final String KW = " kW";
 	
-	private JLabel powerDemandLabel;
+	private JLabel powerloadsLabel;
 	private JLabel percentUsageLabel;
 	private JLabel cULabel;
 	private JLabel entropyLabel;
@@ -76,22 +77,27 @@ public class TabPanelComputing extends TabPanelTable {
 		AttributePanel springPanel = new AttributePanel(4);
 
 		// Total Power Demand
-		double powerDemand = manager.getTotalComputingPowerDemand();
-		powerDemandLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerDemand"),
-				     StyleManager.DECIMAL_KW.format(powerDemand), Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
+		double[] powerLoads = manager.getTotalCombinedLoads();
+		String twoLoads = Math.round(powerLoads[0] * 10.0)/10.0 + SLASH
+				+ Math.round(powerLoads[1] * 10.0)/10.0 + KW;
+		
+		powerloadsLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerload"),
+				twoLoads, Msg.getString("BuildingPanelComputation.powerload.tooltip"));
 
 		// Total Usage
-		double usage = manager.getComputingUsagePercent();
-		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
-					 			StyleManager.DECIMAL_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
+		double[] combined = manager.getPeakCurrentPercent();	
+		// Get the peak total
+		double peak = Math.round(combined[1] * 10.0)/10.0;		
+		// Get the total CUs available
+		double cUs = Math.round(combined[0] * 10.0)/10.0;
+		// Get total usage
+		double usage = Math.round((peak - cUs)/peak * 1000.0)/10.0;
 
-		// Peak Usage
-		double peak = Math.round(manager.getPeakTotalComputing() * 1_000.0)/1_000.0;
-		
-		// Total CUs Available
-		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 1_000.0)/1_000.0;
-		
 		String text = cUs + SLASH + peak + CU;
+		
+		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
+					 			StyleManager.DECIMAL1_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
+
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 	
@@ -116,20 +122,26 @@ public class TabPanelComputing extends TabPanelTable {
 	}
 
 	/**
-	 * Set some coumn widths and renderers
+	 * Sets column widths and renderers.
 	 */
 	@Override
 	protected void setColumnDetails(TableColumnModel columns) {
-		columns.getColumn(0).setPreferredWidth(120);
-		columns.getColumn(1).setPreferredWidth(30);
-		columns.getColumn(2).setPreferredWidth(30);
-		columns.getColumn(3).setPreferredWidth(60);
+		columns.getColumn(0).setPreferredWidth(90);
+		columns.getColumn(1).setPreferredWidth(27);
+		columns.getColumn(2).setPreferredWidth(27);
+		columns.getColumn(3).setPreferredWidth(33);
 		columns.getColumn(4).setPreferredWidth(30);
+		columns.getColumn(5).setPreferredWidth(60);
+		columns.getColumn(6).setPreferredWidth(33);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		columns.getColumn(1).setCellRenderer(renderer);
 		columns.getColumn(2).setCellRenderer(renderer);
 		columns.getColumn(3).setCellRenderer(renderer);
+		columns.getColumn(5).setCellRenderer(renderer);
+		columns.getColumn(6).setCellRenderer(renderer);
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		columns.getColumn(4).setCellRenderer(renderer);
 	}
 
@@ -140,22 +152,25 @@ public class TabPanelComputing extends TabPanelTable {
 	public void update() {
 
 		// Total Power Demand
-		double powerDemand = manager.getTotalComputingPowerDemand();
-		String power = StyleManager.DECIMAL_KW.format(powerDemand);
+		double[] powerLoads = manager.getTotalCombinedLoads();
+		String twoLoads = Math.round(powerLoads[0] * 10.0)/10.0 + SLASH
+				+ Math.round(powerLoads[1] * 10.0)/10.0 + KW;
 		
-		if (!powerDemandLabel.getText().equalsIgnoreCase(power))
-			powerDemandLabel.setText(power);
+		if (!powerloadsLabel.getText().equals(twoLoads))
+			powerloadsLabel.setText(twoLoads);
 		
 		// Total Usage
-		double usage = manager.getComputingUsagePercent();
-		percentUsageLabel.setText(StyleManager.DECIMAL_PERC.format(usage));
-		
-		// Peak Usage
-		double peak = Math.round(manager.getPeakTotalComputing() * 100.0)/100.0;
-		// Total CUs Available
-		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 100.0)/100.0;
+		double[] combined = manager.getPeakCurrentPercent();	
+		// Get the peak total
+		double peak = Math.round(combined[1] * 10.0)/10.0;		
+		// Get the total CUs available
+		double cUs = Math.round(combined[0] * 10.0)/10.0;
+		// Get total usage
+		double usage = Math.round((peak - cUs)/peak * 1000.0)/10.0;
 		
 		String text = cUs + SLASH + peak + CU;
+		
+		percentUsageLabel.setText(StyleManager.DECIMAL1_PERC.format(usage));
 		
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);
@@ -189,7 +204,7 @@ public class TabPanelComputing extends TabPanelTable {
 		}
 
 		public int getColumnCount() {
-			return 6;
+			return 7;
 		}
 		
 		@Override
@@ -199,19 +214,21 @@ public class TabPanelComputing extends TabPanelTable {
 			else if (columnIndex == 1) dataType = Double.class;
 			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = Double.class;
-			else if (columnIndex == 4) dataType = String.class;
-			else if (columnIndex == 5) dataType = Double.class;
+			else if (columnIndex == 4) dataType = Double.class;
+			else if (columnIndex == 5) dataType = String.class;
+			else if (columnIndex == 6) dataType = Double.class;
 			return dataType;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 1) return "Power"; //$NON-NLS-1$
-			else if (columnIndex == 2) return "Heat"; //$NON-NLS-1$
-			else if (columnIndex == 3) return "% Usage"; //$NON-NLS-1$
-			else if (columnIndex == 4) return "CUs"; //$NON-NLS-1$
-			else if (columnIndex == 5) return "Entropy"; //$NON-NLS-1$
+			else if (columnIndex == 1) return "kWe"; //$NON-NLS-1$
+			else if (columnIndex == 2) return "kWt"; //$NON-NLS-1$
+			else if (columnIndex == 3) return "Cooling"; //$NON-NLS-1$
+			else if (columnIndex == 4) return "% Util"; //$NON-NLS-1$
+			else if (columnIndex == 5) return "CUs"; //$NON-NLS-1$
+			else if (columnIndex == 6) return "Entropy"; //$NON-NLS-1$
 			else return null;
 		}
 
@@ -222,25 +239,29 @@ public class TabPanelComputing extends TabPanelTable {
 				return buildings.get(row);
 			}
 			if (column == 1) {
-				// Power Demand
-				return Math.round(buildings.get(row).getComputation().getPowerRequired() * 10.0)/10.0;
+				// Power load
+				return Math.round(buildings.get(row).getComputation().getCombinedPowerLoad() * 10.0)/10.0;
 			}
 			if (column == 2) {
-				// Power Demand
-				return Math.round(buildings.get(row).getComputation().getPowerRequired() * 10.0)/10.0;
+				// heat generated
+				return Math.round(buildings.get(row).getComputation().getInstantHeatGenerated() * 10.0)/10.0;
 			}
 			else if (column == 3) {
+				// cooling load
+				return Math.round(buildings.get(row).getComputation().getInstantCoolingLoad() * 10.0)/10.0;
+			}
+			else if (column == 4) {
 				// Usage
 				return Math.round(buildings.get(row).getComputation().getUsagePercent() * 10.0)/10.0;
 			}
-			else if (column == 4) {
+			else if (column == 5) {
 				// Peak
 				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 100.0)/100.0;
 				// Current
 				double computingUnit = Math.round(buildings.get(row).getComputation().getCurrentCU() * 100.0)/100.0;
 				return computingUnit + SLASH + peak;
 			}
-			else if (column == 5) {
+			else if (column == 6) {
 				// Entropy
 				return Math.round(buildings.get(row).getComputation().getEntropy( )* 1_000.0)/1_000.0;
 			}

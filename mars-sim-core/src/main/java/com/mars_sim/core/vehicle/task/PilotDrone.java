@@ -8,15 +8,18 @@ package com.mars_sim.core.vehicle.task;
 
 import java.util.logging.Level;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Flyer;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.Msg;
 
 /**
  * The PilotDrone class is a task for piloting a drone to a
@@ -33,12 +36,10 @@ public class PilotDrone extends OperateVehicle {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.pilotDrone"); //$NON-NLS-1$
 
-	/** Collsion pahse produces more skill experience */
+	/** Collision phase produces more skill experience */
 	private static final TaskPhase AVOID_COLLISION = new TaskPhase(Msg.getString("Task.phase.avoidObstacle"),
 									IMPACT.changeSkillsRatio(0.2D));
 
-	/** The speed at which the obstacle / winching phase commence. */
-	private static final double LOW_SPEED = .5;
 	/** The computing resources [in CUs] needed per km. */
 	private static final double CU_PER_KM = .05;
 	
@@ -78,7 +79,7 @@ public class PilotDrone extends OperateVehicle {
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Note: OperateVehicle constructor should have set the phase to MOBILIZE
-		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 1000);
+		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 200);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -89,7 +90,7 @@ public class PilotDrone extends OperateVehicle {
 		
 		if (startingPhase != null) {
 			setPhase(startingPhase);
-			logger.log(pilot, Level.INFO, 4_000, "Took control of the drone at phase '"
+			logger.log(pilot, Level.INFO, 4_000, "Attempting to take control of the drone at phase '"
 					+ startingPhase + "'.");
 		}
 	}
@@ -130,7 +131,7 @@ public class PilotDrone extends OperateVehicle {
 	protected double mobilizeVehicle(double time) {
 
 		// If speed is less than or equal to LOW_SPEED, change to avoiding collision phase.
-		if (!getVehicle().isInSettlement() && (getVehicle().getSpeed() >= HIGH_SPEED) 
+		if (!getVehicle().isInSettlement() && (getVehicle().getSpeed() <= LOW_SPEED) 
 				&& !AVOID_COLLISION.equals(getPhase())) {
 			setPhase(AVOID_COLLISION);
 		} 
@@ -158,11 +159,13 @@ public class PilotDrone extends OperateVehicle {
 		if (destinationSpeed > LOW_SPEED) {
 			// Set new direction
 			flyer.setDirection(destinationDirection);
-			// Update vehicle elevation.
-			updateVehicleElevationAltitude(true, time);
+			// Update elevation
+//			updateVehicleElevationAltitude(true, time);
 			
 			setPhase(MOBILIZE);
+			
 			sideDirection = NONE;
+			
 			return time;
 		}
 
@@ -171,10 +174,11 @@ public class PilotDrone extends OperateVehicle {
 
 		// If an direction could not be found, change the elevation
 		if (travelDirection == null) {
-			// Update vehicle elevation.
-			updateVehicleElevationAltitude(false, time);
+			// Ascend into to get around obstacles
+//			updateVehicleElevationAltitude(false, time);
 			
 			sideDirection = NONE;
+			
 			return time;
 		}
 
@@ -265,38 +269,41 @@ public class PilotDrone extends OperateVehicle {
 		// Not needed for some reason !!
 	}
 	
-	/**
-	 * Update vehicle with its current elevation or altitude.
-	 */
-	protected void updateVehicleElevationAltitude(boolean horizontalMovement, double time) {
-		int mod = 1;
-		if (!horizontalMovement)
-			mod = 4;
-			
-		double currentE = ((Flyer)getVehicle()).getHoveringHeight();
-		double oldGroundE = ((Flyer)getVehicle()).getElevation();
-		double newGroundE = getGroundElevation();
-		
-		double ascentE = (Flyer.ELEVATION_ABOVE_GROUND - currentE) + (newGroundE - oldGroundE);
-		double climbE = 0;
-		
-		if (ascentE > 0) {
-			// Future: Use Newton's law to determine the amount of height the flyer can climb 
-			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
-			double speed = .0025 * mod;
-			climbE = speed * tSec;
-			
-		}
-		else if (ascentE < 0) {
-			// Future: Use Newton's law to determine the amount of height the flyer can climb 
-			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
-			double speed = -.02 * mod;
-			climbE = speed * tSec;
-		}
-		
-		double elev = climbE + oldGroundE;
-		((Flyer) getVehicle()).setElevation(elev);
-	}
+//	/**
+//	 * Updates vehicle with its current elevation or altitude.
+//	 * 
+//	 * @param horizontalMovement
+//	 * @param time
+//	 */
+//	protected void updateVehicleElevationAltitude(boolean horizontalMovement, double time) {
+//		int mod = 1;
+//		if (!horizontalMovement)
+//			mod = 4;
+//			
+//		double droneH = ((Flyer)getVehicle()).getHoveringHeight();
+//		double oldGroundE = ((Flyer)getVehicle()).getElevation();
+//		double newGroundE = getGroundElevation() * 1000;
+//		
+//		double ascentE = (Flyer.ELEVATION_ABOVE_GROUND - droneH) + (newGroundE - oldGroundE);
+//		double climbE = 0;
+//		
+//		if (ascentE > 0) {
+//			// Future: Use Newton's law to determine the amount of height the flyer can climb 
+//			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
+//			double speed = .0025 * mod;
+//			climbE = speed * tSec;
+//			
+//		}
+//		else if (ascentE < 0) {
+//			// Future: Use Newton's law to determine the amount of height the flyer can climb 
+//			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
+//			double speed = -.02 * mod;
+//			climbE = speed * tSec;
+//		}
+//		
+//		double elev = climbE + oldGroundE;
+//		((Flyer) getVehicle()).setElevation(elev);
+//	}
 
 	/**
 	 * Check if vehicle has had an accident.
@@ -305,6 +312,56 @@ public class PilotDrone extends OperateVehicle {
 	 */
 	@Override
 	protected void checkForAccident(double time) {
-		// Drones do not have accidents
+
+		Flyer flyer = (Flyer) getVehicle();
+
+		double chance = OperateVehicle.BASE_ACCIDENT_CHANCE;
+
+		// Driver skill modification.
+		int skill = getEffectiveSkillLevel();
+		if (skill <= 3)
+			chance *= (4 - skill);
+		else
+			chance /= (skill - 2);
+
+		// Get task phase modification.
+		if (AVOID_COLLISION.equals(getPhase()))
+			chance *= 1.2D;
+
+		// Terrain modification.
+		chance *= (1D + Math.sin(flyer.getTerrainGrade()));
+
+		// Vehicle handling modification.
+//		chance /= (1D + flyer.getTerrainHandlingCapability());
+
+		// Light condition modification.
+		double lightConditions = surfaceFeatures.getSunlightRatio(flyer.getCoordinates());
+		chance *= (5D * (1D - lightConditions)) + 1D;
+		if (chance < 0D) {
+			chance = 0D;
+		}
+
+		MalfunctionManager malfunctionManager = flyer.getMalfunctionManager();
+		// Modify based on the vehicle's wear condition.
+		chance *= malfunctionManager.getAccidentModifier();
+
+		if (RandomUtil.lessThanRandPercent(chance * time)) {
+			malfunctionManager.createASeriesOfMalfunctions(flyer.getName(), (Unit)worker);
+		}
+	}
+	
+	/**
+	 * Stops the vehicle.
+	 */
+	@Override
+	public void clearDown() {
+		var v = getVehicle();
+		if (v != null) {
+			v.setSpeed(0D);
+		    // Need to set the vehicle operator to null before clearing the driving task 
+	        v.setOperator(null);
+		}
+
+		super.clearDown();
 	}
 }

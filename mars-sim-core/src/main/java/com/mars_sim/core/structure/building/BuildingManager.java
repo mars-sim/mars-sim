@@ -34,6 +34,8 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
@@ -87,14 +89,13 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.AlphanumComparator;
+import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The BuildingManager manages the settlement's buildings.
@@ -159,9 +160,9 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Initializes maps and meteorite instance.
+	 * Initializes functions map and meteorite instance.
 	 */
-	public void initialize() {
+	public void initializeFunctionsNMeteorite() {
 
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
@@ -200,6 +201,11 @@ public class BuildingManager implements Serializable {
 								ft -> new UnitSet<>());
 	}
 
+	/**
+	 * Adds a building to the function map.
+	 * 
+	 * @param b
+	 */
 	private void addBuildingToMap(Building b) {
 		for(Function f : b.getFunctions()) {
 			buildingFunctionsMap.computeIfAbsent(f.getFunctionType(),
@@ -843,10 +849,11 @@ public class BuildingManager implements Serializable {
 
 		if (building != null) {
 			addPersonToActivitySpot(p, building, FunctionType.MEDICAL_CARE);
+			logger.info(p, 2000, "Brought to " + building.getName() + " for possible treatment.");
 		}
 
 		else {
-			logger.log(s, Level.WARNING, 2000,	"No medical facility available for "
+			logger.log(p, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
 			addPersonToRandomBuilding(p, s);
 		}
@@ -1014,9 +1021,9 @@ public class BuildingManager implements Serializable {
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 		
-			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+			if (vehicle instanceof Drone d) {
 				
-				if (garage.containsFlyer((Flyer)vehicle)) {
+				if (garage.containsFlyer(d)) {
 					logger.info(vehicle, 60_000,
 							"Already inside " + garageBuilding.getName() + ".");
 
@@ -1139,8 +1146,8 @@ public class BuildingManager implements Serializable {
 					return false;
 				}
 				
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
-					&& garage.containsFlyer((Flyer)vehicle)) {
+				if (vehicle instanceof Drone d
+					&& garage.containsFlyer(d)) {
 					return true;
 				}
 				else if (garage.containsVehicle(vehicle)) {
@@ -1873,20 +1880,25 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets total power demand from all computing nodes in a settlement.
+	 * Gets total combined power loads from all computing nodes in a settlement.
 	 * 
 	 * @return
 	 */
-	public double getTotalComputingPowerDemand() {
-		double power = 0;
+	public double[] getTotalCombinedLoads() {
+		double loadTotal = 0;
+		double nonloadTotal = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
-			return 0;
+			return new double[] {0, 0};
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			power += node.getPowerDemand();
+			double[] combined = node.getSeparatePowerLoadNonLoad();
+			double load = combined[0];
+			double nonload = combined[1];
+			loadTotal += load;
+			nonloadTotal += nonload;
 		}
-		return power;
+		return new double[] {loadTotal, nonloadTotal};
 	}
 	
 	/**
@@ -1894,16 +1906,17 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getComputingUsagePercent() {
-		double usage = 0;
+	public double[] getPeakCurrentPercent() {
+		double peak = 0;
+		double current = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			usage += node.getUsagePercent();
+			current += node.getCurrentCU();
+			peak += node.getPeakCU();
 		}
-		return usage;
+		
+		return new double[] {current, peak};
 	}
 	
 	/**
@@ -1912,15 +1925,15 @@ public class BuildingManager implements Serializable {
 	 * @return
 	 */
 	public double getPeakTotalComputing() {
-		double usage = 0;
+		double peakTotal = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
 			return 0;
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			usage += node.getPeakCU();
+			peakTotal += node.getPeakCU();
 		}
-		return usage;
+		return peakTotal;
 	}
 	
 	/**
@@ -1959,35 +1972,36 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getTotalEntropyPerNode() {
+	public double[] getTotalEntropyPerNode() {
 		double entropy = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
-			return 0;		
+			return new double[]{0, 0};		
 		int size = nodeBldgs.size();
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			entropy += node.getEntropy();
 		}
-		return entropy/size;
+		return new double[]{size, entropy};
 	}
 	
 	/**
-	 * Gets total entropy of all computing nodes in a settlement.
+	 * Gets total entropy per CU of all computing nodes in a settlement.
 	 * 
 	 * @return
 	 */
-	public double getTotalEntropyPerCU() {
-		double entropy = 0;
+	public double[] getTotalEntropyPerCU() {
+		double entropyPerCU = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		int size = nodeBldgs.size();
 		if (nodeBldgs.isEmpty())
-			return 0;		
+			return new double[]{0, 0};	
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			double ePerCU = node.getEntropyPerCU();
-			entropy += ePerCU;
+			entropyPerCU += ePerCU;
 		}
-		return entropy;
+		return new double[]{size, entropyPerCU};
 	}
 	
 	/**
@@ -2093,10 +2107,10 @@ public class BuildingManager implements Serializable {
 			if (score > 0)
 				scores.put(node, score);
 		}
-
+		
 		if (scores.isEmpty())
 			return null;
-
+		
 		// Note: Use probability selection	
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
@@ -2572,7 +2586,7 @@ public class BuildingManager implements Serializable {
 		settlement = unitManager.getSettlementByID(settlementID);
 		
 		// Re-initializes maps and meteorite instance
-		initialize();
+		initializeFunctionsNMeteorite();
 		
 		// Re-create adjacent building map
 		createAdjacentBuildingMap();

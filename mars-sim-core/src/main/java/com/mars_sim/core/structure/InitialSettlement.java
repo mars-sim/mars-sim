@@ -8,7 +8,7 @@ package com.mars_sim.core.structure;
 
 import java.io.Serializable;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * POJO class for holding a initial settlement info.

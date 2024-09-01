@@ -28,7 +28,7 @@ import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * Meta task for proposing a scientific study.
@@ -72,7 +72,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 			var assigned = role.getType();
 			roleType = (assigned != null ? assigned : roleType);
 		}
-		ScientificStudy study = person.getStudy();
+		ScientificStudy study = person.getResearchStudy().getStudy();
 		if (study == null) {
 			// Probability of starting a new scientific study based on Job
 			int pop = settlement.getInitialPopulation();

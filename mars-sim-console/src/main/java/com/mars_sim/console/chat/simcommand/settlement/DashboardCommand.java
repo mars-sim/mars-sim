@@ -12,8 +12,8 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Command to display dashboard for this settlement
@@ -49,12 +49,14 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	 */
 	void generatedDashboard(Settlement settlement, StructuredResponse response) {
 		Coordinates location = settlement.getCoordinates();
-		double elevationMOLA = TerrainElevation.getMOLAElevation(location);
+		double elevationMEDGR = TerrainElevation.getMEGDRElevation(location);
+		double elevationColor = TerrainElevation.getColorElevation(location);
 		
 		response.appendLabeledString("Sponsor", settlement.getReportingAuthority().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
 		response.appendLabeledString("Location", location.getFormattedString());
-		response.appendLabeledString("MOLA Elevation", String.format(CommandHelper.KM_FORMAT, elevationMOLA));
+		response.appendLabeledString("MEDGR Elevation", String.format(CommandHelper.KM_FORMAT, elevationMEDGR));
+		response.appendLabeledString("Color Elevation", String.format(CommandHelper.KM_FORMAT, elevationColor));
 		response.appendLabelledDigit("Population", settlement.getNumCitizens());	
 
 		String[] cats = new String[] { "Repair", "Maintenance", "EVA Suit Production" };

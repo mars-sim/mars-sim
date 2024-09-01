@@ -20,7 +20,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
@@ -43,6 +43,13 @@ public class BacklogTableModel extends AbstractMonitorModel
 	private static final int SCOPE_COL = EVA_COL+1;
 	private static final int DEMAND_COL = SCOPE_COL+1;
 	static final int SCORE_COL = DEMAND_COL+1;
+	
+	private static final String ANY = "Any";
+	private static final String OFF_DUTY_ONLY = "Off-Duty Only";
+	private static final String ON_DUTY_ONLY = "On-Duty Only";
+	private static final String YES = "Yes";
+	private static final String NO = "No";
+					
 
 	static {
 		COLUMNS = new ColumnSpec[SCORE_COL+1];
@@ -51,7 +58,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS[DESC_COL] = new ColumnSpec("Description", String.class);
 		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", Integer.class);
 		COLUMNS[EVA_COL]  = new ColumnSpec("EVA", String.class);
-		COLUMNS[SCOPE_COL]  = new ColumnSpec("Worker", String.class);
+		COLUMNS[SCOPE_COL]  = new ColumnSpec("Scope", String.class);
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class);
 	}
 
@@ -236,12 +243,12 @@ public class BacklogTableModel extends AbstractMonitorModel
 			case DESC_COL:
 				return selectedTask.getShortName();
 			case EVA_COL:
-				return (selectedTask.isEVA() ? "Yes" : "No");
+				return (selectedTask.isEVA() ? YES: NO);
 			case SCOPE_COL:
 				return switch(selectedTask.getScope()) {
-					case ANY_HOUR -> "Any";
-					case NONWORK_HOUR -> "Off duty only";
-					case WORK_HOUR -> "On duty only";
+					case ANY_HOUR -> ANY;
+					case NONWORK_HOUR -> OFF_DUTY_ONLY;
+					case WORK_HOUR -> ON_DUTY_ONLY;
 				};
 			case DEMAND_COL:
 				return selectedTask.getDemand();

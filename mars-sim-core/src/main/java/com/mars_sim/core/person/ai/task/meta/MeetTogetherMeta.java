@@ -12,7 +12,7 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.MeetTogether;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 
 /**

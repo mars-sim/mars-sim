@@ -4,13 +4,13 @@ import java.util.Iterator;
 
 import org.junit.Before;
 
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.MockBuilding;
 import com.mars_sim.core.structure.building.function.Function;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
 

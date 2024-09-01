@@ -464,6 +464,7 @@ public abstract class TaskManager implements Serializable {
 
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
+			
 			if (taskProbCache.getCreatedOn() != null) {
 				// If it is a cache made dynamically then log it
 				RatingLog.logSelectedRating(getDiagnosticsModule(), worker.getName(), selectedJob,
@@ -498,13 +499,23 @@ public abstract class TaskManager implements Serializable {
 		return remainingTime;
 
 	}
-
+	
 	/**
 	 * Checks to see if it's okay to replace a task.
 	 * 
 	 * @param newTask the task to be executed
 	 */
 	public boolean checkReplaceTask(Task newTask) {
+		return checkReplaceTask(newTask, false); 
+	}
+	
+	/**
+	 * Checks to see if it's okay to replace a task.
+	 * 
+	 * @param newTask the task to be executed
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 */
+	public boolean checkReplaceTask(Task newTask, boolean allowSameTask) {
 		
 		if (newTask == null) {
 			return false;
@@ -514,14 +525,17 @@ public abstract class TaskManager implements Serializable {
 			
 			String currentDes = currentTask.getDescription();
 
-			if (newTask.getDescription().equalsIgnoreCase(currentDes))
-				return false;	
-		
 			if (!currentTask.isInterruptable())
 				return false;
 			
-			if (newTask.getName().equals(getTaskName())) {
-				return false;
+			if (!allowSameTask) {
+				if (newTask.getDescription().equalsIgnoreCase(currentDes))
+					return false;	
+			
+		
+				if (newTask.getName().equals(getTaskName())) {
+					return false;
+				}
 			}
 		}
 		

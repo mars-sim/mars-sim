@@ -34,7 +34,8 @@ public class ExperienceImpact implements Serializable {
     public record SkillWeight(SkillType skill, int weight) implements Serializable {}
 
     /**
-     * Range of physical effort
+     * Range of physical effort.
+     * These MUST be ordered in terms of increasing effort.
      */
     public enum PhysicalEffort {NONE, LOW, HIGH}
 
@@ -306,5 +307,17 @@ public class ExperienceImpact implements Serializable {
      */
     public ExperienceImpact changeSkillsRatio(double newSkillsRatio) {
         return new ExperienceImpact(newSkillsRatio, experienceInfluence, effortDriven, newSkillsRatio, skillWeights);
+    }
+
+
+    /**
+     * Compare 2 Physical efforts and see if the first is more than or equal to the second
+     * in terms effort required
+     * @param first
+     * @param second
+     * @return
+     */
+    public static boolean isEffortHigher(PhysicalEffort first, PhysicalEffort second) {
+        return (first.ordinal() > second.ordinal());
     }
 }

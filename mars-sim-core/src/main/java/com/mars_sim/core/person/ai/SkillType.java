@@ -7,7 +7,7 @@
 
 package com.mars_sim.core.person.ai;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The skill of a settler. A total of 21 types is available

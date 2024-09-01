@@ -21,8 +21,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The SplashWindow class is a splash screen shown when the project is loading.

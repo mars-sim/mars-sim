@@ -34,7 +34,7 @@ import com.mars_sim.core.structure.building.utility.power.PowerMode;
 import com.mars_sim.core.structure.building.utility.power.PowerSource;
 import com.mars_sim.core.structure.building.utility.power.PowerStorage;
 import com.mars_sim.core.structure.building.utility.power.SolarPowerSource;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -141,7 +141,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0;
 		
 		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
-				StyleManager.DECIMAL_PERC1.format(percentPowerUsage) + OPEN_PARA 
+				StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
 				+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
 				+ SLASH + StyleManager.DECIMAL_KW.format(powerGenCache) + CLOSE_PARA,
 				Msg.getString("TabPanelPowerGrid.powerUsage.tooltip"));
@@ -154,7 +154,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		percentEnergyUsage = Math.round(energyStoredCache/energyCapacityCache * 100 * 10.0)/10.0;
 
 		percentEnergyUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.energyUsage"),
-				StyleManager.DECIMAL_PERC1.format(percentEnergyUsage) + OPEN_PARA 
+				StyleManager.DECIMAL1_PERC.format(percentEnergyUsage) + OPEN_PARA 
 				+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
 				+ SLASH + StyleManager.DECIMAL_KWH.format(energyCapacityCache) + CLOSE_PARA,
 				Msg.getString("TabPanelPowerGrid.energyUsage.tooltip"));
@@ -162,7 +162,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Create solar cell eff tf
 		solarCellEfficiencyCache = getAverageEfficiency();
 		solarCellEfficiencyTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
-											 StyleManager.DECIMAL_PERC1.format(solarCellEfficiencyCache * 100D),
+											 StyleManager.DECIMAL1_PERC.format(solarCellEfficiencyCache * 100D),
 											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
 		// Create degradation rate tf.
@@ -298,7 +298,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			powerLoadCache = req;
 			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0;
 
-			String s = StyleManager.DECIMAL_PERC1.format(percentPowerUsage) + OPEN_PARA 
+			String s = StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
 					+ SLASH + StyleManager.DECIMAL_KW.format(powerGenCache) + CLOSE_PARA;
 			
@@ -315,7 +315,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			energyStoredCache = store;
 			percentEnergyUsage = Math.round(energyStoredCache / energyCapacityCache * 100 * 10.0)/10.0;
 					
-			String s = StyleManager.DECIMAL_PERC1.format(percentEnergyUsage) + OPEN_PARA 
+			String s = StyleManager.DECIMAL1_PERC.format(percentEnergyUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
 					+ SLASH + StyleManager.DECIMAL_KWH.format(energyCapacityCache) + CLOSE_PARA;
 			
@@ -327,7 +327,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(StyleManager.DECIMAL_PERC1.format(eff * 100D));
+			solarCellEfficiencyTF.setText(StyleManager.DECIMAL1_PERC.format(eff * 100D));
 		}
 		// Update power table.
 		powerTableModel.update();

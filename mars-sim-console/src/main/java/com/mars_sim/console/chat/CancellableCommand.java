@@ -1,19 +1,19 @@
-/**
+/*
  * Mars Simulation Project
  * CancellableCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
 package com.mars_sim.console.chat;
 
 /**
- * A command that can be cancelled
+ * A command that can be cancelled.
  */
 public interface CancellableCommand {
 
 	/**
-	 * Cancel the current command
+	 * Cancels the current command.
 	 */
 	void cancel();
 }

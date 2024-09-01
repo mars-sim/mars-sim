@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -20,8 +19,12 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
@@ -31,7 +34,6 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -40,14 +42,11 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Airlockable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The EVAOperation class is an abstract task that involves an extra vehicular
@@ -768,7 +767,7 @@ public abstract class EVAOperation extends Task {
 			if (e != null) {
 				boolean done = e.transfer(destination);
 				if (done) {
-					logger.info(person, 0, "Transferring " + e.getName() + " from person back to rover.");
+					logger.info(person, 5000, "Transferring " + e.getName() + " from person back to rover.");
 					if (e instanceof Container c) {
 						for (int resource: c.getAllAmountResourceIDs()) {
 							double amount = c.getAmountResourceStored(resource);
@@ -776,15 +775,13 @@ public abstract class EVAOperation extends Task {
 								// Retrieve this amount from the container
 								c.retrieveAmountResource(resource, amount);
 								destination.storeAmountResource(resource, amount);
-								logger.info(person, 0, "Done unloading all resources from person back to rover.");
+								logger.info(person, 5000, "Done unloading all resources from person back to rover.");
 							}
 						}
 					}
-					
-					e.transfer(destination);	
 				}
 				else
-					logger.warning(person, "Unable to transfer " + e.getName() + " from person back to rover.");
+					logger.warning(person, 5000, "Unable to transfer " + e.getName() + " from person back to rover.");
 			}	
 		}
 	}
@@ -803,22 +800,14 @@ public abstract class EVAOperation extends Task {
 		// Store the person into a medical building
 		BuildingManager.addToMedicalBuilding(p, s);
 
-		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-		Complaint complaint = p.getPhysicalCondition().getMostSerious();
-		HealthProblem problem = null;
-		for (HealthProblem hp : problems) {
-			if (complaint.getType() == hp.getType()) {
-				problem = hp;
-				break;
-			}
-		}
+		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
 		
 		HistoricalEvent rescueEvent = null;
 		
 		if (problem == null) {
 			rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
 				p.getMission(),
-				p.getPhysicalCondition().getHealthSituation(),
+				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
 				p.getName(),
 				p

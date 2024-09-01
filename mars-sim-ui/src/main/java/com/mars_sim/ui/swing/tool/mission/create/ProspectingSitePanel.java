@@ -7,19 +7,9 @@
 
 package com.mars_sim.ui.swing.tool.mission.create;
 
-import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.IntPoint;
-import com.mars_sim.mapdata.map.*;
-import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.tool.map.EllipseLayer;
-import com.mars_sim.ui.swing.tool.map.MapPanel;
-import com.mars_sim.ui.swing.tool.map.MapUtils;
-import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -28,6 +18,19 @@ import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
+import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
+import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.tool.map.EllipseLayer;
+import com.mars_sim.ui.swing.tool.map.MapPanel;
+import com.mars_sim.ui.swing.tool.map.MapUtils;
+import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
+import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
 
 /**
  * A wizard panel for the ice or regolith prospecting site.
@@ -96,7 +99,7 @@ class ProspectingSitePanel extends WizardPanel {
 		add(mapPane);
 		
 		// Create the location label.
-		locationLabel = new JLabel("Location: ", JLabel.CENTER);
+		locationLabel = new JLabel("Location: ", SwingConstants.CENTER);
 		locationLabel.setFont(locationLabel.getFont().deriveFont(Font.BOLD));
 		locationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(locationLabel);
@@ -127,9 +130,11 @@ class ProspectingSitePanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - Map.HALF_MAP_BOX, 
 				navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
@@ -198,7 +203,7 @@ class ProspectingSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 	

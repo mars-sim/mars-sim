@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionListener.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 
@@ -13,7 +13,7 @@ package com.mars_sim.core.goods;
 public interface CreditListener {
 
 	/**
-	 * Catch credit update event.
+	 * Catches credit update event.
 	 * 
 	 * @param event the credit event.
 	 */

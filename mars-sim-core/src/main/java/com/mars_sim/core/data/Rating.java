@@ -12,14 +12,17 @@ package com.mars_sim.core.data;
  * @see RatingLog#logSelectedRating(String, String, Rating, java.util.List)
  */
 public interface Rating {
+	
     /**
-     * Name of this Rating
+     * Returns the name of this Rating.
+     * 
      * @return
      */
     String getName();
 
     /**
-     * What was the score associated to this Rating?
+     * Returns the score associated with this Rating.
+     * 
      * @return
      */
     RatingScore getScore();

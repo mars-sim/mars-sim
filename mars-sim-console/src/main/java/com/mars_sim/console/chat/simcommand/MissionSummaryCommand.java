@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionSummaryCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -15,7 +15,7 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * Command to display mission stats
+ * Command to display mission stats.
  * This is a singleton.
  */
 public class MissionSummaryCommand extends ChatCommand {

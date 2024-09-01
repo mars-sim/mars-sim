@@ -22,10 +22,10 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The TravelToSettlement class is a mission to travel from one settlement to
@@ -186,7 +186,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	private Settlement getRandomDestinationSettlement(Worker member, Settlement startingSettlement) {
 
-		double range = getVehicle().getRange();
+		double range = getVehicle().getEstimatedRange();
 		Settlement result = null;
 
 		// Find all desirable destination settlements.
@@ -406,9 +406,9 @@ public class TravelToSettlement extends RoverMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) {
+				if (firstVehicle.getEstimatedRange() > secondVehicle.getEstimatedRange()) {
 					result = 1;
-				} else if (firstVehicle.getRange() < secondVehicle.getRange()) {
+				} else if (firstVehicle.getEstimatedRange() < secondVehicle.getEstimatedRange()) {
 					result = -1;
 				}
 			}

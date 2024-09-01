@@ -48,9 +48,9 @@ import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -87,8 +87,9 @@ public class MonitorWindow extends ToolWindow
 	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 640;
 
-	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "monitor";
 	public static final String ICON = "monitor";
+    public static final String TITLE = Msg.getString("MonitorWindow.title");
 
 	// Added an custom icon for each tab
 	private static final String COLONY_ICON = "settlement";
@@ -148,7 +149,7 @@ public class MonitorWindow extends ToolWindow
 	 */
 	public MonitorWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		unitManager = desktop.getSimulation().getUnitManager();
 		
@@ -543,6 +544,10 @@ public class MonitorWindow extends ToolWindow
 		
 		MonitorModel tabTableModel = selectedTab.getModel();
 
+		String title = tabTableModel.getName();
+		
+		super.setTitle(TITLE + " - " + title);
+		
 		// Disable all buttons
 		boolean enableMap = selectedTab.isNavigatable();
 		boolean enableDetails = selectedTab.isEntityDriven();

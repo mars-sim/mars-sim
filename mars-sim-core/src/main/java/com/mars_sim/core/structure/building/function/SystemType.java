@@ -8,7 +8,7 @@ package com.mars_sim.core.structure.building.function;
 
 import java.util.Set;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum SystemType {
 

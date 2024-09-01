@@ -1,13 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * GenderType.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author stpa
  */
 
 package com.mars_sim.core.person;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 public enum GenderType {
 
@@ -23,8 +23,8 @@ public enum GenderType {
 	}
 
 	/**
-	 * Gets the gender string
-	 * an internationalized translation for display in user interface.
+	 * Gets the gender string, an internationalized translation 
+	 * for display in user interface.
 	 * 
 	 * @return {@link String}
 	 */
@@ -33,7 +33,7 @@ public enum GenderType {
 	}
 
 	/**
-	 * Gets the matched gender type
+	 * Gets the matched gender type.
 	 * 
 	 * @param s the gender string
 	 */	

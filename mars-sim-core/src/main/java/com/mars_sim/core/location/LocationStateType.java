@@ -7,7 +7,7 @@
 
 package com.mars_sim.core.location;
 
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * The LocationStateType enum class keeps track of the location of a unit.

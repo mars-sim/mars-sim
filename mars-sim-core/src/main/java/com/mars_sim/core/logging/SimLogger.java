@@ -279,6 +279,16 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method just to log a info message. Message timeout is predefined.
+	 * 
+	 * @param timeBetweenLogs
+	 * @param message
+	 */
+	public void info(long timeBetweenLogs, String message) {
+		baseLog(null, Level.INFO, timeBetweenLogs, sourceName + " : " + message, null);
+	}
+	
+	/**
 	 * Logs directly without formatting.
 	 * 
 	 * @param message

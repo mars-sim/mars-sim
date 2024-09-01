@@ -132,29 +132,29 @@
 	</building-package>
 	
 	<building-package name="Air Set 1 - 1x2" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-20.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />    
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-40.0" facing="90.0" />    
 	</building-package>
 
 	<building-package name="Air Set 1 - 1x3" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-20.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />   
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-40.0" facing="90.0" /> 
-	</building-package>
-
-	<building-package name="Air Set 1 - 1x4" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-20.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />   
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-40.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-40.0" facing="90.0" />   
 	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" /> 
 	</building-package>
 
+	<building-package name="Air Set 1 - 1x4" >
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-40.0" facing="90.0" />   
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" /> 
+	</building-package>
+
 	<building-package name="Air Set 1 - 1x5" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-20.0" facing="90.0" />
 	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-30.0" facing="90.0" />   
 	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-40.0" facing="90.0" /> 
 	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" /> 
 	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-70.0" facing="90.0" />
 	</building-package>
 			
 	<building-package name="Sabatier Set 1 - 1x1" >
@@ -187,6 +187,7 @@
     	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-60.0" facing="90.0" />
 	</building-package>
 			
+	<!-- Note: xloc 45 also occupied by Solar Set 1 -->
 	<building-package name="Syngas Set 1 - 1x1" >
 	    <standalone type="Syngas Plant" xloc="45.0" yloc="-20.0" facing="90.0" />    
 	</building-package>

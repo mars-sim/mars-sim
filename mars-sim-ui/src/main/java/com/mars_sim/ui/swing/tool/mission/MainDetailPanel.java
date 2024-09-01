@@ -74,11 +74,11 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -187,11 +187,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		leftRightBox.add(initLocationPane());
 		centerBox.add(leftRightBox, BorderLayout.NORTH);
 
-//		JPanel innerBox = new JPanel(new BorderLayout(1, 1));
-//		innerBox.add(initVehiclePane(), BorderLayout.CENTER);
-//		innerBox.add(initLocationPane(), BorderLayout.SOUTH);
-//		centerBox.add(innerBox, BorderLayout.WEST);
-		
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
 		memberOuterPane = new JPanel(new BorderLayout(1, 1));
@@ -203,8 +198,16 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				
 		bottomBox.add(memberOuterPane, BorderLayout.NORTH);
 		bottomBox.add(initCustomMissionPane(), BorderLayout.SOUTH);
+		
+		// Update the log table model
+		logTableModel.update();
 	}
 
+	/**
+	 * Initializes the mission pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initMissionPane() {
 
 		// Create the vehicle pane.
@@ -227,6 +230,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return missionLayout;
 	}
 	
+	/**
+	 * Initializes the vehicle pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initVehiclePane() {
 		
 		JPanel mainLayout = new JPanel(new BorderLayout(5, 5));
@@ -281,6 +289,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return mainLayout;
 	}
 
+	/**
+	 * Initializes the travel pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initTravelPane() {
 		
 		JPanel mainLayout = new JPanel(new BorderLayout());
@@ -301,6 +314,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return mainLayout;
 	}
 
+	/**
+	 * Initializes the phase log pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initLogPane() {
 
 		// Create the member panel.
@@ -327,6 +345,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return logPane;
 	}
 
+	/**
+	 * Initializes the member pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initMemberPane() {
 		
 		if (memberPane == null) {	
@@ -366,6 +389,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return memberPane;
 	}
 
+	/**
+	 * Initializes the custom mission pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initCustomMissionPane() {
 
 		// Create the mission custom panel.
@@ -463,6 +491,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	}
 
 
+	
 	public void setCurrentMission(Mission mission) {
 		if (missionCache != null) {
 			if (!missionCache.equals(mission)) {
@@ -574,7 +603,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			// Check if the mission is done and the members have been disbanded
 			memberOuterPane.removeAll();
 			memberOuterPane.add(memberLabel);
-			memberLabel.setText(" Disbanded: " + printMembers(mission));
+			memberLabel.setText("    [Disbanded] : " + printMembers(mission));
 		}
 		else {
 			memberOuterPane.removeAll();
@@ -603,6 +632,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		settlementTextField.setText(mission.getAssociatedSettlement().getName());
 
 		logTableModel.setMission(mission);
+		logTableModel.update();
 		
 		centerMapButton.setEnabled(true);
 		
@@ -616,7 +646,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 			if (vehicle != null && !mission.isDone()) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				try {
 					int currentLegRemainingDist = (int) vehicleMission.getDistanceCurrentLegRemaining();
 					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(currentLegRemainingDist)); //$NON-NLS-1$
@@ -624,7 +654,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
 
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
@@ -642,11 +672,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			}
 			else {
 				vehicleStatusLabel.setText(" ");
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
 
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
@@ -666,7 +696,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				vehicle.addUnitListener(this);
@@ -696,12 +726,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		settlementTextField.setText(" ");
 
 		memberTableModel.setMission(null);
+		
+		logTableModel.update();
 		logTableModel.setMission(null);
 		
 		centerMapButton.setEnabled(false);
 		
 		vehicleStatusLabel.setText(" ");
-		speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -859,6 +891,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				if (phaseText.length() > MAX_LENGTH)
 					phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
 				phaseTextField.setText(phaseText);
+				
+				// Update the log table model
+				logTableModel.update();
+				
 			} else if (type == MissionEventType.END_MISSION_EVENT) {
 				var missionStatusText = new StringBuilder();
 				missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
@@ -872,13 +908,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+					speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
 				} else {
 					vehicleButton.setVisible(false);
 					vehicleStatusLabel.setText("Not Applicable");
-					speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$
+					speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$
 					if (currentVehicle != null)
 						currentVehicle.removeUnitListener(panel);
 					currentVehicle = null;
@@ -888,7 +924,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 				
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
 						estTotalDistance
@@ -926,7 +962,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (type == UnitEventType.STATUS_EVENT) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 		}
 	}
 
@@ -935,22 +971,31 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 * Adapter for the mission log
 	 */
 	private class LogTableModel extends AbstractTableModel {
+		
 		private Mission mission;
-
+		
+		private List<MissionLog.MissionLogEntry> entries;
+	
 		/**
 		 * Constructor.
 		 */
 		private LogTableModel() {
 			mission = null;
+			entries = new ArrayList<>();
 		}
 
+		public void update() {
+			if (mission != null)
+				entries = mission.getLog().getEntries();
+		}
+		
 		/**
 		 * Gets the row count.
 		 *
 		 * @return row count.
 		 */
 		public int getRowCount() {
-			return (mission != null ? mission.getLog().getEntries().size() : 0);
+			return (mission != null ? entries.size() : 0);
 		}
 
 		/**
@@ -985,7 +1030,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return the value.
 		 */
 		public Object getValueAt(int row, int column) {
-			List<MissionLog.MissionLogEntry> entries = mission.getLog().getEntries();
+			if (mission == null || entries == null)
+				return null;
+				
 			if (row < entries.size()) {
 				if (column == 0)
 					return entries.get(row).getTime().getTruncatedDateTimeStamp();
@@ -1099,10 +1146,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return
 		 */
 		boolean isOnboard(Worker member) {
-			if (mission instanceof VehicleMission) {		
+			if (mission instanceof VehicleMission vm) {		
 				if (member.getUnitType() == UnitType.PERSON) {
-					Vehicle v = ((VehicleMission)mission).getVehicle();
-					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					Vehicle v = vm.getVehicle();
+					if (VehicleType.isDrone(v.getVehicleType())) {
 						return false;
 					}
 					else if (v instanceof Rover r) {
@@ -1122,10 +1169,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return
 		 */
 		boolean isInAirlock(Worker member) {
-			if (mission instanceof VehicleMission) {		
+			if (mission instanceof VehicleMission vm) {		
 				if (member.getUnitType() == UnitType.PERSON) {
-					Vehicle v = ((VehicleMission)mission).getVehicle();
-					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					Vehicle v = vm.getVehicle();
+					if (VehicleType.isDrone(v.getVehicleType())) {
 						return false;
 					}
 					else if (v instanceof Rover r) {

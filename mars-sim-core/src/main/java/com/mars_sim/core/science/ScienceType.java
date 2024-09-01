@@ -15,8 +15,8 @@ import java.util.Map;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Science field names and researcher job descriptions.

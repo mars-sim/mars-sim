@@ -8,7 +8,7 @@
 package com.mars_sim.core.structure;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * The Structure class is an abstract class that represents a

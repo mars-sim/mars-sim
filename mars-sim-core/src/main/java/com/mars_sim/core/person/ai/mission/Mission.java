@@ -11,13 +11,13 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Represents the behave that a Mission exhibits.

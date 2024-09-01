@@ -1,11 +1,11 @@
 package com.mars_sim.fxgl.model.entities;
 
 import com.almasb.fxgl.entity.Entity;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.fxgl.model.util.EntityType;
 import com.mars_sim.fxgl.model.util.MapPoint;
 import com.mars_sim.fxgl.model.util.Moveable;
 import com.mars_sim.fxgl.model.util.PointColor;
-import com.mars_sim.tools.util.RandomUtil;
 
 import javafx.scene.shape.Circle;
 

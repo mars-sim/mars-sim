@@ -14,7 +14,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -31,8 +30,7 @@ import com.mars_sim.core.time.ClockUtils;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
@@ -53,10 +51,12 @@ public class TimeWindow extends ToolWindow {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
-	public final static String ICON = "time";
-	public final static int WIDTH = 300;
-	public final static int HEIGHT = 590;
+	public static final String NAME = "time";
+	public static final String ICON = "time";
+	public static final String TITLE = Msg.getString("TimeWindow.title");
+
+	public static final int WIDTH = 300;
+	public static final int HEIGHT = 590;
 	
 	/** Tool name. */
 	public final String DESIRED = "x (Desired : ";
@@ -70,24 +70,23 @@ public class TimeWindow extends ToolWindow {
 //    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** the execution time label string */
-	private final String EXEC = "Execution";
+	private static final String EXEC = "Execution";
 	/** the sleep time label string */
-	private final String SLEEP_TIME = "Sleep";
+	private static final String SLEEP_TIME = "Sleep";
 	/** the time pulse width label string */
-	private final String NEXT_PULSE_TIME = "Next Pulse Width";
+	private static final String NEXT_PULSE_TIME = "Next Pulse Width";
 	/** the pulse deviation label string */
-	private final String PULSE_DEVIATION = "Pulse Deviation";
+	private static final String PULSE_DEVIATION = "Pulse Deviation";
 	/** the optimal pulse label string */
-	private final String OPTIMAL = " (Optimal : ";
+	private static final String OPTIMAL = " (Optimal : ";
 	/** the reference pulse label string */
-	private final String REFERENCE = " (Ref : ";
+	private static final String REFERENCE = " (Ref : ";
 	
 	/** the execution time unit */
-//	private static final String MILLISOLS = " millisols";
-	/** the execution time unit */
-	private final String MS = " ms";
+	private static final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
-	private final String UMT = " (UMT) ";
+	private static final String UMT = " (UMT) ";
+
 
 	// Data members
 	private String northernSeasonTip ="";
@@ -145,7 +144,7 @@ public class TimeWindow extends ToolWindow {
 	 */
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 	
 		// Set window resizable to false.
 		setResizable(true);
@@ -191,8 +190,7 @@ public class TimeWindow extends ToolWindow {
 		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
 		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
 
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
+		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiButton.setAlignmentX(.5f);
 		wikiButton.setAlignmentY(.5f);
 		wikiButton.setToolTipText("Open Timekeeping Wiki in GitHub");
@@ -391,7 +389,7 @@ public class TimeWindow extends ToolWindow {
 		// Update pulse deviation label
 		double percent = masterClock.getNextPulseDeviation() * 100;
 		StringBuilder pulseDevText = new StringBuilder();
-		pulseDevText.append(StyleManager.DECIMAL_PERC1.format(percent))
+		pulseDevText.append(StyleManager.DECIMAL1_PERC.format(percent))
 			  .append(OPTIMAL)
 			  .append(StyleManager.DECIMAL_PLACES4.format(optPulse))
 			  .append(CLOSE_P);

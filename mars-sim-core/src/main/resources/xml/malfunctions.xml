@@ -806,13 +806,13 @@
 			<part name="electrical wire" number="2" repair-probability="25" />
 			<part name="wire connector" number="2" repair-probability="25" />
 			<part name="lubricant bottle" number="1" repair-probability="20" />
-			<part name="motor large" number="1" repair-probability="5" />
+			<part name="Motor 30 kW" number="1" repair-probability="5" />
 			<part name="work gloves" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Problems with one of the rover's electric motors. -->
-	<malfunction name="Small Vehicle Motor Failure">
+	<malfunction name="Small Motor Failure">
 		<severity value="50" />
 		<malfunction-probability value="2.0" />
 		<repair-inside time="50.0" />
@@ -827,7 +827,7 @@
 			<part name="electrical wire" number="2" repair-probability="25" />
 			<part name="wire connector" number="2" repair-probability="25" />
 			<part name="lubricant bottle" number="1" repair-probability="20" />
-			<part name="motor small" number="1" repair-probability="5" />
+			<part name="Motor 10 kW" number="1" repair-probability="5" />
 			<part name="work gloves" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -916,7 +916,7 @@
 		<repair-parts-list>
 			<part name="electrical wire" number="2" repair-probability="25" />
 			<part name="wire connector" number="2" repair-probability="25" />
-			<part name="motor small" number="1" repair-probability="10" />
+			<part name="Stepper Motor" number="1" repair-probability="10" />
 			<part name="ventilation fan" number="1" repair-probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -1082,7 +1082,7 @@
 			<part name="microcontroller" number="1" repair-probability="1" />
 			<part name="ventilation fan" number="1" repair-probability="5" />
 			<part name="carbon dioxide laser" number="1" repair-probability="5" />
-			<part name="stepper motor small" number="1" repair-probability="5" />
+			<part name="Stepper Motor" number="1" repair-probability="5" />
 			<part name="timing belt" number="1" repair-probability="5" />
 			<part name="optical prism" number="1" repair-probability="5" />
 			<part name="SLS 3D Printer" number="1" repair-probability="1" />

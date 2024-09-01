@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Drone.java
- * @date 2024-07-15
+ * @date 2024-07-20
  * @author Manny Kung
  */
 package com.mars_sim.core.vehicle;
@@ -30,6 +30,9 @@ public class Drone extends Flyer {
 
 	/** The fuel range modifier. */
 	public static final double FUEL_RANGE_FACTOR = 0.95;
+	
+	public static final double DRONE_PENALTY_FACTOR = .6;
+	
 	/** The mission range modifier. */
 	public static final double MISSION_RANGE_FACTOR = 1.9;
 	/** The amount of work time to perform maintenance (millisols) */
@@ -108,7 +111,15 @@ public class Drone extends Flyer {
 	 */
 	@Override
 	public double getRange() {
-		// Note: multiply by 0.9 would account for the extra distance travelled in between sites
-		return super.getRange() * FUEL_RANGE_FACTOR;
+		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
+		double fuelRange = super.getEstimatedRange() * FUEL_RANGE_FACTOR * DRONE_PENALTY_FACTOR;
+
+		// Battery also contributes to the range
+		double cap = super.getBatteryCapacity();
+		double percent = super.getBatteryPercent();
+		double estFC = super.getEstimatedFuelConsumption();
+		double batteryRange = cap * percent / 100 / estFC * 1000;
+		
+		return fuelRange + batteryRange;
 	}
 }

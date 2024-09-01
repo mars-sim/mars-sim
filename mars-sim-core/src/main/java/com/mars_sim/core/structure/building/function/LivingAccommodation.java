@@ -19,7 +19,7 @@ import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The LivingAccommodation class is a building function for a living
@@ -170,11 +170,10 @@ public class LivingAccommodation extends Function {
 					person.setBed(bed);
 				}
 				
-				logger.log(person, Level.INFO, 0, "Given a "
+				logger.log(person, Level.INFO, 0, "Assigned with " + sp.getName() + " as a "
 							+ (permanent ? "permanent" : "temporary")
-							+ " bed at " + sp.getPos() + "("
-							+ sp.getName() + ") in " + building.getName());
-				
+							+ " bed at " + sp.getPos() + " in " + building.getName() + ".");
+	
 				return bed;
 			}
 		}

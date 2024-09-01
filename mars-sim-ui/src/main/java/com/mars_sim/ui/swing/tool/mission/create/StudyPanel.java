@@ -90,14 +90,15 @@ public class StudyPanel extends WizardPanel {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
-				super.setBackground(null);
-				Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            	// Clear the background from previous error cell
+        		super.setBackground(null); 
+				JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 				// If failure cell, mark background red.
 				if (studyTableModel.isFailureCell(row, column))
-					result.setBackground(Color.RED);
+					l.setBackground(Color.RED);
 
-				return result;
+				return this;
 			}
 		});
 		studyTable.setRowSelectionAllowed(true);
@@ -133,8 +134,14 @@ public class StudyPanel extends WizardPanel {
 		errorMessageLabel.setText(" ");
 	}
 
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
 	@Override
-	boolean commitChanges() {
+	boolean commitChanges(boolean isTesting) {
 		int selectedIndex = studyTable.getSelectedRow();
 		ScientificStudy selectedStudy = studyTableModel.getStudy(selectedIndex);
 		getWizard().getMissionData().setScientificStudy(selectedStudy);

@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
@@ -29,7 +29,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 
 	private static final String PEOPLE_ICON = "people";
-
+	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	/** The inhabitable building. */
 	private LifeSupport inhabitable;
 	private JLabel numberLabel;
@@ -88,7 +91,10 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 	 * Updates this panel.
 	 */
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		// Update population list and number label
 		if (inhabitantListPanel.update()) {
 			numberLabel.setText(Integer.toString(inhabitantListPanel.getUnitCount()));

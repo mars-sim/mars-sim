@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.structure.building.Building;
@@ -30,7 +31,6 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.mapdata.location.LocalPosition;
 
 // Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA)
 // "camp out" at low atmospheric pressure, 10.2 psi (0.70 sbar), spending eight sleeping hours

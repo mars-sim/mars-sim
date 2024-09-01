@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
@@ -363,7 +364,7 @@ public class EquipmentGood extends Good {
 
 		double total = equipmentList.size();
 		for(Container c: equipmentList) {
-			if (c.getStoredMass() > 0)
+			if (!((Equipment)c).isEmpty(false))
 				numUsed++;
 		}
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FuelPowerSource.java
- * @date 2023-05-31
+ * @date 2024-08-03
  * @author Sebastien Venot
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -10,7 +10,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A fuel power source that gives a steady supply of power.
@@ -144,16 +144,6 @@ public class FuelPowerSource extends PowerSource {
 		return building.getSettlement();
 	}
 	
-	@Override
-	public double getCurrentPower(Building building) {
-		if (toggle) {
-			double spentFuel = computeFuelConsumption(time, getPercentElectricity(), true, false);
-			return spentFuel / getMaxFuelPerMillisolPerkW(true);
-		}
-		return 0;
-	}
-	 
-
 	public void toggleON() {
 		toggle = true;
 	}
@@ -228,5 +218,26 @@ public class FuelPowerSource extends PowerSource {
 	 @Override
 	 public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
+	 }
+	 
+	 @Override
+	 public double getCurrentPower(Building building) {
+		if (toggle) {
+			double spentFuel = computeFuelConsumption(time, getPercentElectricity(), true, false);
+			return spentFuel / getMaxFuelPerMillisolPerkW(true) / time;
+		}
+		return 0;
+	 }
+	
+	 /**
+	   * Requests an estimate of the power produced by this power source.
+	   * 
+	   * @param percent The percentage of capacity of this power source
+	   * @return power (kWe)
+	   */
+	 @Override
+	 public double requestPower(double percent) {
+		 double spentFuel = computeFuelConsumption(time, percent, true, true);
+		 return spentFuel / getMaxFuelPerMillisolPerkW(false) / time;
 	 }
 }

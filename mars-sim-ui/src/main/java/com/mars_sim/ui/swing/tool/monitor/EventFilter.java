@@ -16,7 +16,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.events.HistoricalEventCategory;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
@@ -34,6 +34,7 @@ implements ActionListener {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param model the event table model
 	 * @param desktop the main desktop
 	 */
@@ -68,7 +69,7 @@ implements ActionListener {
 	}
 
 	/**
-	 * Create a checkbox to control teh Event category filtering
+	 * Creates a checkbox to control the event category filtering
 	 */
 	private void addCategoryCheckbox(JPanel categoryPane, EventTableModel model2,
 									 HistoricalEventCategory category) {
@@ -80,7 +81,8 @@ implements ActionListener {
 	}
 
 	/**
-	 * React to action event.
+	 * Reacts to action event.
+	 * 
 	 * @see java.awt.event.ActionListener
 	 * @param event the action event
 	 */

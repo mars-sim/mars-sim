@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import com.mars_sim.ui.swing.ComponentMover;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.LineBreakPanel;
 
@@ -63,8 +62,8 @@ public class UnitInfoPanel extends JPanel {
 		setVisible(true);
 
         // Make panel drag-able
-	    ComponentMover mover = new ComponentMover(this, desktop);
-	    mover.registerComponent(this);	
+//	    ComponentMover mover = new ComponentMover(desktop);
+//	    mover.registerComponent(getComponents());	
 	}
 
 }

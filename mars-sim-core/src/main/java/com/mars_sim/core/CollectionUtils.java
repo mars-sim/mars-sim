@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class provides general collection manipulation convenience methods.
@@ -251,8 +251,9 @@ public class CollectionUtils {
 			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
+				Settlement settlementLoc = vehicle.getSettlement();
 				// Select a vehicle at the settlement coordinate.
-				if (vehicle.getCoordinates().equals(settlement.getCoordinates())) {
+				if (settlementLoc != null && settlementLoc.equals(settlement)) {
 					result.add(vehicle);
 				}
 			}
@@ -270,27 +271,28 @@ public class CollectionUtils {
 	 */
 	public static List<Robot> getAssociatedRobotsInSettlementVicinity(Settlement settlement) {
 
-		List<Robot> result = new ArrayList<Robot>();
-
-		if (settlement != null) {
-			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
-			while (i.hasNext()) {
-				Robot robot = i.next();
-
-				// Only select functional robots.
-				if (!robot.getSystemCondition().isInoperable()) {
-
-					// Select a robot that is at the settlement location.
-					Coordinates settlementLoc = settlement.getCoordinates();
-					Coordinates personLoc = robot.getCoordinates();
-					if (personLoc.equals(settlementLoc)) {
-						result.add(robot);
-					}
-				}
-			}
-		}
-
-		return result;
+		return new ArrayList<>(settlement.getAllAssociatedRobots());
+		
+//		List<Robot> result = new ArrayList<Robot>();
+//
+//		if (settlement != null) {
+//			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
+//			while (i.hasNext()) {
+//				Robot robot = i.next();
+//				// Only select functional robots.
+//				if (!robot.getSystemCondition().isInoperable()) {
+//
+//					// Select a robot that is at the settlement location.
+//					Coordinates settlementLoc = settlement.getCoordinates();
+//					Coordinates loc = robot.getCoordinates();
+//					if (loc.equals(settlementLoc)) {
+//						result.add(robot);
+//					}
+//				}
+//			}
+//		}
+//
+//		return result;
 	}
 	
 	/**

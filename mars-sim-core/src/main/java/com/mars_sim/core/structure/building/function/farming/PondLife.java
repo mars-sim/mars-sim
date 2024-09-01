@@ -13,7 +13,7 @@ package com.mars_sim.core.structure.building.function.farming;
 //import edu.colorado.simulations.*; // Provides Organism, Plant, Herbivore classes
 import java.util.Vector;
 
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /******************************************************************************
 * The <CODE>PondLife</CODE> Java application runs a simple simulation that
@@ -154,7 +154,7 @@ public class PondLife {
 	   while (i < fish.size( ))
 	   {
 	      nextFish = fish.elementAt(i);
-	      nextFish.growPerFrame();
+	      nextFish.growPerFrame(.25);
 	      if (nextFish.isAlive( ))
 	         i++;
 	      else
@@ -165,7 +165,7 @@ public class PondLife {
 	   for (i = 0; i <weeds.size( ); i++)
 	   {
 	      nextWeed = weeds.elementAt(i);
-	      nextWeed.growPerFrame( );
+	      nextWeed.growPerFrame(1);
 	   }
 	
 	   // Create some new fish, according to the BIRTH_RATE constant

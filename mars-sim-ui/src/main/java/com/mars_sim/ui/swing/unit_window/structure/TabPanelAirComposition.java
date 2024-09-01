@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +35,15 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
@@ -153,11 +151,11 @@ public class TabPanelAirComposition extends TabPanel {
 		AttributePanel gasPanel = new AttributePanel(2, 3);
 		gasPanel.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelAirComposition.label")));
 		topContentPanel.add(gasPanel); 
-		cO2Label = gasPanel.addTextField(CO2, StyleManager.DECIMAL_PERC2.format(cO2Cache), null);
-		arLabel = gasPanel.addTextField(AR, StyleManager.DECIMAL_PERC2.format(arCache), null);
-		n2Label = gasPanel.addTextField(N2, StyleManager.DECIMAL_PERC2.format(n2Cache), null);
-		o2Label = gasPanel.addTextField(O2, StyleManager.DECIMAL_PERC2.format(o2Cache), null);
-		h2OLabel = gasPanel.addTextField(H2O, StyleManager.DECIMAL_PERC2.format(h2OCache), null);
+		cO2Label = gasPanel.addTextField(CO2, StyleManager.DECIMAL2_PERC.format(cO2Cache), null);
+		arLabel = gasPanel.addTextField(AR, StyleManager.DECIMAL2_PERC.format(arCache), null);
+		n2Label = gasPanel.addTextField(N2, StyleManager.DECIMAL2_PERC.format(n2Cache), null);
+		o2Label = gasPanel.addTextField(O2, StyleManager.DECIMAL2_PERC.format(o2Cache), null);
+		h2OLabel = gasPanel.addTextField(H2O, StyleManager.DECIMAL2_PERC.format(h2OCache), null);
 		gasPanel.addTextField(null, null, null); // Add a blank to balance it out
 
 		// Create override check box panel.
@@ -241,12 +239,7 @@ public class TabPanelAirComposition extends TabPanel {
 	private JRadioButton createSelectorButton(String selector) {
 	    JRadioButton btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox." + selector)); //$NON-NLS-1$
 	    btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox." + selector + ".tooltip")); //$NON-NLS-1$
-	    btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				airTableModel.update();
-			}
-		});
-
+	    btn.addActionListener(e -> airTableModel.update());
 		return btn;
 	}
 
@@ -312,31 +305,31 @@ public class TabPanelAirComposition extends TabPanel {
 			double cO2 = getOverallComposition(ResourceUtil.co2ID);
 			if (cO2Cache != cO2) {
 				cO2Cache = cO2;
-				cO2Label.setText(StyleManager.DECIMAL_PERC2.format(cO2Cache));
+				cO2Label.setText(StyleManager.DECIMAL2_PERC.format(cO2Cache));
 			}
 
 			double ar = getOverallComposition(ResourceUtil.argonID);
 			if (arCache != ar) {
 				arCache = ar;
-				arLabel.setText(StyleManager.DECIMAL_PERC2.format(ar));
+				arLabel.setText(StyleManager.DECIMAL2_PERC.format(ar));
 			}
 
 			double n2 =  getOverallComposition(ResourceUtil.nitrogenID);
 			if (n2Cache != n2) {
 				n2Cache = n2;
-				n2Label.setText(StyleManager.DECIMAL_PERC2.format(n2));
+				n2Label.setText(StyleManager.DECIMAL2_PERC.format(n2));
 			}
 
 			double o2 = getOverallComposition(ResourceUtil.oxygenID);
 			if (o2Cache != o2) {
 				o2Cache = o2;
-				o2Label.setText(StyleManager.DECIMAL_PERC2.format(o2Cache));
+				o2Label.setText(StyleManager.DECIMAL2_PERC.format(o2Cache));
 			}
 
 			double h2O = getOverallComposition(ResourceUtil.waterID);
 			if (h2OCache != h2O) {
 				h2OCache = h2O;
-				h2OLabel.setText(StyleManager.DECIMAL_PERC2.format(h2O));
+				h2OLabel.setText(StyleManager.DECIMAL2_PERC.format(h2O));
 			}
 			
 			double averageTemperature = settlement.getTemperature();

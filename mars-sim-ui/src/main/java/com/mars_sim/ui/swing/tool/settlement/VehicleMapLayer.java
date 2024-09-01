@@ -14,12 +14,14 @@ import java.awt.image.BufferedImage;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -29,7 +31,11 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 	// Static members
 	private static final Color RECT_COLOR = new Color(208, 224, 242); // pale grey color
+
+    private static final Color VEHICLE_SELECTED_COLOR = Color.WHITE;
+    
 	private static final ColorChoice VEHICLE_COLOR = new ColorChoice(Color.YELLOW.darker(), Color.BLACK);
+	
 	private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
 
 	// Data members
@@ -51,12 +57,12 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
+		boolean drawLabel = mapPanel.isOptionDisplayed(DisplayOption.VEHICLE_LABELS);
 
-		// Draw all vehicles.
 		// Draw all parked vehicles at this settlement location
-		for (Vehicle v : settlement.getParkedGaragedVehicles()) {
+		for (Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
 			if (v.isReady())
-				drawVehicle(v, mapPanel.isShowVehicleLabels(), viewpoint);
+				drawVehicle(v, drawLabel, viewpoint);
 		}
 
 		// Restore original graphic transforms.
@@ -71,12 +77,15 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 */
 	private void drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
 
+    	// Check if it's drawing the mouse-picked building 
+        Color selectedColor = (vehicle.equals(mapPanel.getSelectedVehicle()) ? VEHICLE_SELECTED_COLOR : null);
+        
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if (svg != null) {
 			
 			// Draw base SVG image for vehicle.
-			drawStructure(vehicle, svg, null, null, viewpoint);
+			drawStructure(vehicle, svg, svg, selectedColor, viewpoint);
 
 			// Draw overlay if the vehicle is being maintained or repaired.
 			if (isVehicleRepairOrMaintenance(vehicle)) {

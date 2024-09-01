@@ -26,7 +26,7 @@ import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.OneActivity;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Conversion;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
@@ -45,7 +45,7 @@ public class TabPanelSchedule extends TabPanel {
 	
 	private String noteCache; 
 	private String shiftCache;
-	private String timeCache;
+	private String timePeriodCache;
 	private String statusCache;
 	
 	private JTextField shiftNoteTF;
@@ -105,10 +105,10 @@ public class TabPanelSchedule extends TabPanel {
 			shiftLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.label"), //$NON-NLS-1$
 					shiftCache);
 			
-			timeCache = getWorkPeriod(shiftSlot);
+			timePeriodCache = getWorkPeriod(shiftSlot);
 			
 			timeLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.period.label"), //$NON-NLS-1$
-					timeCache);
+					timePeriodCache);
 
 			statusCache = shiftSlot.getStatus().getName();
 			
@@ -150,14 +150,12 @@ public class TabPanelSchedule extends TabPanel {
 		int end = s.getEnd();
 
 		switch(status) {
-			case ON_CALL:
-				return "None";
+			case ON_CALL, ON_LEAVE:
+				return status.getName();
 			case ON_DUTY:
-				return "On Duty ends @ " + end;
+				return status.getName() + " ends @ " + end;
 			case OFF_DUTY:
-				return "Off Duty ends @ " + start;
-			case ON_LEAVE:
-				return "On Leave";
+				return status.getName() + " ends @ " + start;
 		}
 		
 		return "";
@@ -177,7 +175,7 @@ public class TabPanelSchedule extends TabPanel {
 		
 		switch(status) {
 			case ON_CALL:
-				return "On Call";
+				return status.getName();
 			case ON_DUTY, OFF_DUTY, ON_LEAVE:
 				return shiftName;
 		}
@@ -197,14 +195,14 @@ public class TabPanelSchedule extends TabPanel {
 		Shift s = shift.getShift();
 		int start = s.getStart();
 		int end = s.getEnd();
-
+		
 		switch(status) {
+			case ON_DUTY, OFF_DUTY:
+				return "From " + start + " to " + end + " millisols";
 			case ON_CALL:
 				return "Anytime";
-			case ON_DUTY, OFF_DUTY:
-				return start + " - " + end + " millisols";
 			case ON_LEAVE:
-				return "On Leave";
+				return "None";
 		}
 
 		return "";
@@ -225,11 +223,11 @@ public class TabPanelSchedule extends TabPanel {
 				shiftLabel.setText(shift);
 			}
 			
-			String time = getWorkPeriod(shiftSlot);
+			String timePeriod = getWorkPeriod(shiftSlot);
 			
-			if (!timeCache.equalsIgnoreCase(time)) {
-				timeCache = time;
-				timeLabel.setText(time);
+			if (!timePeriodCache.equalsIgnoreCase(timePeriod)) {
+				timePeriodCache = timePeriod;
+				timeLabel.setText(timePeriod);
 			}
 			
 			String status = Conversion.capitalize(shiftSlot.getStatus().toString());

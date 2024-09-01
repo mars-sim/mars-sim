@@ -8,8 +8,8 @@
 package com.mars_sim.core.vehicle;
 
 import com.mars_sim.core.environment.TerrainElevation;
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.mapdata.location.Direction;
 
 /**
  * The Flyer class represents an airborne.
@@ -26,14 +26,14 @@ public abstract class Flyer extends Vehicle {
     public static final double LEAST_AMOUNT = .001D;
     
     /** Ideal hovering elevation. */
-	public final static double ELEVATION_ABOVE_GROUND = .1; // in km
+	public final static double ELEVATION_ABOVE_GROUND = .05; // in km
 	
 	// Data members
 	/** Current total elevation above the sea level in km. */
 	private double elevation;
 
 	/** Current hovering height in km. */
-	private double hoveringHeight;
+	private double hoveringHeight = 0;
 
 //	/** Current Angle of Attack in degree. */
 //	private double AoA;
@@ -57,7 +57,7 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Returns the hovering height of the vehicle above ground [in km].
+	 * Returns the hovering height of the vehicle above ground [in meter], not km.
 	 * 
 	 * @return height
 	 */
@@ -66,7 +66,7 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Sets the hovering height of the vehicle above ground [in km].
+	 * Sets the hovering height of the vehicle above ground [in meter], not km.
 	 * 
 	 * @param height 
 	 */

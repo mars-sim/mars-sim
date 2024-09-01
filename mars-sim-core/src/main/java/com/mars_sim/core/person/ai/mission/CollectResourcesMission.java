@@ -19,17 +19,18 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.CollectResources;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Sleep;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The CollectResourcesMission class is a mission to travel in a rover to
@@ -51,9 +52,11 @@ public abstract class CollectResourcesMission extends EVAMission
 
 	private static final String PROPSPECTING_SITE = "Prospecting Site #";
 
-	/** THe maximum number of sites under consideration. */
+	/** The estimated number of trips made for collecting resources. */
+	private static final int NUM_TRIPS = 6;
+	/** The maximum number of sites under consideration. */
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
-	/** THe maximum number of sites under consideration. */
+	/** The maximum number of sites under consideration. */
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
 	/** Minimum number of people to do mission. */
 	private static final int MIN_PEOPLE = 2;
@@ -65,7 +68,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	protected int resourceID;
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
-	/** The goal amount of resources to collect at a site (kg). */
+	/** The goal amount of resources to collect at one site (kg). */
 	private double siteResourceGoal;
 
 	/** The cumulative amount (kg) of resources collected across multiple sites. */
@@ -140,7 +143,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			
 		// Get the current location.
 		Coordinates startingLocation = s.getCoordinates();
-		double range = getVehicle().getRange();
+		double range = getVehicle().getEstimatedRange();
 		double timeLimit = getRover().getTotalTripTimeLimit(true);
 
 		// Determining the actual traveling range.
@@ -150,7 +153,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		if (range <= 0D) {
 			logger.warning(getVehicle(), "Zero range for mission " 
 					+ getName() + ".");
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -177,7 +180,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		this.siteResourceGoal = 2 * containerCap * containerNum / orderSites.size();
+		this.siteResourceGoal = NUM_TRIPS * containerCap * containerNum / orderSites.size();
 		logger.info(getVehicle(), "Estimating amount of "
 				+ ResourceUtil.findAmountResourceName(resourceID)
 				+ " per site: "
@@ -208,7 +211,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
-	 * @param minPeople              The mimimum number of people for the mission.
+	 * @param minPeople              The minimum number of people for the mission.
 	 * @param rover                  the rover to use.
 	 * @param collectionSites     the sites to collect ice.
 	 */
@@ -221,7 +224,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
+		this.siteResourceGoal = NUM_TRIPS * containerCap * containerNum / collectionSites.size();
 		
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
@@ -422,21 +425,19 @@ public abstract class CollectResourcesMission extends EVAMission
 			return false;
 		}
 
-		// Set the type of resource
-		pickType(person);
-		
-		// Do the EVA task
-		double rate = calculateRate(person);
-
-		// Randomize the rate of collection upon arrival
-		rate = rate
-				* (1 + RandomUtil.getRandomDouble(-.2, .2));
-
 		// Note: Add how areologists and some scientific study may come up with better technique
 		// to obtain better estimation of the collection rate. Go to a prospective site, rather
 		// than going to a site coordinate in the blind.
+	
+		Task currentTask = person.getMind().getTaskManager().getTask();
 
-		if (!person.isEVAFit()) {
+		if (currentTask != null && currentTask.getName().equals(Sleep.NAME)) {
+			// Leave him alone and do NOT assign him any tasks
+			logger.info(person, 4_000,
+        			"Asleep in " + person.getContainerUnit() + " and not to be disturbed.");
+		}
+		
+		else if (!person.isEVAFit()) {
 			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 			boolean canSleep = assignTask(person, new Sleep(person));
@@ -449,12 +450,20 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 		
 		// If person can collect resources, start him/her on that task.
-		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
+		else if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {		
+			// Set the type of resource
+			pickType(person);
+			
+			// Randomize the rate of collection upon arrival
+			double rate = calculateRate(person)
+					* (1 + RandomUtil.getRandomDouble(-.2, .2));
+			
 			EVAOperation collectResources = new CollectResources(person,
 					getRover(), resourceID, rate,
 					siteResourceGoal - amountCollectedAtSiteSoFar0, 
 					rover.getAmountResourceStored(resourceID),
 					containerID, this);
+			
 			assignTask(person, collectResources);
 		}
 

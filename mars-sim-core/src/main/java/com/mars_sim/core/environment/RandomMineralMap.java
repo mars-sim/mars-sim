@@ -12,7 +12,10 @@ import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.net.URL;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 import javax.swing.ImageIcon;
 
@@ -29,32 +35,88 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MineralMapConfig.MineralType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.Direction;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A randomly generated mineral map of Mars.
  */
 public class RandomMineralMap implements MineralMap {
 
+	/*
+	 * Additional Map Resources
+	 * 
+	 * (A). Arizona State University (ASU) Mars Space FLight Facility
+	 * 
+	 * 1. GLobal Data Sets - THEMIS, MOLA, TES THermal Inertia, etc.
+	 * 2. TES Mineral Maps - Hematite, K-Feldspar, Plagioclase, High/Low-Ca Pyroxene, Olivine, Si, Quartz, Amphibole
+	 * 3. Viking IRTM
+	 * 
+	 * Reference : 
+	 * 1. https://mars.asu.edu/data/
+	 * 
+	 * 
+	 * 
+	 * (B). ESA's 5 minerals maps 
+	 * 
+	 * 1. Ferric Oxide - https://www.esa.int/ESA_Multimedia/Images/2013/05/Mars_ferric_oxide_map
+ 	 * 2. Dust - https://www.esa.int/ESA_Multimedia/Images/2013/05/Mars_dust_map
+	 * 3. Pyroxene - https://www.esa.int/ESA_Multimedia/Images/2013/05/Mars_pyroxene_map
+	 * 4. Hydrated Mineral - https://www.esa.int/ESA_Multimedia/Images/2013/05/Mars_hydrated_mineral_map
+	 * 5. Mineralogy - https://www.esa.int/ESA_Multimedia/Images/2013/05/Mars_mineralogy
+	 * 
+	 * Reference: 
+	 * 1. https://www.esa.int/ESA_Multimedia/Videos/2013/05/Mars_mineral_globe
+	 * 2. https://phys.org/news/2022-08-mars-invaluable-future-exploration.html
+	 * 
+	 * 
+	 * 
+	 * (C). Rainbow Map
+	 * 
+	 * A new, high-resolution mineral map of Mars was released in July 2022. Dubbed the “Rainbow Map,” it covers 86%
+	 * of the Red Planet’s surface and reveals the distribution of dozens of key minerals. This 5.6-gigapixel map 
+	 * provides a more detailed understanding of Mars’ geological composition.
+	 * 
+	 * Compact Reconnaissance Imaging Spectrometer for Mars (CRISM) instrument on NASA’s Mars Reconnaissance Orbiter (MRO) 
+	 * spacecraft has a new near-global map conveying the mineral composition of the Martian surface.
+	 * 
+	 * Using detectors that see visible and infrared wavelengths, the CRISM team has previously produced high-resolution 
+	 * mineral maps that provide a record of the formation of the Martian crust and where and how it was altered by water.
+	 * 
+	 * These maps have been crucial to helping scientists understand how lakes, streams, and groundwater shaped the planet. 
+	 * 
+	 * The different false-colors of the CRISM images show the presence of iron-oxides, iron-bearing minerals, important
+	 * rock-forming minerals like pyroxene, water-altered minerals and carbonates on the planet's surface.
+	 * 
+	 * May use CRISM's map to deduce distribution of dozens of key minerals in future.
+	 * 
+	 * Reference: 
+	 * 1. https://www.forbes.com/sites/davidbressan/2022/07/05/new-mineralogical-map-of-mars-online/
+	 * 2. https://www.jhuapl.edu/news/news-releases/220621-crism-team-releases-new-global-map-of-mars-at-instruments-close
+	 * 3. https://www.jhuapl.edu/news/news-releases/220621-crism-team-releases-new-global-map-of-mars-at-instruments-close
+	 */
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private static final SimLogger logger = SimLogger.getLogger(RandomMineralMap.class.getName());
-
+	
+	public static final double MIN_DISTANCE = 0.5;
+	 
+	public static final String TOPO_MAP_FOLDER = "/topography/";
+	
 	private final int W = 300;
 	private final int H = 150;
 	
-	private final int NUM_REGIONS = 50;
+	private final int NUM_REGIONS = 100;
 
 	private final int REGION_FACTOR = 1500;
 	private final int NON_REGION_FACTOR = 50;
 	
-	private final double PIXEL_RADIUS = Coordinates.KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR; //(Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
-	
-	private final String IMAGES_FOLDER = "/images/";
+	// The resolution of each pixel is approximately 5.9219 m (or 0.00592 km) 
+//	private final double PIXEL_RADIUS = Coordinates.KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR; //(Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 	
 	// Topographical Region Strings
 	private final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
@@ -72,11 +134,13 @@ public class RandomMineralMap implements MineralMap {
 	private final String VERY_RARE_FREQUENCY = "very rare";
 
 	private final double LIMIT = Math.PI / 7;
-
+	
 	// A map of all mineral concentrations
 	private Map<Coordinates, Map<String, Integer>> allMineralsByLoc;
 
 	private String[] mineralTypeNames;
+	/** A map of the mineral name and its rgb color string. */
+	private transient SortedMap<String, String> mineralColorMap;
 	
 	private transient Set<Coordinates> allLocations;
 	
@@ -90,6 +154,8 @@ public class RandomMineralMap implements MineralMap {
 	RandomMineralMap() {
 	
 		allMineralsByLoc = new HashMap<>();
+		
+		mineralColorMap = new TreeMap<>();
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
 		
@@ -116,6 +182,9 @@ public class RandomMineralMap implements MineralMap {
 		while (i.hasNext()) {
 			MineralType mineralType = i.next();
 			
+			// Save the color string
+			mineralColorMap.put(mineralType.toString(), mineralType.getColorString());
+			
 			// Create super set of topographical regions.
 			Set<Coordinates> regionSet = new HashSet<>(NUM_REGIONS);
 
@@ -134,28 +203,27 @@ public class RandomMineralMap implements MineralMap {
 			int length = regionSet.size();
 			Coordinates[] regionArray = regionSet.toArray(new Coordinates[length]);
 		
-			// Will have one region array for each of 10 types of minerals 
-//				regionArray is between 850 and 3420 for each mineral
+			// Have one region array for each of 10 types of minerals 
+			// regionArray between 850 and 3420 for each mineral
 			
 			// For now start with a random concentration between 0 to 100
 			int conc = RandomUtil.getRandomInt(100);
 			
-			// Determine individual mineral concentrations.
-			int concentrationNumber = calculateIteration(mineralType, true, length);
+			// Determine individual mineral iteration.
+			int numIteration = calculateIteration(mineralType, true, length);
 					
-			// Get the new remainingConc by multiplying it with concentrationNumber; 
-			double remainingConc = 1.0 * conc * concentrationNumber;
+			// Get the new remainingConc
+			double remainingConc = 1.0 * conc * numIteration;
 		
-			for (int x = 0; x < concentrationNumber; x++) {
-
+			for (int x = 0; x < numIteration; x++) {
+				
+				// Determine individual mineral concentrations.
 				remainingConc = createMinerals(remainingConc, 
-						regionArray[RandomUtil.getRandomInt(length - 1)], x, concentrationNumber, conc, mineralType.name);
+						regionArray[RandomUtil.getRandomInt(length - 1)], x, numIteration, conc, mineralType.name);
 								
 				if (remainingConc <= 0.0) 
 					break;
-			}
-				
-			
+			}		
 		} // end of iterating MineralType
 	}
 
@@ -170,7 +238,8 @@ public class RandomMineralMap implements MineralMap {
 	 */
 	public double createMinerals(double remainingConc, Coordinates oldLocation, int x, int last, double conc, String mineralName) {
 		Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
-		double distance = RandomUtil.getRandomDouble(PIXEL_RADIUS);
+		// Spread it over a 10 km radius
+		double distance = RandomUtil.getRandomDouble(1, 20);
 		Coordinates newLocation = oldLocation.getNewLocation(direction, distance);
 		double concentration = 0;
 
@@ -226,21 +295,23 @@ public class RandomMineralMap implements MineralMap {
 		while (i.hasNext()) {
 			MineralType mineralType = i.next();
 
-			// For now start with a random concentration between 0 to 100
-			int conc = RandomUtil.getRandomInt(15);
+			// For now start with a random concentration between 0 to 25
+			int conc = RandomUtil.getRandomInt(5, 25);
+			// Determine individual mineral iteration.
+			int numIteration = calculateIteration(mineralType, false, 1);
 
-			int concentrationNumber = calculateIteration(mineralType, false, 0);
+			// Get the new remainingConc
+			double remainingConc = 1.0 * conc * numIteration;
 			
-			// Get the new remainingConc by multiplying it with concentrationNumber; 
-			double remainingConc = 1.0 * conc * concentrationNumber;
-			
-			for (int x = 0; x < concentrationNumber; x++) {
-				
+			for (int x = 0; x < numIteration; x++) {
+				// Determine individual mineral concentrations
 				remainingConc = createMinerals(remainingConc, location, x, 
-						concentrationNumber, conc, mineralType.name);				
+						numIteration, conc, mineralType.name);	
+				
+				if (remainingConc <= 0.0) 
+					break;
 			}
 		}
-		
 	}
 	
 	/**
@@ -260,7 +331,7 @@ public class RandomMineralMap implements MineralMap {
 		}
 		else {
 			num = (int)(Math.round(RandomUtil.getRandomDouble(.75, 1.25) 
-					* NON_REGION_FACTOR * 2
+					* NON_REGION_FACTOR * 2 * length
 					/ getFrequencyModifier(mineralType.frequency)));
 		}
 		return num;
@@ -293,7 +364,7 @@ public class RandomMineralMap implements MineralMap {
 	 */
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<>(3000);
-		URL imageMapURL = getClass().getResource(IMAGES_FOLDER + imageMapName);
+		URL imageMapURL = getClass().getResource(TOPO_MAP_FOLDER + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 
@@ -466,6 +537,16 @@ public class RandomMineralMap implements MineralMap {
 	}
 
 	/**
+	 * Gets the color string of a mineral.
+	 * 
+	 * @param mineralName
+	 * @return
+	 */
+	public String getColorString(String mineralName) {
+		return mineralColorMap.get(mineralName);
+	}
+	
+	/**
 	 * Gets an array of all mineral type names.
 	 * 
 	 * @return array of name strings.
@@ -488,7 +569,10 @@ public class RandomMineralMap implements MineralMap {
 				logger.severe("Error getting mineral types.", e);
 			}
 			
+			Arrays.sort(result);
+			
 			mineralTypeNames = result;
+			
 			return result;
 		}
 		
@@ -496,15 +580,17 @@ public class RandomMineralMap implements MineralMap {
 	}
 
 	/**
-	 * Generates a set of Mineral locations from a starting location.
+	 * Generates a map of Mineral locations from a starting location.
 	 * 
 	 * @param startingLocation
 	 * @param range
+	 * @param foundLocations
 	 * @return
 	 */
-	public Set<Coordinates> generateMineralLocations(Coordinates startingLocation, double range) {
+	public Map<Coordinates, Double> generateMineralLocations(Coordinates startingLocation, double range, 
+			Collection<Coordinates> foundLocations) {
 
-		Set<Coordinates> locales = new HashSet<>();
+		Map<Coordinates, Double> locales = new HashMap<>();
 		
 		if (allLocations == null) {
 			allLocations = allMineralsByLoc.keySet();
@@ -513,9 +599,11 @@ public class RandomMineralMap implements MineralMap {
 		Iterator<Coordinates> i = allLocations.iterator();
 		while (i.hasNext()) {
 			Coordinates c = i.next();
-			double distance = Coordinates.computeDistance(startingLocation, c);
-			if (range >= distance) {
-				locales.add(c);
+			if (!foundLocations.contains(c)) {
+				double distance = Coordinates.computeDistance(startingLocation, c);
+				if (range >= distance && distance >= MIN_DISTANCE) {
+					locales.put(c, distance);
+				}
 			}
 		}
 
@@ -531,42 +619,74 @@ public class RandomMineralMap implements MineralMap {
 		return locales;
 	}
 	
+	public <K, V> Stream<K> keys(Map<K, V> map, V value) {
+	    return map
+	      .entrySet()
+	      .stream()
+	      .filter(entry -> value.equals(entry.getValue()))
+	      .map(Map.Entry::getKey);
+	}
+	
 	/**
 	 * Finds a random location with mineral concentrations from a starting location
 	 * and within a distance range.
 	 * 
 	 * @param startingLocation the starting location.
 	 * @param range            the distance range (km).
-	 * @return location with one or more mineral concentrations or null if none
-	 *         found.
+	 * @param sol			the mission sol
+	 * @param foundLocations
+	 * @return location and distance pair
 	 */
-	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
-		Coordinates chosen = null;
+	public Map.Entry<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol,
+			Collection<Coordinates> foundLocations) {
 
-		Set<Coordinates> locales = generateMineralLocations(startingLocation, range);
-		int size = locales.size();
+		Map<Coordinates, Double> locales = generateMineralLocations(startingLocation, range, foundLocations);
 		
+		int size = locales.size();
 		if (size <= 0) {
 			return null;
 		}
-		
+			
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
-	
-		for (Coordinates c : locales) {
-			double distance = Coordinates.computeDistance(startingLocation, c);
-
-			// Fill up the weight map
-			weightedMap.put(c, (range - distance) / range);
-		}
-	
-		// Choose one with weighted randomness 
-		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
-		double chosenDist = weightedMap.get(chosen);
 		
-		logger.info(unitManager.findSettlement(startingLocation), 30_000L, 
-				"Investigating mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
+		for (Coordinates c: locales.keySet()) {
+			double distance = locales.get(c);
+			if (distance < MIN_DISTANCE) {
+				continue;
+			}
+			double prob = 0;
+			double delta = range - distance + Math.max(0, 100 - sol);
+			if (delta > 0) {
+				prob = delta * delta / range / range;
+			}
+			
+			if (distance >= MIN_DISTANCE && prob > 0) {
+				// Fill up the weight map
+				weightedMap.put(c, prob);
+//				System.out.println("c: " + c + "  d: " + distance);
+			}
+		}
 
-		return chosen;
+		// Note: May use getRandomRegressionInteger to make the coordinates to be potentially closer
+
+		// Choose one with weighted randomness 
+		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+
+		if (weightedMap.isEmpty() || chosen == null) {
+			logger.info(unitManager.findSettlement(startingLocation), "No site of interest found.");
+			return null;
+		}
+		
+		double chosenDist = locales.get(chosen);
+
+		logger.info(unitManager.findSettlement(startingLocation), 30_000L, 
+				"Located a mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
+
+//		System.out.println("#: " + weightedMap.size());
+		
+		Map.Entry<Coordinates, Double> result = new SimpleEntry<>(chosen, chosenDist);
+
+		return result;
 	}
 
 	@Override

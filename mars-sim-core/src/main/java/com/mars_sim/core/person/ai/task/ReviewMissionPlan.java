@@ -33,8 +33,8 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Management;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The task for reviewing mission plans.
@@ -245,14 +245,14 @@ public class ReviewMissionPlan extends Task {
 		double siteValue = 0;
 		if (m instanceof SiteMission sm) {
 			// The site value is divided by the distance proposed
-			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getDistanceProposed();
+			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getTotalDistanceProposed();
 		}
 
 		// 7. proposed route distance (note that a negative score represents a penalty)
 		int dist = 0;
 		if (m instanceof VehicleMission vm) {
-			double range = vm.getVehicle().getRange();
-			double proposed = vm.getDistanceProposed();
+			double range = vm.getVehicle().getEstimatedRange();
+			double proposed = vm.getTotalDistanceProposed();
 			
 			// Scoring rule:
 			// At range = 0, the score is 0
@@ -367,7 +367,7 @@ public class ReviewMissionPlan extends Task {
 		double siteValue = 0;
 		if (m instanceof SiteMission sm) {
 			// The site value is divided by the distance proposed
-			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getDistanceProposed();
+			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getTotalDistanceProposed();
 		}
 
 		// 9. reviewer role weight

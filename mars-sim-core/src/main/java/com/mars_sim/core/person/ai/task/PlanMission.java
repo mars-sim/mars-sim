@@ -22,8 +22,8 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 
 /**
@@ -161,20 +161,22 @@ public class PlanMission extends Task {
 					mission = person.getMind().startNewMission();
 					if (mission == null) {
 						// No mission found so stop planning for now
-						logger.log(worker, Level.WARNING, 30_000, "Working on a mission.");
+						logger.log(worker, Level.INFO, 30_000, "No mission selected.");
 					}
 					else {	
 						setPhase(SUBMITTING);
 					}
 				}
 				else {
-					// Prior to 70% completion
 					
-//					1. PlanMission should make use of the task time spent in the selecting 
-//					   phase. May be adding a research phase.
-//					2. One suggestion is modeling a memory cell for recording a person's 
+					// Prior to 70% completion,
+					
+//					1. PlanMission should record use of the task time spent in the selecting 
+//					   phase for that person. 
+//					2. May be one can draw from someone else's research to boost the success of planning a mission.
+//					3. In future, one may model a memory cell for recording a person's 
 //					   effort in researching a mission type. 
-//					3. Model how to document all efforts such as consulting with leadership, 
+//					3. Document all mission planning efforts such as consulting with leadership, 
 //					   meeting with experts, looking up map data to determine mission 
 //					   feasibility, etc.
 				}

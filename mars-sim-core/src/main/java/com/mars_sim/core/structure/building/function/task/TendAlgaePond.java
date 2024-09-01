@@ -16,8 +16,8 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The TendAlgaePond class is a task for tending algae pond in a
@@ -233,6 +233,8 @@ public class TendAlgaePond extends TendHousekeeping {
 		if ((remainingTime > 0) || (tendTime > MAX_TEND)) {
 			endTask();
 		}
+		
+		// Accumulate tend time
 		tendTime += time;
 		
 		return 0;

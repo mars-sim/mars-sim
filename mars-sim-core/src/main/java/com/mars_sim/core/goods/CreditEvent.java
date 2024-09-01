@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CreditEvent.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 
@@ -29,7 +29,8 @@ public class CreditEvent extends EventObject {
 	private static UnitManager unitManager = sim.getUnitManager();
 	
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param settlement1 the first settlement.
 	 * @param settlement2 the second settlement.
 	 * @param credit the credit amount (VP).
@@ -54,6 +55,7 @@ public class CreditEvent extends EventObject {
 	
 	/**
 	 * Gets the second settlement.
+	 * 
 	 * @return settlement.
 	 */
 	public Settlement getSettlement2() {
@@ -62,6 +64,7 @@ public class CreditEvent extends EventObject {
 	
 	/**
 	 * Gets the credit amount.
+	 * 
 	 * @return credit amount (VP).
 	 */
 	public double getCredit() {

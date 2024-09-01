@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.Msg;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
@@ -30,8 +30,9 @@ extends ToolWindow {
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("ScienceWindow.title"); //$NON-NLS-1$
+	public static final String NAME = "science";
 	public static final String ICON = "science";
+    public static final String TITLE = Msg.getString("ScienceWindow.title");
 
 	// Data members
 	private AbstractStudyListPanel ongoingStudyListPane;
@@ -47,7 +48,7 @@ extends ToolWindow {
 	public ScienceWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
-		super(NAME, desktop);
+		super(NAME, TITLE, desktop);
 
 		selectedStudy = null;
 

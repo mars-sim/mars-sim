@@ -16,7 +16,7 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.MathUtils;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class EmotionManager implements Serializable {
 

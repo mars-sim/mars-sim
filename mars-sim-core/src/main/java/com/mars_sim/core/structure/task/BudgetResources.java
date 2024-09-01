@@ -22,8 +22,8 @@ import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.Management;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The task for budgeting resources.
@@ -248,8 +248,8 @@ public class BudgetResources extends Task {
 					double[] data = quarters.calculateWaterLevel(time);
 					
 					logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
-						+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
-							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
+						+ "'s water ration level. Water: " + Math.round(data[0]*10.0)/10.0
+							+ ". Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
 				} break;
 				
 				case RESOURCE: {

@@ -25,9 +25,11 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
@@ -40,6 +42,8 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -48,9 +52,6 @@ import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleMeta;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -158,13 +159,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			usable = usable && vehicle.isVehicleReady();
 
-			usable = usable && (vehicle.getStoredMass() <= 0D);
+			usable = usable && (vehicle.isEmpty());
 
 			if (usable && (vehicle instanceof Rover rover)) {
 				if (result == null)
 					// so far, this is the first vehicle being picked
 					result = rover;
-				else if (vehicle.getRange() > result.getRange())
+				else if (vehicle.getEstimatedRange() > result.getEstimatedRange())
 					// This vehicle has a better range than the previously selected vehicle
 					result = rover;
 			}
@@ -198,7 +199,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (!(vehicle instanceof Rover))
 				usable = false;
 
-			if (vehicle.getStoredMass() > 0D)
+			if (!vehicle.isEmpty())
 				usable = false;
 
 			if (usable)
@@ -293,7 +294,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -301,7 +302,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (settlement == null) {
 			logger.warning(member,
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -630,40 +631,39 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				else if (isRoverInAGarage) {
 										
 					// Transfer the person from vehicle to settlement
-					p.transfer(disembarkSettlement);
+					boolean backToSettle = p.transfer(disembarkSettlement);
 					
-					// Remove this person from the rover
-					rover.removePerson(p);
-					
-					// Add this person to the building
-					BuildingManager.setToBuilding(p, rover.getGarage());
-					
-					String roverName = "None";
-					
-					if (p.getVehicle() != null)
-						roverName = p.getVehicle().getName();
-					
-					if (p.isInSettlement()) {
-						logger.info(p, "[Status Report] " + roverName
-								+ " in " + rover.getBuildingLocation().getName()
-								+ ".  Location State: " + p.getLocationStateType().getName()
-								);
-					}
-					
-					else {						
-						// Not in settlement yet
-						logger.info(p, "[Status Report] " + roverName
-								+ " in " + rover.getLocationStateType().getName()
-								+ ".  Location State: " + p.getLocationStateType().getName()
-								);
+					if (backToSettle) {
+						// Remove this person from the rover
+						rover.removePerson(p);
+						
+						// Add this person to the building
+						BuildingManager.setToBuilding(p, rover.getGarage());
+						
+						String roverName = rover.getName();
+						
+						if (p.isInSettlement()) {
+							logger.info(p, "[Status Report] Left " + roverName
+									+ " in " + rover.getBuildingLocation().getName()
+									+ ".  Building: " + p.getBuildingLocation().getName()
+									+ ".  Location State: " + p.getLocationStateType().getName());
+						}
+						
+						else {						
+							// Not in settlement yet
+							logger.severe(p, "[Status Report] Left " + roverName
+									+ " in " + rover.getLocationStateType().getName()
+									+ ".  Location State: " + p.getLocationStateType().getName());
+						}
 					}
 				}
 				
 				else {
-					// Not in a garage
+					// Rover is NOT in a garage
 					
 					// See if this person needs an EVA suit
-					// This is considered cheating since missing EVA suits are automatically
+					
+					// Note: This is considered cheating since missing EVA suits are automatically
 					// transfered to the vehicle
 					EVASuitUtil.transferSuitsToVehicle(p, disembarkSettlement, this);
 				}
@@ -829,7 +829,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Register the historical event
 		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
 				this,
-				p.getPhysicalCondition().getHealthSituation(),
+				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
 				p.getName(),
 				p
@@ -1109,7 +1109,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Use Iterator's remove() method
 					i.remove();
 					// Adjust the work shift
-					memberLeave(member);
+					removeMember(member);
 				}
 			 }
 			

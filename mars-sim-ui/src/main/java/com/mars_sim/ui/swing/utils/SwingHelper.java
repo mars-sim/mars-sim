@@ -41,7 +41,7 @@ public final class SwingHelper {
      * @param yOffset  Offset of popup point in X
      * @return
      */
-    public static JDialog createPoupWindow(JPanel content, int width, int height, int xOffset, int yOffset) {
+    public static JDialog createPopupWindow(JPanel content, int width, int height, int xOffset, int yOffset) {
 		JDialog d = new JDialog();
 		d.setUndecorated(true);
                 

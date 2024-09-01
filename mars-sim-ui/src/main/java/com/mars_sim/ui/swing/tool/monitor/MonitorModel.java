@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MonitorModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-76-29
  * @author Manny Kung
  */
 
@@ -22,8 +22,9 @@ import com.mars_sim.core.structure.Settlement;
 interface MonitorModel extends TableModel {
 
 	/**
-	 * Get the name of this model. The name will be a description helping
+	 * Gets the name of this model. The name will be a description helping
 	 * the user understand the contents.
+	 * 
 	 * @return Descriptive name.
 	 */
 	public String getName();
@@ -36,11 +37,6 @@ interface MonitorModel extends TableModel {
 	 * @return Object at the specified row.
 	 */
 	public Object getObject(int row);
-
-	/**
-	 * Prepares the model for deletion.
-	 */
-	public void destroy();
 
 	/**
 	 * Gets the model count string.
@@ -63,8 +59,9 @@ interface MonitorModel extends TableModel {
     public void setMonitorEntites(boolean activate);
 
 	/**
-	 * Get the index of the Settlement column if defined. This is a special column that can be visbile/hidden according
+	 * Gets the index of the Settlement column if defined. This is a special column that can be visible/hidden according
 	 * to the selection.
+	 * 
 	 * @return
 	 */
 	public int getSettlementColumn();
@@ -77,4 +74,10 @@ interface MonitorModel extends TableModel {
 	 * @return
 	 */
     public String getToolTipAt(int rowIndex, int colIndex);
+    
+	/**
+	 * Prepares the model for deletion.
+	 */
+	public void destroy();
+
 }

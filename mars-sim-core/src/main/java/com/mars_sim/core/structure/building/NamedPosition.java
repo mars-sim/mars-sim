@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.structure.building;
 
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.map.location.LocalPosition;
 
 /**
  * Represents a LocalPosition with an associated name.

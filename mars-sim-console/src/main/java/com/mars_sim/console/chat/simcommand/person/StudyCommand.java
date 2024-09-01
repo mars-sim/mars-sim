@@ -30,14 +30,14 @@ public class StudyCommand extends AbstractPersonCommand {
 
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
-		ScientificStudy pristudy = person.getStudy();
+		ScientificStudy pristudy = person.getResearchStudy().getStudy();
 		StructuredResponse response = new StructuredResponse();
 		if (pristudy != null) {
 			response.appendHeading("Primary Study");
 			CommandHelper.outputStudy(response, pristudy);
 		}
 		
-		Set<ScientificStudy> studies = person.getCollabStudies();
+		Set<ScientificStudy> studies = person.getResearchStudy().getCollabStudies();
 		if (!studies.isEmpty()) {
 			response.appendBlankLine();
 			response.appendHeading("Collaborating Studies");

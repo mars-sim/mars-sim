@@ -305,29 +305,26 @@ public class TableColumnManager
 		//  Create a menu item for all columns managed by the table column
 		//  manager, checking to see if the column is shown or hidden.
 
-		for (TableColumn tableColumn : allColumns)
-		{
+		for (TableColumn tableColumn : allColumns) {
 			Object value = tableColumn.getHeaderValue();
-			JCheckBoxMenuItem item = new JCheckBoxMenuItem( value.toString() );
-			item.addActionListener( this );
+			JCheckBoxMenuItem item = new JCheckBoxMenuItem(value.toString());
+			item.addActionListener(this);
 
-			try
-			{
-				tcm.getColumnIndex( value );
-				item.setSelected( true );
+			try {
+				tcm.getColumnIndex(value);
+				item.setSelected(true);
 
 				if (columnCount == 1)
-					item.setEnabled( false );
+					item.setEnabled(false);
 			}
-			catch(IllegalArgumentException e)
-			{
-				item.setSelected( false );
+			catch(IllegalArgumentException e) {
+				item.setSelected(false);
 			}
 
-			popup.add( item );
+			popup.add(item);
 
 			if (value == headerValue)
-				popup.setSelected( item );
+				popup.setSelected(item);
 		}
 
 		//  Display the popup below the TableHeader

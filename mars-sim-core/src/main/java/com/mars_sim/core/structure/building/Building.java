@@ -32,6 +32,9 @@ import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -83,10 +86,7 @@ import com.mars_sim.core.structure.building.utility.power.PowerMode;
 import com.mars_sim.core.structure.building.utility.power.PowerStorage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
-import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The Building class is a settlement's building.
@@ -129,6 +129,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// "-1" if it doesn't exist.
 	private double length;
 	private double floorArea;
+	private double areaFactor;
 	private double facing;
 	private double baseFullPowerRequirement;
 	private double baseLowPowerRequirement;
@@ -238,12 +239,13 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		if (length == width) {
 			// For Habs and Hubs that have a circular footprint
-			this.floorArea = Math.PI * .25 * 
-					length * length;
+			this.floorArea = Math.PI * .25 * length * width;
 		}
 		else
 			this.floorArea = length * width;
 		
+		areaFactor = Math.sqrt(floorArea) / 2;
+				
 		if (floorArea <= 0) {
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
@@ -738,6 +740,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return floorArea;
 	}
 
+	public double getAreaFactor() {
+		return areaFactor;
+	}
+	
 	/**
 	 * Returns the volume of the building in liter.
 	 *
@@ -784,11 +790,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// Determine power required for each function.
 		for (Function function : functions) {
-			double power = function.getPowerRequired();
+			double power = function.getCombinedPowerLoad();
 			if (power > 0) {
-//			Test for System.out.println(nickName + " : "
-//					+ function.getFunctionType().toString() + " : "
-//					+ Math.round(power * 10.0)/10.0 + " kW")
 				result += power;
 			}
 		}
@@ -796,6 +799,21 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return result + powerNeededForEVAHeater;
 	}
 
+	/**
+	 * Gets the power requirement for full-power mode.
+	 *
+	 * @return power in kW.
+	 */
+	public double getGeneratedPower() {
+		double result = 0;
+
+		if (getPowerGeneration() != null) {
+			result = getPowerGeneration().getGeneratedPower();
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets the power requirement for low-power mode.
 	 *
@@ -823,7 +841,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * Sets the building's power mode.
 	 */
 	public void setPowerMode(PowerMode powerMode) {
-		this.powerModeCache = powerMode;
+		if (powerModeCache != powerMode) {
+			powerModeCache = powerMode;
+			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+		}
 	}
 
 	/**
@@ -840,6 +861,34 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return result;
 	}
 
+	/**
+	 * Gets the heat gain of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatGain() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatGain();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the heat loss of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatLoss() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatLoss();
+
+		return result;
+	}
+	
 	/**
 	 * Gets the initial net heat gain of this building.
 	 *
@@ -864,6 +913,34 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		if (furnace != null && heating != null)
 			result = furnace.getHeating().getPostNetHeat();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the air heat sink of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getAirHeatSink() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getAirHeatSink();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the water heat sink of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getWaterHeatSink() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getWaterHeatSink();
 
 		return result;
 	}
@@ -897,40 +974,40 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 	
 	/**
-	 * Gets the incoming heat due to ventilation.
+	 * Gets the vent heat passively initiated by other building toward this building.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getVentInHeat() {
+	public double getPassiveVentHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getVentInHeat();
+			result = furnace.getHeating().getPassiveVentHeat();
 
 		return result;
 	}
 	
 	/**
-	 * Gets the outgoing heat due to ventilation.
+	 * Gets the vent heat actively managed by this building via ventilation.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getVentOutHeat() {
+	public double getActiveVentHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getVentOutHeat();
+			result = furnace.getHeating().getActiveVentHeat();
 
 		return result;
 	}
 	
 	
 	/**
-	 * Gets the heat deviation of this building.
+	 * Gets the heat surplus of this building.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatDev() {
+	public double getHeatSurplus() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
@@ -1582,7 +1659,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				return false;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+			setCoordinates(settlement.getCoordinates());
 			// 2. Set LocationStateType
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			// 3. Set containerID
