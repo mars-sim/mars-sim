@@ -1,23 +1,56 @@
 /**
  * Mars Simulation Project
- * MissionManifest.java
- * @date 2023-06-03
+ * SuppliesManifest.java
+ * @date 2024-09-01
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.resource;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manifest for a Mission covering mandatory and optional reources & items.
+ * Represents a manifest of Supplies covering mandatory and optional reources & items.
  */
-public class MissionManifest {
+public class SuppliesManifest {
 
-    private Map<Integer, Number> mandatoryResources = new HashMap<>();
-    private Map<Integer, Number> optionalResources = new HashMap<>();
-    private Map<Integer, Integer> mandatoryEqm = new HashMap<>();
-    private Map<Integer, Integer> optionalEqm = new HashMap<>();
+    private Map<Integer, Number> mandatoryResources;
+    private Map<Integer, Number> optionalResources;
+    private Map<Integer, Integer> mandatoryEqm;
+    private Map<Integer, Integer> optionalEqm;
+
+    /**
+     * Preload the manifest
+     * @param mandatoryResources
+     * @param optionalResources
+     * @param mandatoryEqm
+     * @param optionalEqm
+     */
+    public SuppliesManifest(Map<Integer, Number> mandatoryResources, Map<Integer, Number> optionalResources,
+            Map<Integer, Integer> mandatoryEqm, Map<Integer, Integer> optionalEqm) {
+        this.mandatoryResources = mandatoryResources;
+        this.optionalResources = optionalResources;
+        this.mandatoryEqm = mandatoryEqm;
+        this.optionalEqm = optionalEqm;
+    }
+
+    /**
+     * Deep copy of an existing manifest.
+     * @param source Source manifest
+     */
+    public SuppliesManifest(SuppliesManifest source) {
+        this.mandatoryResources =  new HashMap<>(source.mandatoryResources);
+        this.optionalResources = new HashMap<>(source.optionalResources);
+        this.mandatoryEqm = new HashMap<>(source.mandatoryEqm);
+        this.optionalEqm = new HashMap<>(source.optionalEqm);
+    }
+
+    public SuppliesManifest() {
+        mandatoryResources = new HashMap<>();
+        optionalResources = new HashMap<>();
+        mandatoryEqm = new HashMap<>();
+        optionalEqm = new HashMap<>();
+    }
 
     /**
      * Add an amount of resource to the manifest. This is cummulative and will increase what resoruce
@@ -29,9 +62,6 @@ public class MissionManifest {
     public void addResource(int resourceId, double amount, boolean mandatory) {
         Map<Integer, Number> selected = (mandatory ? mandatoryResources : optionalResources);
         selected.merge(resourceId, amount, (v1,v2) -> v1.doubleValue() + v2.doubleValue());
-
-        // Number existing = selected.getOrDefault(resourceId, 0D);
-        // selected.put(resourceId, existing.doubleValue() + amount);
     }
 
     /**
@@ -44,8 +74,6 @@ public class MissionManifest {
     public void addItem(int itemId, int count, boolean mandatory) {
         Map<Integer, Number> selected = (mandatory ? mandatoryResources : optionalResources);
         selected.merge(itemId, count, (v1,v2) -> v1.intValue() + v2.intValue());
-        // Could take the largest Item demand
-        //selected.merge(itemId, count, (v1,v2) -> Math.max(v1.intValue(), v2.intValue()));
     }
 
     /**

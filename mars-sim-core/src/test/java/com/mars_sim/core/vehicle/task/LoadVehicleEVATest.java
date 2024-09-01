@@ -1,15 +1,12 @@
 package com.mars_sim.core.vehicle.task;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 
 public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
     public void testCreateTask() {
@@ -22,15 +19,12 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
         var eva = EVAOperationTest.prepareForEva(this, p);
 
         // Create a loading plan and preload Settlement
-        Map<Integer, Number> resources = new HashMap<>();
-        resources.put(ResourceUtil.oxygenID, 10D);
-        resources.put(ResourceUtil.waterID, 10D);
-        resources.put(ResourceUtil.foodID, 10D);
-        for(var entry : resources.entrySet()) {
-            s.storeAmountResource(entry.getKey(), entry.getValue().doubleValue() * 1.1D);
-        }
-        LoadingController lc = new LoadingController(s, v, resources, Collections.emptyMap(),
-                                        Collections.emptyMap(), Collections.emptyMap());
+        var resources = new SuppliesManifest();
+        resources.addResource(ResourceUtil.oxygenID, 10D, true);
+        resources.addResource(ResourceUtil.waterID, 10D, true);
+        resources.addResource(ResourceUtil.foodID, 10D, true);
+        LoadControllerTest.loadSettlement(s, resources);
+        LoadingController lc = new LoadingController(s, v, resources);
 
         var task = new LoadVehicleEVA(p, lc);
         assertFalse("Task created", task.isDone()); 

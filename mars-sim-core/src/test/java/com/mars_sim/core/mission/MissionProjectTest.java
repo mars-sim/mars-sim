@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
 
 public class MissionProjectTest extends AbstractMarsSimUnitTest {
@@ -52,7 +53,7 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
          * @return
          */
         @Override
-        void getRequiredResources(MissionManifest manifest, boolean optionl) {
+        void getRequiredResources(SuppliesManifest manifest, boolean optionl) {
             manifest.addResource(ResourceUtil.oxygenID, oxygen, true);
             manifest.addResource(ResourceUtil.foodID, food, true);
         }
@@ -88,7 +89,7 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
         int numSteps = 3;
         TestMission mp = new TestMission(MISSION_NAME, leader, numSteps);
 
-        MissionManifest manifest = mp.getResources(true);
+        SuppliesManifest manifest = mp.getResources(true);
         Map<Integer,Number> needed = manifest.getResources(true);
         assertEquals("Oxygen needed", numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.oxygenID));
         assertEquals("Food needed", numSteps * FOOD_VALUE, needed.get(ResourceUtil.foodID));
