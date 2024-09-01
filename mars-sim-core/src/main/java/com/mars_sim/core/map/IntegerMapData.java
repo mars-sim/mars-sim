@@ -18,6 +18,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -242,115 +243,134 @@ import com.mars_sim.core.map.common.FileLocator;
 		
 	 		baseMapPixels = new int[pixelHeight][pixelWidth];
 	 		
-	 		if (!meta.isColourful()) {	
+	 		if (!meta.isColourful()) {
 	 			
 	 			// Note: May use the shade map to get height values
 	 			
-	 			boolean done = false;
-	 			boolean alreadyWentToNextByte = false;
- 			    int byteIndex = 0;
- 			    int row = 0;
- 			    int col = 0;
- 			    int numBits = 0;
- 			    byte currentByte = pixels[byteIndex];
- 			    while (!done) {
- 			        alreadyWentToNextByte = false;
-	        
- 			        // See https://stackoverflow.com/questions/32804784/weird-rgb-value-from-java-bufferedimage-getrgb/32824569#32824569
- 			    	   
- 			        // Using 0x10101 mask will turn it into monochromic 0 or 1
- 			        
-			        // Use 0xff mask because byte is a signed type in Java, and we want an unsigned value
- 			        int grayValue = (currentByte & 0xff);        
-// 			        int monoValue = (currentByte & 0x80) >> 7;
-// 			        System.out.print(grayValue + " ");
- 			        
-	        		baseMapPixels[row][col] = grayValue;
-	        
- 			        currentByte = (byte) (((int) currentByte) << 1);
- 			        numBits++;
-
- 			        if ((row == pixelHeight - 1) && (col == pixelWidth - 1)) {
- 			            done = true;
- 			        }
- 			        else {
- 			            col++;
-
- 			            if (numBits == 8) {
- 			                currentByte = pixels[++byteIndex];
- 			                numBits = 0;
- 			                alreadyWentToNextByte = true;
- 			            }
-
- 			            if (col == pixelWidth) {
- 			                row++;
- 			                col = 0;
-
- 			                if (!alreadyWentToNextByte) {
- 			                    currentByte = pixels[++byteIndex];
- 			                    numBits = 0;
- 			                }
- 			            }
- 			        }
- 			    } 			
+//	 			boolean done = false;
+//	 			boolean alreadyWentToNextByte = false;
+// 			    int byteIndex = 0;
+// 			    int row = 0;
+// 			    int col = 0;
+// 			    int numBits = 0;
+// 			    byte currentByte = pixels[byteIndex];
+// 			    while (!done) {
+// 			        alreadyWentToNextByte = false;
+//	        
+// 			        // See https://stackoverflow.com/questions/32804784/weird-rgb-value-from-java-bufferedimage-getrgb/32824569#32824569
+// 			    	   
+// 			        // Using 0x10101 mask will turn it into monochromic 0 or 1
+// 			        
+//			        // Use 0xff mask because byte is a signed type in Java, and we want an unsigned value
+// 			        int grayValue = (currentByte & 0xff);        
+//// 			        int monoValue = (currentByte & 0x80) >> 7;
+//// 			        System.out.print(grayValue + " ");
+// 			        
+//	        		baseMapPixels[row][col] = grayValue;
+//	        
+// 			        currentByte = (byte) (((int) currentByte) << 1);
+// 			        numBits++;
+//
+// 			        if ((row == pixelHeight - 1) && (col == pixelWidth - 1)) {
+// 			            done = true;
+// 			        }
+// 			        else {
+// 			            col++;
+//
+// 			            if (numBits == 8) {
+// 			                currentByte = pixels[++byteIndex];
+// 			                numBits = 0;
+// 			                alreadyWentToNextByte = true;
+// 			            }
+//
+// 			            if (col == pixelWidth) {
+// 			                row++;
+// 			                col = 0;
+//
+// 			                if (!alreadyWentToNextByte) {
+// 			                    currentByte = pixels[++byteIndex];
+// 			                    numBits = 0;
+// 			                }
+// 			            }
+// 			        }
+// 			    } 			
 	 			// https://stackoverflow.com/questions/30951726/reading-a-grayscale-image-in-java		
-//	 			Raster raster = cylindricalMapImage.getData();
-//	 			int h = raster.getHeight();
-//	 			int w = raster.getWidth();
-//	 		    for (int i = 0; i < w; i++) {
-//	 		        for (int j = 0; j < h; j++) {
-//	 		        	baseMapPixels[j][i] = raster.getSample(i, j, 0);
-//	 		        }
-//	 		    }
+	 			Raster raster = cylindricalMapImage.getData();
+	 			int h = raster.getHeight();
+	 			int w = raster.getWidth();
+	 		    for (int i = 0; i < w; i++) {
+	 		        for (int j = 0; j < h; j++) {
+	 		        	baseMapPixels[j][i] = raster.getSample(i, j, 0);
+	 		        }
+	 		    }
 	 		}
 	 		
 	 		else if (hasAlphaChannel) {
-	 			// Note: viking geologic is the only one that has alpha channel
-	 			
+	 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel
+	 			logger.info("hasAlphaChannel: " + hasAlphaChannel);
+	 					
 	 			final int pixelLength = 4;
 	 			
 	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
 	 			
-	 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
-	 				int argb = 0;
-	 				
-	 				// Note: The color is a 32-bit integer in ARGB format. 
-	 				//           Fully Opaque = 0xFF______
-	 				//      Fully Transparent = 0x00______
-	 				// Also,
-	 				//	   Red   = 0xFFFF0000
-	 				//	   Green = 0xFF00FF00
-	 				//	   Blue  = 0xFF0000FF
-	 				//
-	 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
-	 				
-	 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
-	 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
-	 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
-	 				//
-	 				// 1. value is promoted to an int (ff ff ff fe).
-	 				// 2. 0xff is an int literal (00 00 00 ff).
-	 				// 3. The '&' is applied to yield the desired value for result.
-
-	 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
-	 				argb += ((int) pixels[pos + 1] & 0xff); // blue
-	 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
-	 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
-	 				
-//	 				The Red and Blue channel comments are flipped. 
-//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
-	 				
-//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
-//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
-//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
-	 						
-	 				baseMapPixels[row][col] = argb;
-	 				col++;
-	 				if (col == pixelWidth) {
-	 					col = 0;
-	 					row++;
-	 				}
-	 			}
+//	 			if (!meta.isColourful()) {
+//	 				for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
+//	 	 			    int byteIndex = 0;
+////	 	 			    int row = 0;
+////	 	 			    int col = 0;
+////	 	 			    int numBits = 0;
+//	 	 			    byte currentByte = pixels[byteIndex];
+//		 				int grayValue = (currentByte & 0xff);   
+//		 				baseMapPixels[row][col] = grayValue;
+//		 				col++;
+//		 				if (col == pixelWidth) {
+//		 					col = 0;
+//		 					row++;
+//		 				}
+//	 				}
+//	 			}
+//	 			else {
+		 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
+		 				int argb = 0;
+				
+		 				// Note: The color is a 32-bit integer in ARGB format. 
+		 				//           Fully Opaque = 0xFF______
+		 				//      Fully Transparent = 0x00______
+		 				// Also,
+		 				//	   Red   = 0xFFFF0000
+		 				//	   Green = 0xFF00FF00
+		 				//	   Blue  = 0xFF0000FF
+		 				//
+		 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
+		 				
+		 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
+		 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
+		 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
+		 				//
+		 				// 1. value is promoted to an int (ff ff ff fe).
+		 				// 2. 0xff is an int literal (00 00 00 ff).
+		 				// 3. The '&' is applied to yield the desired value for result.
+	
+		 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
+		 				argb += ((int) pixels[pos + 1] & 0xff); // blue
+		 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
+		 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
+		 				
+	//	 				The Red and Blue channel comments are flipped. 
+	//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
+		 				
+	//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
+	//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
+	//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
+		 						
+		 				baseMapPixels[row][col] = argb;
+		 				col++;
+		 				if (col == pixelWidth) {
+		 					col = 0;
+		 					row++;
+		 				}
+		 			}
+//	 			}
 	 		}
 	 		
 	 		else {
@@ -425,14 +445,16 @@ import com.mars_sim.core.map.common.FileLocator;
  		// Create a new buffered image to draw the map on.
  		BufferedImage bImage = null;
  				
- 		if (meta.isColourful()) {
+ 		// Note: it turns out TYPE_INT_RGB works the best for gray map
+ 		
+// 		if (meta.isColourful()) {
  			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
 				BufferedImage. TYPE_INT_RGB); // TYPE_4BYTE_ABGR
- 		}
- 		else {
- 			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
- 				BufferedImage.TYPE_BYTE_GRAY); // TYPE_USHORT_GRAY
- 		} 
+// 		}
+// 		else {
+// 			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
+// 				BufferedImage.TYPE_USHORT_GRAY); // TYPE_USHORT_GRAY
+// 		} 
 
 // 		Graphics2D g2d = bImage.createGraphics();
 // 		g2d.setColor(Color.BLACK);
@@ -457,7 +479,6 @@ import com.mars_sim.core.map.common.FileLocator;
 			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 		}
 
-
 	 	// Create new map image.
 	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxHeight);
  		
@@ -468,16 +489,104 @@ import com.mars_sim.core.map.common.FileLocator;
  		return bImage;
  	}
 
+ 	/**
+ 	 * Sets up the RGB values of the buffer image.
+ 	 * 
+ 	 * @param bImage
+ 	 * @param startX
+ 	 * @param startY
+ 	 * @param w
+ 	 * @param h
+ 	 * @param rgbArray
+ 	 * @param offset
+ 	 * @param scansize
+ 	 */
     public void setRGB(BufferedImage bImage, int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
-		int yoff  = offset;
-		int off;
-		Object pixel = null;
+
+		if (!meta.isColourful()) {
+	        // Convert to grayscale
+
+			// Not working below (Retain for further debugging) :
+//			// Create a lookup table for whitening
+//			float[] lut = new float[256];
+//			for (int i = 0; i < 256; i++) {
+//			    lut[i] = (float) Math.min(Math.max(i / 255.0 * 2.0 + 0.5, 0.0), 1.0); // Adjust as needed
+//			}
+//			
+//			// Apply the lookup table to the image
+//			for (int y = 0; y < h; y++) {
+//			    for (int x = 0; x < w; x++) {
+//			        int p = bImage.getRGB(x, y);
+//			        
+//			        int a = (p >> 24) & 0xFF;
+//			        int r = (p >> 16) & 0xFF;
+//			        int g = (p >> 8) & 0xFF;
+//			        int b = p & 0xFF;
+//			        
+//			        int part0 = (int) (lut[r] * 255) << 16;
+//			        int part1 = (int) (lut[g] * 255) << 8;
+//			        int part2 = (int) lut[b];
+//			        int whitenedPixel = part0 | part1 | part2;
+//			        bImage.setRGB(x, y, whitenedPixel | a << 24);
+//			    }
+//			}
 			
-		for (int y = startY; y < startY + h; y++, yoff += scansize) {
-			off = yoff;
-			for (int x = startX; x < startX + w; x++) {
-			    pixel = bImage.getColorModel().getDataElements(rgbArray[off++], pixel);
-			    bImage.getRaster().setDataElements(x, y, pixel);
+	        for (int i = 0; i < rgbArray.length; i++) {
+	 
+	            // Here i denotes the index of array of pixels
+	            // for modifying the pixel value.
+	            int p = rgbArray[i];
+	 
+	            int a = (p >> 24) & 0xff;
+	            int r = (p >> 16) & 0xff;
+	            int g = (p >> 8) & 0xff;
+	            int b = p & 0xff;
+	 
+	            // calculate average
+	            int avg = (r + g + b);
+	            // Note: dividing avg by 3 will make it too dark
+	 
+	            // replace RGB value with avg
+	            p = (a << 24) | (avg << 16) | (avg << 8) | avg;
+	 
+//	            int gray = (int) (r * 0.299 + g * 0.587 + b * 0.114); // Original grayscale calculation
+//            	int enhancedGray = Math.min(255, p + 15); // Brightness enhancement (10-20)
+            	
+	            rgbArray[i] = p;
+	        }
+	        
+	        bImage.setRGB(0, 0, w, h, rgbArray, 0, w);
+			
+	        // Not working below (Retain for further debugging) :
+//			for (int i = 0; i < h; i++) {
+//			    for (int j = 0; j < w; j++) {
+//			        Color c = new Color(bImage.getRGB(j, i));
+////			        int red = (int) (c.getRed() * 0.299);
+////			        int green = (int) (c.getGreen() * 0.587);
+////			        int blue = (int) (c.getBlue() * 0.114);
+//	        
+//			        int gray = (int) (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114); // Original grayscale calculation
+//		            int enhancedGray = Math.min(255, gray + 15); // Brightness enhancement (10-20)
+//		
+//		            Color newColor = new Color(enhancedGray, enhancedGray, enhancedGray);
+////			        Color newColor = new Color(red + green + blue, red + green + blue, red + green + blue);
+//
+//			        bImage.setRGB(j, i, newColor.getRGB());
+//			    }
+//			}
+		}
+			
+		else {
+			int yoff  = offset;
+			int off;
+			Object pixel = null;
+				
+			for (int y = startY; y < startY + h; y++, yoff += scansize) {
+				off = yoff;
+				for (int x = startX; x < startX + w; x++) {
+				    pixel = bImage.getColorModel().getDataElements(rgbArray[off++], pixel);
+				    bImage.getRaster().setDataElements(x, y, pixel);
+				}
 			}
 		}
 	}
@@ -486,7 +595,6 @@ import com.mars_sim.core.map.common.FileLocator;
 // 	    int part = Math.round(value * 255);
  	    return grayValue * 0x10101;
  	}
- 	
  	
  	public void setAlpha(byte alpha, BufferedImage image) {       
  		// alpha is in 0-255 range
@@ -528,7 +636,9 @@ import com.mars_sim.core.map.common.FileLocator;
 	 }
 	 
  	/**
- 	 * Constructs a map array for display with CPU.
+ 	 * Constructs a map array for display with CPU without the projected background issue.
+ 	 * 
+ 	 * @Note: this method cpu1 will replace cpu0 method. Currently not working. Retain for further debugging.
  	 * 
  	 * @param centerPhi
  	 * @param centerTheta
