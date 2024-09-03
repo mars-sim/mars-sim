@@ -361,14 +361,24 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 	   
 	/**
-	 * Gets the map type.
+	 * Gets the current map type instance.
 	 * 
-	 * @return map type.
+	 * @return MapMetaData
 	 */
 	public MapMetaData getMapMetaData() {
 		return marsMap.getMapMetaData();
 	}
 
+	/**
+	 * Gets the new map type instance.
+	 * 
+ 	 * @param newMapType
+	 * @return MapMetaData
+	 */
+	public MapMetaData getNewMapMetaData(String newMapType) {
+		return mapUtil.getMapMetaData(newMapType);
+	}
+	
 	public Map getMap() {
 		return marsMap;
 	}

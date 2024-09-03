@@ -30,7 +30,10 @@ import com.jogamp.opencl.CLBuffer;
 import com.jogamp.opencl.CLKernel;
 import com.jogamp.opencl.CLProgram;
 import com.mars_sim.core.map.common.FileLocator;
-import com.mars_sim.core.tool.BigBufferedImage;
+
+/**
+ * For png image tiling, see https://github.com/leonbloy/pngj/wiki/Snippets
+ */
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -311,72 +314,53 @@ import com.mars_sim.core.tool.BigBufferedImage;
 //				May try final int[] pixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
 
 	 			if (hasAlphaChannel) {
-		 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel
+		 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel.
 		 			logger.info("hasAlphaChannel: " + hasAlphaChannel);
 		 					
 		 			final int pixelLength = 4;
 	 			
-	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
-	 			
-//	 			if (!meta.isColourful()) {
-//	 				for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
-//	 	 			    int byteIndex = 0;
-////	 	 			    int row = 0;
-////	 	 			    int col = 0;
-////	 	 			    int numBits = 0;
-//	 	 			    byte currentByte = pixels[byteIndex];
-//		 				int grayValue = (currentByte & 0xff);   
-//		 				baseMapPixels[row][col] = grayValue;
-//		 				col++;
-//		 				if (col == pixelWidth) {
-//		 					col = 0;
-//		 					row++;
-//		 				}
-//	 				}
-//	 			}
-//	 			else {
-		 			
-			 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
-			 				int argb = 0;
-					
-			 				// Note: The color is a 32-bit integer in ARGB format. 
-			 				//           Fully Opaque = 0xFF______
-			 				//      Fully Transparent = 0x00______
-			 				// Also,
-			 				//	   Red   = 0xFFFF0000
-			 				//	   Green = 0xFF00FF00
-			 				//	   Blue  = 0xFF0000FF
-			 				//
-			 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
-			 				
-			 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
-			 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
-			 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
-			 				//
-			 				// 1. value is promoted to an int (ff ff ff fe).
-			 				// 2. 0xff is an int literal (00 00 00 ff).
-			 				// 3. The '&' is applied to yield the desired value for result.
-		
-			 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
-			 				argb += ((int) pixels[pos + 1] & 0xff); // blue
-			 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
-			 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
-			 				
-		//	 				The Red and Blue channel comments are flipped. 
-		//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
-			 				
-		//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
-		//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
-		//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
-			 						
-			 				baseMapPixels[row][col] = argb;
-			 				col++;
-			 				if (col == pixelWidth) {
-			 					col = 0;
-			 					row++;
-			 				}
-			 			}
-	//	 			}
+		 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
+
+		 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
+		 				int argb = 0;
+				
+		 				// Note: The color is a 32-bit integer in ARGB format. 
+		 				//           Fully Opaque = 0xFF______
+		 				//      Fully Transparent = 0x00______
+		 				// Also,
+		 				//	   Red   = 0xFFFF0000
+		 				//	   Green = 0xFF00FF00
+		 				//	   Blue  = 0xFF0000FF
+		 				//
+		 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
+		 				
+		 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
+		 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
+		 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
+		 				//
+		 				// 1. value is promoted to an int (ff ff ff fe).
+		 				// 2. 0xff is an int literal (00 00 00 ff).
+		 				// 3. The '&' is applied to yield the desired value for result.
+	
+		 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
+		 				argb += ((int) pixels[pos + 1] & 0xff); // blue
+		 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
+		 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
+		 				
+	//	 				The Red and Blue channel comments are flipped. 
+	//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
+		 				
+	//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
+	//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
+	//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
+		 						
+		 				baseMapPixels[row][col] = argb;
+		 				col++;
+		 				if (col == pixelWidth) {
+		 					col = 0;
+		 					row++;
+		 				}
+		 			}
 		 		}
 		 		
 		 		else {
@@ -432,11 +416,9 @@ import com.mars_sim.core.tool.BigBufferedImage;
 			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
 			 return null;
 		 }
-	 
 
 		// Set the new map rho
 		setRho(newRho);
- 		
 
  		// Create a new buffered image to draw the map on.
  		BufferedImage bImage = null;
@@ -452,11 +434,7 @@ import com.mars_sim.core.tool.BigBufferedImage;
 // 				BufferedImage.TYPE_USHORT_GRAY); // TYPE_USHORT_GRAY
 // 		} 
 
-// 		Graphics2D g2d = bImage.createGraphics();
-// 		g2d.setColor(Color.BLACK);
-// 		g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
- 		
- 		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
+ 		// Future: May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
 // 		logger.config("transparency: " + result.getTransparency());
  		
@@ -555,7 +533,7 @@ import com.mars_sim.core.tool.BigBufferedImage;
 	        }
 	        
 	        bImage.setRGB(0, 0, w, h, rgbArray, 0, w);
-			
+	        
 	        // Not working below (Retain for further debugging) :
 //			for (int i = 0; i < h; i++) {
 //			    for (int j = 0; j < w; j++) {

@@ -162,6 +162,16 @@ import com.mars_sim.core.tool.RandomUtil;
  	}
  	
  	/**
+ 	 * Returns the new map meta data instance.
+ 	 * 
+ 	 * @param newMapType
+ 	 * @return
+ 	 */
+ 	MapMetaData getMapMetaData(String newMapType) { 
+ 		return metaDataMap.get(newMapType);
+ 	}
+ 	 	
+ 	/**
  	 * Loads the map data of the requested map type.
  	 * 
  	 * @param mapType the map type

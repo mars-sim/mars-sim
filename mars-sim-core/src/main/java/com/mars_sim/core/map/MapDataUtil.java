@@ -60,6 +60,16 @@ import java.util.Collection;
  	}
 
  	/**
+ 	 * Returns the new map meta data instance.
+ 	 * 
+ 	 * @param newMapType
+ 	 * @return
+ 	 */
+ 	public MapMetaData getMapMetaData(String newMapType) { 
+ 		return mapDataFactory.getMapMetaData(newMapType);
+ 	}
+ 			
+ 	/**
  	 * Sets the map data.
  	 * 
  	 * @param mapType

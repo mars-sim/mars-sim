@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindowMenu.java
- * @date 2023-03-29
+ * @date 2024-09-01
  * @author Scott Davis
  */
 
@@ -257,7 +257,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		// Create About Mars Simulation Project menu item
 		helpMenu.add(createMenuItem("mainMenu.about", "action/about", ABOUT, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
+	
 		helpMenu.add(new JSeparator());
+			
 		helpMenu.add(createMenuItem("mainMenu.new", "action/new", NEW, null,
 				KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK, false)));
 
