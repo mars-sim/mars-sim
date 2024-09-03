@@ -31,6 +31,10 @@ import com.jogamp.opencl.CLKernel;
 import com.jogamp.opencl.CLProgram;
 import com.mars_sim.core.map.common.FileLocator;
 
+/**
+ * For png image tiling, see https://github.com/leonbloy/pngj/wiki/Snippets
+ */
+
  /**
   * A map that uses integer data stored in files to represent colors.
   */
@@ -226,15 +230,14 @@ import com.mars_sim.core.map.common.FileLocator;
  		BufferedImage cylindricalMapImage = null;
  		
 		try {
-			cylindricalMapImage = ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
+			cylindricalMapImage = 
+			// Unable to get BigBufferedImage to work : BigBufferedImage.create(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName), BufferedImage.TYPE_INT_ARGB); // TYPE_INT_RGB
+				ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
 			
-			// Use getRaster() is fastest
+			// Use getRaster() - the fastest
 		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
 			// See https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
 			
-			final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
-//	 		May try: int[] srcPixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData()
-
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
 //	 		logger.config("loadMapData - " +  imageName + " : " + pixelWidth + " x " + pixelHeight + ".");
@@ -305,31 +308,19 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		    }
 	 		}
 	 		
-	 		else if (hasAlphaChannel) {
-	 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel
-	 			logger.info("hasAlphaChannel: " + hasAlphaChannel);
-	 					
-	 			final int pixelLength = 4;
+	 		else { 
 	 			
-	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
+				final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
+//				May try final int[] pixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
+
+	 			if (hasAlphaChannel) {
+		 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel.
+		 			logger.info("hasAlphaChannel: " + hasAlphaChannel);
+		 					
+		 			final int pixelLength = 4;
 	 			
-//	 			if (!meta.isColourful()) {
-//	 				for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
-//	 	 			    int byteIndex = 0;
-////	 	 			    int row = 0;
-////	 	 			    int col = 0;
-////	 	 			    int numBits = 0;
-//	 	 			    byte currentByte = pixels[byteIndex];
-//		 				int grayValue = (currentByte & 0xff);   
-//		 				baseMapPixels[row][col] = grayValue;
-//		 				col++;
-//		 				if (col == pixelWidth) {
-//		 					col = 0;
-//		 					row++;
-//		 				}
-//	 				}
-//	 			}
-//	 			else {
+		 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
+
 		 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
 		 				int argb = 0;
 				
@@ -370,37 +361,37 @@ import com.mars_sim.core.map.common.FileLocator;
 		 					row++;
 		 				}
 		 			}
-//	 			}
-	 		}
-	 		
-	 		else {
-	 			
-	 		    final int pixelLength = 3;
-	 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
-	 				int argb = 0;
-	 					 				
-	 				// Note: The color is a 32-bit integer in ARGB format. 
-	 				//           Fully Opaque = 0xFF______
-	 				//      Fully Transparent = 0x00______
-	 				// Also,
-	 				//	Red   = 0xFFFF0000
-	 				//	Green = 0xFF00FF00
-	 				//	Blue  = 0xFF0000FF
-	 				//
-	 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
-	 				
-	 				argb += -16777216; // 255 alpha
-	 				argb += ((int) pixels[pixel] & 0xff); // blue
-	 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
-	 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-	 				
-	 				baseMapPixels[row][col] = argb;
-	 				col++;
-	 				if (col == pixelWidth) {
-	 					col = 0;
-	 					row++;
-	 				}
-	 			}
+		 		}
+		 		
+		 		else {
+		 			
+		 		    final int pixelLength = 3;
+		 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
+		 				int argb = 0;
+		 					 				
+		 				// Note: The color is a 32-bit integer in ARGB format. 
+		 				//           Fully Opaque = 0xFF______
+		 				//      Fully Transparent = 0x00______
+		 				// Also,
+		 				//	Red   = 0xFFFF0000
+		 				//	Green = 0xFF00FF00
+		 				//	Blue  = 0xFF0000FF
+		 				//
+		 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
+		 				
+		 				argb += -16777216; // 255 alpha
+		 				argb += ((int) pixels[pixel] & 0xff); // blue
+		 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
+		 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
+		 				
+		 				baseMapPixels[row][col] = argb;
+		 				col++;
+		 				if (col == pixelWidth) {
+		 					col = 0;
+		 					row++;
+		 				}
+		 			}
+		 		}
 	 		}
 	 		
 		} catch (IOException e) {
@@ -425,42 +416,25 @@ import com.mars_sim.core.map.common.FileLocator;
 			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
 			 return null;
 		 }
-	 
-// 		if (mapImage != null 
-// 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && newRho == rho)) {
-// 			// No need to recreate the mapImage when the mouse has not moved
-// 			return mapImage;
-// 		}
- 		
-		// Set the new phi		
-// 		centerPhiCache = centerPhi;
-		// Set the new theta 		
-// 		centerThetaCache = centerTheta;
+
 		// Set the new map rho
 		setRho(newRho);
- 		
-//		logger.log(Level.INFO, "centerPhiCache: " + centerPhiCache + "  centerThetaCache: " + centerThetaCache
-//				+ "  scale: " + newRho);
-		
+
  		// Create a new buffered image to draw the map on.
  		BufferedImage bImage = null;
  				
  		// Note: it turns out TYPE_INT_RGB works the best for gray map
  		
 // 		if (meta.isColourful()) {
- 			 bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
-				BufferedImage. TYPE_INT_RGB); // TYPE_4BYTE_ABGR
+ 			 bImage = // BigBufferedImage.create(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_INT_RGB);
+ 					new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_INT_RGB); // TYPE_INT_RGB, TYPE_INT_ARGB, TYPE_4BYTE_ABGR
 // 		}
 // 		else {
 // 			bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
 // 				BufferedImage.TYPE_USHORT_GRAY); // TYPE_USHORT_GRAY
 // 		} 
 
-// 		Graphics2D g2d = bImage.createGraphics();
-// 		g2d.setColor(Color.BLACK);
-// 		g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
- 		
- 		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
+ 		// Future: May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
 // 		logger.config("transparency: " + result.getTransparency());
  		
@@ -503,6 +477,9 @@ import com.mars_sim.core.map.common.FileLocator;
  	 */
     public void setRGB(BufferedImage bImage, int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
 
+    	// Note: Reference https://stackoverflow.com/questions/61130264/how-can-i-process-bufferedimage-faster
+    	//       when attempting to speed up the processing
+    	
 		if (!meta.isColourful()) {
 	        // Convert to grayscale
 
@@ -556,7 +533,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	        }
 	        
 	        bImage.setRGB(0, 0, w, h, rgbArray, 0, w);
-			
+	        
 	        // Not working below (Retain for further debugging) :
 //			for (int i = 0; i < h; i++) {
 //			    for (int j = 0; j < w; j++) {

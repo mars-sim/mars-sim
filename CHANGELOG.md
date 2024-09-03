@@ -14,12 +14,12 @@ GitHub: https://github.com/mars-sim/mars-sim
   
 ### B. UI IMPROVEMENT :
 <OL>
-  <LI>.</LI>
+  <LI>Surface Map: load and render shade relief gray maps.</LI>
 </OL>  
 
 ### C. FIXES :
 <OL>
-  <LI>.</LI>
+  <LI>Map Zoom: allow seamless transition of zoom level going from one map to another.</LI>
 </OL>
 
 

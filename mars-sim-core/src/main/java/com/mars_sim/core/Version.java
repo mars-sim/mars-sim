@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Version.java
- * @date 2023-08-25
+ * @date 2024-09-01
  * @author Barry Evans
  */
 package com.mars_sim.core;
@@ -72,12 +72,13 @@ public final class Version {
 	 * 
 	 * @return
 	 */
-	public String getVersion() {
+	public String getVersionTag() {
 		return versionTag;
 	}
 
 	/**
 	 * The build has uncommitted changes.
+	 * 
 	 * @return
 	 */
 	public boolean isDirty() {
@@ -85,7 +86,8 @@ public final class Version {
 	}
 
 	/**
-	 * Store the version details to ab external output source
+	 * Stores the version details to an external output source.
+	 * 
 	 * @param sink Destination of version
 	 * @throws IOException 
 	 */
@@ -108,6 +110,10 @@ public final class Version {
 		return versionTag + " - Build " + build + (isDirty ? "-dirty" : "");
 	}
 
+	public String getBuildString() {
+		return "Build " + build + (isDirty ? "-dirty" : "");
+	}
+	
 	@Override
 	public int hashCode() {
 		return versionTag.hashCode();

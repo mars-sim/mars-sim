@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationFiles.java
- * @date 2022-06-17
+ * @date 2024-09-01
  * @author Barry Evans
  */
 package com.mars_sim.core;
@@ -21,7 +21,7 @@ import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.tool.Msg;
 
 /**
- * A singleton that represents the runtimeenvironment of the Simulation.
+ * A singleton that represents the runtime environment of the Simulation.
  */
 public class SimulationRuntime {
 	
@@ -77,10 +77,11 @@ public class SimulationRuntime {
 			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
 	/** OS architecture string. */
 	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
-	public static final String TITLE = Msg.getString("Simulation.title", VERSION.getDescription()
+	public static final String SHORT_TITLE = Msg.getString("Simulation.title", VERSION.getVersionTag()); 
+	public static final String LONG_TITLE = SHORT_TITLE
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
-			+ ((NUM_CORES == 1) ? " Core" : " Cores")); 
-
+			+ ((NUM_CORES == 1) ? " Core" : " Cores"); 
+	
 	/**
 	 * Private constructor prevents instantiation.
 	 */
@@ -118,6 +119,7 @@ public class SimulationRuntime {
 
 	/**
 	 * Purges any old files from a directory.
+	 * 
 	 * @param dir Directory to scan
 	 * @param retianedCount Number of files to retain.
 	 * @param extension Optional file extension to filter file list

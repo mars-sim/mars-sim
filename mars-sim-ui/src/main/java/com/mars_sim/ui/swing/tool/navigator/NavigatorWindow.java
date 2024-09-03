@@ -871,18 +871,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 				// Set to the new map resolution
 				mapPanel.setMapResolution(reply);
+				// Change the map
 				changeMap(newMapType, reply, false);
+				// Set the the map type cache
 				mapTypeCache = newMapType;
 			}
 			
-			else if (reply != mapPanel.getMapResolution()) {
-				// if loading the same map type but of a different resolution
+			else if (reply != lastMapRes) {
+				// if it's the same map type but of a different resolution
 				
 				// Set to the new map resolution
 				mapPanel.setMapResolution(reply);
-				
+				// Change the map
 				changeMap(newMapType, reply, false);
-//				mapTypeCache = newMapType;
 			}
 		}
 	}
@@ -930,12 +931,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		List<String> list = new ArrayList<>();
 		
-		int numLevel = mapPanel.getMapMetaData().getNumLevel();
+		MapMetaData mapMetaData = mapPanel.getNewMapMetaData(newMapType);
+		
+		int numLevel = mapMetaData.getNumLevel();
 		
 		for (int i = 0; i < numLevel; i++) {
 			list.add(LEVEL + i);
 		}
-	
+
+		
 		String[] options = list.toArray(String[]::new);
 		
 		String intialValue = options[0];

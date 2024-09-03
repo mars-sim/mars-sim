@@ -36,7 +36,7 @@ public class SplashWindow extends JComponent {
 
 	// Constant data member
 	private static final String SPLASH_FOLDER = "splash/";
-	private static final String VERSION_STRING = SimulationRuntime.VERSION.getVersion();
+	private static final String VERSION_STRING = SimulationRuntime.VERSION.getVersionTag();
 	private static final String BUILD_STRING = "Build " + SimulationRuntime.VERSION.getBuild();
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
 	private static final String[] AUTHOR_STRING = {

@@ -74,7 +74,7 @@ public class HelpGenerator {
 		this.mf = new DefaultMustacheFactory();
 
 		this.baseScope = new HashMap<>();
-		this.baseScope.put("version", SimulationRuntime.VERSION.getVersion());
+		this.baseScope.put("version", SimulationRuntime.VERSION.getVersionTag());
 		this.baseScope.put("generatedOn",
 						DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()));
 		
