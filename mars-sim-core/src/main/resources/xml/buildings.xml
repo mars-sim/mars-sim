@@ -1423,7 +1423,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<resource-storage resource="magnesium" capacity="1000.0" />
 				
-				<resource-storage resource="calcium carbonate" capacity="2000.0" />
+				<resource-storage resource="calcium carbonate" capacity="1000.0" />
 				<resource-storage resource="sodium carbonate" capacity="1000.0" />	
 							
 				<resource-storage resource="concrete" capacity="7500.0" />
@@ -1436,8 +1436,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="polystyrene" capacity="1000.0" />	
 				<resource-storage resource="styrene" capacity="1000.0" />	
 
-				<resource-initial resource="sodium carbonate" amount="500.0" />
-				<resource-initial resource="calcium carbonate" amount="1000.0" />				
+				<resource-initial resource="sodium carbonate" amount="10.0" />
+				<resource-initial resource="calcium carbonate" amount="10.0" />				
 			</storage>
 		</functions>
 	</building>

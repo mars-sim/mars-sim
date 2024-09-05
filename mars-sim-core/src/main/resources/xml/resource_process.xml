@@ -604,7 +604,7 @@
 			<input resource="pyroxene" rate="50.0" />
 		
 			<output resource="calcium" rate="2" />	
-			<output resource="sodium" rate="2" />
+			<output resource="sodium oxide" rate="2" />
 			<output resource="iron powder" rate="2" />	
 			<output resource="magnesium" rate="2" />
 
@@ -704,17 +704,16 @@
 		
 	<process name="Extract minerals from Sand" power-required="0.2" >
 		<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
-			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
+			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate (soda) or sodium oxide
 			serves as a flux to lower the temperature at which the silica melts.
 			https://en.wikipedia.org/wiki/Sodium_oxide
 			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 		</description>
-		<input resource="sand" rate="44.5" />					
-		<input resource="sodium carbonate" rate="2.5" />
+		<input resource="sand" rate="40" />					
+		<input resource="sodium oxide" rate="4" />
 
 		<output resource="carbon dioxide" rate="0.5" waste="false" />
 		<output resource="aluminum oxide" rate="9.0" />
-		<output resource="sodium oxide" rate="2.5" />
 		<output resource="iron powder" rate="1.0" />					
 		<output resource="sulfur" rate="4.0" />					
 		<output resource="silica" rate="13.0" />
@@ -798,18 +797,32 @@
 		<output resource="quartz" rate="40.0" />
 	</process>
 
+
 	<process name="Make soda from sodium oxide" power-required=".03" >
 		<description>
 			Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
 			oxide or super oxide and can be converted into soda. Dissolve the sodium oxide
 			in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
 			Boil down the result to extract the water and you have soda.
+			
+			NaCl: 58.44 g/mol
+			Na: 23 g/mol
+			Cl: 35.44 g/mol
+			Na2CO3: 106 g/mol
+			CO2: 44 g/mol
+			
+			Alternatively, 
+			1. Labnac Process: Another method for producing sodium carbonate is the Labnac process, which involves the reaction of sodium chloride (NaCl) with ammonia (NH3) and carbon dioxide (CO2). This process is similar to the Solvay process but uses a different sequence of reactions:
+			2. Ammoniation: Sodium chloride (NaCl) is dissolved in water and mixed with ammonia (NH3) to form sodium ammonium chloride (NaNH4Cl).
+			3. Carbonation: Carbon dioxide (CO2) is bubbled through the solution to convert sodium ammonium chloride to sodium hydrogen carbonate (NaHCO3) and ammonium chloride (NH4Cl).
+			4. Calcination: The resulting precipitate is filtered, washed, and then calcined (heated) to produce anhydrous sodium carbonate (Na2CO3).
+			
 		</description>	
-		<input resource="sodium oxide" rate="10.0" />
-		<input resource="water" rate="1.0" />	
-		<input resource="carbon dioxide" rate="1.0" ambient="true" />
-		
-		<output resource="sodium carbonate" rate="5.0" />
+		<input resource="Table Salt" rate="11.688" />
+		<input resource="water" rate="1.8" />	
+		<input resource="carbon dioxide" rate="4.4" ambient="true" />
+
+		<output resource="sodium carbonate" rate="10.6" />
 	</process>
 
 	<process name="Make cement" power-required=".1" >
