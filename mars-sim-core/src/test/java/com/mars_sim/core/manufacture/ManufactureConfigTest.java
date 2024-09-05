@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * ManufactureConfigTest.java
+ * @date 2024-02-28
+ * @author Barry Evans
+ */
+
 package com.mars_sim.core.manufacture;
 
 import static org.junit.Assert.assertEquals;
@@ -18,9 +25,10 @@ import com.mars_sim.core.resource.ItemType;
 
 class ManufactureConfigTest {
 
-    private static final String MAKE_FERTILIZER = "Make fertilizers for growing crops";
-    private static final int FERTILIZER_ALTNATIVES = 7;
-    private static final int FERTILIZER_INPUTS = 9;
+    private static final String MAKE_FERTILIZERS = "Make crop fertilizers";
+    private static final String MAKE_RADIO_ANTENNA ="Make radio antenna";
+    private static final int FERTILIZER_ALT = 9;
+    private static final int FERTILIZER_INPUTS = 10;
 
 
     private ManufactureConfig getManufactureConfig() {
@@ -42,22 +50,22 @@ class ManufactureConfigTest {
         var processByName =
                     Maps.uniqueIndex(getManufactureConfig().getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
-        var plasticBottle = processByName.get(MAKE_FERTILIZER);
-        assertNotNull("Manufacturng processes defined", plasticBottle);
-        assertEquals(MAKE_FERTILIZER + " primary inputs", FERTILIZER_INPUTS, plasticBottle.getInputList().size());
+        var fertilizerP = processByName.get(MAKE_FERTILIZERS);
+        assertNotNull("Manufacturng processes defined", fertilizerP);
+        assertEquals(MAKE_FERTILIZERS + " primary inputs", FERTILIZER_INPUTS, fertilizerP.getInputList().size());
 
         // Check the alternative are present and they have different inputs
         Set<List<ProcessItem>> alternatives = new HashSet<>();
-        alternatives.add(plasticBottle.getInputList());
+        alternatives.add(fertilizerP.getInputList());
 
-        for(int i = 1; i <= FERTILIZER_ALTNATIVES; i++) {
-            var found = processByName.get(MAKE_FERTILIZER + ManufactureConfig.ALT_PREFIX + i);
-            assertNotNull(MAKE_FERTILIZER + " alternative " + i, found);
-            assertEquals(MAKE_FERTILIZER + " alternative " + i + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
+        for(int i = 1; i <= FERTILIZER_ALT; i++) {
+            var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.ALT_PREFIX + i);
+            assertNotNull(MAKE_FERTILIZERS + " alternative " + i, found);
+            assertEquals(MAKE_FERTILIZERS + " alternative " + i + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", FERTILIZER_ALTNATIVES + 1, alternatives.size());
+        assertEquals("All alternatives have different inputs", FERTILIZER_ALT + 1, alternatives.size());
     }
 
     @Test
@@ -66,7 +74,7 @@ class ManufactureConfigTest {
         var processByName =
                     Maps.uniqueIndex(getManufactureConfig().getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
-        var process = processByName.get("Make radio antenna");
+        var process = processByName.get(MAKE_RADIO_ANTENNA);
         assertNotNull("Manufacturng processes defined", process);
 
         List<ProcessItem> expectedInputs = new ArrayList<>();

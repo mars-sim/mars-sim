@@ -235,27 +235,35 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make fertilizers for growing crops"
-			tech="2" skill="2"
-			work-time="25"
-			process-time="250"
-			power-required="0.2">
-		<description> A. 3 main macronutrients (NPK):
-						Nitrogen (N): leaf growth; 
-						Phosphorus (P): development of roots, flowers, seeds, fruit;
-						Potassium (K): strong stem growth, movement of water in plants, promotion of flowering and fruiting;
-					  B. 3 secondary macronutrients: 
-					    calcium (Ca), magnesium (Mg), and sulfur (S);
-					  C. Micronutrients: 
-					    copper (Cu), iron (Fe), manganese (Mn), molybdenum (Mo), zinc (Zn), boron (B). 
-					  D. Of occasional significance are silicon (Si), cobalt (Co), and vanadium (V).
+	<process name="Make crop fertilizers"
+			tech="2" skill="1"
+			work-time="10"
+			process-time="10"
+			power-required="0.1">
+		<description> 
+			An arbitrary N-P-K-ratio (the percentage the product contains by volume of nitrogen (N), phosphorus (P), and potassium (K)) is used.		
+			A. 3 main macronutrients (NPK):
+				a. Nitrogen (N): leaf growth; 
+				b. Phosphorus (P): development of roots, flowers, seeds, fruit;
+				c. Potassium (K): strong stem growth, movement of water in plants, promotion of flowering and fruiting;
+			B. 3 secondary macronutrients: 
+				a. calcium (Ca), magnesium (Mg), and sulfur (S);
+			C. Micronutrients: 
+				a. copper (Cu), iron (Fe), manganese (Mn), molybdenum (Mo), zinc (Zn), boron (B). 
+			D. Of occasional significance are silicon (Si), cobalt (Co), and vanadium (V).
 		</description> 	
 		<inputs>
+			<resource name="Compost" amount="0.5" >
+				<alternative name="Crop Waste" amount="0.5" />
+			</resource>	
 			<resource name="Nitrate" amount="0.5" >
 				<alternative name="Nitrite" amount="0.5" />
+				<alternative name="Ammonia" amount="0.5" />
 			</resource>
-			<resource name="potassium" amount="0.5" />
-			<resource name="phosphorus" amount="0.5" />
+			<resource name="Potassium" amount="0.5" >
+				<alternative name="potash lye" amount="0.5" />
+			</resource>
+			<resource name="Phosphorus" amount="0.5" />
 			<resource name="Nitrosomonas SPP" amount=".05">
 				<alternative name="Nitrospira SPP" amount=".05" />
 				<alternative name="Rhizobia" amount=".05" />
@@ -268,13 +276,12 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="iron powder" amount="0.02" />
 				<alternative name="copper" amount="0.02" />
 			</resource>
-			<resource name="ammonia" amount="1">
-				<alternative name="methane" amount="1" />
+			<resource name="methane" amount="1">
 				<alternative name="hydrogen" amount="1" />
 			</resource>
 		</inputs>
 		<outputs>
-			<resource name="Fertilizer" amount="6.0" />
+			<resource name="Fertilizer" amount="3" />
 		</outputs>
 	</process>
 
@@ -2248,25 +2255,43 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Electrolysis of potassium chloride (sylvite) in water to produce potassium hydroxide (potash lye) -->
 	<!-- and chlorine gas  -->
-	<!-- 2 K+(aq) + 2H2O(l) + 2e− → H2(g) + 2 KOH(aq) -->
-	<!-- 2 Cl– — 2e− → Cl2(g) -->
-	<process name="Do potassium chloride electrolysis" tech="1" skill="2" work-time="10.0"
-			process-time="100" power-required="1.0">
+	<!--      2 K+(aq) + 2H2O(l) + 2e−   →   H2(g) + 2 KOH(aq) -->
+	<!-- 2 * 39 g/mol    36 g/mol        →    2 g/mol  2 * 56 g/mol -->
+	<!--         2 Cl– — 2e−   →    Cl2(g) -->
+	<!--      2 * 35.5 g/mol   →  35.5 * 2       -->
+	<!--      KCl (74.6 g/mol) -->
+	<process name="Do potassium chloride electrolysis" tech="1" skill="1" work-time="3.0"
+			process-time="50" power-required="1.0">
 		<description>
 			2 K+(aq) + 2H&lt;sub&gt;2&lt;/sub&gt;O(l) + 2e− → H&lt;sub&gt;2&lt;/sub&gt;(g) + 2 KOH(aq)
 			2 Cl– — 2e− → Cl&lt;sub&gt;2&lt;/sub&gt;(g)
 		</description>
 		<inputs>
-			<resource name="sylvite" amount="10.0" />
-			<resource name="water" amount="17.8" />
+			<resource name="sylvite" amount="7.46" />
+			<resource name="water" amount="1.8" />
 		</inputs>
 		<outputs>
-			<resource name="potash lye" amount="7.5" />
-			<resource name="hydrogen" amount=".5" />
- 			<resource name="chlorine" amount="0.1" />
+			<resource name="potash lye" amount="5.6" />
+			<resource name="hydrogen" amount=".1" />
+ 			<resource name="chlorine" amount="7.1" />
 		</outputs>
 	</process>
 
+	<process name="Dry potash into potassium crystal" tech="1" skill="1" work-time="2.0"
+			process-time="20" power-required="0.1">
+		<description>
+		
+		</description>
+		<inputs>
+			<resource name="potash lye" amount="5.6" />
+		</inputs>
+		<outputs>
+			<resource name="potassium" amount="3.9" />
+			<resource name="water" amount="0.9" />			
+ 			<resource name="oxygen" amount="0.8" />
+		</outputs>
+	</process>
+	
 	<process name="Manufacture battery module" tech="2" skill="3" work-time="300" process-time="100"
 			power-required="1.0">
 		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.
@@ -2275,19 +2300,21 @@ Note: 1 kg of H2 is 14.13 liter
 		 or 160 Ah kg-1. At 3.8V, 3.8V * 160 mAh g-1 = 608 Wh kg-1. Content is 1.6447 kg/kWh.
 		</description> 	
 		<inputs>
-			<resource name="nickel" amount="2" />
-			<resource name="lithium" amount=".4" />			
-			<resource name="potash lye" amount="10.0" />
+			<resource name="nickel" amount="0.25" />
+			<resource name="lithium" amount=".05" />			
+			<resource name="potash lye" amount="0.5" />
 			<resource name="Polyethylene" amount="5.0" >
 				<alternative name="Polypropylene" amount="5.0" />
 			</resource>
-			<part name="iron sheet" number="2" />
-			<part name="logic board" number="2" />
-			<part name="wire connector" number="2" />
+			<part name="iron sheet" number="1" /> 
+			<!-- one iron sheet is 7.85 kg -->
+			<part name="logic board" number="1" />
+			<part name="wire connector" number="4" />
 			<part name="electrical wire" number="12" />			
 		</inputs>
 		<outputs>
 			<part name="battery module" number="1" />
+			<!-- battery module is 15 kg -->
 		</outputs>
 	</process>
 
@@ -2298,18 +2325,19 @@ Note: 1 kg of H2 is 14.13 liter
 		<description> Assume a small EVA battery has the capacity of 0.5kWh.
 		</description>			
 		<inputs>
-			<resource name="nickel" amount="3.0" />
-			<resource name="potash lye" amount="7.0" />
-			<resource name="Polyethylene" amount="4.0">
-				<alternative name="Polypropylene" amount="4.0" />
+			<resource name="nickel" amount="0.05" />
+			<resource name="lithium" amount=".01" />	
+			<resource name="potash lye" amount="0.1" />
+			<resource name="Polyethylene" amount="0.75">
+				<alternative name="Polypropylene" amount="0.75" />
 			</resource>
-			<part name="iron sheet" number="1" />
-			<part name="logic board" number="1" />
-			<part name="wire connector" number="6" />
-			<part name="electrical wire" number="6" />
+			<part name="logic board" number="2" />
+			<part name="wire connector" number="4" />
+			<part name="electrical wire" number="8" />
 		</inputs>
 		<outputs>
-			<part name="EVA battery" number="3" />
+			<part name="EVA battery" number="2" />
+			<!-- EVA battery module is 1.2 kg -->
 		</outputs>
 	</process>
 
