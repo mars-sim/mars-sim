@@ -2248,25 +2248,43 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Electrolysis of potassium chloride (sylvite) in water to produce potassium hydroxide (potash lye) -->
 	<!-- and chlorine gas  -->
-	<!-- 2 K+(aq) + 2H2O(l) + 2e− → H2(g) + 2 KOH(aq) -->
-	<!-- 2 Cl– — 2e− → Cl2(g) -->
-	<process name="Do potassium chloride electrolysis" tech="1" skill="2" work-time="10.0"
-			process-time="100" power-required="1.0">
+	<!--      2 K+(aq) + 2H2O(l) + 2e−   →   H2(g) + 2 KOH(aq) -->
+	<!-- 2 * 39 g/mol    36 g/mol        →    2 g/mol  2 * 56 g/mol -->
+	<!--         2 Cl– — 2e−   →    Cl2(g) -->
+	<!--      2 * 35.5 g/mol   →  35.5 * 2       -->
+	<!--      KCl (74.6 g/mol) -->
+	<process name="Do potassium chloride electrolysis" tech="1" skill="1" work-time="3.0"
+			process-time="50" power-required="1.0">
 		<description>
 			2 K+(aq) + 2H&lt;sub&gt;2&lt;/sub&gt;O(l) + 2e− → H&lt;sub&gt;2&lt;/sub&gt;(g) + 2 KOH(aq)
 			2 Cl– — 2e− → Cl&lt;sub&gt;2&lt;/sub&gt;(g)
 		</description>
 		<inputs>
-			<resource name="sylvite" amount="10.0" />
-			<resource name="water" amount="17.8" />
+			<resource name="sylvite" amount="7.46" />
+			<resource name="water" amount="1.8" />
 		</inputs>
 		<outputs>
-			<resource name="potash lye" amount="7.5" />
-			<resource name="hydrogen" amount=".5" />
- 			<resource name="chlorine" amount="0.1" />
+			<resource name="potash lye" amount="5.6" />
+			<resource name="hydrogen" amount=".1" />
+ 			<resource name="chlorine" amount="7.1" />
 		</outputs>
 	</process>
 
+	<process name="Dry potash into potassium crystal" tech="1" skill="1" work-time="2.0"
+			process-time="20" power-required="0.1">
+		<description>
+		
+		</description>
+		<inputs>
+			<resource name="potash lye" amount="5.6" />
+		</inputs>
+		<outputs>
+			<resource name="potassium" amount="3.9" />
+			<resource name="water" amount="0.9" />			
+ 			<resource name="oxygen" amount="0.8" />
+		</outputs>
+	</process>
+	
 	<process name="Manufacture battery module" tech="2" skill="3" work-time="300" process-time="100"
 			power-required="1.0">
 		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.
