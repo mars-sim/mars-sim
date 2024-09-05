@@ -1129,27 +1129,27 @@
 	http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
 	-->
 	<process name="Solid Waste Management" power-required=".2" >
-		<input resource="solid waste" rate="6" />
+		<input resource="solid waste" rate="5" />
 		
-		<output resource="fertilizer" rate="1" />
 		<output resource="compost" rate="1" />
 		<output resource="toxic waste" rate="1" />
 		<output resource="nitrogen" rate=".5" />
 		<output resource="nitrite" rate=".5" />
 		<output resource="nitrate" rate=".5" />
 		<output resource="phosphorus" rate=".5" />
+		<output resource="potassium" rate=".05" />		
 		<output resource="carbon" rate="1" />
 	</process>				
 
 	<process name="Food Waste Management" power-required=".1" >
 		<input resource="food waste" rate="4" />
 		
-		<output resource="fertilizer" rate=".5" />
 		<output resource="compost" rate=".5" />
 		<output resource="nitrogen" rate=".5" />
 		<output resource="nitrite" rate=".5" />
 		<output resource="nitrate" rate=".5" />
 		<output resource="phosphorus" rate=".5" />
+		<output resource="potassium" rate=".05" />
 		<output resource="carbon" rate="1" />				
 	</process>		
 
@@ -1164,9 +1164,10 @@
 	</process>
 
 	<process name="Soil Generation" power-required=".1" >
-		<input resource="crop waste" rate="5" />
-		<input resource="compost" rate="5" />
-		<output resource="soil" rate="10" />					
+		<input resource="carbon" rate="2" />	
+		<input resource="crop waste" rate="2" />
+		<input resource="compost" rate="2" />
+		<output resource="soil" rate="6" />					
 	</process>
 
 </process-list>
