@@ -61,12 +61,13 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+
+import com.mars_sim.core.logging.SimLogger;
 
 
 /**
@@ -77,6 +78,9 @@ import javax.imageio.stream.ImageInputStream;
  */
 public class BigBufferedImage extends BufferedImage {
 
+	/** Default logger. */
+	private static SimLogger logger = SimLogger.getLogger(BigBufferedImage.class.getName());
+	
 	private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 	public static final int MAX_PIXELS_IN_MEMORY =  1024 * 1024;
 
@@ -115,7 +119,8 @@ public class BigBufferedImage extends BufferedImage {
 					generalExecutor.shutdown();
 					return image;
 				} catch (InterruptedException ex) {
-					Logger.getLogger(BigBufferedImage.class.getName()).log(Level.SEVERE, null, ex);
+					logger.severe("Fail to create the image. " + ex);
+					Thread.currentThread().interrupt();
 				}
 			}
 		}
@@ -233,7 +238,7 @@ public class BigBufferedImage extends BufferedImage {
 
 	private static class FileDataBuffer extends DataBuffer {
 
-		private final String id = "buffer-" + System.currentTimeMillis() + "-" + ((int) (Math.random() * 1000));
+		private final String id = "buffer-" + System.currentTimeMillis() + "-" + RandomUtil.getRandomInt(1000);
 		private File dir;
 		private String path;
 		private File[] files;
@@ -307,19 +312,25 @@ public class BigBufferedImage extends BufferedImage {
 					try {
 						file.close();
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.severe("Fail to close the file. " + e);
 					}
 				}
 				accessFiles = null;
 			}
 			if (files != null) {
 				for (File file : files) {
-					file.delete();
+					if (!file.delete()){
+						// file delete failed;
+						logger.severe("Fail to delete the file.");
+					}
 				}
 				files = null;
 			}
 			if (path != null) {
-				new File(path).delete();
+				if (new File(path).delete()) {
+					// file delete failed;
+					logger.severe("Fail to delete the file path.");
+				}
 				path = null;
 			}
 		}
