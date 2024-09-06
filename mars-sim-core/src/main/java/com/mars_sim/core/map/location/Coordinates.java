@@ -528,6 +528,30 @@ public final class Coordinates implements Serializable {
 		return convertRectToSpherical(x, y, MARS_RADIUS_KM);
 	}
 
+	/**
+	 * Converts linear rectangular XY position change to spherical coordinates.
+	 *
+	 * @param x change in x value
+	 * @param y change in y value
+	 * @return new spherical location
+	 */
+	public Coordinates convertRectIntToSpherical(int x, int y) {
+		Point2D point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, MARS_RADIUS_KM);
+		return new Coordinates(point.getX(), point.getY());
+	}
+	
+	/**
+	 * Converts linear rectangular XY position change to spherical coordinates.
+	 *
+	 * @param x change in x value
+	 * @param y change in y value
+	 * @param rho
+	 * @return new spherical location
+	 */
+	public Coordinates convertRectIntToSpherical(int x, int y, double rho) {
+		Point2D point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, rho);
+		return new Coordinates(point.getX(), point.getY());
+	}
 
 	/**
 	 * Converts linear rectangular XY position change to spherical coordinates with
@@ -536,21 +560,22 @@ public final class Coordinates implements Serializable {
 	 * @param x              change in x value (# of pixels or km)
 	 * @param y              change in y value (# of pixels or km)
 	 * @param rho            radius (in km) or map box height divided by pi (# of pixels)
+	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
 		Point2D point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
 		return new Coordinates(point.getX(), point.getY());
 	}
 
-//	/**
-//	 * Converts linear rectangular XY position change to spherical coordinates with
-//	 * rho value for map.
-//	 *
-//	 * @param index             change in x value (# of pixels or km)
-//	 */
-//	public Point2D convertRectToSpherical(int index) {
-//		return IntegerMapData.getSphericalMapPoint(index);
-//	}
+	/**
+	 * Converts linear rectangular XY position change to spherical coordinates with
+	 * rho value for map.
+	 *
+	 * @param point with phi and theta
+	 */
+	public static Point2D convertRectToSpherical(int index) {
+		return IntegerMapData.getMapBoxPoint(index);
+	}
 	
 	/**
 	 * Returns angle direction to another location on surface of sphere 0 degrees is

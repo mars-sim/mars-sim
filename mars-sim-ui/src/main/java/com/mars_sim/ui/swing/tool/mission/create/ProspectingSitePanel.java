@@ -136,8 +136,8 @@ class ProspectingSitePanel extends WizardPanel {
 	@Override
 	boolean commitChanges(boolean isTesting) {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
-		Coordinates navpoint = getCenterCoords().convertRectToSpherical(1.0 * navpointPixel.getiX() - Map.HALF_MAP_BOX, 
-				1.0 * navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
+		Coordinates navpoint = getCenterCoords().convertRectIntToSpherical(navpointPixel.getiX() - Map.HALF_MAP_BOX, 
+				 navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.COLLECT_ICE == type) 
 			getWizard().getMissionData().setIceCollectionSite(navpoint);
@@ -269,8 +269,8 @@ class ProspectingSitePanel extends WizardPanel {
 				if (withinBounds(displayPos)) {
 					navLayer.setNavpointPosition(0, displayPos);
 					Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-					Coordinates navpoint = center.convertRectToSpherical(1.0 * displayPos.getiX() - Map.HALF_MAP_BOX, 
-							1.0 * displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
+					Coordinates navpoint = center.convertRectIntToSpherical(displayPos.getiX() - Map.HALF_MAP_BOX, 
+							displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
 					locationLabel.setText("Location: " + navpoint.getFormattedString());
 				
 					mapPane.repaint();
