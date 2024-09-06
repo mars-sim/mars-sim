@@ -420,11 +420,12 @@ public class RandomMineralMap implements MineralMap {
 	 * Gets some of the mineral concentrations at a given location.
 	 * 
 	 * @param mineralsDisplaySet 	a set of mineral strings.
-	 * @param aLocation  a coordinate
+	 * @param phi
+	 * @param theta
 	 * @param mag		 the map magnification factor
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Integer> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates aLocation,
+	public Map<String, Integer> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, double phi, double theta,
 			double mag) {
 		
 		double angle = ANGLE_LIMIT;
@@ -442,10 +443,10 @@ public class RandomMineralMap implements MineralMap {
 		while (i.hasNext()) {
 			Coordinates c = i.next();
 	
-			double phi = c.getPhi();
-			double theta = c.getTheta();
-			double phiDiff = Math.abs(aLocation.getPhi() - phi);
-			double thetaDiff = Math.abs(aLocation.getTheta() - theta);
+			double phiLoc = c.getPhi();
+			double thetaLoc = c.getTheta();
+			double phiDiff = Math.abs(phi - phiLoc);
+			double thetaDiff = Math.abs(theta - thetaLoc);
 			
 			// Only take in what's within a certain boundary
 			if (phi > PHI_LIMIT && phi < Math.PI - PHI_LIMIT

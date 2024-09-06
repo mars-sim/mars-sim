@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import java.util.TreeMap;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
+import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
@@ -107,14 +109,22 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	
 			boolean hasMinerals = false;
 			
-			for (int x = 0; x < Map.MAP_BOX_WIDTH; x = x + 2) {
-				
-				for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
-									
+			for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
+				for (int x = 0; x < Map.MAP_BOX_WIDTH; x = x + 2) {
+			
+					int index = x + y * IntegerMapData.getMapBoxWidth();
+					
+					Point2D point = IntegerMapData.getMapBoxPoint(index);
+					if (point == null)
+						continue;
+					double phi = point.getX();
+					double theta = point.getY();
+					
 					java.util.Map<String, Integer> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
-										mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), 
+										phi, 
+										theta,
 										mag);
 									
 					if (mineralConcentrations != null && !mineralConcentrations.isEmpty()) {
