@@ -198,13 +198,17 @@ import com.mars_sim.core.tool.RandomUtil;
 		try {
 			// Set the resolution
 			mapMetaData.setResolution(res);
+			// Destroy the previously held mapDataCache
+//			if (mapDataCache != null) ((IntegerMapData)mapDataCache).destroy();
 			// Obtain a new MapData instance
 			mapData = new IntegerMapData(mapMetaData, rho);		
 			// Patch the metadata to be locally available
 			mapMetaData.setLocallyAvailable(true);
-			
+			// Cache the new mapData
 			mapDataCache = mapData;
-			
+			// Destroy the previously held mapDataCache
+//			if (mapMetaDataCache != null)  mapMetaDataCache.destroy();
+			// Cache the new mapMetaData		
 			mapMetaDataCache = mapMetaData;
 			
 			logger.log(Level.CONFIG, "Loading map type '" + mapType 

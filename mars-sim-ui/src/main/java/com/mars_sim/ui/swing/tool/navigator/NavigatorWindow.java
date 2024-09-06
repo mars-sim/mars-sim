@@ -63,6 +63,7 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
@@ -195,6 +196,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	/** Toggle button for mineral types. */
 	private JButton mineralsButton;
+	/** Toggle button for GPU acceleration. */
+	private FlatToggleButton gpuButton;
 	/** Go button. */
 	private JButton goButton;
 	
@@ -439,14 +442,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		topOptionPane.add(optionsButton);
 
-		JPanel bottomOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomOptionPane.setPreferredSize(new Dimension(120, 30));
-		bottomOptionPane.setMinimumSize(new Dimension(120, 30));
-		bottomOptionPane.setMaximumSize(new Dimension(120, 30));
-		optionsPane.add(bottomOptionPane, BorderLayout.CENTER);
+		JPanel mineralBtnPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		mineralBtnPane.setPreferredSize(new Dimension(100, 25));
+		mineralBtnPane.setMinimumSize(new Dimension(100, 25));
+		mineralBtnPane.setMaximumSize(new Dimension(100, 25));
+		optionsPane.add(mineralBtnPane, BorderLayout.CENTER);
 		
-		// Prepare minerals button.0
+		// Prepare minerals button
 		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+		mineralsButton.setPreferredSize(new Dimension(100, 25));
 		mineralsButton.putClientProperty("JButton.buttonType", "roundRect");
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
@@ -456,7 +460,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				});
 		});
 		
-		bottomOptionPane.add(mineralsButton);
+		mineralBtnPane.add(mineralsButton);
+		
+		JPanel gpuBtnPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		gpuBtnPane.setPreferredSize(new Dimension(80, 25));
+		gpuBtnPane.setMinimumSize(new Dimension(80, 25));
+		gpuBtnPane.setMaximumSize(new Dimension(80, 25));
+		optionsPane.add(gpuBtnPane, BorderLayout.SOUTH);
+	
+		// Prepare gpu button
+		gpuButton = new FlatToggleButton(); 
+		gpuButton.setPreferredSize(new Dimension(80, 25));
+		gpuButton.putClientProperty("JButton.buttonType", "roundRect");
+		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //$NON-NLS-1$
+		boolean gpuState = IntegerMapData.hardwareAccel;
+		gpuButton.setEnabled(gpuState);
+		updateGPUButton();
+		gpuButton.addActionListener(e -> {
+				SwingUtilities.invokeLater(() -> updateGPUButton());
+		});
+		
+		gpuBtnPane.add(gpuButton);
 
 		// Create the status bar
 		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
@@ -514,6 +538,24 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		pack();
 	}
 
+	/**
+	 * Updates the state of the GPU button.
+	 */
+	private void updateGPUButton() {
+		boolean isSelected = gpuButton.isSelected();
+		String gpuStateStr1 = " off";
+		if (isSelected) {
+			gpuStateStr1 = " on";
+			logger.config("Set GPU button to be ON.");
+		}
+		else {
+			logger.config("Set GPU button to be OFF.");
+		}
+		IntegerMapData.setGPU(isSelected);
+		gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
+	}
+	
+	
 	/**
 	 * Checks for config settings.
 	 */
@@ -991,7 +1033,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		boolean selected = mineralsButton.isEnabled();
 		
-		printMineralText(selected);
+		updateMineralButtonText(selected);
 	}
 
 	/**
@@ -1002,16 +1044,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void selectMineralLayer(boolean selected) {
 		mineralsButton.setEnabled(selected);
 		
-		printMineralText(selected);
+		updateMineralButtonText(selected);
 	}
 	
-	private void printMineralText(boolean selected) {
+	/**
+	 * Updates the mineral button text.
+	 * 
+	 * @param selected
+	 */
+	private void updateMineralButtonText(boolean selected) {
 		mineralsButton.setEnabled(selected);
 		if (selected) {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " on ");
+			logger.config("Set Mineral button to be ON.");
 		}
 		else {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " off ");
+			logger.config("Set Mineral button to be OFF.");
 		}
 	}
 	
@@ -1527,6 +1576,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		settlementComboBox = null;
 		mineralsButton = null;
+		gpuButton = null;
+		goButton = null;
 		
 		r0 = null;	
 		r1 = null;

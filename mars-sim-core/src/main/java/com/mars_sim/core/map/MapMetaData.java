@@ -185,5 +185,7 @@ public class MapMetaData {
 	public void destroy() {
 		locallyAvailableMap.clear();
 		locallyAvailableMap = null;
+		listOfMaps.clear();
+		listOfMaps = null;
 	}
 }

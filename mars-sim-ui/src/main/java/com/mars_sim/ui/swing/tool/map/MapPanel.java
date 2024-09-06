@@ -162,7 +162,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		MIN_RHO = IntegerMapData.minRho;
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
 
-		logger.info("RHO_DEFAULT: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
+		logger.info("RHO_DEFAULT: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + ".  multiplier: " + Math.round(multiplier * 10.0)/10.0 + ".");
 	}
 
 	/**
@@ -393,8 +393,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 		boolean toload = false;
 		
-		if (marsMap == null) {	
-			logger.info("marsMap == null");
+		if (marsMap == null) {
 			toload = true;
 		}
 		else if (res != marsMap.getMapMetaData().getResolution()) {

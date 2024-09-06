@@ -42,33 +42,32 @@ import com.mars_sim.core.map.common.FileLocator;
 
 	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
-
-	public static final double HALF_MAP_ANGLE = 0.48587;
-	
-	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
 	
  	private static final double TWO_PI = Math.PI * 2;
  	
- 	private static final double HALF_PI = Math.PI / 2D;
- 	// The max rho multiplier allowed
-  	public static final double maxRhoMultiplier = 5;
-  	// The min rho fraction allowed
-  	public static final double minRhoFraction = 3;
-  	
- 	private static final String CL_FILE = "MapDataFast.cl";
- 	
- 	private static final String KERNEL_NAME = "getMapImage";
- 	
- 	
-	private static boolean hardwareAccel = true;
+ 	public static boolean hardwareAccel = true;
 	// The max rho
  	public static double maxRho;
  	// The min rho
  	public static double minRho;
 	// The default rho at the start of the sim
  	public static double rhoDefault;
-
+ 	
+	public static final double HALF_MAP_ANGLE = 0.48587;
+	
+	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
+ 	// The max rho multiplier allowed
+  	public static final double maxRhoMultiplier = 5;
+  	// The min rho fraction allowed
+  	public static final double minRhoFraction = 3;
+  	
  	// Data members.
+ 	private final double HALF_PI = Math.PI / 2D;
+
+ 	private final String CL_FILE = "MapDataFast.cl";
+ 	
+ 	private final String KERNEL_NAME = "getMapImage";
+ 	
   	/* # of pixels in the width of the map image. */
 	private int pixelWidth;
 	/* # of pixels in the height of the map image. */
@@ -76,16 +75,16 @@ import com.mars_sim.core.map.common.FileLocator;
 	/* The radius of Mars in # of pixels (pixelHeight / PI). */
 	private double rho;
 	/* The base map color pixels double array. */
- 	private int[][] colorPixels = new int[0][0];
+ 	private transient int[][] colorPixels = new int[0][0];
 	/* The array of points for generating mineral map in a mapbox. */	
- 	private static Point2D[] mapBoxArray;
+ 	private transient static Point2D[] mapBoxArray;
  	
  	/* The meta data of the map. */
-	private MapMetaData meta;
+	private transient MapMetaData meta;
  	/* The OpenCL program instance. */
-	private CLProgram program;
+	private transient CLProgram program;
  	/* The OpenCL kernel instance. */
-	private CLKernel kernel;
+	private transient CLKernel kernel;
  	
  	/**
  	 * Constructor.
@@ -118,7 +117,7 @@ import com.mars_sim.core.map.common.FileLocator;
 		maxRho = rhoDefault * maxRhoMultiplier;
 		minRho = rhoDefault / minRhoFraction;
 
-		logger.config("new IntegerMapData - rho : " + Math.round(rho *10.0)/10.0 + " RHO_DEFAULT : " + Math.round(rhoDefault *10.0)/10.0);
+		logger.config("rho: " + Math.round(rho *10.0)/10.0 + ". RHO_DEFAULT: " + Math.round(rhoDefault *10.0)/10.0 + ".");
 		
 		// Exclude mac from use openCL
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -436,31 +435,6 @@ import com.mars_sim.core.map.common.FileLocator;
 		if (!meta.isColourful()) {
 	        // Convert to grayscale
 
-			// Not working below (Retain for further debugging) :
-//			// Create a lookup table for whitening
-//			float[] lut = new float[256];
-//			for (int i = 0; i < 256; i++) {
-//			    lut[i] = (float) Math.min(Math.max(i / 255.0 * 2.0 + 0.5, 0.0), 1.0); // Adjust as needed
-//			}
-//			
-//			// Apply the lookup table to the image
-//			for (int y = 0; y < h; y++) {
-//			    for (int x = 0; x < w; x++) {
-//			        int p = bImage.getRGB(x, y);
-//			        
-//			        int a = (p >> 24) & 0xFF;
-//			        int r = (p >> 16) & 0xFF;
-//			        int g = (p >> 8) & 0xFF;
-//			        int b = p & 0xFF;
-//			        
-//			        int part0 = (int) (lut[r] * 255) << 16;
-//			        int part1 = (int) (lut[g] * 255) << 8;
-//			        int part2 = (int) lut[b];
-//			        int whitenedPixel = part0 | part1 | part2;
-//			        bImage.setRGB(x, y, whitenedPixel | a << 24);
-//			    }
-//			}
-			
 	        for (int i = 0; i < rgbArray.length; i++) {
 	 
 	            // Here i denotes the index of array of pixels
@@ -486,24 +460,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	        }
 	        
 	        bImage.setRGB(0, 0, w, h, rgbArray, 0, w);
-	        
-	        // Not working below (Retain for further debugging) :
-//			for (int i = 0; i < h; i++) {
-//			    for (int j = 0; j < w; j++) {
-//			        Color c = new Color(bImage.getRGB(j, i));
-////			        int red = (int) (c.getRed() * 0.299);
-////			        int green = (int) (c.getGreen() * 0.587);
-////			        int blue = (int) (c.getBlue() * 0.114);
-//	        
-//			        int gray = (int) (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114); // Original grayscale calculation
-//		            int enhancedGray = Math.min(255, gray + 15); // Brightness enhancement (10-20)
-//		
-//		            Color newColor = new Color(enhancedGray, enhancedGray, enhancedGray);
-////			        Color newColor = new Color(red + green + blue, red + green + blue, red + green + blue);
-//
-//			        bImage.setRGB(j, i, newColor.getRGB());
-//			    }
-//			}
+
 		}
 			
 		else {
@@ -520,26 +477,6 @@ import com.mars_sim.core.map.common.FileLocator;
 			}
 		}
 	}
-    
- 	private int toRGB(int grayValue) {
-// 	    int part = Math.round(value * 255);
- 	    return grayValue * 0x10101;
- 	}
- 	
- 	public void setAlpha(byte alpha, BufferedImage image) {       
- 		// alpha is in 0-255 range
- 		alpha %= 0xff; 
- 	    for (int i = 0; i < image.getWidth(); i++) {          
- 	        for (int j = 0; j < image.getHeight(); j++) {
- 	        	int color = image.getRGB(i, j);
-
- 	        	// According to Java API, the alpha value is at 24-31 bit.
- 	            int mc = (alpha << 24) | 0x00ffffff; // shift blue to alpha
- 	            int newcolor = color & mc;
- 	            image.setRGB(i, j, newcolor);            
- 	        }
- 	    }
- 	}
  	
 	 /**
 	  * Constructs a map array for display with GPU via JOCL.
@@ -585,12 +522,23 @@ import com.mars_sim.core.map.common.FileLocator;
 		 int[] cols = new int[size];
 		 colBuffer.getBuffer().get(cols);
 	 
+		 // Note that maxIndex = 262144
+		 int maxIndex = mapBoxArray.length;
 		 for (int i = 0; i < size; i++) {
 			 int x = rows[i];
 			 int y = cols[i];
 			 int index = x + y * mapBoxWidth;
-			 mapBoxArray[index] = new Point2D.Double(x, y);
-			 mapArray[i] = colorPixels[x][y];
+			 if (index < maxIndex)
+				 mapBoxArray[index] = new Point2D.Double(x, y);
+			 
+			 boolean invalid = Double.isNaN(x) || Double.isInfinite(x) || Double.isNaN(y) || Double.isInfinite(y) ;
+			 if (invalid) {
+				 // Set the color to black
+				 mapArray[i] = 0;
+			 }
+			 else {
+				 mapArray[i] = colorPixels[x][y];
+			 }
 		 }
 
 		 rowBuffer.release();
@@ -840,6 +788,13 @@ import com.mars_sim.core.map.common.FileLocator;
  	 */
 	@Override
  	public int getRGBColorInt(double phi, double theta) {
+		
+		 boolean invalid = Double.isNaN(phi) || Double.isInfinite(phi) || Double.isNaN(theta) || Double.isInfinite(theta) ;
+		 if (invalid) {
+			 // Set the color to black
+			 return 0;
+		 }
+	
  		// Make sure phi is between 0 and PI.
  		while (phi > Math.PI)
  			phi -= Math.PI;
@@ -893,6 +848,17 @@ import com.mars_sim.core.map.common.FileLocator;
  		return mapBoxArray[index];
  	}
  	
+ 	
+ 	/**
+ 	 * Sets the value of GPU hardware accel.
+ 	 * 
+ 	 * @param value
+ 	 */
+ 	public static void setGPU(boolean value) {
+ 		hardwareAccel = value;
+ 	}
+ 	
+ 	
 	/**
 	 * Prepares map panel for deletion.
 	 */
@@ -901,6 +867,6 @@ import com.mars_sim.core.map.common.FileLocator;
 	 	meta = null;
 		program = null;
 		kernel = null;
+		mapBoxArray = null;
 	}
- 	
  }
