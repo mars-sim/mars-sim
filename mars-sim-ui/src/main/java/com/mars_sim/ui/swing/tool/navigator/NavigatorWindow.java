@@ -1360,7 +1360,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         });
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
-        		(int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLIER), 10);
+        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(60, 400));
         zoomSlider.setSize(new Dimension(60, 400));
@@ -1413,7 +1413,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		});
 		
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
-		for (int i = 1; i < IntegerMapData.MAX_RHO_MULTIPLIER + 1; i++) {
+		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
 			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
 		}
 //		labelTable.put(0, new JLabel("1/4"));
@@ -1429,7 +1429,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		double newScale = rho / MapPanel.RHO_DEFAULT;
 		
-		if (scale != newScale && newScale < (int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLIER)) {
+		if (scale != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
 //			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
 			scale = newScale;
 
@@ -1446,7 +1446,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @return
 	 */
 	private double computeSliderValue(double scale) {
-		return (scale * IntegerMapData.MIN_RHO_FRACTION - SCALE_CONVERSION) * IntegerMapData.MAX_RHO_MULTIPLIER;
+		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
 	}
 	
 	/**
@@ -1456,7 +1456,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @return
 	 */
 	private double computeScale(double sliderValue) {
-		return (1.0 * sliderValue / IntegerMapData.MAX_RHO_MULTIPLIER + SCALE_CONVERSION) / IntegerMapData.MIN_RHO_FRACTION;
+		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
 	}
 	
 	@Override

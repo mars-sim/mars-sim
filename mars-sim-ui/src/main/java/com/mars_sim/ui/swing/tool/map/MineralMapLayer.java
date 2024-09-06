@@ -39,8 +39,8 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 	private double rhoCache;
 	
-	private double centerX = Map.HALF_MAP_BOX;
-	private double centerY = Map.HALF_MAP_BOX;
+	private final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
+	private final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH;
 	
 	private String mapTypeCache;
 	
@@ -103,16 +103,16 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			mapTypeCache = mapType;
 			updateLayer = false;
 			
-			int[] newMineralArray = new int[Map.MAP_BOX_WIDTH * Map.MAP_BOX_HEIGHT];
+			int[] newMineralArray = new int[MAP_BOX_WIDTH * MAP_BOX_HEIGHT];
 
 			double mag = baseMap.getScale();
 	
 			boolean hasMinerals = false;
 			
-			for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
-				for (int x = 0; x < Map.MAP_BOX_WIDTH; x = x + 2) {
+			for (int y = 0; y < MAP_BOX_HEIGHT; y = y + 2) {
+				for (int x = 0; x < MAP_BOX_WIDTH; x = x + 2) {
 			
-					int index = x + y * IntegerMapData.getMapBoxWidth();
+					int index = x + y * MAP_BOX_WIDTH;
 					
 					Point2D point = IntegerMapData.getMapBoxPoint(index);
 					if (point == null)

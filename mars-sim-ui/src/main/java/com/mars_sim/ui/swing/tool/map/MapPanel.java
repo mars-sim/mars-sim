@@ -158,9 +158,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		setSize(getPreferredSize());
 		
 		// Note: rho = pixelHeight / Math.PI;
-//		RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
-		MAX_RHO = IntegerMapData.MAX_RHO;
-		MIN_RHO = IntegerMapData.MIN_RHO;
+		MAX_RHO = IntegerMapData.maxRho;
+		MIN_RHO = IntegerMapData.minRho;
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
 
 		logger.info("RHO_DEFAULT: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
@@ -410,9 +409,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString, res, getRho()));
 
 			// Redefine map param
-			RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
-			MAX_RHO = IntegerMapData.MAX_RHO;
-			MIN_RHO = IntegerMapData.MIN_RHO;
+			RHO_DEFAULT = IntegerMapData.rhoDefault;
+			MAX_RHO = IntegerMapData.maxRho;
+			MIN_RHO = IntegerMapData.minRho;
 			multiplier = RHO_DEFAULT / ZOOM_STEP;
 					
 			recreateMap = true;
