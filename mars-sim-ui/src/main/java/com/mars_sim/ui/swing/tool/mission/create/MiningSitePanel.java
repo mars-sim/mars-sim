@@ -375,7 +375,7 @@ public class MiningSitePanel extends WizardPanel {
 		if (center != null) {
 			int xValue = xLoc - (Map.MAP_BOX_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
 			int yValue = yLoc - (Map.MAP_BOX_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
-			Coordinates clickedPosition = center.convertRectToSpherical((double) xValue, (double) yValue,
+			Coordinates clickedPosition = center.convertRectIntToSpherical(xValue, yValue,
 								mapPane.getMap().getRho());
 
 			ExploredLocation closestSite = null;

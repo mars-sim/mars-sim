@@ -271,7 +271,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					mouseDragging = true;
 					
 					// Update the centerCoords while dragging
-					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getRho());
+					centerCoords = centerCoords.convertRectIntToSpherical(dx, dy, marsMap.getRho());
 					// Do we really want to update the map while dragging ? 
 					// Yes. It's needed to provide smooth viewing of the surface map
 					marsMap.drawMap(centerCoords, getRho());
