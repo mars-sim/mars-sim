@@ -11,7 +11,6 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-
 import java.util.logging.Logger;
 
 import com.mars_sim.core.map.IntegerMapData;
@@ -543,6 +542,16 @@ public final class Coordinates implements Serializable {
 		return new Coordinates(point.getX(), point.getY());
 	}
 
+//	/**
+//	 * Converts linear rectangular XY position change to spherical coordinates with
+//	 * rho value for map.
+//	 *
+//	 * @param index             change in x value (# of pixels or km)
+//	 */
+//	public Point2D convertRectToSpherical(int index) {
+//		return IntegerMapData.getSphericalMapPoint(index);
+//	}
+	
 	/**
 	 * Returns angle direction to another location on surface of sphere 0 degrees is
 	 * north (clockwise).

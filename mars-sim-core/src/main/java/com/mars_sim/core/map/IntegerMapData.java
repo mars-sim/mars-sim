@@ -62,7 +62,9 @@ import com.mars_sim.core.map.common.FileLocator;
   	public static double MAX_RHO_MULTIPLIER = 5;
   	// The min rho fraction allowed
   	public static double MIN_RHO_FRACTION = 3;
-
+  	/* The width of the map box image in pixels. */
+	private static int mapWidth;
+	
  	// Data members.
   	/* # of pixels in the width of the map image. */
 	private int pixelWidth;
@@ -72,6 +74,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	private double rho;
 	/* The base map pixels double array. */
  	private int[][] baseMapPixels = new int[0][0];
+	/* The array of points for generating mineral map in a mapbox. */	
+ 	private static Point2D[] mapBoxArray;
  	
  	/* The meta data of the map. */
 	private MapMetaData meta;
@@ -90,7 +94,7 @@ import com.mars_sim.core.map.common.FileLocator;
  	IntegerMapData(MapMetaData mapMetaData, double rho) throws IOException {
 		this.meta = mapMetaData;
 		this.rho = rho;
-		
+
 		// Load data files
 		String metaFile = mapMetaData.getFile();
 		
@@ -208,6 +212,10 @@ import com.mars_sim.core.map.common.FileLocator;
 		return pixelWidth;
 	}
 
+	public static int getMapBoxWidth() {
+		return mapWidth;
+	}
+	
 	/**
      * Gets the number of pixels height.
      * 
@@ -411,6 +419,11 @@ import com.mars_sim.core.map.common.FileLocator;
  	@Override
  	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double newRho) {
 	
+ 		mapWidth = mapBoxWidth;
+ 		mapBoxArray = new Point2D[mapBoxHeight * mapBoxWidth];
+ 		if (mapBoxArray == null)
+ 			System.out.println("sphericalArray is null");
+ 		
 		 boolean invalid = Double.isNaN(centerPhi) || Double.isNaN(centerTheta);
 		 if (invalid) {
 			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
@@ -441,17 +454,17 @@ import com.mars_sim.core.map.common.FileLocator;
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
  
-		if (HARDWARE_ACCELERATION) {
-			try {
-				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
-			} catch(Exception e) {
-				HARDWARE_ACCELERATION = false;
-				logger.log(Level.SEVERE, "Disabling GPU OpenCL accel. Exception caused by " + e.getMessage());
-			}
-		}
-		else {
+//		if (HARDWARE_ACCELERATION) {
+//			try {
+//				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
+//			} catch(Exception e) {
+//				HARDWARE_ACCELERATION = false;
+//				logger.log(Level.SEVERE, "Disabling GPU OpenCL accel. Exception caused by " + e.getMessage());
+//			}
+//		}
+//		else {
 			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
-		}
+//		}
 
 	 	// Create new map image.
 	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxHeight);
@@ -607,6 +620,7 @@ import com.mars_sim.core.map.common.FileLocator;
 				 int index = x + (y * mapBoxWidth);
 
 				 Point2D loc = convertRectToSpherical(1.0*(x - halfWidth), 1.0*(y - halfHeight), centerPhi, centerTheta, getRho());
+				 mapBoxArray[index] = loc;
 				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
 			 }
 		 }
@@ -686,8 +700,10 @@ import com.mars_sim.core.map.common.FileLocator;
 				 while (yCorrected > TWO_PI)
 					 yCorrected -= TWO_PI;
 				 
+				 int index = (int)Math.round(x + (y * mapBoxWidth));
 				 Point loc = findRectPosition(centerPhi, centerTheta, x, yCorrected, getRho(), halfWidth, halfWidth);
-				  
+				 mapBoxArray[index] = loc;
+				 
 				 // Determine the display x and y coordinates for the pixel in the image.
 				 int xx = pixelWidth - (int)loc.getX();
 				 int yy = pixelHeight - (int)loc.getY();
@@ -712,6 +728,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	/**
 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
 	 * and y display coordinates for spherical location.
+	 * 
+ 	 * @Note: this method will be used by cpu1(). Retain for further debugging.
 	 *
 	 * @param newPhi   the new phi coordinate
 	 * @param newTheta the new theta coordinate
@@ -774,9 +792,12 @@ import com.mars_sim.core.map.common.FileLocator;
 		 rowBuffer.getBuffer().get(rows);
 		 int[] cols = new int[size];
 		 colBuffer.getBuffer().get(cols);
-
-		 for(int i = 0; i < size; i++) {
-			 mapArray[i] = baseMapPixels[rows[i]][cols[i]];
+	 
+		 for(int index = 0; index < size; index++) {
+			 int x = rows[index];
+			 int y = cols[index];
+			 mapBoxArray[index] = new Point2D.Double(x, y);
+			 mapArray[index] = baseMapPixels[x][y];
 		 }
 
 		 rowBuffer.release();
@@ -878,12 +899,19 @@ import com.mars_sim.core.map.common.FileLocator;
 // 	 *	    return new Color(getRGBColorInt(phi, theta));
 // 	 *  }
 // 	 */
-
- 	
+	
  	public int[][] getPixels() {
  		return baseMapPixels;
  	}
 
+ 	
+	/**
+	 * Gets the point for generating a mineral map. 
+	 */	
+ 	public static Point2D getMapBoxPoint(int index) {
+ 		return mapBoxArray[index];
+ 	}
+ 	
 	/**
 	 * Prepares map panel for deletion.
 	 */
