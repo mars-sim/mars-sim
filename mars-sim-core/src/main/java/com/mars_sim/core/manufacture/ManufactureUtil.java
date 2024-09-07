@@ -492,14 +492,14 @@ public final class ManufactureUtil {
 	 */
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
-		Collection<? extends Unit> salvagableUnits = new ArrayList<>();
+		List<Unit> salvagableUnits = new ArrayList<>();
 
 		if (info.getType() == ItemType.VEHICLE) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
-				salvagableUnits = settlement.getVehicleTypeUnit(VehicleType.LUV);
+				salvagableUnits.addAll(settlement.getVehicleTypeUnit(VehicleType.LUV));
 			} else {
 				VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
-				salvagableUnits = settlement.getVehicleTypeUnit(type);
+				salvagableUnits.addAll(settlement.getVehicleTypeUnit(type));
 			}
 
 			// Remove any reserved vehicles.
@@ -514,7 +514,7 @@ public final class ManufactureUtil {
 		
 		else if (info.getType() == ItemType.EQUIPMENT) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
-			salvagableUnits = settlement.getContainerSet(eType);
+			salvagableUnits.addAll(settlement.getContainerSet(eType));
 		} 
 
 		// Make sure container unit is settlement.
@@ -527,13 +527,12 @@ public final class ManufactureUtil {
 		// If malfunctionable, find most worn unit.
 		if (!salvagableUnits.isEmpty()) {
 			Unit firstUnit = (Unit) salvagableUnits.toArray()[0];
-			if (firstUnit instanceof Malfunctionable) {
+			if (firstUnit instanceof Malfunctionable malfunctionable) {
 				Unit mostWorn = null;
 				double lowestWearCondition = Double.MAX_VALUE;
 				Iterator<? extends Unit> k = salvagableUnits.iterator();
 				while (k.hasNext()) {
 					Unit unit = k.next();
-					Malfunctionable malfunctionable = (Malfunctionable) unit;
 					double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
 					if (wearCondition < lowestWearCondition) {
 						mostWorn = unit;
