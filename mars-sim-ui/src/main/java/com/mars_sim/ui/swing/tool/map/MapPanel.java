@@ -442,8 +442,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			return;
 		
 		if (centerCoords == null
+			|| rho != getRho()
 			|| !centerCoords.equals(newCenter)
-			|| rho != getRho()) {
+			) {
 				recreateMap = true;
 				centerCoords = newCenter;
 		}
@@ -528,18 +529,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 			
 	        if (wait) {
-//	        	if (mapImage != null) {
-//	        		g2d.drawImage(mapImage, 0, 0, this);	
-//	        	}
 	        	String message = "Generating Map";
 	        	drawCenteredMessage(message, g2d);
 	        }
 	        else {
 	        	if (mapError) {
 	            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
-	                // Display previous map image
-//	                if (mapImage != null) g2d.drawImage(mapImage, 0, 0, this);
-	
 	                // Draw error message
 	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
 	                drawCenteredMessage(mapErrorMessage, g2d);
@@ -547,19 +542,18 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	        	else {
 	        		
 	        		// Clear the background with white
-//	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+//	        		// Not working: g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 	        		// Paint black background
-//	        		g2d.setPaint(Color.BLACK); 
 	        		g2d.setColor(Color.BLACK);
 	                
 	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-//	        		g2d.drawImage(starfield, 0, 0, Color.black, this);
-//	        		g2d.setComposite(AlphaComposite.SrcOver); 
-//	        		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
+//	        		Not working: g2d.drawImage(starfield, 0, 0, Color.black, this);
+//	        		Not working: g2d.setComposite(AlphaComposite.SrcOver); 
+//	        		Not working: g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
 	        		// or 0.0f)); // draw transparent background
 	        		// or 1.0f)); // turn on opacity
 	        		
-//	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+//	        		Not working: g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
         		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
@@ -629,10 +623,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return
 	 */
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - Map.MAP_BOX_WIDTH / 2.0;
-		double yMap = y - Map.MAP_BOX_HEIGHT / 2.0;
-		
-		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getRho());
+		double xx = x - Map.MAP_BOX_WIDTH / 2.0;
+		double yy = y - Map.MAP_BOX_HEIGHT / 2.0;
+		// Based on the current centerCoords
+		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
     }
 
     /**
@@ -654,6 +648,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
 	public void setRho(double rho) {
 		if (marsMap != null) {
+//			Not working: updateDisplay();
 			marsMap.drawMap(centerCoords, rho);
 			repaint();
 		}
