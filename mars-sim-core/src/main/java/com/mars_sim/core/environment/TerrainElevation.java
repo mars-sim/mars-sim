@@ -331,7 +331,7 @@ public class TerrainElevation implements Serializable {
 //			height = s.getElevation();
 //		}
 //		else {
-			height = getColorElevation(location.getPhi(), location.getTheta(), IntegerMapData.RHO_DEFAULT);	
+			height = getColorElevation(location.getPhi(), location.getTheta(), IntegerMapData.rhoDefault);	
 //		}
 			
 		return height;

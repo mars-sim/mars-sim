@@ -63,6 +63,7 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
@@ -132,6 +133,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 16;
 	private static final int SCALE_CONVERSION = 3;
+	private static final int CONTROL_PANE_HEIGHT = 85;
 	
 	private static final String LEVEL = "Level ";
 	private static final String DASH = "- ";
@@ -195,6 +197,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	/** Toggle button for mineral types. */
 	private JButton mineralsButton;
+	/** Toggle button for GPU acceleration. */
+	private FlatToggleButton gpuButton;
 	/** Go button. */
 	private JButton goButton;
 	
@@ -300,9 +304,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		///////////////////////////////
 		
 		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
-		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH, 80));
-		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH, 80));
-		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, 80));
+		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
+		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
+		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
 		wholePane.add(wholeBottomPane, BorderLayout.SOUTH);
 		
 		JPanel coordControlPane = new JPanel(new BorderLayout());
@@ -415,15 +419,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		JPanel optionsPane = new JPanel(new BorderLayout(0, 0));
-		optionsPane.setAlignmentY(Component.CENTER_ALIGNMENT);
-		coordControlPane.add(optionsPane, BorderLayout.EAST);
+		JPanel gridPane = new JPanel(new GridLayout(3, 1));
+		gridPane.setAlignmentY(Component.CENTER_ALIGNMENT);
+		coordControlPane.add(gridPane, BorderLayout.EAST);
 
 		JPanel topOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topOptionPane.setPreferredSize(new Dimension(120, 30));
-		topOptionPane.setMinimumSize(new Dimension(120, 30));
-		topOptionPane.setMaximumSize(new Dimension(120, 30));
-		optionsPane.add(topOptionPane, BorderLayout.NORTH);
+		topOptionPane.setPreferredSize(new Dimension(120, 25));
+		topOptionPane.setMinimumSize(new Dimension(120, 25));
+		topOptionPane.setMaximumSize(new Dimension(120, 25));
+		gridPane.add(topOptionPane);
         
 		// Prepare options button.
 		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
@@ -439,14 +443,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		topOptionPane.add(optionsButton);
 
-		JPanel bottomOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomOptionPane.setPreferredSize(new Dimension(120, 30));
-		bottomOptionPane.setMinimumSize(new Dimension(120, 30));
-		bottomOptionPane.setMaximumSize(new Dimension(120, 30));
-		optionsPane.add(bottomOptionPane, BorderLayout.CENTER);
+		JPanel mineralBtnPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		mineralBtnPane.setPreferredSize(new Dimension(100, 25));
+		mineralBtnPane.setMinimumSize(new Dimension(100, 25));
+		mineralBtnPane.setMaximumSize(new Dimension(100, 25));
+		gridPane.add(mineralBtnPane);
 		
-		// Prepare minerals button.0
+		// Prepare minerals button
 		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+		mineralsButton.setPreferredSize(new Dimension(100, 25));
 		mineralsButton.putClientProperty("JButton.buttonType", "roundRect");
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
@@ -456,7 +461,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				});
 		});
 		
-		bottomOptionPane.add(mineralsButton);
+		mineralBtnPane.add(mineralsButton);
+		
+		JPanel gpuBtnPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		gpuBtnPane.setPreferredSize(new Dimension(80, 25));
+		gpuBtnPane.setMinimumSize(new Dimension(80, 25));
+		gpuBtnPane.setMaximumSize(new Dimension(80, 25));
+		gridPane.add(gpuBtnPane);
+	
+		// Prepare gpu button
+		gpuButton = new FlatToggleButton(); 
+		gpuButton.setPreferredSize(new Dimension(80, 25));
+		gpuButton.putClientProperty("JButton.buttonType", "roundRect");
+		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //$NON-NLS-1$
+		boolean gpuState = IntegerMapData.hardwareAccel;
+		gpuButton.setEnabled(gpuState);
+		updateGPUButton();
+		gpuButton.addActionListener(e -> {
+				SwingUtilities.invokeLater(() -> updateGPUButton());
+		});
+		
+		gpuBtnPane.add(gpuButton);
 
 		// Create the status bar
 		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
@@ -514,6 +539,36 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		pack();
 	}
 
+	/**
+	 * Updates the state of the GPU button.
+	 */
+	private void updateGPUButton() {
+		boolean isCapable = IntegerMapData.isGPUEnabled();
+		
+		if (!isCapable) {
+			logger.config("Disabled GPU button since GPU acceleration cannot be enabled.");
+			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + " off");
+			gpuButton.setEnabled(false);
+			mapPanel.setRho(mapPanel.getRho());
+			return;
+		}
+		
+		boolean isSelected = gpuButton.isSelected();
+		String gpuStateStr1 = " off";
+		if (isSelected) {
+			gpuStateStr1 = " on";
+			logger.config("Set GPU button to be ON.");
+		}
+		else {
+			logger.config("Set GPU button to be OFF.");
+		}
+		IntegerMapData.setGPU(isSelected);
+		gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
+		
+		mapPanel.setRho(mapPanel.getRho());
+	}
+	
+	
 	/**
 	 * Checks for config settings.
 	 */
@@ -991,7 +1046,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		boolean selected = mineralsButton.isEnabled();
 		
-		printMineralText(selected);
+		updateMineralButtonText(selected);
 	}
 
 	/**
@@ -1002,16 +1057,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void selectMineralLayer(boolean selected) {
 		mineralsButton.setEnabled(selected);
 		
-		printMineralText(selected);
+		updateMineralButtonText(selected);
 	}
 	
-	private void printMineralText(boolean selected) {
+	/**
+	 * Updates the mineral button text.
+	 * 
+	 * @param selected
+	 */
+	private void updateMineralButtonText(boolean selected) {
 		mineralsButton.setEnabled(selected);
 		if (selected) {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " on ");
+			logger.config("Set Mineral button to be ON.");
 		}
 		else {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " off ");
+			logger.config("Set Mineral button to be OFF.");
 		}
 	}
 	
@@ -1166,23 +1228,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public void checkClick(MouseEvent event) {
 
-		if (mapPanel.getCenterLocation() != null) {
-			Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
+		Coordinates mapCenter = mapPanel.getCenterLocation();
+		if (mapCenter == null) {
+			return;
+		}
+		
+		Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
-			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
+		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
-			// Open window if unit is clicked on the map
-			while (i.hasNext()) {
-				Unit unit = i.next();
-				
-				if (unit.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)unit).isOutsideOnMarsMission()) {
-						// Proceed to below to set cursor;
-						setCursorOpenWindow(unit, clickedPosition);
-					}
-					else 
-						continue;
+		// Open window if unit is clicked on the map
+		while (i.hasNext()) {
+			Unit unit = i.next();
+			
+			if (unit.getUnitType() == UnitType.VEHICLE) {
+				if (((Vehicle)unit).isOutsideOnMarsMission()) {
+					// Proceed to below to set cursor;
+					setCursorOpenWindow(unit, clickedPosition);
 				}
+				else 
+					continue;
 			}
 		}
 	}
@@ -1360,7 +1425,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         });
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
-        		(int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLIER), 10);
+        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(60, 400));
         zoomSlider.setSize(new Dimension(60, 400));
@@ -1394,13 +1459,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					scale = rho / MapPanel.RHO_DEFAULT;
 				}
 	
-				if (rho != oldRho) {				
-					setRho(rho);
-				}
-				
 				if (scale != oldScale) {				
 					setScale(scale);
 				}
+				
+				if (rho != oldRho) {	
+					// Note: Call setRho() will redraw the map
+					setRho(rho);
+				}
+
 				
 //				logger.info("res: " + mapPanel.getMapResolution()
 //						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
@@ -1413,7 +1480,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		});
 		
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
-		for (int i = 1; i < IntegerMapData.MAX_RHO_MULTIPLIER + 1; i++) {
+		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
 			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
 		}
 //		labelTable.put(0, new JLabel("1/4"));
@@ -1429,7 +1496,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		double newScale = rho / MapPanel.RHO_DEFAULT;
 		
-		if (scale != newScale && newScale < (int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLIER)) {
+		if (scale != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
 //			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
 			scale = newScale;
 
@@ -1446,7 +1513,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @return
 	 */
 	private double computeSliderValue(double scale) {
-		return (scale * IntegerMapData.MIN_RHO_FRACTION - SCALE_CONVERSION) * IntegerMapData.MAX_RHO_MULTIPLIER;
+		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
 	}
 	
 	/**
@@ -1456,7 +1523,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @return
 	 */
 	private double computeScale(double sliderValue) {
-		return (1.0 * sliderValue / IntegerMapData.MAX_RHO_MULTIPLIER + SCALE_CONVERSION) / IntegerMapData.MIN_RHO_FRACTION;
+		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
 	}
 	
 	@Override
@@ -1527,6 +1594,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		settlementComboBox = null;
 		mineralsButton = null;
+		gpuButton = null;
+		goButton = null;
 		
 		r0 = null;	
 		r1 = null;

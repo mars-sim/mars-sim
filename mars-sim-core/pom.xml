@@ -77,15 +77,22 @@
 		<dependency>
 			<groupId>org.jogamp.gluegen</groupId>
 			<artifactId>gluegen-rt-main</artifactId>
-			<version>2.3.2</version>
+			<version>2.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jogamp.jocl</groupId>
 			<artifactId>jocl-main</artifactId>
-			<version>2.3.2</version>
+			<version>2.5.0</version>
 		</dependency>
 	</dependencies>
-
+	<!-- See versions in https://jogamp.org/deployment/maven/org/jogamp/jocl/jocl-main/ -->
+	<repositories>
+		<repository>
+			<id>jogamp-remote</id>
+			<name>jogamp mirror</name>
+			<url>https://www.jogamp.org/deployment/maven/</url>
+		</repository>
+	</repositories>
    <build>
         <plugins>
 			<plugin>

@@ -35,7 +35,7 @@ float2 rectToSphere(int2 pos, float2 coord, float rho, float TWO_PI) {
 
 int2 getRGBColorInt(float phi, float theta, int pixelWidth, int pixelHeight, float TWO_PI) {
     // Make sure phi is between 0 and PI.
-
+		
     float2 aa = (float2)(fabs(phi - M_PI_F), pixelHeight) * M_1_PI_F;
     float2 bb = (float2)(fabs(theta), pixelWidth) * TWO_1_PI;
 

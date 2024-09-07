@@ -1,8 +1,7 @@
 /*
-
  * Mars Simulation Project
  * TimeWindow.java
- * @date 2023-09-08
+ * @date 2024-09-06
  * @author Scott Davis
  */
 
@@ -12,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -40,8 +38,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
- * The TimeWindow is a tool window that displays the current Martian and Earth
- * time.
+ * The TimeWindow is a tool window that displays the current Martian date and time and simulation parameters.
  */
 public class TimeWindow extends ToolWindow {
 
@@ -55,7 +52,7 @@ public class TimeWindow extends ToolWindow {
 	public static final String ICON = "time";
 	public static final String TITLE = Msg.getString("TimeWindow.title");
 
-	public static final int WIDTH = 300;
+	public static final int WIDTH = 350;
 	public static final int HEIGHT = 590;
 	
 	/** Tool name. */
@@ -70,25 +67,28 @@ public class TimeWindow extends ToolWindow {
 //    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** the execution time label string */
-	private static final String EXEC = "Execution";
+	private final String EXEC = "Execution";
 	/** the sleep time label string */
-	private static final String SLEEP_TIME = "Sleep";
+	private final String SLEEP_TIME = "Sleep";
 	/** the time pulse width label string */
-	private static final String NEXT_PULSE_TIME = "Next Pulse Width";
+	private final String NEXT_PULSE_TIME = "Next Pulse Width";
 	/** the pulse deviation label string */
-	private static final String PULSE_DEVIATION = "Pulse Deviation";
+	private final String PULSE_DEVIATION = "Pulse Deviation";
 	/** the optimal pulse label string */
-	private static final String OPTIMAL = " (Optimal : ";
+	private final String OPTIMAL = " (Optimal : ";
 	/** the reference pulse label string */
-	private static final String REFERENCE = " (Ref : ";
+	private final String REFERENCE = " (Ref : ";
 	
 	/** the execution time unit */
-	private static final String MS = " ms";
+	private final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
-	private static final String UMT = " (UMT) ";
+	private final String UMT = " (UMT) ";
 
 
 	// Data members
+	/** The time in ms when last updated. */
+	private long lastUpdateTime = 0;
+	
 	private String northernSeasonTip ="";
 	private String northernSeasonCache = "";
 	private String southernSeasonTip = "";
@@ -102,7 +102,7 @@ public class TimeWindow extends ToolWindow {
 	/** label for Martian time. */
 	private JLabel martianTimeLabel;
 	/** label for Earth time. */
-	private JLabel earthTimeLabel;
+//	private JLabel earthTimeLabel;
 	/** label for areocentric longitude. */
 	private JLabel lonLabel;
 	/** label for Northern hemisphere season. */
@@ -131,11 +131,7 @@ public class TimeWindow extends ToolWindow {
 	private JLabel weeksolLabel;
 	
 	private OrbitInfo orbitInfo;
-	
-	/** Arial font. */
-	private final Font arialFont = new Font("Arial", Font.PLAIN, 14);
 
-	private long lastDateUpdate = 0;
 	
 	/**
 	 * Constructs a TimeWindow object.
@@ -292,10 +288,11 @@ public class TimeWindow extends ToolWindow {
 		realTimeClockLabel = paramPane.addTextField(Msg.getString("TimeWindow.rtc"), "", null);
 		uptimeLabel = paramPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", null);
 	
-		// Pack window
-		pack();
 
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		
+		// Pack window
+		pack();
 
 		// Update the two time labels
 		updateFastLabels(masterClock);
@@ -514,12 +511,37 @@ public class TimeWindow extends ToolWindow {
 			updateFastLabels(masterClock);
 
 			long currentTime = System.currentTimeMillis();
-			if ((currentTime - lastDateUpdate) > DATE_UPDATE_PERIOD) {
+			if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
 				// update the slow labels
 				updateDateLabels(masterClock);
 				updateTimeLabels(masterClock);
-				lastDateUpdate = currentTime;
+				lastUpdateTime = currentTime;
 			}
 		}
+	}
+	
+	/**
+	 * Prepares tool window for deletion.
+	 */
+	public void destroy() {
+		super.destroy();
+
+		calendarDisplay = null;
+		cpuSpinner = null;
+		martianTimeLabel = null;
+		lonLabel = null;
+		northernSeasonLabel = null;
+		southernSeasonLabel = null;
+		uptimeLabel = null;
+		ticksPerSecLabel = null;
+		actualTRLabel = null;
+		pulseDeviationLabel = null;
+		execTimeLabel = null;
+		sleepTimeLabel = null;
+		marsPulseLabel = null;
+		realTimeClockLabel = null;
+		monthLabel = null;
+		weeksolLabel = null;		
+		orbitInfo = null;
 	}
 }

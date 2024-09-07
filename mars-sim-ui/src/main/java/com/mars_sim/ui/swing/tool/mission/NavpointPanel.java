@@ -371,56 +371,58 @@ implements MissionListener {
 	public void checkHover(MouseEvent event) {
 
 		Coordinates mapCenter = mapPanel.getCenterLocation();
-		if (mapCenter != null) {
-			Coordinates mousePos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-			boolean onTarget = false;
+		if (mapCenter == null) {
+			return;
+		}
 
-			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
+		Coordinates mousePos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
+		boolean onTarget = false;
 
-			// Change mouse cursor if hovering over an unit on the map
-			while (i.hasNext()) {
-				Unit unit = i.next();
-				
-				if (unit.getUnitType() == UnitType.VEHICLE
-					&& !((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Display the cursor for this vehicle only when
-					// it's outside on a mission
-					return;	
-				}
-				
-				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-					Coordinates unitCoords = unit.getCoordinates();
-					double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
-					double unitClickRange = displayInfo.getMapClickRange();
-					if (clickRange < unitClickRange) {
-						// Click on this unit.
-						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-						onTarget = true;
-					}
-				}
+		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
+
+		// Change mouse cursor if hovering over an unit on the map
+		while (i.hasNext()) {
+			Unit unit = i.next();
+			
+			if (unit.getUnitType() == UnitType.VEHICLE
+				&& !((Vehicle)unit).isOutsideOnMarsMission()) {
+				// Display the cursor for this vehicle only when
+				// it's outside on a mission
+				return;	
 			}
-
-			// Change mouse cursor if hovering over a landmark on the map
-			Iterator<Landmark> j = landmarks.iterator();
-			while (j.hasNext()) {
-				Landmark landmark = (Landmark) j.next();
-
-				Coordinates unitCoords = landmark.getLandmarkCoord();
+			
+			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+			if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
+				Coordinates unitCoords = unit.getCoordinates();
 				double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
-				double unitClickRange = 40D;
-
+				double unitClickRange = displayInfo.getMapClickRange();
 				if (clickRange < unitClickRange) {
-					onTarget = true;
-					// Click on a landmark
-					// Note: may open a panel showing any special items at that landmark
+					// Click on this unit.
 					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+					onTarget = true;
 				}
 			}
+		}
 
-			if (!onTarget) {
-				mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		// Change mouse cursor if hovering over a landmark on the map
+		Iterator<Landmark> j = landmarks.iterator();
+		while (j.hasNext()) {
+			Landmark landmark = (Landmark) j.next();
+
+			Coordinates unitCoords = landmark.getLandmarkCoord();
+			double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
+			double unitClickRange = 40D;
+
+			if (clickRange < unitClickRange) {
+				onTarget = true;
+				// Click on a landmark
+				// Note: may open a panel showing any special items at that landmark
+				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			}
+		}
+
+		if (!onTarget) {
+			mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
 	
