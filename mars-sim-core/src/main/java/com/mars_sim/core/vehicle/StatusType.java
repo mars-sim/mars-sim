@@ -28,6 +28,7 @@ public enum StatusType {
 	STUCK					(false),
 	TOWED 					(false),	
 	TOWING 					(false),	
+	UNLOADING 				(false)
 	;
 	
 	private String name;

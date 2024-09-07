@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -99,8 +100,9 @@ public class TabPanelLog extends TabPanel {
 
 		@Override
 		protected Object getValueFrom(Set<StatusType> value, int columnIndex) {
-			String s = Conversion.capitalize(value.toString());
-			return s.substring(1 , s.length() - 1);
+			return value.stream()
+					.map(StatusType::getName)
+					.collect(Collectors.joining(", "));
 		}
 	}
 }
