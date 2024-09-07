@@ -2165,11 +2165,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param nextPhase The next Mission phase.
 	 */
 	protected void startDisembarkingPhase(MissionPhase nextPhase) {
-		Settlement settlement =	getCurrentNavpointSettlement();
-
 		// Vehicle needs unloading
 		vehicle.addSecondaryStatus(StatusType.UNLOADING);
-		settlement.getBuildingManager().addToGarage(vehicle);
+
+		Settlement settlement =	getCurrentNavpointSettlement();
+		if (settlement != null) {
+			// This should never be null
+			settlement.getBuildingManager().addToGarage(vehicle);
+		}
 		setPhase(nextPhase, (settlement != null ? settlement.getName() : "Unknown"));
 	}
 

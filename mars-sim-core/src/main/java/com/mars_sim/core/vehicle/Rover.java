@@ -26,9 +26,7 @@ import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.RoverMission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
@@ -38,7 +36,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
  * The Rover class represents the rover type of ground vehicle. It contains
@@ -54,52 +51,36 @@ public class Rover extends GroundVehicle implements Crewable,
 	private static final SimLogger logger = SimLogger.getLogger(Rover.class.getName());
 
 	/** The fuel range modifier. */
-	public static final double FUEL_RANGE_FACTOR = 0.95;
-	/** The mission range modifier. */
-	public static final double MISSION_RANGE_FACTOR = 1.9;
+	private static final double FUEL_RANGE_FACTOR = 0.95;
 	/** The reference small amount of resource. */
-	public static final double SMALL_AMOUNT = 0.1;
+	private static final double SMALL_AMOUNT = 0.1;
 	/** The amount of work time to perform maintenance (millisols) */
-	public static final double MAINTENANCE_WORK_TIME = 125D;
+	private static final double MAINTENANCE_WORK_TIME = 125D;
 
 	// Note: 34 kPa (5 psi) is chosen for the composition of oxygen inside a settlement at 58.8%.
 	/** Rate of change of temperature in degree celsius. */
 	private static final double RATE_OF_CHANGE_OF_C_PER_MILLISOL = 0.0005D;
 	/** Rate of change of air pressure (kPa). */
-	private static final double RATE_OF_CHANGE_OF_kPa_PER_MILLISOL = 0.0005D;
+	private static final double RATE_OF_CHANGE_OF_KPA_PER_MILLISOL = 0.0005D;
 	/** The factitious temperature flow [deg C per millisols] when connected to a settlement */
 	private static final double TEMPERATURE_FLOW_PER_MILLISOL = 0.01D;
 	/** The factitious air pressure flow [kPa per millisols] when connected to a settlement */
 	private static final double AIR_PRESSURE_FLOW_PER_MILLISOL = 0.01D;
 
 	/** Normal air pressure (kPa). */
-	private static final double NORMAL_AIR_PRESSURE = 17; //20.7; //34.7D;
+	private static final double NORMAL_AIR_PRESSURE = 17; 
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 22.5D;
 
-	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	public static final int NITROGEN_ID = ResourceUtil.nitrogenID;
-	public static final int CO2_ID = ResourceUtil.co2ID;
-	public static final int WATER_ID = ResourceUtil.waterID;
-//	public static final int METHANE_ID = ResourceUtil.methaneID;
-	public static final int METHANOL_ID = ResourceUtil.methanolID;
-	public static final int FOOD_ID = ResourceUtil.foodID;
-
-	public static final int FOOD_WASTE_ID = ResourceUtil.foodWasteID;
-	public static final int SOLID_WASTE_ID = ResourceUtil.solidWasteID;
-	public static final int TOXIC_WASTE_ID = ResourceUtil.toxicWasteID;
-	public static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
-	public static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
-
-	public static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
-	public static final int ICE_ID = ResourceUtil.iceID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int CO2_ID = ResourceUtil.co2ID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/** The ratio of the amount of oxygen inhaled to the amount of carbon dioxide expelled. */
 	private static final double GAS_RATIO;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi) */
 	private static final double MIN_O2_PRESSURE;
-	
-	public static final AmountResource METHANOL_AR = ResourceUtil.methanolAR;
 	
 	// Data members
 	/** The rover's capacity for crew members. */
@@ -110,7 +91,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	/** The capacity of O2 in this rover (kg)  */
 	private double oxygenCapacity;
 	/** The rover's internal air pressure. */
-	private double airPressure = 0; //NORMAL_AIR_PRESSURE;
+	private double airPressure = 0; 
 	/** The rover's internal temperature. */
 	private double temperature = 0; //NORMAL_TE
 	/** The rover's total crew internal volume. */
@@ -397,6 +378,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.
 	 */
+	@Override
 	public boolean lifeSupportCheck() {
 		// Note: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		if (isPluggedIn()) {
@@ -470,11 +452,6 @@ public class Rover extends GroundVehicle implements Crewable,
 			}
 		}
 
-//		if (malfunctionManager.getOxygenFlowModifier() < 100D)
-//			result = false;
-//		if (malfunctionManager.getWaterFlowModifier() < 100D)
-//			result = false;
-
 		double p = getAirPressure();
 		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
 			logger.log(this, Level.WARNING, 60_000,
@@ -500,6 +477,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	 *
 	 * @return the capacity of the life support system
 	 */
+	@Override
 	public int getLifeSupportCapacity() {
 		return crewCapacity;
 	}
@@ -556,7 +534,7 @@ public class Rover extends GroundVehicle implements Crewable,
 			storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
 		}
 
-		return oxygenTaken - lacking; // * (malfunctionManager.getOxygenFlowModifier() / 100D);
+		return oxygenTaken - lacking;
 	}
 
 	/**
@@ -567,7 +545,6 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken) {
-//		double waterTaken = amountRequested;
 		double lacking = 0;
 
 		Vehicle v = null;
@@ -589,7 +566,7 @@ public class Rover extends GroundVehicle implements Crewable,
 			lacking = retrieveAmountResource(WATER_ID, waterTaken);
 		}
 
-		return waterTaken - lacking; // * (malfunctionManager.getWaterFlowModifier() / 100D);
+		return waterTaken - lacking;
 	}
 
 	/**
@@ -632,9 +609,8 @@ public class Rover extends GroundVehicle implements Crewable,
 			return pp;
 		}
 
-//		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
-
-		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
+		//	Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates())
+		return NORMAL_AIR_PRESSURE;
 	}
 
 	/**
@@ -662,7 +638,7 @@ public class Rover extends GroundVehicle implements Crewable,
 				if (getPrimaryStatus() == StatusType.GARAGED)
 					p = getGarage().getCurrentTemperature();
 				else
-					p = getSettlement().getTemperature();// * (malfunctionManager.getTemperatureModifier() / 100D);
+					p = getSettlement().getTemperature();
 				double delta = temperature - p;
 				if (delta > 5)
 					delta = 5;
@@ -727,14 +703,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	public void plugOffAirPressure(double time) {
 		if (airPressure >= 0) {
 			// if no one is occupying the rover, can power it off
-
-//			double nitrogenLeft = getInventory().getAmountResourceStored(ResourceUtil.nitrogenID, false);
-//			double oxygenLeft = getInventory().getAmountResourceStored(OXYGEN, false);
-//			double co2Left = getInventory().getAmountResourceStored(CO2, false);
-//			double waterLeft = getInventory().getAmountResourceStored(WATER, false);
-//			double sum = nitrogenLeft + oxygenLeft + co2Left + waterLeft;
-
-			double rate = RATE_OF_CHANGE_OF_kPa_PER_MILLISOL * time;
+			double rate = RATE_OF_CHANGE_OF_KPA_PER_MILLISOL * time;
 
 			// TODO : will need to the internal air composition/pressure of a vehicle
 			airPressure -= rate;
@@ -805,6 +774,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	 *
 	 * @return people collection
 	 */
+	@Override
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = super.getAffectedPeople();
 
@@ -824,6 +794,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	 *
 	 * @return robots collection
 	 */
+	@Override
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = super.getAffectedRobots();
 
@@ -925,8 +896,6 @@ public class Rover extends GroundVehicle implements Crewable,
 		double estFC = super.getEstimatedFuelConsumption();
 		double batteryRange = cap * percent / 100 / estFC * 1000;
 		
-//		logger.info(this, "batteryRange: " + batteryRange);
-		
 		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();
 
@@ -945,7 +914,6 @@ public class Rover extends GroundVehicle implements Crewable,
 		double waterCapacity = getAmountResourceCapacity(WATER_ID);
 		double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
 		double waterRange = distancePerSol * waterSols / margin;
-//    	if (waterRange < fuelRange) fuelRange = waterRange;
 
 		// Check oxygen capacity as range limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
@@ -953,9 +921,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / margin;
 
-		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange + batteryRange)));
-
-		return max;
+		return Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange + batteryRange)));
 	}
 
 	@Override

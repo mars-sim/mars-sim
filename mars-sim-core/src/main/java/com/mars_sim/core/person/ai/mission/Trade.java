@@ -238,15 +238,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param member the mission member performing the mission.
 	 */
 	private void performTradeDisembarkingPhase(Worker member) {
-		Vehicle v = getVehicle();
-		// If rover is not parked at settlement, park it.
-		if ((v != null) && (v.getSettlement() == null)) {
-			// SHould have been done as part of Vehicle.transfer
-			//tradingSettlement.addVicinityVehicle(v);
-
-			// Add vehicle to a garage if available.
-			//tradingSettlement.getBuildingManager().addToGarage(v);
-		}
 
 		// Have member exit rover if necessary.
 		if (!member.isInSettlement()) {

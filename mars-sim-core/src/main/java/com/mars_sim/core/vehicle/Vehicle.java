@@ -66,7 +66,6 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.task.LoadingController;
-import com.mars_sim.core.vehicle.task.MaintainVehicleMeta;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -2494,12 +2493,8 @@ public abstract class Vehicle extends Unit
 		if (LocationStateType.SETTLEMENT_VICINITY == currentStateType)
 			return true;
 
-		if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
-				&& ((Settlement)(getContainerUnit())).containsVicinityParkedVehicle((Vehicle)this)) {
-			return true;
-		}
-
-		return false;
+		return (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
+				&& ((Settlement)(getContainerUnit())).containsVicinityParkedVehicle(this));
 	}
 
 	/**
@@ -2510,7 +2505,6 @@ public abstract class Vehicle extends Unit
 	 */
 	public boolean transfer(Unit destination) {
 		boolean leaving = false;
-		boolean arriving = false;
 		boolean transferred = false;
 		// Set the old container unit
 		Unit cu = getContainerUnit();
@@ -2525,15 +2519,12 @@ public abstract class Vehicle extends Unit
 		
 		else if (cu.getUnitType() == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
-			arriving = true;
 		}
 		
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;
 			transferred = currentBase.removeVicinityParkedVehicle(this);
 			leaving = true;
-			// Q: do we need to set the coordinate to the settlement one last time prior to leaving
-//			setCoordinates(currentBase.getCoordinates());
 		}
 
 		if (!transferred) {
@@ -2543,7 +2534,7 @@ public abstract class Vehicle extends Unit
 		else {
 			if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
-				leaving = leaving && true;
+				leaving = true;
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addVicinityVehicle(this);
