@@ -419,8 +419,8 @@ public class ReviewMissionPlan extends Task {
 			Settlement settlement = person.getAssociatedSettlement();
 			
 			double score = mp.getScore();
-			
-			if (settlement.passMissionScore(score)) {
+			double minScore = settlement.getMinimumPassingScore();
+			if (score > minScore) {
 				// Approved
 				// Updates the mission plan status
 				missionManager.approveMissionPlan(mp, PlanType.APPROVED, settlement.getMinimumPassingScore());

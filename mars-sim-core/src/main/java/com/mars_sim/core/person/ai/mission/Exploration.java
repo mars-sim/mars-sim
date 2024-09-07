@@ -477,7 +477,8 @@ public class Exploration extends EVAMission
 	 * @return first exploration site or null if none.
 	 */
 	private Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
-		return getStartingSettlement().determineFirstSiteCoordinate(limit, areologySkill);
+		// Get a random site that is one of the closest
+		return getStartingSettlement().getARandomNearbyMineralLocation(true, limit, areologySkill);
 	}
 	
 	/**
