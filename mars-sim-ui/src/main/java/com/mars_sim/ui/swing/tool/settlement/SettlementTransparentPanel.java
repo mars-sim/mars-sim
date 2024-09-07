@@ -539,9 +539,10 @@ public class SettlementTransparentPanel extends JComponent {
        		String resources = resourceCache.get(s);
        		if (resources == null)
        			resources = "";
-       		StringBuilder sb = new StringBuilder("");
-       		if (s.getDustStorm() != null) {
-       			sb.append(s.getDustStormMsg());
+       		StringBuilder sb = new StringBuilder();
+       		var ds = s.getDustStorm();
+			if (ds != null) {
+       			sb.append(ds.getDescription());
        		}
        		
        		sb.append(resources);

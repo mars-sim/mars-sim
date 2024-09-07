@@ -16,13 +16,11 @@ import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.map.location.LocalBoundedObject;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
@@ -95,7 +93,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 			}
 
 			// Draw overlay if the vehicle is being loaded or unloaded.
-			if (isVehicleLoading(vehicle)) {
+			if (vehicle.haveStatusType(StatusType.LOADING)) {
 				drawSVGLoading(vehicle, svg, viewpoint);
 			}
 
@@ -147,25 +145,6 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(vehicle, vehicleSvg, maintOverlaySvg, viewpoint);
 		}
-	}
-
-	/**
-	 * Checks if the vehicle is currently being loaded or unloaded.
-	 * 
-	 * @param vehicle the vehicle
-	 * @return true if vehicle is being loaded or unloaded.
-	 */
-	private boolean isVehicleLoading(Vehicle vehicle) {
-		boolean result = false;
-
-		// For vehicle missions, check if vehicle is loading or unloading for the mission.
-		Mission mission = vehicle.getMission();
-		if ((mission != null) && (mission instanceof VehicleMission vm)) {
-			LoadingController lp = vm.getLoadingPlan();
-			result = (lp != null) && !lp.isCompleted();
-		}
-
-		return result;
 	}
 
 	/**

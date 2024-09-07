@@ -10,13 +10,11 @@ import java.util.Collection;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.vehicle.task.LoadingController;
 
 public class Drone extends Flyer {
 
@@ -77,19 +75,6 @@ public class Drone extends Flyer {
 						// Question: why would the mission be null for this member in the first place after loading from a saved sim
 						logger.info(this, m.getName() + " reregistered for " + mission + ".");
 						m.setMission(mission);
-					}
-				}
-
-				if (isInSettlement()
-					&& mission instanceof VehicleMission vm) {
-						LoadingController lp = vm.getLoadingPlan();
-
-					if ((lp != null) && !lp.isCompleted()) {
-						double time = pulse.getElapsed();
-						double transferSpeed = 10; // Assume 10 kg per msol
-						double amountLoading = time * transferSpeed;
-
-						lp.backgroundLoad(amountLoading);
 					}
 				}
 			}

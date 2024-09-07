@@ -300,16 +300,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public Vehicle getVehicle() {
 		return vehicle;
 	}
-	
-	/**
-	 * Gets the current loading plan for this Mission phase.
-	 * 
-	 * @return
-	 */
-	@Override
-	public LoadingController getLoadingPlan() {
-		return loadingPlan;
-	}
 
 	/**
 	 * Prepares a loading plan taking resources from a site. If a plan for the same
@@ -324,9 +314,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 												getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(),
 												getOptionalEquipmentToLoad());
-			loadingPlan = new LoadingController(loadingSite, vehicle, manifest);
-
-															
+			loadingPlan = vehicle.setLoading(manifest);													
 		}
 		return loadingPlan;
 	}
@@ -708,7 +696,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// This allows person to do other important things such as eating
 				&& RandomUtil.lessThanRandPercent(75)) {
 								
-				TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+				TaskJob job = LoadVehicleMeta.createLoadJob(vehicle, settlement);
 		        if (job != null) {
 		            Task task = null;
 		            // Create the Task ready for assignment

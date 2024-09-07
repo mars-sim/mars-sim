@@ -373,15 +373,18 @@ public class CommandHelper {
 			}
 	
 			// Vehicle mission has a loading
-			LoadingController lp = tm.getLoadingPlan();
-			if ((lp != null) && !lp.isCompleted()) {
-				response.appendText("Loading from " + lp.getSettlement().getName() + " :");
-				outputAmounts("Amount Resources", response, lp.getAmountManifest(true));	
-				outputAmounts("Optional Amounts", response, lp.getAmountManifest(false));
-				outputItems("Items", response, lp.getItemManifest(true));	
-				outputItems("Optional Items", response, lp.getItemManifest(false));	
-				outputEquipment("Equipment", response, lp.getEquipmentManifest(true));	
-				outputEquipment("Optional Equipment", response, lp.getEquipmentManifest(false));	
+			Vehicle v = tm.getVehicle();
+			if (v != null) {
+				LoadingController lp = v.getLoadingPlan();
+				if ((lp != null) && !lp.isCompleted()) {
+					response.appendText("Loading from " + lp.getSettlement().getName() + " :");
+					outputAmounts("Amount Resources", response, lp.getAmountManifest(true));	
+					outputAmounts("Optional Amounts", response, lp.getAmountManifest(false));
+					outputItems("Items", response, lp.getItemManifest(true));	
+					outputItems("Optional Items", response, lp.getItemManifest(false));	
+					outputEquipment("Equipment", response, lp.getEquipmentManifest(true));	
+					outputEquipment("Optional Equipment", response, lp.getEquipmentManifest(false));	
+				}
 			}
 		}
 	}

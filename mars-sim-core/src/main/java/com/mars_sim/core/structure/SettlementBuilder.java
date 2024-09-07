@@ -320,7 +320,7 @@ public final class SettlementBuilder {
 		RobotDemand demand = new RobotDemand(settlement);
 
 		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
-		while (settlement.getIndoorRobotsCount() < target) {
+		while (settlement.getNumBots() < target) {
 			// Get a robotType randomly
 			RobotType robotType = demand.getBestNewRobot();
 

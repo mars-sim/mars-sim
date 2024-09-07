@@ -79,6 +79,8 @@ public class DustStorm implements Serializable {
 
 	private DustStormType type;
 
+	private String description;
+
 	/**
 	 * Constructor.
 	 * 
@@ -87,7 +89,7 @@ public class DustStorm implements Serializable {
 	 * @param weather
 	 * @param origin
 	 */
-	public DustStorm(DustStormType type, int id, Weather weather,
+	DustStorm(DustStormType type, int id, Weather weather,
 					 Settlement origin) {
 		this.id = id;
 		this.settlementId = origin.getIdentifier();
@@ -107,6 +109,8 @@ public class DustStorm implements Serializable {
 			speed = RandomUtil.getRandomInt(10);
 			size = 1 + RandomUtil.getRandomInt(3); 
 		}
+
+		updateDescription();
 	}
 
 	public String getName() {
@@ -126,24 +130,6 @@ public class DustStorm implements Serializable {
 		return startTime;
 	}
 	
-//	/**
-//     * Gets the distance to the destination.
-//     * 
-//     * @return distance (km)
-//     */
-//    protected double getDistanceToDestination() {
-//    	return getCoordinates().getDistance(destination);
-//    }
-//    
-//	public void travel(double millisols) {
-//	
-//        // Find the distance to destination.
-//        double dist2Dest = getDistanceToDestination();
-//        
-//        // Find current direction and update vehicle.
-//        setDirection(getCoordinates().getDirectionToPoint(destination));	
-//	}
-
 	// Almost all of the planet-encircling storms have been observed to start in one
 	// of two regions (a-d, e) on Mars:
 	// Coordinates from http://planetarynames.wr.usgs.gov/Feature/5954
@@ -221,7 +207,7 @@ public class DustStorm implements Serializable {
 			// Mars year
 			// is 33% based on Earth-based observational record in 1956, 1971, 1973, 1977
 			// (two), and 1982.
-			// TODO: how to incorporate this 33% into the algorithm here?
+			// how to incorporate this 33% into the algorithm here?
 
 			// if there are already 2 planet encircling dust storm,
 			// do not create the next one and reduce it to 3900
@@ -277,6 +263,7 @@ public class DustStorm implements Serializable {
 		size = newSize;
 		speed = newSpeed;
 
+		updateDescription();
 		return size;
 	}
 
@@ -314,4 +301,22 @@ public class DustStorm implements Serializable {
 	public Coordinates getCoordinates() {
 		return location;
 	}
+
+	/**
+	 * Get the description of this storm
+	 * @return
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Update the desxcription which is based on size & speed
+	 * @return Updated description
+	 */
+    private void updateDescription() {
+		description = name
+				+ " (size " + size + " with wind speed "
+				+ Math.round(speed * 10.0) / 10.0 + " m/s) was sighted.";
+    }
 }

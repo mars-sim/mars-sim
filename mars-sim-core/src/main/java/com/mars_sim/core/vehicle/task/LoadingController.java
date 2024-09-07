@@ -242,6 +242,7 @@ public class LoadingController implements Serializable {
 		if (completed) {
 			// Can remove assume fuel is reloaded
 			vehicle.removeSecondaryStatus(StatusType.OUT_OF_FUEL);
+			vehicle.setLoading(null);
 			logger.fine(vehicle, "Loading completed by " + worker.getName());
 		}
 		return (amountLoading > 0D) || completed;
