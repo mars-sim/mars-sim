@@ -8,6 +8,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.StatusType;
 
 public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
     private static final int ITEM_AMOUNT = 10;
@@ -28,6 +29,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         p.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.STRENGTH, 100);
         var eva = EVAOperationTest.prepareForEva(this, p);
 
+        v.addSecondaryStatus(StatusType.UNLOADING);
         var task = new UnloadVehicleEVA(p, v);
         assertFalse("Task created", task.isDone()); 
 
@@ -37,6 +39,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 3000);
         assertEquals("Final stored mass", 0D, v.getStoredMass());
+        assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 
         // Oxygen has some from EVA suit as well
         assertGreaterThan("Oxygen unloaded", RESOURCE_AMOUNT, s.getAmountResourceStored(ResourceUtil.oxygenID));
@@ -64,14 +67,13 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         v.storeAmountResource(ResourceUtil.oxygenID, 10D);
         v.storeAmountResource(ResourceUtil.foodID, 10D);
         v.storeItemResource(ItemResourceUtil.garmentID, 10);
-        v.setReservedForMission(true);
 
         // Skip reserved vehicle
         tasks = mt.getSettlementTasks(s);
-        assertEquals("Skip reserved vehicle", 0, tasks.size());
+        assertEquals("Skip vehicle with wrong state", 0, tasks.size());
 
         // Unreserved vehicle
-        v.setReservedForMission(false);
+        v.addSecondaryStatus(StatusType.UNLOADING);
         tasks = mt.getSettlementTasks(s);
         assertEquals("Found vehicle", 1, tasks.size());
         // No garages so EVA 

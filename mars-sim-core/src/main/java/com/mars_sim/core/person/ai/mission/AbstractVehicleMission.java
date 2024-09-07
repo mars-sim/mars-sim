@@ -99,7 +99,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionPhase LOADING = new MissionPhase("loading", Stage.PREPARATION);
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
-	private static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
+	protected static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
 //	private static final MissionPhase RETURNING_HOME = new MissionPhase("returningHome", Stage.CLOSEDOWN);
 	
 	// Mission Status
@@ -2125,20 +2125,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		return distanceTravelled;
-	}	
-	
-	
-	/**
-	 * Can the mission vehicle be unloaded at this Settlement ?
-	 *
-	 * @param settlement
-	 * @return
-	 */
-	@Override
-	public boolean isVehicleUnloadableHere(Settlement settlement) {
-		// It is either a local mission unloading
-		return (vehicle != null) && DISEMBARKING.equals(getPhase())
-					&& getAssociatedSettlement().equals(settlement);
 	}
 
 	/**
@@ -2168,11 +2154,23 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Starts the disembarking phase.
+	 * Starts the disembarking phase with the default next phase
 	 */
 	protected void startDisembarkingPhase() {
+		startDisembarkingPhase(DISEMBARKING);
+	}
+
+	/**
+	 * Starts the disembarking phase with the next phase.
+	 * @param nextPhase The next Mission phase.
+	 */
+	protected void startDisembarkingPhase(MissionPhase nextPhase) {
 		Settlement settlement =	getCurrentNavpointSettlement();
-		setPhase(DISEMBARKING, (settlement != null ? settlement.getName() : "Unknown"));
+
+		// Vehicle needs unloading
+		vehicle.addSecondaryStatus(StatusType.UNLOADING);
+		settlement.getBuildingManager().addToGarage(vehicle);
+		setPhase(nextPhase, (settlement != null ? settlement.getName() : "Unknown"));
 	}
 
 	/**

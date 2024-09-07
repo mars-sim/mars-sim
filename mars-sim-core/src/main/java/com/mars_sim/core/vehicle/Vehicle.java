@@ -384,6 +384,7 @@ public abstract class Vehicle extends Unit
 			logger.warning(this, "Is already in the loading status");
 		}
 		else {
+			removeSecondaryStatus(StatusType.UNLOADING);
 			loadingController = new LoadingController(getSettlement(), this, manifest);
 			addSecondaryStatus(StatusType.LOADING);
 		}
@@ -1879,8 +1880,6 @@ public abstract class Vehicle extends Unit
 	 * Tags a vehicle for maintenance.
 	 */
 	public void maintainVehicle() {
-		var mt = new MaintainVehicleMeta();
-        var task = mt.getSettlementTasks(getSettlement());
         
         logger.info(this, "Triggering a vehicle maintenance task.");
 	}
