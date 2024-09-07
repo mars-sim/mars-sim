@@ -926,10 +926,6 @@ public class ConstructionMission extends AbstractMission
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
 					result = luvTemp;
 					luvTemp.setReservedForMission(true);
-
-					if (!settlement.removeVicinityParkedVehicle(luvTemp)) {
-						endMissionProblem(luvTemp, "Can not remove parked vehicle");
-					}
 				}
 			}
 		}

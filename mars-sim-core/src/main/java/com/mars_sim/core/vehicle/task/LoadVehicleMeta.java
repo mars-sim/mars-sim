@@ -9,15 +9,11 @@ package com.mars_sim.core.vehicle.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -30,6 +26,7 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -42,16 +39,12 @@ public class LoadVehicleMeta extends MetaTask
 
 		private static final long serialVersionUID = 1L;
 
-		private VehicleMission vehicleMission;
+		private Vehicle vehicle;
 		
-        private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, RatingScore score) {
+        private LoadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
             super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
-            vehicleMission = target;
+            vehicle = target;
             setEVA(eva);
-        }
-
-        private VehicleMission getMission() {
-            return (VehicleMission) getFocus();
         }
 
         @Override
@@ -59,22 +52,20 @@ public class LoadVehicleMeta extends MetaTask
             if (!person.isInSettlement())
             	return null;
             if (isEVA()) {
-                return new LoadVehicleEVA(person, getMission().getLoadingPlan());
+                return new LoadVehicleEVA(person, vehicle);
             }
 	
-    		Vehicle vehicle = vehicleMission.getVehicle();
-
     		boolean hasGarage = vehicle.isInGarage(); 
     		if (hasGarage)
-    			return new LoadVehicleGarage(person, getMission().getLoadingPlan());
+    			return new LoadVehicleGarage(person, vehicle);
     			
     		boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
     				vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
             
     		if (garageTask)
-    			return new LoadVehicleGarage(person, getMission().getLoadingPlan());
+    			return new LoadVehicleGarage(person, vehicle);
 			
-    		return new LoadVehicleEVA(person, getMission().getLoadingPlan());
+    		return new LoadVehicleEVA(person, vehicle);
         }
 
         @Override
@@ -83,7 +74,7 @@ public class LoadVehicleMeta extends MetaTask
 				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA load vehicle");
 			}
-            return new LoadVehicleGarage(robot, getMission().getLoadingPlan());
+            return new LoadVehicleGarage(robot, vehicle);
         }
     }
 
@@ -92,9 +83,6 @@ public class LoadVehicleMeta extends MetaTask
             "Task.description.loadVehicle"); //$NON-NLS-1$
 
     private static final double GARAGE_DEFAULT_SCORE = 500D;
-
-    /** The static instance of the MissionManager */
-	private static MissionManager missionManager;
 
     public LoadVehicleMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
@@ -125,18 +113,18 @@ public class LoadVehicleMeta extends MetaTask
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-        // Find all Vehicle missions with an active loading plan
-		for (Mission mission : missionManager.getMissions()) {
-			if (mission instanceof VehicleMission vehicleMission) {
-				LoadingController plan = vehicleMission.getLoadingPlan();
+        // Find all parked Vehicles with an active loading plan
+		for (var vehicle : settlement.getParkedGaragedVehicles()) {
+			if (vehicle.haveStatusType(StatusType.LOADING)) {
+				LoadingController plan = vehicle.getLoadingPlan();
 
 				// Must have a local Loading Plan that is not complete
 				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
 					
 					boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-							vehicleMission.getAssociatedSettlement(), vehicleMission.getVehicle() instanceof Rover);
+							settlement, vehicle instanceof Rover);
 							
-                    SettlementTask job = createLoadJob(vehicleMission, settlement, garageTask, this);
+                    SettlementTask job = createLoadJob(vehicle, settlement, garageTask, this);
                     if (job != null) {
                         tasks.add(job);
                     }
@@ -147,21 +135,17 @@ public class LoadVehicleMeta extends MetaTask
     }
 
     /**
-     * Creates the appropriate TaskJob to load a mission. This considers whether the vehicle is already in a garage.
+     * Creates the appropriate TaskJob to load a vehicle. This considers whether the vehicle is already in a garage.
      * and whether there is Garage space.
      * 
-     * @param vehicleMission Mission needing a load
+     * @param vehicle Vehicle to load
      * @param settlement Location the load is occurring
      * @param insideOnlyTasks Only inside tasks
      * @param owner 
      */
-    private static SettlementTask createLoadJob(VehicleMission vehicleMission, Settlement settlement,
+    private static SettlementTask createLoadJob(Vehicle vehicle, Settlement settlement,
                                         boolean insideOnlyTasks,
                                         SettlementMetaTask owner) {
-
-        Vehicle vehicle = vehicleMission.getVehicle();
-        if (vehicle == null)
-            return null; // Should not happen
 
         RatingScore score = new RatingScore(GARAGE_DEFAULT_SCORE);
         score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
@@ -172,28 +156,20 @@ public class LoadVehicleMeta extends MetaTask
                 score.addModifier(GARAGED_MODIFIER, 2);
             }
             // Note: owner can be null
-            return new LoadJob(owner, vehicleMission, false, score);
+            return new LoadJob(owner, vehicle, false, score);
         }
-     // Note: owner can be null
-        return new LoadJob(owner, vehicleMission, true, score);
+        return new LoadJob(owner, vehicle, true, score);
     }
 
     /**
-     * Creates the appropriate TaskJob to load a mission. This considers whether the vehicle is 
+     * Creates the appropriate TaskJob to load a Vehicle. This considers whether the vehicle is 
      * already in a garage and whether there is garage space.
      * 
-     * @param vehicleMission Mission needing a load
+     * @param vehicle Vehicle needing a load
      * @param settlement Location the load is occurring
      */
-    public static TaskJob createLoadJob(VehicleMission vehicleMission, Settlement settlement) {
+    public static TaskJob createLoadJob(Vehicle vehicle, Settlement settlement) {
     	// Question: will a null SettlementTask be causing any issues ?
-        return createLoadJob(vehicleMission, settlement, false, null);
+        return createLoadJob(vehicle, settlement, false, null);
     } 
-
-    /**
-	 * Attached to the common controlling classes.
-	 */
-	public static void initialiseInstances(Simulation sim) {
-		missionManager = sim.getMissionManager();
-	}
 }

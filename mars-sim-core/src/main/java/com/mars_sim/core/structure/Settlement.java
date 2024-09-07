@@ -2133,10 +2133,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return numbers of vehicles on mission.
 	 */
 	public int getMissionVehicleNum() {
-		return Math.toIntExact(ownedVehicles
+		return (int) ownedVehicles
 				.stream()
 				.filter(v -> v.getMission() != null)
-				.collect(Collectors.counting()));
+				.count();
 	}
 
 	/**
@@ -2145,9 +2145,8 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of parked or garaged drones
 	 */
 	public Collection<Drone> getParkedGaragedDrones() {
-		return ownedVehicles.stream()
+		return vicinityParkedVehicles.stream()
 				.filter(v -> VehicleType.isDrone(v.getVehicleType()))
-				.filter(v -> this.equals(v.getSettlement()))
 				.map(Drone.class::cast)
 				.toList();
 	}
@@ -2161,7 +2160,7 @@ public class Settlement extends Structure implements Temporal,
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == vehicleType)
 				.map(Unit.class::cast)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -2171,10 +2170,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of vehicles.
 	 */
 	public int findNumVehiclesOfType(VehicleType vehicleType) {
-		return Math.toIntExact(ownedVehicles
+		return (int)ownedVehicles
 					.stream()
 					.filter(v -> v.getVehicleType() == vehicleType)
-					.collect(Collectors.counting()));
+					.count();
 	}
 
 	/**
@@ -2183,10 +2182,9 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of parked rovers
 	 */
 	public int findNumParkedRovers() {
-		return (int)ownedVehicles
+		return (int)vicinityParkedVehicles
 					.stream()
 					.filter(v -> VehicleType.isRover(v.getVehicleType()))
-					.filter(v -> this.equals(v.getSettlement()))
 					.count();
 	}
 
@@ -2197,9 +2195,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Collection<Vehicle> getParkedGaragedVehicles() {
 		// Get all Vehicles that are back home
-		return 	ownedVehicles.stream()
-					.filter(v -> this.equals(v.getSettlement()))
-					.toList();
+		return 	vicinityParkedVehicles;
 	}
 
 	/**
@@ -2208,9 +2204,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return parked vehicles number
 	 */
 	public int getNumParkedVehicles() {
-		return (int)ownedVehicles.stream()
-				.filter(v -> this.equals(v.getSettlement()))
-				.count();
+		return vicinityParkedVehicles.size();
 	}
 
 	/**

@@ -8,11 +8,9 @@ package com.mars_sim.core.mission;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
-import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -50,10 +48,8 @@ public class MissionLoadVehicleStep extends MissionStep {
         Vehicle v = vp.getVehicle();
         Settlement settlement = v.getSettlement();
 		if (loadingPlan == null) {
-            SuppliesManifest manifest = vp.getResources(true);
-			loadingPlan = new LoadingController(v.getSettlement(), v, manifest);	
-            
-                                                
+			loadingPlan = v.setLoading(vp.getResources(true));	
+                                                            
             // Try and move the vehicle to garage
 		    settlement.getBuildingManager().addToGarage(v);
 		}
@@ -85,15 +81,6 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Gets the loading plan associated with the step.
-     * 
-     * @return
-     */
-    public LoadingController getLoadingPlan() {
-        return loadingPlan;
-    }
-
-    /**
      * Creates the most suitable Load Vehicle task if possible.
      * 
      * @param worker
@@ -102,17 +89,16 @@ public class MissionLoadVehicleStep extends MissionStep {
      */
     private Task createLoadTask(Worker worker, Vehicle vehicle) {
         boolean inGarage = vehicle.isInGarage();
-        VehicleMission target = (VehicleMission) getMission();
         if (worker.isInSettlement())
         	return null;
         if (worker instanceof Person p) {
             if (inGarage) {
-                return new LoadVehicleGarage(p, target.getLoadingPlan());
+                return new LoadVehicleGarage(p, vehicle);
             }
-            return new LoadVehicleEVA(p, target.getLoadingPlan());
+            return new LoadVehicleEVA(p, vehicle);
         }
         else if ((worker instanceof Robot r) && inGarage) {
-            return new LoadVehicleGarage(r, target.getLoadingPlan());
+            return new LoadVehicleGarage(r, vehicle);
         }
 
         return null;

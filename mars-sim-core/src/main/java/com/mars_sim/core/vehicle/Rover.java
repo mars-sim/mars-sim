@@ -786,18 +786,6 @@ public class Rover extends GroundVehicle implements Crewable,
 				}
 
 				if (isInSettlement()) {
-					if (mission instanceof VehicleMission) {
-						LoadingController lp = ((VehicleMission)mission).getLoadingPlan();
-
-						if ((lp != null) && !lp.isCompleted()) {
-							double time = pulse.getElapsed();
-							double transferSpeed = 10; // Assume 10 kg per msol
-							double amountLoading = time * transferSpeed;
-
-							lp.backgroundLoad(amountLoading);
-						}
-					}
-
 					plugInTemperature(pulse.getElapsed());
 					plugInAirPressure(pulse.getElapsed());
 				}

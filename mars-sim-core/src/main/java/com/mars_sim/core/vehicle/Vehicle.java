@@ -50,6 +50,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
@@ -64,6 +65,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.core.vehicle.task.MaintainVehicleMeta;
 
 /**
@@ -120,10 +122,6 @@ public abstract class Vehicle extends Unit
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
-//	/** The average road load power of the vehicle [kph]. */
-//	private double averageRoadLoadSpeed;
-//	/** The average road load power of the vehicle [kW]. */
-//	private double averageRoadLoadPower;		
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -198,6 +196,8 @@ public abstract class Vehicle extends Unit
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	
 	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+
+	private LoadingController loadingController;
 	
 	static {
 		lifeSupportRangeErrorMargin = simulationConfig.getSettlementConfiguration()
@@ -364,6 +364,32 @@ public abstract class Vehicle extends Unit
 		return facingParked;
 	}
 
+	/**
+	 * Get the loading plan associated with this Vehicle
+	 */
+	public LoadingController getLoadingPlan() {
+		return loadingController;
+	}
+
+	/**
+	 * Change the loading status of this loading
+	 * @param manifest Supplies to load; if this is null then stop the loading
+	 */
+    public LoadingController setLoading(SuppliesManifest manifest) {
+		if (manifest == null) {
+			removeSecondaryStatus(StatusType.LOADING);
+			loadingController = null;
+		}
+        else if (statusTypes.contains(StatusType.LOADING)) {
+			logger.warning(this, "Is already in the loading status");
+		}
+		else {
+			loadingController = new LoadingController(getSettlement(), this, manifest);
+			addSecondaryStatus(StatusType.LOADING);
+		}
+		return loadingController;
+    }
+	
 	/**
 	 * Gets a list of operator activity spots.
 	 *
@@ -1451,24 +1477,11 @@ public abstract class Vehicle extends Unit
 		// if it's malfunction (outside or inside settlement) 
 		// whether it's in a garage or not
 		else if (haveStatusType(StatusType.MALFUNCTION)
-				&& malfunctionManager.getMalfunctions().size() == 0) {
+				&& malfunctionManager.getMalfunctions().isEmpty()) {
 			// Remove the malfunction status
 			removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
-		
-//		// Regardless being outside or inside settlement,
-//		// if it's still reportedly under maintenance
-//		// but maintenance just got done	
-//		else if (haveStatusType(StatusType.MAINTENANCE) 
-//			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
-//			// Make sure reservedForMaintenance is false since vehicle now needs no maintenance.
-//			setReservedForMaintenance(false);
-//			// Remove the malfunction status
-//			removeSecondaryStatus(StatusType.MAINTENANCE);
-//			// If the vehicle is in a garage, remove from garage
-//			BuildingManager.removeFromGarage(this);
-//		}
-		
+
 		// Regardless being outside or inside settlement,
 		// NOT under maintenance
 		else {
@@ -1487,18 +1500,18 @@ public abstract class Vehicle extends Unit
 			
 		}
 
+		// Bckground loading check
+		if (haveStatusType(StatusType.LOADING) && isInSettlement()
+				&& !loadingController.isCompleted()) {
+			double time = pulse.getElapsed();
+			double transferSpeed = 10; // Assume 10 kg per msol
+			double amountLoading = time * transferSpeed;
+
+			loadingController.backgroundLoad(amountLoading);
+		}
+
 		// Check once per msol (millisol integer)
 		if (pulse.isNewIntMillisol()) {
-			
-//			if (primaryStatus == StatusType.PARKED && isReserved()){
-//				// If the vehicle is reserved and is not in a garage, add to  garage
-//				addToAGarage();
-//			}
-			
-//			if (primaryStatus == StatusType.GARAGED && !isReserved()) {
-//				// If the vehicle is not reserved and is in a garage, remove from garage
-//				BuildingManager.removeFromGarage(this);
-//			}
 			
 			// Sample a data point every SAMPLE_FREQ (in msols)
 			int msol = pulse.getMarsTime().getMillisolInt();
