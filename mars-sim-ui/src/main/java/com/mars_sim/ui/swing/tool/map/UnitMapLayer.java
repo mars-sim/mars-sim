@@ -18,7 +18,6 @@ import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.tool.mission.NavpointPanel;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -31,7 +30,6 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	private static boolean blinkFlag;
 	private static long blinkTime = 0L;
 	private Collection<Unit> unitsToDisplay;
-	private NavpointPanel navpointPanel;
 
 	public UnitMapLayer() {
 		blinkFlag = false;
@@ -69,7 +67,7 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 		if (unitsToDisplay != null) {
 			units = unitsToDisplay;
 		} else {
-			units = navpointPanel.getDisplayUnits();
+			units = unitManager.getDisplayUnits();
 		}
 
 		for (Unit unit : units) {

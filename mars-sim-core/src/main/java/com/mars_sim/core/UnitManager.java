@@ -26,8 +26,10 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
+import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -42,7 +44,6 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mars_sim.ui.swing.tool.mission.NavpointPanel;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -85,6 +86,8 @@ public class UnitManager implements Serializable, Temporal {
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
+	/** A map of all map display units (settlements and vehicles). */
+	private Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
 	private Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
@@ -118,9 +121,6 @@ public class UnitManager implements Serializable, Temporal {
 	/** The instance of Moon. */
 	private Moon moon;
 
-	/** The instance of NavpointPanel. */
-	private NavpointPanel navpointPanel;
-
 	/**
 	 * Constructor.
 	 */
@@ -149,8 +149,7 @@ public class UnitManager implements Serializable, Temporal {
 			case VEHICLE -> lookupVehicle;
 			case SETTLEMENT -> lookupSettlement;
 			case BUILDING -> lookupBuilding;
-//			case EVA_SUIT ->
-			case CONTAINER -> lookupEquipment;
+			case EVA_SUIT, CONTAINER -> lookupEquipment;
 			case ROBOT -> lookupRobot;
 			case CONSTRUCTION -> lookupSite;
 			default -> throw new IllegalArgumentException("No Unit map for type " + type);
@@ -321,12 +320,11 @@ public class UnitManager implements Serializable, Temporal {
 			switch (unit.getUnitType()) {
 				case SETTLEMENT -> {
 					lookupSettlement.put(unitIdentifier, (Settlement) unit);
-					navpointPanel.addDisplayUnit(unit);
+					addDisplayUnit(unit);
 				}
 				case PERSON -> lookupPerson.put(unitIdentifier, (Person) unit);
 				case ROBOT -> lookupRobot.put(unitIdentifier, (Robot) unit);
 				case VEHICLE -> lookupVehicle.put(unitIdentifier, (Vehicle) unit);
-//				case CONTAINER ->
 				case EVA_SUIT -> lookupEquipment.put(unitIdentifier, (Equipment) unit);
 				case BUILDING -> lookupBuilding.put(unitIdentifier, (Building) unit);
 				case CONSTRUCTION -> lookupSite.put(unitIdentifier, (ConstructionSite) unit);
@@ -580,6 +578,27 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupEquipment.values().stream()
 				.filter(e -> e.getUnitType() == UnitType.EVA_SUIT)
 				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Adds the unit for display.
+	 *
+	 * @param unit
+	 */
+	private void addDisplayUnit(Unit unit) {
+		if (displayUnits == null)
+			displayUnits = new UnitSet<>();
+
+		displayUnits.add(unit);
+	}
+
+	/**
+	 * Obtains the settlement and vehicle units for map display.
+	 *
+	 * @return
+	 */
+	public Set<Unit> getDisplayUnits() {
+		return displayUnits;
 	}
 
 	/**
