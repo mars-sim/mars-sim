@@ -26,7 +26,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
