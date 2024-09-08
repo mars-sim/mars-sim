@@ -43,6 +43,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mars_sim.ui.swing.tool.mission.NavpointPanel;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -85,8 +86,6 @@ public class UnitManager implements Serializable, Temporal {
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
-	/** A map of all map display units (settlements and vehicles). */
-	private Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
 	private Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
@@ -119,6 +118,9 @@ public class UnitManager implements Serializable, Temporal {
 
 	/** The instance of Moon. */
 	private Moon moon;
+
+	/** The instance of NavpointPanel. */
+	private NavpointPanel navpointPanel;
 
 	/**
 	 * Constructor.
@@ -320,7 +322,7 @@ public class UnitManager implements Serializable, Temporal {
 			switch (unit.getUnitType()) {
 				case SETTLEMENT -> {
 					lookupSettlement.put(unitIdentifier, (Settlement) unit);
-					addDisplayUnit(unit);
+					navpointPanel.addDisplayUnit(unit);
 				}
 				case PERSON -> lookupPerson.put(unitIdentifier, (Person) unit);
 				case ROBOT -> lookupRobot.put(unitIdentifier, (Robot) unit);
@@ -579,27 +581,6 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupEquipment.values().stream()
 				.filter(e -> e.getUnitType() == UnitType.EVA_SUIT)
 				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Adds the unit for display.
-	 *
-	 * @param unit
-	 */
-	private void addDisplayUnit(Unit unit) {
-		if (displayUnits == null)
-			displayUnits = new UnitSet<>();
-
-		displayUnits.add(unit);
-	}
-
-	/**
-	 * Obtains the settlement and vehicle units for map display.
-	 *
-	 * @return
-	 */
-	public Set<Unit> getDisplayUnits() {
-		return displayUnits;
 	}
 
 	/**

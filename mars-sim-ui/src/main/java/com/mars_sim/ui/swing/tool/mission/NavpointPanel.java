@@ -20,6 +20,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -35,6 +36,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.location.Coordinates;
@@ -66,9 +68,7 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * Tab panel for displaying a mission's navpoints.
  */
 @SuppressWarnings("serial")
-public class NavpointPanel
-extends JPanel
-implements MissionListener {
+public class NavpointPanel extends JPanel implements MissionListener {
 
 	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH;
 	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT;
@@ -90,6 +90,7 @@ implements MissionListener {
 	
 	private UnitManager unitManager;
 	private List<Landmark> landmarks;
+	private Set<Unit> displayUnits;
 
 	/**
 	 * Constructor.
@@ -259,9 +260,25 @@ implements MissionListener {
         });
         navpointScrollPane.setViewportView(navpointTable);
 	}
-	
+
+	private Set<Unit> getDisplayUnits() {
+		return displayUnits;
+	}
+
 	public void setZoomPanel(JPanel zoomPanel) {
 		mapPane.add(zoomPanel);
+	}
+
+	/**
+	 * Adds the unit for display.
+	 *
+	 * @param unit
+	 */
+	public void addDisplayUnit(Unit unit) {
+		if (displayUnits == null) {
+			displayUnits = new UnitSet<>();
+		}
+		displayUnits.add(unit);
 	}
 	
 	/**
@@ -337,7 +354,7 @@ implements MissionListener {
 	public void displayUnits(MouseEvent event) {
 		Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
-		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
+		Iterator<Unit> i = getDisplayUnits().iterator();
 
 		// Open window if unit is clicked on the map
 		while (i.hasNext()) {
@@ -378,7 +395,7 @@ implements MissionListener {
 		Coordinates mousePos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 		boolean onTarget = false;
 
-		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
+		Iterator<Unit> i = getDisplayUnits().iterator();
 
 		// Change mouse cursor if hovering over an unit on the map
 		while (i.hasNext()) {
