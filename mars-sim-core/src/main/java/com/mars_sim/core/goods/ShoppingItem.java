@@ -6,23 +6,11 @@
  */
 package com.mars_sim.core.goods;
 
+import java.io.Serializable;
+
 /**
  * An item in the shopping list holding the value and quantity
  */
-public class ShoppingItem {
-    private int quantity;
-    private double price;
-
-    ShoppingItem(int quantity, double price) {
-        this.quantity = quantity;
-        this.price = price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-}
+public record ShoppingItem(int quantity, double price) implements Serializable
+{}
+   
