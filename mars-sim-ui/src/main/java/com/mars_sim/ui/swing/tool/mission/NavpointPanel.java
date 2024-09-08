@@ -261,7 +261,7 @@ public class NavpointPanel extends JPanel implements MissionListener {
         navpointScrollPane.setViewportView(navpointTable);
 	}
 
-	private Set<Unit> getDisplayUnits() {
+	public Set<Unit> getDisplayUnits() {
 		return displayUnits;
 	}
 
