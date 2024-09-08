@@ -57,7 +57,7 @@ public final class CommerceUtil {
 	 * Private constructor for utility class.
 	 */
 	private CommerceUtil() {
-	};
+	}
 
 	/**
 	 * Gets the best trade deal for a given settlement.
@@ -133,25 +133,20 @@ public final class CommerceUtil {
 	 * @return true if current trade mission between settlements.
 	 */
 	private static boolean hasCurrentCommerceMission(Settlement settlement1, Settlement settlement2) {
-		boolean result = false;
 
 		for(Mission mission : missionManager.getMissions()) {
 			if (mission instanceof CommerceMission) {
 				CommerceMission tradeMission = (CommerceMission) mission;
 				Settlement startingSettlement = tradeMission.getStartingSettlement();
 				Settlement tradingSettlement = tradeMission.getTradingSettlement();
-				if (startingSettlement.equals(settlement1) && tradingSettlement.equals(settlement2)) {
-					result = true;
-					break;
-				}
-				else if (startingSettlement.equals(settlement2) && tradingSettlement.equals(settlement1)) {
-					result = true;
-					break;
+				if ((startingSettlement.equals(settlement1) && tradingSettlement.equals(settlement2))
+					|| (startingSettlement.equals(settlement2) && tradingSettlement.equals(settlement1))) {
+					return true;
 				}
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**
@@ -272,11 +267,11 @@ public final class CommerceUtil {
 		for(Good good : unionGoods) {
 			ShoppingItem buy = buyList.get(good);
 			ShoppingItem sell = sellList.get(good);
-			if (buy.getPrice() <= sell.getPrice()) {
+			if (buy.price() <= sell.price()) {
 				continue;
 			}
 
-			int amountToTrade = Math.min(buy.getQuantity(), sell.getQuantity());
+			int amountToTrade = Math.min(buy.quantity(), sell.quantity());
 
 			boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
 
@@ -311,7 +306,7 @@ public final class CommerceUtil {
 
 			extraMass += (good.getMassPerItem() * amountToTrade);
 			if (extraMass < massCapacity) {
-				costValue += buy.getPrice() * amountToTrade;
+				costValue += buy.price() * amountToTrade;
 				massCapacity -= extraMass;
 				if (tradeList.containsKey(good)) {
 					amountToTrade += tradeList.get(good);
@@ -357,7 +352,7 @@ public final class CommerceUtil {
 			if (prices != null) {
 				ShoppingItem sItem = prices.get(item.getKey());
 				if (sItem != null) {
-					itemPrice = sItem.getPrice();
+					itemPrice = sItem.price();
 				}
 			}
 			if (itemPrice == 0) {

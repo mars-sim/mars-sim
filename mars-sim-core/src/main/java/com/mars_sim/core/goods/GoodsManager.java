@@ -128,8 +128,6 @@ public class GoodsManager implements Serializable {
 	/** Initialized logger. */
 	private static SimLogger logger = SimLogger.getLogger(GoodsManager.class.getName());
 
-	private static final int CHECK_RESOURCES = 30;
-
 	// Number modifiers for outstanding repair and maintenance parts and EVA parts.
 	private static final int BASE_REPAIR_PART = 150;
 	private static final int BASE_MAINT_PART = 15;
@@ -172,8 +170,8 @@ public class GoodsManager implements Serializable {
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static Set<Good> unsellableGoods = null;
 	/** A standard list of buying resources in buying negotiation. */
-	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
-	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
+	private Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
+	private Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
 	private Set<Integer> reviewedEssentials = new HashSet<>();
 
@@ -876,11 +874,8 @@ public class GoodsManager implements Serializable {
 	public void destroy() {
 
 		settlement = null;
-		goodsValues.clear();
 		goodsValues = null;
-		demandCache.clear();
 		demandCache = null;
-		tradeCache.clear();
 		tradeCache = null;
 
 		deflationIndexMap = null;
