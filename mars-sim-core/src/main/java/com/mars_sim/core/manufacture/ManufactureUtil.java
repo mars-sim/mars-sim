@@ -1,14 +1,13 @@
 /*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @date 2022-09-17
+ * @date 2024-09-09
  * @author Scott Davis
  */
 
 package com.mars_sim.core.manufacture;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +60,6 @@ public final class ManufactureUtil {
 	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
 	
-	
 	/** constructor. */
 	public ManufactureUtil() {
 		// Static helper class
@@ -85,9 +83,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
-		return getAllManufactureProcesses().stream()
-				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());
+		return manufactureConfig.getManufactureProcessesForTechLevel(techLevel);
 	}
 
 	/**
@@ -134,7 +130,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		return manufactureConfig.getSalvageList().stream()
+		return getSalvageInfoList().stream()
 				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
@@ -147,11 +143,21 @@ public final class ManufactureUtil {
 	 * @throws Exception if error get salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		return manufactureConfig.getSalvageList().stream()
+		return getSalvageInfoList().stream()
 				.filter(s -> s.getTechLevelRequired() <= techLevel)
     	        .collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a full list of salvage process information.
+	 * 
+	 * @return list of salvage process information.
+	 * @throws Exception if error getting info.
+	 */
+	public static List<SalvageProcessInfo> getSalvageInfoList() {
+		return manufactureConfig.getSalvageInfoList();
+	}
+	
 	/**
 	 * Gets the goods value of a manufacturing process at a settlement.
 	 *

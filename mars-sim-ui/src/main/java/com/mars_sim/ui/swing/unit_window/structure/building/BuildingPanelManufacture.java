@@ -79,6 +79,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	private List<SalvageProcess> salvageCache;
 	/** Process selector. */
 	private JComboBox<Object> processComboBox;
+	
 	private DefaultComboBoxModel<Object> processModel;
 	/** List of available processes. */
 	private transient List<Object> newProcessCache;
@@ -174,14 +175,12 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			try {
 				Object selectedItem = processComboBox.getSelectedItem();
 				if (selectedItem != null) {
-					if (selectedItem instanceof ManufactureProcessInfo) {
-						ManufactureProcessInfo selectedProcess = (ManufactureProcessInfo) selectedItem;
+					if (selectedItem instanceof ManufactureProcessInfo selectedProcess) {
 						if (ManufactureUtil.canProcessBeStarted(selectedProcess, getWorkshop())) {
 							getWorkshop().addProcess(new ManufactureProcess(selectedProcess, getWorkshop()));
 							update();
 						}
-					} else if (selectedItem instanceof SalvageProcessInfo) {
-						SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
+					} else if (selectedItem instanceof SalvageProcessInfo selectedSalvage) {
 						if (ManufactureUtil.canSalvageProcessBeStarted(selectedSalvage, getWorkshop())) {
 							Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage,
 									getWorkshop().getBuilding().getSettlement());

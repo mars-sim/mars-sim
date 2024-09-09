@@ -192,6 +192,9 @@ public class TabPanelManufacture extends TabPanel {
 		
 	}
 
+	/**
+	 * Creates a new process in a given building.
+	 */
 	private void createNewProcess() {
 		Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 		if (workshopBuilding != null) {

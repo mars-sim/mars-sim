@@ -27,7 +27,7 @@ public class ManufactureProcess implements Serializable {
 	private ManufactureProcessInfo info;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param info     information about the process.
 	 * @param workshop the manufacturing workshop where the process is taking place.
@@ -105,7 +105,7 @@ public class ManufactureProcess implements Serializable {
 	}
 
 	/**
-	 * Gets the total work time required
+	 * Gets the total work time required.
 	 * 
 	 * @return
 	 */
