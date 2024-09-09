@@ -29,6 +29,7 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
+import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -81,7 +82,7 @@ public class UnitManager implements Serializable, Temporal {
 	private transient ExecutorService executor;
 
 	private transient Set<Authority> sponsorSet = new HashSet<>();
-	
+
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
@@ -103,7 +104,7 @@ public class UnitManager implements Serializable, Temporal {
 	private Map<Integer, Building> lookupBuilding;
 	/** A map of settlements with its coordinates. */
 	private Map<Coordinates, Integer> settlementCoordinateMap;
-	
+
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 
@@ -113,13 +114,13 @@ public class UnitManager implements Serializable, Temporal {
 
 	/** The instance of Mars Surface. */
 	private MarsSurface marsSurface;
-	
+
 	/** The instance of Outer Space. */
 	private OuterSpace outerSpace;
-	
+
 	/** The instance of Moon. */
 	private Moon moon;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -132,52 +133,33 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment  = new ConcurrentHashMap<>();
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
-		
+
 		settlementCoordinateMap = new HashMap<>();
 	}
 
 	/**
 	 * Gets the appropriate Unit Map for a Unit type.
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
-	private Map<Integer, ? extends Unit> getUnitMap(UnitType type ) {
-		Map<Integer,? extends Unit> map = null;
-
-		switch (type) {
-		case PERSON:
-			map = lookupPerson;
-			break;
-		case VEHICLE:
-			map = lookupVehicle;
-			break;
-		case SETTLEMENT:
-			map = lookupSettlement;
-			break;
-		case BUILDING:
-			map = lookupBuilding;
-			break;
-		case EVA_SUIT:
-		case CONTAINER:
-			map = lookupEquipment;
-			break;
-		case ROBOT:
-			map = lookupRobot;
-			break;
-		case CONSTRUCTION:
-			map = lookupSite;
-			break;
-		default:
-			throw new IllegalArgumentException("No Unit map for type " + type);
-		}
-
-		return map;
+	private Map<Integer, ? extends Unit> getUnitMap(UnitType type) {
+		Map<Integer, ? extends Unit> map = switch (type) {
+			case PERSON -> lookupPerson;
+			case VEHICLE -> lookupVehicle;
+			case SETTLEMENT -> lookupSettlement;
+			case BUILDING -> lookupBuilding;
+			case EVA_SUIT, CONTAINER -> lookupEquipment;
+			case ROBOT -> lookupRobot;
+			case CONSTRUCTION -> lookupSite;
+			default -> throw new IllegalArgumentException("No Unit map for type " + type);
+		};
+        return map;
 	}
 
 	/**
 	 * Gets the Unit of a certain type matching the name.
-	 * 
+	 *
 	 * @param type The UnitType to search for
 	 * @param name Name of the unit
 	 */
@@ -190,7 +172,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the unit with a particular identifier (unit id).
 	 *
@@ -218,7 +200,7 @@ public class UnitManager implements Serializable, Temporal {
 	public Settlement getSettlementByID(Integer id) {
 		return lookupSettlement.get(id);
 	}
-	
+
 	/**
 	 * Finds a nearby settlement based on its coordinates.
 	 *
@@ -229,11 +211,11 @@ public class UnitManager implements Serializable, Temporal {
 
 		if (!settlementCoordinateMap.containsKey(c)) {
 			Collection<Settlement> ss = getSettlements();
-			
+
 			Settlement settlement = null;
 			for (Settlement s : ss) {
 				Coordinates coord = s.getCoordinates();
-				
+
 				// Put the coord and id into the map
 				if (!settlementCoordinateMap.containsKey(coord))
 					settlementCoordinateMap.put(coord, s.getIdentifier());
@@ -244,14 +226,14 @@ public class UnitManager implements Serializable, Temporal {
 
 			return settlement;
 		}
-		
+
 		Integer i = settlementCoordinateMap.get(c);
 		if (i != null)
 			return lookupSettlement.get(i);
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Is this a settlement's coordinates ?
 	 *
@@ -263,22 +245,18 @@ public class UnitManager implements Serializable, Temporal {
 			settlementCoordinateMap = new HashMap<>();
 
 			Collection<Settlement> ss = getSettlements();
-			
+
 			for (Settlement s : ss) {
 				settlementCoordinateMap.put(s.getCoordinates(), s.getIdentifier());
 			}
 		}
-		
 		Integer i = settlementCoordinateMap.get(c);
-		if (i != null)
-			return true;
-		
-		return false;
+		return (i != null);
 	}
-	
+
 	/**
 	 * Gets commander settlement.
-	 * 
+	 *
 	 * @return
 	 */
 	public Settlement getCommanderSettlement() {
@@ -336,60 +314,30 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param unit new unit to add.
 	 */
 	public synchronized void addUnit(Unit unit) {
+		int unitIdentifier = unit.getIdentifier();
 
-		if (unit != null) {
-			switch(unit.getUnitType()) {
-			case SETTLEMENT:
-				lookupSettlement.put(unit.getIdentifier(),
-			   			(Settlement) unit);
-				addDisplayUnit(unit);
-				break;
-			case PERSON:
-				lookupPerson.put(unit.getIdentifier(),
-			   			(Person) unit);
-				break;
-			case ROBOT:
-				lookupRobot.put(unit.getIdentifier(),
-			   			(Robot) unit);
-				break;
-			case VEHICLE:
-				lookupVehicle.put(unit.getIdentifier(),
-			   			(Vehicle) unit);
-				addDisplayUnit(unit);
-				break;
-			case CONTAINER:
-			case EVA_SUIT:
-				lookupEquipment.put(unit.getIdentifier(),
-			   			(Equipment) unit);
-				break;
-			case BUILDING:
-				lookupBuilding.put(unit.getIdentifier(),
-						   			(Building) unit);
-				break;
-			case CONSTRUCTION:
-				lookupSite.put(unit.getIdentifier(),
-							   (ConstructionSite) unit);
-				break;
-			case MARS:
-				// Bit of a hack at the moment.
-				// Need to revisit once extra Planets added.
-				marsSurface = (MarsSurface) unit;
-				break;
-				
-			case OUTER_SPACE:
-				outerSpace = (OuterSpace) unit;
-				break;
-				
-			case MOON:
-				moon = (Moon) unit;
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Cannot store unit type:" + unit.getUnitType());
+		if (unit != null) { // is it necessary?
+			switch (unit.getUnitType()) {
+				case SETTLEMENT -> {
+					lookupSettlement.put(unitIdentifier, (Settlement) unit);
+					addDisplayUnit(unit);
+				}
+				case PERSON -> lookupPerson.put(unitIdentifier, (Person) unit);
+				case ROBOT -> lookupRobot.put(unitIdentifier, (Robot) unit);
+				case VEHICLE -> {
+					lookupVehicle.put(unitIdentifier, (Vehicle) unit);
+					addDisplayUnit(unit);
+				}
+                case CONTAINER -> {}
+                case EVA_SUIT -> lookupEquipment.put(unitIdentifier, (Equipment) unit);
+				case BUILDING -> lookupBuilding.put(unitIdentifier, (Building) unit);
+				case CONSTRUCTION -> lookupSite.put(unitIdentifier, (ConstructionSite) unit);
+				case MARS -> marsSurface = (MarsSurface) unit;
+				case OUTER_SPACE -> outerSpace = (OuterSpace) unit;
+				case MOON -> moon = (Moon) unit;
+				default -> throw new IllegalArgumentException(
+						"Cannot store unit type:" + unit.getUnitType());
 			}
-
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 		}
 	}
 
@@ -411,13 +359,13 @@ public class UnitManager implements Serializable, Temporal {
 	/**
 	 * Increments the count of the number of new unit requested.
 	 * This count is independent of the actual Units held in the manager.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
 	public int incrementTypeCount(String name) {
 		synchronized (unitCounts) {
-			return unitCounts.merge(name, 1, (a, b) -> a + b);
+			return unitCounts.merge(name, 1, Integer::sum);
 		}
 	}
 
@@ -476,13 +424,13 @@ public class UnitManager implements Serializable, Temporal {
 	private void setupTasks() {
 		if (settlementTasks == null || settlementTasks.isEmpty()) {
 			settlementTasks = new HashSet<>();
-			lookupSettlement.values().forEach(s -> activateSettlement(s));
+			lookupSettlement.values().forEach(this::activateSettlement);
 		}
 	}
 
 	/**
 	 * Adds a Settlement to the managed list and activate it for time pulses.
-	 * 
+	 *
 	 * @param s
 	 */
 	public void activateSettlement(Settlement s) {
@@ -499,7 +447,7 @@ public class UnitManager implements Serializable, Temporal {
 	/**
 	 * This method validates whether the current active Settlement in this thread matches
 	 * the owner of an entity. This is a Thread specific method.
-	 * 
+	 *
 	 * @param operation
 	 * @param owner
 	 */
@@ -576,19 +524,19 @@ public class UnitManager implements Serializable, Temporal {
 	public Collection<Authority> getSponsorSet() {
 		if (sponsorSet.isEmpty()) {
 			Set<Authority> sponsors = new HashSet<>();
-			
+
 			for (Settlement s: getSettlements()) {
 				Authority ra = s.getReportingAuthority();
 				if (!sponsors.contains(ra))
 					sponsors.add(ra);
 			}
-			
+
 			sponsorSet = sponsors;
 		}
 		return sponsorSet;
 	}
-	
-	
+
+
 	/**
 	 * Gets a collection of settlements.
 	 *
@@ -635,7 +583,7 @@ public class UnitManager implements Serializable, Temporal {
 				.filter(e -> e.getUnitType() == UnitType.EVA_SUIT)
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Adds the unit for display.
 	 *
@@ -650,7 +598,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Obtains the settlement and vehicle units for map display.
-	 * 
+	 *
 	 * @return
 	 */
 	public Set<Unit> getDisplayUnits() {
@@ -729,23 +677,23 @@ public class UnitManager implements Serializable, Temporal {
 	 * Returns the outer space instance.
 	 *
 	 * @return {@Link OuterSpace}
-	 */	
+	 */
 	public OuterSpace getOuterSpace() {
 		return outerSpace;
 	}
-	
+
 	/**
 	 * Returns the Moon instance.
 	 *
 	 * @return {@Link Moon}
-	 */	
+	 */
 	public Moon getMoon() {
 		return moon;
 	}
-	
+
 	/**
 	 * Extracts the UnitType from an identifier.
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -761,9 +709,9 @@ public class UnitManager implements Serializable, Temporal {
 	 * for lookups.
 	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits
 	 * are a unique increasing number.
-	 * This guarantees uniqueness PLUS a quick means to identify the UnitType 
+	 * This guarantees uniqueness PLUS a quick means to identify the UnitType
 	 * from only the identifier.
-	 * 
+	 *
 	 * @param unitType
 	 * @return
 	 */
@@ -810,7 +758,7 @@ public class UnitManager implements Serializable, Temporal {
 		// Sets up the concurrent tasks
 		setupTasks();
 	}
-	
+
 //	/**
 //	 * Reinitializes instances after deserialization.
 //	 * 
@@ -821,7 +769,7 @@ public class UnitManager implements Serializable, Temporal {
 //	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 //		in.defaultReadObject();
 //	}
-	
+
 	/**
 	 * Prepares object for garbage collection.
 	 */
