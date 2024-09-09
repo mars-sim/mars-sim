@@ -315,7 +315,7 @@ public class UnitManager implements Serializable, Temporal {
 	public synchronized void addUnit(Unit unit) {
 		int unitIdentifier = unit.getIdentifier();
 
-		if (unit != null) { // is it necessary ?
+		if (unit != null) { // is it necessary?
 			switch (unit.getUnitType()) {
 				case SETTLEMENT -> {
 					lookupSettlement.put(unitIdentifier, (Settlement) unit);
