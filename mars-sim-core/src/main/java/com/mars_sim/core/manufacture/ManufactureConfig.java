@@ -104,6 +104,7 @@ public class ManufactureConfig {
 	/**
 	 * Gets a list of manufacturing process information.
 	 * 
+	 * @param manufactureDoc
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */

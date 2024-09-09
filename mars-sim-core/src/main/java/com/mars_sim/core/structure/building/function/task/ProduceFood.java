@@ -424,7 +424,7 @@ public class ProduceFood extends Task {
 		FoodProduction foodProductionFunction = foodProductionBuilding.getFoodProduction();
 		int techLevel = foodProductionFunction.getTechLevel();
 
-		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+		for (FoodProductionProcessInfo process : FoodProductionUtil.getProcessesForTechSkillLevel(
 				techLevel, skillLevel)) {
 
 			if (isProcessRunning(process, foodProductionFunction)
@@ -606,7 +606,7 @@ public class ProduceFood extends Task {
 
 		// Determine all food production processes that are possible and profitable.
 		Map<FoodProductionProcessInfo, Double> processProbMap = new ConcurrentHashMap<>();
-		for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+		for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getProcessesForTechSkillLevel(
 				techLevel, skillLevel)) {
 			if (FoodProductionUtil.canProcessBeStarted(processInfo, foodFactory)) {
 				double processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo,

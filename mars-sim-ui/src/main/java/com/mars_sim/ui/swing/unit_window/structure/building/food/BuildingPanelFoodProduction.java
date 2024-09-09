@@ -299,7 +299,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 			
 			try {
 				Iterator<FoodProductionProcessInfo> j = Collections.unmodifiableList(FoodProductionUtil
-						.getFoodProductionProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel))
+						.getProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel))
 						.iterator();
 				while (j.hasNext()) {
 					FoodProductionProcessInfo process = j.next();

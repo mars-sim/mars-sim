@@ -56,7 +56,7 @@ public final class FoodProductionUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<FoodProductionProcessInfo> getAllFoodProductionProcesses() {
-		return config.getFoodProductionProcessList();
+		return config.getProcessList();
 	}
 
 	/**
@@ -80,9 +80,7 @@ public final class FoodProductionUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechLevel(int techLevel) {
-		return getAllFoodProductionProcesses().stream()
-				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());
+		return config.getProcessesForTechLevel(techLevel);
 	}
 
 	/**
@@ -132,7 +130,7 @@ public final class FoodProductionUtil {
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
-	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechSkillLevel(int techLevel,
+	public static List<FoodProductionProcessInfo> getProcessesForTechSkillLevel(int techLevel,
 			int skillLevel) {
 		return getAllFoodProductionProcesses().stream()
 				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))

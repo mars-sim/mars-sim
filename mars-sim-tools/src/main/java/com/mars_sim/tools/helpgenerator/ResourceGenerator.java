@@ -41,7 +41,7 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
 	private ResourceUse getFoodUsageByName(String name) {
 		if (foodProductionUse == null) {
 			foodProductionUse = new HashMap<>();
-			for (var m: getParent().getConfig().getFoodProductionConfiguration().getFoodProductionProcessList()) {
+			for (var m: getParent().getConfig().getFoodProductionConfiguration().getProcessList()) {
 				for (var r: m.getInputNames()) {
 					foodProductionUse.computeIfAbsent(r.toLowerCase(),
                                 k -> HelpGenerator.buildEmptyResourceUse()).asInput().add(m);

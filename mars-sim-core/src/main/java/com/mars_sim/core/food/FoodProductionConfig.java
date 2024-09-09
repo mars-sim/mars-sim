@@ -13,11 +13,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 
@@ -39,7 +41,10 @@ public class FoodProductionConfig {
 	private static final String EQUIPMENT = "equipment";
 
 	public static final String RECIPE_PREFIX = " Recipe #";
-
+	/**
+	 * A map of a list of processes at or below a tech level.
+	 */
+	private transient Map<Integer, List<FoodProductionProcessInfo>> techLevelProcesses;
 	
 	private List<FoodProductionProcessInfo> processList;
 
@@ -49,19 +54,53 @@ public class FoodProductionConfig {
      * @param foodProductionDoc DOM document containing foodProduction process configuration.
      */
     public FoodProductionConfig(Document foodProductionDoc) {
-    	buildFoodProductionProcessList(foodProductionDoc);
+    	
+		techLevelProcesses = new HashMap<>();
+
+    	buildProcessList(foodProductionDoc);
     }
 
     /**
      * Gets a list of manufacturing process information.
+     * 
      * @return list of manufacturing process information.
      * @throws Exception if error getting info.
      */
-    public List<FoodProductionProcessInfo> getFoodProductionProcessList() {
+    public List<FoodProductionProcessInfo> getProcessList() {
         return processList;
     }
 
-    private synchronized void buildFoodProductionProcessList(Document foodProductionDoc) {
+	/**
+	 * Gets manufacturing processes within the capability of a tech level.
+	 *
+	 * @param techLevel the tech level.
+	 * @return list of processes.
+	 * @throws Exception if error getting processes.
+	 */
+	public List<FoodProductionProcessInfo> getProcessesForTechLevel(int techLevel) {
+		if (techLevelProcesses.containsKey(techLevel)) {
+			return techLevelProcesses.get(techLevel);
+		}
+		
+		List<FoodProductionProcessInfo> list = getProcessList().stream()
+				.filter(s -> s.getTechLevelRequired() <= techLevel)
+    	        .collect(Collectors.toList());
+		
+		if (list != null && !list.isEmpty())
+			techLevelProcesses.put(techLevel, list);
+		
+		return list;
+	}
+	
+	
+	/**
+	 * Builds a list of food production process information.
+	 * 
+	 * @param foodProductionDoc
+	 * @return list of food production process information.
+	 * @throws Exception if error getting info.
+	 */
+    private synchronized void buildProcessList(Document foodProductionDoc) {
     	if (processList != null) {
     		// List has been built by a different thread !!!
     		return;
@@ -133,7 +172,7 @@ public class FoodProductionConfig {
     
 
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         if(processList != null){

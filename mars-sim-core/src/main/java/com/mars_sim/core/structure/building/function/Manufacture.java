@@ -119,13 +119,8 @@ public class Manufacture extends Function {
 		if (!possibleManuProcesses.isEmpty())
 			return possibleManuProcesses;
 
-		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel) {
-				possibleManuProcesses.add(process);
-			}
-		}
+		List<ManufactureProcessInfo> list = ManufactureUtil.getManufactureProcessesForTechLevel(techLevel);
+		possibleManuProcesses.addAll(list);
 
 		return possibleManuProcesses;
 	}
@@ -140,13 +135,8 @@ public class Manufacture extends Function {
 		if (!possibleSalvages.isEmpty())
 			return possibleSalvages;
 
-		Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageInfoList().iterator();
-		while (i.hasNext()) {
-			SalvageProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel) {
-				possibleSalvages.add(process);
-			}
-		}
+		List<SalvageProcessInfo> list = ManufactureUtil.getSalvageProcessesForTechLevel(techLevel);
+		possibleSalvages.addAll(list);
 
 		return possibleSalvages;
 	}
