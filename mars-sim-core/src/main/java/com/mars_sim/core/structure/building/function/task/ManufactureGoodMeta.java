@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGoodMeta.java
- * @date 2021-12-22
+ * @date 2024-09-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function.task;
@@ -11,7 +11,8 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
-import com.mars_sim.core.manufacture.ManufactureProcess;
+import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
@@ -37,8 +38,12 @@ import com.mars_sim.core.tool.Msg;
 public class ManufactureGoodMeta extends MetaTask
     implements SettlementMetaTask, TaskFactory {
 
+	/** Default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ManufactureGoodMeta.class.getName());
+	
+	
     /**
-     * A potential jon needs to manufacture goods
+     * A potential job to manufacture goods
      */
     private static class ManufactureGoodJob extends SettlementTask {
 
@@ -80,7 +85,7 @@ public class ManufactureGoodMeta extends MetaTask
 		setFavorite(FavoriteType.TINKERING);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST,
-						JobType.ENGINEER, JobType.PHYSICIST);
+						JobType.ENGINEER, JobType.PHYSICIST, JobType.TECHNICIAN);
                         
         addPreferredRobot(RobotType.MAKERBOT);
         addPreferredRobot(RobotType.REPAIRBOT);
@@ -89,7 +94,7 @@ public class ManufactureGoodMeta extends MetaTask
 	}
 
     /**
-     * Assess a Person for a specific SettlementTask of this type.
+     * Assesses a Person for a specific SettlementTask of this type.
      * 
      * @param t The Settlement task being evaluated
      * @param p Person in question
@@ -102,7 +107,7 @@ public class ManufactureGoodMeta extends MetaTask
                 && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
             ManufactureGoodJob mgj = (ManufactureGoodJob)t;
 
-            // Check person has minumum skill
+            // Check person has minimum skill
             SkillManager skillManager = p.getSkillManager();
 		    int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
             if (skill < mgj.getMinSkill()) {
@@ -117,7 +122,7 @@ public class ManufactureGoodMeta extends MetaTask
     }
 
     /**
-     * Assess a Robot for a specific SettlementTask of this type.
+     * Assesses a Robot for a specific SettlementTask of this type.
      * 
      * @param t The Settlement task being evaluated
      * @param r Robot in question
@@ -129,7 +134,7 @@ public class ManufactureGoodMeta extends MetaTask
         if (r.isInSettlement()) {
             ManufactureGoodJob mgj = (ManufactureGoodJob)t;
 
-            // Check person has minumum skill
+            // Check person has minimum skill
             SkillManager skillManager = r.getSkillManager();
 		    int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
             if (skill < mgj.getMinSkill()) {
@@ -144,44 +149,58 @@ public class ManufactureGoodMeta extends MetaTask
 
 
     /**
-     * Find any buulding that have manufacturing processing needing help and crete a
+     * Finds any building that have manufacturing processing needing help and creates a
      * SettlementTask for each one.
+     * 
      * @param settlement Place to assess
      */
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> result = new ArrayList<>();
-        if (!settlement.getProcessOverride(OverrideType.MANUFACTURE)) {
-            // Find anything that can be worked on
-            for(Building potentialBuilding :
-                    ManufactureGood.getAvailableManufacturingBuilding(settlement, MAX_SKILL)) {
-                Manufacture m = potentialBuilding.getManufacture();
+        if (settlement.getProcessOverride(OverrideType.MANUFACTURE)) {
+        	return result;
+        }
+        
+        // Find anything that can be worked on
+        for (Building potentialBuilding :
+                ManufactureGood.getAvailableManufacturingBuilding(settlement, MAX_SKILL)) {
+            
+            Manufacture m = potentialBuilding.getManufacture();
 
-                int minSkill = MAX_SKILL;
-                int maxSkill = 0;
-                for(ManufactureProcess p : m.getProcesses()) {
-                    if (p.getWorkTimeRemaining() > 0D) {
-                        int skillRequired = p.getInfo().getSkillLevelRequired();
-                        minSkill = Math.min(minSkill, skillRequired);
-                        maxSkill = Math.max(maxSkill, skillRequired);
-                    }
+            int minSkill = MAX_SKILL;
+            int maxSkill = 0; 
+            for (ManufactureProcessInfo info : m.getPossibleManufactureProcesses()) {
+                int skillRequired = info.getSkillLevelRequired();
+                minSkill = Math.min(minSkill, skillRequired);
+                maxSkill = Math.max(maxSkill, skillRequired);
+            }
+
+            // Create a task for this building
+            if (minSkill < MAX_SKILL) {
+            	int idle = 0;
+            	
+                if (!ManufactureGood.hasProcessRequiringWork(potentialBuilding, minSkill)) {
+                	idle = 100;
                 }
+                
+                RatingScore score = new RatingScore(100 + idle);
+                
+	            score = applyCommerceFactor(score, settlement, CommerceType.MANUFACTURING);
 
-                // Create a task for this building
-                if (minSkill < MAX_SKILL) {
-                    RatingScore score = new RatingScore(200);
-		            score = applyCommerceFactor(score, settlement, CommerceType.MANUFACTURING);
-
-                    score.addBase(SKILL_MODIFIER, 1D + (maxSkill * 0.05D));
-                    result.add(new ManufactureGoodJob(this, potentialBuilding, minSkill, score));
-                }
+                score.addBase(SKILL_MODIFIER, 1D + (maxSkill * 0.075D));
+                
+                logger.info(settlement, "score: " + score);
+                
+                result.add(new ManufactureGoodJob(this, potentialBuilding, minSkill, score));
             }
         }
+ 
         return result;
     }
 
     /**
-     * Create a default ManufactureGood job.
+     * Creates a default ManufactureGood job.
+     * 
      * @param person Person doing the task
      */
     @Override
@@ -190,7 +209,8 @@ public class ManufactureGoodMeta extends MetaTask
     }
 
     /**
-     * Create a default ManufactureGood job.
+     * Creates a default ManufactureGood job.
+     * 
      * @param robot Robot doing the task
      */
     @Override

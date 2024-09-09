@@ -36,7 +36,8 @@ public class ManufactureProcessInfo extends ProcessInfo {
 	}
 
 	/**
-	 * Get teh effort level needed for this manu process
+	 * Gets the effort level needed for this manu process.
+	 * 
 	 * @return
 	 */
 	public int getEffortLevel() {
@@ -59,7 +60,6 @@ public class ManufactureProcessInfo extends ProcessInfo {
 			if (ar != null) {
 				double amt = item.getAmount();
 				mass += amt;
-//				System.out.println(name + " " + amt + " kg");
 			}		
 			else {
 				ItemResource ir = ItemResourceUtil.findItemResource(name);
@@ -67,7 +67,6 @@ public class ManufactureProcessInfo extends ProcessInfo {
 					double quantity = item.getAmount();
 					double massPerItem = ir.getMassPerItem();
 					mass += quantity * massPerItem;
-//					System.out.println(name + " x" + quantity + " (" + massPerItem + " kg each)");
 				}
 //				else {
 //					BinType type = BinType.convertName2Enum(name);
@@ -79,7 +78,6 @@ public class ManufactureProcessInfo extends ProcessInfo {
 //				}
 			}
 		}
-//		System.out.println("Total: " + mass);
 		return mass;
 	}
 	

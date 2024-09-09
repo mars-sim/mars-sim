@@ -29,6 +29,7 @@ import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageProcess;
+import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.resource.AmountResource;
@@ -73,8 +74,11 @@ public class Manufacture extends Function {
 	private int numPrintersInUse;
 	private final int numMaxConcurrentProcesses;
 
-	private List<ManufactureProcess> processes;
-	private List<SalvageProcess> salvages;
+	private List<ManufactureProcessInfo> possibleManuProcesses;
+	private List<SalvageProcessInfo> possibleSalvages;
+	
+	private List<ManufactureProcess> ongoingProcesses;
+	private List<SalvageProcess> ongoingSalvages;
 
 	// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 
@@ -82,7 +86,7 @@ public class Manufacture extends Function {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
-	 * @param spec Details of teh Funciton at hand
+	 * @param spec Details of the Function at hand
 	 * @throws BuildingException if error constructing function.
 	 */
 	public Manufacture(Building building, FunctionSpec spec) {
@@ -93,10 +97,60 @@ public class Manufacture extends Function {
 		numMaxConcurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 		numPrintersInUse = numMaxConcurrentProcesses;
 
-		processes = new CopyOnWriteArrayList<>();
-		salvages = new CopyOnWriteArrayList<>();
+		ongoingProcesses = new CopyOnWriteArrayList<>();
+		ongoingSalvages = new CopyOnWriteArrayList<>();
+		
+		possibleManuProcesses = new CopyOnWriteArrayList<>();
+		possibleSalvages = new CopyOnWriteArrayList<>();
+		
+		// Put together a list of manu process infos
+		getPossibleManufactureProcesses();
+		// Put together a list of salvage process infos
+		getPossibleSalvageProcesses();
 	}
 
+	/**
+	 * Gets a list of the possible manufacturing process for this building.
+	 *
+	 * @return
+	 */
+	public List<ManufactureProcessInfo> getPossibleManufactureProcesses() {
+
+		if (!possibleManuProcesses.isEmpty())
+			return possibleManuProcesses;
+
+		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessInfo process = i.next();
+			if (process.getTechLevelRequired() <= techLevel) {
+				possibleManuProcesses.add(process);
+			}
+		}
+
+		return possibleManuProcesses;
+	}
+	
+	/**
+	 * Gets a list of the possible salvage process info for this building.
+	 *
+	 * @return
+	 */
+	public List<SalvageProcessInfo> getPossibleSalvageProcesses() {
+
+		if (!possibleSalvages.isEmpty())
+			return possibleSalvages;
+
+		Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageInfoList().iterator();
+		while (i.hasNext()) {
+			SalvageProcessInfo process = i.next();
+			if (process.getTechLevelRequired() <= techLevel) {
+				possibleSalvages.add(process);
+			}
+		}
+
+		return possibleSalvages;
+	}
+	
 	/**
 	 * Gets the value of the function for a named building type.
 	 *
@@ -218,16 +272,16 @@ public class Manufacture extends Function {
 	 * @return current total.
 	 */
 	public int getCurrentTotalProcesses() {
-		return processes.size() + salvages.size();
+		return ongoingProcesses.size() + ongoingSalvages.size();
 	}
 
 	/**
-	 * Gets a list of the current manufacturing processes.
+	 * Gets a list of on-going manufacturing processes.
 	 *
-	 * @return unmodifiable list of processes.
+	 * @return unmodifiable list of on-going processes.
 	 */
 	public List<ManufactureProcess> getProcesses() {
-		return Collections.unmodifiableList(processes);
+		return Collections.unmodifiableList(ongoingProcesses);
 	}
 
 	/**
@@ -257,7 +311,7 @@ public class Manufacture extends Function {
 			return;
 		}
 
-		processes.add(process);
+		ongoingProcesses.add(process);
 
 		// Consume inputs.
 		for (var item : process.getInfo().getInputList()) {
@@ -283,7 +337,7 @@ public class Manufacture extends Function {
 	 * @return unmodifiable list of salvage processes.
 	 */
 	public List<SalvageProcess> getSalvageProcesses() {
-		return Collections.unmodifiableList(salvages);
+		return Collections.unmodifiableList(ongoingSalvages);
 	}
 
 	/**
@@ -299,7 +353,7 @@ public class Manufacture extends Function {
 		if (getCurrentTotalProcesses() >= numPrintersInUse)
 			throw new IllegalStateException("No more space left to add new salvage process.");
 
-		salvages.add(process);
+		ongoingSalvages.add(process);
 
 		// Retrieve salvaged unit and remove from unit manager.
 		Unit salvagedUnit = process.getSalvagedUnit();
@@ -341,7 +395,7 @@ public class Manufacture extends Function {
 	@Override
 	public double getCombinedPowerLoad() {
 		double result = 0D;
-		Iterator<ManufactureProcess> i = processes.iterator();
+		Iterator<ManufactureProcess> i = ongoingProcesses.iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
 			if (process.getProcessTimeRemaining() > 0D)
@@ -364,7 +418,7 @@ public class Manufacture extends Function {
 
 			List<ManufactureProcess> finishedProcesses = new CopyOnWriteArrayList<>();
 
-			Iterator<ManufactureProcess> i = processes.iterator();
+			Iterator<ManufactureProcess> i = ongoingProcesses.iterator();
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				process.addProcessTime(pulse.getElapsed());
@@ -395,7 +449,7 @@ public class Manufacture extends Function {
 		if (numPrintersInUse > getCurrentTotalProcesses())
 			result = true;
 		else {
-			Iterator<ManufactureProcess> i = processes.iterator();
+			Iterator<ManufactureProcess> i = ongoingProcesses.iterator();
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
@@ -421,7 +475,7 @@ public class Manufacture extends Function {
 		if (numPrintersInUse > getCurrentTotalProcesses())
 			result = true;
 		else {
-			Iterator<SalvageProcess> i = salvages.iterator();
+			Iterator<SalvageProcess> i = ongoingSalvages.iterator();
 			while (i.hasNext()) {
 				SalvageProcess process = i.next();
 				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
@@ -617,7 +671,7 @@ public class Manufacture extends Function {
 			returnInputs(process);
 		}
 
-		processes.remove(process);
+		ongoingProcesses.remove(process);
 
 		// Log process ending.
 		logger.log(getBuilding(), Level.INFO, 0,
@@ -686,7 +740,7 @@ public class Manufacture extends Function {
 		// Finish the salvage.
 		((Salvagable) process.getSalvagedUnit()).getSalvageInfo().finishSalvage(partsSalvaged, masterClock.getMarsTime());
 
-		salvages.remove(process);
+		ongoingSalvages.remove(process);
 
 		// Log salvage process ending.
 		logger.log(getBuilding(), Level.FINEST, 20_000,
@@ -754,12 +808,12 @@ public class Manufacture extends Function {
 	public void destroy() {
 		super.destroy();
 
-		Iterator<ManufactureProcess> i = processes.iterator();
+		Iterator<ManufactureProcess> i = ongoingProcesses.iterator();
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
 
-		Iterator<SalvageProcess> j = salvages.iterator();
+		Iterator<SalvageProcess> j = ongoingSalvages.iterator();
 		while (j.hasNext()) {
 			j.next().destroy();
 		}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentFactory.java
- * @date 2022-10-04
+ * @date 2024-09-09
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.structure.Settlement;
@@ -20,11 +21,16 @@ import com.mars_sim.core.structure.Settlement;
  * A factory for equipment units.
  */
 public final class EquipmentFactory {
+
+	/** Default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(EquipmentFactory.class.getName());
 	
+	// Note: it's haphazard to match the string of the manu process since it can change.
+	// Will need to implement a better way in matching and looking for the manu process that assemblies the item of interest.
 	private static final String wheel = "Make wheelbarrow";
-	private static final String bottle = "manufacture thermal bottle";
-	private static final String largeBag = "manufacture large bag";
-	private static final String bag = "manufacture bag";
+	private static final String bottle = "Manufacture thermal bottle";
+	private static final String largeBag = "Manufacture large bag";
+	private static final String bag = "Manufacture bag";
 	private static final String box = "Make plastic specimen box";
 	private static final String barrel = "Make plastic barrel";
 	private static final String canister = "Make gas canister";
@@ -169,6 +175,9 @@ public final class EquipmentFactory {
 				weights.put(processName, mass/quantity);
 	    	}
 
+	    	if (mass == 0)
+	    		logger.severe("The process '" + processName + "' cannot be found.");
+	    		
 			return mass;
 		}
 
