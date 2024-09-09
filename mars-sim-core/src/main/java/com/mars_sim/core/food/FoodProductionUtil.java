@@ -132,8 +132,8 @@ public final class FoodProductionUtil {
 	 */
 	public static List<FoodProductionProcessInfo> getProcessesForTechSkillLevel(int techLevel,
 			int skillLevel) {
-		return getAllFoodProductionProcesses().stream()
-				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+		return config.getProcessesForTechLevel(techLevel).stream()
+				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
 
