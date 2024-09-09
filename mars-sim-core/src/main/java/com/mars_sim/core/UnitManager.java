@@ -323,8 +323,12 @@ public class UnitManager implements Serializable, Temporal {
 				}
 				case PERSON -> lookupPerson.put(unitIdentifier, (Person) unit);
 				case ROBOT -> lookupRobot.put(unitIdentifier, (Robot) unit);
-				case VEHICLE -> lookupVehicle.put(unitIdentifier, (Vehicle) unit);
-				case EVA_SUIT -> lookupEquipment.put(unitIdentifier, (Equipment) unit);
+				case VEHICLE -> {
+					lookupVehicle.put(unitIdentifier, (Vehicle) unit);
+					addDisplayUnit(unit);
+				}
+                case CONTAINER -> {}
+                case EVA_SUIT -> lookupEquipment.put(unitIdentifier, (Equipment) unit);
 				case BUILDING -> lookupBuilding.put(unitIdentifier, (Building) unit);
 				case CONSTRUCTION -> lookupSite.put(unitIdentifier, (ConstructionSite) unit);
 				case MARS -> marsSurface = (MarsSurface) unit;
