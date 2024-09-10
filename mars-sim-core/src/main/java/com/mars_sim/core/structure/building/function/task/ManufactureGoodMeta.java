@@ -177,19 +177,17 @@ public class ManufactureGoodMeta extends MetaTask
 
             // Create a task for this building
             if (minSkill < MAX_SKILL) {
-            	int idle = 0;
+            	int work = 0;
             	
-                if (!ManufactureGood.hasProcessRequiringWork(potentialBuilding, minSkill)) {
-                	idle = 100;
+                if (ManufactureGood.hasProcessRequiringWork(potentialBuilding, minSkill)) {
+                	work = 100;
                 }
                 
-                RatingScore score = new RatingScore(100 + idle);
+                RatingScore score = new RatingScore(100 + work);
                 
 	            score = applyCommerceFactor(score, settlement, CommerceType.MANUFACTURING);
 
                 score.addBase(SKILL_MODIFIER, 1D + (maxSkill * 0.075D));
-                
-                logger.info(settlement, "score: " + score);
                 
                 result.add(new ManufactureGoodJob(this, potentialBuilding, minSkill, score));
             }

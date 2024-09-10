@@ -32,7 +32,7 @@ class FoodProductionConfigTest {
 
     @Test
     void testProcessesLoaded() {
-        var manuProcesses = getFoodConfig().getFoodProductionProcessList();
+        var manuProcesses = getFoodConfig().getProcessList();
         assertTrue("Food processes defined", !manuProcesses.isEmpty());
     }
 
@@ -40,7 +40,7 @@ class FoodProductionConfigTest {
     void testPackageFood() {
         // Build mapped key on process name
         var processByName =
-                    Maps.uniqueIndex(getFoodConfig().getFoodProductionProcessList(),
+                    Maps.uniqueIndex(getFoodConfig().getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get(PACKAGE_FOOD);
         assertNotNull("Food processes defined", process);
@@ -64,7 +64,7 @@ class FoodProductionConfigTest {
     void testMakeSoybean() {
         // Build mapped key on process name
         var processByName =
-                    Maps.uniqueIndex(getFoodConfig().getFoodProductionProcessList(),
+                    Maps.uniqueIndex(getFoodConfig().getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get("Process Soybean into Soy Flour");
         assertNotNull("Food processes defined", process);

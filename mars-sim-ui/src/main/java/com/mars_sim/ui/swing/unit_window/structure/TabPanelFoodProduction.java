@@ -417,7 +417,7 @@ public class TabPanelFoodProduction extends TabPanel {
 				FoodProduction foodFactory = foodProductionBuilding.getFoodProduction();
 				if (foodFactory.getCurrentTotalProcesses() < foodFactory.getNumPrintersInUse()) {
 					Iterator<FoodProductionProcessInfo> j = FoodProductionUtil
-							.getFoodProductionProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel)
+							.getProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel)
 							.iterator();
 					while (j.hasNext()) {
 						FoodProductionProcessInfo process = j.next();

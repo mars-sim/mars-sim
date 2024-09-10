@@ -95,7 +95,7 @@ public class HelpGeneratorTest {
         var context = createGenerator();
         var foodConfig = context.getConfig().getFoodProductionConfiguration();
 
-        var spec = foodConfig.getFoodProductionProcessList().get(0);
+        var spec = foodConfig.getProcessList().get(0);
         var vg = new FoodGenerator(context);
         var content = createDoc(vg, spec);
 

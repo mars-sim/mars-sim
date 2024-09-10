@@ -115,8 +115,8 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		return getAllManufactureProcesses().stream()
-				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+		return getManufactureProcessesForTechLevel(techLevel).stream()
+				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
 
