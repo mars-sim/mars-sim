@@ -423,9 +423,11 @@ public class ManufactureGood extends Task {
 		}
 		
 		else {
-			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
+			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+				// Create a probability map and pick a process
 				process = createNewManufactureProcess();
-			
+			}
+				
 			if (process == null) {
 				endTask();
 			}

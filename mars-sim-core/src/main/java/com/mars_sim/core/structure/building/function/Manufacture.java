@@ -223,14 +223,12 @@ public class Manufacture extends Function {
 
 		double result = 0D;
 
-		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
+		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(techLevel).iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel) {
-				double value = ManufactureUtil.getManufactureProcessValue(process, settlement);
-				if (value > result) {
-					result = value;
-				}
+			double value = ManufactureUtil.getManufactureProcessValue(process, settlement);
+			if (value > result) {
+				result = value;
 			}
 		}
 

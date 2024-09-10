@@ -73,17 +73,6 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets food production processes within the capability of a tech level.
-	 *
-	 * @param techLevel the tech level.
-	 * @return list of processes.
-	 * @throws Exception if error getting processes.
-	 */
-	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechLevel(int techLevel) {
-		return config.getProcessesForTechLevel(techLevel);
-	}
-
-	/**
 	 * Gets food production processes with given output.
 	 *
 	 * @param item {@link String} name of desired output
@@ -122,6 +111,17 @@ public final class FoodProductionUtil {
 	}
 
 	/**
+	 * Gets food production processes within the capability of a tech level.
+	 *
+	 * @param techLevel  the tech level.
+	 * @return list of processes.
+	 * @throws Exception if error getting processes.
+	 */
+	public static List<FoodProductionProcessInfo> getProcessesForTechSkillLevel(int techLevel) {
+		return config.getProcessesForTechLevel(techLevel);
+	}
+	
+	/**
 	 * Gets food production processes within the capability of a tech level and a
 	 * skill level.
 	 *
@@ -132,7 +132,7 @@ public final class FoodProductionUtil {
 	 */
 	public static List<FoodProductionProcessInfo> getProcessesForTechSkillLevel(int techLevel,
 			int skillLevel) {
-		return config.getProcessesForTechLevel(techLevel).stream()
+		return getProcessesForTechSkillLevel(techLevel).stream()
 				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
