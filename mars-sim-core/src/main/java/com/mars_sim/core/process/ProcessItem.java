@@ -12,7 +12,7 @@ import com.mars_sim.core.resource.ItemType;
 
 /**
  * A Process input or output item.
- * Ideally this shoudl be a simple 'record' but big impact with teh method name change.
+ * Note: Ideally this should be a simple 'record' but big impact with the method name change.
  */
 public class ProcessItem implements Serializable {
 
@@ -65,6 +65,7 @@ public class ProcessItem implements Serializable {
 
     /**
      * Gets the hash code for this object.
+     * 
      * @return hash code.
      */
     public int hashCode() {

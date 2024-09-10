@@ -21,7 +21,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  */
 public class ManufactureProcessInfo extends ProcessInfo {
 
-	/** default serial id. */
+	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private int effortLevel = 2;

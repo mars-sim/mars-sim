@@ -130,8 +130,8 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		return getSalvageInfoList().stream()
-				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+		return getSalvageProcessesForTechLevel(techLevel).stream()
+				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
 
@@ -143,9 +143,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error get salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		return getSalvageInfoList().stream()
-				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());
+		return manufactureConfig.getSalvageProcessesForTechLevel(techLevel);
 	}
 
 	/**
@@ -217,8 +215,7 @@ public final class ManufactureUtil {
 			GoodsManager goodsManager = settlement.getGoodsManager();
 
 			double wearConditionModifier = 1D;
-			if (salvagedUnit instanceof Malfunctionable) {
-				Malfunctionable salvagedMalfunctionable = (Malfunctionable) salvagedUnit;
+			if (salvagedUnit instanceof Malfunctionable salvagedMalfunctionable) {
 				double wearCondition = salvagedMalfunctionable.getMalfunctionManager().getWearCondition();
 				wearConditionModifier = wearCondition / 100D;
 			}
