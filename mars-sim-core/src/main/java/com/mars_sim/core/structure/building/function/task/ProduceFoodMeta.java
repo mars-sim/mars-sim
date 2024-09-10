@@ -73,7 +73,7 @@ public class ProduceFoodMeta extends FactoryMetaTask {
         if (fatigue > 1000 || stress > 50)
             return EMPTY_TASKLIST;
             
-        // See if there is an available foodProduction building.
+        // See if there is an available food production building.
         Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
         if (foodProductionBuilding == null) {
     		return EMPTY_TASKLIST;
@@ -81,7 +81,7 @@ public class ProduceFoodMeta extends FactoryMetaTask {
 
         double base = 0D;
 
-        // If foodProduction building has process requiring work, add
+        // If food production building has process requiring work, add
         // modifier.
         SkillManager skillManager = person.getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;

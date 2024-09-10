@@ -54,7 +54,7 @@ public class ManufactureConfig {
 	 */
 	private transient Map<Integer, List<SalvageProcessInfo>> techLevelSalvageProcesses;
 	
-	private List<ManufactureProcessInfo> processInfoList;
+	private List<ManufactureProcessInfo> manuProcessInfoList;
 	private List<SalvageProcessInfo> salvageInfoList;
 
 	
@@ -80,7 +80,7 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting info.
 	 */
 	public List<ManufactureProcessInfo> getManufactureProcessList() {
-		return processInfoList;
+		return manuProcessInfoList;
 	}
 	
 	/**
@@ -110,7 +110,7 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting info.
 	 */
 	private synchronized void loadManufactureProcessList(Document manufactureDoc) {
-		if (processInfoList != null) {
+		if (manuProcessInfoList != null) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -159,6 +159,7 @@ public class ManufactureConfig {
 			ManufactureProcessInfo process = new ManufactureProcessInfo(name, description,
 						techLevel, skillLevel, workTime, processTime, power,
 						inputList, outputList, effort);
+			
 			newList.add(process);
 			
 			// Add the process to a list and a map
@@ -173,18 +174,23 @@ public class ManufactureConfig {
 					// Write the modified input resource list onto the new list
 					String altProcessName = processName + ALT_PREFIX + i++;
 
+					ManufactureProcessInfo process1 = new ManufactureProcessInfo(altProcessName, process.getDescription(),
+							process.getTechLevelRequired(), process.getSkillLevelRequired(),
+							process.getWorkTimeRequired(), process.getProcessTimeRequired(),
+							process.getPowerRequired(), newInputItems,
+							process.getOutputList(), process.getEffortLevel());
+					
 					// Add process to newList.
-					newList.add(new ManufactureProcessInfo(altProcessName, process.getDescription(),
-										process.getTechLevelRequired(), process.getSkillLevelRequired(),
-										process.getWorkTimeRequired(), process.getProcessTimeRequired(),
-										process.getPowerRequired(), newInputItems,
-										process.getOutputList(), process.getEffortLevel()));
+					newList.add(process1);
+		
+					// Add the process to a list and a map
+					addToManuTechLevelProcesses(process1, techLevel);
 				}
 			}
 		}
 		
 		// Assign the newList now built
-		processInfoList = Collections.unmodifiableList(newList);
+		manuProcessInfoList = Collections.unmodifiableList(newList);
 	}
 
 	/**

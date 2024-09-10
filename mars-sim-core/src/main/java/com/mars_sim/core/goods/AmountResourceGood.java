@@ -803,7 +803,7 @@ class AmountResourceGood extends Good {
 		// Get highest Food Production tech level in settlement.
 		if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
 			int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
-			for(FoodProductionProcessInfo i : FoodProductionUtil.getFoodProductionProcessesForTechLevel(techLevel)) {
+			for(FoodProductionProcessInfo i : FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)) {
 				double foodProductionDemand = getResourceFoodProductionProcessDemand(owner, settlement, i);
 				demand += foodProductionDemand;
 			}

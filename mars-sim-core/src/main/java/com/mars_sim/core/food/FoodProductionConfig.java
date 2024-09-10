@@ -1,19 +1,17 @@
 /*
  * Mars Simulation Project
  * FoodProductionConfig.java
- * @date 2023-08-17
+ * @date 2024-09-10
  * @author Manny Kung
  */
 
 package com.mars_sim.core.food;
-
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -24,7 +22,6 @@ import com.mars_sim.core.resource.ItemType;
 
 public class FoodProductionConfig {
 
-	
 	private static final String PROCESS = "process";
 	private static final String NAME = "name";
 	private static final String TECH = "tech";
@@ -77,16 +74,13 @@ public class FoodProductionConfig {
 	 * @throws Exception if error getting processes.
 	 */
 	public List<FoodProductionProcessInfo> getProcessesForTechLevel(int techLevel) {
-		if (techLevelProcesses.containsKey(techLevel)) {
-			return techLevelProcesses.get(techLevel);
+		List<FoodProductionProcessInfo> list = new ArrayList<>();
+		
+		for (int i = 0; i <= techLevel; i++) {
+			if (techLevelProcesses.containsKey(i)) {
+				list.addAll(techLevelProcesses.get(i));
+			}
 		}
-		
-		List<FoodProductionProcessInfo> list = getProcessList().stream()
-				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());
-		
-		if (list != null && !list.isEmpty())
-			techLevelProcesses.put(techLevel, list);
 		
 		return list;
 	}
@@ -144,23 +138,32 @@ public class FoodProductionConfig {
 			var process = new FoodProductionProcessInfo(name, description,
 						techLevel, skillLevel, workTime, processTime, power,
 						inputList, outputList);
+
 			newList.add(process);
 		
+			// Add the process to a list and a map
+			addToTechLevelProcesses(process, techLevel);
+
 			if (!alternateResourceMap.isEmpty()) {
 				// Create a list for the original resources from alternateResourceMap
 				String processName = process.getName();
 				int i = 1;
-				for(var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList)) {
+				for (var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList)) {
 					
 					// Write the modified input resource list onto the new list
 					String altProcessName = processName + RECIPE_PREFIX + i++;
 
+					FoodProductionProcessInfo process1 = new FoodProductionProcessInfo(altProcessName, process.getDescription(),
+							process.getTechLevelRequired(), process.getSkillLevelRequired(),
+							process.getWorkTimeRequired(), process.getProcessTimeRequired(),
+							process.getPowerRequired(), newInputItems,
+							process.getOutputList());
+					
 					// Add process to newList.
-					newList.add(new FoodProductionProcessInfo(altProcessName, process.getDescription(),
-										process.getTechLevelRequired(), process.getSkillLevelRequired(),
-										process.getWorkTimeRequired(), process.getProcessTimeRequired(),
-										process.getPowerRequired(), newInputItems,
-										process.getOutputList()));
+					newList.add(process1);
+								
+					// Add the process to a list and a map
+					addToTechLevelProcesses(process, techLevel);
 				}
 			}
 		}
@@ -169,6 +172,28 @@ public class FoodProductionConfig {
 		processList = Collections.unmodifiableList(newList);
     }
     
+	/**
+	 * Adds a process to a list and then the process map.
+	 * 
+	 * @param process
+	 * @param techLevel
+	 */
+	private void addToTechLevelProcesses(FoodProductionProcessInfo process, int techLevel) {
+		List<FoodProductionProcessInfo> existingProcesses = null;
+		
+		if (techLevelProcesses.containsKey(techLevel)) {
+			existingProcesses = techLevelProcesses.get(techLevel);
+		}
+		
+		else {
+			existingProcesses = new ArrayList<>();
+		}
+		
+		existingProcesses.add(process);
+		
+		techLevelProcesses.put(techLevel, existingProcesses);
+	}
+	
 
     /**
      * Prepares object for garbage collection.

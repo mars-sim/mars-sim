@@ -153,15 +153,15 @@ public class FoodProduction extends Function {
 
 		double result = 0D;
 
-		Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getAllFoodProductionProcesses().iterator();
+		Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getProcessesForTechSkillLevel(techLevel).iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel) {
+//			if (process.getTechLevelRequired() <= techLevel) {
 				double value = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
 				if (value > result) {
 					result = value;
 				}
-			}
+//			}
 		}
 
 		return result;
