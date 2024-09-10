@@ -20,6 +20,7 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
@@ -201,81 +202,81 @@ public class MissionManager implements Serializable {
 	 * @param person person to find the mission for
 	 * @return new mission
 	 */
+
 	public Mission getNewMission(Person person) {
-		Mission result = null;
-		
-		// Probability must be calculated as a local otherwise method is not threadsafe using a shared cache
 		List<MissionRating> missionProbCache = new ArrayList<>();
-
-		// Get a random number from 0 to the total weight
-		double totalProbCache = 0D;
-
 		Settlement startingSettlement = person.getAssociatedSettlement();
-		var paramMgr = startingSettlement.getPreferences();
+		ParameterManager paramMgr = startingSettlement.getPreferences();
 
-		// Determine probabilities.
-		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
-			// First check if the mission type has reached limit of active missions.
-			int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE,
-										metaMission.getType().name(), Integer.MAX_VALUE);
-			int activeMissions = numParticularMissions(metaMission.getType(), startingSettlement);
-			if (activeMissions < maxMissions) {
-				
-				RatingScore baseProb = metaMission.getProbability(person);
-				double score = baseProb.getScore();
-				if (score > 0) {
-					// Get any overriding ratio
-					double settlementRatio = paramMgr.getDoubleValue(MissionWeightParameters.INSTANCE,
-														metaMission.getType().name(), 1D);
-					baseProb.addModifier("settlement.ratio", settlementRatio);
+		double calculateTotalProbCache = calculateMissionProbabilities(
+				person, missionProbCache, paramMgr, startingSettlement);
 
-					logger.info(person, metaMission.getType().getName() 
-							+ " " + baseProb.getOutput());
-					if (score > 0) {	
-						totalProbCache += baseProb.getScore();
-					}
-				}
-				
-				missionProbCache.add(new MissionRating(metaMission, baseProb));
-			}
-		}
-
-		if (totalProbCache <= 0D) {
-//			logger.fine(person, 10_000, "Has zero total mission probability weight. No mission selected.");
-
+		if (calculateTotalProbCache <= 0D) {
 			person.getMind().getTaskManager().setMissionRatings(missionProbCache, null);
-			
 			return null;
 		}
 
-		// Get a random number from 0 to the total probability weight.
-		double r = RandomUtil.getRandomDouble(totalProbCache);
+		var selectedMission = selectMissionFromProbabilities(missionProbCache, calculateTotalProbCache);
 
-		// Determine which mission is selected.
-		MissionRating selectedMetaMission = null;
-		for (MissionRating possible : missionProbCache) {
-			double probWeight = possible.getScore().getScore();
-			if (r <= probWeight) {
-				selectedMetaMission = possible;
-				break;
-			} 
-
-			r -= probWeight;
-		}
-
-		if (selectedMetaMission == null) {
+		if (selectedMission == null) {
 			throw new IllegalStateException(person + " could not determine a new mission.");
 		}
 
-		RatingLog.logSelectedRating("missionstart", person.getName(),
-						selectedMetaMission, missionProbCache);
-						
-		// Construct the mission and needs a review
-		result = selectedMetaMission.getMeta().constructInstance(person, true);
+		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, missionProbCache);
 
-		person.getMind().getTaskManager().setMissionRatings(missionProbCache, selectedMetaMission);
-		
-		return result;
+		// Construct and return the mission
+		Mission mission = selectedMission.getMeta().constructInstance(person, true);
+		person.getMind().getTaskManager().setMissionRatings(missionProbCache, selectedMission);
+
+		return mission;
+	}
+
+	private MissionRating selectMissionFromProbabilities(List<MissionRating> missionProbCache, double totalProbCache) {
+		double randomDouble = RandomUtil.getRandomDouble(totalProbCache);
+
+		for (MissionRating possible : missionProbCache) {
+			double probWeight = possible.getScore().getScore();
+			if (randomDouble <= probWeight) {
+				return possible;
+			}
+			randomDouble -= probWeight;
+		}
+		return null;
+	}
+
+	private double calculateMissionProbabilities(Person person, List<MissionRating> missionProbCache,
+												 ParameterManager paramMgr, Settlement startingSettlement) {
+		double totalProbCache = 0D;
+
+		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
+			if (canAcceptMission(metaMission, startingSettlement, paramMgr)) {
+				RatingScore baseProb = metaMission.getProbability(person);
+				totalProbCache += updateMissionRating(person, missionProbCache, metaMission, baseProb, paramMgr);
+			}
+		}
+		return totalProbCache;
+	}
+
+	private boolean canAcceptMission(MetaMission metaMission,
+									 Settlement settlement, ParameterManager paramMgr) {
+		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE,
+				metaMission.getType().name(), Integer.MAX_VALUE);
+		int activeMissions = numParticularMissions(metaMission.getType(), settlement);
+		return activeMissions < maxMissions;
+	}
+
+	private double updateMissionRating(Person person, List<MissionRating> missionProbCache,
+									   MetaMission metaMission, RatingScore baseProb, ParameterManager paramMgr) {
+		double score = baseProb.getScore();
+		if (score > 0) {
+			double settlementRatio = paramMgr.getDoubleValue(
+					MissionWeightParameters.INSTANCE, metaMission.getType().name(), 1D);
+			baseProb.addModifier("settlement.ratio", settlementRatio);
+
+			logger.info(person, metaMission.getType().getName() + " " + baseProb.getOutput());
+			missionProbCache.add(new MissionRating(metaMission, baseProb));
+		}
+		return score;
 	}
 
 
