@@ -280,7 +280,8 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Apply a Good modifier to a score based on a Commerce type
+	 * Applies a Good modifier to a score based on a Commerce type.
+	 * 
 	 * @param score Score to be modified
 	 * @param s Settlement of goods
 	 * @param cType Commerce type

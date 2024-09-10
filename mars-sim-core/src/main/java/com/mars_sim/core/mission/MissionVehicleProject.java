@@ -21,7 +21,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
  * This represents a MissionProject that specialises in Vehicle based Mission.
@@ -175,14 +174,6 @@ public class MissionVehicleProject extends MissionProject
     }
 
     @Override
-    public LoadingController getLoadingPlan() {
-        if (getCurrentStep() instanceof MissionLoadVehicleStep ls) {
-            return ls.getLoadingPlan();
-        }
-        return null;
-    }
-
-    @Override
     public MarsTime getLegETA() {
         return null;
     }
@@ -210,11 +201,6 @@ public class MissionVehicleProject extends MissionProject
     @Override
     public void getHelp(MissionStatus status) {
         throw new UnsupportedOperationException("Unimplemented method 'getHelp'");
-    }
-
-    @Override
-    public boolean isVehicleUnloadableHere(Settlement settlement) {
-        return false;
     }
     
     /**
@@ -269,7 +255,7 @@ public class MissionVehicleProject extends MissionProject
 
 	@Override
 	public double getDistanceCurrentLegTravelled() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return 0;
 	}
 }

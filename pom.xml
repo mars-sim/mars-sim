@@ -8,17 +8,19 @@
 	<groupId>com.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.8.0</version>
+	<version>pre-3.9.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>17</release>
-		<project.version>3.8.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
-		<junit-jupiter.version>5.10.3</junit-jupiter.version>
-        <!-- optional : if we want to use a junit4 specific version -->
+		
+		<!-- These 3 have an interdepency -->
+		<junit-jupiter.version>5.11.0</junit-jupiter.version>
         <junit.version>4.13.2</junit.version>
+		<junit-launcher.version>1.11.0</junit-launcher.version>
+		
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<!-- Set file encoding to UTF-8. See https://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
@@ -87,7 +89,7 @@
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.10.2</version>
+			<version>${junit-launcher.version}</version>
 			<scope>test</scope>
 		</dependency>		
 		<!-- https://stackoverflow.com/questions/41635164/is-junit5-backward-compatible-to-junit4 -->
@@ -230,7 +232,7 @@
 				<!-- See https://maven.apache.org/plugins/maven-dependency-plugin/usage.html -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.7.1</version>
+				<version>3.8.0</version>
 				<configuration>
 					<outputDirectory>
 						${project.build.directory}

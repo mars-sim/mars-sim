@@ -919,20 +919,18 @@ public class Weather implements Serializable, Temporal {
 				.count() < 2);
 		
 		if (!dustStorms.isEmpty()) {
-			List<DustStorm> storms = new ArrayList<>(dustStorms);
-			for (DustStorm ds : storms) {
+			List<DustStorm> old = null;
+			for (DustStorm ds : dustStorms) {
 				if (ds.computeNewSize(allowPlantStorms) == 0) {
-					dustStorms.remove(ds);
-				} 
-		
-				if (ds.getSize() != 0) {
-					Settlement s = ds.getSettlement();
-					String msg = ds.getName()
-						+ " (size " + ds.getSize() + " with wind speed "
-						+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.";
-					s.setDustStormMsg(msg);
-					logger.info(s, 30_000, msg);
+					if (old == null) {
+						old = new ArrayList<>();
+					}
+					old.add(ds);
 				}
+			}
+
+			if (old != null) {
+				dustStorms.removeAll(old);
 			}
 		}
 	}

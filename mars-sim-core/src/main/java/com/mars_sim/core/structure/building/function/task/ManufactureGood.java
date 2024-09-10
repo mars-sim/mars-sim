@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureGood.java
- * @date 2024-06-09
+ * @date 2024-09-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function.task;
@@ -132,7 +132,7 @@ public class ManufactureGood extends Task {
 	}
 	
 	/**
-	 * Setup the workshop to start helping process
+	 * Sets up the workshop to start helping process.
 	 */
 	private void setupWorkshop(Building manufactureBuilding) {
 		setDescription(Msg.getString("Task.description.manufactureGood.building",
@@ -192,11 +192,11 @@ public class ManufactureGood extends Task {
 	}
 
 	/**
-	 * Gets an available manufacturing building at a Settlement needing assistence. Returns
+	 * Gets an available manufacturing building at a Settlement needing assistance. Returns
 	 * null if no manufacturing building is currently available.
 	 * 
 	 * @param settlement Settlement to be checked
-	 * @param skill Tha maximum manufacturing skill needed
+	 * @param skill the maximum manufacturing skill needed
 	 * @return available manufacturing buildings
 	 */
 	public static Set<Building> getAvailableManufacturingBuilding(Settlement settlement, int skill) {
@@ -269,7 +269,7 @@ public class ManufactureGood extends Task {
 
 		boolean result = false;
 
-		for(ManufactureProcess process : manufacturingBuilding.getManufacture().getProcesses()) {
+		for (ManufactureProcess process : manufacturingBuilding.getManufacture().getProcesses()) {
 			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
 			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
 			if (workRequired && skillRequired)
@@ -368,7 +368,7 @@ public class ManufactureGood extends Task {
 		// Check if workshop has malfunction.
 		Building entity = workshop.getBuilding();
 		if (entity.getMalfunctionManager().hasMalfunction()) {
-			logger.info(worker, 30_000L, "Manufacturing halted due to malfunction.");
+			logger.info(worker, 30_000, "Manufacturing halted due to malfunction.");
 			endTask();
 			return time * .75;
 		}

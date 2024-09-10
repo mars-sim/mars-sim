@@ -1,14 +1,13 @@
 /*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @date 2022-09-17
+ * @date 2024-09-09
  * @author Scott Davis
  */
 
 package com.mars_sim.core.manufacture;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +60,6 @@ public final class ManufactureUtil {
 	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
 	
-	
 	/** constructor. */
 	public ManufactureUtil() {
 		// Static helper class
@@ -85,9 +83,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
-		return getAllManufactureProcesses().stream()
-				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());
+		return manufactureConfig.getManufactureProcessesForTechLevel(techLevel);
 	}
 
 	/**
@@ -119,8 +115,8 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		return getAllManufactureProcesses().stream()
-				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+		return getManufactureProcessesForTechLevel(techLevel).stream()
+				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
 
@@ -134,7 +130,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		return manufactureConfig.getSalvageList().stream()
+		return getSalvageInfoList().stream()
 				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
@@ -147,11 +143,21 @@ public final class ManufactureUtil {
 	 * @throws Exception if error get salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		return manufactureConfig.getSalvageList().stream()
+		return getSalvageInfoList().stream()
 				.filter(s -> s.getTechLevelRequired() <= techLevel)
     	        .collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a full list of salvage process information.
+	 * 
+	 * @return list of salvage process information.
+	 * @throws Exception if error getting info.
+	 */
+	public static List<SalvageProcessInfo> getSalvageInfoList() {
+		return manufactureConfig.getSalvageInfoList();
+	}
+	
 	/**
 	 * Gets the goods value of a manufacturing process at a settlement.
 	 *
@@ -492,14 +498,14 @@ public final class ManufactureUtil {
 	 */
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
-		Collection<? extends Unit> salvagableUnits = new ArrayList<>();
+		List<Unit> salvagableUnits = new ArrayList<>();
 
 		if (info.getType() == ItemType.VEHICLE) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
-				salvagableUnits = settlement.getVehicleTypeUnit(VehicleType.LUV);
+				salvagableUnits.addAll(settlement.getVehicleTypeUnit(VehicleType.LUV));
 			} else {
 				VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
-				salvagableUnits = settlement.getVehicleTypeUnit(type);
+				salvagableUnits.addAll(settlement.getVehicleTypeUnit(type));
 			}
 
 			// Remove any reserved vehicles.
@@ -514,7 +520,7 @@ public final class ManufactureUtil {
 		
 		else if (info.getType() == ItemType.EQUIPMENT) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
-			salvagableUnits = settlement.getContainerSet(eType);
+			salvagableUnits.addAll(settlement.getContainerSet(eType));
 		} 
 
 		// Make sure container unit is settlement.
@@ -527,13 +533,12 @@ public final class ManufactureUtil {
 		// If malfunctionable, find most worn unit.
 		if (!salvagableUnits.isEmpty()) {
 			Unit firstUnit = (Unit) salvagableUnits.toArray()[0];
-			if (firstUnit instanceof Malfunctionable) {
+			if (firstUnit instanceof Malfunctionable malfunctionable) {
 				Unit mostWorn = null;
 				double lowestWearCondition = Double.MAX_VALUE;
 				Iterator<? extends Unit> k = salvagableUnits.iterator();
 				while (k.hasNext()) {
 					Unit unit = k.next();
-					Malfunctionable malfunctionable = (Malfunctionable) unit;
 					double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
 					if (wearCondition < lowestWearCondition) {
 						mostWorn = unit;

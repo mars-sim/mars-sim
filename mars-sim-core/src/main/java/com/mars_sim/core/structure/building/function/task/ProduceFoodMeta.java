@@ -53,8 +53,9 @@ public class ProduceFoodMeta extends FactoryMetaTask {
     }
 
     /**
-     * Assess if a Person can prepare some food. Assessment is based on the ability to
+     * Assesses if a Person can prepare some food. Assessment is based on the ability to
      * find a Building that can produce food.
+     * 
      * @param person Being assessed
      */
     @Override
@@ -122,30 +123,30 @@ public class ProduceFoodMeta extends FactoryMetaTask {
         // If settlement has foodProduction override, no new
         // foodProduction processes can be created.
         if (robot.isInSettlement()
-                && !robot.getSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
+            && !robot.getSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
 
-                // See if there is an available foodProduction building.
-                Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
-                if (foodProductionBuilding != null) {
+            // See if there is an available food production building.
+            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
+            if (foodProductionBuilding != null) {
+                result += 100D;
+
+                // Food production good value modifier.
+                result *= ProduceFood.getHighestFoodProductionProcessValue(robot, foodProductionBuilding);
+
+                // If food production building has process requiring work, add modifier.
+                SkillManager skillManager = robot.getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+                skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+                skill = (int) Math.round(skill / 7D);
+
+                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
                     result += 100D;
-
-                    // FoodProduction good value modifier.
-                    result *= ProduceFood.getHighestFoodProductionProcessValue(robot, foodProductionBuilding);
-
-                    // If foodProduction building has process requiring work, add modifier.
-                    SkillManager skillManager = robot.getSkillManager();
-                    int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
-                    skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
-                    skill = (int) Math.round(skill / 7D);
-
-                    if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-                        result += 100D;
-                    }
-
-                    // Effort-driven task modifier.
-                    result *= robot.getPerformanceRating();
-
                 }
+
+                // Effort-driven task modifier.
+                result *= robot.getPerformanceRating();
+
+            }
         }
 
         return result;

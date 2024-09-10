@@ -19,7 +19,7 @@ public abstract class ProjectStep implements Serializable {
 	private Project parent;
     private Stage stage;
     private String description;
-    private boolean completed = false;;
+    private boolean completed = false;
 
     protected ProjectStep(Stage stage, String description) {
         if ((stage == Stage.WAITING) || (stage == Stage.DONE) || (stage == Stage.ABORTED)) {

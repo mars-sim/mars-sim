@@ -343,8 +343,6 @@ public class MetaTaskUtil {
 	 */
     static void initialiseInstances(Simulation sim) {
 		MetaTask.initialiseInstances(sim);
-		LoadVehicleMeta.initialiseInstances(sim);
-		UnloadVehicleMeta.initialiseInstances(sim);
 		ExamineBodyMeta.initialiseInstances(sim.getMedicalManager());
 		ReviewMissionPlanMeta.initialiseInstances(sim.getMissionManager());
 		ObserveAstronomicalObjectsMeta.initialiseInstances(sim.getScientificStudyManager());

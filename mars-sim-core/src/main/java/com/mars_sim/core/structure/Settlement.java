@@ -262,8 +262,6 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement terrain profile. */
 	private double[] terrainProfile = new double[2];
 	/** The settlement template name. */
-	private String stormMsg;
-	/** The settlement template name. */
 	private String template;
 	/** The settlement code. */
 	private String settlementCode;
@@ -618,15 +616,6 @@ public class Settlement extends Structure implements Temporal,
 	public double getElevation() {	
 		return terrainProfile[0];
 	}
-
-	/**
-	 * Gets the terrain gradient.
-	 * 
-	 * @return
-	 */
-	public double getGradient() {
-		return terrainProfile[1];
-	}
 	
 	/**
 	 * Gets the space agency.
@@ -723,15 +712,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the current number of robots in the settlement
-	 *
-	 * @return the number of robots
-	 */
-	public int getIndoorRobotsCount() {
-		return ownedRobots.size();
-	}
-
-	/**
 	 * Gets a collection of the number of robots of a particular type.
 	 *
 	 * @return Collection of robots
@@ -750,6 +730,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.
 	 */
+	@Override
 	public boolean lifeSupportCheck() {
 
 		try {
@@ -863,10 +844,12 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @return air pressure [in kPa] (not Pa)
 	 */
+	@Override
 	public double getAirPressure() {
 		return currentPressure;
 	}
 
+	@Override
 	public double getTemperature() {
 		return currentTemperature;
 	}
@@ -934,17 +917,6 @@ public class Settlement extends Structure implements Temporal,
 		trackByMSol(pulse);
 
 		return true;
-	}
-	
-	/**
-	 * Determines the first exploration site.
-	 * 
-	 * @param limit
-	 * @param areologySkill
-	 * @return
-	 */
-	public Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
-		return getARandomNearbyMineralLocation(true, limit, areologySkill);
 	}
 	
 	/**
@@ -1104,8 +1076,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 	
-
-
 	/**
 	 * Samples all the critical resources for stats.
 	 *
@@ -1155,7 +1125,6 @@ public class Settlement extends Structure implements Temporal,
 		todayMap.put(resourceType, msolMap);
 		resourceStat.put(sol, todayMap);
 	}
-
 
 	/**
 	 * Gathers yestersol's statistics for the critical resources.
@@ -1319,41 +1288,6 @@ public class Settlement extends Structure implements Temporal,
 			trackAirlocks(depressurizedBldgs, false);
 		}
 	}
-	
-	/**
-	 * Is there an airlock available ? 
-	 * Note: currently not being used.
-	 * 
-	 * @param person
-	 * @param ingress
-	 * @return
-	 */
-	public boolean isAirlockAvailable(Person person, boolean ingress) {
-		Building currentBldg = person.getBuildingLocation();
-	
-		Set<Integer> bldgs = null;
-		if (ingress)
-			bldgs = depressurizedAirlocks;
-		else
-			bldgs = pressurizedAirlocks;
-		Iterator<Integer> i = bldgs.iterator();
-		while (i.hasNext()) {
-			Building building = unitManager.getBuildingByID(i.next());
-			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
-			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
-
-			// Select airlock that fulfill either conditions:
-			// 1. Chambers are NOT full
-			// 2. Chambers are full but the reservation is NOT full
-			if ((!chamberFull || !reservationFull)
-				// Check valid path
-				&& buildingConnectorManager.hasValidPath(currentBldg, building)) {
-					return true;
-			}
-		}
-
-		return false;
-	}
 
 	/**
 	 * Gets the closest available airlock at the settlement to the given location.
@@ -1490,7 +1424,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param bldgs
 	 * @param pressurized
 	 */
-	public void trackAirlocks(Set<Building> bldgs, boolean pressurized) {	
+	private void trackAirlocks(Set<Building> bldgs, boolean pressurized) {	
 		for (Building building : bldgs) {
 			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
@@ -1638,7 +1572,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param map
 	 * @return
 	 */
-	public Airlock selectBestScoreAirlock(Map<Airlock, Integer> map) {
+	private static Airlock selectBestScoreAirlock(Map<Airlock, Integer> map) {
 		return Collections.max(map.entrySet(), Map.Entry.comparingByValue()).getKey();
 	}
 	
@@ -1652,7 +1586,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param isIngress is airlock in ingress mode ?
 	 * @return airlock or null if none available.
 	 */
-	public boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+	private boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
 		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
@@ -2199,10 +2133,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return numbers of vehicles on mission.
 	 */
 	public int getMissionVehicleNum() {
-		return Math.toIntExact(ownedVehicles
+		return (int) ownedVehicles
 				.stream()
 				.filter(v -> v.getMission() != null)
-				.collect(Collectors.counting()));
+				.count();
 	}
 
 	/**
@@ -2211,24 +2145,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of parked or garaged drones
 	 */
 	public Collection<Drone> getParkedGaragedDrones() {
-		return ownedVehicles.stream()
+		return vicinityParkedVehicles.stream()
 				.filter(v -> VehicleType.isDrone(v.getVehicleType()))
-				.filter(v -> this.equals(v.getSettlement()))
 				.map(Drone.class::cast)
-				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Gets the number of drones parked or garaged at the settlement.
-	 *
-	 * @return parked or garaged drones number
-	 */
-	public int getNumParkedGaragedDrones() {
-		return Math.toIntExact(ownedVehicles
-				.stream()
-				.filter(v -> VehicleType.isDrone(v.getVehicleType()))
-				.filter(v -> this.equals(v.getSettlement()))
-				.collect(Collectors.counting()));
+				.toList();
 	}
 	
 	/**
@@ -2240,7 +2160,7 @@ public class Settlement extends Structure implements Temporal,
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == vehicleType)
 				.map(Unit.class::cast)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -2250,10 +2170,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of vehicles.
 	 */
 	public int findNumVehiclesOfType(VehicleType vehicleType) {
-		return Math.toIntExact(ownedVehicles
+		return (int)ownedVehicles
 					.stream()
 					.filter(v -> v.getVehicleType() == vehicleType)
-					.collect(Collectors.counting()));
+					.count();
 	}
 
 	/**
@@ -2262,11 +2182,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of parked rovers
 	 */
 	public int findNumParkedRovers() {
-		return Math.toIntExact(ownedVehicles
+		return (int)vicinityParkedVehicles
 					.stream()
 					.filter(v -> VehicleType.isRover(v.getVehicleType()))
-					.filter(v -> this.equals(v.getSettlement()))
-					.collect(Collectors.counting()));
+					.count();
 	}
 
 	/**
@@ -2276,9 +2195,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Collection<Vehicle> getParkedGaragedVehicles() {
 		// Get all Vehicles that are back home
-		return 	ownedVehicles.stream()
-					.filter(v -> this.equals(v.getSettlement()))
-					.collect(Collectors.toList());
+		return 	vicinityParkedVehicles;
 	}
 
 	/**
@@ -2287,10 +2204,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return parked vehicles number
 	 */
 	public int getNumParkedVehicles() {
-		return Math.toIntExact(ownedVehicles
-				.stream()
-				.filter(v -> this.equals(v.getSettlement()))
-				.collect(Collectors.counting()));
+		return vicinityParkedVehicles.size();
 	}
 
 	/**
@@ -2444,14 +2358,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 
-	
-	/** 
-	 * Gets the new water ratio at the settlement. 
-	 */
-	public int getNewWaterRatio() {
-		return newWaterRatio;
-	}
-	
 	/** 
 	 * Gets the current water level at the settlement. 
 	 */
@@ -2698,17 +2604,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Checks if the last 20 mission scores are above the threshold.
-	 *
-	 * @param score
-	 * @return true/false
-	 */
-	public boolean passMissionScore(double score) {
-
-		return (score > minimumPassingScore);
-	}
-
-	/**
 	 * Calculates the current minimum passing score.
 	 *
 	 * @return
@@ -2760,14 +2655,6 @@ public class Settlement extends Structure implements Temporal,
 
 	public void setDustStorm(DustStorm storm) {
 		this.storm = storm;
-	}
-	
-	public void setDustStormMsg(String msg) {
-		this.stormMsg = msg;
-	}
-
-	public String getDustStormMsg() {
-		return stormMsg;
 	}
 	
 	public boolean hasDesignatedCommander() {
@@ -3065,27 +2952,7 @@ public class Settlement extends Structure implements Temporal,
 		
 		return chosen;
 	}
-	
-	
-	/**
-	 * Gets the number of all declared locations (claimed or unclaimed).
-	 * 
-	 * @param isClaimed
-	 * @return
-	 */
-	public int numAllDeclaredLocation(boolean isClaimed) {
-		return (int)surfaceFeatures.numAllDeclaredLocations(this, isClaimed);
-	}
-	
-	/**
-	 * Returns the number of locations declared/considered by this settlement as a Region Of Interest (ROI), regardless of its claimed status.
-	 * 
-	 * @return
-	 */
-	public int numAllDeclaredLocations() {
-		return (int)surfaceFeatures.numAllDeclaredLocations(this);
-	}
-	
+
 	/**
 	 * Returns number of locations being claimed or not being claimed as a Region Of Interest (ROI).
 	 * 
@@ -3117,56 +2984,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Set<ExploredLocation> getDeclaredLocations() {	
 		return declaredMineralLocations;
-	}
-
-	
-	/**
-	 * Returns average distance of mineral locations being claimed or not being claimed as a Region Of Interest (ROI).
-	 * 
-	 * @param coord
-	 * @param settlement
-	 * @param isClaimed
-	 * @return
-	 */
-	public double getMeanMineralLocDistance(boolean isClaimed) {
-		double dist = 0;
-		int num = 0;
-		for (Coordinates c: nearbyMineralLocations.keySet()) {
-			if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, isClaimed)) {
-				dist += nearbyMineralLocations.get(c);
-				num++;
-			}
-		}
-		if (num != 0)
-			return dist/num;
-		return 0;
-	}
-	
-	/**
-	 * Returns the standard deviation of distance of mineral locations being claimed or not being claimed as a Region Of Interest (ROI).
-	 * 
-	 * @param coord
-	 * @param settlement
-	 * @param isClaimed
-	 * @return
-	 */
-	public double getStandardDevMineralLocDistance(boolean isClaimed) {
-		double powerSum1 = 0;
-		double powerSum2 = 0;
-		double stdev = 0;
-		List<Coordinates> list = new ArrayList<>(nearbyMineralLocations.keySet());
-		int size = list.size();
-		for (int i=0; i<size; i++) {
-			  Coordinates c = list.get(i);
-			if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, isClaimed)) {
-				double dist = getCoordinates().getDistance(c);
-				powerSum1 += dist;
-				powerSum2 += Math.pow(dist, 2);
-				if (i > 0)
-					stdev = Math.sqrt(i*powerSum2 - Math.pow(powerSum1, 2))/i;
-			}
-		}
-		return stdev;
 	}
 
 	/**
@@ -3225,17 +3042,6 @@ public class Settlement extends Structure implements Temporal,
         return new int[] {(int)mean, (int)sd};
 	}
 	
-	
-	/**
-	 * Gets a comfortable nearby mineral location, based on skills.
-	 * 
-	 * @param limit
-	 * @param skillDistance
-	 */
-	public Coordinates getAComfortableNearbyMineralLocation(double limit, int skill) {
-		return getARandomNearbyMineralLocation(false, limit, skill);
-	}
-	
 	/**
 	 * Creates a Region of Interest (ROI) at a given location and
 	 * estimate its mineral concentrations.
@@ -3262,7 +3068,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if mineral locations.
 	 * @throws Exception if error determining mineral locations.
 	 */
-	public Map<String, Integer> getNearbyMineral(Rover rover, int skill) {
+	private Map<String, Integer> getNearbyMineral(Rover rover, int skill) {
 		int sol = masterClock.getMarsTime().getMissionSol();
 				
 		Map<String, Integer> minerals = new HashMap<>();
@@ -3273,8 +3079,6 @@ public class Settlement extends Structure implements Temporal,
 		double range = roverRange;
 		if (tripRange < range)
 			range = tripRange;
-
-//		acquireNearbyMineralLocation(getCoordinates(), range, sol);
 
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
@@ -3414,10 +3218,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 
-	public int getSolCache() {
-		return solCache;
-	}
-
 	public boolean isFirstSol() {
         return solCache == 0 || solCache == 1;
     }
@@ -3498,9 +3298,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public int getNumEVASuit() {
 		return getSuitSet().size();
-//		return Math.toIntExact(getEquipmentTypeSet(EquipmentType.EVA_SUIT)
-//				.stream()
-//				.collect(Collectors.counting()));
 	}
 	
 	/**

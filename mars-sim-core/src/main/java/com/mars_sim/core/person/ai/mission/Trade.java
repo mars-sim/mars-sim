@@ -33,6 +33,7 @@ import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -175,12 +176,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
 				if (isCurrentNavpointSettlement()) {
-					if (outbound) {
-						setPhase(TRADE_DISEMBARKING, tradingSettlement.getName());
-					}
-					else {
-						startDisembarkingPhase();
-					}
+					startDisembarkingPhase(outbound ? TRADE_DISEMBARKING : DISEMBARKING);
 				}
 			}
 
@@ -242,18 +238,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param member the mission member performing the mission.
 	 */
 	private void performTradeDisembarkingPhase(Worker member) {
-		Vehicle v = getVehicle();
-		// If rover is not parked at settlement, park it.
-		if ((v != null) && (v.getSettlement() == null)) {
-
-			tradingSettlement.addVicinityVehicle(v);
-
-			// Add vehicle to a garage if available.
-			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
-				// or else re-orient it
-//				v.findNewParkingLoc();
-			}
-		}
 
 		// Have member exit rover if necessary.
 		if (!member.isInSettlement()) {
@@ -364,8 +348,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		unloadTowedVehicle();
 
 		// Unload rover if necessary.
-		boolean roverUnloaded = getRover().isEmpty();
-		if (roverUnloaded) {
+		if (!getRover().haveStatusType(StatusType.UNLOADING)) {
 			setPhaseEnded(true);
 		}
 	}
@@ -823,19 +806,6 @@ public class Trade extends RoverMission implements CommerceMission {
 		return tradingSettlement;
 	}
 
-	/**
-	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
-	 * then it can be unloaded.
-	 */
-	@Override
-	public boolean isVehicleUnloadableHere(Settlement settlement) {
-		if (UNLOAD_GOODS.equals(getPhase())
-					&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleUnloadableHere(settlement);
-	}
-	
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {
 		return OBJECTIVES;

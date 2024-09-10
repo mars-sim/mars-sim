@@ -51,9 +51,9 @@ public class LoadVehicleEVA extends EVAOperation {
 	 * Constructor
 	 * 
 	 * @param person            the person performing the task.
-	 * @param loadingPlan Plan to execute the load
+	 * @param vehicle           vehicle to load via EVA
 	 */
-	public LoadVehicleEVA(Person person, LoadingController loadingPlan) {
+	public LoadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use Task constructor.
 		super(NAME, person, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
 
@@ -67,15 +67,15 @@ public class LoadVehicleEVA extends EVAOperation {
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 		
-		settlement = unitManager.findSettlement(person.getCoordinates());
+		settlement = person.getSettlement();
 		if (settlement == null) {
 			endTask();
 			return;
 		}
 
-		this.loadingPlan = loadingPlan;		
-		vehicle = loadingPlan.getVehicle();
-		if (vehicle == null) {
+		this.vehicle = vehicle;
+		this.loadingPlan = vehicle.getLoadingPlan();
+		if (loadingPlan == null) {
 			// Mission must be done
 			checkLocation("Vehicle is null.");
 			return;

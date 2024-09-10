@@ -26,6 +26,7 @@ import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
 import junit.framework.TestCase;
@@ -95,8 +96,7 @@ extends TestCase {
 
 		loadSettlement(settlement, requiredResourcesMap);
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-															 requiredResourcesMap);
+		LoadingController controller = vehicle.setLoading(requiredResourcesMap);
 		int loadingCount = 0;
 		while (loadingCount < 100) {
 			controller.backgroundLoad(80);
@@ -225,8 +225,7 @@ extends TestCase {
 		// Add 2000kg food to the manifest
 		requiredResourcesMap.addAmount(ResourceUtil.foodID, 50D, true);
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-				requiredResourcesMap);
+		LoadingController controller = vehicle.setLoading(requiredResourcesMap);
 
 		// Run the loader but do not load an resources into the settlement
 		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
@@ -374,8 +373,7 @@ extends TestCase {
 	 */
 	private LoadingController reload(SuppliesManifest manifest) {
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-						manifest);
+		LoadingController controller = vehicle.setLoading(manifest);
 
 		// Vehicle should already be loaded
 		assertTrue("Vehicle already loaded", controller.isCompleted());
@@ -394,8 +392,10 @@ extends TestCase {
 	 */
 	private LoadingController loadIt(int maxCycles, SuppliesManifest manifest) {
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-				manifest);
+
+		LoadingController controller = vehicle.setLoading(manifest);
+		assertTrue("Vehicle has of LOADING", vehicle.haveStatusType(StatusType.LOADING));
+		assertEquals("Vehicle of the controller", vehicle, controller.getVehicle());
 
 		int loadingCount = 0;
 		boolean loaded = false;
@@ -407,6 +407,7 @@ extends TestCase {
 		assertTrue("Load operation stopped on load complete", loaded);
 		assertFalse("Loading controller successful", controller.isFailure());
 		assertTrue("Loading controller complete", controller.isCompleted());
+		assertFalse("Vehicle clear of LOADING", vehicle.haveStatusType(StatusType.LOADING));
 
 		return controller;
 	}

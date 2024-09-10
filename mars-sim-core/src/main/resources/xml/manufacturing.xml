@@ -3412,7 +3412,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- Salvage process for an EVA suit. -->
-	<salvage item-name="EVA suit" type="equipment" tech="2" skill="2" work-time="200">
+	<salvage item-name="EVA suit" type="equipment" tech="2" skill="1" work-time="200">
 		<part-salvage name="EVA helmet" number="1" />
 		<part-salvage name="helmet visor" number="1" />
 		<part-salvage name="pressure suit" number="1" />
@@ -3429,7 +3429,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
-	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="2" work-time="600">			
+	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="1" work-time="400">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
 		<part-salvage name="optical lens" number="2" />
@@ -3454,7 +3454,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 
-	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">			
+	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="1" work-time="300">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
 		<part-salvage name="optical lens" number="2" />
@@ -3479,7 +3479,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
-	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="2" work-time="800">
+	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="1" work-time="500">
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="Motor 10 kW" number="2" />
 		<part-salvage name="battery module" number="1" />
@@ -3498,7 +3498,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for an explorer rover. -->
-	<salvage item-name="explorer rover" type="vehicle" tech="2" skill="2" work-time="1000">
+	<salvage item-name="explorer rover" type="vehicle" tech="2" skill="1" work-time="750">
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3530,7 +3530,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
-	<salvage item-name="transport rover" type="vehicle" tech="2" skill="2" work-time="1000">
+	<salvage item-name="transport rover" type="vehicle" tech="2" skill="1" work-time="1000">
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3562,7 +3562,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
-	<salvage item-name="cargo rover" type="vehicle" tech="2" skill="2" work-time="1000">
+	<salvage item-name="cargo rover" type="vehicle" tech="2" skill="1" work-time="1000">
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3594,19 +3594,19 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->
-	<salvage item-name="barrel" type="equipment" tech="1" skill="1" work-time="100">
+	<salvage item-name="barrel" type="equipment" tech="1" skill="0" work-time="4">
 		<part-salvage name="steel sheet" number="1" />
 	</salvage>
 
 	<!-- Salvage process for a gas canister. -->
-	<salvage item-name="gas canister" type="equipment" tech="1" skill="1" work-time="100">
+	<salvage item-name="gas canister" type="equipment" tech="1" skill="0" work-time="10">
 		<part-salvage name="steel canister" number="1" />
 		<part-salvage name="valve" number="2" />
 		<part-salvage name="gasket" number="4" />
 	</salvage>
 
 	<!-- Salvage process for a large bag. -->
-	<salvage item-name="large bag" type="equipment" tech="1" skill="1" work-time="100">
+	<salvage item-name="large bag" type="equipment" tech="1" skill="0" work-time="2">
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
 	</salvage>

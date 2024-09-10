@@ -15,33 +15,31 @@ import com.mars_sim.core.tool.Msg;
  */
 public enum StatusType {
 	
-	GARAGED 				(Msg.getString("StatusType.garaged"), true), //$NON-NLS-1$
-	HOVERING 				(Msg.getString("StatusType.hovering"), true), //$NON-NLS-1$
-	MAINTENANCE 			(Msg.getString("StatusType.maintenance"), false), //$NON-NLS-1$
-	MALFUNCTION 			(Msg.getString("StatusType.malfunction"), false), //$NON-NLS-1$
-	MOVING 					(Msg.getString("StatusType.moving"), true), //$NON-NLS-1$
-	OUT_OF_BATTERY_POWER	(Msg.getString("StatusType.outOfBatteryPower"),false), //$NON-NLS-1$
-	OUT_OF_FUEL 			(Msg.getString("StatusType.outOfFuel"),false), //$NON-NLS-1$
-	OUT_OF_OXIDIZER 		(Msg.getString("StatusType.outOfOxidizer"),false), //$NON-NLS-1$
-	PARKED 					(Msg.getString("StatusType.parked"), true), //$NON-NLS-1$
-	STUCK					(Msg.getString("StatusType.stuck"), false), //$NON-NLS-1$
-	TOWED 					(Msg.getString("StatusType.towed"), false), //$NON-NLS-1$	
-	TOWING 					(Msg.getString("StatusType.towing"), false), //$NON-NLS-1$	
+	GARAGED 				(true),
+	HOVERING 				(true),
+	LOADING		 			(false),
+	MAINTENANCE 			(false),
+	MALFUNCTION 			(false),
+	MOVING 					(true),
+	OUT_OF_BATTERY_POWER	(false),
+	OUT_OF_FUEL 			(false),
+	OUT_OF_OXIDIZER 		(false),
+	PARKED 					(true),
+	STUCK					(false),
+	TOWED 					(false),	
+	TOWING 					(false),	
+	UNLOADING 				(false)
 	;
 	
 	private String name;
 	private boolean primary;
 
-	private StatusType(String name, boolean primary) {
-		this.name = name;
+	private StatusType(boolean primary) {
+		this.name = Msg.getString("StatusType." + name().toLowerCase());
 		this.primary = primary;
 	}
 
 	public String getName() {
-		return this.name;
-	}
-	
-	public String toString() {
 		return this.name;
 	}
 

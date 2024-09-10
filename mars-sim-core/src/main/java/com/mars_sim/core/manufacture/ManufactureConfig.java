@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -45,10 +46,15 @@ public class ManufactureConfig {
 	private static final String PART_SALVAGE = "part-salvage";
 
 	public static final String ALT_PREFIX = " Alt #";
+	/**
+	 * A map of a list of processes at or below a tech level.
+	 */
+	private transient Map<Integer, List<ManufactureProcessInfo>> techLevelProcesses;
+	
+	private List<ManufactureProcessInfo> processInfoList;
+	private List<SalvageProcessInfo> salvageInfoList;
 
-	private List<ManufactureProcessInfo> processList;
-	private List<SalvageProcessInfo> salvageList;
-
+	
 	/**
 	 * Constructor.
 	 * 
@@ -56,6 +62,9 @@ public class ManufactureConfig {
 	 *                       configuration.
 	 */
 	public ManufactureConfig(Document manufactureDoc) {
+		
+		techLevelProcesses = new HashMap<>();
+
 		loadManufactureProcessList(manufactureDoc);
 		loadSalvageList(manufactureDoc);
 	}
@@ -67,17 +76,40 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting info.
 	 */
 	public List<ManufactureProcessInfo> getManufactureProcessList() {
-		return processList;
+		return processInfoList;
+	}
+	
+	/**
+	 * Gets manufacturing processes within the capability of a tech level.
+	 *
+	 * @param techLevel the tech level.
+	 * @return list of processes.
+	 * @throws Exception if error getting processes.
+	 */
+	public List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
+		if (techLevelProcesses.containsKey(techLevel)) {
+			return techLevelProcesses.get(techLevel);
+		}
+		
+		List<ManufactureProcessInfo> list = getManufactureProcessList().stream()
+				.filter(s -> s.getTechLevelRequired() <= techLevel)
+    	        .collect(Collectors.toList());
+		
+		if (list != null && !list.isEmpty())
+			techLevelProcesses.put(techLevel, list);
+		
+		return list;
 	}
 	
 	/**
 	 * Gets a list of manufacturing process information.
 	 * 
+	 * @param manufactureDoc
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */
 	private synchronized void loadManufactureProcessList(Document manufactureDoc) {
-		if (processList != null) {
+		if (processInfoList != null) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -148,18 +180,18 @@ public class ManufactureConfig {
 		}
 		
 		// Assign the newList now built
-		processList = Collections.unmodifiableList(newList);
+		processInfoList = Collections.unmodifiableList(newList);
 	}
 
 
 	/**
-	 * Gets a list of salvage process information.
+	 * Gets a full list of salvage process information.
 	 * 
 	 * @return list of salvage process information.
 	 * @throws Exception if error getting info.
 	 */
-	public List<SalvageProcessInfo> getSalvageList() {
-		return salvageList;
+	public List<SalvageProcessInfo> getSalvageInfoList() {
+		return salvageInfoList;
 	}
 		
 	/**
@@ -169,7 +201,7 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting info.
 	 */
 	private synchronized void loadSalvageList(Document manufactureDoc) {
-		if (salvageList != null) {
+		if (salvageInfoList != null) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -195,6 +227,6 @@ public class ManufactureConfig {
 		}
 
 		// Assign the newList now built
-		salvageList = Collections.unmodifiableList(newList);
+		salvageInfoList = Collections.unmodifiableList(newList);
 	}
 }
