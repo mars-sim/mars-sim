@@ -7,10 +7,10 @@
 package com.mars_sim.core.structure.building.function;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -32,6 +32,7 @@ import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
@@ -479,6 +480,7 @@ public class Manufacture extends Function {
 		return result;
 	}
 
+	
 	/**
 	 * Deposits the outputs.
 	 * 
@@ -575,12 +577,12 @@ public class Manufacture extends Function {
 	 * 
 	 * @param process
 	 */
-	private void returnInputs(ManufactureProcess process) {
+	private void returnInputs(ProcessInfo processInfo) {
 		Settlement settlement = building.getAssociatedSettlement();
 	
 		// Premature end of process. Return all input materials.
 		// Note: should some resources be consumed and irreversible ?
-		for(var item : process.getInfo().getInputList()) {
+		for(var item : processInfo.getInputList()) {
 			if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, false) > 0D) {
 				if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 					// Produce amount resources.
@@ -589,7 +591,7 @@ public class Manufacture extends Function {
 					double capacity = settlement.getAmountResourceRemainingCapacity(resource.getID());
 					if (item.getAmount() > capacity) {
 						double overAmount = item.getAmount() - capacity;
-						logger.severe("Premature ending '" +  process.getInfo().getName() + "'. "
+						logger.severe("Prematurely ending '" +  processInfo.getName() + "'. "
 								+ "Not enough storage capacity to store " + overAmount + " of " + item.getName()
 								+ " at " + settlement.getName());
 						amount = capacity;
@@ -656,16 +658,20 @@ public class Manufacture extends Function {
 
 		if (!premature) {
 			depositOutputs(process);
+			// Log process ending.
+			logger.log(getBuilding(), Level.INFO, 10_000,
+					"Finished the process '" + process.getInfo().getName() + "'.");
 		}
 		else {
-			returnInputs(process);
+			returnInputs(process.getInfo());
+			// Log process ending.
+			logger.log(getBuilding(), Level.INFO, 10_000,
+					"Unable to finish the process '" + process.getInfo().getName() + "'.");
 		}
 
 		ongoingProcesses.remove(process);
 
-		// Log process ending.
-		logger.log(getBuilding(), Level.INFO, 0,
-				"Ending manufacturing process '" + process.getInfo().getName() + "'.");
+
 	}
 
 	/**
@@ -678,9 +684,16 @@ public class Manufacture extends Function {
 	public void endSalvageProcess(SalvageProcess process, boolean premature) {
 		Settlement settlement = building.getSettlement();
 
-		Map<Integer, Integer> partsSalvaged = new ConcurrentHashMap<>(0);
+		Map<Integer, Integer> partsSalvaged = new HashMap<>();
 
-		if (!premature) {
+		if (premature) {
+			returnInputs(process.getInfo());
+			// Log salvage process ending.
+			logger.log(getBuilding(), Level.INFO, 10_000,
+							"Unable to finish the process '" + process.getInfo().getName() + "'.");	
+		}
+		
+		else {
 			// Produce salvaged parts.
 
 			// Determine the salvage chance based on the wear condition of the item.
@@ -696,7 +709,7 @@ public class Manufacture extends Function {
 			salvageChance += process.getAverageSkillLevel() * 5D;
 
 			// Salvage parts.
-			for(var partSalvage : process.getInfo().getOutputList()) {
+			for (var partSalvage : process.getInfo().getOutputList()) {
 				Part part = (Part) ItemResourceUtil.findItemResource(partSalvage.getName());
 				int id = part.getID();
 
@@ -725,17 +738,16 @@ public class Manufacture extends Function {
 			}
 
 			settlement.recordProcess(process.getInfo(), "Salvage", building);
+			
+			// Log salvage process ending.
+			logger.log(getBuilding(), Level.INFO, 10_000,
+							"Finished the process '" + process.getInfo().getName() + "'.");
 		}
 
 		// Finish the salvage.
 		((Salvagable) process.getSalvagedUnit()).getSalvageInfo().finishSalvage(partsSalvaged, masterClock.getMarsTime());
 
 		ongoingSalvages.remove(process);
-
-		// Log salvage process ending.
-		logger.log(getBuilding(), Level.FINEST, 20_000,
-						"Ending salvage process: " + process.getInfo().getName());
-
 	}
 
 	@Override
