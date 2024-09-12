@@ -19,9 +19,8 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.structure.building.function.task.ManufactureGood;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -48,39 +47,57 @@ public class SalvageGoodMeta extends FactoryMetaTask {
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
 
-        // If settlement has manufacturing override, no new
+        // If settlement has manufacturing override, no new settlement-driven
         // salvage processes can be created.
         if (!person.isInSettlement()
-            || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
-            || person.getSettlement().getProcessOverride(OverrideType.SALVAGE)) {
+            || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
                 return EMPTY_TASKLIST;
         }
         
-        // No salvaging goods until after the first month of the simulation.
-        MarsTime startTime = getMasterClock().getInitialMarsTime();
-        MarsTime currentTime = getMasterClock().getMarsTime();
-        double totalTimeMillisols = currentTime.getTimeDiff(startTime);
-        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-        if (totalTimeOrbits < MarsTime.SOLS_PER_MONTH_LONG) {
-            return EMPTY_TASKLIST;
-        }
-
-        // See if there is an available manufacturing building.
-        Building manufacturingBuilding = SalvageGood.getAvailableManufacturingBuilding(person);
-        if (manufacturingBuilding == null) {
-            return EMPTY_TASKLIST;
-        }
+        // If settlement has manufacturing override, no new settlement-driven
+        // salvage processes can be created.
         
-        // If manufacturing building has salvage process requiring work, add
-        // modifier.
-        double base = 1D;
+        // Note: need to account for player manually adding a salvage process
+        //       in manu tab. Override means settlement cannot automatically add. 
+        //       It doesn't mean that player cannot manually add.
+        
+//        if (person.getSettlement().getProcessOverride(OverrideType.SALVAGE)) {
+//        	return EMPTY_TASKLIST;
+//        }
+
+        // No salvaging goods until after the first month of the simulation.
+//        MarsTime startTime = getMasterClock().getInitialMarsTime();
+//        MarsTime currentTime = getMasterClock().getMarsTime();
+//        double totalTimeMillisols = currentTime.getTimeDiff(startTime);
+//        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
+//        if (totalTimeOrbits < MarsTime.SOLS_PER_MONTH_LONG) {
+//            return EMPTY_TASKLIST;
+//        }
+        
+        double base = 0;
         SkillManager skillManager = person.getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-        if (SalvageGood.hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
-            base = 10D;
+        
+        // See if there is an available manufacturing building.
+        Building manufacturingBuilding = null; // SalvageGood.getAvailableManufacturingBuilding(person);
+        
+        for (Building potentialBuilding :
+                ManufactureGood.getAvailableManufacturingBuilding(person.getSettlement(), skill)) {
+            // Look for a building that has started salvage work
+		    if (SalvageGood.hasSalvageProcessRequiringWork(potentialBuilding, skill)) {
+		    	manufacturingBuilding = potentialBuilding;
+		        base += 50D;
+		    }
         }
-
+        
+        if (manufacturingBuilding == null) {
+        	return EMPTY_TASKLIST;
+        }
+        
         var score = new RatingScore(base);
+        
+        score.addBase(SKILL_MODIFIER, 1 + (skill * 0.075D));
+        
         score = assessBuildingSuitability(score, manufacturingBuilding, person);
         score = assessPersonSuitability(score, person);
 

@@ -182,7 +182,7 @@ public class ManufactureGoodMeta extends MetaTask
                 	work = 100;
                 }
                 
-                RatingScore score = new RatingScore(100 + work);
+                RatingScore score = new RatingScore(100.0 + work);
                 
 	            score = applyCommerceFactor(score, settlement, CommerceType.MANUFACTURING);
 

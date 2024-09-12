@@ -80,7 +80,10 @@ public class Manufacture extends Function {
 	
 	private List<ManufactureProcess> ongoingProcesses;
 	private List<SalvageProcess> ongoingSalvages;
-
+	
+	private List<ManufactureProcess> queueManuProcesses;
+	private List<SalvageProcess> queueSalvageProcesses;
+	
 	// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 
 	/**
@@ -103,6 +106,9 @@ public class Manufacture extends Function {
 		
 		possibleManuProcesses = new CopyOnWriteArrayList<>();
 		possibleSalvages = new CopyOnWriteArrayList<>();
+			
+		queueManuProcesses = new CopyOnWriteArrayList<>();
+		queueSalvageProcesses = new CopyOnWriteArrayList<>();
 		
 		// Put together a list of manu process infos
 		getPossibleManufactureProcesses();
@@ -274,6 +280,55 @@ public class Manufacture extends Function {
 	}
 
 	/**
+	 * Gets a list of queue manu processes.
+	 * 
+	 * @return
+	 */
+	public List<ManufactureProcess> getQueueManuProcesses() {
+		return Collections.unmodifiableList(queueManuProcesses);
+	}
+	
+	/**
+	 * Transfer a salvage process from queue to ongoing list.
+	 * 
+	 * @param process
+	 */
+	public void loadFromManuQueue(ManufactureProcess process) {
+		if (queueManuProcesses.remove(process)) {
+			addProcess(process);
+		}
+	}
+	
+	/**
+	 * Gets a list of queue salvage processes.
+	 * 
+	 * @return
+	 */
+	public List<SalvageProcess> getQueueSalvageProcesses() {
+		return Collections.unmodifiableList(queueSalvageProcesses);
+	}
+
+	/**
+	 * Transfer a salvage process from queue to ongoing list.
+	 * 
+	 * @param process
+	 */
+	public void loadFromSalvageQueue(SalvageProcess process) {
+		if (queueSalvageProcesses.remove(process)) {
+			addSalvageProcess(process);
+		}
+	}
+	
+	public void addToManuQueue(ManufactureProcess process) {
+		// Add this process to the queue
+		queueManuProcesses.add(process);
+	}
+	
+	public boolean isFull() {
+		return getCurrentTotalProcesses() >= numPrintersInUse;
+	}
+	
+	/**
 	 * Adds a new manufacturing process to the building.
 	 *
 	 * @param process the new manufacturing process.
@@ -290,13 +345,15 @@ public class Manufacture extends Function {
 					+ ": " + getCurrentTotalProcesses() + " concurrent processes.");
 			logger.info(getBuilding().getSettlement(), 20_000,
 					getBuilding()
-					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use."
-					+ "");
+					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use.");
 			logger.info(getBuilding().getSettlement(), 20_000,
 					getBuilding()
 					+ ": " + (numMaxConcurrentProcesses-numPrintersInUse)
-					+ " 3D-printer slot(s) available."
-					+ "");
+					+ " 3D-printer slot(s) available.");
+			logger.info(getBuilding(), 20_000, "Adding '" + process.getInfo().getName() + "' to the queue only.");
+			// Add this process to the queue
+			queueManuProcesses.add(process);
+			
 			return;
 		}
 
@@ -329,6 +386,11 @@ public class Manufacture extends Function {
 		return Collections.unmodifiableList(ongoingSalvages);
 	}
 
+	public void addToSalvageQueue(SalvageProcess process) {
+		// Add this process to the queue
+		queueSalvageProcesses.add(process);
+	}
+	
 	/**
 	 * Adds a new salvage process to the building.
 	 *
@@ -339,8 +401,25 @@ public class Manufacture extends Function {
 		if (process == null)
 			throw new IllegalArgumentException("process is null");
 
-		if (getCurrentTotalProcesses() >= numPrintersInUse)
-			throw new IllegalStateException("No more space left to add new salvage process.");
+		if (getCurrentTotalProcesses() >= numPrintersInUse) {
+			logger.info(getBuilding().getSettlement(), 0,
+					getBuilding()
+					+ ": " + getCurrentTotalProcesses() + " concurrent processes.");
+			logger.info(getBuilding().getSettlement(), 0,
+					getBuilding()
+					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use."
+					+ "");
+			logger.info(getBuilding().getSettlement(), 0,
+					getBuilding()
+					+ ": " + (numMaxConcurrentProcesses-numPrintersInUse)
+					+ " 3D-printer slot(s) available."
+					+ "");
+			logger.info(getBuilding(), 20_000, "Adding '" + process.getInfo().getName() + "' to the queue only.");
+			// Add this process to the queue
+			queueSalvageProcesses.add(process);
+			
+			return;
+		}
 
 		ongoingSalvages.add(process);
 
@@ -377,8 +456,7 @@ public class Manufacture extends Function {
 		}
 
 		// Log salvage process starting.
-		logger.log(getBuilding(), Level.FINEST, 20_000,
-						"Starting salvage process: " + process.getInfo().getName());
+		logger.info(getBuilding(), 0, "Starting salvage process: " + process.getInfo().getName());
 	}
 
 	@Override

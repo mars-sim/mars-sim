@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -30,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
@@ -40,6 +40,7 @@ import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -57,10 +58,12 @@ import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 @SuppressWarnings("serial")
 public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
+	/** Default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(BuildingPanelManufacture.class.getName());
 
 	private static final String MANU_ICON = "manufacture";
+	private static final String BUTTON_TEXT = Msg.getString("TabPanelManufacture.button.createNewProcess"); // $NON-NLS-1$
+	private static final String QUEUE_TEXT = "Queue This Process";
 	
 	/** Is UI constructed. */
 	private boolean uiDone = false;
@@ -108,7 +111,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -141,10 +144,8 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
 
-		List<ManufactureProcess> list = workshop.getProcesses();
-
 		// Create process panels
-		processCache = new ArrayList<>(list);
+		processCache = new ArrayList<>(workshop.getProcesses());
 		Iterator<ManufactureProcess> i = processCache.iterator();
 		while (i.hasNext())
 			processListPane.add(new ManufacturePanel(i.next(), false, processStringWidth));
@@ -168,7 +169,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
 		// Create new process button.
 		JPanel btnPanel = new JPanel(new FlowLayout());
-		newProcessButton = new JButton("Create New Process");
+		newProcessButton = new JButton(BUTTON_TEXT);
 		btnPanel.add(newProcessButton);
 		newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process");
 		newProcessButton.addActionListener(event -> {
@@ -176,22 +177,50 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 				Object selectedItem = processComboBox.getSelectedItem();
 				if (selectedItem != null) {
 					if (selectedItem instanceof ManufactureProcessInfo selectedProcess) {
-						if (ManufactureUtil.canProcessBeStarted(selectedProcess, getWorkshop())) {
-							getWorkshop().addProcess(new ManufactureProcess(selectedProcess, getWorkshop()));
+
+						if (ManufactureUtil.canProcessBeStarted(selectedProcess, workshop)) {
+							getWorkshop().addProcess(new ManufactureProcess(selectedProcess, workshop));
+							
 							update();
+
+							logger.log(workshop.getBuilding(), Level.CONFIG, 0, "Player selected the manufacturing process '" 
+									+ selectedProcess.getName() + "'.");
 						}
-					} else if (selectedItem instanceof SalvageProcessInfo selectedSalvage) {
-						if (ManufactureUtil.canSalvageProcessBeStarted(selectedSalvage, getWorkshop())) {
-							Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage,
-									getWorkshop().getBuilding().getSettlement());
-							getWorkshop().addSalvageProcess(
-									new SalvageProcess(selectedSalvage, getWorkshop(), salvagedUnit));
+						
+						else if (ManufactureUtil.canProcessBeQueued(selectedProcess, workshop)) {
+							workshop.addToManuQueue(new ManufactureProcess(selectedProcess, workshop));
+							
 							update();
+
+							logger.log(workshop.getBuilding(), Level.CONFIG, 0, "Player queued the manufacturing process '" 
+									+ selectedProcess.getName() + "'.");
+						}					
+					} 
+					
+					else if (selectedItem instanceof SalvageProcessInfo selectedSalvage) {
+
+						if (ManufactureUtil.canSalvageProcessBeStarted(selectedSalvage, workshop)) {
+							Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, workshop.getBuilding().getSettlement());
+							workshop.addSalvageProcess(
+									new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
+							update();
+
+							logger.log(workshop.getBuilding(), Level.CONFIG, 0, "Player selected the salvaging process '" 
+									+ salvagedUnit.getName() + "'.");
+						}
+						else if (ManufactureUtil.canSalvageProcessBeQueued(selectedSalvage, workshop)) {
+							Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, workshop.getBuilding().getSettlement());
+							workshop.addToSalvageQueue(
+									new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
+							update();
+
+							logger.log(workshop.getBuilding(), Level.CONFIG, 0, "Player queued the salvaging process '" 
+									+ salvagedUnit.getName() + "'.");
 						}
 					}
 				}
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "new process button", e);
+				logger.severe(workshop.getBuilding(), 0, "new process button", e);
 			}
 		});
 		interactionPanel.add(btnPanel);		
@@ -200,32 +229,78 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		populateAvailableProcesses();
 	}
 
+	/**
+	 * Gets all the manufacture processes at the settlement.
+	 * 
+	 * @return list of manufacture processes.
+	 */
+	private List<ManufactureProcess> getManufactureProcesses() {
+		List<ManufactureProcess> result = new ArrayList<>();
+
+		result.addAll(workshop.getProcesses());
+
+		if (!workshop.isFull()) {
+			Iterator<ManufactureProcess> j = workshop.getQueueManuProcesses().iterator();
+			while (j.hasNext()) {
+				ManufactureProcess process = j.next();
+				result.add(process);
+				workshop.loadFromManuQueue(process);
+				// Add only one at a time to ensure it's not full
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets all the salvage processes at the settlement.
+	 * 
+	 * @return list of salvage processes.
+	 */
+	private List<SalvageProcess> getSalvageProcesses() {
+		List<SalvageProcess> result = new ArrayList<>();
+
+		result.addAll(workshop.getSalvageProcesses());
+			
+		if (!workshop.isFull()) {
+			Iterator<SalvageProcess> j = workshop.getQueueSalvageProcesses().iterator();
+			while (j.hasNext()) {
+				SalvageProcess process = j.next();
+				result.add(process);
+				workshop.loadFromSalvageQueue(process);
+				// Add only one at a time to ensure it's not full
+				break;
+			}	
+		}
+
+		return result;
+	}
+	
 	@Override
 	public void update() {	
 		if (!uiDone)
 			initializeUI();
-		
 
-		// Update processes and salvage processes if necessary.
-		List<ManufactureProcess> processes =  new ArrayList<>(workshop.getProcesses());
+		List<ManufactureProcess> processes = getManufactureProcesses();
+		List<SalvageProcess> salvages = getSalvageProcesses();
 		
-		List<SalvageProcess> salvages = new ArrayList<>(workshop.getSalvageProcesses());
 		if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 
 			// Add process panels for new processes.
-			for(ManufactureProcess process : processes) {
+			for (ManufactureProcess process : processes) {
 				if (!processCache.contains(process))
 					processListPane.add(new ManufacturePanel(process, false, processStringWidth));
 			}
 
 			// Add salvage panels for new salvage processes.
-			for(SalvageProcess salvage : salvages) {
+			for (SalvageProcess salvage : salvages) {
 				if (!salvageCache.contains(salvage))
 					processListPane.add(new SalvagePanel(salvage, false, processStringWidth));
 			}
 
 			// Remove process panels for old processes.
-			for(ManufactureProcess process : processCache) {
+			for (ManufactureProcess process : processCache) {
 				if (!processes.contains(process)) {
 					ManufacturePanel panel = getManufacturePanel(process);
 					if (panel != null)
@@ -234,7 +309,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			}
 
 			// Remove salvage panels for old salvages.
-			for(SalvageProcess salvage : salvageCache) {
+			for (SalvageProcess salvage : salvageCache) {
 				if (!salvages.contains(salvage)) {
 					SalvagePanel panel = getSalvagePanel(salvage);
 					if (panel != null)
@@ -254,14 +329,14 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		}
 
 		// Update all process panels.
-		for(ManufactureProcess mp : processes) {
+		for (ManufactureProcess mp : processes) {
 			ManufacturePanel panel = getManufacturePanel(mp);
 			if (panel != null)
 				panel.update();
 		}
 
 		// Update all salvage panels.
-		for(SalvageProcess sp : salvages) {
+		for (SalvageProcess sp : salvages) {
 			SalvagePanel panel = getSalvagePanel(sp);
 			if (panel != null)
 				panel.update();
@@ -272,7 +347,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Load the Combo according to what can be actually run not just what is defined.
+	 * Loads the Combo according to what can be actually run not just what is defined.
 	 */
 	private void populateAvailableProcesses() {
 		List<Object> newProcesses = new ArrayList<>();
@@ -297,7 +372,14 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			}
 			
 			// Update new process button.
-			newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
+//			newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
+
+			if (workshop.isFull()) {
+				newProcessButton.setText(QUEUE_TEXT);
+			}
+			else {
+				newProcessButton.setText(BUTTON_TEXT);
+			}		
 		}
 	}
 
@@ -405,6 +487,15 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		return workshop;
 	}
 
+	/**
+	 * Gets the building of the workshop for this panel.
+	 * 
+	 * @return building
+	 */
+	private Building getBuilding() {
+		return workshop.getBuilding();
+	}
+	
 	/**
 	 * Inner class for the manufacture selection list cell renderer.
 	 */
