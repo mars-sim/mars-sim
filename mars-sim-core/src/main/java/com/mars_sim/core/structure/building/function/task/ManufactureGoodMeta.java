@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -39,7 +38,7 @@ public class ManufactureGoodMeta extends MetaTask
     implements SettlementMetaTask, TaskFactory {
 
 	/** Default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ManufactureGoodMeta.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(ManufactureGoodMeta.class.getName())
 	
 	
     /**
@@ -183,7 +182,7 @@ public class ManufactureGoodMeta extends MetaTask
                 	work = 100;
                 }
                 
-                RatingScore score = new RatingScore(100 + work);
+                RatingScore score = new RatingScore(100.0 + work);
                 
 	            score = applyCommerceFactor(score, settlement, CommerceType.MANUFACTURING);
 

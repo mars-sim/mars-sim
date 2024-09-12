@@ -17,12 +17,15 @@ import java.io.Serializable;
 public class SalvageProcess implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	// Data members.
+    private double workTimeRemaining;
+    private double averageSkillLevel;
+    
+    private Unit salvagedUnit;
+    
     private Manufacture workshop;
     private SalvageProcessInfo info;
-    private double workTimeRemaining;
-    private Unit salvagedUnit;
-    private double averageSkillLevel;
     
     /**
      * Constructor.

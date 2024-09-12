@@ -130,8 +130,8 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		return getSalvageInfoList().stream()
-				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+		return getSalvageProcessesForTechLevel(techLevel).stream()
+				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
 	}
 
@@ -143,9 +143,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error get salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		return getSalvageInfoList().stream()
-				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());
+		return manufactureConfig.getSalvageProcessesForTechLevel(techLevel);
 	}
 
 	/**
@@ -217,8 +215,7 @@ public final class ManufactureUtil {
 			GoodsManager goodsManager = settlement.getGoodsManager();
 
 			double wearConditionModifier = 1D;
-			if (salvagedUnit instanceof Malfunctionable) {
-				Malfunctionable salvagedMalfunctionable = (Malfunctionable) salvagedUnit;
+			if (salvagedUnit instanceof Malfunctionable salvagedMalfunctionable) {
 				double wearCondition = salvagedMalfunctionable.getMalfunctionManager().getWearCondition();
 				wearConditionModifier = wearCondition / 100D;
 			}
@@ -323,6 +320,41 @@ public final class ManufactureUtil {
 	 * @return true if process can be started.
 	 * @throws Exception if error determining if process can be started.
 	 */
+	public static boolean canProcessBeQueued(ManufactureProcessInfo process, Manufacture workshop) {
+
+		// Q: Are the numbers of 3D printers available for another processes ?
+		// Check for workshop.getNumPrintersInUse()
+		// NOTE: create a map to show which process has a 3D printer in use and which doesn't
+
+		// Check to see if process tech level is above workshop tech level.
+		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
+			return false;
+		}
+
+		Settlement settlement = workshop.getBuilding().getSettlement();
+
+		// Check to see if process input items are available at settlement.
+        if (!areProcessInputsAvailable(process, settlement)) {
+			return false;
+		}
+
+		// Check to see if room for process output items at settlement.
+		if (!canProcessOutputsBeStored(process, settlement)) {
+			return false;
+		}
+
+		return true;
+    }
+	
+	/**
+	 * Checks to see if a manufacturing process can be started at a given
+	 * manufacturing building.
+	 *
+	 * @param process  the manufacturing process to start.
+	 * @param workshop the manufacturing building.
+	 * @return true if process can be started.
+	 * @throws Exception if error determining if process can be started.
+	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
 		// Check to see if this workshop can accommodate another process.
 		if (workshop.getMaxProcesses() < workshop.getCurrentTotalProcesses()) {
@@ -354,6 +386,30 @@ public final class ManufactureUtil {
 		return true;
     }
 
+	/**
+	 * Checks to see if a salvage process can be started at a given manufacturing
+	 * building.
+	 *
+	 * @param process  the salvage process to start.
+	 * @param workshop the manufacturing building.
+	 * @return true if salvage process can be started.
+	 * @throws Exception if error determining if salvage process can be started.
+	 */
+	public static boolean canSalvageProcessBeQueued(SalvageProcessInfo process, Manufacture workshop) {
+
+        // Check to see if process tech level is above workshop tech level.
+		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
+			return false;
+		}
+
+		// Check to see if a salvagable unit is available at the settlement.
+		if (findUnitForSalvage(process, workshop.getBuilding().getSettlement()) == null) {
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Checks to see if a salvage process can be started at a given manufacturing
@@ -365,7 +421,12 @@ public final class ManufactureUtil {
 	 * @throws Exception if error determining if salvage process can be started.
 	 */
 	public static boolean canSalvageProcessBeStarted(SalvageProcessInfo process, Manufacture workshop) {
-
+		// Check to see if this workshop can accommodate another process.
+		if (workshop.getMaxProcesses() < workshop.getCurrentTotalProcesses()) {
+			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
+			return false;
+		}
+		
         // Check to see if process tech level is above workshop tech level.
 		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
 			return false;

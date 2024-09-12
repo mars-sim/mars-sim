@@ -892,7 +892,7 @@ public class PartGood extends Good {
 		// Get highest Food Production tech level in settlement.
 		if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
 			int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
-			Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(techLevel)
+			Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)
 					.iterator();
 			while (i.hasNext()) {
 				double foodProductionDemand = getPartFoodProductionProcessDemand(owner, settlement, part, i.next());

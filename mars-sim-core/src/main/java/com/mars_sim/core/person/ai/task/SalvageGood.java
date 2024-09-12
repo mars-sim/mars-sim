@@ -59,6 +59,7 @@ public class SalvageGood extends Task {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person to perform the task
 	 */
 	public SalvageGood(Person person) {
@@ -107,7 +108,8 @@ public class SalvageGood extends Task {
 	}
 
 	/**
-	 * Perform the salvaging phase.
+	 * Performs the salvaging phase.
+	 * 
 	 * @param time the time to perform (millisols)
 	 * @return remaining time after performing (millisols)
 	 */
@@ -161,6 +163,7 @@ public class SalvageGood extends Task {
 	/**
 	 * Gets an available manufacturing building that the person can use.
 	 * Returns null if no manufacturing building is currently available.
+	 * 
 	 * @param person the person
 	 * @return available manufacturing building
 	 */
@@ -193,6 +196,7 @@ public class SalvageGood extends Task {
 	/**
 	 * Gets a list of manufacturing buildings needing work from a list of buildings
 	 * with the manufacture function.
+	 * 
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @param skill the materials science skill level of the person.
 	 * @return list of manufacture buildings needing work.
@@ -216,6 +220,7 @@ public class SalvageGood extends Task {
 
 	/**
 	 * Gets a subset list of manufacturing buildings with salvage processes requiring work.
+	 * 
 	 * @param buildingList the original building list.
 	 * @param skill the materials science skill level of the person.
 	 * @return subset list of buildings with processes requiring work, or original list if none found.
@@ -244,6 +249,7 @@ public class SalvageGood extends Task {
 
 	/**
 	 * Checks if manufacturing building has any salvage processes requiring work.
+	 * 
 	 * @param manufacturingBuilding the manufacturing building.
 	 * @param skill the materials science skill level of the person.
 	 * @return true if processes requiring work.
@@ -261,6 +267,20 @@ public class SalvageGood extends Task {
 			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
 			if (workRequired && skillRequired) {
 				result = true;
+				break;
+			}
+		}
+		
+		if (!result) {
+			Iterator<SalvageProcess> j = manufacturingFunction.getQueueSalvageProcesses().iterator();
+			while (j.hasNext()) {
+				SalvageProcess process = j.next();
+				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
+				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+				if (workRequired && skillRequired) {
+					result = true;
+					break;
+				}
 			}
 		}
 
@@ -270,6 +290,7 @@ public class SalvageGood extends Task {
 	/**
 	 * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings
 	 * with the manufacture function.
+	 * 
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @return subset list of highest tech level buildings.
 	 */
@@ -303,6 +324,7 @@ public class SalvageGood extends Task {
 	/**
 	 * Gets the highest salvaging process goods value for the person and the
 	 * manufacturing building.
+	 * 
 	 * @param person the person to perform manufacturing.
 	 * @param manufacturingBuilding the manufacturing building.
 	 * @return highest process good value.
@@ -339,6 +361,7 @@ public class SalvageGood extends Task {
 	/**
 	 * Checks if a process type is currently running at a manufacturing
 	 * building.
+	 * 
 	 * @param processInfo the process type.
 	 * @param manufactureBuilding the manufacturing building.
 	 * @return true if process is running.
@@ -360,6 +383,7 @@ public class SalvageGood extends Task {
 
 	/**
 	 * Gets an available running salvage process.
+	 * 
 	 * @return process or null if none.
 	 */
 	private SalvageProcess getRunningSalvageProcess() {
@@ -373,14 +397,29 @@ public class SalvageGood extends Task {
 			if ((p.getInfo().getSkillLevelRequired() <= skillLevel) &&
 					(p.getWorkTimeRemaining() > 0D)) {
 				result = p;
+				break;
 			}
 		}
 
+		if (result == null) {
+			Iterator<SalvageProcess> j = workshop.getQueueSalvageProcesses().iterator();
+			while (i.hasNext() && (result == null)) {
+				SalvageProcess process = j.next();
+				if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && (process.getWorkTimeRemaining() > 0D)) {
+					result = process;
+					workshop.loadFromSalvageQueue(process);
+					break;
+				}
+			}
+		}
+		
+		
 		return result;
 	}
 
 	/**
 	 * Creates a new salvage process if possible.
+	 * 
 	 * @return the new salvage process or null if none.
 	 */
 	private SalvageProcess createNewSalvageProcess() {
@@ -423,6 +462,7 @@ public class SalvageGood extends Task {
 
 	/**
 	 * Determines a salvage process used for the task.
+	 * 
 	 * @return salvage process or null if none determined.
 	 */
 	private SalvageProcess determineSalvageProcess() {

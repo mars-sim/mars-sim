@@ -272,8 +272,21 @@ public class ManufactureGood extends Task {
 		for (ManufactureProcess process : manufacturingBuilding.getManufacture().getProcesses()) {
 			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
 			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
-			if (workRequired && skillRequired)
+			if (workRequired && skillRequired) {
 				result = true;
+				break;
+			}
+		}
+		
+		if (!result) {
+			for (ManufactureProcess process : manufacturingBuilding.getManufacture().getQueueManuProcesses()) {
+				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
+				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+				if (workRequired && skillRequired) {
+					result = true;
+					break;
+				}
+			}
 		}
 
 		return result;
@@ -423,8 +436,10 @@ public class ManufactureGood extends Task {
 		}
 		
 		else {
-			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
+			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+				// Create a probability map and pick a process
 				process = createNewManufactureProcess();
+			}
 			
 			if (process == null) {
 				endTask();
@@ -452,9 +467,22 @@ public class ManufactureGood extends Task {
 			ManufactureProcess process = i.next();
 			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && (process.getWorkTimeRemaining() > 0D)) {
 				result = process;
+				break;
 			}
 		}
 
+		if (result == null) {
+			Iterator<ManufactureProcess> j = workshop.getQueueManuProcesses().iterator();
+			while (i.hasNext() && (result == null)) {
+				ManufactureProcess process = j.next();
+				if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && (process.getWorkTimeRemaining() > 0D)) {
+					result = process;
+					workshop.loadFromManuQueue(process);
+					break;
+				}
+			}
+		}
+		
 		return result;
 	}
 
