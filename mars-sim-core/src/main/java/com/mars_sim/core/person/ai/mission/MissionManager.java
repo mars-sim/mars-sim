@@ -26,7 +26,6 @@ import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class keeps track of ongoing missions in the simulation.
@@ -237,19 +236,6 @@ public class MissionManager implements Serializable {
 	private MissionRating selectMissionFromProbabilities() {
 		return missionProbCache.getRandomSelection();
 	}
-
-//	private MissionRating selectMissionFromProbabilities(List<MissionRating> missionProbCache, double totalProbCache) {
-//		double randomDouble = RandomUtil.getRandomDouble(totalProbCache);
-//
-//		for (MissionRating possible : missionProbCache) {
-//			double probWeight = possible.getScore().getScore();
-//			if (randomDouble <= probWeight) {
-//				return possible;
-//			}
-//			randomDouble -= probWeight;
-//		}
-//		return null;
-//	}
 
 	private double calculateMissionProbabilities(Person person, List<MissionRating> missionProbCache,
 												 ParameterManager paramMgr, Settlement startingSettlement) {
