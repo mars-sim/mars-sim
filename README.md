@@ -334,11 +334,11 @@ Below is a summary of how player may set up one's machine to evaluate and develo
 
 ### Prerequisites
 
-Currently, mars-sim supports Java 17 and is evaluating the feasibility of supporting Java 21 
+Currently, mars-sim supports Java 21 and is evaluating the feasibility of supporting Java 21 
 (the latest long-term support (LTS) release) in near future.
 
-* Requires only JRE 17 for running mars-sim
-* Requires only JDK 17 (or OpenJDK 17) for compiling binary
+* Requires only JRE 21 for running mars-sim
+* Requires only JDK 21 (or OpenJDK 21) for compiling binary
 
 ### JDK and JavaFX
 
@@ -363,16 +363,16 @@ to set up JavaFX to run it under Java 11.
 
 Obtain the latest JRE/JDK for your platform. 
 
-Check out [Java Version Almanac](https://javaalmanac.io/jdk/17/) for a quick view of the 
-new features of Java 17 as well as most (if not all) of the OpenJDK out there.
+Check out [Java Version Almanac](https://javaalmanac.io/jdk/21/) for a quick view of the 
+new features of Java 21 as well as most (if not all) of the OpenJDK out there.
 
 See some of the popular OpenJDK packages out there in the following :
 
-* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html)
 
-* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-17)
+* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21)
 
-* [Liberica](https://bell-sw.com/pages/downloads/#jdk-17-lts)
+* [Liberica](https://bell-sw.com/pages/downloads/#jdk-21-lts)
 
 * [OpenLogic](https://www.openlogic.com/openjdk-downloads)
 
@@ -415,17 +415,17 @@ In the command prompt, try `java -version` to see what version of Java is first 
 
 Follow the steps below : 
 
-1. Locate the folder with Java installation. For instance, "C:\Program Files\Java\jdk-17" may be your JDK's location.
+1. Locate the folder with Java installation. For instance, "C:\Program Files\Java\jdk-21" may be your JDK's location.
 
 2. Under System variable, ensure `JAVA_HOME` has been added and set up correct as follows:
 
-> set JAVA_HOME=C:\Program Files\Java\jdk-17
+> set JAVA_HOME=C:\Program Files\Java\jdk-21
 
-2a. Alternatively, one may start a command prompt and type this `set JAVA_HOME="C:\Program Files\Java\jdk-17"` 
+2a. Alternatively, one may start a command prompt and type this `set JAVA_HOME="C:\Program Files\Java\jdk-21"` 
 
 3. Under both User and the System variable, set the `PATH` variable to include the JDK folder. For instance,
 
-> set PATH=C:\Program Files\Java\jdk-17\bin
+> set PATH=C:\Program Files\Java\jdk-21\bin
 
 or 
 
@@ -443,7 +443,7 @@ down the `PATH` variable to look for a valid JDK folder. If java executable is n
 mars-sim cannot be started.
 
 > [!NOTE]
-> The BEST approach is to enable only one Java build (such as Java 17.0.8)
+> The BEST approach is to enable only one Java build (such as Java 21.0.4_+7)
 inside `PATH` variable and remove all other folders referencing other java versions/builds.
 
 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;` in `PATH` variable. It can
@@ -523,7 +523,7 @@ e.g. Include the followings :
 
 **Specifications (please complete)**
  - OS version : [e.g. Windows 11, macOS 14.2, Ubuntu 23.10]
- - Java version : [e.g. Oracle JDK 17.0.8, AdoptOpenJDK 17.0.8, OpenJFX 17]
+ - Java version : [e.g. Oracle JDK 21, AdoptOpenJDK 21, OpenJFX 21]
  - Major version and build : [e.g. 3.7.1 build 9227]
 
 **Additional context**
