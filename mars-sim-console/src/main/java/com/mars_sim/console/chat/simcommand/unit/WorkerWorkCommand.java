@@ -13,8 +13,9 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.task.util.PendingTask;
-import com.mars_sim.core.person.ai.task.util.TaskCache;
+//import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -61,7 +62,7 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			response.appendBlankLine();
 		}
 
-		TaskCache tasks = tm.getLatestTaskProbability();
+		CacheCreator<> tasks = tm.getLatestTaskProbability();
 		if (tasks == null) {
 			response.append("No Tasks planned yet");
 		}
