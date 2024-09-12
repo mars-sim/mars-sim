@@ -189,7 +189,7 @@ public class MarsProjectFXGL extends GameApplication {
             System.setProperty("sun.java2d.ddforcevram", "true");
         }
         
-        logger.config("Starting " + SimulationRuntime.LONG_TITLE);
+        logger.config("Starting " + SimulationRuntime.TITLE);
         
 		// starting the simulation
 		new MarsProjectFXGL().parseArgs(args);
