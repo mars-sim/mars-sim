@@ -22,6 +22,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -46,6 +47,8 @@ public class MissionManager implements Serializable {
 	
 	/** The mission listeners. */
 	private transient List<MissionManagerListener> listeners;
+
+	private transient CacheCreator<MissionRating> missionProbCache = null;
 
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
@@ -216,7 +219,7 @@ public class MissionManager implements Serializable {
 			return null;
 		}
 
-		var selectedMission = selectMissionFromProbabilities(missionProbCache, calculateTotalProbCache);
+		var selectedMission = selectMissionFromProbabilities();
 
 		if (selectedMission == null) {
 			throw new IllegalStateException(person + " could not determine a new mission.");
@@ -231,18 +234,22 @@ public class MissionManager implements Serializable {
 		return mission;
 	}
 
-	private MissionRating selectMissionFromProbabilities(List<MissionRating> missionProbCache, double totalProbCache) {
-		double randomDouble = RandomUtil.getRandomDouble(totalProbCache);
-
-		for (MissionRating possible : missionProbCache) {
-			double probWeight = possible.getScore().getScore();
-			if (randomDouble <= probWeight) {
-				return possible;
-			}
-			randomDouble -= probWeight;
-		}
-		return null;
+	private MissionRating selectMissionFromProbabilities() {
+		return missionProbCache.getRandomSelection();
 	}
+
+//	private MissionRating selectMissionFromProbabilities(List<MissionRating> missionProbCache, double totalProbCache) {
+//		double randomDouble = RandomUtil.getRandomDouble(totalProbCache);
+//
+//		for (MissionRating possible : missionProbCache) {
+//			double probWeight = possible.getScore().getScore();
+//			if (randomDouble <= probWeight) {
+//				return possible;
+//			}
+//			randomDouble -= probWeight;
+//		}
+//		return null;
+//	}
 
 	private double calculateMissionProbabilities(Person person, List<MissionRating> missionProbCache,
 												 ParameterManager paramMgr, Settlement startingSettlement) {

@@ -19,6 +19,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.science.task.RespondToStudyInvitation;
@@ -50,7 +51,8 @@ public abstract class TaskManager implements Serializable {
 	/** The last task the person was doing. */
 	private Task lastTask;
 
-	private transient TaskCache taskProbCache = null;
+//	private transient TaskCache taskProbCache = null;
+	private transient CacheCreator<TaskJob> taskProbCache = null;
 
 
 	/** The history of tasks. */
@@ -276,7 +278,7 @@ public abstract class TaskManager implements Serializable {
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 * @param now The current MarsTime
 	 */
-	protected abstract TaskCache rebuildTaskCache(MarsTime now);
+	protected abstract CacheCreator<TaskJob> rebuildTaskCache(MarsTime now);
 
 	/**
 	 * Constructs a new Task of the specified type.
@@ -288,10 +290,10 @@ public abstract class TaskManager implements Serializable {
 
 	/**
 	 * Returns the last calculated probability map.
-	 * 
+	 *
 	 * @return
 	 */
-	public TaskCache getLatestTaskProbability() {
+	public CacheCreator<TaskJob> getLatestTaskProbability() {
 		return taskProbCache;
 	}
 	
@@ -449,12 +451,12 @@ public abstract class TaskManager implements Serializable {
 		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
 		// ignore the cache
 		MarsTime now = master.getMarsTime();
-		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
-				|| (now.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
+		if ((taskProbCache == null)  || (taskProbCache.getCreatedTime() == null) || taskProbCache.getCache().isEmpty()
+				|| (now.getMillisol() != taskProbCache.getCreatedTime().getMillisol())) {
 			taskProbCache = rebuildTaskCache(now);
 		}
 
-		if (taskProbCache.getTasks().isEmpty()) { 
+		if (taskProbCache.getCache().isEmpty()) {
 			// Should never happen since TaskManagers have to return a populated list
 			// with doable defaults if needed
 			logger.severe(worker, "No normal Tasks available in " + taskProbCache.getContext());
@@ -465,10 +467,10 @@ public abstract class TaskManager implements Serializable {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
 			
-			if (taskProbCache.getCreatedOn() != null) {
+			if (taskProbCache.getCreatedTime() != null) {
 				// If it is a cache made dynamically then log it
 				RatingLog.logSelectedRating(getDiagnosticsModule(), worker.getName(), selectedJob,
-									taskProbCache.getTasks());
+									taskProbCache.getCache());
 			}
 
 			// Start this newly selected task

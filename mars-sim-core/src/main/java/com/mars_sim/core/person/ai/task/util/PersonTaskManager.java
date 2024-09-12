@@ -12,6 +12,7 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.EatDrink;
@@ -34,8 +35,8 @@ public class PersonTaskManager extends TaskManager {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
 
-	private static TaskCache defaultInsideTasks;
-	private static TaskCache defaultOutsideTasks;
+	private static CacheCreator<TaskJob> defaultInsideTasks;
+	private static CacheCreator<TaskJob> defaultOutsideTasks;
 	
 	private static final String SLEEP = "Sleep";
 	private static final String EAT = "Eat";
@@ -85,31 +86,29 @@ public class PersonTaskManager extends TaskManager {
 	 * @param now The current mars time
 	 */
 	@Override
-	protected TaskCache rebuildTaskCache(MarsTime now) {
+	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
-		switch(workStatus) {
-			case OFF_DUTY:
-			case ON_LEAVE:
-				mtList = MetaTaskUtil.getNonDutyHourTasks();
-				shiftDesc = "Shift: Non-Duty";
-				break;
-			case ON_CALL:
-				mtList = MetaTaskUtil.getOnCallMetaTasks();
-				shiftDesc = "Shift: On-Call";
-				break;
-			case ON_DUTY:
-				mtList = MetaTaskUtil.getDutyHourTasks();
-				shiftDesc = "Shift: On-Duty";
-				break;
-			default:
-				throw new IllegalStateException("Do not know status " + workStatus);
-		}
+        shiftDesc = switch (workStatus) {
+            case OFF_DUTY, ON_LEAVE -> {
+                mtList = MetaTaskUtil.getNonDutyHourTasks();
+                yield "Shift: Non-Duty";
+            }
+            case ON_CALL -> {
+                mtList = MetaTaskUtil.getOnCallMetaTasks();
+                yield "Shift: On-Call";
+            }
+            case ON_DUTY -> {
+                mtList = MetaTaskUtil.getDutyHourTasks();
+                yield "Shift: On-Duty";
+            }
+            default -> throw new IllegalStateException("Do not know status " + workStatus);
+        };
 
 		// Create new taskProbCache
-		TaskCache newCache = new TaskCache(shiftDesc, now);
+		CacheCreator<TaskJob> newCache = new CacheCreator<>(shiftDesc, now);
 
 		// Determine probabilities.
 		for (FactoryMetaTask mt : mtList) {
@@ -126,7 +125,7 @@ public class PersonTaskManager extends TaskManager {
 		}
 
 		// Check if the map cache is empty
-		if (newCache.getTasks().isEmpty()) {
+		if (newCache.getCache().isEmpty()) {
 			if (person.isOutside()) {
 				newCache = getDefaultOutsideTasks();
 			}
@@ -143,9 +142,9 @@ public class PersonTaskManager extends TaskManager {
 	 * Shared cache for person who are Inside. Contains the basic Task
 	 * that can always be done.
 	 */
-	private static synchronized TaskCache getDefaultInsideTasks() {
+	private static synchronized CacheCreator<TaskJob> getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
-			defaultInsideTasks = new TaskCache("Default Inside", null);
+			defaultInsideTasks = new CacheCreator<>("Default Inside", null);
 			
 			// Create a fallback Task job that can always be done
 			RatingScore base = new RatingScore(1D);
@@ -177,9 +176,9 @@ public class PersonTaskManager extends TaskManager {
 	/**
 	 * Shared cache for person who are Outside. This forces a return to the settlement.
 	 */
-	private static synchronized TaskCache getDefaultOutsideTasks() {
+	private static synchronized CacheCreator<TaskJob> getDefaultOutsideTasks() {
 		if (defaultOutsideTasks == null) {
-			defaultOutsideTasks = new TaskCache("Default Outside", null);
+			defaultOutsideTasks = new CacheCreator<>("Default Outside", null);
 
 			// Create a MetaTask to return inside
 			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
@@ -217,8 +216,8 @@ public class PersonTaskManager extends TaskManager {
 	 * @param missionProbCache
 	 * @param selectedMetaMissionRating
 	 */
-	public void setMissionRatings(List<MissionRating> missionProbCache, 
-			MissionRating selectedMetaMissionRating) {
+	public void setMissionRatings(List<MissionRating> missionProbCache,
+								  MissionRating selectedMetaMissionRating) {
 		this.missionProbCache = missionProbCache;
 		this.selectedMissionRating = selectedMetaMissionRating;
 	}

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.task.util.AbstractTaskJob;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
@@ -44,10 +45,10 @@ public class BotTaskManager extends TaskManager {
 	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
 
 	// The shared cache with the charging job
-	private static TaskCache chargeMap;
+	private static CacheCreator<TaskJob> chargeMap;
 
 	// The shared cache with the power saving job
-	private static TaskCache powerSaveMap;
+	private static CacheCreator<TaskJob> powerSaveMap;
 	
 	// Mapping of RobotType to the applicable MetaTasks
 	private static Map<RobotType, List<FactoryMetaTask>> robotTasks;
@@ -123,7 +124,7 @@ public class BotTaskManager extends TaskManager {
 	 * Calculates and caches the probabilities.
 	 */
 	@Override
-	protected TaskCache rebuildTaskCache(MarsTime now) {
+	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
 		// If robot is low power then can only charge
 		if (robot.getSystemCondition().isLowPower()) {
@@ -137,7 +138,7 @@ public class BotTaskManager extends TaskManager {
 		}
 		
 		// Reset taskProbCache and totalProbCache
-		TaskCache newCache = new TaskCache("Robot", now);
+		CacheCreator<TaskJob> newCache = new CacheCreator<>("Robot", now);
 		
 		// Determine probabilities.
 		List<FactoryMetaTask> potentials = robotTasks.get(robot.getRobotType());
@@ -153,15 +154,15 @@ public class BotTaskManager extends TaskManager {
 		SettlementTaskManager stm = robot.getAssociatedSettlement().getTaskManager();
 		newCache.add(stm.getTasks(robot));
 
-		if (newCache.getTasks().isEmpty()) {
+		if (newCache.getCache().isEmpty()) {
 			newCache = getPowerSaveTaskMap();
 		}
 		return newCache;
 	}
 
-	private static synchronized TaskCache getPowerSaveTaskMap() {
+	private static synchronized CacheCreator<TaskJob> getPowerSaveTaskMap() {
 		if (powerSaveMap == null) {
-			powerSaveMap = new TaskCache("Power Save Mode", null);
+			powerSaveMap = new CacheCreator<>("Power Save Mode", null);
 			TaskJob powerSaveJob = new AbstractTaskJob("SavePower", new RatingScore(SavePower.DEFAULT_SCORE)) {
 				
 				private static final long serialVersionUID = 1L;
@@ -176,9 +177,9 @@ public class BotTaskManager extends TaskManager {
 		return powerSaveMap;
 	}
 
-	private static synchronized TaskCache getChargeTaskMap() {
+	private static synchronized CacheCreator<TaskJob> getChargeTaskMap() {
 		if (chargeMap == null) {
-			chargeMap = new TaskCache("Robot Charge", null);
+			chargeMap = new CacheCreator<TaskJob>("Robot Charge", null);
 			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1000D)) {
 				
 				private static final long serialVersionUID = 1L;

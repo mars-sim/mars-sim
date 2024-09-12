@@ -13,8 +13,9 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.task.util.PendingTask;
-import com.mars_sim.core.person.ai.task.util.TaskCache;
+//import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -61,19 +62,19 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			response.appendBlankLine();
 		}
 
-		TaskCache tasks = tm.getLatestTaskProbability();
+		CacheCreator<TaskJob> tasks = tm.getLatestTaskProbability();
 		if (tasks == null) {
 			response.append("No Tasks planned yet");
 		}
 		else {
 			response.appendLabeledString("Context", tasks.getContext());
 
-			MarsTime cacheCreated = tasks.getCreatedOn();
+			MarsTime cacheCreated = tasks.getCreatedTime();
 			if (cacheCreated != null) {
 				response.appendLabeledString("Created On", cacheCreated.getDateTimeStamp());
 			}
 
-			double sum = tasks.getTotal();
+			double sum = tasks.getTotalProbability();
 			response.appendTableHeading(true, "Potential Task", 30, "P %", 6,
 										"P Score", -60);
 
@@ -84,7 +85,7 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 										lastSelected.getScore().getOutput());
 			}
 			// Jobs in the cache
-			for (TaskJob item : tasks.getTasks()) {
+			for (TaskJob item : tasks.getCache()) {
 				response.appendTableRow(item.getName(), 
 										String.format(CommandHelper.PERC1_FORMAT,
 													(100D * item.getScore().getScore())/sum),
