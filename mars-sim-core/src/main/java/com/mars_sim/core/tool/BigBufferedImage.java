@@ -98,7 +98,7 @@ public class BigBufferedImage extends BufferedImage {
 	}
 
 	public static BufferedImage create(File inputFile, int imageType) throws IOException {
-		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile);) {
+		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile)) {
 			Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
 			if (readers.hasNext()) {
 				try {
@@ -121,6 +121,8 @@ public class BigBufferedImage extends BufferedImage {
 				} catch (InterruptedException ex) {
 					logger.severe("Fail to create the image. " + ex);
 					Thread.currentThread().interrupt();
+				} finally {
+					stream.close();
 				}
 			}
 		}
