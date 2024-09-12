@@ -178,7 +178,7 @@ public class BotTaskManager extends TaskManager {
 
 	private static synchronized CacheCreator<TaskJob> getChargeTaskMap() {
 		if (chargeMap == null) {
-			chargeMap = new CacheCreator<TaskJob>("Robot Charge", null);
+			chargeMap = new CacheCreator<>("Robot Charge", null);
 			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1000D)) {
 				
 				private static final long serialVersionUID = 1L;
