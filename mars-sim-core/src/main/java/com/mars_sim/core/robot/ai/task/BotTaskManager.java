@@ -20,7 +20,6 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.robot.Robot;
