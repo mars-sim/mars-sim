@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelManufacture.java
- * @date 2022-07-09
+ * @date 2024-09-10
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -56,11 +56,12 @@ import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 @SuppressWarnings("serial")
 public class TabPanelManufacture extends TabPanel {
 
-	/** default logger. */
+	/** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelManufacture.class.getName());
 	
 	private static final int WORD_WIDTH = 70;
 	private static final String MANU_ICON ="manufacture";
+	private static final String BUTTON_TEXT = Msg.getString("TabPanelManufacture.button.createNewProcess"); // $NON-NLS-1$
 	
 	/** The Settlement instance. */
 	private Settlement target;
@@ -168,9 +169,9 @@ public class TabPanelManufacture extends TabPanel {
 			processSelection.addItem(k.next());
 
 		// Create new process button.
-		newProcessButton = new JButton(Msg.getString("TabPanelManufacture.button.createNewProcess")); //$NON-NLS-1$
+		newProcessButton = new JButton(BUTTON_TEXT); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
-		newProcessButton.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.createNewProcess")); //$NON-NLS-1$
+		newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process"); //$NON-NLS-1$
 		newProcessButton.addActionListener(event -> createNewProcess());
 		interactionPanel.add(newProcessButton);
 
@@ -201,30 +202,47 @@ public class TabPanelManufacture extends TabPanel {
 			Manufacture workshop = workshopBuilding.getManufacture();
 			Object selectedItem = processSelection.getSelectedItem();
 			if (selectedItem != null) {
-				if (selectedItem instanceof ManufactureProcessInfo) {
-					ManufactureProcessInfo selectedProcess = (ManufactureProcessInfo) selectedItem;
+				if (selectedItem instanceof ManufactureProcessInfo selectedProcess) {
 					if (ManufactureUtil.canProcessBeStarted(selectedProcess, workshop)) {
 						workshop.addProcess(new ManufactureProcess(selectedProcess, workshop));
+						
 						update();
 
-						logger.log(workshopBuilding, Level.CONFIG, 0L, "Player selected the manufacturing process '" 
+						logger.log(workshopBuilding, Level.CONFIG, 0, "Player selected the manufacturing process '" 
 								+ selectedProcess.getName() + "'.");
 						
-						buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
-						buildingComboBox.setSelectedIndex(-1);
-						processSelection.setRenderer(
-								new ManufactureSelectionListCellRenderer(" (2). Select a Process"));
-						processSelection.setSelectedIndex(-1);
+						showRenderer();
 					}
-				} else if (selectedItem instanceof SalvageProcessInfo) {
-					SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
+					
+					else if (ManufactureUtil.canProcessBeQueued(selectedProcess, workshop)) {
+						workshop.addToManuQueue(new ManufactureProcess(selectedProcess, workshop));
+						
+						update();
+
+						logger.log(workshopBuilding, Level.CONFIG, 0, "Player queued the manufacturing process '" 
+								+ selectedProcess.getName() + "'.");
+						
+						showRenderer();
+					}
+				} 
+				
+				else if (selectedItem instanceof SalvageProcessInfo selectedSalvage) {
 					if (ManufactureUtil.canSalvageProcessBeStarted(selectedSalvage, workshop)) {
 						Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, target);
 						workshop.addSalvageProcess(
 								new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
 						update();
 
-						logger.log(workshopBuilding, Level.CONFIG, 0L, "Player selected the salvaging process '" 
+						logger.log(workshopBuilding, Level.CONFIG, 0, "Player selected the salvaging process '" 
+								+ salvagedUnit.getName() + "'.");
+					}
+					else if (ManufactureUtil.canSalvageProcessBeQueued(selectedSalvage, workshop)) {
+						Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, target);
+						workshop.addToSalvageQueue(
+								new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
+						update();
+
+						logger.log(workshopBuilding, Level.CONFIG, 0, "Player queued the salvaging process '" 
 								+ salvagedUnit.getName() + "'.");
 					}
 				}
@@ -232,6 +250,15 @@ public class TabPanelManufacture extends TabPanel {
 		}
 	}
 
+	private void showRenderer() {
+		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingComboBox.setSelectedIndex(-1);
+		
+		processSelection.setRenderer(
+				new ManufactureSelectionListCellRenderer(" (2). Select a Process"));
+		processSelection.setSelectedIndex(-1);
+	}
+	
 	private class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;
@@ -376,9 +403,9 @@ public class TabPanelManufacture extends TabPanel {
 		}
 
 		// Update new process button.
-		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+//		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 
-		// Update ooverride check box.
+		// Update override check box.
 		if (target.getProcessOverride(OverrideType.MANUFACTURE) != overrideManuCheckbox.isSelected())
 			overrideManuCheckbox.setSelected(target.getProcessOverride(OverrideType.MANUFACTURE));
 	}
@@ -393,7 +420,19 @@ public class TabPanelManufacture extends TabPanel {
 
 		Iterator<Building> i = target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
-			result.addAll(i.next().getManufacture().getProcesses());
+			Manufacture manufacture = i.next().getManufacture();
+			result.addAll(manufacture.getProcesses());
+			
+			if (!manufacture.isFull()) {
+				Iterator<ManufactureProcess> j = manufacture.getQueueManuProcesses().iterator();
+				while (j.hasNext()) {
+					ManufactureProcess process = j.next();
+					result.add(process);
+					manufacture.loadFromManuQueue(process);
+					// Add only one at a time to ensure it's not full
+					break;
+				}
+			}
 		}
 
 		return result;
@@ -409,7 +448,20 @@ public class TabPanelManufacture extends TabPanel {
 
 		Iterator<Building> i = target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
-			result.addAll(i.next().getManufacture().getSalvageProcesses());
+	
+			Manufacture manufacture = i.next().getManufacture();
+			result.addAll(manufacture.getSalvageProcesses());
+			
+			if (!manufacture.isFull()) {
+				Iterator<SalvageProcess> j = manufacture.getQueueSalvageProcesses().iterator();
+				while (j.hasNext()) {
+					SalvageProcess process = j.next();
+					result.add(process);
+					manufacture.loadFromSalvageQueue(process);
+					// Add only one at a time to ensure it's not full
+					break;
+				}	
+			}
 		}
 
 		return result;
@@ -425,8 +477,7 @@ public class TabPanelManufacture extends TabPanel {
 		ManufacturePanel result = null;
 		for (int x = 0; x < manufactureListPane.getComponentCount(); x++) {
 			Component component = manufactureListPane.getComponent(x);
-			if (component instanceof ManufacturePanel) {
-				ManufacturePanel panel = (ManufacturePanel) component;
+			if (component instanceof ManufacturePanel panel) {
 				if (panel.getManufactureProcess().equals(process))
 					result = panel;
 			}
@@ -444,8 +495,7 @@ public class TabPanelManufacture extends TabPanel {
 		SalvagePanel result = null;
 		for (int x = 0; x < manufactureListPane.getComponentCount(); x++) {
 			Component component = manufactureListPane.getComponent(x);
-			if (component instanceof SalvagePanel) {
-				SalvagePanel panel = (SalvagePanel) component;
+			if (component instanceof SalvagePanel panel) {
 				if (panel.getSalvageProcess().equals(process))
 					result = panel;
 			}
