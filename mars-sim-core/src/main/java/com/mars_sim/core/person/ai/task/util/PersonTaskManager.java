@@ -216,8 +216,8 @@ public class PersonTaskManager extends TaskManager {
 	 * @param missionProbCache
 	 * @param selectedMetaMissionRating
 	 */
-	public void setMissionRatings(List<MissionRating> missionProbCache, 
-			MissionRating selectedMetaMissionRating) {
+	public void setMissionRatings(List<MissionRating> missionProbCache,
+								  MissionRating selectedMetaMissionRating) {
 		this.missionProbCache = missionProbCache;
 		this.selectedMissionRating = selectedMetaMissionRating;
 	}

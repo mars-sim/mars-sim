@@ -1,19 +1,19 @@
 package com.mars_sim.core.person.ai;
 
-import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CacheCreator<T extends TaskJob> {
+public class CacheCreator<T extends Rating> {
 
     private List<T> cache = new ArrayList<>();
     private double probability = 0;
     private String context;
     private MarsTime createdTime;
-    private TaskJob lastSelected;
+    private T lastSelected;
 
     public CacheCreator(String context, MarsTime createdTime) {
         this.context = context;
@@ -52,7 +52,7 @@ public class CacheCreator<T extends TaskJob> {
         return cache;
     }
 
-    public TaskJob getLastSelected() {
+    public T getLastSelected() {
         return lastSelected;
     }
 
@@ -80,10 +80,13 @@ public class CacheCreator<T extends TaskJob> {
         return RandomUtil.getRandomDouble(probability);
     }
 
+
+
     public void destroy() {
         cache.clear();
         cache = null;
         createdTime = null;
         lastSelected = null;
     }
+
 }
