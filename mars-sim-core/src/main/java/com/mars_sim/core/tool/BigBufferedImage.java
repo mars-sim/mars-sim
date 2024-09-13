@@ -98,8 +98,9 @@ public class BigBufferedImage extends BufferedImage {
 	}
 
 	public static BufferedImage create(File inputFile, int imageType) throws IOException {
-		ExecutorService generalExecutor = null;
 		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile);) {
+			ExecutorService generalExecutor = null;
+			
 			Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
 			if (readers.hasNext()) {
 				try {
@@ -124,8 +125,9 @@ public class BigBufferedImage extends BufferedImage {
 					Thread.currentThread().interrupt();
 				} finally {
 					stream.close();
-					generalExecutor.close();
-					generalExecutor.shutdown();
+					if (generalExecutor != null) {
+						generalExecutor.shutdown();
+					}
 				}
 			}
 		}

@@ -979,15 +979,17 @@ public class BuildingManager implements Serializable {
 				canAdd = addRobotToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
 			}
 		}	
-
+		
 		Set<Building> buildings = manager.getBuildingSet();
 		for (Building bldg : buildings) {
-			for (Function function: bldg.getFunctions()) {
-				if (!canAdd && bldg.getZone() == 0
-						&& function.hasEmptyActivitySpot()) {
-					destination = bldg;
-		
-					canAdd = addRobotToActivitySpot(robot, destination, function.getFunctionType());
+			// Avoid going inside an EVA Airlock that will interfere its intricate operation
+			if (bldg.getCategory() != BuildingCategory.EVA) {
+				for (Function function: bldg.getFunctions()) {
+					if (!canAdd && bldg.getZone() == 0
+							&& function.hasEmptyActivitySpot()) {
+						destination = bldg;		
+						canAdd = addRobotToActivitySpot(robot, destination, function.getFunctionType());
+					}
 				}
 			}
 		}
@@ -1448,7 +1450,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addRobotToActivitySpot(Robot robot, Building building, FunctionType functionType) {
 		boolean result = false;
-	
+
 		try {
 			Function f = null;
 			LocalPosition loc = null;
