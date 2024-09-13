@@ -8,10 +8,8 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.List;
 
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.LoadingController;
 
 public interface VehicleMission extends Mission {
 
@@ -50,13 +48,6 @@ public interface VehicleMission extends Mission {
      * Gets the remaining distance for the current travel leg.
      */
     double getDistanceCurrentLegTravelled();
-    
-    /**
-	 * Gets the current loading plan for this Mission phase.
-	 * 
-	 * @return
-	 */
-    LoadingController getLoadingPlan();
 
     /**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.
@@ -93,12 +84,4 @@ public interface VehicleMission extends Mission {
      * Requests help as things have gone wrong.
      */
     void getHelp(MissionStatus status);
-
-	/**
-	 * Can the mission vehicle be unloaded at this Settlement ?
-	 *
-	 * @param settlement
-	 * @return
-	 */
-    boolean isVehicleUnloadableHere(Settlement settlement);
 }

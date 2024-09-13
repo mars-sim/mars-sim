@@ -98,7 +98,6 @@ public class BigBufferedImage extends BufferedImage {
 	}
 
 	public static BufferedImage create(File inputFile, int imageType) throws IOException {
-
 		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile);) {
 			ExecutorService generalExecutor = null;
 			

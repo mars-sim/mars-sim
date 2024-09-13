@@ -373,13 +373,18 @@ public class CommandHelper {
 			}
 	
 			// Vehicle mission has a loading
-			LoadingController lp = tm.getLoadingPlan();
-			if ((lp != null) && !lp.isCompleted()) {
-				response.appendText("Loading from " + lp.getSettlement().getName() + " :");
-				outputResources("Resources", response, lp.getResourcesManifest());	
-				outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
-				outputEquipment("Equipment", response, lp.getEquipmentManifest());	
-				outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
+			Vehicle v = tm.getVehicle();
+			if (v != null) {
+				LoadingController lp = v.getLoadingPlan();
+				if ((lp != null) && !lp.isCompleted()) {
+					response.appendText("Loading from " + lp.getSettlement().getName() + " :");
+					outputAmounts("Amount Resources", response, lp.getAmountManifest(true));	
+					outputAmounts("Optional Amounts", response, lp.getAmountManifest(false));
+					outputItems("Items", response, lp.getItemManifest(true));	
+					outputItems("Optional Items", response, lp.getItemManifest(false));	
+					outputEquipment("Equipment", response, lp.getEquipmentManifest(true));	
+					outputEquipment("Optional Equipment", response, lp.getEquipmentManifest(false));	
+				}
 			}
 		}
 	}
@@ -406,34 +411,48 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Outputs the resources in use.
+	 * Outputs the amount resources in use.
 	 * 
 	 * @param title
 	 * @param response
 	 * @param resourcesManifest
 	 */
-	private static void outputResources(String title, StructuredResponse response,
-			Map<Integer, Number> resourcesManifest) {
+	private static void outputAmounts(String title, StructuredResponse response,
+			Map<Integer, Double> resourcesManifest) {
 		if (!resourcesManifest.isEmpty()) {
 			response.appendText(title);
 			response.appendTableHeading(ITEM, 30, ITEM);
 			
-			for(Entry<Integer, Number> item : resourcesManifest.entrySet()) {
+			for(Entry<Integer, Double> item : resourcesManifest.entrySet()) {
 				int id = item.getKey();
-				String quantity;
-				String name;
-				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-					name = ResourceUtil.findAmountResourceName(id);
-					quantity = String.format(KG_FORMAT, item.getValue().doubleValue());
-				}
-				else {
-					name = ItemResourceUtil.findItemResource(id).getName();
-					quantity = Integer.toString(item.getValue().intValue());
-				}	
+				var name = ResourceUtil.findAmountResourceName(id);
+				var quantity = String.format(KG_FORMAT, item.getValue());
 				response.appendTableRow(name, quantity);
 			}
 			response.appendBlankLine();
+		}
+	}
 
+	/**
+	 * Outputs the items in use.
+	 * 
+	 * @param title
+	 * @param response
+	 * @param resourcesManifest
+	 */
+	private static void outputItems(String title, StructuredResponse response,
+			Map<Integer, Integer> resourcesManifest) {
+		if (!resourcesManifest.isEmpty()) {
+			response.appendText(title);
+			response.appendTableHeading(ITEM, 30, ITEM);
+			
+			for(Entry<Integer, Integer> item : resourcesManifest.entrySet()) {
+				int id = item.getKey();
+				var name = ItemResourceUtil.findItemResource(id).getName();
+				var quantity = Integer.toString(item.getValue().intValue());	
+				response.appendTableRow(name, quantity);
+			}
+			response.appendBlankLine();
 		}
 	}
 

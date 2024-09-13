@@ -8,7 +8,6 @@ package com.mars_sim.core.mission;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
@@ -38,6 +37,23 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
+     * Step just become active so mark Vehicle for loading.
+     */
+    @Override
+    protected void start() {
+        MissionVehicleProject vp = (MissionVehicleProject) getMission();
+        Vehicle v = vp.getVehicle();
+        Settlement settlement = v.getSettlement();
+		if (loadingPlan == null) {
+			loadingPlan = v.setLoading(vp.getResources(true));	
+                                                            
+            // Try and move the vehicle to garage
+		    settlement.getBuildingManager().addToGarage(v);
+		}
+    }
+
+
+    /**
      * Executes the vehicle loading step. This will create a Loading controller on the first
      * call ready for later use.
      * 
@@ -45,26 +61,10 @@ public class MissionLoadVehicleStep extends MissionStep {
      */
     @Override
     protected boolean execute(Worker worker) {
-        MissionVehicleProject vp = (MissionVehicleProject) getMission();
-        Vehicle v = vp.getVehicle();
-        Settlement settlement = v.getSettlement();
-		if (loadingPlan == null) {
-            MissionManifest manifest = vp.getResources(true);
-			loadingPlan = new LoadingController(v.getSettlement(), v,
-												manifest.getResources(true),
-												manifest.getResources(false),
-                                                manifest.getEquipment(true),
-												manifest.getEquipment(false));	
-            
-                                                
-            // Try and move the vehicle to garage
-		    settlement.getBuildingManager().addToGarage(v);
-		}
-
         // Loading still active
         boolean workOn = false;
         if (loadingPlan.isFailure()) {
-            vp.abortMission(CANNOT_LOAD_RESOURCES);
+            getMission().abortMission(CANNOT_LOAD_RESOURCES);
         }
         else if (!loadingPlan.isCompleted()) {
 			// Load vehicle if not fully loaded.
@@ -74,7 +74,7 @@ public class MissionLoadVehicleStep extends MissionStep {
 			if (worker.isInSettlement()
 				&& RandomUtil.lessThanRandPercent(75)) {
 
-				Task job = createLoadTask(worker, v);
+				Task job = createLoadTask(worker, loadingPlan.getVehicle());
 				if (job != null) {
                     workOn = assignTask(worker, job);
 				}
@@ -88,15 +88,6 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Gets the loading plan associated with the step.
-     * 
-     * @return
-     */
-    public LoadingController getLoadingPlan() {
-        return loadingPlan;
-    }
-
-    /**
      * Creates the most suitable Load Vehicle task if possible.
      * 
      * @param worker
@@ -105,17 +96,16 @@ public class MissionLoadVehicleStep extends MissionStep {
      */
     private Task createLoadTask(Worker worker, Vehicle vehicle) {
         boolean inGarage = vehicle.isInGarage();
-        VehicleMission target = (VehicleMission) getMission();
         if (worker.isInSettlement())
         	return null;
         if (worker instanceof Person p) {
             if (inGarage) {
-                return new LoadVehicleGarage(p, target.getLoadingPlan());
+                return new LoadVehicleGarage(p, vehicle);
             }
-            return new LoadVehicleEVA(p, target.getLoadingPlan());
+            return new LoadVehicleEVA(p, vehicle);
         }
         else if ((worker instanceof Robot r) && inGarage) {
-            return new LoadVehicleGarage(r, target.getLoadingPlan());
+            return new LoadVehicleGarage(r, vehicle);
         }
 
         return null;

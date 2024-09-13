@@ -167,8 +167,9 @@ public class AirComposition implements Serializable {
 	public void timePassing(Building building, ClockPulse pulse) {
 		double time = pulse.getElapsed();
 		double tt = building.getCurrentTemperature();
+		boolean isTempUnsafe = tt > -40 && tt < 40;
 
-		if (tt > -40 && tt < 40) {
+		if (isTempUnsafe) {
 			double t = AirComposition.C_TO_K + tt;
 
 			accumulatedTime += time;
@@ -333,14 +334,14 @@ public class AirComposition implements Serializable {
 
 			if (isReleasing) {
 				gas.numMoles = gas.numMoles + dMoles;
-				gas.mass  = gas.mass + dMass;
+				gas.mass = gas.mass + dMass;
 				if (dMass > 0) {
 					rh.retrieveAmountResource(gasId, dMass);
 				}
 			}
 			else { // recapture
 				gas.numMoles = gas.numMoles - dMoles;
-				gas.mass  = gas.mass - dMass;
+				gas.mass = gas.mass - dMass;
 				if (dMass > 0) {
 					rh.storeAmountResource(gasId, dMass * AirComposition.GAS_CAPTURE_EFFICIENCY);	
 				}
@@ -348,7 +349,7 @@ public class AirComposition implements Serializable {
 
 			if (gas.numMoles < 0)
 				gas.numMoles = 0;
-			if (gas.mass< 0)
+			if (gas.mass < 0)
 				gas.mass = 0;
 		}
 	}
@@ -411,43 +412,54 @@ public class AirComposition implements Serializable {
 	 */
 	private static final double getMolecularMass(int gasId) {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
-		double result;
-		if (gasId == ResourceUtil.co2ID)
-			result = CO2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.argonID)
-			result = ARGON_MOLAR_MASS;
-		else if (gasId == ResourceUtil.nitrogenID)
-			result = N2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.oxygenID)
-			result = O2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.waterID)
-			result = H2O_MOLAR_MASS;
-		else {
-			String g = ResourceUtil.findAmountResourceName(gasId);
-			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
-		}
-		return result;
+		return getByGas(
+				gasId,
+				CO2_MOLAR_MASS,
+				ARGON_MOLAR_MASS,
+				N2_MOLAR_MASS,
+				O2_MOLAR_MASS,
+				H2O_MOLAR_MASS
+		);
 	}
 
 	/**
 	 * Gets the ideal pressure for a particular gas.
-	 * 
+	 *
 	 * @param gasId
 	 * @return
 	 */
 	private static final double getIdealPressure(int gasId) {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
+		return getByGas(
+				gasId,
+				CO2_PARTIAL_PRESSURE,
+				ARGON_PARTIAL_PRESSURE,
+				N2_PARTIAL_PRESSURE,
+				O2_PARTIAL_PRESSURE,
+				H2O_PARTIAL_PRESSURE
+		);
+	}
+
+	/**
+	 *
+	 * Gets mass or pressure based for particular gas.
+	 *
+	 * @param gasId
+	 * @return
+	 */
+	private static double getByGas(int gasId, double co2,
+								   double argon, double n2, double o2, double h2o) {
 		double result;
 		if (gasId == ResourceUtil.co2ID)
-			result = CO2_PARTIAL_PRESSURE;
+			result = co2;
 		else if (gasId == ResourceUtil.argonID)
-			result = ARGON_PARTIAL_PRESSURE;
+			result = argon;
 		else if (gasId == ResourceUtil.nitrogenID)
-			result = N2_PARTIAL_PRESSURE;
+			result = n2;
 		else if (gasId == ResourceUtil.oxygenID)
-			result = O2_PARTIAL_PRESSURE;
+			result = o2;
 		else if (gasId == ResourceUtil.waterID)
-			result = H2O_PARTIAL_PRESSURE;
+			result = h2o;
 		else {
 			String g = ResourceUtil.findAmountResourceName(gasId);
 			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);

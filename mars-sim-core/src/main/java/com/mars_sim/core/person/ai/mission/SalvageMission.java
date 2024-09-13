@@ -555,10 +555,6 @@ public class SalvageMission extends AbstractMission
 					// Place light utility vehicles at random location in construction site.
 					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(constructionSite);
 					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-
-					if (!settlement.removeVicinityParkedVehicle(luvTemp)) {
-						endMissionProblem(luvTemp, "Can not remove parked vehicle");
-					}
 				}
 			}
 		}

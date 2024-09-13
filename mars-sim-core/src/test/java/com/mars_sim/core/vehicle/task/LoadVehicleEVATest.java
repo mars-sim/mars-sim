@@ -1,15 +1,12 @@
 package com.mars_sim.core.vehicle.task;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 
 public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
     public void testCreateTask() {
@@ -22,17 +19,14 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
         var eva = EVAOperationTest.prepareForEva(this, p);
 
         // Create a loading plan and preload Settlement
-        Map<Integer, Number> resources = new HashMap<>();
-        resources.put(ResourceUtil.oxygenID, 10D);
-        resources.put(ResourceUtil.waterID, 10D);
-        resources.put(ResourceUtil.foodID, 10D);
-        for(var entry : resources.entrySet()) {
-            s.storeAmountResource(entry.getKey(), entry.getValue().doubleValue() * 1.1D);
-        }
-        LoadingController lc = new LoadingController(s, v, resources, Collections.emptyMap(),
-                                        Collections.emptyMap(), Collections.emptyMap());
+        var resources = new SuppliesManifest();
+        resources.addAmount(ResourceUtil.oxygenID, 10D, true);
+        resources.addAmount(ResourceUtil.waterID, 10D, true);
+        resources.addAmount(ResourceUtil.foodID, 10D, true);
+        LoadControllerTest.loadSettlement(s, resources);
+        v.setLoading(resources);
 
-        var task = new LoadVehicleEVA(p, lc);
+        var task = new LoadVehicleEVA(p, v);
         assertFalse("Task created", task.isDone()); 
 
         // Move onsite
@@ -46,5 +40,30 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
         EVAOperationTest.executeEVAWalk(this, eva, task);
         assertTrue("Task completed", task.isDone()); 
 
+    }
+
+    public void testMetaTask() {
+        var s = buildSettlement("Vehicle base", true);
+
+        // Load the vehicle
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        buildRover(s, "rover2", new LocalPosition(10, 13));
+
+        var mt = new LoadVehicleMeta();
+
+        // Check with no loading
+        var tasks = mt.getSettlementTasks(s);
+        assertTrue("No load tasks found", tasks.isEmpty());
+
+        // Set rover to be loading
+        var resources = new SuppliesManifest();
+        resources.addAmount(ResourceUtil.oxygenID, 10D, true);
+        v.setLoading(resources);
+
+        tasks = mt.getSettlementTasks(s);
+        assertEquals("One load tasks found", 1, tasks.size());
+        var t = tasks.get(0);
+        assertTrue("Load in eva", t.isEVA());
+        assertEquals("Correct vehicle selected", v, t.getFocus());
     }
 }

@@ -259,7 +259,7 @@ implements MissionListener {
         });
         navpointScrollPane.setViewportView(navpointTable);
 	}
-	
+
 	public void setZoomPanel(JPanel zoomPanel) {
 		mapPane.add(zoomPanel);
 	}

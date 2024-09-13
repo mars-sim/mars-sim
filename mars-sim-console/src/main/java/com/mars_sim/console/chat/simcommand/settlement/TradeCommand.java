@@ -36,8 +36,8 @@ public class TradeCommand extends AbstractSettlementCommand {
 	public static final ChatCommand TRADE = new TradeCommand();
 	private static final int COST_WIDTH = 10;
 	private static final String DEALS = "deals";
-	private static final String BUYING = "buying";
-	private static final String SELLING = "selling";
+	private static final String BUYING = "buy";
+	private static final String SELLING = "sell";
 
 	private TradeCommand() {
 		super("tr", "trade", "Trade deals of a Settlement");
@@ -81,8 +81,8 @@ public class TradeCommand extends AbstractSettlementCommand {
 		Collections.sort(ordered);						
 		for(Good good : ordered) {
 			ShoppingItem item = list.get(good);
-			response.appendTableRow(good.getName(), item.getQuantity(),
-						String.format(CommandHelper.MONEY_FORMAT, item.getPrice()));
+			response.appendTableRow(good.getName(), item.quantity(),
+						String.format(CommandHelper.MONEY_FORMAT, item.price()));
 		}
 	}
 
