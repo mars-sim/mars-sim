@@ -31,10 +31,10 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -333,7 +333,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			taskStack.setText(newContent);
 		
 			// Refresh task cache
-			TaskCache newCache = taskManager.getLatestTaskProbability();
+			CacheCreator<TaskJob> newCache = taskManager.getLatestTaskProbability();
 			taskCacheModel.setCache(newCache);
 		}
 
@@ -474,9 +474,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private static class TaskCacheModel extends AbstractTableModel {
 		private List<TaskJob> tasks = Collections.emptyList();
 
-		void setCache(TaskCache newCache) {
+		void setCache(CacheCreator<TaskJob> newCache) {
 			if (newCache != null) {
-				tasks = newCache.getTasks();
+				tasks = newCache.getCache();
 			}
 			else {
 				tasks = Collections.emptyList();
