@@ -3183,8 +3183,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-storage capacity="20" discharge-rate="1.25" />
 			
-			<robotic-station capacity="1"/>
-			
+			<robotic-station capacity="1">
+				<activity>
+					<activity-spot xloc="0.0" yloc="0.0" />
+				</activity>
+			</robotic-station>
+						
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="5.0" />
@@ -3724,8 +3728,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<life-support capacity="3" power-required="0.15" />
 			
-			<robotic-station capacity="1"/>
-			
+			<robotic-station capacity="1">
+				<activity>
+					<activity-spot xloc="0.0" yloc="0.0" />
+				</activity>
+			</robotic-station>
+						
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="5.0" />
