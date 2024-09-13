@@ -98,6 +98,7 @@ public class BigBufferedImage extends BufferedImage {
 	}
 
 	public static BufferedImage create(File inputFile, int imageType) throws IOException {
+		ExecutorService generalExecutor = null;
 		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile);) {
 			Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
 			if (readers.hasNext()) {
@@ -109,7 +110,7 @@ public class BigBufferedImage extends BufferedImage {
 					BufferedImage image = create(width, height, imageType);
 					int cores = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
 					int block = Math.min(MAX_PIXELS_IN_MEMORY / cores / width, (int) (Math.ceil(height / (double) cores)));
-					ExecutorService generalExecutor = Executors.newFixedThreadPool(cores);
+					generalExecutor = Executors.newFixedThreadPool(cores);
 					List<Callable<ImagePartLoader>> partLoaders = new ArrayList<>();
 					for (int y = 0; y < height; y += block) {
 						partLoaders.add(new ImagePartLoader(
@@ -121,6 +122,10 @@ public class BigBufferedImage extends BufferedImage {
 				} catch (InterruptedException ex) {
 					logger.severe("Fail to create the image. " + ex);
 					Thread.currentThread().interrupt();
+				} finally {
+					stream.close();
+					generalExecutor.close();
+					generalExecutor.shutdown();
 				}
 			}
 		}
