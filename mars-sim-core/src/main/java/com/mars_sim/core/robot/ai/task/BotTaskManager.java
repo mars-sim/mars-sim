@@ -20,7 +20,6 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.robot.Robot;
@@ -179,7 +178,7 @@ public class BotTaskManager extends TaskManager {
 
 	private static synchronized CacheCreator<TaskJob> getChargeTaskMap() {
 		if (chargeMap == null) {
-			chargeMap = new CacheCreator<TaskJob>("Robot Charge", null);
+			chargeMap = new CacheCreator<>("Robot Charge", null);
 			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1000D)) {
 				
 				private static final long serialVersionUID = 1L;

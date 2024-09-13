@@ -79,14 +79,4 @@ public class CacheCreator<T extends Rating> {
     private double getRandomDoubleBasedOnProbability() {
         return RandomUtil.getRandomDouble(probability);
     }
-
-
-
-    public void destroy() {
-        cache.clear();
-        cache = null;
-        createdTime = null;
-        lastSelected = null;
-    }
-
 }
