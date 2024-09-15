@@ -37,8 +37,15 @@ public abstract class MobileUnit extends Unit  {
         this.surfacePosn = owner.getCoordinates();
         this.owner = owner;
 
-        // TODO Place holder; once completed this can be removed
-		setContainerID(owner.getIdentifier());
+		setContainer(owner);
+	}
+
+	/**
+	 * Set the container of this mobile unit
+	 * @param destination New destination of container
+	 */
+	protected void setContainer(Unit destination) {
+		setContainerID(destination.getIdentifier());
 	}
 
 	/**

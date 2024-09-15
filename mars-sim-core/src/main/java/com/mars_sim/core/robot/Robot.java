@@ -888,9 +888,8 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 			}
 			// 2. Set LocationStateType
 			updateLocationState(newContainer);
-			// 3. Set containerID
-			// TODO: what to set for a decommissioned robot ?
-			setContainerID(newContainer.getIdentifier());
+			// 3. Set container
+			setContainer(newContainer);
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}

@@ -1581,7 +1581,7 @@ public class Person extends MobileUnit implements Worker, Temporal, Appraiser {
 			
 			// 3. Set containerID
 			// Note: need to decide what to set for a deceased person
-			setContainerID(newContainer.getIdentifier());
+			setContainer(newContainer);
 			
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);

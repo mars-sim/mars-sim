@@ -2351,7 +2351,7 @@ public abstract class Vehicle extends MobileUnit
 			}
 			
 			// 3. Set containerID
-			setContainerID(newContainer.getIdentifier());
+			setContainer(newContainer);
 
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);

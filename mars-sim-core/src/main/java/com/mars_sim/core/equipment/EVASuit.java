@@ -175,9 +175,9 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error creating EVASuit.
 	 */
 	EVASuit(String name, Settlement settlement) {
-
 		// Use Equipment constructor.
 		super(name, TYPE, settlement);
+		setDescription("A standard EVA suit for Mars surface operation.");
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -209,10 +209,6 @@ public class EVASuit extends Equipment
 		// Sets the base mass of the bag.
 		setBaseMass(getEmptyMass());
 
-		locnHistory = new History<>(10);
-		
-		// Set settlement as its container unit
-		setContainerUnit(settlement);
 	}
 
 	/**
@@ -475,21 +471,16 @@ public class EVASuit extends Equipment
 	}
 
 	@Override
-	public Settlement getAssociatedSettlement() {
-		Settlement s = getContainerUnit().getAssociatedSettlement();
-		if (s == null) s = super.getAssociatedSettlement();
-		return s;
-	}
-
-	@Override
-	public boolean setContainerUnit(Unit parent) {
-		boolean result = super.setContainerUnit(parent);
-		if (result) {
+	public void setContainer(Unit parent) {
+		Unit cu = getContainerUnit();
+		if (parent != cu) {
 			// Add new parent to owner history
+			if (locnHistory == null) {
+				locnHistory = new History<>(10);
+			}
 			locnHistory.add(parent);
 		}
-
-		return result;
+		super.setContainer(parent);
 	}
 
 	/**

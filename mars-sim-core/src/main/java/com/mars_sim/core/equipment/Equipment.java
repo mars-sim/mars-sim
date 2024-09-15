@@ -21,18 +21,18 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Repair;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.Indoor;
 import com.mars_sim.core.structure.building.task.MaintainBuilding;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
  * equipment, such as a kit, a container, an EVA suit or a medpack.
  */
-public abstract class Equipment extends Unit implements Indoor, Salvagable {
+public abstract class Equipment extends MobileUnit implements Indoor, Salvagable {
 
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -47,8 +47,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
 
-	/** Unique identifier for the settlement that owns this equipment. */
-//	private int associatedSettlementID;
+
 	/** The identifier for the registered owner of this equipment. */
 	private int registeredOwner;
 
@@ -76,7 +75,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param settlement the unit's owner
 	 */
 	protected Equipment(String name, EquipmentType eType, String type, Settlement settlement) {
-		super(name, settlement.getCoordinates());
+		super(name, settlement);
 
 		// Initialize data members.
 		this.equipmentType = eType;
@@ -84,15 +83,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		salvageInfo = null;
 
 		registeredOwner = -1;
-	}
-
-	/**
-	 * Sets the equipment's description.
-	 *
-	 * @param description new description.
-	 */
-	protected void setDescription(String description) {
-		super.setDescription(description);
 	}
 	
 	/**
@@ -297,48 +287,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return equipmentType;
 	}
 
-
-	/**
-	 * Gets the equipment's settlement, null if equipment is not at a settlement.
-	 *
-	 * @return {@link Settlement} the equipment's settlement
-	 */
-	@Override
-	public Settlement getSettlement() {
-
-		if (getContainerID() == 0)
-			return null;
-
-		Unit c = getContainerUnit();
-
-		if (c == null)
-			return null;
-		
-		if (c.getUnitType() == UnitType.SETTLEMENT) {
-			return (Settlement) c;
-		}
-
-		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
-			return c.getSettlement();
-		}
-
-		if (isInVehicleInGarage()) {
-			return ((Vehicle)c).getSettlement();
-		}
-
-		return null;
-	}
-
-	/**
-	 * Gets the settlement the person is currently associated with.
-	 *
-	 * @return associated settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return super.getAssociatedSettlement();
-	}
-
 	public static String generateName(String baseName) {
 		if (baseName == null) {
 			throw new IllegalArgumentException("Must specify a baseName");
@@ -346,155 +294,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 		int number = unitManager.incrementTypeCount(baseName);
 		return String.format("%s %03d", baseName, number);
-	}
-
-	/**
-	 * Sets the unit's container unit.
-	 *
-	 * @param newContainer the unit to contain this unit.
-	 * @return Was a changed applied
-	 */
-	boolean setContainerUnit(Unit newContainer) {
-		if (newContainer != null) {
-			Unit cu = getContainerUnit();
-			
-			if (newContainer.equals(cu)) {
-				return false;
-			}
-
-			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.MARS) {
-				// Since it's on the surface of Mars,
-				// First set its initial location to its old parent's location as it's leaving its parent.
-				// Later it may move around and updates its coordinates by itself
-				setCoordinates(cu.getCoordinates());
-			}
-			else {
-				// Null its coordinates since it's now slaved after its parent
-				setCoordinates(newContainer.getCoordinates());
-			}
-			
-			// 2. Set LocationStateType
-			if (cu != null) { 
-				// 2a. If the previous cu is a settlement
-				//     and this person's new cu is mars surface,
-				//     then location state is within settlement vicinity
-				if (cu.getUnitType() == UnitType.SETTLEMENT
-					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-				}	
-				// 2b. If the previous cu is a vehicle or a person
-				//     and the previous cu is in settlement vicinity
-				//     then the new location state is settlement vicinity
-				else if ((cu.getUnitType() == UnitType.VEHICLE
-						|| cu.getUnitType() == UnitType.PERSON)
-						&& cu.isInSettlementVicinity()
-						&& newContainer.getUnitType() == UnitType.MARS) {
-							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-				}
-				// 2c. If the previous cu is a vehicle
-				//     and the previous cu vehicle is outside on mars surface
-				//     then the new location state is vehicle vicinity
-				else if ((cu.getUnitType() == UnitType.VEHICLE)
-						&& cu.isOutside()
-						&& newContainer.getUnitType() == UnitType.MARS) {
-							currentStateType = LocationStateType.VEHICLE_VICINITY;
-				}
-				else {
-					updateEquipmentState(newContainer);
-				}
-			}
-			else {
-				updateEquipmentState(newContainer);
-			}
-
-			// 3. Set containerID
-			setContainerID(newContainer.getIdentifier());
-			
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
-		}
-		return true;
-	}
-
-	/**
-	 * Updates the location state type of an equipment.
-	 *
-	 * @param newContainer
-	 */
-	public void updateEquipmentState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-
-		currentStateType = getNewLocationState(newContainer);
-	}
-
-	/**
-	 * Gets the location state type based on the type of the new container unit.
-	 *
-	 * @param newContainer
-	 * @return {@link LocationStateType}
-	 */
-	public LocationStateType getNewLocationState(Unit newContainer) {
-
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.VEHICLE)
-			return LocationStateType.INSIDE_VEHICLE;
-
-		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.MARS_SURFACE;
-
-		if (newContainer.getUnitType() == UnitType.PERSON)
-			return LocationStateType.ON_PERSON_OR_ROBOT;
-
-		if (newContainer.getUnitType() == UnitType.MARS)
-			return LocationStateType.MARS_SURFACE;
-
-		return null;
-	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-
-		if (containerID <= MARS_SURFACE_UNIT_ID)
-			return false;
-
-		// if the unit is in a settlement
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInSettlement();
-
-		// if the vehicle is parked in a garage
-		if ((LocationStateType.INSIDE_VEHICLE == currentStateType) 
-				&& (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType())) {
-			return true;
-		}
-
-		if (getContainerUnit().getUnitType() == UnitType.PERSON) {
-			// if the unit is on a person
-			return ((Person)getContainerUnit()).isInSettlement();
-		}
-
-		if (getContainerUnit().getUnitType() == UnitType.ROBOT) {
-			// if the unit is on a robot
-			return ((Robot)getContainerUnit()).isInSettlement();
-		}
-
-		return false;
 	}
 
 	/**
@@ -511,7 +310,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			// Fire the unit event type
 			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 			// Set the new container unit (which will internally set the container unit id)
-			return setContainerUnit(destination);
+			setContainer(destination);
+			canRetrieve = true;
 		}
 		
 		else if (cu instanceof EquipmentOwner deo) {
@@ -559,7 +359,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
-				setContainerUnit(destination);
+				setContainer(destination);
+				updateLocationState(destination);
 				// Fire the unit event type
 				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
