@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.building;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -20,20 +21,17 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.hazard.HazardEvent;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.BoundedObject;
-import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
@@ -45,7 +43,6 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.Structure;
 import com.mars_sim.core.structure.building.connection.InsidePathLocation;
 import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
@@ -87,28 +84,28 @@ import com.mars_sim.core.structure.building.utility.power.PowerStorage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.FixedUnit;
 
 /**
  * The Building class is a settlement's building.
+ * TODO Is the Item & ResoruceHolder needed if it is delegated to Settlement
  */
-public class Building extends Structure implements Malfunctionable, Indoor, 
-		LocalBoundedObject, InsidePathLocation, Temporal, ResourceHolder, ItemHolder {
+public class Building extends FixedUnit implements Malfunctionable,
+	 InsidePathLocation, Temporal, ResourceHolder, ItemHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
-	public static final int TISSUE_CAPACITY = 20;
-
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
-	public static final double HEIGHT = 2.5;
+	private  static final double HEIGHT = 2.5;
 	/** 500 W heater for use during EVA ingress */
-	public static final double EVA_HEATER_KW = .5D;
+	private static final double EVA_HEATER_KW = .5D;
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
-	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
+	private static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 
 	// Data members
 	boolean isImpactImminent = false;
@@ -137,14 +134,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	
 	/** Type of building. */
 	private String buildingType;
-	/** Description for this building. */
-	private String description;
-
-	/** Unique identifier for the settlement of this building. */
-	private Integer settlementID;
-	
-	/** The settlement of this building. */
-	private transient Settlement settlement;
 
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
@@ -195,7 +184,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/**
 	 * Factory method to create from a building template
 	 *
-	 * @param template the building template.
+	 * @param spec the building 
 	 * @param owner The owning Settlement
 	 */
 	public static Building createBuilding(BuildingTemplate template, Settlement owner) {
@@ -215,25 +204,18 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public Building(Settlement owner, String id, int zone, String name,
 					BoundedObject bounds, String buildingType, BuildingCategory category) {
-		super(name, owner.getCoordinates());
+		super(name, owner);
 
 		this.templateID = id;
 		this.zone = zone;
 		this.buildingType = buildingType;
 		this.category = category;
 
-		this.settlement = owner;
-		this.settlementID = settlement.getIdentifier();
-		setContainerID(settlementID);
 
 		this.loc = bounds.getPosition();
 		this.facing = bounds.getFacing();
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
-		
-		if (length < 0) {
-			logger.info(this, "length: " + length);
-		}
 
 		this.powerModeCache = PowerMode.FULL_POWER;
 
@@ -272,7 +254,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		setBaseMass(buildingSpec.getBaseMass());
 
 		baseLevel = buildingSpec.getBaseLevel();
-		description = buildingSpec.getDescription();
+		setDescription(buildingSpec.getDescription());
 
 		// Get base power requirements.
 		baseFullPowerRequirement = buildingSpec.getBasePowerRequirement();
@@ -311,17 +293,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// If no life support then no internal repairs
 		malfunctionManager.setSupportInsideRepair(hasFunction(FunctionType.LIFE_SUPPORT));
-	}
-
-
-	/**
-	 * Gets the description of a building.
-	 *
-	 * @return String description
-	 */
-	@Override
-	public String getDescription() {
-		return description;
 	}
 
 	/**
@@ -715,7 +686,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
-		return settlement.getBuildingManager();
+		return getAssociatedSettlement().getBuildingManager();
 	}
 
 	/**
@@ -1200,12 +1171,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public Collection<Person> getAffectedPeople() {
 
-		Collection<Person> people = new UnitSet<>();
+		Collection<Person> people = new HashSet<>();
 		// Check all people in settlement.
-		Iterator<Person> i = settlement.getIndoorPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-
+		for(Person person : getAssociatedSettlement().getIndoorPeople()) {
 			if (person.getBuildingLocation() == this) {
 				people.add(person);
 			}
@@ -1263,13 +1231,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		}
 
 		inTransportMode = false;
-		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		tLast = System.currentTimeMillis();
-//		long elapsedMS = tLast - tnow;
-//		if (elapsedMS > 10)
-//			logger.severe(this, "elapsedMS: " + elapsedMS);
-			
 		return true;
 	}
 
@@ -1349,6 +1310,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			logger.log(this, Level.INFO, 20_000, mal.getName() + " registered.");
 			
 			String victimNames = null;
+			var settlement = getAssociatedSettlement();
 
 			// check if someone under this roof may have seen/affected by the impact
 			for (Person person : getInhabitants()) {
@@ -1419,16 +1381,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * Get the wall thickness based on the constructionType type.
 	 */
 	private double getWallThickness() {
-		switch(constructionType) {
-			case PRE_FABRICATED:
-				return 0.0000254;
-			case INFLATABLE:
-				return 0.0000018;
-			case SEMI_ENGINEERED:
-				return 0.0000100;
-			default:
-				return 0;
-		}
+		return switch(constructionType) {
+			case PRE_FABRICATED -> 0.0000254;
+			case INFLATABLE -> 0.0000018;
+			case SEMI_ENGINEERED -> 0.0000100;
+			default -> 0;
+		};
 	}
 
 	public ConstructionType getConstruction() {
@@ -1454,25 +1412,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return zone;
 	}
 
-	/**
-	 * Sets the building's settlement template ID number.
-	 *
-	 * @param id.
-	 */
-	public void setTemplateID(String id) {
-		templateID = id;
-	}
-
-	/**
-	 * Gets the settlement it is currently associated with.
-	 *
-	 * @return settlement or null if none.
-	 */
-	@Override
-	public Settlement getSettlement() {
-		return settlement;
-	}
-	
 	/**
 	 * Adds incoming heat arriving at this building due to ventilation.
 	 * Note: heat gain if positive; heat loss if negative.
@@ -1505,15 +1444,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return this;
 	}
 
-	/**
-	 * Gets the settlement the person is currently associated with.
-	 *
-	 * @return associated settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getSettlement();
-	}
 
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
@@ -1540,16 +1470,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Is this unit inside a settlement
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return true;
-	}
-
-	/**
 	 * Gets the amount resource stored
 	 *
 	 * @param resource
@@ -1557,7 +1477,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public double getAmountResourceStored(int resource) {
-		return getSettlement().getAmountResourceStored(resource);
+		return getAssociatedSettlement().getAmountResourceStored(resource);
 	}
 
 	/**
@@ -1568,7 +1488,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public double getAllAmountResourceStored(int resource) {
-		return getSettlement().getAllAmountResourceStored(resource);
+		return getAssociatedSettlement().getAllAmountResourceStored(resource);
 	}
 	
 	/**
@@ -1580,7 +1500,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		return getSettlement().storeAmountResource(resource, quantity);
+		return getAssociatedSettlement().storeAmountResource(resource, quantity);
 	}
 
 	/**
@@ -1592,7 +1512,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		return getSettlement().retrieveAmountResource(resource, quantity);
+		return getAssociatedSettlement().retrieveAmountResource(resource, quantity);
 	}
 
 	/**
@@ -1603,7 +1523,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		return getSettlement().getAmountResourceCapacity(resource);
+		return getAssociatedSettlement().getAmountResourceCapacity(resource);
 	}
 
 	/**
@@ -1614,7 +1534,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		return getSettlement().getAmountResourceRemainingCapacity(resource);
+		return getAssociatedSettlement().getAmountResourceRemainingCapacity(resource);
 	}
 
 	/**
@@ -1625,7 +1545,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return getSettlement().hasAmountResourceRemainingCapacity(resource);
+		return getAssociatedSettlement().hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**
@@ -1635,7 +1555,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
-		return getSettlement().getAmountResourceIDs();
+		return getAssociatedSettlement().getAmountResourceIDs();
 	}
 	
 	/**
@@ -1645,31 +1565,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public Set<Integer> getAllAmountResourceIDs() {
-		return getSettlement().getAllAmountResourceIDs();
-	}
-	
-	/**
-	 * Sets the unit's container unit.
-	 *
-	 * @param newContainer the unit to contain this unit.
-	 */
-	public boolean setContainerUnit(Unit newContainer) {
-		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
-				return false;
-			}
-			// 1. Set Coordinates
-			setCoordinates(settlement.getCoordinates());
-			// 2. Set LocationStateType
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-			// 3. Set containerID
-			// Q: what to set for a deceased person ?
-			setContainerID(newContainer.getIdentifier());
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
-		}
-
-		return true;
+		return getAssociatedSettlement().getAllAmountResourceIDs();
 	}
 
 	/**
@@ -1684,18 +1580,18 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	@Override
 	public int storeItemResource(int resource, int quantity) {
-		return getSettlement().storeItemResource(resource, quantity);
+		return getAssociatedSettlement().storeItemResource(resource, quantity);
 	}
 
 	@Override
 	public int retrieveItemResource(int resource, int quantity) {
-		return getSettlement().retrieveItemResource(resource, quantity);
+		return getAssociatedSettlement().retrieveItemResource(resource, quantity);
 	}
 
 
 	@Override
 	public int getItemResourceStored(int resource) {
-		return getSettlement().getItemResourceStored(resource);
+		return getAssociatedSettlement().getItemResourceStored(resource);
 	}
 
 	/**
@@ -1706,12 +1602,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	@Override
 	public int getItemResourceRemainingQuantity(int resource) {
-		return getSettlement().getItemResourceRemainingQuantity(resource);
+		return getAssociatedSettlement().getItemResourceRemainingQuantity(resource);
 	}
 
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		return getSettlement().getItemResourceIDs();
+		return getAssociatedSettlement().getItemResourceIDs();
 	}
 	
 	@Override
@@ -1733,10 +1629,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return super.equals(obj);
 	}
 
-	public void reinit() {
-		settlement = unitManager.getSettlementByID(settlementID);
-	}
-	
 	/**
 	 * Gets the hash code for this object.
 	 *
@@ -1745,19 +1637,5 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	@Override
 	public int hashCode() {
 		return super.hashCode();
-	}
-
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		functions = null;
-		furnace = null;
-		lifeSupport = null;
-		roboticStation = null;
-		powerGen = null;
-		buildingType = null;
-		powerModeCache = null;
-		malfunctionManager = null;
 	}
 }

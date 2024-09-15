@@ -746,9 +746,6 @@ public class UnitManager implements Serializable, Temporal {
 		for (Robot r: lookupRobot.values()) {
 			r.reinit();
 		}
-		for (Building b: lookupBuilding.values()) {
-			b.reinit();
-		}
 		for (Settlement s: lookupSettlement.values()) {
 			s.reinit();
 		}

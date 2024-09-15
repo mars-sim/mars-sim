@@ -10,32 +10,27 @@ package com.mars_sim.core.structure.construction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
-import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.MissionPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.Structure;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.vehicle.GroundVehicle;
 
 /**
  * A building construction site.
  */
-public class ConstructionSite
-extends Structure
-implements  LocalBoundedObject {
+public class ConstructionSite extends FixedUnit {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -44,14 +39,13 @@ implements  LocalBoundedObject {
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
 	
     // Construction site events.
-    public static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
-    public static final String END_UNDERGOING_CONSTRUCTION_EVENT = "end undergoing construction";
-    public static final String START_UNDERGOING_SALVAGE_EVENT = "start undergoing salvage";
-    public static final String END_UNDERGOING_SALVAGE_EVENT = "end undergoing salvage";
-    public static final String ADD_CONSTRUCTION_STAGE_EVENT = "adding construction stage";
-    public static final String REMOVE_CONSTRUCTION_STAGE_EVENT = "removing construction stage";
-    public static final String CREATE_BUILDING_EVENT = "creating new building";
-    public static final String REMOVE_BUILDING_EVENT = "removing old building";
+    private static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
+    private static final String END_UNDERGOING_CONSTRUCTION_EVENT = "end undergoing construction";
+    private static final String START_UNDERGOING_SALVAGE_EVENT = "start undergoing salvage";
+    private static final String END_UNDERGOING_SALVAGE_EVENT = "end undergoing salvage";
+    private static final String ADD_CONSTRUCTION_STAGE_EVENT = "adding construction stage";
+    private static final String REMOVE_CONSTRUCTION_STAGE_EVENT = "removing construction stage";
+    private static final String CREATE_BUILDING_EVENT = "creating new building";
 
     // Data members
     private boolean undergoingConstruction;
@@ -85,7 +79,6 @@ implements  LocalBoundedObject {
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
     private ConstructionManager constructionManager;
-    private Settlement settlement;
     private ConstructionStageInfo stageInfo;
 
     private MissionPhase phase;
@@ -96,16 +89,14 @@ implements  LocalBoundedObject {
      * Constructor.
      */
     public ConstructionSite(Settlement settlement) {
-    	super("Site", settlement.getCoordinates());
+    	super("Site", settlement);
     	
     	this.constructionManager = settlement.getConstructionManager();
-    	this.settlement = settlement;
 
     	identifier = constructionManager.getUniqueID();
     	
     	createSiteName();
-    	
-    	setDescription(getDescription());
+
     	
     	width = 0D;
         length = 0D;
@@ -389,6 +380,8 @@ implements  LocalBoundedObject {
     public Building createBuilding(Settlement settlement2) {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
 
+        var settlement = getAssociatedSettlement();
+
         BuildingManager manager = settlement.getBuildingManager();
         int id = manager.getNextTemplateID();
         String buildingType = buildingStage.getInfo().getName();
@@ -493,9 +486,8 @@ implements  LocalBoundedObject {
         if (listeners == null)
             listeners = Collections.synchronizedList(new ArrayList<>());
         synchronized(listeners) {
-            Iterator<ConstructionListener> i = listeners.iterator();
-            while (i.hasNext()) i.next().constructionUpdate(
-                    new ConstructionEvent(this, updateType, target));
+            listeners.forEach(cs -> cs.constructionUpdate(
+                new ConstructionEvent(this, updateType, target)));
         }
     }
 
@@ -503,36 +495,17 @@ implements  LocalBoundedObject {
      * Relocates the construction site by changing its coordinates.
      */
 	public void relocateSite() {
-		Coordinates existingCoord = getCoordinates();
+        var existingPosn = getPosition();
 		// Compute a new position for a site
 		ConstructionMission.positionNewSite(this);
 		
 		logger.info(this, "Manually relocated by player from " 
-				+ existingCoord.getFormattedString() + " to "
-				+ getCoordinates().getFormattedString());
+				+ existingPosn + " to "
+				+ getPosition());
 	}
 
     public ConstructionManager getConstructionManager() {
     	return constructionManager;
-    }
-
-	/**
-	 * Gets the associated settlement this unit is with
-	 *
-	 * @return the associated settlement
-	 */
-	public Settlement getAssociatedSettlement() {
-		return settlement;
-	}
-
-	/**
-	 * Gets the settlement this unit is with.
-	 *
-	 * @return the settlement
-	 */
-	@Override
-    public Settlement getSettlement() {
-    	return settlement;
     }
 
     public void setSkill(int constructionSkill) {
@@ -606,11 +579,6 @@ implements  LocalBoundedObject {
 	public boolean isInSettlement() {
 		return false;
 	}
-
-	@Override
-    public String toString() {
-		return getName();
-	}
 	
     public String getDescription() {
 		StringBuilder result = new StringBuilder();
@@ -618,13 +586,6 @@ implements  LocalBoundedObject {
 		ConstructionStage stage = getCurrentConstructionStage();
 		if (stage != null) {
 			result.append(stage.getInfo().getName());
-			
-//			if (undergoingConstruction) result.append(" - Under Construction");
-//			else if (undergoingSalvage) result.append(" - Under Salvage");
-//			else if (hasUnfinishedStage()) {
-//				if (stage.isSalvaging()) result.append(" - Salvage Unfinished");
-//				else result.append(" - Construction Unfinished");
-//			}
 		}
 
 		return result.toString();
@@ -641,7 +602,9 @@ implements  LocalBoundedObject {
 	/**
 	 * Prepares object for garbage collection.
 	 */
+    @Override
 	public void destroy() {
+        super.destroy();
 		position = null;
 	    members = null;
 	    vehicles = null;
@@ -649,7 +612,6 @@ implements  LocalBoundedObject {
 	    frameStage = null;
 	    buildingStage = null;
 	    constructionManager = null;
-	    settlement = null;
 	    stageInfo = null;
 	}
 }
