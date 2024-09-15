@@ -18,7 +18,6 @@ public abstract class FixedUnit extends Unit
     implements LocalBoundedObject {
     
     private Settlement owner;
-    private String childContext;
 
     /**
 	 * Constructor.
@@ -76,9 +75,6 @@ public abstract class FixedUnit extends Unit
 	 * @return Combination of Settlement and Unit name.
 	 */
 	public String getChildContext() {
-		if (childContext == null) {
-			childContext = owner.getName() + ENTITY_SEPERATOR + getName();
-		}
-		return childContext;
+		return owner.getName();
 	}
 }

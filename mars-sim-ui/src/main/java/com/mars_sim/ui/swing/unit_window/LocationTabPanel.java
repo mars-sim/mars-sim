@@ -444,11 +444,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		int max = 0;
 		int min = 0;
 		
-		if (elevation > 1) {
+		if (elevation > 0) {
 			max = (int) larger; 
 			min = (int) smaller;
 		}
-		else if (elevation < -1) {
+		else if (elevation < 0) {
 			max = (int) smaller;
 			min = (int) larger;
 		}
@@ -457,8 +457,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			min = -2;
 		}
 
-		gauge.setMinValue(min);
-		gauge.setMaxValue(max);
+		gauge.getModel().setRange(min, max);
 		gauge.setLcdValueAnimated(elevation);
 	}
 	
@@ -538,10 +537,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			sw.chooseSettlement(settlement);
 			sw.displayRobot(r);
 		}
-//		else {
-//			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-//			nw.updateCoordsMaps(r.getCoordinates());
-//		}
 	}
 
 	/**

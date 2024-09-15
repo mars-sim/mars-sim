@@ -39,10 +39,11 @@ public class SimLogger {
 	private static Map<String, SimLogger> loggers = new HashMap<>();
 	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
 
-	private static final String OPEN_BRACKET = " [x";
+	private static final String REPEAT_BRACKET = " [x";
+	private static final String OPEN_BRACKET = "[";
 	private static final String CLOSED_BRACKET = "]";
 	private static final String CLOSED_BRACKET_SPACE = "] ";
-	private static final String COLON = " : [";
+	private static final String COLON = " : ";
 	private static final String DASH = " - ";
 	private static final String QUESTION = "?";
 	private static final long DEFAULT_WARNING_TIME = 0;
@@ -136,7 +137,7 @@ public class SimLogger {
 
 				// Print the log statement with counts
 				outputMessage = new StringBuilder(sourceName);
-				outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
+				outputMessage.append(REPEAT_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
 			}
 		}
 		else {
@@ -148,18 +149,15 @@ public class SimLogger {
 		outputMessage.append(COLON);
 		if (actor == null) {
 			// Actor unknown
-			outputMessage.append("System").append(CLOSED_BRACKET_SPACE);
+			outputMessage.append(OPEN_BRACKET).append("System").append(CLOSED_BRACKET_SPACE);
 		}
 		else {
 			// Has an Actor
 			String context = actor.getContext();
-			if (context == null) {
-				outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
+			if (context != null) {
+				outputMessage.append(OPEN_BRACKET).append(context).append(CLOSED_BRACKET_SPACE);
 			}
-			else {
-				outputMessage.append(context);
-				outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getName()).append(DASH);
-			}
+			outputMessage.append(actor.getName()).append(DASH);		
 		}
 		outputMessage.append(message);
 

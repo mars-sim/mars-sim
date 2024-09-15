@@ -65,6 +65,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
@@ -72,7 +73,7 @@ import com.mars_sim.core.vehicle.task.LoadingController;
  * information about the vehicle. This class needs to be subclassed to represent
  * a specific type of vehicle.
  */
-public abstract class Vehicle extends Unit
+public abstract class Vehicle extends MobileUnit
 		implements Malfunctionable, Salvagable, Temporal, Indoor,
 		LocalBoundedObject, EquipmentOwner, ItemHolder, Towed {
 
@@ -85,8 +86,8 @@ public abstract class Vehicle extends Unit
 	
 	private static final double MAXIMUM_RANGE = 10_000;
 	
-    public static final double VEHICLE_CLEARANCE_0 = 1.4;
-    public static final double VEHICLE_CLEARANCE_1 = 2.8;
+    private static final double VEHICLE_CLEARANCE_0 = 1.4;
+    private static final double VEHICLE_CLEARANCE_1 = 2.8;
     
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuelRangeErrorMargin;
@@ -118,9 +119,6 @@ public abstract class Vehicle extends Unit
 	/** True if vehicle is ready to be drawn on the map. */
 	private boolean isReady = false;
 	
-	/** Vehicle's associated Settlement. */
-	private int associatedSettlementID;
-	
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -150,9 +148,7 @@ public abstract class Vehicle extends Unit
 	private String specName;
 	/** The vehicle model */
 	private String modelName;
-	
-	/** Parked position (meters) from center of settlement. */
-	private LocalPosition posParked;	
+
 	/** The radiation status instance that capture if the settlement has been exposed to a radiation event. */
 	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
 
@@ -214,7 +210,7 @@ public abstract class Vehicle extends Unit
 	 */
 	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
-		super(name, settlement.getCoordinates());
+		super(name, settlement);
 		
 		this.spec = spec;
 		this.specName = spec.getName();
@@ -241,8 +237,6 @@ public abstract class Vehicle extends Unit
 		odometerMileage = 0;
 		// Set distance traveled by vehicle since last maintenance (km)
 		distanceMaint = 0;
-		// Obtain the associated settlement ID
-		associatedSettlementID = settlement.getIdentifier();
 
 		direction = new Direction(0);
 		trail = new ArrayList<>();
@@ -253,10 +247,6 @@ public abstract class Vehicle extends Unit
 		reservedForMaintenance = false;
 		emergencyBeacon = false;
 		isSalvaged = false;
-		
-		// Must add this vehicle to Mars Surface first
-		// or else it won't be able to transfer into a settlement later
-		((MarsSurface)getContainerUnit()).addVehicle(this);
 		
 		// Make this vehicle to be owned by the settlement
 		settlement.addOwnedVehicle(this);
@@ -274,10 +264,6 @@ public abstract class Vehicle extends Unit
 
 		// Instantiate the motor controller
 		vehicleController = new VehicleController(this);
-		
-		// Set initial parked location and facing at settlement.
-		// Note: already done in addOwnedVehicle()
-//		findNewParkingLoc();
 
 		// Initialize operator activity spots.
 		operatorActivitySpots = spec.getOperatorActivitySpots();
@@ -354,11 +340,6 @@ public abstract class Vehicle extends Unit
 	}
 
 	@Override
-	public LocalPosition getPosition() {
-		return posParked;
-	}
-
-	@Override
 	public double getFacing() {
 		return facingParked;
 	}
@@ -416,7 +397,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public void setParkedLocation(LocalPosition position, double facing) {
 		// Set new parked location for the vehicle.
-		this.posParked = position;
+		setPosition(position);
 		this.facingParked = facing;
 		
 		// Get current human crew positions relative to the vehicle.
@@ -441,7 +422,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public void setFlyerLocation(LocalPosition position, double facing) {
 		// Set new parked location for the flyer.
-		this.posParked = position;
+		setPosition(position);
 		this.facingParked = facing;
 	}
 	
@@ -1562,24 +1543,6 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Resets the vehicle reservation status.
-	 */
-	// public void correctVehicleReservation() {
-	// 	if (isReservedMission
-	// 		// Set reserved for mission to false if the vehicle is not associated with a
-	// 		// mission.
-	// 		&& missionManager.getMissionForVehicle(this) == null) {
-	// 			logger.log(this, Level.FINE, 5000,
-	// 					"Found reserved for an non-existing mission. Untagging it.");
-	// 			setReservedForMission(false);
-	// 	} else if (missionManager.getMissionForVehicle(this) != null) {
-	// 			logger.log(this, Level.FINE, 5000,
-	// 					"On a mission but not registered as mission reserved. Correcting it.");
-	// 			setReservedForMission(true);
-	// 	}
-	// }
-
-	/**
 	 * Gets a collection of people affected by this entity.
 	 *
 	 * @return person collection
@@ -1932,20 +1895,6 @@ public abstract class Vehicle extends Unit
 
 	public static double getLifeSupportRangeErrorMargin() {
 		return lifeSupportRangeErrorMargin;
-	}
-
-	public int getAssociatedSettlementID() {
-		return associatedSettlementID;
-	}
-
-	/**
-	 * Gets the settlement the person is currently associated with.
-	 *
-	 * @return associated settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 
 	/**

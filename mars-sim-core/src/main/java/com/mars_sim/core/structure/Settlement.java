@@ -104,7 +104,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Temporal,
+public class Settlement extends Unit implements Temporal,
 	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
 
 	/** default serial id. */
@@ -1978,8 +1978,6 @@ public class Settlement extends Structure implements Temporal,
 			addVicinityVehicle(vehicle);
 			// Set vehicle's coordinates to that of settlement
 			vehicle.setCoordinates(getCoordinates());
-			// Transfer to this settlement
-			vehicle.transfer(this);
 			// Call findNewParkingLoc to get a non-collided x and y coordinates
 			vehicle.findNewParkingLoc();
 			// Update the numOwnedVehicles

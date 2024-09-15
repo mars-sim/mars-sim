@@ -82,6 +82,11 @@ public class LoadVehicleGarage extends Task {
 
 		this.vehicle = vehicle;
 		this.loadController = vehicle.getLoadingPlan();
+		if (loadController == null) {
+			// Must have completed loading
+			clearTask("Vehicle already loaded.");
+			return;
+		}
  
 		// Rover may already be in the Garage
 		Building garage = vehicle.getGarage();

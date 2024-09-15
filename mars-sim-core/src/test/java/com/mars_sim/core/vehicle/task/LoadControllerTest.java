@@ -68,10 +68,7 @@ extends TestCase {
 
 		vehicle = new Rover("Test Cargo Rover",
 							config.getVehicleConfiguration().getVehicleSpec("cargo rover"), settlement);
-		
-		// Call addOwnedVehicle prior to addUnit
-		settlement.addOwnedVehicle(vehicle);
-		
+
 		unitManager.addUnit(vehicle);
 
 		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();

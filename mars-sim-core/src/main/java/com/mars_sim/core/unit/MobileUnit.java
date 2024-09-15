@@ -125,7 +125,11 @@ public abstract class MobileUnit extends Unit  {
 	 * not applicable to Structures.
 	 */
 	public String getContext() {
-		if (isInSettlement()) {
+		// Check vehicle first because could be in a Vehicle in a Settlement
+		if (isInVehicle()) {
+			return getVehicle().getChildContext();
+		}
+		else if (isInSettlement()) {
 			var b = getBuildingLocation();
 			if (b != null) {
 				return b.getChildContext();
@@ -133,9 +137,6 @@ public abstract class MobileUnit extends Unit  {
 			else {
 				return getAssociatedSettlement().getName();
 			}
-		}
-		else if (isInVehicle()) {
-			return getVehicle().getChildContext();
 		}
 		else if (isOutside()) {
 			return getCoordinates().getFormattedString();
@@ -173,7 +174,8 @@ public abstract class MobileUnit extends Unit  {
 
 		if (c.getUnitType() == UnitType.VEHICLE) {
 			// Will see if vehicle is inside a garage or not
-			return ((Vehicle)c).getSettlement();
+			Vehicle v = (Vehicle) c;
+			return (v.isInVehicleInGarage() ? v.getSettlement() : null);
 		}
 
 		if (c.getUnitType() == UnitType.BUILDING || c.getUnitType() == UnitType.PERSON
@@ -191,14 +193,7 @@ public abstract class MobileUnit extends Unit  {
 	 */
 	@Override
 	public boolean isInSettlement() {
-
-		if (containerID <= MARS_SURFACE_UNIT_ID)
-			return false;
-
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-
-		return false;
+		return (getSettlement() != null);
 	}
 
     
