@@ -40,7 +40,6 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -80,6 +79,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -88,7 +88,7 @@ import com.mars_sim.core.vehicle.Vehicle;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, Appraiser {
+public class Person extends MobileUnit implements Worker, Temporal, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -129,17 +129,13 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 	private LocalDate birthDate;
 	/** The age of a person */
 	private int age = -1;
-	/** The current building location of the person. */
-	private int currentBuildingInt;
 	/** The carrying capacity of the person. */
 	private int carryingCapacity;
 	/** The id of the person who invite this person for a meeting. */
 	private int initiatorId = -1;
 	/** The id of the person being invited by this person for a meeting. */
 	private int inviteeId = -1;
-	
-	/** The settlement the person is currently associated with. */
-	private Integer associatedSettlementID = Integer.valueOf(-1);
+
 	/** The buried settlement if the person has been deceased. */
 	private Integer buriedSettlement = Integer.valueOf(-1);
 
@@ -149,16 +145,12 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 	private double height;
 	/** The height of the person (in kg). */
 	private double weight;
-
-//	private long tLast;
 	
 	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
 	private String bloodType;
 
-	/** Settlement position (meters) from settlement center. */
-	private LocalPosition position;
 	/** The spot owned by this Person */
 	private AllocatedSpot spot;
 	/** The gender of the person (male or female). */
@@ -218,12 +210,8 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 	public Person(String name, Settlement settlement, GenderType gender,
 					int age, PopulationCharacteristics ethnicity,
 					Map<NaturalAttributeType, Integer> initialAttrs) {
-		super(name, settlement.getCoordinates());
+		super(name, settlement);
 		super.setDescription(EARTHLING);
-
-		// Initialize data members
-		this.position = LocalPosition.DEFAULT_POSITION;
-		this.associatedSettlementID = settlement.getIdentifier();
 
 		// Create a prior training profile
 		generatePriorTraining();
@@ -264,7 +252,7 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 		// Create the role
 		role = new Role(this);
 		// Create shift schedule
-		shiftSlot = getAssociatedSettlement().getShiftManager().allocationShift(this);
+		shiftSlot = settlement.getShiftManager().allocationShift(this);
 		
 		// Set up life support type
 		support = getLifeSupportType();
@@ -537,66 +525,6 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 	}
 
 	/**
-	 * Gets the person's position at a settlement.
-	 *
-	 * @return distance (meters) from the settlement's center.
-	 */
-	@Override
-	public LocalPosition getPosition() {
-		return position;
-	}
-
-	/**
-	 * Sets the person's settlement-wide position.
-	 *
-	 * @param position
-	 */
-	@Override
-	public void setPosition(LocalPosition position) {
-		this.position = position;
-	}
-
-	/**
-	 * Gets the settlement in vicinity. This is used assume the person is not at a settlement.
-	 *
-	 * @return the person's settlement
-	 */
-	public Settlement getNearbySettlement() {
-		return unitManager.findSettlement(getCoordinates());
-	}
-	
-	/**
-	 * Gets the settlement the person is at.
-	 * Returns null if person is not at a settlement.
-	 *
-	 * @return the person's settlement
-	 */
-	@Override
-	public Settlement getSettlement() {
-
-		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
-			return null;
-
-		Unit c = getContainerUnit();
-
-		if (c.getUnitType() == UnitType.SETTLEMENT) {
-			return (Settlement) c;
-		}
-
-		if (c.getUnitType() == UnitType.VEHICLE) {
-			// Will see if vehicle is inside a garage or not
-			return ((Vehicle)c).getSettlement();
-		}
-
-		if (c.getUnitType() == UnitType.BUILDING || c.getUnitType() == UnitType.PERSON
-				|| c.getUnitType() == UnitType.ROBOT) {
-			return c.getSettlement();
-		}
-
-		return null;
-	}
-
-	/**
 	 * Buries the Person at the current location. This happens only if the person can
 	 * be retrieved from any containing Settlements or Vehicles found. The body is
 	 * fixed at the last location of the containing unit.
@@ -611,7 +539,7 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 		// Back up the last container unit
 		condition.getDeathDetails().backupContainerUnit(getContainerUnit());
 		// Set his/her buried settlement
-		buriedSettlement = associatedSettlementID;
+		buriedSettlement = getAssociatedSettlement().getIdentifier();
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
@@ -984,72 +912,11 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
         return !condition.isNominallyUnfit();
     }
 
-	/**
-	 * Gets the settlement the person is currently associated with.
-	 *
-	 * @return associated settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlementID);
-	}
-
-	/**
-	 * Sets the associated settlement for a person.
-	 *
-	 * @param newSettlement the new associated settlement or null if none.
-	 */
-	public void setAssociatedSettlement(int newSettlement) {
-
-		if (associatedSettlementID != newSettlement) {
-
-			int oldSettlement = associatedSettlementID;
-			associatedSettlementID = newSettlement;
-
-			if (oldSettlement != -1) {
-				unitManager.getSettlementByID(oldSettlement).removeACitizen(this);
-			}
-
-			if (newSettlement != -1) {
-				unitManager.getSettlementByID(newSettlement).addACitizen(this);
-			}
-		}
-	}
-
 	public Settlement getBuriedSettlement() {
 		return unitManager.getSettlementByID(buriedSettlement);
 	}
 
-
-
-	/**
-	 * Computes the building the person is currently located at.
-	 * Returns null if outside of a settlement.
-	 *
-	 * @return building
-	 */
-	@Override
-	public Building getBuildingLocation() {
-		if (currentBuildingInt == -1)
-			return null;
-		return unitManager.getBuildingByID(currentBuildingInt);
-	}
-
-	/**
-	 * Computes the building the person is currently located at.
-	 * Returns null if outside of a settlement.
-	 *
-	 * @return building
-	 */
-	public void setCurrentBuilding(Building building) {
-		if (building == null) {
-			currentBuildingInt = -1;
-		}
-		else {
-			currentBuildingInt = building.getIdentifier();
-		}
-	}
-
+	
 	@Override
 	public String getTaskDescription() {
 		return getMind().getTaskManager().getTaskDescription(false);
@@ -1143,19 +1010,6 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 		return isBuried;
 	}
 
-	/**
-	 * Gets vehicle person is in, null if person is not in vehicle.
-	 *
-	 * @return the person's vehicle
-	 */
-	@Override
-	public Vehicle getVehicle() {
-		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
-			return (Vehicle) getContainerUnit();
-		}
-
-		return null;
-	}
 
 	public CircadianClock getCircadianClock() {
 		return circadian;
@@ -1718,11 +1572,11 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 							currentStateType = LocationStateType.VEHICLE_VICINITY;
 				}
 				else {
-					updatePersonState(newContainer);
+					updateLocationState(newContainer);
 				}
 			}
 			else {
-				updatePersonState(newContainer);
+				updateLocationState(newContainer);
 			}
 			
 			// 3. Set containerID
@@ -1733,66 +1587,6 @@ public class Person extends Unit implements Worker, Temporal, Appraiser {
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 		return true;
-	}
-
-	/**
-	 * Updates the location state type of a person.
-	 *
-	 * @param newContainer
-	 */
-	public void updatePersonState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-
-		currentStateType = getNewLocationState(newContainer);
-	}
-
-	/**
-	 * Gets the location state type based on the type of the new container unit.
-	 *
-	 * @param newContainer
-	 * @return {@link LocationStateType}
-	 */
-	private LocationStateType getNewLocationState(Unit newContainer) {
-
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.VEHICLE)
-			return LocationStateType.INSIDE_VEHICLE;
-
-		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.MARS_SURFACE;
-
-		if (newContainer.getUnitType() == UnitType.PERSON)
-			return LocationStateType.ON_PERSON_OR_ROBOT;
-
-		if (newContainer.getUnitType() == UnitType.MARS)
-			return LocationStateType.MARS_SURFACE;
-
-		return null;
-	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-
-		if (containerID <= MARS_SURFACE_UNIT_ID)
-			return false;
-
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-
-		return false;
 	}
 
 	/**

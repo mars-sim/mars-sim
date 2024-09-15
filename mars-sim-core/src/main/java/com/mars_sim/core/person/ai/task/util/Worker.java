@@ -120,13 +120,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	public boolean isRightOutsideSettlement();
 
 	/**
-	 * Gets the settlement in vicinity. This is used assume the person is not at a settlement.
-	 *
-	 * @return the worker's settlement
-	 */
-	public Settlement getNearbySettlement();
-
-	/**
 	 * Gets the associated settlement.
 	 *  
 	 * @return the worker's associated settlement

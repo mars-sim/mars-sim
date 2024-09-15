@@ -34,6 +34,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -73,7 +74,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	private JLabel vicinityLabel;
 	private JLabel containerLabel;
-	private JLabel settlementLabel;
+	private JLabel posnLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
 	private JLabel activitySpot;
@@ -95,7 +96,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private Unit vicinityUnit;
 	private Unit containerCache;
 	private Building buildingCache;
-	private Settlement settlementCache;
 	private Coordinates locationCache;
 
 	private LocationStateType locationStateTypeCache;
@@ -219,8 +219,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			
 			activitySpot = containerPanel.addRow("Reserved Spot", "");
 			
-			addTop3(containerPanel);
-			addNext2(containerPanel);
+			addUnitValues(containerPanel);
+			addMobileUnitValues(containerPanel);
 		}
 		
 		else if (isVehicle) {
@@ -228,16 +228,16 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			AttributePanel containerPanel = new AttributePanel(5);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 	
-			addTop3(containerPanel);
-			addNext2(containerPanel);
+			addUnitValues(containerPanel);
+			addMobileUnitValues(containerPanel);
 		}
 		
 		else if (isEquipment) {
 			
-			AttributePanel containerPanel = new AttributePanel(3);
+			AttributePanel containerPanel = new AttributePanel(2);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 				
-			addTop3(containerPanel);
+			addUnitValues(containerPanel);
 		}
 		
 		else if (isSettlement) {
@@ -252,17 +252,29 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		update();
 	}
 
-	public void addTop3(AttributePanel containerPanel) {
-		settlementLabel = containerPanel.addRow("Settlement", "");
+	private void addUnitValues(AttributePanel containerPanel) {
 		containerLabel = containerPanel.addRow("Container Unit", "");
 		locationStateLabel = containerPanel.addRow("Location State", "");
 	}
 	
-	public void addNext2(AttributePanel containerPanel) {
+	private void addMobileUnitValues(AttributePanel containerPanel) {
 		buildingLabel = containerPanel.addRow("Building", "");
+		posnLabel = containerPanel.addRow("Position", "");
 		vicinityLabel = containerPanel.addRow("Vicinity", "");
 	}
 	
+	private void updateMobileLabels(MobileUnit mu) {
+		// If this unit is inside a building
+		Building building = mu.getBuildingLocation();
+		if (buildingCache != building) {
+			buildingCache = building;
+			String n = building != null ? building.getName() : "";
+			buildingLabel.setText(n);
+		}
+
+		posnLabel.setText(mu.getPosition().getShortFormat());
+	}
+
 	/**
 	 * Updates the info on this panel.
 	 */
@@ -281,6 +293,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			updateBanner(unit);
 		}
 		
+		if (unit instanceof MobileUnit mu) {
+			updateMobileLabels(mu);
+		}
 		updateLabels(unit);
 		
 		String theme = StyleManager.getLAF();
@@ -683,22 +698,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 				containerLabel.setText(n);
 			}
 			
-			// If this unit is inside a settlement
-			Settlement settlement = unit.getSettlement();
-			if (settlementCache != settlement) {
-				settlementCache = settlement;
-				String n = settlement != null ? settlement.getName() : "";
-				settlementLabel.setText(n);
-			}
-			
-			// If this unit is inside a building
-			Building building = unit.getBuildingLocation();
-			if (buildingCache != building) {
-				buildingCache = building;
-				String n = building != null ? building.getName() : "";
-				buildingLabel.setText(n);
-			}
-
 			LocationStateType locationStateType = unit.getLocationStateType();
 			if (locationStateTypeCache != locationStateType) {
 				locationStateTypeCache = locationStateType;
@@ -786,35 +785,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	public void destroy() {
 		super.destroy();
 		
-		vicinityLabel = null;
-		containerLabel = null;
-		settlementLabel = null;
-		 buildingLabel = null;
-		locationStateLabel = null;
-		activitySpot = null;
-		iceLabel = null;
-		regolithLabel = null;
-		areothermalLabel = null;
-		
-		locatorButton = null;
-
-		lcdLong = null;
-		lcdLat = null;
-		bannerText = null;
-		gauge = null;
-
-		latLonDim = null;
-		gaugeDim = null;
-		bannerDim = null;
-		
 		vicinityUnit = null;
 		containerCache = null;
 		buildingCache = null;
-		settlementCache = null;
 		locationCache = null;
 
 		locationStateTypeCache = null;
-		
-
 	}
 }

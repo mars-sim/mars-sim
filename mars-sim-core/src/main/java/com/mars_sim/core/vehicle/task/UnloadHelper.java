@@ -56,7 +56,6 @@ public final class UnloadHelper {
     	for (Person p : deadBodies) {
     		if (p.transfer(dest)) {
     			BuildingManager.addToMedicalBuilding(p, dest);			
-    			p.setAssociatedSettlement(dest.getIdentifier());
     			UnloadVehicleEVA.logger.info(p, "dead body from " + crewable.getName());
     		}
     		else {

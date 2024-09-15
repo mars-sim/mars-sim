@@ -32,7 +32,6 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -42,7 +41,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.ai.BotMind;
-import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -54,13 +52,13 @@ import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, Worker {
+public class Robot extends MobileUnit implements Salvagable, Temporal, Malfunctionable, Worker {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -93,12 +91,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 
-	/** The building the robot is at. */
-	private int currentBuildingInt;
 	/** The age of this robot. */
 	private int age;
-	/** The settlement the robot is currently associated with. */
-	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
 	/** The carrying capacity of the robot. */
@@ -110,8 +104,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private AllocatedSpot spot;
 	/** The year of birth of this robot. */
 	private LocalDate birthDate;
-	/** Settlement position (meters) from settlement center. */
-	private LocalPosition position;
 	/** The Robot Type. */
 	private RobotType robotType;
 	/** The robot's skill manager. */
@@ -138,12 +130,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @param spec
 	 */
 	public Robot(String name, Settlement settlement, RobotSpec spec) {
-		super(name, settlement.getCoordinates());
+		super(name, settlement);
 
 		// Initialize data members.
-		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 		this.robotType = spec.getRobotType();
-		this.position = LocalPosition.DEFAULT_POSITION;
 		this.model = spec.getMakeModel();
 		
 		// Set base mass
@@ -177,7 +167,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public void initialize() {
 
 		// Add this robot to be owned by the settlement
-		Settlement s = unitManager.getSettlementByID(associatedSettlementID);
+		Settlement s = getAssociatedSettlement();
 		s.addOwnedRobot(this);
 
 		// Put robot in proper building.
@@ -219,87 +209,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return true if the robot is just right outside of a settlement
 	 */
+	@Override
 	public boolean isRightOutsideSettlement() {
         return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
     }
-
-	/**
-	 * Gets the robot's position at a settlement.
-	 *
-	 * @return distance (meters) from the settlement's center.
-	 */
-	@Override
-	public LocalPosition getPosition() {
-		return position;
-	}
-
-	/**
-	 * Sets the robot's position at a settlement.
-	 *
-	 * @param position the distance (meters) from the settlement's center.
-	 */
-	@Override
-	public void setPosition(LocalPosition position) {
-		this.position = position;
-	}
-
-	/**
-	 * Get the settlement in vicinity. This is used assume the robot's is not at a settlement
-	 *
-	 * @return the robot's settlement
-	 */
-	public Settlement getNearbySettlement() {
-		return unitManager.findSettlement(getCoordinates());
-	}
-
-	/**
-	/**
-	 * Get the settlement the robot is at.
-	 * Returns null if robot is not at a settlement.
-	 *
-	 * @return the robot's settlement
-	 */
-	@Override
-	public Settlement getSettlement() {
-
-		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
-			return null;
-
-		Unit c = getContainerUnit();
-
-		if (c.getUnitType() == UnitType.SETTLEMENT) {
-			return (Settlement) c;
-		}
-
-		if (isInVehicleInGarage()) {
-			return ((Vehicle)c).getSettlement();
-		}
-
-		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
-			return c.getSettlement();
-		}
-
-		return null;
-	}
-
-	/**
-	 * Get vehicle robot is in, null if robot is not in vehicle
-	 *
-	 * @return the robot's vehicle
-	 */
-	@Override
-	public Vehicle getVehicle() {
-		if (isInVehicle())
-			return (Vehicle) getContainerUnit();
-		return null;
-	}
 
 	// TODO: allow parts to be recycled
 	public void toBeSalvaged() {
 		((Settlement)getContainerUnit()).removeOwnedRobot(this);
 		isInoperable = true;
-		// Set home town
-		setAssociatedSettlement(-1);
 	}
 
 	// TODO: allow robot parts to be stowed in storage
@@ -477,43 +395,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Gets the settlement the robot is currently associated with.
-	 *
-	 * @return associated settlement or null if none.
-	 */
-	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlementID);
-	}
-
-	/**
-	 * Sets the associated settlement for a robot.
-	 *
-	 * @param newSettlement the new associated settlement or null if none.
-	 */
-	public void setAssociatedSettlement(int newSettlement) {
-		if (associatedSettlementID != newSettlement) {
-
-			int oldSettlement = associatedSettlementID;
-			associatedSettlementID = newSettlement;
-
-			if (oldSettlement != -1) {
-				unitManager.getSettlementByID(oldSettlement).removeOwnedRobot(this);
-			}
-		}
-	}
-
-	public double getScientificAchievement(ScienceType science) {
-		return 0;
-	}
-
-	public double getTotalScientificAchievement() {
-		return 0;
-	}
-
-	public void addScientificAchievement(double achievementCredit, ScienceType science) {
-	}
-
-	/**
 	 * Gets a collection of people affected by this malfunction bots
 	 *
 	 * @return person collection
@@ -559,50 +440,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
-	}
-
-	/**
-	 * Gets the building the robot is located at Returns null if outside of a
-	 * settlement
-	 *
-	 * @return building
-	 */
-	@Override
-	public Building getBuildingLocation() {
-		return computeCurrentBuilding();
-	}
-
-	/**
-	 * Computes the building the robot is currently located at Returns null if
-	 * outside of a settlement
-	 *
-	 * @return building
-	 */
-	public Building computeCurrentBuilding() {
-//		if (isInSettlement()) {
-//			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(),
-//					getYLocation());
-//		} else
-//			currentBuilding = null;
-//
-//		return currentBuilding;
-
-		if (currentBuildingInt == -1)
-			return null;
-		return unitManager.getBuildingByID(currentBuildingInt);
-	}
-
-	/**
-	 * Computes the building the robot is currently located at Returns null if
-	 * outside of a settlement
-	 *
-	 * @return building
-	 */
-	public void setCurrentBuilding(Building building) {
-		if (building == null)
-			currentBuildingInt = -1;
-		else
-			currentBuildingInt = building.getIdentifier();
 	}
 
 	@Override
@@ -1050,7 +887,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set LocationStateType
-			updateRobotState(newContainer);
+			updateLocationState(newContainer);
 			// 3. Set containerID
 			// TODO: what to set for a decommissioned robot ?
 			setContainerID(newContainer.getIdentifier());
@@ -1059,79 +896,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		return true;
-	}
-
-	/**
-	 * Updates the location state type of a  robot
-	 *
-	 * @param newContainer
-	 */
-	public void updateRobotState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-
-		currentStateType = getNewLocationState(newContainer);
-	}
-
-	/**
-	 * Gets the location state type based on the type of the new container unit
-	 *
-	 * @param newContainer
-	 * @return {@link LocationStateType}
-	 */
-	private LocationStateType getNewLocationState(Unit newContainer) {
-
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.VEHICLE)
-			return LocationStateType.INSIDE_VEHICLE;
-
-		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.MARS_SURFACE;
-
-		if (newContainer.getUnitType() == UnitType.PERSON)
-			return LocationStateType.ON_PERSON_OR_ROBOT;
-
-		if (newContainer.getUnitType() == UnitType.MARS)
-			return LocationStateType.MARS_SURFACE;
-
-		return null;
-	}
-
-	/**
-	 * Is this unit inside a settlement
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-
-		if (containerID <= MARS_SURFACE_UNIT_ID)
-			return false;
-
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
-			return false;
-//			// if the vehicle is parked in a garage
-//			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
-//				return true;
-//			}
-		}
-
-		// Note: may consider the scenario of this unit
-		// being carried in by another person or a robot
-//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-//			return getContainerUnit().isInSettlement();
-
-		return false;
 	}
 
 	/**
