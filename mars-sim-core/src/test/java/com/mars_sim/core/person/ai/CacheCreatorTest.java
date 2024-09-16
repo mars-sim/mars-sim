@@ -29,7 +29,6 @@ class CacheCreatorTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        cacheCreator = spy(new CacheCreator<>("test-context", marsTime));
 
         when(score1.getScore()).thenReturn(5.0);
         when(score2.getScore()).thenReturn(3.0);
