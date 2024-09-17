@@ -308,6 +308,7 @@ public abstract class MetaTask {
 			if (t.isEVA()) {
 				// EVA factor is the radiation and the EVA modifiers applied extra
 				factor.addModifier(RADIATION_MODIFIER, TaskUtil.getRadiationModifier(p.getSettlement()));
+				// Question: how to bypass some checks below in case of emergency ?
 				factor.addModifier(EVA_MODIFIER, TaskUtil.getEVAModifier(p));
 			}
 		}

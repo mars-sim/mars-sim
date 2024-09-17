@@ -202,8 +202,14 @@ public class TaskUtil {
 		if (EVAOperation.isGettingDark(person))
 			return 0;
 
-		// Checks if the person's settlement is at meal time and is hungry
-		if (EVAOperation.isHungryAtMealTime(person))
+		// Question: how to bypass some checks below in case of emergency ?
+		
+		// Checks if the person is hungry
+		if (person.getPhysicalCondition().isHungry())
+			return 0;
+		
+		// Checks if the person's settlement is too close to starting meal time and is doubly hungry
+		if (EVAOperation.isHungryAtMealTime(person, 20))
 			return 0;
 		
 		// Checks if the person is physically fit for heavy EVA tasks

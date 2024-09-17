@@ -68,10 +68,20 @@ public class HouseKeeping implements Serializable {
 		inspectionMap.replaceAll((s, v) -> v - value);
 	}
 	
+	/**
+	 * Gets the least inspected.
+	 * 
+	 * @return
+	 */
 	public String getLeastInspected() {
 		return getLeast(this.inspectionMap);
 	}
 	
+	/**
+	 * Gets the least cleaned.
+	 * 
+	 * @return
+	 */
 	public String getLeastCleaned() {
 		return getLeast(this.cleaningMap);
 	}
@@ -114,7 +124,8 @@ public class HouseKeeping implements Serializable {
 	}
 
 	/**
-	 * How much time has been spend working of this entity
+	 * Gets how much time has been spend working of this entity.
+	 * 
 	 * @return
 	 */
     public double getCumulativeWorkTime() {
