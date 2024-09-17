@@ -417,9 +417,9 @@ public abstract class EVAOperation extends Task {
 			return true;
 		}
 
-		// Check if it is at meal time and the person is hungry
-		if (isHungryAtMealTime(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': At meal time.");
+		// Check if it is at meal time and the person is doubly hungry
+		if (isHungryAtMealTime(person, 0)) {
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': Doubly hungry at meal time.");
 			return true;
 		}
 
@@ -584,14 +584,15 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the person's settlement is at meal time and is hungry.
+	 * Checks if the person's settlement is at meal time and is doubly hungry.
 	 *
 	 * @param person
+	 * @param prepTime
 	 * @return
 	 */
-	public static boolean isHungryAtMealTime(Person person) {
-        return CookMeal.isMealTime(person, 0) 
-        		&& person.getPhysicalCondition().isHungry();
+	public static boolean isHungryAtMealTime(Person person, int prepTime) {
+        return CookMeal.isMealTime(person, prepTime) 
+        		&& person.getPhysicalCondition().isDoubleHungry();
     }
 
 	/**
@@ -601,7 +602,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
-        return person.getPhysicalCondition().isHungry() && person.getPhysicalCondition().isThirsty()
+        return person.getPhysicalCondition().isDoubleHungry() && person.getPhysicalCondition().isDoubleThirsty()
                 && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().isStressed();
     }
 

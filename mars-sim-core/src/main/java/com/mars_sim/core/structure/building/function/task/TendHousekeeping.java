@@ -31,11 +31,20 @@ public abstract class TendHousekeeping extends Task {
 	/** Task phases. */
 	protected static final TaskPhase CLEANING = new TaskPhase(Msg.getString("Task.phase.cleaning")); //$NON-NLS-1$
 
+	protected static final String CLEANING_DETAIL = Msg.getString("Task.description.tendHousekeeping.cleaning"); //$NON-NLS-1$
+	
+	protected static final String INSPECTING_DETAIL = Msg.getString("Task.description.tendHousekeeping.inspecting"); //$NON-NLS-1$
+	
+	private static final int MS = 30_000;
+	
 	static final double MAX_INSPECT_TIME = 30D;
+	
 	static final double MAX_CLEANING_TIME = 80D;
 
 	private double completedTime = 0D;
+	
 	private String goal;
+	
 	private HouseKeeping keeping;
 	
 	/**
@@ -82,8 +91,7 @@ public abstract class TendHousekeeping extends Task {
 				return time;
 			}
 
-			updateDescription(Msg.getString("Task.description.tendHousekeeping.inspect.detail", 
-					goal));
+			updateDescription(INSPECTING_DETAIL + goal);
 		}
 		
 		addExperience(time);
@@ -92,8 +100,7 @@ public abstract class TendHousekeeping extends Task {
 		if (completedTime > MAX_INSPECT_TIME) {
 			keeping.inspected(goal, completedTime);
 			
-			logger.info(worker, 60_000, Msg.getString("Task.description.tendHousekeeping.inspect.detail", 
-					goal) + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
+			logger.info(worker, MS, INSPECTING_DETAIL + goal + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
 			endTask();
 		}
 			
@@ -108,7 +115,7 @@ public abstract class TendHousekeeping extends Task {
 	 */
 	protected void updateDescription(String text) {
 		setDescription(text);
-		logger.info(worker, 60_000, text + ".");
+		logger.info(worker, MS, text + ".");
 	}
 	
 	/**
@@ -125,8 +132,7 @@ public abstract class TendHousekeeping extends Task {
 				return time;
 			}
 
-			updateDescription(Msg.getString("Task.description.tendHousekeeping.clean.detail", 
-					goal));
+			updateDescription(CLEANING_DETAIL + goal);
 		}
 		
 		addExperience(time);
@@ -135,8 +141,7 @@ public abstract class TendHousekeeping extends Task {
 		if (completedTime > MAX_CLEANING_TIME) {
 			keeping.cleaned(goal, completedTime);
 			
-			logger.info(worker, 60_000, Msg.getString("Task.description.tendHousekeeping.clean.detail", 
-					goal) + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
+			logger.info(worker, MS, CLEANING_DETAIL + goal + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
 			endTask();
 		}
 			

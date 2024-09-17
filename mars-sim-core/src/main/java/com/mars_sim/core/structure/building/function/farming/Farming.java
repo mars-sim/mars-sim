@@ -261,9 +261,7 @@ public class Farming extends Function {
 				.filter(c -> building.getSettlement()
 				.getAllAmountResourceOwned(c.getCropID()) > amount)
 				.collect(Collectors.toList());
-			
-//		logger.log(getBuilding(), Level.INFO, 0, "list: " + list);
-		
+
 		List<AmountResource> tissues = new ArrayList<>();
 		
 		for (CropSpec c: list) {
@@ -295,7 +293,7 @@ public class Farming extends Function {
 		}
 	
 		if (cropName != null) {
-			logger.log(getBuilding(), Level.INFO, 0, "cropName: " + cropName);
+			logger.log(getBuilding(), Level.INFO, 0, "Extracting " + cropName + ".");
 			return cropName;
 		}
 		else {	
@@ -314,7 +312,7 @@ public class Farming extends Function {
 			
 			if (selectedTissueName != null) {
 				building.getSettlement().retrieveAmountResource(selectedTissueid, STANDARD_AMOUNT_TISSUE_CULTURE);
-				logger.log(getBuilding(), Level.INFO, 0, "selectedTissueName: " + selectedTissueName);
+				logger.log(getBuilding(), Level.INFO, 0, "Extracting " + selectedTissueName + ".");
 				return selectedTissueName.replace(" tissue", "");
 			}
 		}

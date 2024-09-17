@@ -1873,6 +1873,15 @@ public class PhysicalCondition implements Serializable {
 		muscleSoreness = soreness;
 	}
 
+	/**
+	 * Checks if it passes the hunger x2 threshold
+	 *
+	 * @return
+	 */
+	public boolean isDoubleHungry() {
+		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD * 2;
+	}
+	
 
 	/**
 	 * Checks if it passes the hunger threshold
@@ -1883,6 +1892,15 @@ public class PhysicalCondition implements Serializable {
 		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD;
 	}
 
+	/**
+	 * Checks if it passes the thirst x2 threshold
+	 *
+	 * @return
+	 */
+	public boolean isDoubleThirsty() {
+		return thirst > THIRST_THRESHOLD * 2;
+	}
+	
 	/**
 	 * Checks if it passes the thirst threshold
 	 *
