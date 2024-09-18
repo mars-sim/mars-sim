@@ -611,13 +611,8 @@ public class BuildingManager implements Serializable {
 				return null;
 			
 			Set<Building> list1 = list0;
-			if (list1.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						list0);
-				return RandomUtil.getWeightedRandomObject(probs);
-			}
-			
-			if (canChat)
+
+            if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
 				list1 = BuildingManager.getChattyBuildings(list1);
 			else
@@ -774,13 +769,10 @@ public class BuildingManager implements Serializable {
 				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
 //				.skip(getRandomInt(collection.size()))
                 .findFirst();
-		
-		if (value.isPresent()) {
-			return value.get();
-		}
-		
-		return null;
-	}
+
+        return value.orElse(null);
+
+    }
 
 	/**
 	 * Gets the number of buildings at the settlement.
@@ -1478,7 +1470,7 @@ public class BuildingManager implements Serializable {
 					loc = roboticStation.getAvailableActivitySpot();
 					
 					// Add the robot to the station
-					if (loc != null && roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+					if (loc != null && !roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
 					}
 				}
@@ -1501,7 +1493,7 @@ public class BuildingManager implements Serializable {
 				robot.setCurrentBuilding(building);
 				// Claim this activity spot
 				boolean canClaim = f.claimActivitySpot(loc, robot);
-				
+
 				if (!canClaim)
 					result = false;
 				else
