@@ -429,24 +429,13 @@ public class BuildingManager implements Serializable {
 	 * @return building or null if none found.
 	 */
 	public Building getBuildingByTemplateID(String id) {
-		// Use Java 8 stream
-		// Note: stream won't pass junit test.
-//		return buildings
-//				.stream()
-//				.filter(b-> b.getID() == id)
-//				.findFirst().orElse(null);//.get();	// .findAny()
-
-		// Note: the version below can pass junit test.
 		Building result = null;
 
-		Iterator<Building> i = buildings.iterator();
-		while (i.hasNext()) {
-			Building b = i.next();
-			if (b.getTemplateID().equalsIgnoreCase(id)) {
-				result = b;
-			}
-		}
-
+        for (Building b : buildings) {
+            if (b.getTemplateID().equalsIgnoreCase(id)) {
+                result = b;
+            }
+        }
 		return result;
 	}
 
@@ -560,7 +549,6 @@ public class BuildingManager implements Serializable {
 				b = RandomUtil.getWeightedRandomObject(possibleBuildings);
 			}
 		}
-
 		return b;
 	}
 	
@@ -611,13 +599,8 @@ public class BuildingManager implements Serializable {
 				return null;
 			
 			Set<Building> list1 = list0;
-			if (list1.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						list0);
-				return RandomUtil.getWeightedRandomObject(probs);
-			}
-			
-			if (canChat)
+
+            if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
 				list1 = BuildingManager.getChattyBuildings(list1);
 			else
@@ -774,13 +757,10 @@ public class BuildingManager implements Serializable {
 				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
 //				.skip(getRandomInt(collection.size()))
                 .findFirst();
-		
-		if (value.isPresent()) {
-			return value.get();
-		}
-		
-		return null;
-	}
+
+        return value.orElse(null);
+
+    }
 
 	/**
 	 * Gets the number of buildings at the settlement.
@@ -1480,7 +1460,7 @@ public class BuildingManager implements Serializable {
 					loc = roboticStation.getAvailableActivitySpot();
 					
 					// Add the robot to the station
-					if (loc != null && roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+					if (loc != null && !roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
 					}
 				}
@@ -1503,7 +1483,7 @@ public class BuildingManager implements Serializable {
 				robot.setCurrentBuilding(building);
 				// Claim this activity spot
 				boolean canClaim = f.claimActivitySpot(loc, robot);
-				
+
 				if (!canClaim)
 					result = false;
 				else
@@ -1603,132 +1583,41 @@ public class BuildingManager implements Serializable {
 		else {
 			double result = 0D;
 			BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(buildingType);
-			for(FunctionType supported : spec.getFunctionSupported()) {
-				switch (supported) {
 
-				case ADMINISTRATION:
-					result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case ALGAE_FARMING:
-					result += AlgaeFarming.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-					
-				case ASTRONOMICAL_OBSERVATION:
-					result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case CONNECTION:
-					result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case COMMUNICATION:
-					result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case COMPUTATION:
-					result += Computation.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case COOKING:
-					result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case DINING:
-					result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case EARTH_RETURN:
-					result += EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case EVA:
-					result += EVA.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case EXERCISE:
-					result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case FARMING:
-					result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case FISHERY:
-					result += Fishery.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case FOOD_PRODUCTION:
-					result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case VEHICLE_MAINTENANCE:
-					result += VehicleGarage.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case LIFE_SUPPORT:
-					result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case LIVING_ACCOMMODATION:
-					result += LivingAccommodation.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case MANAGEMENT:
-					result += Management.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case MANUFACTURE:
-					result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case MEDICAL_CARE:
-					result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case POWER_GENERATION:
-					result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case POWER_STORAGE:
-					result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case PREPARING_DESSERT:
-					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-					
-				case RECREATION:
-					result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case RESEARCH:
-					result += Research.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case RESOURCE_PROCESSING:
-					result += ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case ROBOTIC_STATION:
-					result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case STORAGE:
-					result += Storage.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case THERMAL_GENERATION:
-					result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				case WASTE_PROCESSING:
-					result += WasteProcessing.getFunctionValue(buildingType, newBuilding, settlement);
-					break;
-
-				default:
-					throw new IllegalArgumentException("Do not know how to build Function " + supported);
-				}
+			for (FunctionType supported : spec.getFunctionSupported()) {
+				result += switch (supported) {
+					case ADMINISTRATION -> Administration.getFunctionValue(buildingType, newBuilding, settlement);
+					case ALGAE_FARMING -> AlgaeFarming.getFunctionValue(buildingType, newBuilding, settlement);
+					case ASTRONOMICAL_OBSERVATION -> AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
+					case CONNECTION -> BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
+					case COMMUNICATION -> Communication.getFunctionValue(buildingType, newBuilding, settlement);
+					case COMPUTATION -> Computation.getFunctionValue(buildingType, newBuilding, settlement);
+					case COOKING -> Cooking.getFunctionValue(buildingType, newBuilding, settlement);
+					case DINING -> Dining.getFunctionValue(buildingType, newBuilding, settlement);
+					case EARTH_RETURN -> EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
+					case EVA -> EVA.getFunctionValue(buildingType, newBuilding, settlement);
+					case EXERCISE -> Exercise.getFunctionValue(buildingType, newBuilding, settlement);
+					case FARMING -> Farming.getFunctionValue(buildingType, newBuilding, settlement);
+					case FISHERY -> Fishery.getFunctionValue(buildingType, newBuilding, settlement);
+					case FOOD_PRODUCTION -> FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
+					case VEHICLE_MAINTENANCE -> VehicleGarage.getFunctionValue(buildingType, newBuilding, settlement);
+					case LIFE_SUPPORT -> LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
+					case LIVING_ACCOMMODATION -> LivingAccommodation.getFunctionValue(buildingType, newBuilding, settlement);
+					case MANAGEMENT -> Management.getFunctionValue(buildingType, newBuilding, settlement);
+					case MANUFACTURE -> Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
+					case MEDICAL_CARE -> MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
+					case POWER_GENERATION -> PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
+					case POWER_STORAGE -> PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
+					case PREPARING_DESSERT -> PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
+					case RECREATION -> Recreation.getFunctionValue(buildingType, newBuilding, settlement);
+					case RESEARCH -> Research.getFunctionValue(buildingType, newBuilding, settlement);
+					case RESOURCE_PROCESSING -> ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
+					case ROBOTIC_STATION -> RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
+					case STORAGE -> Storage.getFunctionValue(buildingType, newBuilding, settlement);
+					case THERMAL_GENERATION -> ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
+					case WASTE_PROCESSING -> WasteProcessing.getFunctionValue(buildingType, newBuilding, settlement);
+					default -> throw new IllegalArgumentException("Do not know how to build Function " + supported);
+				};
 			}
 
 			// Multiply value.
