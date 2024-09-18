@@ -26,6 +26,7 @@ import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 
 /**
  * This class keeps track of ongoing missions in the simulation.
@@ -46,8 +47,6 @@ public class MissionManager implements Serializable {
 	
 	/** The mission listeners. */
 	private transient List<MissionManagerListener> listeners;
-
-	private transient CacheCreator<MissionRating> missionProbCache = null;
 
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
@@ -206,35 +205,33 @@ public class MissionManager implements Serializable {
 	 */
 
 	public Mission getNewMission(Person person) {
-		List<MissionRating> missionProbCache = new ArrayList<>();
+		MarsTime marsTime = Simulation.instance().getMasterClock().getMarsTime();
+		CacheCreator<MissionRating> missionProbCache = new CacheCreator<>("Mission", marsTime);
+		List<MissionRating> missionCache = new ArrayList<>();
 		Settlement startingSettlement = person.getAssociatedSettlement();
 		ParameterManager paramMgr = startingSettlement.getPreferences();
 
 		double calculateTotalProbCache = calculateMissionProbabilities(
-				person, missionProbCache, paramMgr, startingSettlement);
+				person, missionCache, paramMgr, startingSettlement);
 
 		if (calculateTotalProbCache <= 0D) {
-			person.getMind().getTaskManager().setMissionRatings(missionProbCache, null);
+			person.getMind().getTaskManager().setMissionRatings(missionCache, null);
 			return null;
 		}
 
-		var selectedMission = selectMissionFromProbabilities();
+		var selectedMission = missionProbCache.getRandomSelection();
 
 		if (selectedMission == null) {
 			throw new IllegalStateException(person + " could not determine a new mission.");
 		}
 
-		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, missionProbCache);
+		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, missionCache);
 
 		// Construct and return the mission
 		Mission mission = selectedMission.getMeta().constructInstance(person, true);
-		person.getMind().getTaskManager().setMissionRatings(missionProbCache, selectedMission);
+		person.getMind().getTaskManager().setMissionRatings(missionCache, selectedMission);
 
 		return mission;
-	}
-
-	private MissionRating selectMissionFromProbabilities() {
-		return missionProbCache.getRandomSelection();
 	}
 
 	private double calculateMissionProbabilities(Person person, List<MissionRating> missionProbCache,

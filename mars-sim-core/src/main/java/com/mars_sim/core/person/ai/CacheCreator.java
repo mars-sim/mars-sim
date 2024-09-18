@@ -60,7 +60,7 @@ public class CacheCreator<T extends Rating> {
         T lastEntry = null;
         double randomDouble = getRandomDoubleBasedOnProbability();
 
-        for (T entry: cache) {
+        for (T entry : cache) {
             double probWeight = entry.getScore().getScore();
             if (randomDouble <= probWeight) {
                 if (createdTime != null) {
