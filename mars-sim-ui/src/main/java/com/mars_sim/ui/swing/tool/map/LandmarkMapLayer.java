@@ -27,33 +27,26 @@ import com.mars_sim.core.tool.SimulationConstants;
 public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 
 	/** Diameter of marking circle. */
-	private int CIRCLE_DIAMETER = 4; // FIXME: make proportional to actual loaded diameter.
-
+	private int CIRCLE_DIAMETER = 4;
 	/** Diameter of marking circle for artificial objects. */
 	private int AO_CIRCLE_DIAMETER = 4;
+	/** Horizontal offset for label. */
+	private int LABEL_HORIZONTAL_OFFSET = 2;
+	/** Horizontal offset for artificial objects. */
+	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
 	/** Light pink color for landmarks on surface map. */
 	private final Color SURFACE_COLOR = new Color(230, 186, 186);
-
 	/** Dark pink color for landmarks on topo map. */
 	private final Color TOPO_COLOR = new Color(95, 60, 60);
-
 	/** Light violet color for artificial objects on surface map. */
-	private final Color AO_SURFACE_COLOR = new Color(127, 127, 255);
-
+	private final Color AO_COLOR_0 = new Color(127, 127, 255);
 	/** Gray color for artificial objects on topo map. */
-	private final Color AO_TOPO_COLOR = new Color(173, 173, 173);
-	
+	private final Color AO_COLOR_1 = new Color(173, 173, 173);
 	/** Label font for landmarks. */
 	private final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
 	/** Label font for artificial object. */
 	private final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
-	
-	/** Horizontal offset for label. */
-	private int LABEL_HORIZONTAL_OFFSET = 2;
-
-	/** Horizontal offset for artificial objects. */
-	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
 	private final List<Landmark> landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 
@@ -112,9 +105,9 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			g2d.setFont(AO_LABEL_FONT);
 			// Set the label color.
 			if (baseMap.getMapMetaData().isColourful())
-				g2d.setColor(AO_TOPO_COLOR);
+				g2d.setColor(AO_COLOR_0);
 			else
-				g2d.setColor(AO_SURFACE_COLOR);
+				g2d.setColor(AO_COLOR_1);
 			
 			// Draw a circle at the location.
 			g2d.drawOval(locX, locY, AO_CIRCLE_DIAMETER, AO_CIRCLE_DIAMETER);
@@ -132,9 +125,9 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			g2d.setFont(MAP_LABEL_FONT);
 			// Set the label color.
 			if (baseMap.getMapMetaData().isColourful())
-				g2d.setColor(TOPO_COLOR);
-			else
 				g2d.setColor(SURFACE_COLOR);
+			else
+				g2d.setColor(TOPO_COLOR);
 			
 			// Draw a circle at the location.
 			g2d.drawOval(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);

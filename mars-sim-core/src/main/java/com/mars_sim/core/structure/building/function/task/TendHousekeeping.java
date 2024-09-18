@@ -91,7 +91,7 @@ public abstract class TendHousekeeping extends Task {
 				return time;
 			}
 
-			updateDescription(INSPECTING_DETAIL + goal);
+			updateDescription(INSPECTING_DETAIL + " " + goal);
 		}
 		
 		addExperience(time);
@@ -100,7 +100,7 @@ public abstract class TendHousekeeping extends Task {
 		if (completedTime > MAX_INSPECT_TIME) {
 			keeping.inspected(goal, completedTime);
 			
-			logger.info(worker, MS, INSPECTING_DETAIL + goal + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
+			logger.info(worker, MS, INSPECTING_DETAIL + " " + goal + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
 			endTask();
 		}
 			
@@ -132,7 +132,7 @@ public abstract class TendHousekeeping extends Task {
 				return time;
 			}
 
-			updateDescription(CLEANING_DETAIL + goal);
+			updateDescription(CLEANING_DETAIL + " " + goal);
 		}
 		
 		addExperience(time);
@@ -141,7 +141,7 @@ public abstract class TendHousekeeping extends Task {
 		if (completedTime > MAX_CLEANING_TIME) {
 			keeping.cleaned(goal, completedTime);
 			
-			logger.info(worker, MS, CLEANING_DETAIL + goal + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
+			logger.info(worker, MS, CLEANING_DETAIL + " " + goal + " for " + Math.round(completedTime * 10.0)/10.0  + " msols.");
 			endTask();
 		}
 			

@@ -452,8 +452,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param des the task description.
 	 */
 	protected void setDescriptionDone(String des) {
-		description = des;
-		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+		if (!description.equalsIgnoreCase(des)) {
+			description = des;
+			eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+		}
 	}
 		
 	/**
@@ -463,14 +465,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param recordTask true if wanting to record
 	 */
 	protected void setDescription(String des, boolean recordTask) {
-		description = des;
-		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
-		
-		if (!des.equals("") && worker.getTaskManager().getTask() != null
-			// Record the activity
-			&& recordTask && canRecord()) {
-				Mission ms = worker.getMission();
-				worker.getTaskManager().recordTask(this, ms);
+		if (!description.equalsIgnoreCase(des)) {
+			description = des;
+			eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+			
+			if (!des.equals("") && worker.getTaskManager().getTask() != null
+				// Record the activity
+				&& recordTask && canRecord()) {
+					Mission ms = worker.getMission();
+					worker.getTaskManager().recordTask(this, ms);
+			}
 		}
 	}
 	
