@@ -152,6 +152,13 @@
 			</roles>
 			<timezone>0</timezone>
 		</developer>
+		<developer>
+			<name>muybien3433</name>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
 	</developers>
 
 	<!-- ************************************************************************************************* -->
