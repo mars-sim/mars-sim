@@ -9,17 +9,25 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
-  <LI>.</LI>
+  <LI>Battery: rework ingredients for making vehicle's battery modules and EVA battery.</LI>
+  <LI>Fertilizer: rework resources for making fertilizers.</LI>
+  <LI>Loading: rework loading/unloading resources independent from vehicle mission.</LI>
+  <LI>Java: update from Java 19 to Java 21.</LI>
+  <LI>Rating: unify how rating score for both mission and task is computed.</LI>
+  <LI>Resource: correct potassium production and related manu processes.</LI>
 </OL>
   
 ### B. UI IMPROVEMENT :
 <OL>
-  <LI>Surface Map: load and render shade relief gray maps.</LI>
+  <LI>OpenCL: add a button to turn on/off GPU map loading.</LI>
+  <LI>Surface Map: add rendering shade relief gray maps.</LI>
 </OL>  
 
 ### C. FIXES :
 <OL>
-  <LI>Map Zoom: allow seamless transition of zoom level going from one map to another.</LI>
+  <LI>Manufacturing: fix settlement-driven manufacturing and food production.</LI>
+  <LI>Map Zoom: correct seamless zoom level transition when changing from one map to another.</LI>
+  <LI>Salvage: fix salvaging vehicles and equipment.</LI>
 </OL>
 
 
