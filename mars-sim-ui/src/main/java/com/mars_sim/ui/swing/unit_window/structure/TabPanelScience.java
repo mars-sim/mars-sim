@@ -60,6 +60,7 @@ extends TabPanel {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param settlement the settlement.
 	 * @param desktop the main desktop.
 	 */

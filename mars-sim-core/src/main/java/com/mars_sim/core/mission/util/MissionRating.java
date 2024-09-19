@@ -9,7 +9,6 @@ package com.mars_sim.core.mission.util;
 import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
-import com.mars_sim.core.person.ai.task.util.TaskJob;
 
 /**
  * This represents a mission selection that has a meta mission and a rating score.
