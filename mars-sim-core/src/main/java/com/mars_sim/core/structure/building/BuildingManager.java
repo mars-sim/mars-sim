@@ -2196,55 +2196,51 @@ public class BuildingManager implements Serializable {
 	  * Retrieves maintenance parts from all entities associated with this settlement. 
 	  */
 	private void retrieveMaintPartsFromMalfunctionMgrs() {
-		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next(); 		
-			Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
-			
-			if (!parts.isEmpty()) {
-			
-				if (!partsMaint.isEmpty()) {
-					Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
-					if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
-						// Post it
-						partsMaint.put(entity, parts);
-						for (int id: parts.keySet()) {							
-							int num = parts.get(id);		
-							Good good = GoodsUtil.getGood(id);						
-							Part part = ItemResourceUtil.findItemResource(id);					
-							// Inject the demand onto this part
-							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-						}
-					}
-					if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
+        for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
+            Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+
+            if (!parts.isEmpty()) {
+
+                if (!partsMaint.isEmpty()) {
+                    Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
+                    if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
+                        // Post it
+                        partsMaint.put(entity, parts);
+                        for (int id : parts.keySet()) {
+                            int num = parts.get(id);
+                            Good good = GoodsUtil.getGood(id);
+                            Part part = ItemResourceUtil.findItemResource(id);
+                            // Inject the demand onto this part
+                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+                        }
+                    }
+                    if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
 //						logger.info(entity, 30_000L, "Both are equal : " + partsMaintEntry + " and " + parts);
-					}
-					else {
-						// Post it
-						partsMaint.put(entity, parts);
-						for (int id: parts.keySet()) {							
-							int num = parts.get(id);		
-							Good good = GoodsUtil.getGood(id);						
-							Part part = ItemResourceUtil.findItemResource(id);					
-							// Inject the demand onto this part
-							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-						}
-					}
-				}
-				else {
-					// Post it
-					partsMaint.put(entity, parts);
-					logger.info(parts + " was posted in empty partsMaint.");
-					for (int id: parts.keySet()) {							
-						int num = parts.get(id);		
-						Good good = GoodsUtil.getGood(id);						
-						Part part = ItemResourceUtil.findItemResource(id);					
-						// Inject the demand onto this part
-						((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-					}
-				}
-			}
-		}			
+                    } else {
+                        // Post it
+                        partsMaint.put(entity, parts);
+                        for (int id : parts.keySet()) {
+                            int num = parts.get(id);
+                            Good good = GoodsUtil.getGood(id);
+                            Part part = ItemResourceUtil.findItemResource(id);
+                            // Inject the demand onto this part
+                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+                        }
+                    }
+                } else {
+                    // Post it
+                    partsMaint.put(entity, parts);
+                    logger.info(parts + " was posted in empty partsMaint.");
+                    for (int id : parts.keySet()) {
+                        int num = parts.get(id);
+                        Good good = GoodsUtil.getGood(id);
+                        Part part = ItemResourceUtil.findItemResource(id);
+                        // Inject the demand onto this part
+                        ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+                    }
+                }
+            }
+        }
 	}
 	
 	/**
@@ -2289,22 +2285,20 @@ public class BuildingManager implements Serializable {
 		if (partsMaint.isEmpty())
 			return new HashMap<>();
 		Map<Integer, Integer> partsList = new HashMap<>();
-		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-			Map<Integer, Integer> partMap = partsMaint.get(entity);
-			
-			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
-				Integer part = entry.getKey();
-				int number = entry.getValue();
-				if (!settlement.getItemResourceIDs().contains(part)) {
-					if (partsList.containsKey(part)) {
-						number += partsList.get(part).intValue();
-					}
-					partsList.put(part, number);
-				}
-			}
-		}
+        for (Malfunctionable entity : partsMaint.keySet()) {
+            Map<Integer, Integer> partMap = partsMaint.get(entity);
+
+            for (Entry<Integer, Integer> entry : partMap.entrySet()) {
+                Integer part = entry.getKey();
+                int number = entry.getValue();
+                if (!settlement.getItemResourceIDs().contains(part)) {
+                    if (partsList.containsKey(part)) {
+                        number += partsList.get(part).intValue();
+                    }
+                    partsList.put(part, number);
+                }
+            }
+        }
 		
 		return partsList;
 	}
@@ -2399,10 +2393,9 @@ public class BuildingManager implements Serializable {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		Iterator<Building> i = buildings.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
+        for (Building building : buildings) {
+            building.destroy();
+        }
 		buildings = null;
 		vPNewCache = null;
 		vPOldCache = null;
