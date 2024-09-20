@@ -840,7 +840,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 		
 		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
-			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + ".");
+			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + "'.");
 			return false;
 		}
 		

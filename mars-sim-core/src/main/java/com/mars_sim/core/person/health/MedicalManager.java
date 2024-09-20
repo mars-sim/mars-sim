@@ -79,6 +79,16 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
+	 * Returns the pre-defined Medical Complaint that signifies a panic attack
+	 * complaint.
+	 * 
+	 * @return Medical complaint for high stress.
+	 */
+	public Complaint getPanicAttack() {
+		return getComplaintByName(ComplaintType.PANIC_ATTACK);
+	}
+
+	/**
 	 * Returns the pre-defined Medical Complaint that signifies a dehydration
 	 * complaint.
 	 * 

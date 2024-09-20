@@ -120,12 +120,14 @@ extends Task {
 	 */
 	private double listeningPhase(double time) {
 		double remainingTime = 0;
-		
+		    
+        setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
+       
         // Reduce person's fatigue
         person.getPhysicalCondition().reduceFatigue(.5 * time);
 
-        setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
-        
+        person.getPhysicalCondition().reduceStress(time/2); 
+  
 		return remainingTime;
 	}
 

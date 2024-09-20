@@ -976,7 +976,7 @@ public class Settlement extends Structure implements Temporal,
 	public double getStressFactor(double time) {
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
 		if (overCrowding > 0) {
-			return .1D * overCrowding * time;
+			return .01D * overCrowding * time;
 		}
 		return 0;
 	}

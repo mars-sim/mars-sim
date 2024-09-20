@@ -98,7 +98,7 @@ public class PhysicalCondition implements Serializable {
 	/** Performance modifier for fatigue. */
 	private static final double FATIGUE_PERFORMANCE_MODIFIER = .0005D;
 	/** Performance modifier for stress. */
-	private static final double STRESS_PERFORMANCE_MODIFIER = .001D;
+	private static final double STRESS_PERFORMANCE_MODIFIER = .0005D;
 	/** Performance modifier for energy. */
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
@@ -171,7 +171,7 @@ public class PhysicalCondition implements Serializable {
 	private double kJoules;
 	/** Person's food appetite (0.0 to 1.0) */
 	private double appetite;
-
+	
 	/** The time it takes to prebreathe the air mixture in the EVA suit. */
 	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 
@@ -318,7 +318,7 @@ public class PhysicalCondition implements Serializable {
 		// Set up random physical health index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
 		fatigue = RandomUtil.getRandomRegressionInteger(50);
-		stress = RandomUtil.getRandomRegressionInteger(20);
+		stress = RandomUtil.getRandomRegressionInteger(10);
 		hunger = RandomUtil.getRandomRegressionInteger(50);
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (50 - hunger) * 100;
@@ -435,12 +435,20 @@ public class PhysicalCondition implements Serializable {
 				radiation.timePassing(pulse);
 				
 				// Get stress factor due to settlement overcrowding
-				if (person.isInSettlement()) {
+				if (person.isInSettlement() && !person.isRestingTask()) {
 					// Note: this stress factor is different from LifeSupport's timePassing's
 					//       stress modifier for each particular building
 					double stressFactor = person.getSettlement().getStressFactor(time);
-					// Update stress
-					addStress(stressFactor);
+					
+					if (stressFactor > 0) {
+						// Update stress
+				        addStress(stressFactor);
+//				        logger.info(person, 10_000, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
+					}
+				}				
+				
+				if (stress < 75) {
+					isStressedOut = false;
 				}
 				
 				int msol = pulse.getMarsTime().getMillisolInt();
@@ -449,14 +457,16 @@ public class PhysicalCondition implements Serializable {
 					// Update starvation
 					checkStarvation(hunger);
 					// Update dehydration
-					checkDehydration(thirst);
-					
-					// Check for mental breakdown if person is at high stress
+					checkDehydration(thirst);					
+					// Check if person is stressed out
+					checkStress();
 					
 					// Check if person is at very high fatigue may collapse.
 
-					if (!isRadiationPoisoned)
+					// Check radiation poisoning
+					if (!isRadiationPoisoned) {
 						checkRadiationPoisoning(time);
+					}
 				}
 			}
 
@@ -476,6 +486,23 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	/**
+	 * Checks if a person suffers from stress related health problem.
+	 */
+	private void checkStress() {
+		if (stress >= 75 && !isStressedOut()) {
+			isStressedOut = true;
+		}
+		
+		if (isStressedOut() && stress >= 100.0) {
+			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
+	
+			if (!problems.contains(panic)) {
+				addMedicalComplaint(medicalManager.getPanicAttack());
+				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+			}
+		}
+	}
 
 	 /**
 	  * Checks and updates existing health problems
@@ -517,6 +544,7 @@ public class PhysicalCondition implements Serializable {
 					else if (type == ComplaintType.RADIATION_SICKNESS)
 						isRadiationPoisoned = false;
 
+					
 					// If nextPhase is not null, remove this problem so that it can
 					// properly be transitioned into the next.
 					problems.remove(problem);
@@ -902,6 +930,10 @@ public class PhysicalCondition implements Serializable {
 	 * @param d
 	 */
 	public void addStress(double d) {
+		if (stress > 95) {
+			logger.info(person, "stress: " + Math.round(stress * 10.0)/10.0 + "  d: " + Math.round(d * 10.0)/10.0);
+		}
+		
 		double ss = stress + d;
 		if (ss > 100)
 			ss = 100;
@@ -1559,8 +1591,8 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// High stress reduces performance.
-		if (stress > 70D) {
-			tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER / 8;
+		if (stress > 75D) {
+			tempPerformance -= (stress - 75D) * STRESS_PERFORMANCE_MODIFIER / 2;
 		} else if (stress > 50D) {
 			tempPerformance -= (stress - 50D) * STRESS_PERFORMANCE_MODIFIER / 4;
 		}
@@ -1920,7 +1952,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if it passes the stress threshold
+	 * Checks if it's above the stress threshold.
 	 *
 	 * @return
 	 */
@@ -2053,6 +2085,7 @@ public class PhysicalCondition implements Serializable {
     
 	/**
 	 * Gets the history of cured problems.
+	 * 
 	 * @return
 	 */
 	public List<CuredProblem> getHealthHistory() {

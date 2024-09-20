@@ -736,13 +736,13 @@ public class Manufacture extends Function {
 			depositOutputs(process);
 			// Log process ending.
 			logger.log(getBuilding(), Level.INFO, 10_000,
-					"Finished the process '" + process.getInfo().getName() + "'.");
+					"Finished the manu process '" + process.getInfo().getName() + "'.");
 		}
 		else {
 			returnInputs(process.getInfo());
 			// Log process ending.
 			logger.log(getBuilding(), Level.INFO, 10_000,
-					"Unable to finish the process '" + process.getInfo().getName() + "'.");
+					"Unable to finish the manu process '" + process.getInfo().getName() + "'.");
 		}
 
 		ongoingProcesses.remove(process);

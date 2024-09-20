@@ -274,8 +274,8 @@ public abstract class TaskManager implements Serializable {
 
 	/**
 	 * Calculates and caches the probabilities.
+	 * Note: This will NOT use the cache but assumes the callers know when a cache can be used or not used. 
 	 * 
-	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 * @param now The current MarsTime
 	 */
 	protected abstract CacheCreator<TaskJob> rebuildTaskCache(MarsTime now);
@@ -397,7 +397,8 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Check if any pending task can be processed.
+	 * Checks if any pending task can be processed.
+	 * 
 	 * @return Whether a task was started
 	 */
 	private boolean processPendingTask() {
@@ -411,13 +412,14 @@ public abstract class TaskManager implements Serializable {
 			Task newTask = createTask(job);
 
 			if (newTask == null) {
-				logger.severe(worker, "Pending '" + job.getName() + "' could not be created.");				
+				logger.severe(worker, "The Pending task '" + job.getName() + "' could not be created.");				
 			}
+			
 			else if (newTask.isDone()) {
-				logger.warning(worker, "Pending '" + job.getName() + "' was no longer possible.");				
+				logger.warning(worker, "The Pending task '" + job.getName() + "' was no longer possible.");				
 			}
 			// Potential here to loose started Task if new pending matches the existing
-			// check should be done against the TaskJob and delay the Task creation untilt eh name check
+			// check should be done against the TaskJob and delay the Task creation until the name check
 			else if ((currentTask == null) || !hasSameTask(newTask.getName())) {		
 				// Note: this is the only eligible condition for replacing the
 				// current task with the new task

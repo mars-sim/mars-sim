@@ -111,7 +111,8 @@ public class Workout extends Task {
 		// Improves musculoskeletal systems
 		// Record the exercise time [in millisols]
 		person.getPhysicalCondition().workout(time);
-		
+        // Reduce person's stress
+		person.getPhysicalCondition().reduceStress(time/2);
 		return 0;
 	}
 

@@ -24,7 +24,7 @@ public abstract class TendHousekeeping extends Task {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static SimLogger logger = SimLogger.getLogger(TendHousekeeping.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(TendHousekeeping.class.getName());
 
 	/** Task phases. */
 	protected static final TaskPhase INSPECTING = new TaskPhase(Msg.getString("Task.phase.inspecting")); //$NON-NLS-1$

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PrescribeMedication.java
- * @date 2023-09-17
+ * @date 2024-09-20
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -59,22 +59,22 @@ public class PrescribeMedication extends Task {
 	private Person patient = null;
 
 	/**
-	 * A Worker wants to to issue some medication a person
+	 * The task of issuing medication to a patient.
 	 * 
-	 * @param pharmacist the person performing the task.
+	 * @param pharmacist the worker performing the task.
 	 */
 	PrescribeMedication(Worker pharmacist) {
         // Use task constructor.
         super(NAME, pharmacist, false, IMPACT, 10D);
 
         // Determine patient needing medication
-        patient = determinePatient(person);
+        patient = determinePatient(pharmacist);
         if (patient != null) {
         	
-            if (person.isOutside())
+            if (patient.isOutside())
             	endTask();
             // If in settlement, move doctor to building patient is in.
-            else if (person.isInSettlement() && patient.getBuildingLocation() != null) {
+            else if (patient.isInSettlement() && patient.getBuildingLocation() != null) {
 
                 // Walk to patient's building.
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
@@ -97,7 +97,8 @@ public class PrescribeMedication extends Task {
     }
 
     /**
-     * Who is being treated
+     * Returns the patient being treated.
+     * 
      * @return
      */
     Person getPatient() {
@@ -105,7 +106,7 @@ public class PrescribeMedication extends Task {
     }
 
     /**
-     * Determines source of patients
+     * Determines source of patients.
      * 
      * @param pharmacist the Worker prescribing the medication.
      * @return patient if one found, null otherwise.
@@ -125,7 +126,7 @@ public class PrescribeMedication extends Task {
     }
 
     /**
-     * Does this person need medication
+     * Does this person need medication ?
      */
     static boolean needsMedication(Person patient) {
         PhysicalCondition condition = patient.getPhysicalCondition();
@@ -207,7 +208,7 @@ public class PrescribeMedication extends Task {
                 produceMedicalWaste();
             }
             else 
-            	logger.info(patient, "Is not in a proper place to receive medication.");
+            	logger.info(patient, "Not in a proper place to receive medication.");
         }
 
         return 0D;

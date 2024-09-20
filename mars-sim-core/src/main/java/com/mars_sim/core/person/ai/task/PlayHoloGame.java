@@ -162,7 +162,7 @@ public class PlayHoloGame extends Task {
 		// May either increase or reduce a person's fatigue level
 		condition.increaseFatigue(2 * time * rand);
         // Reduce person's stress
-        condition.reduceStress(2 * time);
+        condition.reduceStress(time/2);
         
         if (condition.getHunger() > 666 || condition.getFatigue() > 666) {
 	        endTask();

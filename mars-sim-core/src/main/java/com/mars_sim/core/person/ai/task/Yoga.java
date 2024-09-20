@@ -103,6 +103,8 @@ public class Yoga extends Task {
 		person.getPhysicalCondition().exerciseMuscle(time);
 		// Record the sleep time [in millisols]
 		person.getCircadianClock().recordExercise(time);
+        // Reduce person's stress
+		person.getPhysicalCondition().reduceStress(time/2);
 		
 		return 0;
 	}

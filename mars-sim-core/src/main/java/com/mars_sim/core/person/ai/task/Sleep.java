@@ -187,6 +187,8 @@ public class Sleep extends Task {
 		
 		pc.relaxMuscle(time);
 
+        pc.reduceStress(time/2); 
+        
 		double fractionOfRest = time * TIME_FACTOR;
 
 		double f = pc.getFatigue();
