@@ -1809,37 +1809,6 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets peak available total CUs from all computing nodes in a settlement.
-	 * 
-	 * @return
-	 */
-	public double getPeakTotalComputing() {
-		double peakTotal = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
-		for (Building b: nodeBldgs) {
-			Computation node = b.getComputation();
-			peakTotal += node.getPeakCU();
-		}
-		return peakTotal;
-	}
-	
-	/**
-	 * Gets the sum of all computing capacity in a settlement.
-	 * 
-	 * @return amount in CUs
-	 */
-	public double getTotalCapacityCUsComputing() {
-		double units = 0;
-		for (Building b: getBuildingSet(FunctionType.COMPUTATION)) {
-			Computation node = b.getComputation();
-			units += node.getCurrentCU();
-		}
-		return units;
-	}
-	
-	/**
 	 * Gets total entropy of all computing nodes in a settlement.
 	 * 
 	 * @return
