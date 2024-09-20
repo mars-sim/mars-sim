@@ -1894,50 +1894,6 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets average minimum entropy of all computing nodes in a settlement.
-	 * 
-	 * @return
-	 */
-	public double getAverageMinimumEntropy() {
-		double entropy = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
-		int size = nodeBldgs.size();
-		for (Building b: nodeBldgs) {
-			Computation node = b.getComputation();
-			entropy += node.getMinEntropy();
-		}
-		return entropy/size;
-	}
-	
-	/**
-	 * Gets a computing node for having the worst entropy.
-	 * 
-	 * @return
-	 */
-	public Computation getWorstEntropyComputingNode() {
-		double highestEntropy = Integer.MIN_VALUE;
-		Computation worstNode = null;
-		
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		
-		if (nodeBldgs.isEmpty())
-			return null;
-		
-		for (Building b: nodeBldgs) {
-			Computation cNode = b.getComputation();
-			double entropy = cNode.getEntropy();
-			if (highestEntropy < entropy) {
-				highestEntropy = entropy;
-				worstNode = cNode;
-			}
-		}
-				
-		return worstNode;
-	}
-	
-	/**
 	 * Gets a computing node for having the worst entropy by probability.
 	 * 
 	 * @param person
@@ -1946,34 +1902,16 @@ public class BuildingManager implements Serializable {
 	public Computation getWorstEntropyComputingNodeByProbability(Person person) {
 		Map<Computation, Double> scores = new HashMap<>();
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (person.getBuildingLocation() != null) {
-			nodeBldgs = nodeBldgs
-					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
-		}
-		else {
-			nodeBldgs = nodeBldgs
-					.stream()
-					.filter(b -> b.getZone() == 0
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());		
-		}
 				
 		if (nodeBldgs.isEmpty())
 			return null;
+
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			double entropy = node.getEntropy();
 			scores.put(node, entropy);
 		}
-
-		if (scores.isEmpty())
-			return null;
-
-		// Note: Use probability selection	
-		return RandomUtil.getWeightedRandomObject(scores);
+		return getWorstEntropyByProbability(person, nodeBldgs, scores);
 	}
 	
 
@@ -2031,33 +1969,39 @@ public class BuildingManager implements Serializable {
 	public Research getWorstEntropyLabByProbability(Person person) {
 		Map<Research, Double> scores = new HashMap<>();
 		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
+				
+		if (bldgs.isEmpty())
+			return null;
+
+		for (Building b: bldgs) {
+			Research lab = b.getResearch();
+			double entropy = lab.getEntropy();
+			scores.put(lab, entropy);
+		}
+		return getWorstEntropyByProbability(person, bldgs, scores);
+	}
+
+	public <T> T getWorstEntropyByProbability(Person person, Set<Building> buildings,
+											   Map<T, Double> scores) {
+
 		if (person.getBuildingLocation() != null) {
-			bldgs = bldgs
+			buildings = buildings
 					.stream()
 					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
 		else {
-			bldgs = bldgs
+			buildings = buildings
 					.stream()
 					.filter(b -> b.getZone() == 0
 							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());		
-		}
-				
-		if (bldgs.isEmpty())
-			return null;
-		for (Building b: bldgs) {
-			Research lab = b.getResearch();
-			double entropy = lab.getEntropy();
-			scores.put(lab, entropy);
+					.collect(Collectors.toSet());
 		}
 
-		if (scores.isEmpty())
+		if (buildings.isEmpty()) {
 			return null;
-
-		// Note: Use probability selection	
+		}
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
 	
