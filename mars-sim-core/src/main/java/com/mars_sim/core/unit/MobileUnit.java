@@ -139,7 +139,7 @@ public abstract class MobileUnit extends Unit  {
 		else if (isInSettlement()) {
 			var b = getBuildingLocation();
 			if (b != null) {
-				return b.getChildContext();
+				return b.getContext();
 			}
 			else {
 				return getAssociatedSettlement().getName();
@@ -167,27 +167,27 @@ public abstract class MobileUnit extends Unit  {
 	 *
 	 * @return the settlement
 	 */
-	@Override
 	public Settlement getSettlement() {
 
 		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 
-		Unit c = getContainerUnit();
+		var c = getContainerUnit();
 
-		if (c.getUnitType() == UnitType.SETTLEMENT) {
-			return (Settlement) c;
+		if (c instanceof Settlement s) {
+			return s;
 		}
 
-		if (c.getUnitType() == UnitType.VEHICLE) {
+		else if (c instanceof Vehicle v) {
 			// Will see if vehicle is inside a garage or not
-			Vehicle v = (Vehicle) c;
 			return (v.isInVehicleInGarage() ? v.getSettlement() : null);
 		}
 
-		if (c.getUnitType() == UnitType.BUILDING || c.getUnitType() == UnitType.PERSON
-				|| c.getUnitType() == UnitType.ROBOT) {
-			return c.getSettlement();
+		else if (c instanceof FixedUnit b) {
+			return b.getAssociatedSettlement();
+		}
+		else if (c instanceof MobileUnit m) {
+			return m.getSettlement();
 		}
 
 		return null;
@@ -233,6 +233,7 @@ public abstract class MobileUnit extends Unit  {
 		return false;
 	}
 
+	
     /**
 	 * Updates the location state type of a person.
 	 *

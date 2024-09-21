@@ -129,7 +129,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, int id, int containerId) {
 		// Initialize data members from parameters
 		this.name = name;
-//		this.description = name;
 		this.baseMass = 0;
 		this.identifier = id;
 		this.containerID = containerId;
@@ -147,7 +146,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, Coordinates location) {
 		// Initialize data members from parameters
 		this.name = name;
-//		this.description = name;
 		this.baseMass = 0;
 
 		if (masterClock != null) {
@@ -258,32 +256,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		return name;
 	}
 
-	/**
-	 * This method assumes the Unit could be movable and change container. It identifies the
-	 * appropriate container it can use. Ideally this method should be moved to a 
-	 * new subclass called 'MovableUnit' that encapsulates some positioning methods 
-	 * not applicable to Structures.
-	 */
-	public String getContext() {
-		if (isInSettlement()) {
-			var b = getBuildingLocation();
-			if (b != null) {
-				return b.getChildContext();
-			}
-			else {
-				return getAssociatedSettlement().getName();
-			}
-		}
-		else if (isInVehicle()) {
-			return getVehicle().getChildContext();
-		}
-		else if (isOutside()) {
-			return getCoordinates().getFormattedString();
-		}
-		else {
-			return getContainerUnit().getName();
-		}
-	}
 	/**
 	 * Gets the unit's shortened name.
 	 *
@@ -423,42 +395,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
-	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
-	 *
-	 * @return the unit's topmost container unit
-	 */
-	public Unit getTopContainerUnit() {
-		Unit topUnit = getContainerUnit();
-		if (!(topUnit.getUnitType() == UnitType.MARS)) {
-			while (topUnit != null && topUnit.getContainerUnit() != null
-					&& !(topUnit.getContainerUnit().getUnitType() == UnitType.MARS)) {
-				topUnit = topUnit.getContainerUnit();
-			}
-		}
-
-		return topUnit;
-	}
-
-	/**
-	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
-	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
-	 *
-	 * @return the unit's topmost container unit
-	 */
-	public int getTopContainerID() {
-
-		int topID = getContainerUnit().getContainerID();
-		if (topID != Unit.MARS_SURFACE_UNIT_ID) {
-			while (topID != Unit.MARS_SURFACE_UNIT_ID) {
-				topID = getContainerUnit().getContainerID();
-			}
-		}
-
-		return topID;
-	}
-
-	/**
 	 * Gets the unit's mass including inventory mass.
 	 *
 	 * @return mass of unit and inventory
@@ -577,10 +513,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		return tag;
 	}
 
-	public Settlement getSettlement() {
-		return null;
-	}
-	
 	/**
 	 * Gets the building this unit is at.
 	 *

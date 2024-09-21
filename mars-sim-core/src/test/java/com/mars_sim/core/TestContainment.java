@@ -19,6 +19,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.VehicleGarage;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -42,10 +43,9 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	private void testContainment(Unit source, Unit container, Unit topContainer, LocationStateType lon) {
 		assertEquals("Location state type", lon, source.getLocationStateType());
 		assertEquals("Parent container", container, source.getContainerUnit());
-		assertEquals("Top container", topContainer, source.getTopContainerUnit());
 	}
 
-	private static void assertInsideSettlement(String msg, Unit source, Settlement base) {
+	private static void assertInsideSettlement(String msg, MobileUnit source, Settlement base) {
 		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType());
 		assertEquals(msg + ": Settlement", base, source.getSettlement());
 		
@@ -57,7 +57,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertNull(msg + ": Vehicle", source.getVehicle());
 		
 		assertEquals(msg + ": Container", base, source.getContainerUnit());
-		assertEquals(msg + ": Top container", base, source.getTopContainerUnit());
 	}
 
 	/**
@@ -78,7 +77,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertNull(msg + ": Vehicle", source.getVehicle());
 		
 		assertEquals(msg + ": Container", base, source.getContainerUnit());
-		assertEquals(msg + ": Top container", base, source.getTopContainerUnit());
 	}
 
 	/**
@@ -99,7 +97,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertNull(msg + ": Vehicle", source.getVehicle());
 		
 		assertEquals(msg + ": Container", base, source.getContainerUnit());
-		assertEquals(msg + ": Top container", base, source.getTopContainerUnit());
 	}
 	
 	private static void assertInBuilding(String msg, Person source, Building base, Settlement home) {
@@ -122,7 +119,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals(msg + ": Vehicle", vehicle, source.getVehicle());
 		
 		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
-		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
 	}
 
 	private static void assertInVehicle(String msg, Equipment source, Vehicle vehicle) {
@@ -139,11 +135,9 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals(msg + ": Vehicle", vehicle, source.getVehicle());
 		
 		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
-		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
 	}
 	
-	private void assertWithinSettlementVicinity(String msg, Unit source) {
-		//assertEquals(msg + ": Location state type", LocationStateType.SETTLEMENT_VICINITY, source.getLocationStateType());
+	private void assertWithinSettlementVicinity(String msg, MobileUnit source) {
 		
 		assertFalse(msg + ": InSettlement", source.isInSettlement());
 		assertNull(msg + ": Settlement", source.getSettlement());

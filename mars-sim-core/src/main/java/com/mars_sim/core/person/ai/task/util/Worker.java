@@ -55,15 +55,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	public Coordinates getCoordinates();
 
 	/**
-	 * What is the top level container of this worker; this will be a Unit that is on the MarsSurface,
-	 * e.g. Vehicle or Settlement.
-	 * 
-	 * @return
-	 */
-	public Unit getTopContainerUnit();
-
-
-	/**
 	 * Is the worker in a vehicle ?
 	 *
 	 * @return true if the worker in a vehicle

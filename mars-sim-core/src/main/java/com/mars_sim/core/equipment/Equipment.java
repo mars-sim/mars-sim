@@ -330,7 +330,7 @@ public abstract class Equipment extends MobileUnit implements Indoor, Salvagable
 			if (destination.getUnitType() == UnitType.BUILDING) {
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				destination = ((Building)destination).getSettlement();
+				destination = ((Building)destination).getAssociatedSettlement();
 			}
 
 			if (destination instanceof EquipmentOwner eo) {

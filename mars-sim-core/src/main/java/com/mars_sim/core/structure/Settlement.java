@@ -3220,11 +3220,6 @@ public class Settlement extends Unit implements Temporal,
         return solCache == 0 || solCache == 1;
     }
 
-	@Override
-	public Settlement getSettlement() {
-		return null;
-	}
-
 	/**
 	 * Gets the stored mass.
 	 */

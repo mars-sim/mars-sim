@@ -52,9 +52,9 @@ public abstract class FixedUnit extends Unit
     }   
     
     /**
-     * TODO This should be a deprecated protected once changes done
+     * Get the settlement of this fixed unit which is same as associated.
+     * This should be deprecated and removed
      */
-    @Override
     public Settlement getSettlement() {
         return getAssociatedSettlement();
     }
@@ -71,10 +71,10 @@ public abstract class FixedUnit extends Unit
 	}
 
     /**
-	 * What is the context for any child entities.
-	 * @return Combination of Settlement and Unit name.
+	 * This method return the context of this FixedUnit which is always the parent 
 	 */
-	public String getChildContext() {
+	@Override
+	public String getContext() {
 		return owner.getName();
 	}
 }

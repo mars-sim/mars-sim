@@ -206,7 +206,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		final ConstructionSitesPanel sitePanel = new ConstructionSitesPanel(manager);
 
         JInternalFrame d = new JInternalFrame(
-        		unit.getSettlement().getName() + " - " + site,
+				site.getAssociatedSettlement().getName() + " - " + site,
         		true, 
                 false, 
                 true,
