@@ -287,7 +287,6 @@ public class ChainOfCommand implements Serializable {
 				PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 				Commander commander = personConfig.getCommander();
 				updateCommander(cc, commander);
-				cc.setAssociatedSettlement(settlement.getIdentifier());
 				logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc
 						+ " had been assigned as the commander of " + settlement + ".");
 

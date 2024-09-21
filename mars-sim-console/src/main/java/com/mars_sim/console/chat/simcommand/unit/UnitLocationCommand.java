@@ -11,6 +11,8 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.unit.FixedUnit;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -30,29 +32,38 @@ public class UnitLocationCommand extends AbstractUnitCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
 		var message = new StringBuilder();
-		if (source.isOutside()) {
-			message.append("On the surface @ ")
-				   .append(source.getCoordinates().getFormattedString());
+
+		if (source instanceof FixedUnit fu) {
+			message.append(fu.getCoordinates().getFormattedString())
+					.append(", local position ")
+					.append(fu.getPosition().getShortFormat());
 		}
-		else if (source.isInVehicle()) {
-			Vehicle v = source.getVehicle();
-			message.append("In ").append(v.getName());
-			message.append(" @ ").append(v.getCoordinates().getFormattedString());
-			if (source.isInSettlement()) {
-				message.append(", warning also isIsSettlement=true");
+		else if (source instanceof MobileUnit mu) {
+			if (mu.isOutside()) {
+				message.append("On the surface @ ")
+					.append(mu.getCoordinates().getFormattedString());
+			}
+			else if (mu.isInVehicle()) {
+				Vehicle v = mu.getVehicle();
+				message.append("In ").append(v.getName());
+				message.append(" @ ").append(v.getCoordinates().getFormattedString());
+				if (mu.isInSettlement()) {
+					message.append(", warning also isIsSettlement=true");
+				}
+			}
+			else {
+				Settlement base = mu.getSettlement();
+				Building building = mu.getBuildingLocation();
+				message.append("In ");
+				if (building != null) {
+					message.append(building.getName()).append(" @ ");
+				}
+
+				message.append(base.getName())
+						.append(' ')
+						.append(mu.getPosition().getShortFormat());			
 			}
 		}
-		else {
-			Settlement base = source.getSettlement();
-			Building building = source.getBuildingLocation();
-			message.append("In ");
-			if (building != null) {
-				message.append(building.getName()).append(" @ ");
-			}
-
-			message.append(base.getName());				
-		}
-
 		context.println(message.toString());
 		return true;
 	}
