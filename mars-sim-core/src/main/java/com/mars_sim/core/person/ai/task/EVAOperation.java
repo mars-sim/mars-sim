@@ -407,25 +407,25 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': too dark already.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': too dark already.");
 			return true;
 		}
 
 		// Check for any EVA problems.
 		if (hasEVAProblem(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': EVA problems.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': EVA problems.");
 			return true;
 		}
 
 		// Check if it is at meal time and the person is doubly hungry
 		if (isHungryAtMealTime(person, 0)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': Doubly hungry at meal time.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': Doubly hungry at meal time.");
 			return true;
 		}
 
         // Checks if the person is physically drained
 		if (isExhausted(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': Exhausted.");
 			return true;
 		}
 		
@@ -507,7 +507,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void abortEVA(String reason) {
 		if (reason != null) {
- 			logger.info(worker, 20_000, "Aborted '" + getName().toLowerCase() + "': " + reason);
+ 			logger.info(worker, 20_000, "Aborted '" + Conversion.setFirstWordLowercase(getName()) + "': " + reason);
 		}
 		
 		if (person.isOutside()) {

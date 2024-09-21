@@ -286,12 +286,12 @@ public class Sleep extends Task {
 		if (tempBed == null) {
 			tempBed = findSleepRoughLocation(s, person);
 			if (tempBed == null) {
-				logger.severe(person, "Nowhere to sleep, staying awake.");
+				logger.severe(person, "Found no spots to sleep, staying awake.");
 				endTask();
 				return null;
 			}
-			logger.warning(person, "No bed can be found; sleeping rough at "
-									+ tempBed.getSpotDescription());
+			logger.warning(person, "No bed found. Sleeping at '"
+									+ tempBed.getSpotDescription() + "'.");
 		}
 		return tempBed;
 	}

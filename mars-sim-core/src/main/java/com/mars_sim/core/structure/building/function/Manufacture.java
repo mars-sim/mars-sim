@@ -577,8 +577,9 @@ public class Manufacture extends Function {
 						double capacity = settlement.getAmountResourceRemainingCapacity(outputId);
 						if (outputAmount> capacity) {
 							double overAmount = item.getAmount() - capacity;
-							logger.severe(getBuilding(), "Not enough storage capacity to store " + overAmount + " of " + item.getName()
-									+ " from " + process.getInfo().getName());
+							logger.severe(getBuilding(), "Not enough storage capacity to store " 
+								+ Math.round(overAmount * 10.0)/10.0 + " kg " + item.getName()
+									+ " from '" + process.getInfo().getName() + "'.");
 							outputAmount = capacity;
 						}
 						settlement.storeAmountResource(outputId, outputAmount);
