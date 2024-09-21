@@ -213,8 +213,6 @@ public class ProduceFood extends Task {
 	 */
 	public static Building getAvailableFoodProductionBuilding(Person person) {
 
-		Building result = null;
-
 		SkillManager skillManager = person.getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
         skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
@@ -222,24 +220,8 @@ public class ProduceFood extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			
 			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION);
 
-			if (person.getBuildingLocation() != null) {
-				foodProductionBuildings = foodProductionBuildings
-						.stream()
-						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				foodProductionBuildings = foodProductionBuildings
-						.stream()
-						.filter(b -> b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());		
-			}
-		
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getHighestFoodProductionTechLevelBuildings(foodProductionBuildings);
@@ -248,11 +230,11 @@ public class ProduceFood extends Task {
 			if (!foodProductionBuildings.isEmpty()) {
 				Map<Building, Double> foodProductionBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 						person, foodProductionBuildings);
-				result = RandomUtil.getWeightedRandomObject(foodProductionBuildingProbs);
+				return buildingManager.getWorstEntropyByProbability(person,
+						foodProductionBuildings, foodProductionBuildingProbs);
 			}
 		}
-
-		return result;
+		return null;
 	}
 
 	public static Building getAvailableFoodProductionBuilding(Robot robot) {

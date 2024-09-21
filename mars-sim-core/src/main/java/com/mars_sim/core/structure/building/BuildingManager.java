@@ -1811,37 +1811,6 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets peak available total CUs from all computing nodes in a settlement.
-	 * 
-	 * @return
-	 */
-	public double getPeakTotalComputing() {
-		double peakTotal = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
-		for (Building b: nodeBldgs) {
-			Computation node = b.getComputation();
-			peakTotal += node.getPeakCU();
-		}
-		return peakTotal;
-	}
-	
-	/**
-	 * Gets the sum of all computing capacity in a settlement.
-	 * 
-	 * @return amount in CUs
-	 */
-	public double getTotalCapacityCUsComputing() {
-		double units = 0;
-		for (Building b: getBuildingSet(FunctionType.COMPUTATION)) {
-			Computation node = b.getComputation();
-			units += node.getCurrentCU();
-		}
-		return units;
-	}
-	
-	/**
 	 * Gets total entropy of all computing nodes in a settlement.
 	 * 
 	 * @return
@@ -1896,50 +1865,6 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets average minimum entropy of all computing nodes in a settlement.
-	 * 
-	 * @return
-	 */
-	public double getAverageMinimumEntropy() {
-		double entropy = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
-		int size = nodeBldgs.size();
-		for (Building b: nodeBldgs) {
-			Computation node = b.getComputation();
-			entropy += node.getMinEntropy();
-		}
-		return entropy/size;
-	}
-	
-	/**
-	 * Gets a computing node for having the worst entropy.
-	 * 
-	 * @return
-	 */
-	public Computation getWorstEntropyComputingNode() {
-		double highestEntropy = Integer.MIN_VALUE;
-		Computation worstNode = null;
-		
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		
-		if (nodeBldgs.isEmpty())
-			return null;
-		
-		for (Building b: nodeBldgs) {
-			Computation cNode = b.getComputation();
-			double entropy = cNode.getEntropy();
-			if (highestEntropy < entropy) {
-				highestEntropy = entropy;
-				worstNode = cNode;
-			}
-		}
-				
-		return worstNode;
-	}
-	
-	/**
 	 * Gets a computing node for having the worst entropy by probability.
 	 * 
 	 * @param person
@@ -1948,34 +1873,16 @@ public class BuildingManager implements Serializable {
 	public Computation getWorstEntropyComputingNodeByProbability(Person person) {
 		Map<Computation, Double> scores = new HashMap<>();
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (person.getBuildingLocation() != null) {
-			nodeBldgs = nodeBldgs
-					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
-		}
-		else {
-			nodeBldgs = nodeBldgs
-					.stream()
-					.filter(b -> b.getZone() == 0
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());		
-		}
 				
 		if (nodeBldgs.isEmpty())
 			return null;
+
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			double entropy = node.getEntropy();
 			scores.put(node, entropy);
 		}
-
-		if (scores.isEmpty())
-			return null;
-
-		// Note: Use probability selection	
-		return RandomUtil.getWeightedRandomObject(scores);
+		return getWorstEntropyByProbability(person, nodeBldgs, scores);
 	}
 	
 
@@ -2033,33 +1940,39 @@ public class BuildingManager implements Serializable {
 	public Research getWorstEntropyLabByProbability(Person person) {
 		Map<Research, Double> scores = new HashMap<>();
 		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
+				
+		if (bldgs.isEmpty())
+			return null;
+
+		for (Building b: bldgs) {
+			Research lab = b.getResearch();
+			double entropy = lab.getEntropy();
+			scores.put(lab, entropy);
+		}
+		return getWorstEntropyByProbability(person, bldgs, scores);
+	}
+
+	public <T> T getWorstEntropyByProbability(Person person, Set<Building> buildings,
+											   Map<T, Double> scores) {
+
 		if (person.getBuildingLocation() != null) {
-			bldgs = bldgs
+			buildings = buildings
 					.stream()
 					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
 		else {
-			bldgs = bldgs
+			buildings = buildings
 					.stream()
 					.filter(b -> b.getZone() == 0
 							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());		
-		}
-				
-		if (bldgs.isEmpty())
-			return null;
-		for (Building b: bldgs) {
-			Research lab = b.getResearch();
-			double entropy = lab.getEntropy();
-			scores.put(lab, entropy);
+					.collect(Collectors.toSet());
 		}
 
-		if (scores.isEmpty())
+		if (buildings.isEmpty()) {
 			return null;
-
-		// Note: Use probability selection	
+		}
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
 	
@@ -2285,55 +2198,51 @@ public class BuildingManager implements Serializable {
 	  * Retrieves maintenance parts from all entities associated with this settlement. 
 	  */
 	private void retrieveMaintPartsFromMalfunctionMgrs() {
-		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next(); 		
-			Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
-			
-			if (!parts.isEmpty()) {
-			
-				if (!partsMaint.isEmpty()) {
-					Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
-					if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
-						// Post it
-						partsMaint.put(entity, parts);
-						for (int id: parts.keySet()) {							
-							int num = parts.get(id);		
-							Good good = GoodsUtil.getGood(id);						
-							Part part = ItemResourceUtil.findItemResource(id);					
-							// Inject the demand onto this part
-							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-						}
-					}
-					if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
+        for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
+            Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+
+            if (!parts.isEmpty()) {
+
+                if (!partsMaint.isEmpty()) {
+                    Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
+                    if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
+                        // Post it
+                        partsMaint.put(entity, parts);
+                        for (int id : parts.keySet()) {
+                            int num = parts.get(id);
+                            Good good = GoodsUtil.getGood(id);
+                            Part part = ItemResourceUtil.findItemResource(id);
+                            // Inject the demand onto this part
+                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+                        }
+                    }
+                    if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
 //						logger.info(entity, 30_000L, "Both are equal : " + partsMaintEntry + " and " + parts);
-					}
-					else {
-						// Post it
-						partsMaint.put(entity, parts);
-						for (int id: parts.keySet()) {							
-							int num = parts.get(id);		
-							Good good = GoodsUtil.getGood(id);						
-							Part part = ItemResourceUtil.findItemResource(id);					
-							// Inject the demand onto this part
-							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-						}
-					}
-				}
-				else {
-					// Post it
-					partsMaint.put(entity, parts);
-					logger.info(parts + " was posted in empty partsMaint.");
-					for (int id: parts.keySet()) {							
-						int num = parts.get(id);		
-						Good good = GoodsUtil.getGood(id);						
-						Part part = ItemResourceUtil.findItemResource(id);					
-						// Inject the demand onto this part
-						((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-					}
-				}
-			}
-		}			
+                    } else {
+                        // Post it
+                        partsMaint.put(entity, parts);
+                        for (int id : parts.keySet()) {
+                            int num = parts.get(id);
+                            Good good = GoodsUtil.getGood(id);
+                            Part part = ItemResourceUtil.findItemResource(id);
+                            // Inject the demand onto this part
+                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+                        }
+                    }
+                } else {
+                    // Post it
+                    partsMaint.put(entity, parts);
+                    logger.info(parts + " was posted in empty partsMaint.");
+                    for (int id : parts.keySet()) {
+                        int num = parts.get(id);
+                        Good good = GoodsUtil.getGood(id);
+                        Part part = ItemResourceUtil.findItemResource(id);
+                        // Inject the demand onto this part
+                        ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+                    }
+                }
+            }
+        }
 	}
 	
 	/**
@@ -2378,22 +2287,20 @@ public class BuildingManager implements Serializable {
 		if (partsMaint.isEmpty())
 			return new HashMap<>();
 		Map<Integer, Integer> partsList = new HashMap<>();
-		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-			Map<Integer, Integer> partMap = partsMaint.get(entity);
-			
-			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
-				Integer part = entry.getKey();
-				int number = entry.getValue();
-				if (!settlement.getItemResourceIDs().contains(part)) {
-					if (partsList.containsKey(part)) {
-						number += partsList.get(part).intValue();
-					}
-					partsList.put(part, number);
-				}
-			}
-		}
+        for (Malfunctionable entity : partsMaint.keySet()) {
+            Map<Integer, Integer> partMap = partsMaint.get(entity);
+
+            for (Entry<Integer, Integer> entry : partMap.entrySet()) {
+                Integer part = entry.getKey();
+                int number = entry.getValue();
+                if (!settlement.getItemResourceIDs().contains(part)) {
+                    if (partsList.containsKey(part)) {
+                        number += partsList.get(part).intValue();
+                    }
+                    partsList.put(part, number);
+                }
+            }
+        }
 		
 		return partsList;
 	}
@@ -2488,10 +2395,9 @@ public class BuildingManager implements Serializable {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		Iterator<Building> i = buildings.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
+        for (Building building : buildings) {
+            building.destroy();
+        }
 		buildings = null;
 		vPNewCache = null;
 		vPOldCache = null;
