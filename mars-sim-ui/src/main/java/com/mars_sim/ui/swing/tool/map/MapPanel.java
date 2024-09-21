@@ -7,9 +7,12 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -20,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,7 +32,13 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.Painter;
+import javax.swing.SwingConstants;
+import javax.swing.UIDefaults;
 
 import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.Map;
@@ -38,6 +48,7 @@ import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -51,6 +62,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
+	private static final int SCALE_CONVERSION = 3;
 	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
 	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH;
 	private static int dragx, dragy;
@@ -89,6 +101,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private NavpointPanel navPanel;
 
 	private Image starfield;
+	
+	private JSlider zoomSlider;
+
 	
 	private List<MapLayer> mapLayers;
 
@@ -140,7 +155,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 	
 	public void init() {
-	    
+
+		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
+		setMaximumSize(getPreferredSize());
+		setSize(getPreferredSize());
+		
 		starfield = ImageLoader.getImage("map/starfield");
 		
 		executor = Executors.newSingleThreadExecutor();
@@ -153,9 +172,20 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		mapLayers = new CopyOnWriteArrayList<>();
 		centerCoords = new Coordinates(HALF_PI, 0D);
 	
-		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
-		setMaximumSize(getPreferredSize());
-		setSize(getPreferredSize());
+		buildZoomSlider();
+
+		addMouseWheelListener(this);
+		
+		setLayout(new BorderLayout(10, 20));
+		
+		JPanel zoomPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 40));
+       	add(zoomPane, BorderLayout.EAST);
+       	
+	    zoomPane.setBackground(new Color(0, 0, 0, 128));
+	    zoomPane.setOpaque(false);
+	    zoomPane.setAlignmentX(RIGHT_ALIGNMENT);
+	    zoomPane.setAlignmentY(CENTER_ALIGNMENT);
+       	zoomPane.add(zoomSlider);
 		
 		// Note: rho = pixelHeight / Math.PI;
 		MAX_RHO = IntegerMapData.maxRho;
@@ -163,6 +193,150 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
 
 		logger.info("RHO_DEFAULT: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + ".  multiplier: " + Math.round(multiplier * 10.0)/10.0 + ".");
+	}
+
+	private void buildZoomSlider() {
+
+		UIDefaults sliderDefaults = new UIDefaults();
+
+        sliderDefaults.put("Slider.thumbWidth", 15);
+        sliderDefaults.put("Slider.thumbHeight", 15);
+        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
+            public void paint(Graphics2D g, JComponent c, int w, int h) {
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setStroke(new BasicStroke(2f));
+                g.setColor(Color.BLACK);
+                g.fillOval(1, 1, w-1, h-1);
+                g.setColor(Color.WHITE);
+                g.drawOval(1, 1, w-1, h-1);
+            }
+        });
+        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
+            public void paint(Graphics2D g, JComponent c, int w, int h) {
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setStroke(new BasicStroke(2f));
+                g.setColor(Color.BLACK);
+                g.fillRoundRect(0, 6, w, 6, 6, 6);
+                g.setColor(Color.WHITE);
+                g.drawRoundRect(0, 6, w, 6, 6, 6);
+            }
+        });
+
+        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
+        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
+        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
+        zoomSlider.setPreferredSize(new Dimension(60, 400));
+        zoomSlider.setSize(new Dimension(60, 400));
+		zoomSlider.setPaintTicks(true);
+		zoomSlider.setPaintLabels(true);
+		zoomSlider.setForeground(Color.ORANGE.darker().darker());
+		zoomSlider.setBackground(new Color(0, 0, 0, 128));
+		zoomSlider.setOpaque(false);
+		
+		zoomSlider.setVisible(true);
+		
+		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+		zoomSlider.addChangeListener(e -> {
+				// Change scale of map based on slider position.
+				int newSliderValue = zoomSlider.getValue();
+				// Note: scale = rho / RHO_DEFAULT;
+				double oldScale = getScale();	
+				
+				double oldRho = getRho();
+				
+				double scale = computeScale(newSliderValue);
+				
+				double rho = MapPanel.RHO_DEFAULT * scale;
+				
+				if (rho > MapPanel.MAX_RHO) {
+					rho = MapPanel.MAX_RHO;
+					scale = rho / MapPanel.RHO_DEFAULT;
+				}
+				else if (rho < MapPanel.MIN_RHO) {
+					rho = MapPanel.MIN_RHO;
+					scale = rho / MapPanel.RHO_DEFAULT;
+				}
+	
+				if (scale != oldScale) {				
+					setScale(scale);
+				}
+				
+				if (rho != oldRho) {	
+					// Note: Call setRho() will redraw the map
+					setRho(rho);
+				}
+
+				
+//				logger.info("res: " + mapPanel.getMapResolution()
+//						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
+//						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
+//						+ " -> " + Math.round(scale* 1000.0)/1000.0
+//						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
+//						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
+//						+ " -> " + Math.round(rho* 10.0)/10.0);
+
+		});
+		
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
+		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
+			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
+		}
+//		labelTable.put(0, new JLabel("1/4"));
+		zoomSlider.setLabelTable(labelTable);
+    }
+	
+	/**
+	 * Explicitly changes the scale and sets the zoom slider value.
+	 * 
+	 * @param rho
+	 */
+	public void updateScaleZoomSlider(double rho) {
+		
+		double newScale = rho / MapPanel.RHO_DEFAULT;
+		
+		if (getScale() != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
+//			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
+			setScale(newScale);
+
+			double newSliderValue = computeSliderValue(newScale);
+			
+			zoomSlider.setValue((int)(Math.round(newSliderValue * 10.0)/10.0));
+		}
+	}
+	
+	/**
+	 * Computes the new slider value.
+	 * 
+	 * @param scale
+	 * @return
+	 */
+	private double computeSliderValue(double scale) {
+		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
+	}
+	
+	/**
+	 * Computes the new scale.
+	 * 
+	 * @param sliderValue
+	 * @return
+	 */
+	private double computeScale(double sliderValue) {
+		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
+	}
+	
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		double movement = e.getPreciseWheelRotation();
+		// Note: limiting the mouse movement to incrementing or decrementing 1 only
+		// to lower the need of having to render a new map excessively		
+		if (movement > 0) {
+			// Move mouse wheel rotated down, thus moving down zoom slider.
+			zoomSlider.setValue(zoomSlider.getValue() - 1);
+		}
+		else if (movement < 0) {
+			// Move mouse wheel rotated up, thus moving up zoom slider.
+			zoomSlider.setValue(zoomSlider.getValue() + 1);
+		}
 	}
 
 	/**
@@ -182,69 +356,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public void setMapResolution(int res) {
 		this.res = res;
 	}
-	
-	/**
-	 * Detects the mouse wheel movement.
-	 */
-	public void mouseWheelMoved(MouseWheelEvent e) {
-//		// Gets the latest rho
-//		double oldRho = getRho();
-//
-//		// May use this if (e.isControlDown()) {} to add ctrl key
-//        // May use if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {} to combine with other keys 
-//		
-//		// Redefine map param
-////		RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
-////		MAX_RHO = IntegerMapData.MAX_RHO;
-////		MIN_RHO = IntegerMapData.MIN_RHO;
-////		multiplier = RHO_DEFAULT / ZOOM_STEP;
-//		
-//		double delta = e.getWheelRotation();
-//		
-//		double newMag = (5.0/14 * delta + 1)/6;							
-//		double newRho = MapPanel.RHO_DEFAULT * newMag;
-//		
-////    	double rhoDelta = - multiplier * delta;
-////    	double newRho = oldRho + rhoDelta;
-//    	
-////      Note 1:: Scroll up to zoom in or magnify map
-////    	Note 2:Scroll down to zoom out or shrink the map
-//
-//		if (newRho > MAX_RHO) {
-//			newRho = MAX_RHO;
-//		}
-//		else if (newRho < MIN_RHO) {
-//			newRho = MIN_RHO;
-//		}
-// 
-//		if (newRho != oldRho) {
-//
-//			magnification = newRho/RHO_DEFAULT;
-//			
-////			zooming = true;
-//			
-//			logger.info("mag: " + Math.round(magnification * 1000.0)/1000.0 
-//					+ "  delta: " + Math.round(delta* 1000.0)/1000.0
-//					+ "  newMag: " + Math.round(newMag* 1000.0)/1000.0
-//					+ "  oldRho: " + Math.round(oldRho* 1000.0)/1000.0
-//					+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
-//					+ "  RHO_DEFAULT: " + Math.round(RHO_DEFAULT* 1000.0)/1000.0
-//					);
-//			
-//	    	// Update the map rho
-////	    	setRho(newRho);
-//
-//			// Call showMap
-////			showMap(centerCoords, newRho);
-//	    	// which in turns calls updateDisplay()
-//	    	// which in turns calls MapTask thread
-//	    	// which in turns calls marsMap.drawMap(centerCoords, getRho());
-//
-//			marsMap.drawMap(centerCoords, newRho);
-//			
-//			repaint();
-//		}
-    }
 	
 	/*
 	 * Sets up the mouse dragging capability.
@@ -459,6 +570,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 	}
 
+	
+	/**		
+	 * Updates the map display.
+	 */
 	public void updateDisplay() {
 		updateDisplay(getRho());
 	}
@@ -500,7 +615,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				marsMap.drawMap(centerCoords, rho);
 				
 				// Update the zoom slider value
-				navwin.updateScaleZoomSlider(rho);
+				updateScaleZoomSlider(rho);
+//				if (navwin != null)
+//					navwin.updateScaleZoomSlider(rho);
+//				else
+//					updateScale(rho);
 				
 				wait = false;
 				repaint();
@@ -510,6 +629,21 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				mapErrorMessage = e.getMessage();
 				logger.severe("Can't draw surface map: " + e);
 			}
+		}
+	}
+	
+	/**
+	 * Explicitly changes the scale.
+	 * 
+	 * @param rho
+	 */
+	public void updateScale(double rho) {
+		
+		double newScale = rho / MapPanel.RHO_DEFAULT;
+		
+		if (getScale() != newScale) {
+
+			setScale(newScale);
 		}
 	}
 	
@@ -611,6 +745,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		g.drawString(message, x, y);
 	}
 
+	/**
+	 * Updates the map with time pulse.
+	 * 
+	 * @param pulse The clock pulse
+	 */
 	public void update(ClockPulse pulse) {
 		updateDisplay();
 	}
@@ -663,7 +802,17 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     public double getScale() {
     	return getRho() / RHO_DEFAULT;
     }
-    
+
+	/**
+	 * Sets the map scale.
+	 *
+	 * @param scale
+	 */
+	public void setScale(double scale) {
+		double newRho = scale * RHO_DEFAULT;
+		setRho(newRho);
+	}
+
 	/**
 	 * Prepares map panel for deletion.
 	 */

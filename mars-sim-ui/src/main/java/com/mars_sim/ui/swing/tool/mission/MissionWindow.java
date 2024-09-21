@@ -59,7 +59,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	
 	private static final int PADDING = 20;
 	static final int LEFT_PANEL_WIDTH = 220;
-	static final int WIDTH = LEFT_PANEL_WIDTH + NavigatorWindow.MAP_BOX_WIDTH;
+	static final int WIDTH = LEFT_PANEL_WIDTH + NavigatorWindow.MAP_BOX_WIDTH + PADDING * 2;
 	
 	static final int MAP_BOX_HEIGHT = NavigatorWindow.MAP_BOX_HEIGHT;
 	static final int TABLE_HEIGHT = 160;
