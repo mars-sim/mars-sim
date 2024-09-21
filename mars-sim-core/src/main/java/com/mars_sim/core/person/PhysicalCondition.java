@@ -83,7 +83,7 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of fatigue threshold [millisols]. */
 	public static final int FATIGUE_MIN = 150;
 	/** The amount of stress threshold [millisols]. */
-	private static final int STRESS_THRESHOLD = 60;
+	private static final int STRESS_THRESHOLD = 75;
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
@@ -98,7 +98,7 @@ public class PhysicalCondition implements Serializable {
 	/** Performance modifier for fatigue. */
 	private static final double FATIGUE_PERFORMANCE_MODIFIER = .0005D;
 	/** Performance modifier for stress. */
-	private static final double STRESS_PERFORMANCE_MODIFIER = .0005D;
+	private static final double STRESS_PERFORMANCE_MODIFIER = .00075D;
 	/** Performance modifier for energy. */
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
@@ -428,6 +428,8 @@ public class PhysicalCondition implements Serializable {
 				increaseFatigue(1);
 				// Update hunger
 				increaseHunger(bodyMassDeviation * .75);
+				// Reduce stress
+				reduceStress(time/10);
 				
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
@@ -447,7 +449,7 @@ public class PhysicalCondition implements Serializable {
 					}
 				}				
 				
-				if (stress < 75) {
+				if (stress < STRESS_THRESHOLD) {
 					isStressedOut = false;
 				}
 				
@@ -459,7 +461,7 @@ public class PhysicalCondition implements Serializable {
 					// Update dehydration
 					checkDehydration(thirst);					
 					// Check if person is stressed out
-					checkStress();
+					checkStressOut();
 					
 					// Check if person is at very high fatigue may collapse.
 
@@ -483,24 +485,6 @@ public class PhysicalCondition implements Serializable {
 			
 			// Update energy via PersonTaskManager's executeTask()
 			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
-		}
-	}
-
-	/**
-	 * Checks if a person suffers from stress related health problem.
-	 */
-	private void checkStress() {
-		if (stress >= 75 && !isStressedOut()) {
-			isStressedOut = true;
-		}
-		
-		if (isStressedOut() && stress >= 100.0) {
-			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
-	
-			if (!problems.contains(panic)) {
-				addMedicalComplaint(medicalManager.getPanicAttack());
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-			}
 		}
 	}
 
@@ -931,7 +915,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void addStress(double d) {
 		if (stress > 95) {
-			logger.info(person, "stress: " + Math.round(stress * 10.0)/10.0 + "  d: " + Math.round(d * 10.0)/10.0);
+			logger.warning(person, 30_000, "stress: " + Math.round(stress * 1000.0)/1000.0 + "  d: " + Math.round(d * 1000.0)/1000.0);
 		}
 		
 		double ss = stress + d;
@@ -972,6 +956,38 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
+	 * Checks if a person suffers from stress related health problem.
+	 */
+	private void checkStressOut() {
+		if (stress >= STRESS_THRESHOLD && !isStressedOut()) {
+			isStressedOut = true;
+		}
+		
+		if (isStressedOut()) {
+			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
+	
+			if (!problems.contains(panic)) {
+				if (stress >= 100.0) {
+					addMedicalComplaint(medicalManager.getPanicAttack());
+					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+				}
+				else if (stress >= STRESS_THRESHOLD) {
+					// Anything to do here ?
+				}
+			}
+			
+			else if (stress < STRESS_THRESHOLD) {
+				
+				panic.setCured();
+				
+				isStressedOut = false;
+
+				logger.log(person, Level.INFO, 20_000, "No longer having panic attack (case 2).");
+			}
+		}
+	}
+	
+	/**
 	 * Checks if a person is starving or no longer starving.
 	 *
 	 * @param hunger
@@ -1002,7 +1018,7 @@ public class PhysicalCondition implements Serializable {
 				// Set isStarving to false
 				isStarving = false;
 
-				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 2).");
+				logger.log(person, Level.INFO, 20_000, "No longer starving (case 2).");
 			}
 
 			// If this person's hunger has reached the buffer zone
@@ -1053,7 +1069,7 @@ public class PhysicalCondition implements Serializable {
 				// Set dehydrated to false
 				isDehydrated = false;
 
-				logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 2).");
+				logger.log(person, Level.INFO, 0, "No longer dehydrated (case 2).");
 			}
 
 			// If this person's thirst has reached the buffer zone
@@ -1116,7 +1132,7 @@ public class PhysicalCondition implements Serializable {
 				// Set isStarving to false
 				isRadiationPoisoned = false;
 
-				logger.log(person, Level.INFO, 20_000, "Cured of radiation poisoning (case 1).");
+				logger.log(person, Level.INFO, 20_000, "No longer having radiation poisoning (case 1).");
 			}
 		}
 
@@ -1128,7 +1144,7 @@ public class PhysicalCondition implements Serializable {
 					// Set isRadiationPoisoned to false
 					isRadiationPoisoned = false;
 
-					logger.log(person, Level.INFO, 20_000, "Cured of radiation poisoning (case 2).");
+					logger.log(person, Level.INFO, 20_000, "No longer having radiation poisoning (case 2).");
 				}
 			}
 
@@ -1155,7 +1171,7 @@ public class PhysicalCondition implements Serializable {
 			// Set isRadiationPoisoned to false
 			isRadiationPoisoned = false;
 
-			logger.log(person, Level.INFO, 20_000, "Cured of radiationPoisoning (case 3).");
+			logger.log(person, Level.INFO, 20_000, "No longer having radiationPoisoning (case 3).");
 		}
 	}
 

@@ -172,6 +172,10 @@ public class TendAlgaePond extends TendHousekeeping {
 		
 		totalHarvested += algaeMass;
 		
+		// Assume tending can reduce stress
+		if (person != null)
+			person.getPhysicalCondition().reduceStress(time);
+		
 		// Add experience
 		addExperience(time);
 
@@ -224,6 +228,10 @@ public class TendAlgaePond extends TendHousekeeping {
 
 		double remainingTime = pond.tending(workTime);
 
+		// Assume tending can reduce stress
+		if (person != null)
+			person.getPhysicalCondition().reduceStress(time);
+		
 		// Add experience
 		addExperience(time);
 

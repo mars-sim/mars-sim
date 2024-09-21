@@ -241,6 +241,9 @@ public class TendGreenhouse extends TendHousekeeping {
 		if (remain > workTime * .75)
 			remain = workTime * .75;
 
+		// Assume tending can reduce stress
+		if (person != null)
+			person.getPhysicalCondition().reduceStress(time);
 
 		// Add experience
 		addExperience(time);

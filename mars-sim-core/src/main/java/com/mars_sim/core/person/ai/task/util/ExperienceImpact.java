@@ -221,7 +221,7 @@ public class ExperienceImpact implements Serializable {
      * @param effectiveness
      */
     private void applyPersonBenfits(Person p, double timeElapsed, double effectiveness) {
-     
+
     	double stressFactor = 0;
         // need to modify happiness & other emotions
         if (effortDriven == PhysicalEffort.HIGH) {
@@ -238,6 +238,7 @@ public class ExperienceImpact implements Serializable {
 
         // Reduce stress modifier for person's skill related to the task.
         if (stressRatio != 0D) {
+        	// stressRatio can be positive and negative
             double deltaStress = stressFactor * stressRatio * timeElapsed;
 //            logger.info(p, 10_000, "Adding " + Math.round(deltaStress * 100.0)/100.0 + " to the stress.");
             p.getPhysicalCondition().addStress(deltaStress);
