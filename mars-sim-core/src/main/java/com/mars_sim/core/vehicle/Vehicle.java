@@ -1813,16 +1813,6 @@ public abstract class Vehicle extends MobileUnit
 	}
 
 	/**
-	 * Gets the settlement the person is currently associated with.
-	 *
-	 * @return associated settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlementID);
-	}
-
-	/**
 	 * Is the vehicle outside of a settlement but within its vicinity ?
 	 *
 	 * @return
