@@ -22,7 +22,7 @@ public class AnxietyMedication extends Medication {
     public static final String NAME = "Anxiety Medication";
     
     // Stress reduction amount.
-    private static final double STRESS_REDUCTION = -0.01;
+    private static final double STRESS_REDUCTION = .75;
     
     // Duration (millisols).
     private static final double DURATION = 200D;

@@ -131,8 +131,8 @@ public class ExploreSite extends EVAOperation {
 				return false;
 			}
 
-			if (EVAOperation.isHungryAtMealTime(person)) {
-				logger.fine(person, "Ended exploring site due to being hungry at meal time.");
+			if (EVAOperation.isHungryAtMealTime(person, 0)) {
+				logger.fine(person, "Ended exploring site due to being doubly hungry and is at meal time.");
 				return false;
 			}
 

@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.data.History;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;

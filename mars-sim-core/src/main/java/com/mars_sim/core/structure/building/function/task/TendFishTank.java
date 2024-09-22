@@ -163,6 +163,10 @@ public class TendFishTank extends TendHousekeeping {
 
 		double remainingTime = fishTank.catchFish(worker, workTime);
 
+		// Assume tending can reduce stress
+		if (person != null)
+			person.getPhysicalCondition().reduceStress(time);
+		
 		// Add experience
 		addExperience(time);
 
@@ -217,6 +221,10 @@ public class TendFishTank extends TendHousekeeping {
 
 		double remainingTime = fishTank.tendWeeds(workTime);
 
+		// Assume tending can reduce stress
+		if (person != null)
+			person.getPhysicalCondition().reduceStress(time);
+		
 		// Add experience
 		addExperience(time);
 

@@ -7,6 +7,8 @@
 package com.mars_sim.core.equipment;
 
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Unit;
@@ -26,13 +28,12 @@ class GenericContainer extends Equipment implements Container {
 	private static final long serialVersionUID = 1L;
 
 	private static SimLogger logger = SimLogger.getLogger(GenericContainer.class.getName());
+	private static final Map<EquipmentType,String> DESCRIPTION_CACHE = new EnumMap<>(EquipmentType.class);
 
 	private double totalCapacity;
 	private double amountStored;
 	private int resourceHeld = -1;
 	private boolean reusable;
-
-	private EquipmentType type;
 	
 	/**
 	 * Constructor.
@@ -46,29 +47,23 @@ class GenericContainer extends Equipment implements Container {
 	GenericContainer(String name, EquipmentType type, boolean reusable, Settlement base) {
 		// Use Equipment constructor
 		super(name, type, type.name(), base);
-		
-		this.type = type;
+		setDescription(createDescription(type));
+
 		this.reusable = reusable;
 		this.totalCapacity = ContainerUtil.getContainerCapacity(type);
 		
 		setBaseMass(type);
+	}
 		
-		// Set settlement as its container unit
-		setContainerUnit(base);
+	/**
+	 * Caches descriptions per Equipment Type to reduce String creation
+	 * @param type
+	 * @return
+	 */
+	private static String createDescription(EquipmentType type) {
+		return DESCRIPTION_CACHE.computeIfAbsent(type, t -> "A standard " + t.getName() + ".");
 	}
 
-//	/**
-//	 * Gets the base mass.
-//	 */
-//	@Override
-//	public double getBaseMass() {
-//		double mass = super.getBaseMass();
-//		if (mass == 0) {
-//			setBaseMass(type);
-//		}
-//		return super.getBaseMass();
-//	}
-	
 	/**
 	 * Sets the base mass of this container type.
 	 * 
@@ -278,11 +273,6 @@ class GenericContainer extends Equipment implements Container {
 	@Override
 	public Building getBuildingLocation() {
 		return getContainerUnit().getBuildingLocation();
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getContainerUnit().getAssociatedSettlement();
 	}
 
 	/**

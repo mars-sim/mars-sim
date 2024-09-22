@@ -1278,6 +1278,11 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 		
+		if (EVAOperation.isHungryAtMealTime(person, 20)) {
+			logger.info(person, "Too close to starting meal time and is doubly hungry.");
+			return false;
+		}
+		
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE
 				|| person.getPhysicalCondition().hasSeriousMedicalProblems()

@@ -140,12 +140,14 @@ class RobotGood extends Good {
     }
 
     @Override
-    double getPrice(Settlement settlement, double value) {
+    double calculatePrice(Settlement settlement, double value) {
         double mass = Robot.EMPTY_MASS;
         double quantity = settlement.getInitialNumOfRobots() ;
         double factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
         // Need to increase the value for robots
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+        double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
+        setPrice(price);   
+        return price;
     }
 
     @Override

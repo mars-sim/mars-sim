@@ -25,11 +25,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
-import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -43,7 +43,6 @@ import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -745,9 +744,6 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		for (Robot r: lookupRobot.values()) {
 			r.reinit();
-		}
-		for (Building b: lookupBuilding.values()) {
-			b.reinit();
 		}
 		for (Settlement s: lookupSettlement.values()) {
 			s.reinit();

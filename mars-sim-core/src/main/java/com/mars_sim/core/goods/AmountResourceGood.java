@@ -557,10 +557,12 @@ class AmountResourceGood extends Good {
     }
 
     @Override
-    double getPrice(Settlement settlement, double value) {
+    double calculatePrice(Settlement settlement, double value) {
 		double totalMass = Math.round(settlement.getAmountResourceStored(getID()) * 100.0)/100.0;
 		double factor = 1.5 / (.5 + Math.log(totalMass + 1));
-	    return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+	    double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+	    setPrice(price);
+	    return price;
     }
 
     @Override

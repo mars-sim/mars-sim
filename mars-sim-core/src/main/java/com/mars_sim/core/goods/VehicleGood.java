@@ -203,11 +203,13 @@ class VehicleGood extends Good {
     }
 
     @Override
-    double getPrice(Settlement settlement, double value) {
+    double calculatePrice(Settlement settlement, double value) {
         double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
         double quantity = settlement.findNumVehiclesOfType(vehicleType);
         double factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+        double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
+        setPrice(price);
+        return price;
     }
 
     @Override

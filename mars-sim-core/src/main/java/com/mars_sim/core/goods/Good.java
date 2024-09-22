@@ -44,8 +44,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
-	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
+//	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
+//	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
 	static final int HIGHEST_PROJECTED_VALUE = 20_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
@@ -73,12 +73,13 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private double skill;
 	private double tech;
 
-	private double costModifier = -1;
-	/** The national/inter-market average value of this good. */
-	private double interMarketGoodValue = -1;
-	/** The adjusted cost output for this good. */
-	private double adjustedCostOutput = -1;
 
+	private double costModifier = -1;
+	/** The cost for this good. */
+	private double cost = -1;
+	/** The price for this good. */
+	private double price = -1;
+	
 	private static List<ManufactureProcessInfo> manufactureProcessInfos;
 	private static List<FoodProductionProcessInfo> foodProductionProcessInfos;
 
@@ -88,7 +89,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param name     the name of the good.
 	 * @param id   the good's id.
 	 */
-	protected Good (String name, int id) {
+	protected Good(String name, int id) {
 		this.name = name;
 		this.id = id;
 	}
@@ -131,20 +132,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
     public double getRepairDemand() {
     	return 0;
     }
-	
-	/**
-	 * Calculates the cost of each good.
-	 */
-	public void computeCost() {
-		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
-		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
-
-		// Compute the base output cost
-		computeBaseOutputCost();
-		// Compute the adjusted output cost
-		computeAdjustedOutputCost();
-	}
-
 
 	/**
 	 * Gets the good's name.
@@ -204,29 +191,44 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
+	 * Calculates the two costs of each good.
+	 */
+	public void computeAllCosts() {
+		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
+		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
+
+		// Compute the base output cost
+		computeBaseOutputCost();
+		// Compute the adjusted output cost
+		computeAdjustedCost();
+	}
+	
+	/**
 	 * Gets the cost of output.
 	 */
 	public double getCostOutput() {
-		if (adjustedCostOutput == -1)
-			computeAdjustedOutputCost();
-		return adjustedCostOutput;
+		if (cost == -1)
+			computeAdjustedCost();
+		return cost;
 	}
 
 	/**
 	 * Calculates the modified cost of output.
 	 */
-	public void computeAdjustedOutputCost() {
+	public double computeAdjustedCost() {
 		// First compute the modifier
 		if (costModifier == -1) {
 			costModifier = computeCostModifier();
 			// Then compute the total cost
-			adjustedCostOutput = (0.01 + costModifier) * (
+			cost = (0.01 + costModifier) * (
 					1 + getlaborTime() / LABOR_FACTOR
 					+ getProcessTime() / PROCESS_TIME_FACTOR
 					+ getPower() / POWER_FACTOR
 					+ getSkill() / SKILL_FACTOR
 					+ getTech() / TECH_FACTOR);
 		}
+		
+		return cost;
 	}
 
 	/**
@@ -235,38 +237,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @return
 	 */
 	protected abstract double computeCostModifier();
-
-	/**
-	 * Gets the inter-market value of this good.
-	 * 
-	 * @return
-	 */
-	public double getInterMarketGoodValue() {
-		return interMarketGoodValue;
-	}
-
-	/**
-	 * Sets the inter-market value of this good.
-	 * 
-	 * @param value
-	 */
-	public void setInterMarketGoodValue(double value) {
-		interMarketGoodValue = value;
-	}
 	
-	/**
-	 * Adjusts the inter-market value of this good.
-	 */
-	public void adjustInterMarketGoodValue() {
-		// Deflate the value by 5%
-		if (interMarketGoodValue > LOWEST_VALUE_TO_DEFLATE)
-			interMarketGoodValue = .95 * interMarketGoodValue;
-
-		// Inflate the value by 5%
-		else if (interMarketGoodValue < HIGHEST_VALUE_TO_INFLATE)
-			interMarketGoodValue = 1.05 * interMarketGoodValue;
-	}
-
 	/**
 	 * Computes the base cost of each good from manufacturing and food production
 	 */
@@ -668,13 +639,31 @@ public abstract class Good implements Serializable, Comparable<Good> {
 			              .filter(Unit::isOutside);
     }
 
+    /**
+     * Sets the price.
+     * 
+     * @param price
+     */
+    protected void setPrice(double price) {
+    	this.price = price;
+    }
+    
+    /**
+     * Gets the price.
+     * 
+     * @return price
+     */
+    public double getPrice() {
+    	return price;
+    }
+    
 	/**
-	 * Gets the price for this Good at a settlement with a specific Value Point.
+	 * Calculates the price for this Good at a settlement with a specific Value Point.
 	 * 
 	 * @param settlement Get the price at
 	 * @param value Value Point for the good
 	 */
-    abstract double getPrice(Settlement settlement, double value);
+    abstract double calculatePrice(Settlement settlement, double value);
 
 	/**
 	 * Gets the default initial demand value for this Good.

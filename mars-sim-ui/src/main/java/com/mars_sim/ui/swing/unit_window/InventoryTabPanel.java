@@ -602,7 +602,9 @@ public class InventoryTabPanel extends TabPanel {
     	 * Prepares object for garbage collection.
     	 */
     	public void destroy() {
-    		items.clear();
+    		// Note: calling clear() below will trigger UnsupportedOperationException on ImmutableCollections
+    		// on InventoryTabPanel's itemTableModel.destroy()
+//    		items.clear();
     		items = null;
     		holder = null;
     	}

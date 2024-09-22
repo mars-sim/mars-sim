@@ -64,7 +64,7 @@ public class MathUtils {
 	}
 
 	/**
-	 * Normalize the values of the array
+	 * Normalizes the values of the array.
 	 * 
 	 * @param w
 	 * @return
@@ -93,10 +93,10 @@ public class MathUtils {
 			for (j = 0; j < x.length - 1; j++){
 				if (x[j].compareToIgnoreCase(x[j+1]) > 0) {
 	                // ascending sort
-	                temp = x [ j ];
-	                x [ j ] = x [ j+1];     
+	                temp = x[j];
+	                x[j] = x[j+1];     
 	                // swapping
-	                x [ j+1] = temp; 
+	                x[j+1] = temp; 
 	                flag = true;
 				} 
 			} 
@@ -104,7 +104,8 @@ public class MathUtils {
     }
 
 	/**
-	 * Adjust a value so it is between a low & high value
+	 * Adjusts a value so it is between a low & high value.
+	 * 
 	 * @param value
 	 * @param low
 	 * @param high

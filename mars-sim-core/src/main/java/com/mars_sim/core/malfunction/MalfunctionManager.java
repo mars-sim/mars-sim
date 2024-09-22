@@ -82,8 +82,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
+	/** Default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
 	
 	/** The lower limit factor for malfunction that will result in 1 % certainty. */	
@@ -100,7 +100,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final double HIGH_QUALITY_INSPECTION = 2000;
 	
 	/** Stress jump resulting from being in an accident. */
-	private static final double ACCIDENT_STRESS = 10D;
+	private static final double ACCIDENT_STRESS = 5D;
 	/** Modifier for number of parts needed for a trip. */
 	public static final double PARTS_NUMBER_MODIFIER = 7.5;
 	/** Estimate number of broken parts per malfunctions */
@@ -959,7 +959,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				aType = "Type-II";
 			}
 
-			// More generic simplifed log message
+			// More generic simplified log message
 			logger.log(entity, Level.WARNING, 20_000L, "Accident " + aType + " occurred. " + CAUSED_BY
 						 + actor.getName() + "'.");
 
@@ -967,7 +967,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
-				i.next().getPhysicalCondition().addStress(ACCIDENT_STRESS);
+				Person p = i.next();
+//	            logger.info(p, 10_000, "Adding " + Math.round(ACCIDENT_STRESS * 100.0)/100.0 + " to the stress.");
+				p.getPhysicalCondition().addStress(ACCIDENT_STRESS);
 			}
 		}
 	}

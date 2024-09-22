@@ -83,7 +83,7 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of fatigue threshold [millisols]. */
 	public static final int FATIGUE_MIN = 150;
 	/** The amount of stress threshold [millisols]. */
-	private static final int STRESS_THRESHOLD = 60;
+	private static final int STRESS_THRESHOLD = 75;
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
@@ -98,7 +98,7 @@ public class PhysicalCondition implements Serializable {
 	/** Performance modifier for fatigue. */
 	private static final double FATIGUE_PERFORMANCE_MODIFIER = .0005D;
 	/** Performance modifier for stress. */
-	private static final double STRESS_PERFORMANCE_MODIFIER = .001D;
+	private static final double STRESS_PERFORMANCE_MODIFIER = .00075D;
 	/** Performance modifier for energy. */
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
@@ -171,7 +171,7 @@ public class PhysicalCondition implements Serializable {
 	private double kJoules;
 	/** Person's food appetite (0.0 to 1.0) */
 	private double appetite;
-
+	
 	/** The time it takes to prebreathe the air mixture in the EVA suit. */
 	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 
@@ -318,7 +318,7 @@ public class PhysicalCondition implements Serializable {
 		// Set up random physical health index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
 		fatigue = RandomUtil.getRandomRegressionInteger(50);
-		stress = RandomUtil.getRandomRegressionInteger(20);
+		stress = RandomUtil.getRandomRegressionInteger(10);
 		hunger = RandomUtil.getRandomRegressionInteger(50);
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (50 - hunger) * 100;
@@ -428,6 +428,8 @@ public class PhysicalCondition implements Serializable {
 				increaseFatigue(1);
 				// Update hunger
 				increaseHunger(bodyMassDeviation * .75);
+				// Reduce stress
+				reduceStress(time/10);
 				
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
@@ -435,12 +437,20 @@ public class PhysicalCondition implements Serializable {
 				radiation.timePassing(pulse);
 				
 				// Get stress factor due to settlement overcrowding
-				if (person.isInSettlement()) {
+				if (person.isInSettlement() && !person.isRestingTask()) {
 					// Note: this stress factor is different from LifeSupport's timePassing's
 					//       stress modifier for each particular building
 					double stressFactor = person.getSettlement().getStressFactor(time);
-					// Update stress
-					addStress(stressFactor);
+					
+					if (stressFactor > 0) {
+						// Update stress
+				        addStress(stressFactor);
+//				        logger.info(person, 10_000, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
+					}
+				}				
+				
+				if (stress < STRESS_THRESHOLD) {
+					isStressedOut = false;
 				}
 				
 				int msol = pulse.getMarsTime().getMillisolInt();
@@ -449,14 +459,16 @@ public class PhysicalCondition implements Serializable {
 					// Update starvation
 					checkStarvation(hunger);
 					// Update dehydration
-					checkDehydration(thirst);
-					
-					// Check for mental breakdown if person is at high stress
+					checkDehydration(thirst);					
+					// Check if person is stressed out
+					checkStressOut();
 					
 					// Check if person is at very high fatigue may collapse.
 
-					if (!isRadiationPoisoned)
+					// Check radiation poisoning
+					if (!isRadiationPoisoned) {
 						checkRadiationPoisoning(time);
+					}
 				}
 			}
 
@@ -475,7 +487,6 @@ public class PhysicalCondition implements Serializable {
 			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
 		}
 	}
-
 
 	 /**
 	  * Checks and updates existing health problems
@@ -517,6 +528,7 @@ public class PhysicalCondition implements Serializable {
 					else if (type == ComplaintType.RADIATION_SICKNESS)
 						isRadiationPoisoned = false;
 
+					
 					// If nextPhase is not null, remove this problem so that it can
 					// properly be transitioned into the next.
 					problems.remove(problem);
@@ -902,6 +914,10 @@ public class PhysicalCondition implements Serializable {
 	 * @param d
 	 */
 	public void addStress(double d) {
+		if (stress > 95) {
+			logger.warning(person, 30_000, "stress: " + Math.round(stress * 1000.0)/1000.0 + "  d: " + Math.round(d * 1000.0)/1000.0);
+		}
+		
 		double ss = stress + d;
 		if (ss > 100)
 			ss = 100;
@@ -940,6 +956,38 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
+	 * Checks if a person suffers from stress related health problem.
+	 */
+	private void checkStressOut() {
+		if (stress >= STRESS_THRESHOLD && !isStressedOut()) {
+			isStressedOut = true;
+		}
+		
+		if (isStressedOut()) {
+			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
+	
+			if (!problems.contains(panic)) {
+				if (stress >= 100.0) {
+					addMedicalComplaint(medicalManager.getPanicAttack());
+					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+				}
+				else if (stress >= STRESS_THRESHOLD) {
+					// Anything to do here ?
+				}
+			}
+			
+			else if (stress < STRESS_THRESHOLD) {
+				
+				panic.setCured();
+				
+				isStressedOut = false;
+
+				logger.log(person, Level.INFO, 20_000, "No longer having panic attack (case 2).");
+			}
+		}
+	}
+	
+	/**
 	 * Checks if a person is starving or no longer starving.
 	 *
 	 * @param hunger
@@ -970,7 +1018,7 @@ public class PhysicalCondition implements Serializable {
 				// Set isStarving to false
 				isStarving = false;
 
-				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 2).");
+				logger.log(person, Level.INFO, 20_000, "No longer starving (case 2).");
 			}
 
 			// If this person's hunger has reached the buffer zone
@@ -1021,7 +1069,7 @@ public class PhysicalCondition implements Serializable {
 				// Set dehydrated to false
 				isDehydrated = false;
 
-				logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 2).");
+				logger.log(person, Level.INFO, 0, "No longer dehydrated (case 2).");
 			}
 
 			// If this person's thirst has reached the buffer zone
@@ -1084,7 +1132,7 @@ public class PhysicalCondition implements Serializable {
 				// Set isStarving to false
 				isRadiationPoisoned = false;
 
-				logger.log(person, Level.INFO, 20_000, "Cured of radiation poisoning (case 1).");
+				logger.log(person, Level.INFO, 20_000, "No longer having radiation poisoning (case 1).");
 			}
 		}
 
@@ -1096,7 +1144,7 @@ public class PhysicalCondition implements Serializable {
 					// Set isRadiationPoisoned to false
 					isRadiationPoisoned = false;
 
-					logger.log(person, Level.INFO, 20_000, "Cured of radiation poisoning (case 2).");
+					logger.log(person, Level.INFO, 20_000, "No longer having radiation poisoning (case 2).");
 				}
 			}
 
@@ -1123,7 +1171,7 @@ public class PhysicalCondition implements Serializable {
 			// Set isRadiationPoisoned to false
 			isRadiationPoisoned = false;
 
-			logger.log(person, Level.INFO, 20_000, "Cured of radiationPoisoning (case 3).");
+			logger.log(person, Level.INFO, 20_000, "No longer having radiationPoisoning (case 3).");
 		}
 	}
 
@@ -1559,8 +1607,8 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// High stress reduces performance.
-		if (stress > 70D) {
-			tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER / 8;
+		if (stress > 75D) {
+			tempPerformance -= (stress - 75D) * STRESS_PERFORMANCE_MODIFIER / 2;
 		} else if (stress > 50D) {
 			tempPerformance -= (stress - 50D) * STRESS_PERFORMANCE_MODIFIER / 4;
 		}
@@ -1873,6 +1921,15 @@ public class PhysicalCondition implements Serializable {
 		muscleSoreness = soreness;
 	}
 
+	/**
+	 * Checks if it passes the hunger x2 threshold
+	 *
+	 * @return
+	 */
+	public boolean isDoubleHungry() {
+		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD * 2;
+	}
+	
 
 	/**
 	 * Checks if it passes the hunger threshold
@@ -1883,6 +1940,15 @@ public class PhysicalCondition implements Serializable {
 		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD;
 	}
 
+	/**
+	 * Checks if it passes the thirst x2 threshold
+	 *
+	 * @return
+	 */
+	public boolean isDoubleThirsty() {
+		return thirst > THIRST_THRESHOLD * 2;
+	}
+	
 	/**
 	 * Checks if it passes the thirst threshold
 	 *
@@ -1902,7 +1968,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if it passes the stress threshold
+	 * Checks if it's above the stress threshold.
 	 *
 	 * @return
 	 */
@@ -2035,6 +2101,7 @@ public class PhysicalCondition implements Serializable {
     
 	/**
 	 * Gets the history of cured problems.
+	 * 
 	 * @return
 	 */
 	public List<CuredProblem> getHealthHistory() {

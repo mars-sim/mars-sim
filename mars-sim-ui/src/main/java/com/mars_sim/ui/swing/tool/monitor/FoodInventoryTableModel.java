@@ -39,8 +39,8 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 	private static final int SUPPLY_COL = DEMAND_COL+1;
 	static final int MASS_COL = SUPPLY_COL+1;
 	private static final int LOCAL_VP_COL = MASS_COL+1;
-	private static final int NATIONAL_VP_COL = LOCAL_VP_COL+1;
-	static final int COST_COL = NATIONAL_VP_COL+1;
+	private static final int MARKET_VP_COL = LOCAL_VP_COL+1;
+	static final int COST_COL = MARKET_VP_COL+1;
 	static final int PRICE_COL = COST_COL+1;
 	static {
 		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
@@ -51,11 +51,11 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 
 		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class);
-		COLUMNS[MASS_COL] = new ColumnSpec("kg", Double.class);
-		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local VP", Double.class);
-		COLUMNS[NATIONAL_VP_COL] = new ColumnSpec("National VP", Double.class);
-		COLUMNS[COST_COL] = new ColumnSpec("Cost [$]", Double.class);
-		COLUMNS[PRICE_COL] = new ColumnSpec("Price [$]", Double.class);
+		COLUMNS[MASS_COL] = new ColumnSpec("kg Mass", Double.class);
+		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Double.class);
+		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Double.class);
+		COLUMNS[COST_COL] = new ColumnSpec("$ Cost", Double.class);
+		COLUMNS[PRICE_COL] = new ColumnSpec("$ Price", Double.class);
 	}
 
 	/**
@@ -106,9 +106,9 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 			case MASS_COL:
 				return getTotalMass(selectedSettlement, selectedFood);
 			case LOCAL_VP_COL:
-				return convertFoodToGood(selectedFood).getInterMarketGoodValue();
-			case NATIONAL_VP_COL:
-				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedFood.getID());
+				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedFood.getID()); 
+			case MARKET_VP_COL:
+				return selectedSettlement.getGoodsManager().getMarketData(1, convertFoodToGood(selectedFood));
 			case COST_COL:
 				return convertFoodToGood(selectedFood).getCostOutput();
 			case PRICE_COL:

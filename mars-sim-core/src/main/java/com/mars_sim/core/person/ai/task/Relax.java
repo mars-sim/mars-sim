@@ -127,6 +127,8 @@ extends Task {
 	        
 	        pc.relaxMuscle(time);
 	        
+	        pc.reduceStress(time/2);   
+	        
 	        if (perf < 1) {
 	        	perf *= (1 + fractionOfRest);
 	        	pc.setPerformanceFactor(perf);

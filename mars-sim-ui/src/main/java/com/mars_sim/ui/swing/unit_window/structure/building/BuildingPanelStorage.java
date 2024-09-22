@@ -36,6 +36,9 @@ public class BuildingPanelStorage extends TabPanelTable {
 
 	private static final String STORE_ICON = "stock";
 
+	// Prepare medical table model
+	private	StorageTableModel storageTableModel;
+	
 	private static class StorageTableModel extends AbstractTableModel {
 		private List<String> nameList = new ArrayList<>();
 		private Map<String, Double> buildingStorage = new HashMap<>();
@@ -43,21 +46,30 @@ public class BuildingPanelStorage extends TabPanelTable {
 		private Map<String, Double> available = new HashMap<>();
 		
 		private ResourceHolder holder;
+		private Storage storage;
 		
 		public StorageTableModel(Storage storage) {	
+			this.storage = storage;
 			holder = storage.getBuilding().getAssociatedSettlement();
+			
+			updateResources();
+		}
+		
+		private void updateResources() {
 			
 			Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 			for (Entry<Integer, Double> resource : resourceStorage.entrySet()) {
 				int id = resource.getKey();
 				String name = ResourceUtil.findAmountResourceName(id);
-				nameList.add(name);
+				
+				if (!nameList.contains(name))
+					nameList.add(name);
+				
 				buildingStorage.put(name, resource.getValue());
 
 				available.put(name, holder.getAllAmountResourceStored(id));
 				
-				ResourceHolder rh = (ResourceHolder)storage.getBuilding().getSettlement();
-				settlementStorage.put(name, rh.getAmountResourceCapacity(id));
+				settlementStorage.put(name, holder.getAmountResourceCapacity(id));
 			}
 			
 			Collections.sort(nameList);
@@ -106,7 +118,11 @@ public class BuildingPanelStorage extends TabPanelTable {
 				return settlementStorage.get(nameList.get(row));
 			}
 		}
-
+		
+		private void update() {
+			updateResources();
+			fireTableDataChanged();
+		}
 	}
 
 	/** Is UI constructed. */
@@ -148,10 +164,12 @@ public class BuildingPanelStorage extends TabPanelTable {
 	 */
 	@Override
 	protected TableModel createModel() {
-
-		// Prepare medical table model
-		return new StorageTableModel(storage);
+		// Prepare storage table model
+		storageTableModel = new StorageTableModel(storage);
+		
+		return storageTableModel;
 	}
+	
 	/**
 	 * Updates this panel.
 	 */
@@ -159,6 +177,9 @@ public class BuildingPanelStorage extends TabPanelTable {
 	public void update() {	
 		if (!uiDone)
 			initializeUI();
+			
+		// Update table.
+		storageTableModel.update();
 	}
 	
 }

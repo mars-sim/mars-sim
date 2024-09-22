@@ -265,9 +265,9 @@ implements MissionListener {
 	}
 	
 	/**
-	 * Time has advanced.
+	 * Updates the map with time pulse.
 	 * 
-	 * @param pulse The clock change
+	 * @param pulse The clock pulse
 	 */
 	public void update(ClockPulse pulse) {
 		mapPanel.update(pulse);

@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.navigator;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -14,10 +13,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -25,14 +22,11 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -48,7 +42,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -56,10 +49,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
-import javax.swing.Painter;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLaf;
@@ -111,7 +102,7 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * presents the simulation to the user.
  */
 @SuppressWarnings("serial")
-public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow, MouseWheelListener {
+public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow {
 
 	private static class MapOrder {
 		int order;
@@ -132,7 +123,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 16;
-	private static final int SCALE_CONVERSION = 3;
 	private static final int CONTROL_PANE_HEIGHT = 85;
 	
 	private static final String LEVEL = "Level ";
@@ -174,14 +164,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private static final String RESOLUTION = "0";
 
-
-	
 	// Data member
-	/** The map rho. */
-	private double rho;
-	/** The scale of the zoom slider. */
-	private double scale;
-	
+	/** The cache latitude combox.  */
 	private String mapTypeCache;
 	
 	/** The latitude combox.  */
@@ -217,8 +201,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel phiLabel;
 	private JLabel thetaLabel;
 	private JLabel rhoLabel;
-
-	private JSlider zoomSlider;
 
 	private transient java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
 
@@ -290,16 +272,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		mapPane.add(mapPanel);
 			
-		buildZoomSlider();
-		
-		JPanel zoomPane = new JPanel(new BorderLayout());
-		zoomPane.setBackground(new Color(0, 0, 0, 128));
-		zoomPane.setOpaque(false);
-		zoomPane.add(zoomSlider);
-
-		mapPane.add(zoomPane);
-
-		mapPanel.addMouseWheelListener(this);
+//		buildZoomSlider();
+//		
+//		JPanel zoomPane = new JPanel(new BorderLayout());
+//		zoomPane.setBackground(new Color(0, 0, 0, 128));
+//		zoomPane.setOpaque(false);
+//		zoomPane.add(zoomSlider);
+//
+//		mapPane.add(zoomPane);
+//
+//		mapPanel.addMouseWheelListener(this);
 		
 		///////////////////////////////
 		
@@ -1292,7 +1274,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 //		double h1 = TerrainElevation.getColorElevation(phi, theta);	
 		double scale = mapPanel.getScale();
 		
-		updateStatusBar(scale, phi, theta, rho, h0, pos.getFormattedString());
+		updateStatusBar(scale, phi, theta, mapPanel.getRho(), h0, pos.getFormattedString());
 
 		checkOnTarget(pos);
 	}
@@ -1350,9 +1332,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	/**
-	 * Updates the layers with time pulse.
+	 * Updates the map with time pulse.
 	 * 
-	 * @param pulse The Change to the clock
+	 * @param pulse The clock pulse
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
@@ -1397,184 +1379,156 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		return results;
 	}
 	
-	private void buildZoomSlider() {
+//	private void buildZoomSlider() {
+//
+//		UIDefaults sliderDefaults = new UIDefaults();
+//
+//        sliderDefaults.put("Slider.thumbWidth", 15);
+//        sliderDefaults.put("Slider.thumbHeight", 15);
+//        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
+//            public void paint(Graphics2D g, JComponent c, int w, int h) {
+//                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//                g.setStroke(new BasicStroke(2f));
+//                g.setColor(Color.BLACK);
+//                g.fillOval(1, 1, w-1, h-1);
+//                g.setColor(Color.WHITE);
+//                g.drawOval(1, 1, w-1, h-1);
+//            }
+//        });
+//        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
+//            public void paint(Graphics2D g, JComponent c, int w, int h) {
+//                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//                g.setStroke(new BasicStroke(2f));
+//                g.setColor(Color.BLACK);
+//                g.fillRoundRect(0, 6, w, 6, 6, 6);
+//                g.setColor(Color.WHITE);
+//                g.drawRoundRect(0, 6, w, 6, 6, 6);
+//            }
+//        });
+//
+//        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
+//        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
+//        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
+//        zoomSlider.setPreferredSize(new Dimension(60, 400));
+//        zoomSlider.setSize(new Dimension(60, 400));
+//		zoomSlider.setPaintTicks(true);
+//		zoomSlider.setPaintLabels(true);
+//		zoomSlider.setForeground(Color.ORANGE.darker().darker());
+//		zoomSlider.setBackground(new Color(0, 0, 0, 128));
+//		zoomSlider.setOpaque(false);
+//		
+//		zoomSlider.setVisible(true);
+//		
+//		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+//		zoomSlider.addChangeListener(e -> {
+//				// Change scale of map based on slider position.
+//				int newSliderValue = zoomSlider.getValue();
+//				// Note: scale = rho / RHO_DEFAULT;
+//				double oldScale = mapPanel.getScale();	
+//				
+//				double oldRho = mapPanel.getRho();
+//				
+//				double scale = computeScale(newSliderValue);
+//				
+//				double rho = MapPanel.RHO_DEFAULT * scale;
+//				
+//				if (rho > MapPanel.MAX_RHO) {
+//					rho = MapPanel.MAX_RHO;
+//					scale = rho / MapPanel.RHO_DEFAULT;
+//				}
+//				else if (rho < MapPanel.MIN_RHO) {
+//					rho = MapPanel.MIN_RHO;
+//					scale = rho / MapPanel.RHO_DEFAULT;
+//				}
+//	
+//				if (scale != oldScale) {				
+//					mapPanel.setScale(scale);
+//				}
+//				
+//				if (rho != oldRho) {	
+//					// Note: Call setRho() will redraw the map
+//					mapPanel.setRho(rho);
+//				}
+//
+//				
+////				logger.info("res: " + mapPanel.getMapResolution()
+////						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
+////						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
+////						+ " -> " + Math.round(scale* 1000.0)/1000.0
+////						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
+////						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
+////						+ " -> " + Math.round(rho* 10.0)/10.0);
+//
+//		});
+//		
+//		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
+//		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
+//			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
+//		}
+////		labelTable.put(0, new JLabel("1/4"));
+//		zoomSlider.setLabelTable(labelTable);
+//    }
+	
+//	/**
+//	 * Explicitly changes the scale and sets the zoom slider value.
+//	 * 
+//	 * @param rho
+//	 */
+//	public void updateScaleZoomSlider(double rho) {
+//		
+//		double newScale = rho / MapPanel.RHO_DEFAULT;
+//		
+//		if (mapPanel.getScale() != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
+////			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
+//			mapPanel.setScale(newScale);
+//
+//			double newSliderValue = computeSliderValue(newScale);
+//			
+//			zoomSlider.setValue((int)(Math.round(newSliderValue * 10.0)/10.0));
+//		}
+//	}
+//	
+//	/**
+//	 * Computes the new slider value.
+//	 * 
+//	 * @param scale
+//	 * @return
+//	 */
+//	private double computeSliderValue(double scale) {
+//		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
+//	}
+//	
+//	/**
+//	 * Computes the new scale.
+//	 * 
+//	 * @param sliderValue
+//	 * @return
+//	 */
+//	private double computeScale(double sliderValue) {
+//		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
+//	}
+//	
+//	@Override
+//	public void mouseWheelMoved(MouseWheelEvent e) {
+//		double movement = e.getPreciseWheelRotation();
+//		// Note: limiting the mouse movement to incrementing or decrementing 1 only
+//		// to lower the need of having to render a new map excessively		
+//		if (movement > 0) {
+//			// Move mouse wheel rotated down, thus moving down zoom slider.
+//			zoomSlider.setValue(zoomSlider.getValue() - 1);
+//		}
+//		else if (movement < 0) {
+//			// Move mouse wheel rotated up, thus moving up zoom slider.
+//			zoomSlider.setValue(zoomSlider.getValue() + 1);
+//		}
+//	}
 
-		UIDefaults sliderDefaults = new UIDefaults();
-
-        sliderDefaults.put("Slider.thumbWidth", 15);
-        sliderDefaults.put("Slider.thumbHeight", 15);
-        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
-            public void paint(Graphics2D g, JComponent c, int w, int h) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.BLACK);
-                g.fillOval(1, 1, w-1, h-1);
-                g.setColor(Color.WHITE);
-                g.drawOval(1, 1, w-1, h-1);
-            }
-        });
-        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
-            public void paint(Graphics2D g, JComponent c, int w, int h) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.BLACK);
-                g.fillRoundRect(0, 6, w, 6, 6, 6);
-                g.setColor(Color.WHITE);
-                g.drawRoundRect(0, 6, w, 6, 6, 6);
-            }
-        });
-
-        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
-        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
-        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(60, 400));
-        zoomSlider.setSize(new Dimension(60, 400));
-		zoomSlider.setPaintTicks(true);
-		zoomSlider.setPaintLabels(true);
-		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-		zoomSlider.setBackground(new Color(0, 0, 0, 128));
-		zoomSlider.setOpaque(false);
-		
-		zoomSlider.setVisible(true);
-		
-		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		zoomSlider.addChangeListener(e -> {
-				// Change scale of map based on slider position.
-				int newSliderValue = zoomSlider.getValue();
-				// Note: scale = rho / RHO_DEFAULT;
-				double oldScale = getScale();	
-				
-				double oldRho = getRho();
-				
-				double scale = computeScale(newSliderValue);
-				
-				double rho = MapPanel.RHO_DEFAULT * scale;
-				
-				if (rho > MapPanel.MAX_RHO) {
-					rho = MapPanel.MAX_RHO;
-					scale = rho / MapPanel.RHO_DEFAULT;
-				}
-				else if (rho < MapPanel.MIN_RHO) {
-					rho = MapPanel.MIN_RHO;
-					scale = rho / MapPanel.RHO_DEFAULT;
-				}
-	
-				if (scale != oldScale) {				
-					setScale(scale);
-				}
-				
-				if (rho != oldRho) {	
-					// Note: Call setRho() will redraw the map
-					setRho(rho);
-				}
-
-				
-//				logger.info("res: " + mapPanel.getMapResolution()
-//						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
-//						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
-//						+ " -> " + Math.round(scale* 1000.0)/1000.0
-//						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
-//						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
-//						+ " -> " + Math.round(rho* 10.0)/10.0);
-
-		});
-		
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
-		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
-			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
-		}
-//		labelTable.put(0, new JLabel("1/4"));
-		zoomSlider.setLabelTable(labelTable);
-    }
-	
-	/**
-	 * Explicitly changes the scale and sets the zoom slider value.
-	 * 
-	 * @param rho
-	 */
-	public void updateScaleZoomSlider(double rho) {
-		
-		double newScale = rho / MapPanel.RHO_DEFAULT;
-		
-		if (scale != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
-//			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
-			scale = newScale;
-
-			double newSliderValue = computeSliderValue(scale);
-			
-			zoomSlider.setValue((int)(Math.round(newSliderValue * 10.0)/10.0));
-		}
-	}
-	
-	/**
-	 * Computes the new slider value.
-	 * 
-	 * @param scale
-	 * @return
-	 */
-	private double computeSliderValue(double scale) {
-		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
-	}
-	
-	/**
-	 * Computes the new scale.
-	 * 
-	 * @param sliderValue
-	 * @return
-	 */
-	private double computeScale(double sliderValue) {
-		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
-	}
-	
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		double movement = e.getPreciseWheelRotation();
-		// Note: limiting the mouse movement to incrementing or decrementing 1 only
-		// to lower the need of having to render a new map excessively		
-		if (movement > 0) {
-			// Move mouse wheel rotated down, thus moving down zoom slider.
-			zoomSlider.setValue(zoomSlider.getValue() - 1);
-		}
-		else if (movement < 0) {
-			// Move mouse wheel rotated up, thus moving up zoom slider.
-			zoomSlider.setValue(zoomSlider.getValue() + 1);
-		}
-	}
-
-	/**
-	 * Gets the map scale.
-	 *
-	 * @param scale
-	 */
-	public double getScale() {
-		return scale;
-	}
-	
-	/**
-	 * Sets the map scale.
-	 *
-	 * @param scale
-	 */
-	public void setScale(double scale) {
-		this.scale = scale;
-	}
-	
-	/**
-	 * Gets the map rho.
-	 *
-	 * @param rho
-	 */
-	public double getRho() {
-		return rho;
-	}
-	
 	/**
 	 * Sets the map rho.
 	 *
 	 * @param rho
 	 */
 	public void setRho(double rho) {
-		this.rho = rho;
 		mapPanel.setRho(rho);
 	}
 

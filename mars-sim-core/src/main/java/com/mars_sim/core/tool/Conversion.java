@@ -32,7 +32,8 @@ public class Conversion {
 	}
 
 	/**
-	 * Sets the first word to lower case
+	 * Sets the first word to lower case.
+	 * Note: Exception given to the word 'EVA'
 	 * 
 	 * @param input the word
 	 * @return modified word
@@ -53,7 +54,7 @@ public class Conversion {
 				titleCase.append(c);
 			}
 
-			return titleCase.toString().replaceAll("eVA", "EVA");
+			return titleCase.toString().replace("eVA", "EVA");
 		} else
 			return null;
 	}

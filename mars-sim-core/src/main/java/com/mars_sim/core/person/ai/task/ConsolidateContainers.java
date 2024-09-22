@@ -17,6 +17,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -138,6 +139,26 @@ extends Task {
         }
     }
     
+    
+	/**
+	 * Gets the topmost container unit that owns this unit, either a settlement or a vehicle.
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface.
+	 *
+	 * @return the unit's topmost container unit
+	 */
+	private static EquipmentOwner getBestOwner(Worker u) {
+		if (u.isInSettlement()) {
+            return u.getSettlement();
+        }
+        else if (u.isInVehicle()) {
+            return u.getVehicle();
+        }
+        else {
+            throw new IllegalStateException("Worker is not in a container to consolidate containers");
+        }
+	}
+
+
     /**
      * Performs the consolidating phase.
      * 
@@ -145,7 +166,7 @@ extends Task {
      * @return the amount of time (millisol) left after performing the consolidating phase.
      */
     private double consolidatingPhase(double time) {
-    	EquipmentOwner parent = (EquipmentOwner) worker.getTopContainerUnit();
+    	EquipmentOwner parent = getBestOwner(worker);
     	boolean useTopInventory = worker.isInSettlement();
     	
         // Determine consolidation load rate.

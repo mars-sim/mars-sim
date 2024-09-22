@@ -36,12 +36,12 @@ public class Mind implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Mind.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Mind.class.getName());
 
 	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
-	private static final int RELATION_UPDATE_CYCLE = 300;
-	private static final int EMOTION_UPDATE_CYCLE = 300;
+	private static final int RELATION_UPDATE_CYCLE = 250;
+	private static final int EMOTION_UPDATE_CYCLE = 250;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
 

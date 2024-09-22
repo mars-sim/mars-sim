@@ -380,13 +380,13 @@ public class LivingAccommodation extends Function {
 		// No bed found
 		if (guestHouse == null) {
 			if (guest) {
-				logger.warning(p, "No guest bunk provided");
+				logger.warning(p, "No guest bed found.");
 				return null;
 			}
 			guestHouse = RandomUtil.getARandSet(dorms).getLivingAccommodation();
 		}
 
-		logger.config(p, "Cannot find a bed.");
+		logger.config(p, "No bed assigned.");
 
 		// Pick a random bed in the guest house; unlikely to arrive here
 		return RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,

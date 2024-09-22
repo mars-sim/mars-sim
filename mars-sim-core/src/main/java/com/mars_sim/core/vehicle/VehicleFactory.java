@@ -55,9 +55,6 @@ public final class VehicleFactory {
             	vehicle = new Rover(name, spec, owner);
 				break;
         }
-        
-        // Call addOwnedVehicle prior to addUnit()
-        owner.addOwnedVehicle(vehicle);
 
         unitMgr.addUnit(vehicle);
         

@@ -227,12 +227,16 @@ public class LifeSupport extends Function {
 	
 				logger.info(building.getSettlement(), 30_000L, "Overcrowding at " + building + ".");
 	
-				double stressModifier = .1D * overcrowding * pulse.getElapsed();
+				double stressModifier = .01D * overcrowding * pulse.getElapsed();
 	
 				if (occupants != null) {
 					Iterator<Person> j = getOccupants().iterator();
 					while (j.hasNext()) {
-						j.next().getPhysicalCondition().addStress(stressModifier);
+						Person p = j.next();
+						if (!p.isRestingTask()) {	
+//							logger.info(p, 10_000, "Adding " + Math.round(stressModifier * 100.0)/100.0 + " to the stress.");
+							p.getPhysicalCondition().addStress(stressModifier);
+						}
 					}
 				}
 			}

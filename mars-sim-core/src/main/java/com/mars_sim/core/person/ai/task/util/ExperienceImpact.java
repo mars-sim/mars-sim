@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -25,6 +26,10 @@ import com.mars_sim.core.time.MarsTime;
 public class ExperienceImpact implements Serializable {
     
     private static final long serialVersionUID = 1L;
+    
+	/** Default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ExperienceImpact.class.getName());
+
 	// Taken from BotTaskManager; should be driven by RobotType
     private static final double ROBOT_WORK_POWER = 0.2D;
 
@@ -40,12 +45,14 @@ public class ExperienceImpact implements Serializable {
     public enum PhysicalEffort {NONE, LOW, HIGH}
 
     private double skillRatio;
-    private Set<SkillWeight> skillWeights;
-    private NaturalAttributeType experienceInfluence;
     private double stressModifier;
     private double totalSkillWeight;
+
+    private Set<SkillWeight> skillWeights;
     private Set<SkillType> skills;
+
     private PhysicalEffort effortDriven;
+    private NaturalAttributeType experienceInfluence;
 
     /**
      * Cuts down constructor using a varargs of skills.
@@ -133,17 +140,17 @@ public class ExperienceImpact implements Serializable {
      * Applies impacts to a worker for a given duration.
      * 
      * @param worker Worker in question
-     * @param duration Duration they did the activity
+     * @param timeElapsed the time elapsed
      * @param assistance Further percentage modifier to reflect local circumstances of assistance
      * @param effectiveness How effective where they doing the work
      */
-    public void apply(Worker worker, double duration, double assistance, double effectiveness) {
+    public void apply(Worker worker, double timeElapsed, double assistance, double effectiveness) {
         // Update skills
         if (!skillWeights.isEmpty()) {
             // Points calculated
             // 1) By the duration divided by the skill ratio
-            // 2) Multiplied by any assitence, e.g. teaching
-            double newPoints = (duration / skillRatio) * assistance;
+            // 2) Multiplied by any assistance, e.g. teaching
+            double newPoints = (timeElapsed / skillRatio) * assistance;
 
             // 3) Natural ability to handle the experience
             newPoints *= getExperienceModifier(worker);
@@ -152,7 +159,7 @@ public class ExperienceImpact implements Serializable {
 			SkillManager sm = worker.getSkillManager();
 			for (var skillType : skillWeights) {
 				sm.addExperience(skillType.skill(), (newPoints * skillType.weight())/totalSkillWeight,
-                                    duration);
+                                    timeElapsed);
 			}
 		}
 
@@ -160,10 +167,10 @@ public class ExperienceImpact implements Serializable {
 
         // Update person
         if (worker instanceof Person p) {
-            applyPersonBenfits(p, duration, effectiveness);
+            applyPersonBenfits(p, timeElapsed, effectiveness);
         }
         else if (worker instanceof Robot r) {
-            applyRobotBenefits(r, duration);
+            applyRobotBenefits(r, timeElapsed);
         }
     }
 
@@ -210,63 +217,71 @@ public class ExperienceImpact implements Serializable {
      * Applies the stress to a person.
      * 
      * @param p
-     * @param duration
+     * @param timeElapsed
      * @param effectiveness
      */
-    private void applyPersonBenfits(Person p, double duration, double effectiveness) {
-        // This is odd but matches the original in Task
-		double stressRatio = stressModifier - (stressModifier * effectiveness);
+    private void applyPersonBenfits(Person p, double timeElapsed, double effectiveness) {
+
+    	double stressFactor = 0;
+        // need to modify happiness & other emotions
+        if (effortDriven == PhysicalEffort.HIGH) {
+        	stressFactor = 1;
+        }
+        else if (effortDriven == PhysicalEffort.LOW) {
+        	stressFactor = .5;
+        }
+        else if (effortDriven == PhysicalEffort.NONE) {
+        	stressFactor = .25;
+        }
+        
+        double stressRatio = stressModifier - (stressModifier * effectiveness);
 
         // Reduce stress modifier for person's skill related to the task.
         if (stressRatio != 0D) {
-            double deltaStress = stressRatio * duration;
+        	// stressRatio can be positive and negative
+            double deltaStress = stressFactor * stressRatio * timeElapsed;
+//            logger.info(p, 10_000, "Adding " + Math.round(deltaStress * 100.0)/100.0 + " to the stress.");
             p.getPhysicalCondition().addStress(deltaStress);
         }
+        
+        double energyTime = timeElapsed * p.getPerformanceRating();
 
-        // need to modify happiness & other emotions
+        if (energyTime > 0D) {
 
-        // Check effort
-        if (effortDriven != PhysicalEffort.NONE) {
-            double energyTime = duration * p.getPerformanceRating();
-    
-            // Double energy expenditure if performing effort-driven task.
-            if (energyTime > 0D) {
-
-                if (p.isOutside()) {
-                    // Take more energy to be in EVA doing work
-                    
-                	// Consider skill level 
-                	double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-            		if (skill == 0)
-            			skill = .5;
-                	
-                	// Consider the strength, resilience, endurance, agility
-		  			int strength = p.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.STRENGTH);
-		  			int resilience = p.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-		  			int endurance = p.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.ENDURANCE);
-		  			int agility = p.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.AGILITY);
-		  			
-		  			double modifier = 1 +  
-		  					 + (400 - 1.5 * strength 
-		  							- 1.25 * endurance 
-		  							- 0.75 * agility
-		  							- 0.5 * resilience
-		  							) / 800D / skill * 1.5; 
-		  			
-                	energyTime = energyTime * modifier;
-                }
+            if (p.isOutside()) {
+                // Take more energy to be in EVA doing work
                 
-                p.getPhysicalCondition().reduceEnergy(energyTime);
+            	// Consider skill level 
+            	double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        		if (skill == 0)
+        			skill = .5;
+            	
+            	// Consider the strength, resilience, endurance, agility
+	  			int strength = p.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.STRENGTH);
+	  			int resilience = p.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+	  			int endurance = p.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.ENDURANCE);
+	  			int agility = p.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.AGILITY);
+	  			
+	  			double modifier = 1 +  
+	  					 + (400 - 1.5 * strength 
+	  							- 1.25 * endurance 
+	  							- 0.75 * agility
+	  							- 0.5 * resilience
+	  							) / 800D / skill * 1.5; 
+	  			
+            	energyTime = energyTime * modifier;
             }
+            
+            p.getPhysicalCondition().reduceEnergy(energyTime);
+        }
 
-            if (effortDriven == PhysicalEffort.HIGH) {
-                p.getPhysicalCondition().stressMuscle(duration);
-            }
-         }
+        if (effortDriven == PhysicalEffort.HIGH) {
+            p.getPhysicalCondition().stressMuscle(timeElapsed);
+        }
     }
 
 	/**
@@ -286,7 +301,8 @@ public class ExperienceImpact implements Serializable {
 	}
 
     /**
-     * What skills are impacted in this experience
+     * Gets the skill types set impacted in this experience.
+     * 
      * @return
      */
     public Set<SkillType> getImpactedSkills() {
@@ -301,7 +317,8 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Create a new varient of this Experience but with a different 
+     * Creates a new variant of this Experience but with a different.
+     * 
      * @param newSkillsRatio The new skill ratio
      * @return
      */
@@ -311,8 +328,9 @@ public class ExperienceImpact implements Serializable {
 
 
     /**
-     * Compare 2 Physical efforts and see if the first is more than or equal to the second
-     * in terms effort required
+     * Compares 2 Physical efforts and see if the first is more than or equal to the second
+     * in terms effort required.
+     * 
      * @param first
      * @param second
      * @return

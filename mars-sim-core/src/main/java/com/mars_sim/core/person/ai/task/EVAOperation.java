@@ -407,25 +407,25 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': too dark already.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': too dark already.");
 			return true;
 		}
 
 		// Check for any EVA problems.
 		if (hasEVAProblem(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': EVA problems.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': EVA problems.");
 			return true;
 		}
 
-		// Check if it is at meal time and the person is hungry
-		if (isHungryAtMealTime(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': At meal time.");
+		// Check if it is at meal time and the person is doubly hungry
+		if (isHungryAtMealTime(person, 0)) {
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': Doubly hungry at meal time.");
 			return true;
 		}
 
         // Checks if the person is physically drained
 		if (isExhausted(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
+			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': Exhausted.");
 			return true;
 		}
 		
@@ -507,7 +507,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void abortEVA(String reason) {
 		if (reason != null) {
- 			logger.info(worker, getName() + " aborted: " + reason);
+ 			logger.info(worker, 20_000, "Aborted '" + Conversion.setFirstWordLowercase(getName()) + "': " + reason);
 		}
 		
 		if (person.isOutside()) {
@@ -584,14 +584,15 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the person's settlement is at meal time and is hungry.
+	 * Checks if the person's settlement is at meal time and is doubly hungry.
 	 *
 	 * @param person
+	 * @param prepTime
 	 * @return
 	 */
-	public static boolean isHungryAtMealTime(Person person) {
-        return CookMeal.isMealTime(person, 0) 
-        		&& person.getPhysicalCondition().isHungry();
+	public static boolean isHungryAtMealTime(Person person, int prepTime) {
+        return CookMeal.isMealTime(person, prepTime) 
+        		&& person.getPhysicalCondition().isDoubleHungry();
     }
 
 	/**
@@ -601,7 +602,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
-        return person.getPhysicalCondition().isHungry() && person.getPhysicalCondition().isThirsty()
+        return person.getPhysicalCondition().isDoubleHungry() && person.getPhysicalCondition().isDoubleThirsty()
                 && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().isStressed();
     }
 

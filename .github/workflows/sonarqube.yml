@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   sonarqube:
@@ -18,12 +16,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     
-    # Setup java 17
+    # Setup java 21
     - name: Setup Java JDK
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: 17
+        java-version: 21
                   
     - name: SonarCloud Analysis
       env:

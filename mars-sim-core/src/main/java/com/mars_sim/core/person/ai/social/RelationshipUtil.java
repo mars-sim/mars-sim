@@ -41,7 +41,7 @@ public class RelationshipUtil implements Serializable {
 	/** The base change amount per millisol. */
 	private static final double BASE_RELATIONSHIP_CHANGE_AMOUNT = .1D;
 	/** The base stress modifier per millisol for relationships. */
-	private static final double BASE_STRESS_MODIFIER = .1D;
+	private static final double BASE_STRESS_MODIFIER = .05D;
 	/** The base opinion modifier per millisol for relationship change. */
 	private static final double BASE_OPINION_MODIFIER = .2D;
 	/** The base conversation modifier per millisol for relationship change. */
@@ -277,11 +277,13 @@ public class RelationshipUtil implements Serializable {
 	 */
 	public static void timePassing(Person person, double time) {
 
-		// Update the person's relationships.
-		updateRelationships(person, time);
-
-		// Modify the person's stress based on relationships with local people.
-		modifyStress(person, time);
+		if (person.isRestingTask()) {
+			// Update the person's relationships.
+			updateRelationships(person, time);
+	
+			// Modify the person's stress based on relationships with local people.
+			modifyStress(person, time);
+		}
 	}
 
 	/**
@@ -409,9 +411,11 @@ public class RelationshipUtil implements Serializable {
 				stressModifier -= ((getOpinionOfPerson(person, p) - 50D) / 50D);
 			}
 		}
-		
-		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
-		person.getPhysicalCondition().addStress(stressModifier);
+		if (stressModifier != 0) {
+			stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
+//	        logger.info(person, 10_000, "Adding " + Math.round(stressModifier * 100.0)/100.0 + " to the stress.");
+			person.getPhysicalCondition().addStress(stressModifier);
+		}
 	}
 
 	/**

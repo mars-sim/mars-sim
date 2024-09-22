@@ -214,6 +214,8 @@ public class MissionManager implements Serializable {
 		double calculateTotalProbCache = calculateMissionProbabilities(
 				person, missionCache, paramMgr, startingSettlement);
 
+		missionProbCache.add(missionCache);
+		
 		if (calculateTotalProbCache <= 0D) {
 			person.getMind().getTaskManager().setMissionRatings(missionCache, null);
 			return null;

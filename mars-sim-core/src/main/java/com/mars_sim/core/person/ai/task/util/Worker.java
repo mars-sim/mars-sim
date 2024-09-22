@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.person.ai.task.util;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitIdentifer;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
@@ -53,15 +52,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	 * @return
 	 */
 	public Coordinates getCoordinates();
-
-	/**
-	 * What is the top level container of this worker; this will be a Unit that is on the MarsSurface,
-	 * e.g. Vehicle or Settlement.
-	 * 
-	 * @return
-	 */
-	public Unit getTopContainerUnit();
-
 
 	/**
 	 * Is the worker in a vehicle ?
@@ -118,13 +108,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement();
-
-	/**
-	 * Gets the settlement in vicinity. This is used assume the person is not at a settlement.
-	 *
-	 * @return the worker's settlement
-	 */
-	public Settlement getNearbySettlement();
 
 	/**
 	 * Gets the associated settlement.

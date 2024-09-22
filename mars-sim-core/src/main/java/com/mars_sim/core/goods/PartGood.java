@@ -37,9 +37,8 @@ public class PartGood extends Good {
 	private static final long serialVersionUID = 1L;
     
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
 
-	
 	private static final String FIBERGLASS = "fiberglass";
 	private static final String SCRAP = "scrap";
 	private static final String INGOT = "ingot";
@@ -369,11 +368,13 @@ public class PartGood extends Good {
     }
 
     @Override
-    double getPrice(Settlement settlement, double value) {
+    double calculatePrice(Settlement settlement, double value) {
         double mass = getPart().getMassPerItem();
         double quantity = settlement.getItemResourceStored(getID()) ;
         double factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
-        return getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
+        double price = getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
+        setPrice(price);
+        return price;
     }
 
     @Override
