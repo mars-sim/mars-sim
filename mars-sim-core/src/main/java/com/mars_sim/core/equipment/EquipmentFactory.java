@@ -7,10 +7,10 @@
 
 package com.mars_sim.core.equipment;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
@@ -24,22 +24,13 @@ public final class EquipmentFactory {
 
 	/** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EquipmentFactory.class.getName());
+
+	// Default mass for uncalculated types
+	protected static final double DEFAULT_MASS = 0.0001;
 	
-	// Note: it's haphazard to match the string of the manu process since it can change.
-	// Will need to implement a better way in matching and looking for the manu process that assemblies the item of interest.
-	private static final String wheel = "Make wheelbarrow";
-	private static final String bottle = "Manufacture thermal bottle";
-	private static final String largeBag = "Manufacture large bag";
-	private static final String bag = "Manufacture bag";
-	private static final String box = "Make plastic specimen box";
-	private static final String barrel = "Make plastic barrel";
-	private static final String canister = "Make gas canister";
-	private static final String suit = "Assemble EVA suit";
-	
-	private static Map<String, Double> weights = new HashMap<>();
+	private static Map<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
 	
 	private static UnitManager unitManager;
-//	private static SimulationConfig simulationConfig;
 	private static ManufactureConfig manufactureConfig;
 
 	/**
@@ -64,7 +55,6 @@ public final class EquipmentFactory {
 		switch (type) {
 		case EVA_SUIT:
 			newEqm = new EVASuit(newName, settlement);
-
 			break;
 
 		case BAG:
@@ -80,8 +70,6 @@ public final class EquipmentFactory {
 			// Reusable Containers
 			newEqm = new GenericContainer(newName, type, true, settlement);
 			break;
-		default:
-			throw new IllegalStateException("Equipment type '" + type + "' could not be constructed.");
 		}
 
 		unitManager.addUnit(newEqm);
@@ -112,28 +100,7 @@ public final class EquipmentFactory {
 	 * @throws Exception if equipment mass could not be determined.
 	 */
 	public static double getEquipmentMass(EquipmentType type) {
-		String productName = type.getName();
-		
-		switch (type) {				
-			case BAG:
-				return calculateMass(bag, productName);
-			case BARREL:
-				return calculateMass(barrel, productName);
-			case EVA_SUIT:
-				return calculateMass(suit, productName);
-			case GAS_CANISTER:
-				return calculateMass(canister, productName);
-			case LARGE_BAG:
-				return calculateMass(largeBag, productName);
-			case SPECIMEN_BOX:
-				return calculateMass(box, productName);
-			case THERMAL_BOTTLE:
-				return calculateMass(bottle, productName);
-			case WHEELBARROW:
-				return calculateMass(wheel, productName);	
-			default:
-				throw new IllegalStateException("Class for equipment type '" + type + "' could not be found.");
-		}
+		return weights.computeIfAbsent(type, t-> calculateMass(t));
 	}
 
 	/**
@@ -142,39 +109,39 @@ public final class EquipmentFactory {
 	 * @param processName
 	 * @return
 	 */
-    public static double calculateMass(String processName, String productName) {	
-		if (weights.isEmpty() || !weights.containsKey(processName)) {
-			double mass = 0;
-			double quantity = 1;
-	    	ManufactureProcessInfo manufactureProcessInfo = null;
+    private static double calculateMass(EquipmentType type) {
+		
+		// Note: it's haphazard to match the string of the manu process since it can change.
+		// Will need to implement a better way in matching and looking for the manu process that assemblies the item of interest.
+		String processName = switch(type) {
+			case BAG -> "Manufacture bag";
+			case BARREL -> "Make plastic barrel";
+			case EVA_SUIT -> "Assemble EVA suit";
+			case GAS_CANISTER -> "Make gas canister";
+			case LARGE_BAG -> "Manufacture large bag";
+			case SPECIMEN_BOX -> "Make plastic specimen box";
+			case THERMAL_BOTTLE -> "Manufacture thermal bottle";
+			case WHEELBARROW -> "Make wheelbarrow";
+		};
 
-	    	if (manufactureConfig == null) {
-	    		manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
-	    	}
-	    	
-	    	for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-	    		if (info.getName().equalsIgnoreCase(processName)) {
-	    			manufactureProcessInfo = info;
-	    			break;
-		        }
-	    	}
+	    Optional<ManufactureProcessInfo> found = manufactureConfig.getManufactureProcessList()
+		 	.stream()
+			.filter(f -> f.getName().equalsIgnoreCase(processName))
+			.findFirst();
 	
-	    	if (manufactureProcessInfo != null) {
-				// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-				mass = manufactureProcessInfo.calculateTotalInputMass();
-				// Calculate output quantity
-				quantity = manufactureProcessInfo.calculateOutputQuantity(productName);					
-				// Save the key value pair onto the weights Map
-				weights.put(processName, mass/quantity);
-	    	}
-
-	    	if (mass == 0)
-	    		logger.severe("The process '" + processName + "' cannot be found.");
-	    		
-			return mass;
+		if (found.isPresent()) {
+			var manufactureProcessInfo = found.get();
+			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
+			var mass = manufactureProcessInfo.calculateTotalInputMass();
+			// Calculate output quantity
+			var quantity = manufactureProcessInfo.calculateOutputQuantity(type.getName());					
+			// Save the key value pair onto the weights Map
+			return mass/quantity;
 		}
 
-		return weights.get(processName);
+	    logger.severe("The process '" + processName + "' cannot be found.");
+	    		
+		return DEFAULT_MASS;
     }
     
 	/**
