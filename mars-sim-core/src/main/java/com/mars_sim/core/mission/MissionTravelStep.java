@@ -76,9 +76,7 @@ public class MissionTravelStep extends MissionStep {
         boolean workedOn = false;
         if (vehicle.getOperator() == null) {
             Task operateVehicleTask = createOperateVehicleTask(vehicle, worker);
-            if (operateVehicleTask != null) {
-                workedOn = assignTask(worker, operateVehicleTask);
-            }
+            workedOn = assignTask(worker, operateVehicleTask);
         }
         return workedOn;
     }

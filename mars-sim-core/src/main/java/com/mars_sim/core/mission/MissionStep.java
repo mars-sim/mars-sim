@@ -64,13 +64,12 @@ public abstract class MissionStep extends ProjectStep {
 
     /**
      * Calculate what resources are needed for this step.
+     * Method should be empty
      * The return value may change once the step is active.
      * @param includeOptionals
      * @param resources
      */
-    void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {
-       // Do nonthing; nothing to add
-    }
+    void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {}
 
     /**
      * Calculate and add life support resources to the manifest for the crew
@@ -80,7 +79,7 @@ public abstract class MissionStep extends ProjectStep {
      * @param manifest Place to hold the order
      */
     protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, SuppliesManifest manifest) {
-        double personSols = (crew * durationMSol)/1000D; // Consumption rates are in Sols
+        double personSols = (crew * durationMSol) / 1000D; // Consumption rates are in Sols
         personSols *= (ideal ? Vehicle.getLifeSupportRangeErrorMargin() : 1D);
         manifest.addAmount(ResourceUtil.oxygenID,
                         PhysicalCondition.getOxygenConsumptionRate() * personSols, true);
@@ -99,28 +98,28 @@ public abstract class MissionStep extends ProjectStep {
      * @param task Task allocated
      */
     protected boolean assignTask(Worker worker, Task task) {
-        boolean assignTask = false;
+        boolean shouldAssignTask = false;
 
-        // Bit messy
         if (worker instanceof Robot r) {
-            assignTask = (!r.getMalfunctionManager().hasMalfunction() 
-                                && r.getSystemCondition().isBatteryAbove(10));
+            boolean isRobotBatteryEnough = r.getSystemCondition().isBatteryAbove(10);
+            boolean isRobotOperational = !r.getMalfunctionManager().hasMalfunction();
+            shouldAssignTask = (isRobotOperational && isRobotBatteryEnough);
         }
         else if (worker instanceof Person p) {
-            assignTask = (!task.isEffortDriven() || (p.getPerformanceRating() != 0D));
-            
-    		if (p.isSuperUnfit())
+            boolean isPersonUnfit = p.isSuperUnfit();
+            boolean isPhysicalEffortNotRequired = !task.isEffortDriven();
+            boolean isPersonHealthy = p.getPerformanceRating() != 0D;
+            shouldAssignTask = (isPhysicalEffortNotRequired || isPersonHealthy);
+
+    		if (isPersonUnfit)
     			return false;
         }
 
-        if (assignTask) {
-            assignTask = worker.getTaskManager().checkReplaceTask(task);
-        }
-        if (!assignTask) {
+        if (shouldAssignTask && !worker.getTaskManager().checkReplaceTask(task)) {
             logger.warning(worker, "Unable to start " + task.getName());
         }
 
-        return assignTask;
+        return shouldAssignTask;
     }
 
     protected static UnitManager getUnitManager() {
