@@ -193,7 +193,8 @@ public class EquipmentGood extends Good {
     }
 
     @Override
-    double getPrice(Settlement settlement, double value) {
+    double calculatePrice(Settlement settlement, double value) {
+    	
 		// For Equipment   		
     	double mass = 0;
 		double quantity = 0;
@@ -211,7 +212,10 @@ public class EquipmentGood extends Good {
     		quantity = settlement.findNumContainersOfType(equipmentType);
     		factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
     	}
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));   
+        
+        double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));    
+        setPrice(price);   
+        return price;
     }
 
 	@Override

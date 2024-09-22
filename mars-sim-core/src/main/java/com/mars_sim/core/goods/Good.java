@@ -73,10 +73,13 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private double skill;
 	private double tech;
 
-	private double costModifier = -1;
-	/** The adjusted cost output for this good. */
-	private double adjustedCostOutput = -1;
 
+	private double costModifier = -1;
+	/** The cost for this good. */
+	private double cost = -1;
+	/** The price for this good. */
+	private double price = -1;
+	
 	private static List<ManufactureProcessInfo> manufactureProcessInfos;
 	private static List<FoodProductionProcessInfo> foodProductionProcessInfos;
 
@@ -129,20 +132,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
     public double getRepairDemand() {
     	return 0;
     }
-	
-	/**
-	 * Calculates the cost of each good.
-	 */
-	public void computeCost() {
-		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
-		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
-
-		// Compute the base output cost
-		computeBaseOutputCost();
-		// Compute the adjusted output cost
-		computeAdjustedOutputCost();
-	}
-
 
 	/**
 	 * Gets the good's name.
@@ -202,29 +191,44 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
+	 * Calculates the two costs of each good.
+	 */
+	public void computeAllCosts() {
+		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
+		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
+
+		// Compute the base output cost
+		computeBaseOutputCost();
+		// Compute the adjusted output cost
+		computeAdjustedCost();
+	}
+	
+	/**
 	 * Gets the cost of output.
 	 */
 	public double getCostOutput() {
-		if (adjustedCostOutput == -1)
-			computeAdjustedOutputCost();
-		return adjustedCostOutput;
+		if (cost == -1)
+			computeAdjustedCost();
+		return cost;
 	}
 
 	/**
 	 * Calculates the modified cost of output.
 	 */
-	public void computeAdjustedOutputCost() {
+	public double computeAdjustedCost() {
 		// First compute the modifier
 		if (costModifier == -1) {
 			costModifier = computeCostModifier();
 			// Then compute the total cost
-			adjustedCostOutput = (0.01 + costModifier) * (
+			cost = (0.01 + costModifier) * (
 					1 + getlaborTime() / LABOR_FACTOR
 					+ getProcessTime() / PROCESS_TIME_FACTOR
 					+ getPower() / POWER_FACTOR
 					+ getSkill() / SKILL_FACTOR
 					+ getTech() / TECH_FACTOR);
 		}
+		
+		return cost;
 	}
 
 	/**
@@ -233,32 +237,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @return
 	 */
 	protected abstract double computeCostModifier();
-	
-//	/**
-//	 * Adjusts the market value of this good.
-//	 */
-//	public synchronized void adjustMarketGoodValue() {
-//		// Deflate the value by 5%
-//		if (marketGoodValue > LOWEST_VALUE_TO_DEFLATE)
-//			marketGoodValue = .95 * marketGoodValue;
-//
-//		// Inflate the value by 5%
-//		else if (marketGoodValue < HIGHEST_VALUE_TO_INFLATE)
-//			marketGoodValue = 1.05 * marketGoodValue;
-//	}
-
-//	/**
-//	 * Adjusts the market demand of this good.
-//	 */
-//	public synchronized void adjustMarketDemand() {
-//		// Deflate the demand by 5%
-//		if (marketDemand > LOWEST_VALUE_TO_DEFLATE)
-//			marketDemand = .95 * marketDemand;
-//
-//		// Inflate the value by 5%
-//		else if (marketDemand < HIGHEST_VALUE_TO_INFLATE)
-//			marketDemand = 1.05 * marketDemand;
-//	}
 	
 	/**
 	 * Computes the base cost of each good from manufacturing and food production
@@ -661,13 +639,31 @@ public abstract class Good implements Serializable, Comparable<Good> {
 			              .filter(Unit::isOutside);
     }
 
+    /**
+     * Sets the price.
+     * 
+     * @param price
+     */
+    protected void setPrice(double price) {
+    	this.price = price;
+    }
+    
+    /**
+     * Gets the price.
+     * 
+     * @return price
+     */
+    public double getPrice() {
+    	return price;
+    }
+    
 	/**
-	 * Gets the price for this Good at a settlement with a specific Value Point.
+	 * Calculates the price for this Good at a settlement with a specific Value Point.
 	 * 
 	 * @param settlement Get the price at
 	 * @param value Value Point for the good
 	 */
-    abstract double getPrice(Settlement settlement, double value);
+    abstract double calculatePrice(Settlement settlement, double value);
 
 	/**
 	 * Gets the default initial demand value for this Good.

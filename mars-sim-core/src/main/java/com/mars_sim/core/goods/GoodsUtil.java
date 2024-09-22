@@ -78,7 +78,7 @@ public class GoodsUtil {
      */
     private static void calculateGoodCost() {
         for (Good g : goodsList) {
-            g.computeCost();
+            g.computeAllCosts();
         }
     }
 	

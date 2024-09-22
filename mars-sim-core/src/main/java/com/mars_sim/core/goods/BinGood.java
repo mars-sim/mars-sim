@@ -94,12 +94,14 @@ public class BinGood extends Good {
     }
 
     @Override
-    double getPrice(Settlement settlement, double value) {
+    double calculatePrice(Settlement settlement, double value) {
 		// For Bin   		
     	double mass = 0; // BinFactory.getBinMass(binType);
 		double quantity = 0; //settlement.findNumContainersOfType(binType);
     	double factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
-        return getCostOutput() * factor;   
+        double price = getCostOutput() * factor;        
+        setPrice(price);    
+        return price;
     }
 
 	@Override

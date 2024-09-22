@@ -306,17 +306,29 @@ public class GoodsManager implements Serializable {
 			double localDemand = demandCache.get(g.getID());
 			double marketDemand = getMarketData(0, g); 
 	
-			if (initialized || marketDemand == -1 || marketValue == -1) {
+			double localCost = g.computeAdjustedCost();
+			double marketCost = getMarketData(2, g); 
+			
+			double localPrice = g.calculatePrice(settlement, localValue);
+			double marketPrice = getMarketData(3, g); 
+			
+			if (initialized || marketDemand == -1 || marketValue == -1 || marketCost == -1 || marketPrice == -1) {
 				setMarketData(0, g, localDemand);	
-				setMarketData(1, g, localValue);		
+				setMarketData(1, g, localValue);	
+				setMarketData(2, g, localCost);
+				setMarketData(3, g, localPrice);
 			}
 			else {			
 				setMarketData(0, g, 0.95 * marketDemand + 0.05 * localDemand);
 				setMarketData(1, g, 0.95 * marketValue + 0.05 * localValue);
+				setMarketData(2, g, 0.95 * marketCost + 0.05 * localCost);
+				setMarketData(3, g, 0.95 * marketPrice + 0.05 * localPrice);
 			}
 			
 			settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, g);				
 			settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, g);
+			settlement.fireUnitUpdate(UnitEventType.MARKET_COST_EVENT, g);
+			settlement.fireUnitUpdate(UnitEventType.MARKET_PRICE_EVENT, g);
 		}
 				
 		initialized = true;
@@ -704,9 +716,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getPrice(Good good) {
-		double value = getGoodValuePoint(good);
-
-		return good.getPrice(settlement, value);
+		return good.getPrice();
 	}
 	
 	/**
@@ -981,11 +991,9 @@ public class GoodsManager implements Serializable {
 					double old = mData.getDemand();
 					if (old == -1) {
 						mData.setDemand(data);
-						marketMap.put(good, mData);
 					}
 					else {
 						mData.setDemand(0.95 * old + 0.05 * data);
-						marketMap.put(good, mData);
 					}				
 				}
 			}
@@ -998,11 +1006,9 @@ public class GoodsManager implements Serializable {
 					double old = mData.getValue();
 					if (old == -1) {
 						mData.setValue(data);
-						marketMap.put(good, mData);
 					}
 					else {
 						mData.setValue(0.95 * old + 0.05 * data);
-						marketMap.put(good, mData);
 					}
 				}
 			}		
@@ -1015,11 +1021,9 @@ public class GoodsManager implements Serializable {
 					double old = mData.getCost();
 					if (old == -1) {
 						mData.setCost(data);
-						marketMap.put(good, mData);
 					}
 					else {
 						mData.setCost(0.95 * old + 0.05 * data);
-						marketMap.put(good, mData);
 					}
 				}
 			}		
@@ -1032,11 +1036,9 @@ public class GoodsManager implements Serializable {
 					double old = mData.getPrice();
 					if (old == -1) {
 						mData.setPrice(data);
-						marketMap.put(good, mData);
 					}
 					else {
 						mData.setPrice(0.95 * old + 0.05 * data);
-						marketMap.put(good, mData);
 					}
 				}
 			}
