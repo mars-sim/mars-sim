@@ -35,7 +35,6 @@ import javax.swing.table.TableCellRenderer;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -43,6 +42,7 @@ import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
+import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
@@ -282,7 +282,7 @@ public class MiningSitePanel extends WizardPanel {
 			unitsToDisplay.add(getWizard().getMissionData().getStartingSettlement());
 			unitIconLayer.setUnitsToDisplay(unitsToDisplay);
 			unitLabelLayer.setUnitsToDisplay(unitsToDisplay);
-			ellipseLayer.setEllipseDetails(new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX),
+			ellipseLayer.setEllipseDetails(new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX), new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX),
 					(convertRadiusToMapPixels(getRoverRange()) * 2));
 			ellipseLayer.setDisplayEllipse(true);
 			selectMiningSite(null);
@@ -373,8 +373,8 @@ public class MiningSitePanel extends WizardPanel {
 
 		Coordinates center = getCenterCoords();
 		if (center != null) {
-			int xValue = xLoc - (Map.MAP_BOX_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
-			int yValue = yLoc - (Map.MAP_BOX_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
+			int xValue = xLoc - (MapDisplay.MAP_BOX_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
+			int yValue = yLoc - (MapDisplay.MAP_BOX_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
 			Coordinates clickedPosition = center.convertRectIntToSpherical(xValue, yValue,
 								mapPane.getMap().getRho());
 

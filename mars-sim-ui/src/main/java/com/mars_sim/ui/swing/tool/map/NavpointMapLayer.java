@@ -11,8 +11,6 @@ import java.awt.Graphics;
 
 import javax.swing.Icon;
 
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
@@ -87,7 +85,7 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		if (singleMission != null) {
 			if (singleMission instanceof VehicleMission)
 				displayMission((VehicleMission) singleMission, mapCenter, baseMap, g);
@@ -111,7 +109,7 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayMission(VehicleMission mission, Coordinates mapCenter, Map baseMap, Graphics g) {
+	private void displayMission(VehicleMission mission, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		for (NavPoint np : mission.getNavpoints()) {
 			displayNavpoint(np, mapCenter, baseMap, g);
 		}
@@ -125,7 +123,7 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, Map baseMap, Graphics g) {
+	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
 		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
 			MapMetaData mapType = baseMap.getMapMetaData();

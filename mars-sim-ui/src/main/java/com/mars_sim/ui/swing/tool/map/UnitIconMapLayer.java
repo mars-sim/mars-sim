@@ -13,7 +13,6 @@ import java.awt.Graphics;
 import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
@@ -39,7 +38,7 @@ public class UnitIconMapLayer extends UnitMapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected void displayUnit(Unit unit, Coordinates mapCenter, Map baseMap, Graphics g) {
+	protected void displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);

@@ -19,6 +19,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
+import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -63,12 +64,9 @@ import com.mars_sim.core.map.common.FileLocator;
   	// The min rho fraction allowed
   	public static final double minRhoFraction = 3;
   	
- 	// Data members.
- 	private final double HALF_PI = Math.PI / 2D;
-
- 	private final String CL_FILE = "MapDataFast.cl";
- 	
- 	private final String KERNEL_NAME = "getMapImage";
+ 	private static final double HALF_PI = Math.PI / 2D;
+ 	private static final String CL_FILE = "MapDataFast.cl";
+ 	private static final String KERNEL_NAME = "getMapImage";
  	
   	/* # of pixels in the width of the map image. */
 	private int pixelWidth;
@@ -81,18 +79,20 @@ import com.mars_sim.core.map.common.FileLocator;
 	/* The cache for the last theta. */
 	private double centerThetaCache;
 	/* The base map color pixels double array. */
- 	private transient int[][] colorPixels = new int[0][0];
+ 	private int[][] colorPixels = new int[0][0];
 	/* The array of points for generating mineral map in a mapbox. */	
- 	private transient static Point2D[] mapBoxArray;
+ 	private static Point2D[] mapBoxArray;
  	
  	/* The meta data of the map. */
-	private transient MapMetaData meta;
+	private MapMetaData meta;
  	/* The OpenCL program instance. */
-	private transient CLProgram program;
+	private CLProgram program;
  	/* The OpenCL kernel instance. */
-	private transient CLKernel kernel;
+	private CLKernel kernel;
 	
-	private transient BufferedImage bImageCache;
+	private BufferedImage bImageCache;
+
+	private boolean loaded = false;
  	
  	/**
  	 * Constructor.
@@ -105,28 +105,15 @@ import com.mars_sim.core.map.common.FileLocator;
 		this.meta = mapMetaData;
 		this.rho = rho;
 
-		// Load data files
-		String metaFile = mapMetaData.getFile();
+		// Load data files async
+		String dataFilename = mapMetaData.getFile();
+		var dataFile = FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + dataFilename);
 		
-		try {
-			if (metaFile == null || metaFile.equals("")) {
-				logger.log(Level.SEVERE, "Map file not found.");
-				return;
-			}
-			else {
-				loadMapData(metaFile);
-			}
-		} catch(Exception e) {
-			logger.log(Level.SEVERE, "Unable to load map. " + e.getMessage());
-			return;
+		// Data file is already available
+		if (dataFile != null) {
+			loadMapData(dataFile);
 		}
-		
-		rhoDefault = pixelHeight / Math.PI;
-		maxRho = rhoDefault * maxRhoMultiplier;
-		minRho = rhoDefault / minRhoFraction;
 
-		logger.config("rho: " + Math.round(rho *10.0)/10.0 + ". RHO_DEFAULT: " + Math.round(rhoDefault *10.0)/10.0 + ".");
-		
 		// Exclude mac from use openCL
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			hardwareAccel = false;
@@ -235,26 +222,19 @@ import com.mars_sim.core.map.common.FileLocator;
  	/**
  	 * Loads the whole map data set into an 2-D integer array.
  	 * 
- 	 * @param imageName
+ 	 * @param dataFile File containing the data to be loaded
  	 * @return
- 	 * @throws IOException
  	 */
- 	private void loadMapData(String imageName) throws IOException {
+ 	private void loadMapData(File dataFile) {
 
  		BufferedImage cylindricalMapImage = null;
- 		
 		try {
 			cylindricalMapImage = 
-			// Unable to get BigBufferedImage to work : BigBufferedImage.create(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName), BufferedImage.TYPE_INT_ARGB); // TYPE_INT_RGB
-				ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
+				ImageIO.read(dataFile);
 			
-			// Use getRaster() - the fastest
-		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
-			// See https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
-			
+
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
-//	 		logger.config("loadMapData - " +  imageName + " : " + pixelWidth + " x " + pixelHeight + ".");
 	 		
 	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 		
@@ -278,7 +258,6 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		else { 
 	 			
 				final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
-//				May try final int[] pixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
 
 	 			if (hasAlphaChannel) {
 		 			// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel.
@@ -286,8 +265,6 @@ import com.mars_sim.core.map.common.FileLocator;
 		 					
 		 			final int pixelLength = 4;
 	 			
-		 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
-
 		 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
 		 				int argb = 0;
 				
@@ -299,7 +276,6 @@ import com.mars_sim.core.map.common.FileLocator;
 		 				//	   Green = 0xFF00FF00
 		 				//	   Blue  = 0xFF0000FF
 		 				//
-		 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
 		 				
 		 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
 		 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
@@ -360,10 +336,16 @@ import com.mars_sim.core.map.common.FileLocator;
 		 			}
 		 		}
 	 		}
-	 		
+	 		loaded = true;
 		} catch (IOException e) {
-			logger.severe("Can't read image file '" + imageName + "'.");
+			logger.severe("Can't read image file : " + dataFile.getName());
 		}
+	
+		rhoDefault = pixelHeight / Math.PI;
+		maxRho = rhoDefault * maxRhoMultiplier;
+		minRho = rhoDefault / minRhoFraction;
+
+		logger.config("rho: " + Math.round(rho *10.0)/10.0 + ". RHO_DEFAULT: " + Math.round(rhoDefault *10.0)/10.0 + ".");
  	}
  	
  	/**
@@ -377,10 +359,7 @@ import com.mars_sim.core.map.common.FileLocator;
  	 */
  	@Override
  	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double newRho) {
-// 		logger.info("centerPhi: " + Math.round(centerPhi * 1000.0)/1000.0 
-// 				+ ".  centerTheta: " + Math.round(centerTheta * 1000.0)/1000.0 
-// 				+ ".  newRho: " + Math.round(newRho * 1000.0)/1000.0 + ".");
- 		
+ 	
 		 boolean invalid = Double.isNaN(centerPhi) || Double.isNaN(centerTheta);
 		 if (invalid) {
 			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
@@ -400,14 +379,12 @@ import com.mars_sim.core.map.common.FileLocator;
 		setRho(newRho);
 
  		// Create a new buffered image to draw the map on.
- 		BufferedImage bImage // BigBufferedImage.create(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_INT_RGB);
+ 		BufferedImage bImage 
 			= new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_INT_RGB); 
  		
  		// Not using TYPE_INT_ARGB or TYPE_4BYTE_ABGR
  				
  		// Note: it turns out TYPE_INT_RGB works the best for gray map
-
- 		// Future: May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
  		
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
@@ -881,6 +858,13 @@ import com.mars_sim.core.map.common.FileLocator;
  	}
  	
 	/**
+	 * Has the data loaded
+	 */
+	public boolean isReady() {
+		return loaded;
+	}
+
+	/**
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
@@ -888,6 +872,5 @@ import com.mars_sim.core.map.common.FileLocator;
 	 	meta = null;
 		program = null;
 		kernel = null;
-		mapBoxArray = null;
 	}
  }

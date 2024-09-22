@@ -15,8 +15,6 @@ import java.util.List;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.Landmark;
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.SimulationConstants;
@@ -58,7 +56,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -85,7 +83,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   {@LINK String} type of map.
 	 * @param g         {@link Graphics} the graphics context.
 	 */
-	private void displayLandmark(Landmark landmark, Coordinates mapCenter, Map baseMap, Graphics2D g2d) {
+	private void displayLandmark(Landmark landmark, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
 
 		// Determine display location of landmark.
 		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkCoord(), mapCenter, baseMap);

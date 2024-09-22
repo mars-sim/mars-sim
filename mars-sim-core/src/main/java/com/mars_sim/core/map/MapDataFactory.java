@@ -167,7 +167,7 @@ import com.mars_sim.core.tool.RandomUtil;
  	 * @param newMapType
  	 * @return
  	 */
- 	MapMetaData getMapMetaData(String newMapType) { 
+ 	public MapMetaData getMapMetaData(String newMapType) { 
  		return metaDataMap.get(newMapType);
  	}
  	 	
@@ -179,7 +179,7 @@ import com.mars_sim.core.tool.RandomUtil;
  	 * @param rho
  	 * @return the map data
  	 */
- 	MapData loadMapData(String mapType, int res, double rho) {
+ 	public MapData loadMapData(String mapType, int res, double rho) {
  		
  		MapData mapData = null;
  		
@@ -199,15 +199,13 @@ import com.mars_sim.core.tool.RandomUtil;
 			// Set the resolution
 			mapMetaData.setResolution(res);
 			// Destroy the previously held mapDataCache
-//			if (mapDataCache != null) ((IntegerMapData)mapDataCache).destroy();
 			// Obtain a new MapData instance
 			mapData = new IntegerMapData(mapMetaData, rho);		
 			// Patch the metadata to be locally available
-			mapMetaData.setLocallyAvailable(true);
+			mapMetaData.setLocallyAvailable();
 			// Cache the new mapData
 			mapDataCache = mapData;
 			// Destroy the previously held mapDataCache
-//			if (mapMetaDataCache != null)  mapMetaDataCache.destroy();
 			// Cache the new mapMetaData		
 			mapMetaDataCache = mapMetaData;
 			
@@ -215,8 +213,7 @@ import com.mars_sim.core.tool.RandomUtil;
 					+ "'. Res level: " + mapMetaData.getResolution() 
 					+ ". Map name: '" + mapMetaData.getMapType()
 					+ "'. Filename: '" + mapMetaData.getFile()
-					+ "'. Color: " + mapMetaData.isColourful()
-					+ ". Local: " + mapMetaData.isLocallyAvailable() + ".");
+					+ "'. Color: " + mapMetaData.isColourful());
 
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not find the map file.", e);

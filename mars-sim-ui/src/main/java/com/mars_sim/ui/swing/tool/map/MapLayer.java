@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.map;
+package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Graphics;
 
@@ -23,5 +23,5 @@ public interface MapLayer {
 	 * @param baseMap   the base map controlling coordinate frame
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g);
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g);
 }

@@ -67,10 +67,8 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.map.IntegerMapData;
-import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.MapDataFactory;
 import com.mars_sim.core.map.MapDataUtil;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
@@ -85,6 +83,8 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
+import com.mars_sim.ui.swing.tool.map.MapDisplay;
+import com.mars_sim.ui.swing.tool.map.MapLayer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
@@ -104,24 +104,12 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow {
 
-	private static class MapOrder {
-		int order;
-		MapLayer layer;
-
-		public MapOrder(int order, MapLayer layer) {
-			this.order = order;
-			this.layer = layer;
-		}
-		
-		public int getOrder() {
-			return order;
-		}
-	}
+	private static record MapOrder(int order, MapLayer layer) {}
 	
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
-	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
-	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
+	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
+	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 16;
 	private static final int CONTROL_PANE_HEIGHT = 85;
 	
@@ -1086,14 +1074,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		ButtonGroup group = new ButtonGroup();
 		
 		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
-			
-			// In case mars-sim has just been loaded: metaData.checkMapLocalAvailability();
-			
-			int currentRes = metaData.getResolution();
-			
+					
+			int currentRes = metaData.getResolution();	
 			String resolutionString = LEVEL + currentRes;
-			
 			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + OPEN_PARA +  resolutionString + CLOSE_PARA
+															+ (metaData.isLocal(currentRes) ? " *" : "")
 															, metaData.equals(mapPanel.getMapMetaData()));
 			
 			mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + metaData.getMapString());
@@ -1109,7 +1094,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		for (int i = 0; i < size; i++) {
 			for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
 				MapOrder mo = e.getValue();
-				if (mo.getOrder() == i) {
+				if (mo.order() == i) {
 					optionsMenu.add(createSelectableMapOptions(LAYER_ACTION, e.getKey(),
 								mapPanel.hasMapLayer(e.getValue().layer)));
 				}

@@ -41,10 +41,9 @@ import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 
 import com.mars_sim.core.map.IntegerMapData;
-import com.mars_sim.core.map.Map;
+import com.mars_sim.core.map.MapData;
 import com.mars_sim.core.map.MapDataFactory;
 import com.mars_sim.core.map.MapDataUtil;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.ClockPulse;
@@ -63,8 +62,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private static final double HALF_PI = Math.PI / 2d;
 
 	private static final int SCALE_CONVERSION = 3;
-	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
-	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH;
+	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
+	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;
@@ -92,7 +91,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private Image mapImage;
 
-	private Map marsMap;
+	private MapDisplay marsMap;
 	
 	private MainDesktopPane desktop;
 
@@ -107,8 +106,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private List<MapLayer> mapLayers;
 
-	private final MapDataUtil mapUtil = MapDataUtil.instance();
-	
+	private final MapDataFactory mapFactory = MapDataUtil.instance().getMapDataFactory();
+
 	/**
 	 * Constructor 1.
 	 * 
@@ -239,7 +238,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		zoomSlider.addChangeListener(e -> {
 				// Change scale of map based on slider position.
 				int newSliderValue = zoomSlider.getValue();
-				// Note: scale = rho / RHO_DEFAULT;
 				double oldScale = getScale();	
 				
 				double oldRho = getRho();
@@ -295,7 +293,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		double newScale = rho / MapPanel.RHO_DEFAULT;
 		
 		if (getScale() != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
-//			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
 			setScale(newScale);
 
 			double newSliderValue = computeSliderValue(newScale);
@@ -412,7 +409,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				dragy = 0;
 				
 				mouseDragging = false;
-//				zooming = false;
 
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
@@ -486,10 +482,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return MapMetaData
 	 */
 	public MapMetaData getNewMapMetaData(String newMapType) {
-		return mapUtil.getMapMetaData(newMapType);
+		return mapFactory.getMapMetaData(newMapType);
 	}
 	
-	public Map getMap() {
+	public MapDisplay getMap() {
 		return marsMap;
 	}
 
@@ -515,23 +511,26 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 		
 		if (toload) {
-			
-			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString, res, getRho()));
-
-			// Redefine map param
-			RHO_DEFAULT = IntegerMapData.rhoDefault;
-			MAX_RHO = IntegerMapData.maxRho;
-			MIN_RHO = IntegerMapData.minRho;
-			multiplier = RHO_DEFAULT / ZOOM_STEP;
-					
-			recreateMap = true;
-			
-			showMap(centerCoords, getRho());
-			
+			var newMapData = mapFactory.loadMapData(newMapString, res, getRho());
+			createMapDisplay(newMapData);
 			return toload;
 		}
 	
 		return toload;
+	}
+
+	private void createMapDisplay(MapData newMapData) {
+		marsMap = new CannedMarsMap(this, newMapData);
+
+		// Redefine map param
+		RHO_DEFAULT = IntegerMapData.rhoDefault;
+		MAX_RHO = IntegerMapData.maxRho;
+		MIN_RHO = IntegerMapData.minRho;
+		multiplier = RHO_DEFAULT / ZOOM_STEP;
+				
+		recreateMap = true;
+		
+		showMap(centerCoords, getRho());
 	}
 
 	public Coordinates getCenterLocation() {
@@ -680,7 +679,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	        		// Paint black background
 	        		g2d.setColor(Color.BLACK);
 	                
-	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+	        		g2d.fillRect(0, 0, MapDisplay.MAP_BOX_WIDTH, MapDisplay.MAP_BOX_HEIGHT);
 //	        		Not working: g2d.drawImage(starfield, 0, 0, Color.black, this);
 //	        		Not working: g2d.setComposite(AlphaComposite.SrcOver); 
 //	        		Not working: g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
@@ -738,8 +737,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		int msgWidth = messageMetrics.stringWidth(message);
 
 		// Determine message draw position
-		int x = (Map.MAP_BOX_WIDTH - msgWidth) / 2;
-		int y = (Map.MAP_BOX_HEIGHT + msgHeight) / 2;
+		int x = (MapDisplay.MAP_BOX_WIDTH - msgWidth) / 2;
+		int y = (MapDisplay.MAP_BOX_HEIGHT + msgHeight) / 2;
 
 		// Draw message
 		g.drawString(message, x, y);
@@ -762,8 +761,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return
 	 */
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xx = x - Map.MAP_BOX_WIDTH / 2.0;
-		double yy = y - Map.MAP_BOX_HEIGHT / 2.0;
+		double xx = x - MapDisplay.MAP_BOX_WIDTH / 2.0;
+		double yy = y - MapDisplay.MAP_BOX_HEIGHT / 2.0;
 		// Based on the current centerCoords
 		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
     }
@@ -787,7 +786,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
 	public void setRho(double rho) {
 		if (marsMap != null) {
-//			Not working: updateDisplay();
 			marsMap.drawMap(centerCoords, rho);
 			repaint();
 		}
@@ -825,7 +823,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 		executor = null;
 		marsMap = null;
-//		update = false;
 		mapImage = null;
 	}
 

@@ -95,4 +95,10 @@ import java.io.IOException;
  	 */
  	public int getRGBColorInt(double phi, double theta);
 
+    /**
+     * Is this map data ready to be used? The data may require loading in the background
+     * @return
+     */
+    public boolean isReady();
+
  }
