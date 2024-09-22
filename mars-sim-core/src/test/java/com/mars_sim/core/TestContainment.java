@@ -190,7 +190,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	public void testVehicleNearSettlement() throws Exception {
 		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1));
 
-		vehicle.setContainerUnit(settlement);
+		vehicle.setContainerUnitAndID(settlement);
 
 		testContainment(vehicle, settlement, settlement, LocationStateType.SETTLEMENT_VICINITY);
 	}
