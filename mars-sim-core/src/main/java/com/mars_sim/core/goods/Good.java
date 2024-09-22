@@ -44,8 +44,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
-	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
+//	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
+//	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
 	static final int HIGHEST_PROJECTED_VALUE = 20_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
@@ -74,8 +74,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private double tech;
 
 	private double costModifier = -1;
-	/** The national/inter-market average value of this good. */
-	private double interMarketGoodValue = -1;
 	/** The adjusted cost output for this good. */
 	private double adjustedCostOutput = -1;
 
@@ -88,7 +86,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param name     the name of the good.
 	 * @param id   the good's id.
 	 */
-	protected Good (String name, int id) {
+	protected Good(String name, int id) {
 		this.name = name;
 		this.id = id;
 	}
@@ -235,38 +233,33 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @return
 	 */
 	protected abstract double computeCostModifier();
-
-	/**
-	 * Gets the inter-market value of this good.
-	 * 
-	 * @return
-	 */
-	public double getInterMarketGoodValue() {
-		return interMarketGoodValue;
-	}
-
-	/**
-	 * Sets the inter-market value of this good.
-	 * 
-	 * @param value
-	 */
-	public void setInterMarketGoodValue(double value) {
-		interMarketGoodValue = value;
-	}
 	
-	/**
-	 * Adjusts the inter-market value of this good.
-	 */
-	public void adjustInterMarketGoodValue() {
-		// Deflate the value by 5%
-		if (interMarketGoodValue > LOWEST_VALUE_TO_DEFLATE)
-			interMarketGoodValue = .95 * interMarketGoodValue;
+//	/**
+//	 * Adjusts the market value of this good.
+//	 */
+//	public synchronized void adjustMarketGoodValue() {
+//		// Deflate the value by 5%
+//		if (marketGoodValue > LOWEST_VALUE_TO_DEFLATE)
+//			marketGoodValue = .95 * marketGoodValue;
+//
+//		// Inflate the value by 5%
+//		else if (marketGoodValue < HIGHEST_VALUE_TO_INFLATE)
+//			marketGoodValue = 1.05 * marketGoodValue;
+//	}
 
-		// Inflate the value by 5%
-		else if (interMarketGoodValue < HIGHEST_VALUE_TO_INFLATE)
-			interMarketGoodValue = 1.05 * interMarketGoodValue;
-	}
-
+//	/**
+//	 * Adjusts the market demand of this good.
+//	 */
+//	public synchronized void adjustMarketDemand() {
+//		// Deflate the demand by 5%
+//		if (marketDemand > LOWEST_VALUE_TO_DEFLATE)
+//			marketDemand = .95 * marketDemand;
+//
+//		// Inflate the value by 5%
+//		else if (marketDemand < HIGHEST_VALUE_TO_INFLATE)
+//			marketDemand = 1.05 * marketDemand;
+//	}
+	
 	/**
 	 * Computes the base cost of each good from manufacturing and food production
 	 */

@@ -37,7 +37,7 @@ public class PartGood extends Good {
 	private static final long serialVersionUID = 1L;
     
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
 
 	
 	private static final String FIBERGLASS = "fiberglass";

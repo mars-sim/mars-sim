@@ -40,15 +40,16 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int TRADE_COL = PROJECTED_COL + 1;
 	private static final int REPAIR_COL = TRADE_COL + 1;
 	private static final int DEMAND_COL = REPAIR_COL + 1;
-	private static final int SUPPLY_COL = DEMAND_COL + 1;
+	private static final int MARKET_DEMAND_COL = DEMAND_COL + 1;
+	private static final int SUPPLY_COL = MARKET_DEMAND_COL + 1;
 	static final int QUANTITY_COL = SUPPLY_COL + 1;
 	private static final int MASS_COL = QUANTITY_COL + 1;
-	private static final int MARKET_COL = MASS_COL + 1;
-	private static final int VALUE_COL = MARKET_COL + 1;
-	static final int COST_COL = VALUE_COL + 1;
+	private static final int VALUE_COL = MASS_COL + 1;
+	private static final int MARKET_VALUE_COL = VALUE_COL + 1;
+	static final int COST_COL = MARKET_VALUE_COL + 1;
 	static final int PRICE_COL = COST_COL + 1;
 
-	static final int NUM_INITIAL_COLUMNS = 4;
+	static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
 	private static final int COLUMNCOUNT = PRICE_COL + 1;
 
 	static {
@@ -61,12 +62,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class);
 		COLUMNS[TRADE_COL] = new ColumnSpec ("Trade", Double.class);
 		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class);
-		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class);
+		COLUMNS[DEMAND_COL] = new ColumnSpec ("Local Demand", Double.class);	
+		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class);
 		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Double.class);
 		COLUMNS[MASS_COL] = new ColumnSpec ("kg Mass", Double.class);
-		COLUMNS[MARKET_COL] = new ColumnSpec ("National VP", Double.class);
-		COLUMNS[VALUE_COL] = new ColumnSpec ("Local VP", Double.class);
+		COLUMNS[VALUE_COL] = new ColumnSpec ("Local Value", Double.class);
+		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class);
 		COLUMNS[COST_COL] = new ColumnSpec ("$ Cost", Double.class);
 		COLUMNS[PRICE_COL] = new ColumnSpec ("$ Price", Double.class);
 	}
@@ -92,12 +94,28 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		if ((eventType == UnitEventType.GOODS_VALUE_EVENT
-			|| eventType == UnitEventType.FOOD_EVENT)
-			&& event.getTarget() instanceof Good g
+		if (event.getTarget() instanceof Good g
 			&& unit instanceof Settlement s) {
+			
+			if (eventType == UnitEventType.VALUE_EVENT) {
+				entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
+			}
+			else if (eventType == UnitEventType.DEMAND_EVENT) {
+				entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
+			}
+			else if (eventType == UnitEventType.MARKET_VALUE_EVENT) {
+				entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
+			}
+			else if (eventType == UnitEventType.MARKET_DEMAND_EVENT) {
+				entityValueUpdated(new CategoryKey<>(s, g), MARKET_DEMAND_COL, MARKET_DEMAND_COL);
+			}
+			else if (eventType == UnitEventType.PRICE_EVENT) {
+				entityValueUpdated(new CategoryKey<>(s, g), COST_COL, PRICE_COL);
+			}
+			else {
 				entityValueUpdated(new CategoryKey<>(s, g), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
+		}
 	}
 
 	/**
@@ -130,16 +148,18 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 				return getRepair(selectedSettlement, selectedGood);
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValue(selectedGood);
+			case MARKET_DEMAND_COL:
+				return selectedSettlement.getGoodsManager().getMarketData(0, selectedGood);
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyValue(selectedGood);
 			case QUANTITY_COL:
 				return getQuantity(selectedSettlement, selectedGood.getID());
 			case MASS_COL:
 				return getTotalMass(selectedSettlement, selectedGood);
-			case MARKET_COL:
-				return selectedGood.getInterMarketGoodValue();
 			case VALUE_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
+			case MARKET_VALUE_COL:
+				return selectedSettlement.getGoodsManager().getMarketData(1, selectedGood);
 			case COST_COL:
 				return selectedGood.getCostOutput();
 			case PRICE_COL:

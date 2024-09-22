@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.person.ai.task.util;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitIdentifer;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;

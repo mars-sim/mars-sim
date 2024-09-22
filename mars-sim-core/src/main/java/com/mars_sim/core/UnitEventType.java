@@ -107,9 +107,12 @@ public enum UnitEventType {
 	JOB_EVENT						("job event"),
 	MISSION_EVENT					("mission event"),
 
-	// For GoodsManager
-	GOODS_VALUE_EVENT				("values of goods"),
-	PRICE_EVENT						("price of goods"),
+	// For Goods and GoodsManager
+	MARKET_VALUE_EVENT				("market value of a good"),
+	MARKET_DEMAND_EVENT				("market demand of a good"),
+	VALUE_EVENT						("value of a good"),
+	DEMAND_EVENT					("demand of a good"),
+	PRICE_EVENT						("price of a good"),
 	
 	// For Vehicle
 	STATUS_EVENT					("vehicle status"),

@@ -44,7 +44,10 @@ public class GoodsManager implements Serializable {
 	 */
 	private class GoodsUpdater implements ScheduledEventHandler {
 		private static final long serialVersionUID = 1L;
-		private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
+		// For now, update 20 times per day
+		// May adjust it according to the time ratio
+		private static final int UPDATE_GOODS_PERIOD = (1000/20); 
+
 
 		@Override
 		public String getEventDescription() {
@@ -126,29 +129,38 @@ public class GoodsManager implements Serializable {
 	private static final long serialVersionUID = 12L;
 
 	/** Initialized logger. */
-	private static SimLogger logger = SimLogger.getLogger(GoodsManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(GoodsManager.class.getName());
 
 	// Number modifiers for outstanding repair and maintenance parts and EVA parts.
 	private static final int BASE_REPAIR_PART = 150;
 	private static final int BASE_MAINT_PART = 15;
-	private static final int BASE_EVA_SUIT = 1;
-
-	private static final double MIN_SUPPLY = 0.01;
-	static final double MIN_DEMAND = 0.01;
-	
+	private static final int BASE_EVA_SUIT = 1;	
 	private static final int MAX_SUPPLY = 5_000;
+	private static final int MAX_VP = 10_000;
+
 	static final int MAX_DEMAND = 10_000;
 	
-	private static final int MAX_VP = 10_000;
-	public static final double MAX_FINAL_VP = 5_000D;
+	private static final double MIN_SUPPLY = 0.01;
 	private static final double MIN_VP = 0.01;
-	
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_81 = .81;
 
+	public static final double MAX_FINAL_VP = 5_000D;
+	static final double MIN_DEMAND = 0.01;
+
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
+
+	private static Map<Integer, ResourceLimits> resLimits;
+	
+	private static Map<Good, MarketData> marketMap = new HashMap<>();
+	/** A standard list of resources to be excluded in buying negotiation. */
+	private static Set<Good> unsellableGoods = null;
+
+	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
+
+	private static UnitManager unitManager;
 
 	// Data members
 	private double repairMod = BASE_REPAIR_PART;
@@ -166,9 +178,7 @@ public class GoodsManager implements Serializable {
 	private Map<Integer, Double> supplyCache = new HashMap<>();
 
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
-
-	/** A standard list of resources to be excluded in buying negotiation. */
-	private static Set<Good> unsellableGoods = null;
+	
 	/** A standard list of buying resources in buying negotiation. */
 	private Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
 	private Map<Good, ShoppingItem> sellList = Collections.emptyMap();
@@ -177,11 +187,6 @@ public class GoodsManager implements Serializable {
 
 	private Settlement settlement;
 
-	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
-
-	private static UnitManager unitManager;
-
-	private static Map<Integer, ResourceLimits> resLimits;
 
 	/**
 	 * Constructor.
@@ -198,7 +203,9 @@ public class GoodsManager implements Serializable {
 		
 		// Future event to update Goods values; randomise first trigger
 		settlement.getFutureManager().addEvent(RandomUtil.getRandomInt(1, 50), new GoodsUpdater());
-		populateGoodsValues();
+		
+		// Populate the caches
+		populateCaches();
 
 		// Schedule reseting the first review cycle during early morning
 		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
@@ -247,7 +254,7 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Populates the cache maps.
 	 */
-	private void populateGoodsValues() {
+	private void populateCaches() {
 		// Preload the good cache
 		for(Good good : GoodsUtil.getGoodsList()) {
 			int id = good.getID();
@@ -256,6 +263,7 @@ public class GoodsManager implements Serializable {
 			deflationIndexMap.put(id, 0);
 			demandCache.put(id, good.getDefaultDemandValue());
 			supplyCache.put(id, good.getDefaultSupplyValue());
+			marketMap.put(good, new MarketData(good));
 		}
 	}
 
@@ -291,11 +299,24 @@ public class GoodsManager implements Serializable {
 
  		// Update the goods value gradually with the use of buffers
 		for (Good g: GoodsUtil.getGoodsList()) {
-			determineGoodValue(g);
 			
-			if (initialized) {
-				g.adjustInterMarketGoodValue();
+			double localValue = determineGoodValue(g);
+			double marketValue = getMarketData(1, g); 
+			
+			double localDemand = demandCache.get(g.getID());
+			double marketDemand = getMarketData(0, g); 
+	
+			if (initialized || marketDemand == -1 || marketValue == -1) {
+				setMarketData(0, g, localDemand);	
+				setMarketData(1, g, localValue);		
 			}
+			else {			
+				setMarketData(0, g, 0.95 * marketDemand + 0.05 * localDemand);
+				setMarketData(1, g, 0.95 * marketValue + 0.05 * localValue);
+			}
+			
+			settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, g);				
+			settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, g);
 		}
 				
 		initialized = true;
@@ -317,36 +338,50 @@ public class GoodsManager implements Serializable {
 		
 			// Calculate the value point
 			double totalSupply = supplyCache.get(id);
-			double totalDemand = demandCache.get(id);
-			double value = totalDemand / (1 + totalSupply);
+			double oldDemand = demandCache.get(id);
+			double newDemand = oldDemand;
+			
+			// Adjust the market demand
+			double adj0 = adjustMarketDemand(good, oldDemand) / 20.0;
+			if (oldDemand + adj0 > 0)
+				newDemand += adj0;
+			
+			// Save the demand if it has changed
+			if (oldDemand != newDemand) {
+				demandCache.put(id, newDemand);
+
+				settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
+			}
+			
+			double newValue = newDemand / (1 + totalSupply);
 
 			// Check if it surpasses MAX_VP
-			if (value > MAX_VP) {
+			if (newValue > MAX_VP) {
 				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, good.getCategory(), true);
+				newValue = updateDeflationMap(id, newValue, good.getCategory(), true);
 			}
 			// Check if it falls below MIN_VP
-			else if (value < MIN_VP) {
+			else if (newValue < MIN_VP) {
 				// Update deflationIndexMap for other resources of the same category
-				updateDeflationMap(id, value, good.getCategory(), false);
+				updateDeflationMap(id, newValue, good.getCategory(), false);
 			}
 
 			// Check for inflation and deflation adjustment due to other resources
-			value = checkDeflation(id, value);
-			// Adjust the value according to the inter-market value
-			double adjustment = adjustMarketValue(good, value) / 20.0;
-			if (value + adjustment > 0)
-				value += adjustment;
+			newValue = checkDeflation(id, newValue);
+			// Adjust the market value
+			double adj1 = adjustMarketValue(good, newValue) / 20.0;
+			if (newValue + adj1 > 0)
+				newValue += adj1;
 
 			// Save the value point if it has changed
 			double oldValue = goodsValues.get(id);
-			if (oldValue != value) {
-				goodsValues.put(id, value);
+			if (oldValue != newValue) {
+				goodsValues.put(id, newValue);
 
-				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
+				settlement.fireUnitUpdate(UnitEventType.VALUE_EVENT, good);
 			}
 
-			return value;
+			return newValue;
 		} else
 			logger.severe(settlement, "Good is null.");
 
@@ -354,15 +389,56 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Adjusts the inter-market value of a good based on the local value of a settlement.
+	 * Adjusts the market demand of a good of a settlement.
+	 * 
+	 * @param good
+	 * @param demand
+	 * @return the market adjustment
+	 */
+	private double adjustMarketDemand(Good good, double demand) {
+		// Gets the market demand among the settlements
+		double currentMarket = getMarketData(0, good);
+		double futureMarket = 0;
+
+		if (currentMarket == -1) {
+			// At the startup of the sim
+			futureMarket = demand;
+				
+			if (futureMarket > MAX_DEMAND)
+				futureMarket = MAX_DEMAND;			
+			else if (futureMarket < MIN_DEMAND)
+				futureMarket = MIN_DEMAND;
+			
+			setMarketData(0, good, futureMarket);	
+			settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, good);
+			return 0;
+		}
+
+		else {
+			// Let the market demand affects the local demand of this good
+			futureMarket = .9 * currentMarket + .1 * demand;
+
+			if (futureMarket > MAX_DEMAND)
+				futureMarket = MAX_DEMAND;
+			else if (futureMarket < MIN_DEMAND)
+				futureMarket = MIN_DEMAND;
+			
+			setMarketData(0, good, futureMarket);
+			settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
+			return futureMarket - currentMarket;
+		}
+	}
+	
+	/**
+	 * Adjusts the market value of a good of a settlement.
 	 * 
 	 * @param good
 	 * @param value
 	 * @return the market adjustment
 	 */
 	private double adjustMarketValue(Good good, double value) {
-		// Gets the inter-market value among the settlements
-		double currentMarket = good.getInterMarketGoodValue();
+		// Gets the market value among the settlements
+		double currentMarket = getMarketData(1, good);
 		double futureMarket = 0;
 
 		if (currentMarket == -1) {
@@ -374,13 +450,13 @@ public class GoodsManager implements Serializable {
 			else if (futureMarket < MIN_VP)
 				futureMarket = MIN_VP;
 			
-			good.setInterMarketGoodValue(futureMarket);
+			setMarketData(1, good, futureMarket);
 			
 			return 0;
 		}
 
 		else {
-			// Let the inter-market value affects the value of this good
+			// Let the market value affects the value of this good
 			// at this settlement 
 			futureMarket = .9 * currentMarket + .1 * value;
 
@@ -389,12 +465,11 @@ public class GoodsManager implements Serializable {
 			else if (futureMarket < MIN_VP)
 				futureMarket = MIN_VP;
 			
-			good.setInterMarketGoodValue(futureMarket);
+			setMarketData(1, good, futureMarket);
 			
 			return futureMarket - currentMarket;
 		}
 	}
-
 
 	/**
 	 * Checks the deflation of a resource.
@@ -692,6 +767,8 @@ public class GoodsManager implements Serializable {
 	public void setDemandValue(Good good, double newValue) {
 		double clippedValue = limitMaxMin(newValue, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
+		
+		settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
 	}
 
 	/**
@@ -854,36 +931,116 @@ public class GoodsManager implements Serializable {
 		return true;
 	}
 
+
 	/**
-	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param s  {@link SimulationConfg}
-	 * @param m  {@link MissionManager}
-	 * @param u  {@link UnitManager}
+	 * Gets a specific piece of market data of this good.
+	 * 
+	 * @return
 	 */
-	public static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u) {
-		unitManager = u;
-		Good.initializeInstances(sc, m);
-		CommerceUtil.initializeInstances(m, u);
-		resLimits = sc.getSettlementConfiguration().getEssentialResources();
+	public double getMarketData(int index, Good good) {
+
+		if (index == 0) {
+			if (marketMap.containsKey(good)) {
+				return marketMap.get(good).getDemand();
+			}
+		}
+		else if (index == 1) {
+			if (marketMap.containsKey(good)) {
+				return marketMap.get(good).getValue();
+			}		
+		}
+		else if (index == 2) {
+			if (marketMap.containsKey(good)) {
+				return marketMap.get(good).getCost();
+			}		
+		}
+		else if (index == 3) {
+			if (marketMap.containsKey(good)) {
+				return marketMap.get(good).getPrice();
+			}
+		}
+		
+		return -1;
 	}
+
 	
 	/**
-	 * Prepares object for garbage collection.
+	 * Updates a piece of market data.
+	 * 
+	 * @param index
+	 * @param good
+	 * @param data
 	 */
-	public void destroy() {
+	public static void setMarketData(int index, Good good, double data) {
 
-		settlement = null;
-		goodsValues = null;
-		demandCache = null;
-		tradeCache = null;
-
-		deflationIndexMap = null;
-
-		supplyCache = null;
-
-		buyList = null;
-		sellList = null;
+		if (index == 0) {
+			if (marketMap.containsKey(good)) {
+				MarketData mData = marketMap.get(good);
+				
+				synchronized (mData) {
+					double old = mData.getDemand();
+					if (old == -1) {
+						mData.setDemand(data);
+						marketMap.put(good, mData);
+					}
+					else {
+						mData.setDemand(0.95 * old + 0.05 * data);
+						marketMap.put(good, mData);
+					}				
+				}
+			}
+		}
+		else if (index == 1) {
+			if (marketMap.containsKey(good)) {
+				MarketData mData = marketMap.get(good);
+				
+				synchronized (mData) {
+					double old = mData.getValue();
+					if (old == -1) {
+						mData.setValue(data);
+						marketMap.put(good, mData);
+					}
+					else {
+						mData.setValue(0.95 * old + 0.05 * data);
+						marketMap.put(good, mData);
+					}
+				}
+			}		
+		}
+		else if (index == 2) {
+			if (marketMap.containsKey(good)) {
+				MarketData mData = marketMap.get(good);
+				
+				synchronized (mData) {
+					double old = mData.getCost();
+					if (old == -1) {
+						mData.setCost(data);
+						marketMap.put(good, mData);
+					}
+					else {
+						mData.setCost(0.95 * old + 0.05 * data);
+						marketMap.put(good, mData);
+					}
+				}
+			}		
+		}
+		else if (index == 3) {
+			if (marketMap.containsKey(good)) {
+				MarketData mData = marketMap.get(good);
+				
+				synchronized (mData) {
+					double old = mData.getPrice();
+					if (old == -1) {
+						mData.setPrice(data);
+						marketMap.put(good, mData);
+					}
+					else {
+						mData.setPrice(0.95 * old + 0.05 * data);
+						marketMap.put(good, mData);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -999,4 +1156,37 @@ public class GoodsManager implements Serializable {
 		buyList = Collections.emptyMap();
 		sellList = Collections.emptyMap();
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim.
+	 *
+	 * @param s  {@link SimulationConfg}
+	 * @param m  {@link MissionManager}
+	 * @param u  {@link UnitManager}
+	 */
+	public static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u) {
+		unitManager = u;
+		Good.initializeInstances(sc, m);
+		CommerceUtil.initializeInstances(m, u);
+		resLimits = sc.getSettlementConfiguration().getEssentialResources();
+	}
+
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+
+		settlement = null;
+		goodsValues = null;
+		demandCache = null;
+		tradeCache = null;
+
+		deflationIndexMap = null;
+
+		supplyCache = null;
+
+		buyList = null;
+		sellList = null;
+	}
+
 }
