@@ -139,7 +139,7 @@ public class HelpGeneratorTest {
         var context = createGenerator();
         
         // Has both inputs and outputs
-        var spec = context.getConfig().getSettlementConfiguration().getItem("Alpha Base");
+        var spec = context.getConfig().getSettlementTemplateConfiguration().getItem("Alpha Base");
 
         var vg = new SettlementGenerator(context);
         var content = createDoc(vg, spec);

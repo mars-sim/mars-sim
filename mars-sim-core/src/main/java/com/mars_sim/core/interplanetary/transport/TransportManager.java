@@ -22,6 +22,7 @@ import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
@@ -44,9 +45,6 @@ public class TransportManager implements Serializable, Temporal {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param scenario 
-	 * @param raFactory 
 	 */
 	public TransportManager(Simulation sim) {
 		this.eventManager = sim.getEventManager();
@@ -67,15 +65,15 @@ public class TransportManager implements Serializable, Temporal {
 	 * Adds any arriving Settlements that are defined in a Scenario.
 	 * 
 	 * @param scenario
-	 * @param settlementConfig 
+	 * @param settlementTemplateConfig
 	 * @param raFactory 
 	 */
-	public void loadArrivingSettments(Scenario scenario, SettlementConfig settlementConfig,
+	public void loadArrivingSettments(Scenario scenario, SettlementTemplateConfig settlementTemplateConfig,
 									  AuthorityFactory raFactory) {
 		// Create initial arriving settlements.
 		for (ArrivingSettlement a : scenario.getArrivals()) {
 			// Check the defines values are correct; these throw exception
-			settlementConfig.getItem(a.getTemplate());
+			settlementTemplateConfig.getItem(a.getTemplate());
 			
 			if (raFactory.getItem(a.getSponsorCode()) == null) {
 				throw new IllegalArgumentException("Arriving settlement has a incorrect RAcode " + a.getSponsorCode());

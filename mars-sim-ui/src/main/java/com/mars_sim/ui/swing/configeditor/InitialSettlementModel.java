@@ -20,6 +20,7 @@ import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -61,19 +62,19 @@ class InitialSettlementModel extends AbstractTableModel {
 	private String[] columns;
 	
 	private List<SettlementInfo> settlementInfoList;
-	private SettlementConfig settlementConfig;
+	private SettlementTemplateConfig settlementTemplateConfig;
 	private AuthorityFactory raFactory;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param settlementConfig 
+	 * @param settlementTemplateConfig
 	 * @param raFactory 
 	 */
-	InitialSettlementModel(SettlementConfig settlementConfig, AuthorityFactory raFactory) {
+	InitialSettlementModel(SettlementTemplateConfig settlementTemplateConfig, AuthorityFactory raFactory) {
 		super();
 
-		this.settlementConfig = settlementConfig;
+		this.settlementTemplateConfig = settlementTemplateConfig;
 		this.raFactory = raFactory;
 		
 		// Add table columns.
@@ -197,32 +198,17 @@ class InitialSettlementModel extends AbstractTableModel {
 		if ((row > -1) && (row < getRowCount())) {
 			SettlementInfo info = settlementInfoList.get(row);
 			if ((column > -1) && (column < getColumnCount())) {
-				switch (column) {
-				case SETTLEMENT_COL:
-					result = info.name;
-					break;
-				case SPONSOR_COL:
-					result = info.sponsor;
-					break;
-				case PHASE_COL:
-					result = info.template;
-					break;
-				case SETTLER_COL:
-					result = info.population;
-					break;
-				case CREW_COL:
-					result = info.crew;
-					break;
-				case BOT_COL:
-					result = info.numOfRobots;
-					break;
-				case LAT_COL:
-					result = info.latitude;
-					break;
-				case LON_COL:
-					result = info.longitude;
-					break;
-				}
+                result = switch (column) {
+                    case SETTLEMENT_COL -> info.name;
+                    case SPONSOR_COL -> info.sponsor;
+                    case PHASE_COL -> info.template;
+                    case SETTLER_COL -> info.population;
+                    case CREW_COL -> info.crew;
+                    case BOT_COL -> info.numOfRobots;
+                    case LAT_COL -> info.latitude;
+                    case LON_COL -> info.longitude;
+                    default -> result;
+                };
 			} else {
 				result = Msg.getString("SimulationConfigEditor.log.invalidColumn"); //$NON-NLS-1$
 			}
@@ -257,8 +243,8 @@ class InitialSettlementModel extends AbstractTableModel {
 					
 				case PHASE_COL:
 					info.template = (String) aValue;
-					info.population = Integer.toString(ConfigModelHelper.determineNewSettlementPopulation(info.template, settlementConfig));
-					info.numOfRobots = Integer.toString(ConfigModelHelper.determineNewSettlementNumOfRobots(info.template, settlementConfig));
+					info.population = Integer.toString(ConfigModelHelper.determineNewSettlementPopulation(info.template, settlementTemplateConfig));
+					info.numOfRobots = Integer.toString(ConfigModelHelper.determineNewSettlementNumOfRobots(info.template, settlementTemplateConfig));
 					break;
 					
 				case SETTLER_COL:
@@ -466,13 +452,12 @@ class InitialSettlementModel extends AbstractTableModel {
 		InitialSettlement newRow = new InitialSettlement(tailorSettlementNameBySponsor(sponsor, 
 											settlementInfoList.size()),
 					sponsor, template,
-					ConfigModelHelper.determineNewSettlementPopulation(template, settlementConfig),
-					ConfigModelHelper.determineNewSettlementNumOfRobots(template, settlementConfig),
+					ConfigModelHelper.determineNewSettlementPopulation(template, settlementTemplateConfig),
+					ConfigModelHelper.determineNewSettlementNumOfRobots(template, settlementTemplateConfig),
 					location, null);
 		settlementInfoList.add(toSettlementInfo(newRow));
 		fireTableDataChanged();
 	}
-
 
 	public String getErrorMessage() {
 		return errorMessage;

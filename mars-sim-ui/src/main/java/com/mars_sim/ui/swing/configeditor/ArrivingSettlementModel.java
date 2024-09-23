@@ -19,6 +19,7 @@ import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -54,22 +55,22 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	public static final int LON_COL = 7;
 	
 	public static final double DECIMAL_PLACES = 10000.0;
-	
+
+	private final SettlementTemplateConfig settlementTemplateConfig;
 	private String[] columns;
 	private List<ArrivalInfo> arrivalInfos;
-	private SettlementConfig settlementConfig;
 	private AuthorityFactory raFactory;
 	private String errorMessage;
 	
 	/**
-	 * @param settlementConfig 
+	 * @param settlementTemplateConfig
 	 * @param raFactory 
 	 */
-	ArrivingSettlementModel(SettlementConfig settlementConfig, AuthorityFactory raFactory) {
+	ArrivingSettlementModel(SettlementTemplateConfig settlementTemplateConfig, AuthorityFactory raFactory) {
 		super();
 
-		this.settlementConfig = settlementConfig;
-		this.raFactory = raFactory;
+        this.settlementTemplateConfig = settlementTemplateConfig;
+        this.raFactory = raFactory;
 		
 		// Add table columns.
 		columns = new String[] { 
@@ -256,8 +257,8 @@ class ArrivingSettlementModel extends AbstractTableModel {
 					
 				case TEMPLATE_COL:
 					info.template = (String) aValue;
-					info.population = Integer.toString(ConfigModelHelper.determineNewSettlementPopulation(info.template, settlementConfig));
-					info.numOfRobots = Integer.toString(ConfigModelHelper.determineNewSettlementNumOfRobots(info.template, settlementConfig));
+					info.population = Integer.toString(ConfigModelHelper.determineNewSettlementPopulation(info.template, settlementTemplateConfig));
+					info.numOfRobots = Integer.toString(ConfigModelHelper.determineNewSettlementNumOfRobots(info.template, settlementTemplateConfig));
 					break;
 					
 				case SETTLER_COL:
@@ -469,8 +470,8 @@ class ArrivingSettlementModel extends AbstractTableModel {
 		ArrivingSettlement newRow = new ArrivingSettlement(tailorSettlementNameBySponsor(sponsor, 
 											arrivalInfos.size()),
 					template, sponsor, 1, location,
-					ConfigModelHelper.determineNewSettlementPopulation(template, settlementConfig),
-					ConfigModelHelper.determineNewSettlementNumOfRobots(template, settlementConfig));
+					ConfigModelHelper.determineNewSettlementPopulation(template, settlementTemplateConfig),
+					ConfigModelHelper.determineNewSettlementNumOfRobots(template, settlementTemplateConfig));
 		arrivalInfos.add(toArrivalInfo(newRow));
 		fireTableDataChanged();
 	}

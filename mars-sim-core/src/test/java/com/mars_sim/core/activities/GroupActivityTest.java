@@ -129,7 +129,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
         // Need to check the template
         var sConfig = simConfig.getSettlementConfiguration();
-        var template = sConfig.getItem(s.getTemplate());
+        var template = simConfig.getSettlementTemplateConfiguration().getItem(s.getTemplate());
         var schedued = sConfig.getActivityByPopulation(template.getDefaultPopulation());
         var expected = schedued.specials().get(GroupActivityType.ANNOUNCEMENT);
         assertNotNull("Mock settlement supports Announcements", expected);
@@ -152,7 +152,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
         // Need to check the template
         var sConfig = simConfig.getSettlementConfiguration();
-        var template = sConfig.getItem(s.getTemplate());
+        var template = simConfig.getSettlementTemplateConfiguration().getItem(s.getTemplate());
         var schedued = sConfig.getActivityByPopulation(template.getDefaultPopulation());
         var birthday = schedued.specials().get(GroupActivityType.BIRTHDAY);
   

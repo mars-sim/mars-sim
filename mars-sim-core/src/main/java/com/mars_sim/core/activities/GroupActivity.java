@@ -239,14 +239,13 @@ public class GroupActivity implements ScheduledEventHandler {
      * @param host Settlement hosting activity
      * @param person Instigator of the activity; optional
      * @param now  Currnet mars time
-     * @param dueInSols When is the event due in Sols
      */
     public static GroupActivity createPersonActivity(String name, GroupActivityType type,
                                     Settlement host, Person person, int dueInSol, MarsTime now) {
         GroupActivityInfo activityInfo = null;
         
         // First check that the request activity type is define for the settlement
-        var template = SimulationConfig.instance().getSettlementConfiguration().getItem(host.getTemplate());
+        var template = SimulationConfig.instance().getSettlementTemplateConfiguration().getItem(host.getTemplate());
         var schedule = template.getActivitySchedule();
         if (schedule != null) {
             activityInfo = schedule.specials().get(type);

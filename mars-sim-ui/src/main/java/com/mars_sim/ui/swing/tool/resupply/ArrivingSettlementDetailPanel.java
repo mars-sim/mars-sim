@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
-import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.structure.SettlementSupplies;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
@@ -102,7 +102,7 @@ extends JPanel
 				clearInfo();
 			}
 			else {
-				SettlementConfig sConfig = SimulationConfig.instance().getSettlementConfiguration();
+				SettlementTemplateConfig sConfig = SimulationConfig.instance().getSettlementTemplateConfiguration();
 				SettlementSupplies template = sConfig.getItem(arrivingSettlement.getTemplate());
 				if (template != null) {
 					suppliesPanel.show(template);

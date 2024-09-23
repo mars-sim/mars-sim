@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mars_sim.core.structure.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
@@ -28,10 +29,6 @@ import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
-import com.mars_sim.core.structure.InitialSettlement;
-import com.mars_sim.core.structure.SettlementBuilder;
-import com.mars_sim.core.structure.SettlementConfig;
-import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.tool.RandomUtil;
 
 /*
@@ -319,7 +316,7 @@ public class SimulationBuilder {
 				}
 				builder.createInitialSettlements(bootstrap);
 				sim.getTransportManager().loadArrivingSettments(bootstrap,
-																simConfig.getSettlementConfiguration(),
+																simConfig.getSettlementTemplateConfiguration(),
 																simConfig.getReportingAuthorityFactory());
 			}
 		}
@@ -401,9 +398,10 @@ public class SimulationBuilder {
 	 */
 	private InitialSettlement loadSettlementTemplate(SimulationConfig simulationConfig) {
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
+		SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 			
 		// Find the template
-		SettlementTemplate settlementTemplate = settlementConfig.getItem(template);	
+		SettlementTemplate settlementTemplate = settlementTemplateConfig.getItem(template);
 		Authority authority;
 		if (authorityName == null) {
 			// Use the default on the template

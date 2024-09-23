@@ -109,7 +109,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 * 
 	 * @param settlement                the arriving settlement to modify or null if
 	 *                                  creating a new one.
-	 * @param resupplywindow
 	 * @param modifyTransportItemDialog
 	 * @param newTransportItemDialog
 	 */
@@ -168,7 +167,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topSpring.add(templateTitleLabel);
 
 		// Create template combo box.
-		Vector<String> templateNames = new Vector<>(settlementConfig.getItemNames());
+		Vector<String> templateNames = new Vector<>(settlementTemplateConfig.getItemNames());
 
 		templateCB = new JComboBoxMW<>(templateNames);
 		if (settlement != null) {
@@ -228,7 +227,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			// Update the population number based on selected template.
 			String templateName = (String) templateCB.getSelectedItem();
 			if (templateName != null) {
-				SettlementTemplate template = settlementConfig.getItem(templateName);
+				SettlementTemplate template = settlementTemplateConfig.getItem(templateName);
 				if (template != null) {
 					populationNum = template.getDefaultPopulation();
 					numOfRobots = template.getDefaultNumOfRobots();
@@ -488,7 +487,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 */
 	private void updateTemplateDependentFields(String templateName) {
 		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getItem(templateName);
+			SettlementTemplate template = settlementTemplateConfig.getItem(templateName);
 			if (template != null) {
 				numOfRobotsTF.setText(Integer.toString(template.getDefaultNumOfRobots()));
 				populationTF.setText(Integer.toString(template.getDefaultPopulation()));
@@ -499,8 +498,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 	/**
 	 * Validate the arriving settlement data.
-	 * 
-	 * @param MultiplayerClient
+	 *
 	 * @return true if data is valid.
 	 */
 	private boolean validateData() {

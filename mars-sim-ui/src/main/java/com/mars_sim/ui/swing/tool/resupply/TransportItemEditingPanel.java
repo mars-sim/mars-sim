@@ -12,6 +12,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 
 /**
  * An abstract panel for editing a transport item.
@@ -22,6 +23,7 @@ extends JPanel {
 
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 	protected static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
+	protected static SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	
 	// Data members

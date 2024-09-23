@@ -62,8 +62,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	 * Constructor. Called by SettlementConfig.java
 	 * 
 	 * @param name
-	 * @param activitySchedule 
-	 * @param pattern
+	 * @param activitySchedule
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
