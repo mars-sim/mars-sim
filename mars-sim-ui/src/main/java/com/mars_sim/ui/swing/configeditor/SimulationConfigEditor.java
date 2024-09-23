@@ -66,7 +66,7 @@ import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.structure.InitialSettlement;
-import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -108,6 +108,7 @@ public class SimulationConfigEditor {
 			}
 			return results;
 		}
+
 		@Override
 		public int getSize() {
 			return getPossibles().size();
@@ -167,7 +168,7 @@ public class SimulationConfigEditor {
 	private CrewEditor crewEditor;
 
 	private GameMode mode;
-	private SettlementConfig settlementConfig;
+	private SettlementTemplateConfig settlementTemplateConfig;
 	private PersonConfig personConfig;
 	private AuthorityFactory raFactory;
 
@@ -191,7 +192,7 @@ public class SimulationConfigEditor {
 
 		// Initialize data members.
 		raFactory = config.getReportingAuthorityFactory();
-		settlementConfig = config.getSettlementConfiguration();
+		settlementTemplateConfig = config.getSettlementTemplateConfiguration();
 		personConfig = config.getPersonConfig();
 		crewConfig = new CrewConfig();
 		scenarioConfig = new ScenarioConfig();
@@ -513,7 +514,7 @@ public class SimulationConfigEditor {
 
 	private void createSettlementTable(JScrollPane settlementScrollPane) {
 		// Create settlement table model
-		settlementTableModel = new InitialSettlementModel(settlementConfig, raFactory);
+		settlementTableModel = new InitialSettlementModel(settlementTemplateConfig, raFactory);
 
 		settlementTable = new JTable(settlementTableModel);
 		settlementTable.setRowSelectionAllowed(true);
@@ -555,7 +556,7 @@ public class SimulationConfigEditor {
 	private void setTemplateEditor(JTable table, int column) {
 		TableColumn templateColumn = table.getColumnModel().getColumn(column);
 		JComboBox<String> templateCB = new JComboBox<>();
-		for (String st : settlementConfig.getItemNames()) {
+		for (String st : settlementTemplateConfig.getItemNames()) {
 			templateCB.addItem(st);
 		}
 		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
@@ -563,7 +564,7 @@ public class SimulationConfigEditor {
 
 	private void createArrivalTable(JScrollPane parentScrollPane) {
 		// Create table
-		arrivalTableModel = new ArrivingSettlementModel(settlementConfig, raFactory);
+		arrivalTableModel = new ArrivingSettlementModel(settlementTemplateConfig, raFactory);
 
 		arrivalTable = new JTable(arrivalTableModel);
 		arrivalTable.setRowSelectionAllowed(true);
@@ -670,8 +671,6 @@ public class SimulationConfigEditor {
 
 	/**
 	 * Edits team profile.
-	 *
-	 * @param crew
 	 */
 	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
@@ -734,8 +733,8 @@ public class SimulationConfigEditor {
 	private String determineNewSettlementTemplate() {
 		String result = null;
 
-		List<String> templates = settlementConfig.getItemNames();
-		if (templates.size() > 0) {
+		List<String> templates = settlementTemplateConfig.getItemNames();
+		if (!templates.isEmpty()) {
 			int index = RandomUtil.getRandomInt(templates.size() - 1);
 			result = templates.get(index);
 		} else

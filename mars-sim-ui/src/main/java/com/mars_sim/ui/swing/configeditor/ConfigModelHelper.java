@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.configeditor;
 
 import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 
 class ConfigModelHelper {
 
@@ -20,14 +21,14 @@ class ConfigModelHelper {
 	 * 
 	 * @param templateName
 	 *            the settlement template name.
-	 * @param settlementConfig 
+	 * @param settlementTemplateConfig
 	 * @return the new population number.
 	 */
-	static int determineNewSettlementPopulation(String templateName, SettlementConfig settlementConfig) {
+	static int determineNewSettlementPopulation(String templateName, SettlementTemplateConfig settlementTemplateConfig) {
 
 		int result = 0; 
 		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getItem(templateName);
+			SettlementTemplate template = settlementTemplateConfig.getItem(templateName);
 			if (template != null) {
 				result = template.getDefaultPopulation();
 			}
@@ -43,12 +44,12 @@ class ConfigModelHelper {
 	 *            the settlement template name.
 	 * @return number of robots.
 	 */
-	static int determineNewSettlementNumOfRobots(String templateName, SettlementConfig settlementConfig) {
+	static int determineNewSettlementNumOfRobots(String templateName, SettlementTemplateConfig settlementTemplateConfig) {
 
 		int result = 0;
 
 		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getItem(templateName);
+			SettlementTemplate template = settlementTemplateConfig.getItem(templateName);
 			if (template != null) {
 				result = template.getDefaultNumOfRobots();
 			}
