@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.configuration.UserConfigurableConfig;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
