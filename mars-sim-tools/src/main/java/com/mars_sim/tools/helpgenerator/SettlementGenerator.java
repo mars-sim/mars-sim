@@ -8,10 +8,7 @@ package com.mars_sim.tools.helpgenerator;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.SettlementSupplies;
@@ -35,10 +32,10 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
      */
     protected List<SettlementTemplate> getEntities() {
 
-        return getParent().getConfig().getSettlementConfiguration().getKnownItems()
+        return getParent().getConfig().getSettlementTemplateConfiguration().getKnownItems()
                             .stream()
                             .filter(SettlementTemplate::isBundled)
-		 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
+		 					.sorted(Comparator.comparing(SettlementTemplate::getName))
 							.toList();
     }
 
