@@ -2177,8 +2177,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Collection of parked or garaged vehicles
 	 */
 	public Collection<Vehicle> getParkedGaragedVehicles() {
-		// Get all Vehicles that are back home
-		return 	vicinityParkedVehicles;
+		return vicinityParkedVehicles;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HealthProblem.java
- * @date 2022-07-29
+ * @date 2024-09-23
  * @author Barry Evans
  */
 package com.mars_sim.core.person.health;
@@ -88,6 +88,7 @@ public class HealthProblem implements Serializable {
 		return state;
 	}
 
+	
 	/**
 	 * Gets a rating of the current health situation. This is a percentage value and
 	 * may either represent the recovering or degradation of the current illness.
@@ -325,12 +326,23 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Convert this problem into a cured report
+	 * Converts this problem into a cured report.
+	 * 
 	 * @param now
 	 * @return
 	 */
 	public CuredProblem toCured(MarsTime now) {
 		return new CuredProblem(started, now, complaint);
+	}
+	
+
+	/**
+	 * Prints the health status.
+	 * 
+	 * @return
+	 */
+	public String printStatus() {
+		return getComplaint().getName() + ": " + getState().getName();
 	}
 	
 	/**

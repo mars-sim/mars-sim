@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PhysicalConditionFormat.java
- * @date 2024-07-28
+ * @date 2024-09-23
  * @author Barry Evans
  */
 package com.mars_sim.core.person;
@@ -188,7 +188,7 @@ public final class PhysicalConditionFormat {
     	return status;
     }
 
-    	/**
+    /**
 	 * Gets a string description of the most mostSeriousProblem health situation.
 	 *
 	 * @return A string containing the current illness if any.
@@ -197,11 +197,7 @@ public final class PhysicalConditionFormat {
 		String situation = WELL;
         var mostSeriousProblem = pc.getMostSerious();
 		if (mostSeriousProblem != null) {
-			if (pc.isDead()) {
-				situation = DEAD_COLON + mostSeriousProblem.getComplaint().getType().toString();
-			} else {
-				situation = SICK_COLON + mostSeriousProblem.toString();
-			}
+			situation = SICK_COLON + mostSeriousProblem.printStatus();
 		}
 		return situation;
 	}
