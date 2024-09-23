@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 import javax.xml.XMLConstants;
 
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -63,6 +64,7 @@ public class SimulationConfig {
 	private static final String PEOPLE_FILE = "people";
 	private static final String VEHICLE_FILE = "vehicles";
 	private static final String SETTLEMENT_FILE = "settlements";
+	private static final String SETTLEMENT_TEMPLATE_FILE = "settlements";
 	private static final String RESUPPLY_FILE = "resupplies";
 	private static final String MEDICAL_FILE = "medical";
 	private static final String MALFUNCTION_FILE = "malfunctions";
@@ -141,6 +143,7 @@ public class SimulationConfig {
 	private VehicleConfig vehicleConfig;
 	private BuildingConfig buildingConfig;
 	private SettlementConfig settlementConfig;
+	private SettlementTemplateConfig settlementTemplateConfig;
 	private ManufactureConfig manufactureConfig;
 	private ResupplyConfig resupplyConfig;
 	private ConstructionConfig constructionConfig;
@@ -232,7 +235,7 @@ public class SimulationConfig {
 			autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);
 			numberOfAutoSaves = loadIntValue(timeConfig, AUTOSAVE_NUMBER, 1, 100);
 
-			// LOad MIssion Types
+			// Load Mission Types
 			Element missionConfig = root.getChild(MISSION_CONFIGURATION);
 			minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
 
@@ -258,8 +261,7 @@ public class SimulationConfig {
 
 	/**
 	 * Finds a string value.
-	 * 
-	 * @param parent Parent element
+	 *
 	 * @param child Value element
 	 * @return String value found
 	 */
@@ -268,7 +270,7 @@ public class SimulationConfig {
 		String str = childItem.getAttributeValue(VALUE);
 
 
-		if ((str == null) || str.trim().length() == 0)
+		if ((str == null) || str.trim().isEmpty())
 			throw new IllegalStateException(parentConfig.getName() + "->" + child + " must be greater than zero and cannot be blank.");
 		return str.trim();
 	}
@@ -358,15 +360,6 @@ public class SimulationConfig {
 	}
 
 	/**
-	 * Load the accuracy bias. Must be between 0.0 -> 1.0
-	 * 
-	 * @return
-	 */
-	public double getAccuracyBias() {
-		return accuracyBias;
-	}
-
-	/**
 	 * Load the default elapsed time for each pulse. Must be positive.
 	 * 
 	 * @return Millisec
@@ -383,15 +376,6 @@ public class SimulationConfig {
 	 */
 	public int getUnusedCores() {
 		return unusedCores;
-	}
-
-	/**
-	 * The the minimum light needed for EVAs.
-	 * 
-	 * @return Light value.
-	 */
-	public double getMinEVALight() {
-		return minEVALight;
 	}
 	
 	/**
@@ -415,15 +399,6 @@ public class SimulationConfig {
 	}
 
 	/**
-	 * Manually sets the autosave interval.
-	 *
-	 * @param value
-	 */
-	public void setAutosaveInterval(int value) {
-		autosaveInterval = value;
-	}
-
-	/**
 	 * Gets the autosave interval when the simulation starts.
 	 *
 	 * @return number of minutes.
@@ -435,7 +410,6 @@ public class SimulationConfig {
 
 	/**
 	 * How many auto saves should be retained.
-	 * @param Integer value.
 	 */
 	public int getNumberAutoSaves() {
 		return numberOfAutoSaves;
@@ -458,15 +432,6 @@ public class SimulationConfig {
 	 */
 	public PartConfig getPartConfiguration() {
 		return partConfig;
-	}
-
-	/**
-	 * Gets the part package configuration.
-	 *
-	 * @return part package config
-	 */
-	public PartPackageConfig getPartPackageConfiguration() {
-		return partPackageConfig;
 	}
 
 	/**
@@ -560,21 +525,16 @@ public class SimulationConfig {
 	}
 
 	/**
-	 * Gets the resupply configuration.
-	 *
-	 * @return resupply config
-	 */
-	public ResupplyConfig getResupplyConfiguration() {
-		return resupplyConfig;
-	}
-
-	/**
 	 * Gets the settlement config subset.
 	 *
 	 * @return settlement config
 	 */
 	public SettlementConfig getSettlementConfiguration() {
 		return settlementConfig;
+	}
+
+	public SettlementTemplateConfig getSettlementTemplateConfiguration() {
+		return settlementTemplateConfig;
 	}
 
 	/**
@@ -611,15 +571,6 @@ public class SimulationConfig {
 	 */
 	public ConstructionConfig getConstructionConfiguration() {
 		return constructionConfig;
-	}
-
-	/**
-	 * Gets the quotation config subset.
-	 *
-	 * @return quotation config
-	 */
-	public QuotationConfig getQuotationConfiguration() {
-		return quotationConfig;
 	}
 
 	/**
@@ -710,9 +661,10 @@ public class SimulationConfig {
 		ResourceProcessConfig resourceProcessConfig = new ResourceProcessConfig(parseXMLFileAsJDOMDocument(RESPROCESS_FILE, true));
 		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true), resourceProcessConfig);
 		resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
-		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(
-									SETTLEMENT_FILE, true),
-									partPackageConfig, buildingPackageConfig, resupplyConfig);
+		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true));
+		settlementTemplateConfig = new SettlementTemplateConfig(parseXMLFileAsJDOMDocument(
+				SETTLEMENT_TEMPLATE_FILE, true), partPackageConfig, buildingPackageConfig, resupplyConfig, settlementConfig);
+
 
 		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 		foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));

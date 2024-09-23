@@ -345,6 +345,7 @@ public class Settlement extends Unit implements Temporal,
 	private History<CompletedProcess> processHistory = new History<>(40);
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	private static SettlementTemplateConfig settlementTemplateConfig = SimulationConfig.instance().getSettlementTemplateConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
@@ -359,7 +360,6 @@ public class Settlement extends Unit implements Temporal,
 	 * Constructor 2 called by MockSettlement for maven testing.
 	 *
 	 * @param name
-	 * @param id
 	 * @param location
 	 */
 	public Settlement(String name, Coordinates location) {
@@ -447,7 +447,6 @@ public class Settlement extends Unit implements Temporal,
 	 * create a brand new settlement.
 	 *
 	 * @param name
-	 * @param id
 	 * @param template
 	 * @param sponsor
 	 * @param location
@@ -498,7 +497,7 @@ public class Settlement extends Unit implements Temporal,
 		// Stores limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
 
-		SettlementTemplate sTemplate = settlementConfig.getItem(template);
+		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
 
 		// Initialize building manager
 		buildingManager = new BuildingManager(this, sTemplate.getBuildings());
@@ -857,7 +856,6 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Perform time-related processes
 	 *
-	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception error during time passing.
 	 */
 	@Override
@@ -1265,8 +1263,6 @@ public class Settlement extends Unit implements Temporal,
 
 	/**
 	 * Checks for available airlocks.
-	 * 
-	 * @param buildingManager
 	 */
 	public void checkAvailableAirlocks() {
 		Set<Building> pressurizedBldgs = new UnitSet<>();
@@ -1294,7 +1290,7 @@ public class Settlement extends Unit implements Temporal,
 	 * The airlock must have a valid walkable interior path from the person's
 	 * current location.
 	 *
-	 * @param person    the person.
+	 * @param worker the worker.
 	 * @param pos Position to search
 	 * @return airlock or null if none available.
 	 */
@@ -1341,30 +1337,29 @@ public class Settlement extends Unit implements Temporal,
 		Airlock result = null;
 		double leastDistance = Double.MAX_VALUE;
 
-		Iterator<Integer> i = bldgs.iterator();
-		while (i.hasNext()) {
-			Building nextBuilding = unitManager.getBuildingByID(i.next());
-			Airlock airlock = nextBuilding.getEVA().getAirlock();
-		
-			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+        for (Integer bldg : bldgs) {
+            Building nextBuilding = unitManager.getBuildingByID(bldg);
+            Airlock airlock = nextBuilding.getEVA().getAirlock();
 
-			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+            boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
 
-				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
-				
-				if (result == null) {
-					result = airlock;
-					leastDistance = distance;
-					continue;
-				}
-				
-				if (distance < leastDistance
-					&& !chamberFull) {
-						result = airlock;
-						leastDistance = distance;
-				}
-			}
-		}
+            if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+
+                double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
+
+                if (result == null) {
+                    result = airlock;
+                    leastDistance = distance;
+                    continue;
+                }
+
+                if (distance < leastDistance
+                        && !chamberFull) {
+                    result = airlock;
+                    leastDistance = distance;
+                }
+            }
+        }
 
 		return result;
 	}
@@ -1391,28 +1386,27 @@ public class Settlement extends Unit implements Temporal,
 		else {
 			bldgs = pressurizedAirlocks;
 		}
-		Iterator<Integer> i = bldgs.iterator();
-		while (i.hasNext()) {
-			Building building = unitManager.getBuildingByID(i.next());
-			Airlock airlock = building.getEVA().getAirlock();
-			boolean chamberFull = airlock.areAll4ChambersFull();
+        for (Integer bldg : bldgs) {
+            Building building = unitManager.getBuildingByID(bldg);
+            Airlock airlock = building.getEVA().getAirlock();
+            boolean chamberFull = airlock.areAll4ChambersFull();
 
-			// Select airlock that fulfill either conditions:
-			// 1. Chambers are NOT full
-			// 2. Chambers are full but the reservation is NOT full
-			if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
-				if (result == null) {
-					result = airlock;
-					continue;
-				}
-				double distance = building.getPosition().getDistanceTo(pos);
-				if (distance < leastDistance
-					&& !chamberFull) {
-						result = airlock;
-						leastDistance = distance;
-				}
-			}
-		}
+            // Select airlock that fulfill either conditions:
+            // 1. Chambers are NOT full
+            // 2. Chambers are full but the reservation is NOT full
+            if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
+                if (result == null) {
+                    result = airlock;
+                    continue;
+                }
+                double distance = building.getPosition().getDistanceTo(pos);
+                if (distance < leastDistance
+                        && !chamberFull) {
+                    result = airlock;
+                    leastDistance = distance;
+                }
+            }
+        }
 
 		return result;
 	}
@@ -1461,7 +1455,6 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @param building  the building in the walkable interior path.
 	 * @param location  Starting position.
-	 * @param isIngress is airlock in ingress mode ?
 	 * @return airlock or null if none available.
 	 */
 	public Airlock getBestWalkableAvailableAirlock(Building building, LocalPosition location, 
@@ -1478,87 +1471,84 @@ public class Settlement extends Unit implements Temporal,
 		
 		if (airlocks.isEmpty())
 			return null;
-		
-		Iterator<Building> i = airlocks.iterator();
-		while (i.hasNext()) {
-			Building nextBuilding = i.next();
-			Airlock airlock = nextBuilding.getEVA().getAirlock();
-			
-			boolean chamberFull = airlock.areAll4ChambersFull();
-			if (chamberFull
-				|| !buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-				// This will eliminate airlocks that are not in the same zone
-				continue;
-			}
-			
-			AirlockMode airlockMode = airlock.getAirlockMode();
-			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
-			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
-			// May also consider boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
-			
-			int numInnerDoor = airlock.getNumAwaitingInnerDoor();
-			int numOuterDoor = airlock.getNumAwaitingOuterDoor();
-			int numOccupants = airlock.getNumOccupants();
-			int numEmpty = airlock.getNumEmptied();
-			
-			// Select an airlock that fulfill these conditions:
-			// 
-			// 1. Chambers are NOT full
-			// 2. Least number of occupants in chambers
-			// 3. Least number waiting at outer door
-			// 4. Least number waiting at inner door
-			// 5. Least distance
 
-			// Note: the use of reservationFull are being put on hold
-			// since it creates excessive logs. Thus it needs to be handled differently 
+        for (Building nextBuilding : airlocks) {
+            Airlock airlock = nextBuilding.getEVA().getAirlock();
 
-			airlockMap.put(airlock, 1);
+            boolean chamberFull = airlock.areAll4ChambersFull();
+            if (chamberFull
+                    || !buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+                // This will eliminate airlocks that are not in the same zone
+                continue;
+            }
 
-			// Note that the airlock can be not in use
-			if (isIngressMode == isIngres
-				|| isEgressMode != isIngres
-					) {
-				airlockMap.put(airlock, 2 + airlockMap.get(airlock));
-			}
-			
-			double distance = nextBuilding.getPosition().getDistanceTo(location);
-			if (distance <= leastDistance) {
-				leastDistance = distance;
-				airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-			}
-			
-			if (numOccupants <= leastPeople) {
-				leastPeople = numOccupants;
-				airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-			}
-			
-			airlockMap.put(airlock, numEmpty + airlockMap.get(airlock));
-					
-			if (isIngres) {
-				// If the person is coming in
-				if (numOuterDoor <= leastOuterDoor) {
-					leastOuterDoor = numOuterDoor;
-					airlockMap.put(airlock, 1 + (4 - numOuterDoor) + airlockMap.get(airlock));
-				}
-				
-				if (numInnerDoor <= leastInnerDoor) {
-					leastInnerDoor = numInnerDoor;
-					airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-				}
-			}
-			else {
-				// If the person is leaving
-				if (numOuterDoor <= leastOuterDoor) {
-					leastOuterDoor = numOuterDoor;
-					airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-				}
-				
-				if (numInnerDoor <= leastInnerDoor) {
-					leastInnerDoor = numInnerDoor;
-					airlockMap.put(airlock, 1 + (4 - numInnerDoor) + airlockMap.get(airlock));
-				}
-			}
-		}
+            AirlockMode airlockMode = airlock.getAirlockMode();
+            boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+            boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+            // May also consider boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+
+            int numInnerDoor = airlock.getNumAwaitingInnerDoor();
+            int numOuterDoor = airlock.getNumAwaitingOuterDoor();
+            int numOccupants = airlock.getNumOccupants();
+            int numEmpty = airlock.getNumEmptied();
+
+            // Select an airlock that fulfill these conditions:
+            //
+            // 1. Chambers are NOT full
+            // 2. Least number of occupants in chambers
+            // 3. Least number waiting at outer door
+            // 4. Least number waiting at inner door
+            // 5. Least distance
+
+            // Note: the use of reservationFull are being put on hold
+            // since it creates excessive logs. Thus it needs to be handled differently
+
+            airlockMap.put(airlock, 1);
+
+            // Note that the airlock can be not in use
+            if (isIngressMode == isIngres
+                    || isEgressMode != isIngres
+            ) {
+                airlockMap.put(airlock, 2 + airlockMap.get(airlock));
+            }
+
+            double distance = nextBuilding.getPosition().getDistanceTo(location);
+            if (distance <= leastDistance) {
+                leastDistance = distance;
+                airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+            }
+
+            if (numOccupants <= leastPeople) {
+                leastPeople = numOccupants;
+                airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+            }
+
+            airlockMap.put(airlock, numEmpty + airlockMap.get(airlock));
+
+            if (isIngres) {
+                // If the person is coming in
+                if (numOuterDoor <= leastOuterDoor) {
+                    leastOuterDoor = numOuterDoor;
+                    airlockMap.put(airlock, 1 + (4 - numOuterDoor) + airlockMap.get(airlock));
+                }
+
+                if (numInnerDoor <= leastInnerDoor) {
+                    leastInnerDoor = numInnerDoor;
+                    airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+                }
+            } else {
+                // If the person is leaving
+                if (numOuterDoor <= leastOuterDoor) {
+                    leastOuterDoor = numOuterDoor;
+                    airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+                }
+
+                if (numInnerDoor <= leastInnerDoor) {
+                    leastInnerDoor = numInnerDoor;
+                    airlockMap.put(airlock, 1 + (4 - numInnerDoor) + airlockMap.get(airlock));
+                }
+            }
+        }
 
 		if (airlockMap.isEmpty())
 			return null;
@@ -1582,21 +1572,16 @@ public class Settlement extends Unit implements Temporal,
 	 * building's current location.
 	 *
 	 * @param building  the building in the walkable interior path.
-	 * @param location  Starting position.
-	 * @param isIngress is airlock in ingress mode ?
 	 * @return airlock or null if none available.
 	 */
-	private boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
-		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
-		while (i.hasNext()) {
-			Building nextBuilding = i.next();
-			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
-			if (!chamberFull
-				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-				return true;
-			}
-		}
-
+	private boolean hasClosestWalkableAvailableAirlock(Building building) {
+        for (Building nextBuilding : buildingManager.getBuildingSet(FunctionType.EVA)) {
+            boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+            if (!chamberFull
+                    && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -1607,7 +1592,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return true if an airlock is walkable from the building.
 	 */
 	public boolean hasWalkableAvailableAirlock(Building building) {
-		return hasClosestWalkableAvailableAirlock(building, LocalPosition.DEFAULT_POSITION);
+		return hasClosestWalkableAvailableAirlock(building);
 	}
 
 	/**
@@ -1926,7 +1911,7 @@ public class Settlement extends Unit implements Temporal,
 	 * Adds a vicinity parked vehicle.
 	 *
 	 * @param vehicle
-	 * @param true if the vicinity parked vehicle can be added
+	 * return true if the vicinity parked vehicle can be added
 	 */
 	public boolean addVicinityVehicle(Vehicle vehicle) {
 		if (vicinityParkedVehicles.contains(vehicle)) {
@@ -1945,7 +1930,7 @@ public class Settlement extends Unit implements Temporal,
 	 * Removes a vicinity parked vehicle.
 	 *
 	 * @param vehicle
-	 * @param true if the vicinity parked vehicle can be removed
+	 * return true if the vicinity parked vehicle can be removed
 	 */
 	public boolean removeVicinityParkedVehicle(Vehicle vehicle) {
 		if (!vicinityParkedVehicles.contains(vehicle))
@@ -1967,7 +1952,7 @@ public class Settlement extends Unit implements Temporal,
 	 * Adds a vehicle into ownership.
 	 *
 	 * @param vehicle
-	 * @param true if the vehicle can be added
+	 * return true if the vehicle can be added
 	 */
 	public boolean addOwnedVehicle(Vehicle vehicle) {
 		if (ownedVehicles.contains(vehicle))
@@ -1992,7 +1977,7 @@ public class Settlement extends Unit implements Temporal,
 	 * Removes a vehicle from ownership.
 	 *
 	 * @param vehicle
-	 * @param true if the vehicle can be removed
+	 * return true if the vehicle can be removed
 	 */
 	public boolean removeOwnedVehicle(Vehicle vehicle) {
 		if (!ownedVehicles.contains(vehicle))
@@ -2268,9 +2253,7 @@ public class Settlement extends Unit implements Temporal,
 	public double getTotalScientificAchievement() {
 		double result = 0D;
 
-		Iterator<Double> i = scientificAchievement.values().iterator();
-		while (i.hasNext())
-			result += i.next();
+        for (Double aDouble : scientificAchievement.values()) result += aDouble;
 
 		return result;
 	}
@@ -2332,7 +2315,7 @@ public class Settlement extends Unit implements Temporal,
 		return exposed;
 	}
 
-	/*
+	/**
 	 * Updates the status of Radiation exposure.
 	 * 
 	 * @param newExposed
@@ -2680,11 +2663,9 @@ public class Settlement extends Unit implements Temporal,
 
 	/**
 	 * Records a completed process.
-	 * 
-	 * @param name Name of the process
+	 *
 	 * @param type Type of process
 	 * @param locn On what building it was completed
-	 * @param products The outputs produced
 	 */
     public void recordProcess(ProcessInfo process, String type, Building locn) {
         var ph = new CompletedProcess(process, type, locn.getName());
@@ -2766,7 +2747,6 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Gets the available vehicle at the settlement with the minimal range.
 	 *
-	 * @param settlement         the settlement to check.
 	 * @return vehicle or null if none available.
 	 */
 	public Rover getVehicleWithMinimalRange() {
@@ -2792,7 +2772,6 @@ public class Settlement extends Unit implements Temporal,
 	 * 
 	 * @param limit
 	 * @param sol
-	 * @param a new nearby mineral coordinate
 	 */
 	public Coordinates acquireNearbyMineralLocation(double limit, int sol) {
 		
@@ -2844,8 +2823,6 @@ public class Settlement extends Unit implements Temporal,
 	
 	/**
 	 * Gets a set of nearby potential mineral locations.
-	 * 
-	 * @param rover
 	 */
 	public Set<Coordinates> getNearbyMineralLocations() {
 		return nearbyMineralLocations.keySet();
@@ -2863,10 +2840,7 @@ public class Settlement extends Unit implements Temporal,
 	
 	/**
 	 * Gets one of the existing nearby mineral location that has not been declared yet.
-	 * 
-	 * @param closest
-	 * @param limit
-	 * @param skill
+	 *
 	 * @return
 	 */
 	public Coordinates getExistingNearbyMineralLocation() {
@@ -3062,7 +3036,6 @@ public class Settlement extends Unit implements Temporal,
 	 * Note: Called by getTotalMineralValue()
 	 *
 	 * @param rover          the rover to use.
-	 * @param homeSettlement the starting settlement.
 	 * @return true if mineral locations.
 	 * @throws Exception if error determining mineral locations.
 	 */
@@ -3296,7 +3269,6 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Does it possess an equipment of this equipment type ?
 	 *
-	 * @param typeID
 	 * @return true if this person possess this equipment type
 	 */
 	@Override
@@ -3511,7 +3483,6 @@ public class Settlement extends Unit implements Temporal,
 	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
 	 *
-	 * @param containerClass  the unit class.
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
 	 */
@@ -3564,7 +3535,6 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Finds the number of bins of a particular type.
 	 *
-	 * @param containerType the bin type.
 	 * @return number of empty bins.
 	 */
 	@Override

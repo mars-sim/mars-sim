@@ -72,8 +72,7 @@ public final class SettlementBuilder {
 	private static final boolean MEASURE_PHASES = false;
 
 	private UnitManager unitManager;
-
-	private SettlementConfig settlementConfig;
+	private SettlementTemplateConfig settlementTemplateConfig;
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
 	private AuthorityFactory raFactory;
@@ -82,7 +81,7 @@ public final class SettlementBuilder {
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
 		this.unitManager = sim.getUnitManager();
-		this.settlementConfig = simConfig.getSettlementConfiguration();
+		this.settlementTemplateConfig = simConfig.getSettlementTemplateConfiguration();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
 		this.namingSpecs = new NationSpecConfig();
@@ -113,7 +112,7 @@ public final class SettlementBuilder {
 	 * @return
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
-		SettlementTemplate template = settlementConfig.getItem(spec.getSettlementTemplate());
+		SettlementTemplate template = settlementTemplateConfig.getItem(spec.getSettlementTemplate());
 		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'...");
 
 		StopWatch watch = new StopWatch();
