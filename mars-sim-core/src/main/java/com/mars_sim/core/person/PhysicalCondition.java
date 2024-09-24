@@ -527,22 +527,19 @@ public class PhysicalCondition implements Serializable {
 
 					else if (type == ComplaintType.RADIATION_SICKNESS)
 						isRadiationPoisoned = false;
-
-					
+				
 					// If nextPhase is not null, remove this problem so that it can
 					// properly be transitioned into the next.
 					problems.remove(problem);
 					
 					history.add(problem.toCured(pulse.getMarsTime()));
 
-					Iterator<Medication> i = getMedicationList().iterator();
-					while (i.hasNext()) {
-						Medication med = i.next();
+					for (Medication med : getMedicationList()) {
 						// Remove the medication related to this particular problem
 						if (problem.getComplaint().getType() == med.getComplaintType()
 						// Take a person off medications that have been "expired"
 							|| !med.isMedicated()) {
-							i.remove();
+							getMedicationList().remove(med);
 							break;
 						}
 					}
@@ -572,9 +569,8 @@ public class PhysicalCondition implements Serializable {
 		}
 		
 		// Add time to all medications affecting the person.
-		Iterator<Medication> ii = getMedicationList().iterator();
-		while (ii.hasNext()) {
-			ii.next().timePassing(pulse);
+		for (Medication med : getMedicationList()) {
+			med.timePassing(pulse);
 		}
 	}
 
@@ -1738,7 +1734,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return list of medication.
 	 */
 	public List<Medication> getMedicationList() {
-		return new CopyOnWriteArrayList<>(medicationList);
+		return medicationList;
 	}
 	
 	/**

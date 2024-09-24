@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.configeditor;
 
-import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 

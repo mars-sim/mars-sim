@@ -14,7 +14,6 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.MarsTime;
 

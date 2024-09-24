@@ -69,7 +69,7 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         // Continue to complete review
         var ph = task.getPhase();
         executeTaskUntilPhase(p, task, 1000);
-        assertTrue("Task is either still active or has failed", !task.isDone() || task.hasFailed());
+        assertTrue("Task is either still active or has failed", !task.isDone() || task.injectDemand());
         assertNotEquals("Phase changed", ph, task.getPhase());
 
         // Approval

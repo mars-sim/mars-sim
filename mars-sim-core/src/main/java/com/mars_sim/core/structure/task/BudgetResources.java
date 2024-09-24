@@ -67,17 +67,16 @@ public class BudgetResources extends Task {
 			}
 		};
 		
-	// Data members
-	boolean notPassed = false;
-		
+	// Data members		
+	private int settlementResource;
+	private double newDemand = 0;
+	
 	/** The administration building the person is using. */
 	private Administration office;
 	
 	private Building building;
 	
 	private ReviewGoal taskNum;
-	
-	private int settlementResource;
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -253,7 +252,7 @@ public class BudgetResources extends Task {
 				} break;
 				
 				case RESOURCE: {
-					notPassed = !person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource);
+					newDemand = person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource);
 				} break;
 				
 				case SETTLEMENT_WATER: {
@@ -267,8 +266,10 @@ public class BudgetResources extends Task {
 			// Add experience
 			addExperience(time);
 	
-			if (notPassed)
+			if (newDemand > 0) {
+				person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, newDemand);
 				endTask();
+			}
 			
 			// Go to the next phase
 			setPhase(APPROVING);
@@ -293,16 +294,16 @@ public class BudgetResources extends Task {
 				// Use water and produce waste water
 				quarters.generateWaste(time);
 				
-				logger.info(worker, 0, "New water waste measures approved for " 
+				logger.info(worker, 0, "Approved a new water waste measure for " 
 						+ building.getName() + ".");
 				break;
 				
 			case RESOURCE:
-				logger.info(worker, 0, "New resource demand measures approved.");
+				logger.info(worker, 0, "Approved a new resource demand measure for the settlement.");
 				break;
 				
 			case SETTLEMENT_WATER:
-				logger.info(worker, 0, "New water ratio measures approved.");
+				logger.info(worker, 0, "Approved a new water ratio measure for the settlement.");
 				break;
 		}
 			
@@ -329,12 +330,12 @@ public class BudgetResources extends Task {
 	}
 	
 	/**
-	 * Has the essential resource check failed ?
+	 * Does it need to inject demand on essential resource ?
 	 * 
 	 * @return
 	 */
-	public boolean hasFailed() {
-		return notPassed;
+	public boolean injectDemand() {
+		return newDemand > 0;
 	}
 	
 	@Override

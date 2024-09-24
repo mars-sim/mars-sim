@@ -90,9 +90,6 @@ public class SettlementConfig {
 	private Map<Integer, ResourceLimits> resLimits = new HashMap<>();
 
 	private List<GroupActivitySchedule> rulesets = new ArrayList<>();
-
-	private SettlementTemplateConfig settlementTemplateConfig;
-
 	/**
 	 * Constructor.
 	 *

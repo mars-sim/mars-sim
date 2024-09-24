@@ -881,9 +881,9 @@ public class GoodsManager implements Serializable {
 	 * Checks if the demand for a resource is met.
 	 *
 	 * @param resourceID
-	 * @return true if passed
+	 * @return zero if no need of injecting change
 	 */
-	public boolean checkResourceDemand(int resourceID) {
+	public double checkResourceDemand(int resourceID) {
 		double lacking = 0;
 
 		var limits = resLimits.get(resourceID);
@@ -891,7 +891,7 @@ public class GoodsManager implements Serializable {
 			throw new IllegalArgumentException("Resource is not essential " + resourceID);
 		}
 		int reservePerPop = limits.reserve();
-		int maxPerPop = limits.max();
+		int optimalPerPop = limits.max();
 		int pop = settlement.getNumCitizens();
 		
 		double demand = getDemandValueWithID(resourceID);
@@ -901,46 +901,51 @@ public class GoodsManager implements Serializable {
 
 		double stored = settlement.getAmountResourceStored(resourceID);
 	
-		if (stored >= reservePerPop * pop) {
-			return true;
+		if (stored >= optimalPerPop * pop) {
+			// Thus no need of demand adjustment
+			return 0;
 		}
 
-		else {
-			lacking = reservePerPop * pop - stored;
-		}
+		lacking = (optimalPerPop - reservePerPop) * pop - stored;
 		
 		if (lacking < 0)
 			lacking = 0;
 				
-		if (lacking > maxPerPop)
-			lacking = maxPerPop;
+		if (lacking > optimalPerPop)
+			lacking = optimalPerPop;
 
-		double delta = stored / (stored - lacking) * demand - demand;
+		// Note: may need to further limit each increase to a value only to avoid an abrupt rise or drop in demand 
+
+		double delta = lacking / stored * demand - demand;
 		
-		// Note: may need to limit each increase to a value only to avoid an abrupt rise or drop in demand 
-
 		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(resourceID);
-			logger.info(settlement, 60_000L,
+			logger.info(settlement, 30_000L,
 					gasName + " - " 
-					+ "Old demand: " + Math.round(demand * 100.0)/100.0 
-					+ "  New Demand: " + Math.round((demand + delta) * 100.0)/100.0 
+					+ "Injecting demand " + Math.round(demand * 100.0)/100.0 
+					+ "  -> " + Math.round((demand + delta) * 100.0)/100.0 
 					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
 					+ "  Stored: " + Math.round(stored * 100.0)/100.0
 					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0
-					+ "  lacking: " + Math.round(lacking * 100.0)/100.0		
-					+ "  Delta: " + Math.round(delta * 100.0)/100.0
+					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
 					+ ".");
-			
-			// Inject a sudden change of demand
-			setDemandValue(GoodsUtil.getGood(resourceID), (demand + delta));
-			
-			return false;
+
+			return delta;
 		}
 		
-		return true;
+		return 0;
 	}
 
+	/**
+	 * Injects the resource demand.
+	 * 
+	 * @param resourceID
+	 * @param newDemand
+	 */
+	public void injectResourceDemand(int resourceID, double newDemand) {
+		// Inject a sudden change of demand
+		setDemandValue(GoodsUtil.getGood(resourceID), newDemand);
+	}
 
 	/**
 	 * Gets a specific piece of market data of this good.

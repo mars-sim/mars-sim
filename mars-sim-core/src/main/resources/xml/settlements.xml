@@ -146,13 +146,13 @@
 
 	<!-- Define the limits for essential resources per Person-->
 	<essential-resources>
-		<resource name="Oxygen" reserve="400" max="10000" />
-		<resource name="Methane" reserve="400" max="10000" />
-		<resource name="Methanol" reserve="300" max="10000" />
-		<resource name="Water" reserve="400" max="10000" />
-		<resource name="Hydrogen" reserve="400" max="10000" />
-		<resource name="Nitrogen" reserve="20" max="5000" />
-		<resource name="Carbon Dioxide" reserve="4" max="1000" />
+		<resource name="Oxygen" reserve="800" max="8000" />
+		<resource name="Methane" reserve="800" max="8000" />
+		<resource name="Methanol" reserve="600" max="6000" />
+		<resource name="Water" reserve="800" max="8000" />
+		<resource name="Hydrogen" reserve="800" max="8000" />
+		<resource name="Nitrogen" reserve="60" max="600" />
+		<resource name="Carbon Dioxide" reserve="4" max="40" />
 	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 

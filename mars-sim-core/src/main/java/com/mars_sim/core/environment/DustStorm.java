@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * DustStorm.java
+ * DustStorm.j0ava
  * @date 2022-07-29
  * @author Manny Kung
  */
@@ -294,16 +294,25 @@ public class DustStorm implements Serializable {
 		type = newType;
 	}
 
+	/**
+	 * Gets the originating settlement.
+	 */
 	public Settlement getSettlement() {
-		return (Settlement) Simulation.instance().getUnitManager().getUnitByID(settlementId);
+		return (Settlement) Simulation.instance().getUnitManager().getSettlementByID(settlementId);
 	}
 	
+	/**
+	 * Gets the originating coordinates.
+	 * 
+	 * @return
+	 */
 	public Coordinates getCoordinates() {
 		return location;
 	}
 
 	/**
-	 * Get the description of this storm
+	 * Gets the description of this storm.
+	 * 
 	 * @return
 	 */
 	public String getDescription() {
@@ -311,7 +320,8 @@ public class DustStorm implements Serializable {
 	}
 
 	/**
-	 * Update the desxcription which is based on size & speed
+	 * Updates the description with name, size & speed.
+	 * 
 	 * @return Updated description
 	 */
     private void updateDescription() {
