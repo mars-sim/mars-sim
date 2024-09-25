@@ -534,15 +534,20 @@ public class PhysicalCondition implements Serializable {
 					
 					history.add(problem.toCured(pulse.getMarsTime()));
 
+					Medication expired = null;
+					
 					for (Medication med : getMedicationList()) {
 						// Remove the medication related to this particular problem
 						if (problem.getComplaint().getType() == med.getComplaintType()
-						// Take a person off medications that have been "expired"
+							// Tag the medication
 							|| !med.isMedicated()) {
-							getMedicationList().remove(med);
+							expired = med;
 							break;
 						}
 					}
+					
+					// Take a person off medications that have been "expired"
+					getMedicationList().remove(expired);
 				}
 
 				// If a new problem, check it doesn't exist already
