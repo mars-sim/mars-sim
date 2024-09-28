@@ -78,10 +78,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public static double MAX_RHO;
 	public static double MIN_RHO;
 	
-	/** The map resolution. Level 0 is the lowest. Level n is highest. */
-	private int res = 0;
-	
-	private final double ZOOM_STEP = 16;
+	private static final double ZOOM_STEP = 16;
 
 	private double multiplier;
 
@@ -107,6 +104,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private List<MapLayer> mapLayers;
 
 	private final MapDataFactory mapFactory = MapDataUtil.instance().getMapDataFactory();
+
+	private MapData backgroundMapData;
 
 	/**
 	 * Constructor 1.
@@ -163,8 +162,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		executor = Executors.newSingleThreadExecutor();
 		
-		// Initializes map
-		loadMap(MapDataFactory.DEFAULT_MAP_TYPE, getMapResolution());
+		// Initializes map to default map level 0
+		loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
 		
 		mapError = false;
 		wait = false;
@@ -222,7 +221,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
         });
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
-        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
+        		(int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLER), 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(60, 400));
         zoomSlider.setSize(new Dimension(60, 400));
@@ -276,7 +275,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		});
 		
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
-		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
+		for (int i = 1; i < IntegerMapData.MAX_RHO_MULTIPLER + 1; i++) {
 			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
 		}
 //		labelTable.put(0, new JLabel("1/4"));
@@ -292,7 +291,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		double newScale = rho / MapPanel.RHO_DEFAULT;
 		
-		if (getScale() != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
+		if (getScale() != newScale && newScale < (int)computeSliderValue(IntegerMapData.MAX_RHO_MULTIPLER)) {
 			setScale(newScale);
 
 			double newSliderValue = computeSliderValue(newScale);
@@ -308,7 +307,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return
 	 */
 	private double computeSliderValue(double scale) {
-		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
+		return (scale * IntegerMapData.MIN_RHO_FRACTION - SCALE_CONVERSION) * IntegerMapData.MAX_RHO_MULTIPLER;
 	}
 	
 	/**
@@ -318,7 +317,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return
 	 */
 	private double computeScale(double sliderValue) {
-		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
+		return (1.0 * sliderValue / IntegerMapData.MAX_RHO_MULTIPLER + SCALE_CONVERSION) / IntegerMapData.MIN_RHO_FRACTION;
 	}
 	
 	@Override
@@ -342,16 +341,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return
 	 */
 	public int getMapResolution() {
-		return res;
-	}
-	
-	/**
-	 * Sets the map resolution.
-	 * 
-	 * @param res
-	 */
-	public void setMapResolution(int res) {
-		this.res = res;
+		return marsMap.getResolution();
 	}
 	
 	/*
@@ -494,29 +484,20 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @param mapStringType
 	 * @param res
-	 * @return true if map type set successfully
+	 * @return Display was updated immediately
 	 */
 	public boolean loadMap(String newMapString, int res) {
-
-		boolean toload = false;
 		
-		if (marsMap == null) {
-			toload = true;
-		}
-		else if (res != marsMap.getMapMetaData().getResolution()) {
-			toload = true;
-		}
-		else if (!newMapString.equals(marsMap.getMapMetaData().getMapString())) {
-			toload = true;
-		}
-		
-		if (toload) {
-			var newMapData = mapFactory.loadMapData(newMapString, res, getRho());
+		var newMapData = mapFactory.loadMapData(newMapString, res, getRho());
+		if (newMapData.isReady()) {
+			// It is ready
 			createMapDisplay(newMapData);
-			return toload;
+			return true;
 		}
-	
-		return toload;
+
+		// Wait for this map to load
+		backgroundMapData = newMapData;
+		return false;
 	}
 
 	private void createMapDisplay(MapData newMapData) {
@@ -572,9 +553,19 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	/**		
 	 * Updates the map display.
+	 * @return Map displayed was changed
 	 */
-	public void updateDisplay() {
+	public boolean updateDisplay() {
+		boolean changed = false;
+		if ((backgroundMapData != null) && backgroundMapData.isReady()) {
+			// Background map is done so display it
+			createMapDisplay(backgroundMapData);
+			backgroundMapData = null;
+			changed = true;
+		}
 		updateDisplay(getRho());
+
+		return changed;
 	}
 
 	/**
@@ -582,7 +573,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @param rho
 	 */
-	public void updateDisplay(double rho) {
+	private void updateDisplay(double rho) {
 		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
 			|| desktop.isToolWindowOpen(MissionWindow.NAME))
 			&& (!executor.isTerminated() || !executor.isShutdown())) {
@@ -742,15 +733,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 		// Draw message
 		g.drawString(message, x, y);
-	}
-
-	/**
-	 * Updates the map with time pulse.
-	 * 
-	 * @param pulse The clock pulse
-	 */
-	public void update(ClockPulse pulse) {
-		updateDisplay();
 	}
 
 	/**

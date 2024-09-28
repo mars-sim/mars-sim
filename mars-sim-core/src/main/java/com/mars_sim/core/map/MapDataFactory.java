@@ -60,10 +60,6 @@ import com.mars_sim.core.tool.RandomUtil;
 	private static final String ELEVATION_PROP = "elevation";
 
 	private Map<String, MapMetaData> metaDataMap = new HashMap<>();
-
-	private MapData mapDataCache;
-	
-	private MapMetaData mapMetaDataCache;
 			
 	private MEGDRMapReader reader;
 
@@ -94,11 +90,7 @@ import com.mars_sim.core.tool.RandomUtil;
 						// Remove the element at index 0 and 1
 						if (i > 1)
 							mapList.add(array[i].replaceAll(" ", ""));
-					}
-
-//					Kept for debugging: System.out.println(array[0] + " - size: " + array.length + "  " + mapList + " - size: " + mapList.size());
-//					Kept for debugging: System.out.println("mapString: " + mapString + ".  mapType: " + mapType + ".  isColour: " + isColour);
-					
+					}					
 					metaDataMap.put(mapString, new MapMetaData(mapString, mapType, isColour, mapList));
 				}
 			}
@@ -153,12 +145,8 @@ import com.mars_sim.core.tool.RandomUtil;
 		MapMetaData metaData = metaDataMap.get(mapType);
  		if (metaData == null) {
  			logger.log(Level.SEVERE, "Map type " + mapType + " unknown.");
-			
-			new MapDataFactory();
-		}
-// 		else
-// 			// Change the map resolution
-// 			metaData.setResolution(res);
+					}
+
  	}
  	
  	/**
@@ -180,46 +168,28 @@ import com.mars_sim.core.tool.RandomUtil;
  	 * @return the map data
  	 */
  	public MapData loadMapData(String mapType, int res, double rho) {
- 		
- 		MapData mapData = null;
- 		
+ 		 		
 		MapMetaData mapMetaData = metaDataMap.get(mapType);
 	
  		if (mapMetaData == null) {
  			logger.log(Level.SEVERE, "Map type " + mapType + " unknown.");
 			return null;
 		}
-
- 		if (mapMetaDataCache != null && mapMetaDataCache.equals(mapMetaData)
- 				&& mapMetaDataCache.getResolution() == res) {
-			return mapDataCache;
-		}
  		
 		try {
-			// Set the resolution
-			mapMetaData.setResolution(res);
-			// Destroy the previously held mapDataCache
 			// Obtain a new MapData instance
-			mapData = new IntegerMapData(mapMetaData, rho);		
-			// Patch the metadata to be locally available
-			mapMetaData.setLocallyAvailable();
-			// Cache the new mapData
-			mapDataCache = mapData;
-			// Destroy the previously held mapDataCache
-			// Cache the new mapMetaData		
-			mapMetaDataCache = mapMetaData;
+			var mapData = new IntegerMapData(mapMetaData, res, rho);		
 			
 			logger.log(Level.CONFIG, "Loading map type '" + mapType 
-					+ "'. Res level: " + mapMetaData.getResolution() 
+					+ "'. Res level: " + res 
 					+ ". Map name: '" + mapMetaData.getMapType()
-					+ "'. Filename: '" + mapMetaData.getFile()
 					+ "'. Color: " + mapMetaData.isColourful());
+			return mapData;
 
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not find the map file.", e);
-		}
-		
-		return mapData;
+			return null;
+		}		
  	}
 
 	/**

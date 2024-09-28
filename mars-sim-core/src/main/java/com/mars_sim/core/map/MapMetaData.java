@@ -36,12 +36,6 @@ public class MapMetaData {
     }
 
     private boolean colourful = true;
-    
-    /** The selected resolution of the map file. */
-	private int res = 0;
-    /** The available number of resolution level for this map type. */
-	private int numLevel = 1;
-	
 	private String mapString;
     private String mapType;
     
@@ -54,12 +48,9 @@ public class MapMetaData {
         this.colourful = colourful;
         this.listOfMaps = new ArrayList<>();
         for(var a : array) {
-            var locally = FileLocator.isLocallyAvailable(a);
+            var locally = FileLocator.isLocallyAvailable(MapDataFactory.MAPS_FOLDER + a);
             listOfMaps.add(new Resolution(a, locally));
         }
-  
-        numLevel = listOfMaps.size();
-        setResolution(0);
     }
     
     public String getMapString() {
@@ -71,39 +62,12 @@ public class MapMetaData {
     }
 
     /**
-     * Sets if the file is locally available.
-     * 
-     * @param newValue
-     */
-    void setLocallyAvailable() {
-        listOfMaps.get(res).setLocal();
-    }
-
-    /**
-     * Sets the resolution of the map file.
-     * 
-     * @param selected
-     */
-    public void setResolution(int selected) {
-    	res = selected;
-    }
-    
-    /**
-     * Gets the resolution of the map file.
-     * 
-     * @return
-     */
-    public int getResolution() {
-    	return res;
-    }
-    
-    /**
      * Gets the available number of level of resolution.
      * 
      * @return
      */
     public int getNumLevel() {
-    	return numLevel;
+    	return listOfMaps.size();
     }
     
     /**
@@ -116,41 +80,32 @@ public class MapMetaData {
     }
 
     /**
+     * Callback from the MapData that is is not loaded locally
+     * @param res
+     */
+    void setLocallyAvailable(int res) {
+        listOfMaps.get(res).setLocal();
+    }
+
+    /**
      * Is the resolution loaded locally
      * @param newRes
      * @return
      */
     public boolean isLocal(int newRes) {
-        if (newRes >= listOfMaps.size()) {
-            newRes = listOfMaps.size()-1;
-        }
-
         return listOfMaps.get(newRes).isLocal();
     }
 
     /**
-     * Gets the filename.
+     * Gets the filename that represents a resolution layer of this map
      * 
      * @param newRes
      * @return
      */
     public String getFile(int newRes) {
-        if (newRes >= listOfMaps.size()) {
-            newRes = listOfMaps.size()-1;
-        }
-        this.res = newRes;
-        return listOfMaps.get(res).getFilename();
+        return listOfMaps.get(newRes).getFilename();
     }
     
-    /**
-     * Gets the filename.
-     * 
-     * @return
-     */
-    public String getFile() {
-    	return getFile(res);
-    }
-
 	/**
 	 * Compares if an object is the same as this unit
 	 *

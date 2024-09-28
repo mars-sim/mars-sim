@@ -17,8 +17,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -44,7 +42,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
@@ -116,8 +114,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String LEVEL = "Level ";
 	private static final String DASH = "- ";
 	private static final String CHOOSE_SETTLEMENT = "List";
-	private static final String MAPTYPE_ACTION = "mapType";
-	private static final String RESOLUTION_ACTION = "resolution";
+	private static final String MAPTYPE_PROP = "mapType";
+	private static final String RESOLUTION_PROP = "resolution";
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
 	private static final String GO_THERE_ACTION = "goThere";
@@ -147,14 +145,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String KM_PIXEL = " pixel: ";
 	private static final String ELEVATION = " height: ";
 	private static final String KM = " km";
-	private static final String OPEN_PARA = " (";
-	private static final String CLOSE_PARA = ")";
+	private static final String MAP_SEPERATOR = "~";
 	
 	private static final String RESOLUTION = "0";
-
-	// Data member
-	/** The cache latitude combox.  */
-	private String mapTypeCache;
 	
 	/** The latitude combox.  */
 	private JComboBoxMW<?> latCB;
@@ -193,8 +186,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private transient java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
 
 	private transient MapDataUtil mapDataUtil = MapDataUtil.instance();
-	
-	private transient Icon mapIcon = ImageLoader.getIconByName(MAP_ICON);
 	
 	private transient MineralMapLayer mineralLayer;
 	
@@ -447,9 +438,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		boolean gpuState = IntegerMapData.hardwareAccel;
 		gpuButton.setEnabled(gpuState);
 		updateGPUButton();
-		gpuButton.addActionListener(e -> {
-				SwingUtilities.invokeLater(() -> updateGPUButton());
-		});
+		gpuButton.addActionListener(e -> SwingUtilities.invokeLater(this::updateGPUButton));
 		
 		gpuBtnPane.add(gpuButton);
 
@@ -547,7 +536,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 		if (userSettings != null) {
 			
-			String resolutionString = userSettings.getProperty(RESOLUTION_ACTION, RESOLUTION);
+			String resolutionString = userSettings.getProperty(RESOLUTION_PROP, RESOLUTION);
 			
 			int resolution = mapPanel.getMapResolution();
 			
@@ -556,10 +545,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			}
 			
 			// Set the map type
-			// NOTE: this method causes Error JOptionPane.showMessageDialog at start up 
-			changeMap(userSettings.getProperty(MAPTYPE_ACTION, MapDataFactory.DEFAULT_MAP_TYPE), resolution, true);
-
-			mapTypeCache = MapDataFactory.DEFAULT_MAP_TYPE;
+			changeMap(userSettings.getProperty(MAPTYPE_PROP, MapDataFactory.DEFAULT_MAP_TYPE), resolution);
 			
 			// Check for layer action and mineral action
 			checkLayerAction(userSettings);
@@ -722,29 +708,25 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		settlementComboBox.setRenderer(new PromptComboBoxRenderer(CHOOSE_SETTLEMENT));
 
 		// Set the item listener only after the setup is done
-		settlementComboBox.addItemListener(new ItemListener() {
-	        @Override
-	        public void itemStateChanged(ItemEvent e) {
-				if (settlementComboBox.getSelectedIndex() == -1)
-					return;
-				
-				
-				Settlement newSettlement = (Settlement) e.getItem();
-				
-				if (newSettlement != null) {
-					// Change to the selected settlement in SettlementMapPanel
-					if (selectedSettlement != newSettlement) {
-						// Set the selected settlement
-						selectedSettlement = newSettlement;
-					}
-					
-					// Need to update the coordinates
-					updateCoordsMaps(newSettlement.getCoordinates());
-					
-					// Reset it back to the prompt text
-					settlementComboBox.setSelectedIndex(-1);
+		settlementComboBox.addItemListener(e -> {
+			if (settlementComboBox.getSelectedIndex() == -1)
+				return;
+			
+			Settlement newSettlement = (Settlement) e.getItem();
+			
+			if (newSettlement != null) {
+				// Change to the selected settlement in SettlementMapPanel
+				if (selectedSettlement != newSettlement) {
+					// Set the selected settlement
+					selectedSettlement = newSettlement;
 				}
-	        }
+				
+				// Need to update the coordinates
+				updateCoordsMaps(newSettlement.getCoordinates());
+				
+				// Reset it back to the prompt text
+				settlementComboBox.setSelectedIndex(-1);
+			}
 		});
 		
 		// Listen for new Settlements
@@ -832,10 +814,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private void goToMineral(Object source) {
 		JCheckBoxMenuItem mineralItem = (JCheckBoxMenuItem) source;
-		boolean previous = ((MineralMapLayer) mineralLayer).isMineralDisplayed(mineralItem.getText());
+		boolean previous = mineralLayer.isMineralDisplayed(mineralItem.getText());
 		boolean now = !previous;
 		mineralItem.setSelected(now);
-		((MineralMapLayer) mineralLayer).setMineralDisplayed(mineralItem.getText(), now);
+		mineralLayer.setMineralDisplayed(mineralItem.getText(), now);
 		logger.config("Just set the state of " + mineralItem.getText() + " to " + now + " in mineral layer.");
 	}
 	
@@ -846,14 +828,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param source
 	 */
 	private void goToOtherCommands(String command, Object source) {
-		if (command.startsWith(MAPTYPE_ACTION)) {
-			String newMapType = command.substring(MAPTYPE_ACTION.length());
-			if (((JCheckBoxMenuItem) source).isSelected()) {
-				changeMap(newMapType, mapPanel.getMapResolution(), false);
-				mapTypeCache = newMapType;
-			}
-		}
-		else if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {			
+		if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {			
 			goToMapTypeReload(command, source);
 		}
 		else if (command.startsWith(LAYER_ACTION)) {
@@ -876,40 +851,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private void goToMapTypeReload(String command, Object source) {
 		if (((JCheckBoxMenuItem) source).isSelected()) {
-			String newMapType = command.substring(MAPTYPE_RELOAD_ACTION.length());
-			int reply = loadDialog(newMapType);
+			String [] parts = command.split(MAP_SEPERATOR);
+			String newMapType = parts[2];
+			int reply = Integer.parseInt(parts[1]);
 
-			// Warning: do not allow reply to be -1
-			if (reply < 0)
-				reply = 0;
-			
-			// Note: may explore the use of mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
-			int lastMapRes = mapPanel.getMapMetaData().getResolution(); 
-			if (lastMapRes < 0)
-				lastMapRes = 0;
-			
-			// Consider if reply < mapPanel.getMapMetaData().getNumLevel()				
-			// Note: Level 0 is the lowest res
-			
-			if (!newMapType.equalsIgnoreCase(mapTypeCache)) {
-				// If loading a completely different map type
-				
-				// Set to the new map resolution
-				mapPanel.setMapResolution(reply);
-				// Change the map
-				changeMap(newMapType, reply, false);
-				// Set the the map type cache
-				mapTypeCache = newMapType;
-			}
-			
-			else if (reply != lastMapRes) {
-				// if it's the same map type but of a different resolution
-				
-				// Set to the new map resolution
-				mapPanel.setMapResolution(reply);
-				// Change the map
-				changeMap(newMapType, reply, false);
-			}
+			// if it's the same map type but of a different resolution
+			// Change the map
+			changeMap(newMapType, reply);
 		}
 	}
 	
@@ -943,80 +891,35 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Loads a dialog and prompt user for res level.
-	 * 
-	 * @param newMapType
-	 */
-	private int loadDialog(String newMapType) {
-
-		int oldRes = mapPanel.getMapMetaData().getResolution(); 
-		if (oldRes < 0) {
-			oldRes = 0;
-		}
-		
-		List<String> list = new ArrayList<>();
-		
-		MapMetaData mapMetaData = mapPanel.getNewMapMetaData(newMapType);
-		
-		int numLevel = mapMetaData.getNumLevel();
-		
-		for (int i = 0; i < numLevel; i++) {
-			list.add(LEVEL + i);
-		}
-
-		
-		String[] options = list.toArray(String[]::new);
-		
-		String intialValue = options[0];
-		// Set the initial value to the previous resolution choice
-		if (oldRes != 0)
-			intialValue = LEVEL + oldRes;
-		
-		return JOptionPane.showOptionDialog(getFocusOwner(),
-			"Choose res level for '" + newMapType 
-			+ "' map type ? (Will download if not available locally)", 
-			"Surface Map Level",
-			JOptionPane.YES_NO_CANCEL_OPTION,
-			JOptionPane.QUESTION_MESSAGE,
-			mapIcon,
-			options,
-			intialValue);
-	}
-
-	/**
 	 * Changes the map.
 	 * 
 	 * @param newMapType New map Type
-	 * @param res
-	 * @param startup
+	 * @param res Resolution layer
 	 */
-	private void changeMap(String newMapType, int res, boolean startup) {
+	private void changeMap(String newMapType, int res) {
 				
 		// Load a new map 
-		if (startup || mapPanel.loadMap(newMapType, res)) {
-			// Update dependent panels
-			MapMetaData metaType = mapPanel.getMapMetaData();
-			
-			if (metaType.isColourful()) {
-				// turn off day night layer
-				setMapLayer(false, DAYLIGHT_LAYER);
-				// turn off mineral layer
-				setMapLayer(false, MINERAL_LAYER);
-				
-				mineralsButton.setEnabled(false);
-			}
+		if (mapPanel.loadMap(newMapType, res)) {
+			updateMapControls();
 		}
-		
-		else {
-			// Inform user
-			JOptionPane.showMessageDialog(getFocusOwner(), "There was a problem loading the map data",
-													"Problem loading Map",
-													JOptionPane.ERROR_MESSAGE);
-		}
+	}
 
-		boolean selected = mineralsButton.isEnabled();
+	/**
+	 * Update layers according to Map type
+	 */
+	private void updateMapControls() {
+		// Update dependent panels
+		MapMetaData metaType = mapPanel.getMapMetaData();
 		
-		updateMineralButtonText(selected);
+		var isColourful = metaType.isColourful();
+		if (isColourful) {
+			// turn off day night layer
+			setMapLayer(false, DAYLIGHT_LAYER);
+			// turn off mineral layer
+			setMapLayer(false, MINERAL_LAYER);
+			
+		}
+		selectMineralLayer(!isColourful);
 	}
 
 	/**
@@ -1026,25 +929,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private void selectMineralLayer(boolean selected) {
 		mineralsButton.setEnabled(selected);
-		
-		updateMineralButtonText(selected);
-	}
-	
-	/**
-	 * Updates the mineral button text.
-	 * 
-	 * @param selected
-	 */
-	private void updateMineralButtonText(boolean selected) {
-		mineralsButton.setEnabled(selected);
-		if (selected) {
-			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " on ");
-			logger.config("Set Mineral button to be ON.");
-		}
-		else {
-			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " off ");
-			logger.config("Set Mineral button to be OFF.");
-		}
+		mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") +
+								(selected ? " on " : " off "));
 	}
 	
 	/**
@@ -1069,23 +955,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		// Create map options menu.
 		JPopupMenu optionsMenu = new JPopupMenu();
 		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
-		
-		// Create map type menu item.
-		ButtonGroup group = new ButtonGroup();
-		
+				
+		var currentMap = mapPanel.getMapMetaData();
+		var currentRes = mapPanel.getMapResolution();
 		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
-					
-			int currentRes = metaData.getResolution();	
-			String resolutionString = LEVEL + currentRes;
-			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + OPEN_PARA +  resolutionString + CLOSE_PARA
-															+ (metaData.isLocal(currentRes) ? " *" : "")
-															, metaData.equals(mapPanel.getMapMetaData()));
-			
-			mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + metaData.getMapString());
-			
-			mapItem.addActionListener(this);
-			optionsMenu.add(mapItem);
-			group.add(mapItem);
+	
+			boolean active = metaData.equals(currentMap);
+			JMenu mapMenu = new JMenu((active ? "> " : "") + metaData.getMapType());
+			mapMenu.setBackground(mapMenu.getBackground().darker());
+
+			for(int lvl = 0; lvl < metaData.getNumLevel(); lvl++) {
+				boolean displayed = (metaData.equals(currentMap)
+										&& (lvl == currentRes));
+				JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(LEVEL + lvl
+															+ (metaData.isLocal(lvl) ? " *" : "")
+															, displayed);
+				mapItem.setEnabled(!displayed);
+				mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + MAP_SEPERATOR + lvl + MAP_SEPERATOR + metaData.getMapString());
+				mapItem.addActionListener(this);
+				mapMenu.add(mapItem);
+			}
+			optionsMenu.add(mapMenu);
 		}
 		
 		optionsMenu.addSeparator();
@@ -1164,13 +1054,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private class MouseListener extends MouseAdapter {
 		@Override
-		public void mouseEntered(MouseEvent event) {
-			// May add back: checkHover(event);
-		}
-		@Override
-		public void mouseExited(MouseEvent event) {
-		}
-		@Override
 		public void mouseClicked(MouseEvent event) {
 			if (SwingUtilities.isRightMouseButton(event) && event.getClickCount() == 1) {
 				checkClick(event);
@@ -1182,9 +1065,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		@Override
 		public void mouseMoved(MouseEvent event) {
 			checkHover(event);
-		}
-		@Override
-		public void mouseDragged(MouseEvent event) {
 		}
 	}
 
@@ -1210,11 +1090,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			if (unit.getUnitType() == UnitType.VEHICLE) {
 				if (((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Proceed to below to set cursor;
+					// Proceed to below to set cursor
 					setCursorOpenWindow(unit, clickedPosition);
 				}
-				else 
-					continue;
 			}
 		}
 	}
@@ -1256,7 +1134,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		double phi = pos.getPhi();
 		double theta = pos.getTheta();			
 		double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-//		double h1 = TerrainElevation.getColorElevation(phi, theta);	
 		double scale = mapPanel.getScale();
 		
 		updateStatusBar(scale, phi, theta, mapPanel.getRho(), h0, pos.getFormattedString());
@@ -1279,7 +1156,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			Unit unit = i.next();
 			if (unit.getUnitType() == UnitType.VEHICLE) {
 				if (((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Proceed to below to set cursor;
+					// Proceed to below to set cursor
 					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 				}
 				else 
@@ -1323,8 +1200,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
-		if (mapPanel != null) {
-			mapPanel.update(pulse);
+		if ((mapPanel != null) && mapPanel.updateDisplay()) {
+			updateMapControls();
 		}
 	}
 	 	
@@ -1340,9 +1217,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties results = new Properties();
 
 		// Record the map type
-		results.setProperty(MAPTYPE_ACTION, mapPanel.getMapMetaData().getMapString());
+		results.setProperty(MAPTYPE_PROP, mapPanel.getMapMetaData().getMapString());
 		// Record the resolution
-		results.setProperty(RESOLUTION_ACTION, "" + mapPanel.getMapMetaData().getResolution());
+		results.setProperty(RESOLUTION_PROP, "" + mapPanel.getMapResolution());
 		Coordinates center = mapPanel.getCenterLocation();
 		// Record the longitude
 		results.setProperty(LON_PROP, center.getFormattedLongitudeString());

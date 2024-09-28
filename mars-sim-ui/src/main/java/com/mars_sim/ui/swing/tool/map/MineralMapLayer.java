@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -118,7 +119,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 					double phi = point.getX();
 					double theta = point.getY();
 					
-					java.util.Map<String, Integer> mineralConcentrations = 
+					Map<String, Integer> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
 										phi, 

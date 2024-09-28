@@ -75,6 +75,11 @@ import java.io.IOException;
      * @return
      */
     public MapMetaData getMetaData();
+
+    /**
+	 * Get the resolution layer of this data in the parent Map Meta Data stack.
+	 */
+    public int getResolution();
  	
 	/**
  	 * Loads the 2-D integer map data set pixel array.

@@ -259,7 +259,6 @@ class ExplorationSitesPanel extends WizardPanel {
 			siteListPane.add(startingSitePane);
 			navLayer.addNavpointPosition(
 					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), mapPane.getMap()));
-	//		mapPane.setCenterCoords(startingSite);
 			mapPane.showMap(startingSite);
 			addButton.setEnabled(canAddMoreSites());
 		} catch (Exception e) {

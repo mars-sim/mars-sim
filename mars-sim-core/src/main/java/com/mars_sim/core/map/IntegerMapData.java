@@ -60,9 +60,9 @@ import com.mars_sim.core.map.common.FileLocator;
 	
 	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
  	// The max rho multiplier allowed
-  	public static final double maxRhoMultiplier = 5;
+  	public static final double MAX_RHO_MULTIPLER = 5;
   	// The min rho fraction allowed
-  	public static final double minRhoFraction = 3;
+  	public static final double MIN_RHO_FRACTION = 3;
   	
  	private static final double HALF_PI = Math.PI / 2D;
  	private static final String CL_FILE = "MapDataFast.cl";
@@ -91,23 +91,26 @@ import com.mars_sim.core.map.common.FileLocator;
 	private CLKernel kernel;
 	
 	private BufferedImage bImageCache;
-
+	private int resolution;
 	private boolean loaded = false;
  	
  	/**
  	 * Constructor.
  	 * 
-	 * @param name   the name/description of the data
- 	 * @param filename   the map data file name.
+	 * @param mapMetaData Meta data describing this map stack
+	 * @param res The Resolution level in the map stack
+ 	 * @param rho  
  	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData mapMetaData, double rho) throws IOException {
+ 	IntegerMapData(MapMetaData mapMetaData, int res, double rho) throws IOException {
 		this.meta = mapMetaData;
 		this.rho = rho;
+		this.resolution = res;
 
 		// Load data files async
-		String dataFilename = mapMetaData.getFile();
-		var dataFile = FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + dataFilename);
+		String dataFilename = mapMetaData.getFile(resolution);
+		var dataFile = FileLocator.locateFileAsync(MapDataFactory.MAPS_FOLDER + dataFilename,
+						this::loadMapData);
 		
 		// Data file is already available
 		if (dataFile != null) {
@@ -151,11 +154,20 @@ import com.mars_sim.core.map.common.FileLocator;
 		return meta;
 	}
 
+	/**
+	 * Get the resolution layer of this data in the parent Map Meta Data stack.
+	 */
+	@Override
+	public int getResolution() {
+		return resolution;
+	}
+
     /**
      * Gets the scale of the Mars surface map.
      * 
      * @return
      */
+	@Override
     public double getScale() {
     	return rho / rhoDefault;
     }
@@ -175,6 +187,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	 * 
 	 * @param value
 	 */
+	@Override
 	public void setRho(double value) {
 		double newRho = value;
 		if (newRho > maxRho) {
@@ -195,7 +208,7 @@ import com.mars_sim.core.map.common.FileLocator;
      * @return
      */
     public double getHalfAngle() {
-    	double ha = Math.sqrt(HALF_MAP_ANGLE / getScale() / (0.25 + meta.getResolution()));
+    	double ha = Math.sqrt(HALF_MAP_ANGLE / getScale() / (0.25 + resolution));
     	return Math.min(Math.PI, ha);
     }
 	
@@ -229,10 +242,8 @@ import com.mars_sim.core.map.common.FileLocator;
 
  		BufferedImage cylindricalMapImage = null;
 		try {
-			cylindricalMapImage = 
-				ImageIO.read(dataFile);
+			cylindricalMapImage = ImageIO.read(dataFile);
 			
-
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
 	 		
@@ -294,7 +305,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
 		 				
 	//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
-	//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
+	//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green
 	//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
 		 						
 		 				colorPixels[row][col] = argb;
@@ -319,9 +330,7 @@ import com.mars_sim.core.map.common.FileLocator;
 		 				//	Red   = 0xFFFF0000
 		 				//	Green = 0xFF00FF00
 		 				//	Blue  = 0xFF0000FF
-		 				//
-		 				//  int blueMask = 0xFF0000, greenMask = 0xFF00, redMask = 0xFF;
-		 				
+		 				//		 				
 		 				argb += -16777216; // 255 alpha
 		 				argb += (pixels[pixel] & 0xff); // blue
 		 				argb += ((pixels[pixel + 1] & 0xff) << 8); // green
@@ -336,14 +345,17 @@ import com.mars_sim.core.map.common.FileLocator;
 		 			}
 		 		}
 	 		}
+
+			// Update as ready
 	 		loaded = true;
+			meta.setLocallyAvailable(resolution);
 		} catch (IOException e) {
 			logger.severe("Can't read image file : " + dataFile.getName());
 		}
 	
 		rhoDefault = pixelHeight / Math.PI;
-		maxRho = rhoDefault * maxRhoMultiplier;
-		minRho = rhoDefault / minRhoFraction;
+		maxRho = rhoDefault * MAX_RHO_MULTIPLER;
+		minRho = rhoDefault / MIN_RHO_FRACTION;
 
 		logger.config("rho: " + Math.round(rho *10.0)/10.0 + ". RHO_DEFAULT: " + Math.round(rhoDefault *10.0)/10.0 + ".");
  	}
@@ -403,10 +415,6 @@ import com.mars_sim.core.map.common.FileLocator;
 
 	 	// Gets the color pixels ready for the new projected map image in Mars Navigator.
 	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxHeight);
- 		
- 		// If alpha value is 255, it is fully opaque.
- 		//  A value of 1 would mean it is (almost) fully transparent.
- 		// May try setAlpha((byte)127, result);
 	
 	 	bImageCache = bImage;
 	 	
@@ -450,9 +458,6 @@ import com.mars_sim.core.map.common.FileLocator;
 	 
 	            // replace RGB value with avg
 	            p = (a << 24) | (avg << 16) | (avg << 8) | avg;
-	 
-//	            int gray = (int) (r * 0.299 + g * 0.587 + b * 0.114); // Original grayscale calculation
-//            	int enhancedGray = Math.min(255, p + 15); // Brightness enhancement (10-20)
             	
 	            rgbArray[i] = p;
 	        }
@@ -508,8 +513,6 @@ import com.mars_sim.core.map.common.FileLocator;
 				 .putArg(mapBoxHeight/2)
 				 .putArg(size)
 				 .putArgs(colBuffer, rowBuffer)
-				 // Set the rho above only and NOT below
-//				 .putArg((float) getRho())
 				 ;
 
 		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
@@ -582,7 +585,6 @@ import com.mars_sim.core.map.common.FileLocator;
  	 */
 	 private void cpu1(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
 		 int halfWidth = mapBoxWidth / 2;
-//		 int halfHeight = mapBoxHeight / 2;
 
 		 // The map data is PI offset from the center theta.
 		 double correctedTheta = centerTheta - Math.PI;
@@ -808,17 +810,13 @@ import com.mars_sim.core.map.common.FileLocator;
  		while (theta < 0)
  			theta += TWO_PI;
 
- 		int row = (int) Math.round(phi * ((double) colorPixels.length / Math.PI));
+ 		int row = (int) Math.round(phi * (colorPixels.length / Math.PI));
  		if (row > colorPixels.length - 1)
  	 		row--;
  			
- 		int column = (int) Math.round(theta * ((double) colorPixels[0].length / TWO_PI));
+ 		int column = (int) Math.round(theta * (colorPixels[0].length / TWO_PI));
  		if (column > colorPixels[0].length - 1)
  			column--;
- 		
-// 		int pixel = baseMapPixels[row][column];
-// 		int pixelWithAlpha = (pixel >> 24) & 0xFF; 
-// 		return pixelWithAlpha;
  		
  		return colorPixels[row][column];
  	}

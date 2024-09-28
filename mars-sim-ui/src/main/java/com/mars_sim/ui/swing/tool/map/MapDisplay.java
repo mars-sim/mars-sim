@@ -97,4 +97,6 @@ public interface MapDisplay {
 	 * @return
 	 */
     public int getPixelWidth();
+
+    public int getResolution();
 }

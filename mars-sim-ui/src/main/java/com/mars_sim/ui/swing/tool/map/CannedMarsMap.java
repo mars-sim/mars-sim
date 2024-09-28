@@ -145,6 +145,17 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 		return mapData.getWidth();
 	}
 	
+	
+	/**
+	 * Gets the resolution of this map in the map stack
+	 * 
+	 * @return
+	 */
+	@Override
+    public int getResolution() {
+		return mapData.getResolution();
+	}
+
 	/**
 	 * Prepares map panel for deletion.
 	 */
