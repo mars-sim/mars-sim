@@ -17,7 +17,6 @@ import java.util.Set;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.MapDataUtil;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
@@ -62,11 +61,6 @@ public class TerrainElevation implements Serializable {
 	private static final double HECATES_THOLUS_THETA = 2.615812;
 	private static final double ALBOR_THOLUS_PHI = 1.245184; 
 	private static final double ALBOR_THOLUS_THETA = 2.615812;
-	
-	private static final double NORTH_POLE_PHI = 0; 
-	private static final double NORTH_POLE_THETA = 0;
-	private static final double SOUTH_POLE_PHI = Math.PI; 
-	private static final double SOUTH_POLE_THETA = 0;
 	
 	public static final double STEP_KM = 2;
 	private static final double DEG_TO_RAD = Math.PI/180;
@@ -319,22 +313,8 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getColorElevation(Coordinates location) {	
-		
-//		if (unitManager == null)
-//			unitManager = Simulation.instance().getUnitManager();
-//			
-//		// Check if this location is a settlement
-//		Settlement s = unitManager.findSettlement(location);
 				
-		double height = 0;
-//		if (s != null) {
-//			height = s.getElevation();
-//		}
-//		else {
-			height = getColorElevation(location.getPhi(), location.getTheta(), IntegerMapData.rhoDefault);	
-//		}
-			
-		return height;
+		return getColorElevation(location.getPhi(), location.getTheta());	
 	}
 	
 	/**
@@ -345,9 +325,9 @@ public class TerrainElevation implements Serializable {
  	 * @param rho
 	 * @return elevation in km
 	 */
-	public static double getColorElevation(double phi, double theta, double rho) {	
+	public static double getColorElevation(double phi, double theta) {	
 		// Find hue and saturation color components at location.
-		Color color = new Color(mapDataUtil.loadMapData(TOPO_MAP_TYPE, 0, rho).getRGBColorInt(phi, theta));
+		Color color = new Color(mapDataUtil.loadMapData(TOPO_MAP_TYPE, 0).getRGBColorInt(phi, theta));
 		int red = color.getRed();
 		int green = color.getGreen();
 		int blue = color.getBlue();

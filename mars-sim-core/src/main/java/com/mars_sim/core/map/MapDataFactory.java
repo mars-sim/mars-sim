@@ -81,17 +81,14 @@ import com.mars_sim.core.tool.RandomUtil;
 				else {		
 					// Split the details into the parts
 					String[] array = mapProps.getProperty(mapString).split(SEPARATOR);
-					String mapType = array[0];
-					boolean isColour = Boolean.parseBoolean(array[1].replaceAll(" ", ""));
+					String description = array[0];
+					boolean isColour = Boolean.parseBoolean(array[1].trim());
 								
-					int size = array.length;
 					List<String> mapList = new ArrayList<>();
-					for (int i = 0; i < size; i++) {
-						// Remove the element at index 0 and 1
-						if (i > 1)
-							mapList.add(array[i].replaceAll(" ", ""));
+					for (int i = 2; i < array.length; i++) {
+						mapList.add(array[i].trim());
 					}					
-					metaDataMap.put(mapString, new MapMetaData(mapString, mapType, isColour, mapList));
+					metaDataMap.put(mapString, new MapMetaData(mapString, description, isColour, mapList));
 				}
 			}
 		} catch (IOException e) {
@@ -132,22 +129,6 @@ import com.mars_sim.core.tool.RandomUtil;
 			throw new IllegalArgumentException("Problem loading MEGDRReader:" + ioe.getMessage());
 		}
 	}
-
- 	/**
- 	 * Gets map data of the requested type.
- 	 * 
- 	 * @param mapType the map type
- 	 * @param res
- 	 * @return the map data
- 	 */
- 	void setMapData(String mapType, int res) {
-
-		MapMetaData metaData = metaDataMap.get(mapType);
- 		if (metaData == null) {
- 			logger.log(Level.SEVERE, "Map type " + mapType + " unknown.");
-					}
-
- 	}
  	
  	/**
  	 * Returns the new map meta data instance.
@@ -167,7 +148,7 @@ import com.mars_sim.core.tool.RandomUtil;
  	 * @param rho
  	 * @return the map data
  	 */
- 	public MapData loadMapData(String mapType, int res, double rho) {
+ 	public MapData loadMapData(String mapType, int res) {
  		 		
 		MapMetaData mapMetaData = metaDataMap.get(mapType);
 	
@@ -178,11 +159,11 @@ import com.mars_sim.core.tool.RandomUtil;
  		
 		try {
 			// Obtain a new MapData instance
-			var mapData = new IntegerMapData(mapMetaData, res, rho);		
+			var mapData = new IntegerMapData(mapMetaData, res);		
 			
 			logger.log(Level.CONFIG, "Loading map type '" + mapType 
 					+ "'. Res level: " + res 
-					+ ". Map name: '" + mapMetaData.getMapType()
+					+ ". Map name: '" + mapMetaData.getDescription()
 					+ "'. Color: " + mapMetaData.isColourful());
 			return mapData;
 

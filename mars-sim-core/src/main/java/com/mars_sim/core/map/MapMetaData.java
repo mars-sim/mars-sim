@@ -12,6 +12,10 @@ import java.util.List;
 
 import com.mars_sim.core.map.common.FileLocator;
 
+/**
+ * Represents the meta data associated with a type of map. It contains a "stack" of different 
+ * resolution images.
+ */
 public class MapMetaData {
     private class Resolution{
         private boolean locallyAvailable;
@@ -36,15 +40,15 @@ public class MapMetaData {
     }
 
     private boolean colourful = true;
-	private String mapString;
-    private String mapType;
+	private String id;
+    private String description;
     
     private List<Resolution> listOfMaps;
     
-    public MapMetaData(String mapString, String mapType, boolean colourful, List<String> array) {
+    MapMetaData(String id, String description, boolean colourful, List<String> array) {
 
-        this.mapString = mapString;
-        this.mapType = mapType;
+        this.id = id;
+        this.description = description;
         this.colourful = colourful;
         this.listOfMaps = new ArrayList<>();
         for(var a : array) {
@@ -53,12 +57,12 @@ public class MapMetaData {
         }
     }
     
-    public String getMapString() {
-        return mapString;
+    public String getId() {
+        return id;
     }
 
-    public String getMapType() {
-        return mapType;
+    public String getDescription() {
+        return description;
     }
 
     /**
@@ -118,7 +122,7 @@ public class MapMetaData {
 			return false;
 		if (this.getClass() != obj.getClass())
 			return false;
-		return this.mapString == ((MapMetaData)obj).getMapString();
+		return this.id == ((MapMetaData)obj).getId();
 	}
 
 	/**
@@ -127,6 +131,6 @@ public class MapMetaData {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return mapType.hashCode() * mapString.hashCode();
+		return description.hashCode() * id.hashCode();
 	}
 }

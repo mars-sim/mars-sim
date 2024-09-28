@@ -55,8 +55,8 @@ import java.util.Collection;
  	 * @param rho
  	 * @return
  	 */
- 	public MapData loadMapData(String mapType, int res, double rho) {
- 		return mapDataFactory.loadMapData(mapType, res, rho);
+ 	public MapData loadMapData(String mapType, int res) {
+ 		return mapDataFactory.loadMapData(mapType, res);
  	}
 
  	/**
@@ -68,17 +68,7 @@ import java.util.Collection;
  	public MapMetaData getMapMetaData(String newMapType) { 
  		return mapDataFactory.getMapMetaData(newMapType);
  	}
- 			
- 	/**
- 	 * Sets the map data.
- 	 * 
- 	 * @param mapType
- 	 * @param resolution
- 	 */
- 	public void setMapData(String mapType, int resolution) {
- 		mapDataFactory.setMapData(mapType, resolution);
- 	}
- 	
+
      /**
       * Gets the map types available.
       * 

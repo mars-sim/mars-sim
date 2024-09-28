@@ -566,16 +566,6 @@ public final class Coordinates implements Serializable {
 		Point2D point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
 		return new Coordinates(point.getX(), point.getY());
 	}
-
-	/**
-	 * Converts linear rectangular XY position change to spherical coordinates with
-	 * rho value for map.
-	 *
-	 * @param point with phi and theta
-	 */
-	public static Point2D convertRectToSpherical(int index) {
-		return IntegerMapData.getMapBoxPoint(index);
-	}
 	
 	/**
 	 * Returns angle direction to another location on surface of sphere 0 degrees is

@@ -92,7 +92,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 		Graphics2D g2d = (Graphics2D) g;
 		
-		String mapType = baseMap.getMapMetaData().getMapString();
+		String mapType = baseMap.getMapMetaData().getId();
 		
 		int numMinerals = mineralsDisplaySet.size();
 

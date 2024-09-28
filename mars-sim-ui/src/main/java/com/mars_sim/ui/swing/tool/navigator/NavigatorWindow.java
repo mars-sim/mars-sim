@@ -961,7 +961,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
 	
 			boolean active = metaData.equals(currentMap);
-			JMenu mapMenu = new JMenu((active ? "> " : "") + metaData.getMapType());
+			JMenu mapMenu = new JMenu((active ? "> " : "") + metaData.getDescription());
 			mapMenu.setBackground(mapMenu.getBackground().darker());
 
 			for(int lvl = 0; lvl < metaData.getNumLevel(); lvl++) {
@@ -971,7 +971,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 															+ (metaData.isLocal(lvl) ? " *" : "")
 															, displayed);
 				mapItem.setEnabled(!displayed);
-				mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + MAP_SEPERATOR + lvl + MAP_SEPERATOR + metaData.getMapString());
+				mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + MAP_SEPERATOR + lvl + MAP_SEPERATOR + metaData.getId());
 				mapItem.addActionListener(this);
 				mapMenu.add(mapItem);
 			}
@@ -1217,7 +1217,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties results = new Properties();
 
 		// Record the map type
-		results.setProperty(MAPTYPE_PROP, mapPanel.getMapMetaData().getMapString());
+		results.setProperty(MAPTYPE_PROP, mapPanel.getMapMetaData().getId());
 		// Record the resolution
 		results.setProperty(RESOLUTION_PROP, "" + mapPanel.getMapResolution());
 		Coordinates center = mapPanel.getCenterLocation();

@@ -49,8 +49,7 @@ public class OpenCL {
    */
   public static CLProgram getProgram(String programName) {
     programs.computeIfAbsent(programName, k -> {
-      InputStream stream = ClassLoader.getSystemResourceAsStream(programName);
-      try {
+      try {InputStream stream = ClassLoader.getSystemResourceAsStream(programName);
         return context.createProgram(stream).build();
       } catch (IOException e) {
         throw new RuntimeException(e);

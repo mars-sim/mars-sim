@@ -36,7 +36,6 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.Landmark;
-import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mining;
@@ -52,6 +51,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
@@ -166,7 +166,7 @@ implements MissionListener {
         JButton northButton = new JButton(ImageLoader.getIconByName("map/navpoint_north")); //$NON-NLS-1$
 		northButton.addActionListener(e -> changeFocus(c -> {
 				double phi = c.getPhi();
-				phi = phi - IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+				phi = phi - MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (phi < 0D) phi = 0D;
 				return new Coordinates(phi, c.getTheta());
 			}));
@@ -177,7 +177,7 @@ implements MissionListener {
 		westButton.setMargin(new Insets(1, 1, 1, 1));
 		westButton.addActionListener(e -> changeFocus(c -> {
 				double theta = c.getTheta();
-				theta = theta - IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+				theta = theta - MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (theta < 0D) theta += (TWO_PI);
 				return new Coordinates(c.getPhi(), theta);
 			}));
@@ -188,7 +188,7 @@ implements MissionListener {
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
 		eastButton.addActionListener(e -> changeFocus(c -> {
 				double theta = c.getTheta();
-				theta = theta + IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+				theta = theta + MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (theta < (TWO_PI)) theta -= (TWO_PI);
 				return new Coordinates(c.getPhi(), theta);
 			}));
@@ -198,7 +198,7 @@ implements MissionListener {
 		JButton southButton = new JButton(ImageLoader.getIconByName("map/navpoint_south"));
 		southButton.addActionListener(e -> changeFocus(c -> {
 				double phi = c.getPhi();
-				phi = phi + IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+				phi = phi + MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (phi > Math.PI) phi = Math.PI;
 				return new Coordinates(phi, c.getTheta());
 			}));
