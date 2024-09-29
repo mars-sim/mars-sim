@@ -47,9 +47,9 @@ import com.mars_sim.core.map.location.Coordinates;
 	
  	private static final double TWO_PI = Math.PI * 2;
  	
- 	public static boolean isGPUCapable = true;
- 	
- 	public static boolean hardwareAccel = true;
+ 	private static boolean isGPUCapable = true;
+ 	private static boolean hardwareAccel = true;
+	
 	// The max rho
  	private Range rhoRange; 	
  	
@@ -106,12 +106,10 @@ import com.mars_sim.core.map.location.Coordinates;
 			loadMapData(dataFile);
 		}
 
-		// Exclude mac from use openCL
-		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-			hardwareAccel = false;
-			isGPUCapable = false;
-		}
-		else {
+		// Check if OpenCL is supported
+		isGPUCapable = OpenCL.initCompute();
+		hardwareAccel = isGPUAvailable();
+		if (isGPUCapable) {
 			setKernel();
 		}
  	}
@@ -808,16 +806,24 @@ import com.mars_sim.core.map.location.Coordinates;
  	 * 
  	 * @param value
  	 */
- 	public static void setGPU(boolean value) {
+ 	public static void setHardwareAccel(boolean value) {
  		hardwareAccel = value;
  	}
  	
+	/**
+	 * What is the setting to use hardware acceleration
+	 * @return
+	 */
+	public static boolean isHardwareAccel() {
+		return hardwareAccel;
+	}
+
  	/**
  	 * Checks if GPU hardware is capable.
  	 * 
  	 * @return
  	 */
- 	public static boolean isGPUEnabled() {
+ 	public static boolean isGPUAvailable() {
  		return isGPUCapable;
  	}
  	

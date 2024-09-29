@@ -109,6 +109,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 16;
 	private static final int CONTROL_PANE_HEIGHT = 85;
+	private static final String DEGREE_SIGN = Msg.getString("direction.degreeSign");
 	
 	private static final String LEVEL = "Level ";
 	private static final String DASH = "- ";
@@ -247,19 +248,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
 		mapPane.add(mapPanel);
-			
-//		buildZoomSlider();
-//		
-//		JPanel zoomPane = new JPanel(new BorderLayout());
-//		zoomPane.setBackground(new Color(0, 0, 0, 128));
-//		zoomPane.setOpaque(false);
-//		zoomPane.add(zoomSlider);
-//
-//		mapPane.add(zoomPane);
-//
-//		mapPanel.addMouseWheelListener(this);
-		
-		///////////////////////////////
 		
 		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
 		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
@@ -348,8 +336,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		latCB.setSelectedItem(0);
 		topPane.add(latCB);
 
-		String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
-				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
+		String[] latStrings = { DEGREE_SIGN + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
+							DEGREE_SIGN+ Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 		latCBDir = new JComboBoxMW<>(latStrings);
 		latCBDir.setPreferredSize(new Dimension(60, 25));
@@ -366,8 +354,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		lonCB.setSelectedItem(0);
 		topPane.add(lonCB);
 
-		String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
-				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
+		String[] longStrings = { DEGREE_SIGN + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
+					DEGREE_SIGN + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 		lonCBDir = new JComboBoxMW<>(longStrings);
 		lonCBDir.setPreferredSize(new Dimension(60, 25));
@@ -413,11 +401,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mineralsButton.putClientProperty("JButton.buttonType", "roundRect");
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
-		mineralsButton.addActionListener(e -> {
-				SwingUtilities.invokeLater(() -> {
-					createMineralsMenu().show(mineralsButton, 0, mineralsButton.getHeight());
-				});
-		});
+		mineralsButton.addActionListener(e -> 
+				SwingUtilities.invokeLater(() -> 
+					createMineralsMenu().show(mineralsButton, 0, mineralsButton.getHeight())
+			)
+		);
 		
 		mineralBtnPane.add(mineralsButton);
 		
@@ -432,11 +420,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		gpuButton.setPreferredSize(new Dimension(80, 25));
 		gpuButton.putClientProperty("JButton.buttonType", "roundRect");
 		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //$NON-NLS-1$
-		boolean gpuState = IntegerMapData.hardwareAccel;
-		gpuButton.setEnabled(gpuState);
+		gpuButton.setSelected(IntegerMapData.isHardwareAccel());
+
 		updateGPUButton();
 		gpuButton.addActionListener(e -> SwingUtilities.invokeLater(this::updateGPUButton));
-		
+
+
 		gpuBtnPane.add(gpuButton);
 
 		// Create the status bar
@@ -498,30 +487,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/**
 	 * Updates the state of the GPU button.
 	 */
-	private void updateGPUButton() {
-		boolean isCapable = IntegerMapData.isGPUEnabled();
-		
-		if (!isCapable) {
-			logger.config("Disabled GPU button since GPU acceleration cannot be enabled.");
-			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + " off");
-			gpuButton.setEnabled(false);
+	private void updateGPUButton() {	
+		if (IntegerMapData.isGPUAvailable()) {
+			boolean isSelected = gpuButton.isSelected();
+			String gpuStateStr1 = " off";
+			if (isSelected) {
+				gpuStateStr1 = " on";
+				logger.config("Set GPU button to be ON.");
+			}
+			else {
+				logger.config("Set GPU button to be OFF.");
+			}
+			IntegerMapData.setHardwareAccel(isSelected);
+			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
+			
 			mapPanel.setRho(mapPanel.getRho());
-			return;
-		}
-		
-		boolean isSelected = gpuButton.isSelected();
-		String gpuStateStr1 = " off";
-		if (isSelected) {
-			gpuStateStr1 = " on";
-			logger.config("Set GPU button to be ON.");
 		}
 		else {
-			logger.config("Set GPU button to be OFF.");
+			gpuButton.setEnabled(false);
+			gpuButton.setText("No GPU");
 		}
-		IntegerMapData.setGPU(isSelected);
-		gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
-		
-		mapPanel.setRho(mapPanel.getRho());
 	}
 	
 	
@@ -748,10 +733,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		String lon = newCoords.getFormattedLongitudeString();
 		
 		String latNumS = lat.substring(0, lat.indexOf(' '));
-		String latDirS = Msg.getString("direction.degreeSign") + lat.substring(lat.indexOf(' ') + 1);
+		String latDirS = DEGREE_SIGN + lat.substring(lat.indexOf(' ') + 1);
 		
 		String lonNumS = lon.substring(0, lon.indexOf(' '));
-		String lonDirS = Msg.getString("direction.degreeSign") + lon.substring(lon.indexOf(' ') + 1);
+		String lonDirS = DEGREE_SIGN + lon.substring(lon.indexOf(' ') + 1);
 		
 		int latNum = (int) Math.round(Double.parseDouble(latNumS));
 		int lonNum = (int) Math.round(Double.parseDouble(lonNumS));
@@ -1085,11 +1070,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		while (i.hasNext()) {
 			Unit unit = i.next();
 			
-			if (unit.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Proceed to below to set cursor
-					setCursorOpenWindow(unit, clickedPosition);
-				}
+			if ((unit.getUnitType() == UnitType.VEHICLE) && ((Vehicle)unit).isOutsideOnMarsMission()) {
+				// Proceed to below to set cursor
+				setCursorOpenWindow(unit, clickedPosition);
 			}
 		}
 	}
@@ -1236,159 +1219,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 		
 		return results;
-	}
-	
-//	private void buildZoomSlider() {
-//
-//		UIDefaults sliderDefaults = new UIDefaults();
-//
-//        sliderDefaults.put("Slider.thumbWidth", 15);
-//        sliderDefaults.put("Slider.thumbHeight", 15);
-//        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
-//            public void paint(Graphics2D g, JComponent c, int w, int h) {
-//                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//                g.setStroke(new BasicStroke(2f));
-//                g.setColor(Color.BLACK);
-//                g.fillOval(1, 1, w-1, h-1);
-//                g.setColor(Color.WHITE);
-//                g.drawOval(1, 1, w-1, h-1);
-//            }
-//        });
-//        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
-//            public void paint(Graphics2D g, JComponent c, int w, int h) {
-//                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//                g.setStroke(new BasicStroke(2f));
-//                g.setColor(Color.BLACK);
-//                g.fillRoundRect(0, 6, w, 6, 6, 6);
-//                g.setColor(Color.WHITE);
-//                g.drawRoundRect(0, 6, w, 6, 6, 6);
-//            }
-//        });
-//
-//        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, 
-//        		(int)computeSliderValue(IntegerMapData.maxRhoMultiplier), 10);
-//        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-//        zoomSlider.setPreferredSize(new Dimension(60, 400));
-//        zoomSlider.setSize(new Dimension(60, 400));
-//		zoomSlider.setPaintTicks(true);
-//		zoomSlider.setPaintLabels(true);
-//		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-//		zoomSlider.setBackground(new Color(0, 0, 0, 128));
-//		zoomSlider.setOpaque(false);
-//		
-//		zoomSlider.setVisible(true);
-//		
-//		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-//		zoomSlider.addChangeListener(e -> {
-//				// Change scale of map based on slider position.
-//				int newSliderValue = zoomSlider.getValue();
-//				// Note: scale = rho / RHO_DEFAULT;
-//				double oldScale = mapPanel.getScale();	
-//				
-//				double oldRho = mapPanel.getRho();
-//				
-//				double scale = computeScale(newSliderValue);
-//				
-//				double rho = MapPanel.RHO_DEFAULT * scale;
-//				
-//				if (rho > MapPanel.MAX_RHO) {
-//					rho = MapPanel.MAX_RHO;
-//					scale = rho / MapPanel.RHO_DEFAULT;
-//				}
-//				else if (rho < MapPanel.MIN_RHO) {
-//					rho = MapPanel.MIN_RHO;
-//					scale = rho / MapPanel.RHO_DEFAULT;
-//				}
-//	
-//				if (scale != oldScale) {				
-//					mapPanel.setScale(scale);
-//				}
-//				
-//				if (rho != oldRho) {	
-//					// Note: Call setRho() will redraw the map
-//					mapPanel.setRho(rho);
-//				}
-//
-//				
-////				logger.info("res: " + mapPanel.getMapResolution()
-////						+ "  newSliderValue: " + Math.round(newSliderValue * 10.0)/10.0 
-////						+ "  Scale: " + Math.round(oldScale* 100.0)/100.0
-////						+ " -> " + Math.round(scale* 1000.0)/1000.0
-////						+ "  RHO_DEFAULT: " +  Math.round(MapPanel.RHO_DEFAULT * 10.0)/10.0 
-////						+ "  rho: " + Math.round(oldRho* 10.0)/10.0
-////						+ " -> " + Math.round(rho* 10.0)/10.0);
-//
-//		});
-//		
-//		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();	
-//		for (int i = 1; i < IntegerMapData.maxRhoMultiplier + 1; i++) {
-//			labelTable.put((int)computeSliderValue(i), new JLabel(i + ""));
-//		}
-////		labelTable.put(0, new JLabel("1/4"));
-//		zoomSlider.setLabelTable(labelTable);
-//    }
-	
-//	/**
-//	 * Explicitly changes the scale and sets the zoom slider value.
-//	 * 
-//	 * @param rho
-//	 */
-//	public void updateScaleZoomSlider(double rho) {
-//		
-//		double newScale = rho / MapPanel.RHO_DEFAULT;
-//		
-//		if (mapPanel.getScale() != newScale && newScale < (int)computeSliderValue(IntegerMapData.maxRhoMultiplier)) {
-////			logger.info("scale: " + Math.round(scale * 100.0)/100.0 + "  rho: " + Math.round(rho * 10.0)/10.0);
-//			mapPanel.setScale(newScale);
-//
-//			double newSliderValue = computeSliderValue(newScale);
-//			
-//			zoomSlider.setValue((int)(Math.round(newSliderValue * 10.0)/10.0));
-//		}
-//	}
-//	
-//	/**
-//	 * Computes the new slider value.
-//	 * 
-//	 * @param scale
-//	 * @return
-//	 */
-//	private double computeSliderValue(double scale) {
-//		return (scale * IntegerMapData.minRhoFraction - SCALE_CONVERSION) * IntegerMapData.maxRhoMultiplier;
-//	}
-//	
-//	/**
-//	 * Computes the new scale.
-//	 * 
-//	 * @param sliderValue
-//	 * @return
-//	 */
-//	private double computeScale(double sliderValue) {
-//		return (1.0 * sliderValue / IntegerMapData.maxRhoMultiplier + SCALE_CONVERSION) / IntegerMapData.minRhoFraction;
-//	}
-//	
-//	@Override
-//	public void mouseWheelMoved(MouseWheelEvent e) {
-//		double movement = e.getPreciseWheelRotation();
-//		// Note: limiting the mouse movement to incrementing or decrementing 1 only
-//		// to lower the need of having to render a new map excessively		
-//		if (movement > 0) {
-//			// Move mouse wheel rotated down, thus moving down zoom slider.
-//			zoomSlider.setValue(zoomSlider.getValue() - 1);
-//		}
-//		else if (movement < 0) {
-//			// Move mouse wheel rotated up, thus moving up zoom slider.
-//			zoomSlider.setValue(zoomSlider.getValue() + 1);
-//		}
-//	}
-
-	/**
-	 * Sets the map rho.
-	 *
-	 * @param rho
-	 */
-	public void setRho(double rho) {
-		mapPanel.setRho(rho);
 	}
 
 	/**
