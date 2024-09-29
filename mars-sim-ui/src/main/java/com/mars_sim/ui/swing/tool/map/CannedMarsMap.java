@@ -10,7 +10,7 @@ import java.awt.Image;
 
 import javax.swing.JComponent;
 
-import com.mars_sim.core.map.Map;
+import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
@@ -20,7 +20,7 @@ import com.mars_sim.core.map.location.Coordinates;
  * order to generate a map image.
  */
 @SuppressWarnings("serial")
-public class CannedMarsMap extends JComponent implements Map {
+public class CannedMarsMap extends JComponent implements MapDisplay {
 
 	// Data members
 	private boolean mapImageDone = false;
@@ -28,6 +28,8 @@ public class CannedMarsMap extends JComponent implements Map {
 	private transient Image mapImage = null;
 	
 	private transient MapData mapData;
+
+	private double rho;
 
 	/**
 	 * Constructor.
@@ -49,23 +51,14 @@ public class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/**
-	 * Creates a map image for a given center location.
-	 * 
-	 * @param center 	The center location of the map display.
-	 * @param scale 	The map scale
-	 * @return the map image.
-	 */
-	private Image createMapImage(Coordinates center, double scale) {
-		return mapData.createMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, scale);
-	}
-	
-	/**
 	 * Creates a 2D map at a given center point.
 	 * 
 	 * @param newCenter the new center location
 	 */
-	public void drawMap(Coordinates newCenter, double scale) {	
-		mapImage = createMapImage(newCenter, scale);
+	public void drawMap(Coordinates newCenter, double rho) {	
+		mapImage = mapData.createMapImage(newCenter,
+								MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, rho);
+		this.rho = rho;
 		mapImageDone = true;
 	}
 	
@@ -95,7 +88,7 @@ public class CannedMarsMap extends JComponent implements Map {
      * @return
      */
     public double getScale() {
-		return mapData.getScale();
+		return rho/mapData.getRhoDefault();
 	}
 	   
 	/**
@@ -105,16 +98,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	 */
 	@Override
 	public double getRho() {
-		return mapData.getRho();
-	}
-	
-	/**
-	 * Sets the map rho.
-	 *
-	 * @param rho
-	 */
-	public void setRho(double rho) {
-		mapData.setRho(rho);
+		return rho;
 	}
 	
 	/**
@@ -122,8 +106,11 @@ public class CannedMarsMap extends JComponent implements Map {
      * 
      * @return
      */
+	@Override
     public double getHalfAngle() {
-    	return mapData.getHalfAngle();
+
+    	double ha = Math.sqrt(HALF_MAP_ANGLE / getScale() / (0.25 + mapData.getResolution()));
+    	return Math.min(Math.PI, ha);
     }
 	
 	/**
@@ -146,11 +133,32 @@ public class CannedMarsMap extends JComponent implements Map {
 		return mapData.getWidth();
 	}
 	
+	
+	/**
+	 * Gets the resolution of this map in the map stack
+	 * 
+	 * @return
+	 */
+	@Override
+    public int getResolution() {
+		return mapData.getResolution();
+	}
+
 	/**
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
 		mapImage = null;
 		mapData = null;
+	}
+
+	@Override
+	public Range getRhoRange() {
+		return mapData.getRhoRange();
+	}
+
+	@Override
+	public double getRhoDefault() {
+		return mapData.getRhoDefault();
 	}
 }

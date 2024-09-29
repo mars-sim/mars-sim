@@ -12,8 +12,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.SimulationConstants;
@@ -69,7 +67,7 @@ public class EllipseLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		// Display ellipse if flag is true.
 		if (displayEllipse) {

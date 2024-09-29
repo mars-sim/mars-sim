@@ -20,6 +20,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -31,12 +32,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.Landmark;
-import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mining;
@@ -52,6 +51,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
@@ -98,7 +98,7 @@ implements MissionListener {
 		Simulation sim = missionWindow.getDesktop().getSimulation();
 
 		unitManager = sim.getUnitManager();
-		landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
+		landmarks = sim.getConfig().getLandmarkConfiguration().getLandmarkList();
 
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -128,11 +128,7 @@ implements MissionListener {
 		JPanel navpointTablePane = new JPanel(new BorderLayout());
 		navpointTablePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		navpointTablePane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		navpointTablePane.setBorder(new MarsPanelBorder());
-
-		
-		///////////////////////////////////////////////////////////
-		
+		navpointTablePane.setBorder(new MarsPanelBorder());		
 		
 		// Define splitPane to house mapDisplayPane and ..
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapDisplayPane, navpointTablePane);
@@ -140,15 +136,11 @@ implements MissionListener {
 	    splitPane.setDividerLocation(HEIGHT + 10);
 	    mainPane.add(splitPane, BorderLayout.CENTER);
 		
-	    
-		///////////////////////////////////////////////////////////
-
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop(), this);
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
 		// Set up mouse control
-//		mapPanel.setNavpointPanel(this);
 		mapPanel.setMouseDragger(false);
 		mapPanel.addMouseListener(new MapListener());
 		mapPanel.addMouseMotionListener(new MouseMotionListener());
@@ -160,7 +152,6 @@ implements MissionListener {
 		navpointLayer = new NavpointMapLayer(this);
         mineralLayer = new MineralMapLayer(this);
         
-		// Note remove the ShadingMapLayer to improve clarity of map display mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0); 
         mapPanel.addMapLayer(mineralLayer, 1);
 		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
 		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
@@ -173,64 +164,46 @@ implements MissionListener {
         
 		// Create the north button.
         JButton northButton = new JButton(ImageLoader.getIconByName("map/navpoint_north")); //$NON-NLS-1$
-		northButton.addActionListener(e -> {
-			// Recenter the map to the north by a 1/8 map.
-			Coordinates centerCoords = mapPanel.getCenterLocation();
-			if (centerCoords != null) {
-				double phi = centerCoords.getPhi();
-				phi = phi - IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+		northButton.addActionListener(e -> changeFocus(c -> {
+				double phi = c.getPhi();
+				phi = phi - MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (phi < 0D) phi = 0D;
-				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
-			}
-		});
+				return new Coordinates(phi, c.getTheta());
+			}));
 		mapDisplayPane.add(northButton, BorderLayout.NORTH);
 		
 		// Create the west button.
 		JButton westButton = new JButton(ImageLoader.getIconByName("map/navpoint_west"));
 		westButton.setMargin(new Insets(1, 1, 1, 1));
-		westButton.addActionListener(e -> {
-			// Recenter the map to the west by 1/8 map.
-			Coordinates centerCoords = mapPanel.getCenterLocation();
-			if (centerCoords != null) {
-				double theta = centerCoords.getTheta();
-				theta = theta - IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+		westButton.addActionListener(e -> changeFocus(c -> {
+				double theta = c.getTheta();
+				theta = theta - MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (theta < 0D) theta += (TWO_PI);
-				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
-			}
-		});
+				return new Coordinates(c.getPhi(), theta);
+			}));
 		mapDisplayPane.add(westButton, BorderLayout.WEST);
 		
 		// Create the east button.
 		JButton eastButton = new JButton(ImageLoader.getIconByName("map/navpoint_east"));
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
-		eastButton.addActionListener(e -> {
-			// Recenter the map to the east by 1/8 map.
-			Coordinates centerCoords = mapPanel.getCenterLocation();
-			if (centerCoords != null) {
-				double theta = centerCoords.getTheta();
-				theta = theta + IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+		eastButton.addActionListener(e -> changeFocus(c -> {
+				double theta = c.getTheta();
+				theta = theta + MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (theta < (TWO_PI)) theta -= (TWO_PI);
-				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
-			}
-		});
+				return new Coordinates(c.getPhi(), theta);
+			}));
 		mapDisplayPane.add(eastButton, BorderLayout.EAST);
 		
 		// Create the south button.
 		JButton southButton = new JButton(ImageLoader.getIconByName("map/navpoint_south"));
-		southButton.addActionListener(e -> {
-			// Recenter the map to the south by 1/8 map.
-			Coordinates centerCoords = mapPanel.getCenterLocation();
-			if (centerCoords != null) {
-				double phi = centerCoords.getPhi();
-				phi = phi + IntegerMapData.QUARTER_HALF_MAP_ANGLE;
+		southButton.addActionListener(e -> changeFocus(c -> {
+				double phi = c.getPhi();
+				phi = phi + MapDisplay.QUARTER_HALF_MAP_ANGLE;
 				if (phi > Math.PI) phi = Math.PI;
-				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
-			}
-		});
+				return new Coordinates(phi, c.getTheta());
+			}));
 		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
-		
-		///////////////////////////////////////////////////////////	
-		
+				
 		// Create the navpoint scroll panel.
 		JScrollPane navpointScrollPane = new JScrollPane();
         navpointTablePane.add(navpointScrollPane);
@@ -260,17 +233,20 @@ implements MissionListener {
         navpointScrollPane.setViewportView(navpointTable);
 	}
 
-	public void setZoomPanel(JPanel zoomPanel) {
-		mapPane.add(zoomPanel);
+	private void changeFocus(UnaryOperator<Coordinates> changer) {
+		Coordinates centerCoords = mapPanel.getCenterLocation();
+		if (centerCoords != null) {
+			mapPanel.showMap(changer.apply(centerCoords));
+		}
 	}
-	
+
 	/**
 	 * Updates the map with time pulse.
 	 * 
 	 * @param pulse The clock pulse
 	 */
 	public void update(ClockPulse pulse) {
-		mapPanel.update(pulse);
+		mapPanel.updateDisplay();
 	}
 
 	/**
@@ -405,10 +381,7 @@ implements MissionListener {
 		}
 
 		// Change mouse cursor if hovering over a landmark on the map
-		Iterator<Landmark> j = landmarks.iterator();
-		while (j.hasNext()) {
-			Landmark landmark = (Landmark) j.next();
-
+		for(Landmark landmark : landmarks) {
 			Coordinates unitCoords = landmark.getLandmarkCoord();
 			double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
 			double unitClickRange = 40D;
@@ -600,7 +573,7 @@ implements MissionListener {
 				fireTableDataChanged();
 			}
 			else {
-				if (navpoints.size() > 0) {
+				if (!navpoints.isEmpty()) {
 					navpoints.clear();
 					fireTableDataChanged();
 				}

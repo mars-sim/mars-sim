@@ -33,7 +33,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.location.IntPoint;
@@ -41,6 +40,7 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
+import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
@@ -259,7 +259,6 @@ class ExplorationSitesPanel extends WizardPanel {
 			siteListPane.add(startingSitePane);
 			navLayer.addNavpointPosition(
 					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), mapPane.getMap()));
-	//		mapPane.setCenterCoords(startingSite);
 			mapPane.showMap(startingSite);
 			addButton.setEnabled(canAddMoreSites());
 		} catch (Exception e) {
@@ -646,8 +645,8 @@ class ExplorationSitesPanel extends WizardPanel {
 				int displayY = event.getPoint().y + navOffset.getiY();
 				IntPoint displayPos = new IntPoint(displayX, displayY);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-				Coordinates navpoint = center.convertRectIntToSpherical(displayPos.getiX() - Map.HALF_MAP_BOX, 
-						displayPos.getiY() - Map.HALF_MAP_BOX,
+				Coordinates navpoint = center.convertRectIntToSpherical(displayPos.getiX() - MapDisplay.HALF_MAP_BOX, 
+						displayPos.getiY() - MapDisplay.HALF_MAP_BOX,
 						mapPane.getMap().getRho());
 
 				// Only drag navpoint flag if within ellipse range bounds.

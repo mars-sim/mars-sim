@@ -4,6 +4,7 @@ import com.jogamp.opencl.CLCommandQueue;
 import com.jogamp.opencl.CLContext;
 import com.jogamp.opencl.CLDevice;
 import com.jogamp.opencl.CLKernel;
+import com.jogamp.opencl.CLPlatform;
 import com.jogamp.opencl.CLProgram;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,18 +27,30 @@ public class OpenCL {
   private static CLCommandQueue queue;
   private static int localSize = -1;
 
-  static {
-    initCompute();
-    Runtime.getRuntime().addShutdownHook(new Thread(OpenCL::destroy));
+  private OpenCL() {
+    // Avoid creating helper
   }
 
-  private static void initCompute() {
-    programs = new HashMap<>();
-    kernels = new HashMap<>();
+  /**
+   * Initialise compute
+   * @return Is OpenCL supported
+   */
+  public static boolean initCompute() {
+    if (!CLPlatform.isAvailable()) {
+      return false;
+    }
+    else if (context == null) {
+      // Don't re-init if a context is already present
+      programs = new HashMap<>();
+      kernels = new HashMap<>();
 
-    context = CLContext.create();
-    device = context.getMaxFlopsDevice();
-    queue = device.createCommandQueue();
+      context = CLContext.create();
+      device = context.getMaxFlopsDevice();
+      queue = device.createCommandQueue();
+
+      Runtime.getRuntime().addShutdownHook(new Thread(OpenCL::destroy));
+    }
+    return true;
   }
 
   /**
@@ -49,11 +62,10 @@ public class OpenCL {
    */
   public static CLProgram getProgram(String programName) {
     programs.computeIfAbsent(programName, k -> {
-      InputStream stream = ClassLoader.getSystemResourceAsStream(programName);
-      try {
+      try {InputStream stream = ClassLoader.getSystemResourceAsStream(programName);
         return context.createProgram(stream).build();
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new IllegalStateException("Problem loading program file", e);
       }
     });
 

@@ -7,118 +7,71 @@
 
 package com.mars_sim.core.map;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.mars_sim.core.map.common.FileLocator;
 
+/**
+ * Represents the meta data associated with a type of map. It contains a "stack" of different 
+ * resolution images.
+ */
 public class MapMetaData {
-	
+    private class Resolution{
+        private boolean locallyAvailable;
+        private String filename;
+
+        Resolution(String filename, boolean locallyAvailable) {
+            this.filename = filename;
+            this.locallyAvailable = locallyAvailable;
+        }
+
+        void setLocal() {
+            locallyAvailable = true;
+        }
+
+        String getFilename() {
+            return filename;
+        }
+
+        boolean isLocal() {
+            return locallyAvailable;
+        }
+    }
+
     private boolean colourful = true;
+	private String id;
+    private String description;
     
-    /** The selected resolution of the map file. */
-	private int res = 0;
-    /** The available number of resolution level for this map type. */
-	private int numLevel = 1;
-	
-	private String mapString;
-    private String mapType;
+    private List<Resolution> listOfMaps;
     
-    private List<String> listOfMaps;
-    
-    private Map<String, Boolean> locallyAvailableMap = new HashMap<>();
-    
-    public MapMetaData(String mapString, String mapType, boolean colourful, List<String> array) {
+    MapMetaData(String id, String description, boolean colourful, List<String> array) {
 
-        this.mapString = mapString;
-        this.mapType = mapType;
+        this.id = id;
+        this.description = description;
         this.colourful = colourful;
-        this.listOfMaps = array;
-  
-        numLevel = array.size();
-      
-        checkMapLocalAvailability();
-    }
-
-    /**
-     * Checks if the maps are available locally.
-     */
-    public void checkMapLocalAvailability() {
-
-		boolean[] loaded = new boolean[numLevel];
-		
-		for (int i = 0; i < numLevel; i++) {
-			String map = listOfMaps.get(i);
-			loaded[i] = FileLocator.isLocallyAvailable(map);
-			locallyAvailableMap.put(map, loaded[i]);
-		}
-		
-		// Initially set resolution to level 0, the lowest possible one
-		setResolution(0);
+        this.listOfMaps = new ArrayList<>();
+        for(var a : array) {
+            var locally = FileLocator.isLocallyAvailable(MapDataFactory.MAPS_FOLDER + a);
+            listOfMaps.add(new Resolution(a, locally));
+        }
     }
     
-    public String getMapString() {
-        return mapString;
+    public String getId() {
+        return id;
     }
 
-    public String getMapType() {
-        return mapType;
+    public String getDescription() {
+        return description;
     }
 
-    /**
-     * Sets if the file is locally available.
-     * 
-     * @param newValue
-     */
-    void setLocallyAvailable(boolean newValue) {
-        locallyAvailableMap.put(getFile(), newValue);
-    }
-
-    /**
-     * Sets the resolution of the map file.
-     * 
-     * @param selected
-     */
-    public void setResolution(int selected) {
-    	res = selected;
-    }
-    
-    /**
-     * Gets the resolution of the map file.
-     * 
-     * @return
-     */
-    public int getResolution() {
-    	return res;
-    }
-    
     /**
      * Gets the available number of level of resolution.
      * 
      * @return
      */
     public int getNumLevel() {
-    	return numLevel;
-    }
-    
-    /**
-     * Is the map file locally available.
-     * 
-     * @param resolution
-     * @return
-     */
-    public boolean isLocallyAvailable(int resolution) {
-        return locallyAvailableMap.get(getFile(resolution));
-    }
-
-    /**
-     * Is the map file available locally (or else remotely) ?
-     * 
-     * @return
-     */
-    public boolean isLocallyAvailable() {
-        return locallyAvailableMap.get(getFile());
+    	return listOfMaps.size();
     }
     
     /**
@@ -131,32 +84,34 @@ public class MapMetaData {
     }
 
     /**
-     * Gets the filename.
-     * 
+     * Callback from the MapData that is is not loaded locally
      * @param res
-     * @return
      */
-    public String getFile(int res) {
-    	numLevel = listOfMaps.size();	
-    	if (numLevel > res) {
-    		this.res = res;
-    		return listOfMaps.get(res);
-    	}
-    	else {
-    		res--;
-    		return getFile(res);
-    	}
-    }
-    
-    /**
-     * Gets the filename.
-     * 
-     * @return
-     */
-    public String getFile() {
-    	return getFile(res);
+    void setLocallyAvailable(int res) {
+        listOfMaps.get(res).setLocal();
     }
 
+    /**
+     * Is the resolution loaded locally
+     * @param newRes
+     * @return
+     */
+    public boolean isLocal(int newRes) {
+        return listOfMaps.get(newRes).isLocal();
+    }
+
+    /**
+     * Gets the map data associate with a particular resolution
+     * 
+     * @param newRes
+     * @return
+     */
+    public MapData getData(int newRes) {
+        var filename = listOfMaps.get(newRes).getFilename();
+
+        return MapDataFactory.loadMapData(this, newRes, filename);
+    }
+    
 	/**
 	 * Compares if an object is the same as this unit
 	 *
@@ -169,7 +124,7 @@ public class MapMetaData {
 			return false;
 		if (this.getClass() != obj.getClass())
 			return false;
-		return this.mapString == ((MapMetaData)obj).getMapString();
+		return this.id == ((MapMetaData)obj).getId();
 	}
 
 	/**
@@ -178,14 +133,6 @@ public class MapMetaData {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = mapType.hashCode() * mapString.hashCode();
-		return hashCode;
-	}
-	
-	public void destroy() {
-		locallyAvailableMap.clear();
-		locallyAvailableMap = null;
-		listOfMaps.clear();
-		listOfMaps = null;
+		return description.hashCode() * id.hashCode();
 	}
 }

@@ -13,8 +13,6 @@ import java.util.Collection;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -61,7 +59,7 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {		
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {		
 		Collection<Unit> units = null;
 				
 		if (unitsToDisplay != null) {
@@ -99,5 +97,5 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected abstract void displayUnit(Unit unit, Coordinates mapCenter, Map baseMap, Graphics g);
+	protected abstract void displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics g);
 }

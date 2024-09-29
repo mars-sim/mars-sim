@@ -12,8 +12,6 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.SimulationConstants;
@@ -45,7 +43,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
 		// Set trail color
 		g.setColor((baseMap.getMapMetaData().isColourful() ? Color.BLACK : new Color(0, 96, 0)));
@@ -68,7 +66,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, Map baseMap, Graphics g) {
+	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
 		// Get map angle.
 		double angle = baseMap.getHalfAngle();

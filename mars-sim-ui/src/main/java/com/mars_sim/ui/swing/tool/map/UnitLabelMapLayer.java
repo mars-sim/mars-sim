@@ -14,7 +14,6 @@ import java.awt.RenderingHints;
 import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -35,7 +34,7 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected void displayUnit(Unit unit, Coordinates mapCenter, Map baseMap, Graphics g) {
+	protected void displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

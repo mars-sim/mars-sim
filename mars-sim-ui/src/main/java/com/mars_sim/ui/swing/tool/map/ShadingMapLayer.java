@@ -12,8 +12,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
 
@@ -42,7 +40,7 @@ public class ShadingMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 
 		// Need to determine which side of Mars is facing the sun
@@ -54,7 +52,7 @@ public class ShadingMapLayer implements MapLayer, SimulationConstants {
         if (sunlight < 0.85) {	        
         	int opacity = LIGHT_THRESHOLD - sunlightInt;
             g2d.setColor(new Color(5, 0, 0, opacity)); //(0, 0, 0, 196));
-            g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+            g2d.fillRect(0, 0, MapDisplay.MAP_BOX_WIDTH, MapDisplay.MAP_BOX_HEIGHT);
 		}
 	}
 }

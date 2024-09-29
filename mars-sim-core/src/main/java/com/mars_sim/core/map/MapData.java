@@ -5,86 +5,61 @@
  * @author Scott Davis
  */
 
- package com.mars_sim.core.map;
+package com.mars_sim.core.map;
 
- import java.awt.Image;
-import java.io.IOException;
+import java.awt.Image;
+
+import com.mars_sim.core.data.Range;
+import com.mars_sim.core.map.location.Coordinates;
 
  /**
   * An interface for map data.
   */
  public interface MapData {
+   // Represents the state of whether the data has loaded
+   enum MapState { PENDING, LOADED, FAILED}
 
 	/**
 	 * Generates and returns a map image with the given parameters.
 	 * 
-	 * @param centerPhi 	The phi center location of the map
-	 * @param centerTheta 	The theta center location of the map
+	 * @param center The center location of the map
 	 * @param mapBoxWidth 	The width of the map box
 	 * @param mapBoxHieght 	The height of the map box
-	 * @param scale 		The map scale
+	 * @param rho 		The map scale
 	 * @return Image		The map image
 	 */
-	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale);
-	
-    /**
-     * Gets the rho of the Mars surface map.
-     * 
-     * @return
-     */
-    public double getRho();
+	public Image createMapImage(Coordinates center, int mapBoxWidth, int mapBoxHeight, double rho);
+    
+   /**
+    * Gets the number of pixels height.
+    * 
+    * @return
+    */
+   public int getHeight();
 
-	/**
-	 * sets the rho of the Mars surface map (height pixels divided by pi).
-	 * 
-	 * @return
+   /**
+    * Gets the number of pixels width.
+    * 
+    * @return
+    */
+   public int getWidth();
+ 
+   /**
+    * Gets the Meta data of the map.
+    * 
+    * @return
+    */
+   public MapMetaData getMetaData();
+
+   /**
+	 * Get the resolution layer of this data in the parent Map Meta Data stack.
 	 */
-	public void setRho(double rho);
-	
-	/**
-     * Gets the half angle of the Mars surface map.
-     * 
-     * @return
-     */
-    public double getHalfAngle();
-    
-    /**
-     * Gets the scale of the Mars surface map.
-     * 
-     * @return
-     */
-    public double getScale();
-    
-    /**
-     * Gets the number of pixels height.
-     * 
-     * @return
-     */
-    public int getHeight();
-
-    /**
-     * Gets the number of pixels width.
-     * 
-     * @return
-     */
-    public int getWidth();
-
-    /**
-     * Gets the Meta data of the map.
-     * 
-     * @return
-     */
-    public MapMetaData getMetaData();
+   public int getResolution();
  	
-	/**
- 	 * Loads the 2-D integer map data set pixel array.
- 	 * 
- 	 * @param imageName
- 	 * @return
- 	 * @throws IOException
- 	 */
- 	public int[][] getPixels();
- 	
+   /**
+	 * Get the min and max value of rho supported by this mao data.
+	 */
+	public Range getRhoRange();
 	
  	/**
  	 * Gets the RGB map color as an integer at a given location.
@@ -94,5 +69,13 @@ import java.io.IOException;
  	 * @return the RGB map color.
  	 */
  	public int getRGBColorInt(double phi, double theta);
+
+   /**
+    * Is this map data ready to be used? The data may require loading in the background
+    * @return
+    */
+   public MapState getStatus();
+
+    public double getRhoDefault();
 
  }

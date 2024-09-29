@@ -12,8 +12,6 @@ import java.awt.Graphics;
 import javax.swing.Icon;
 
 import com.mars_sim.core.environment.ExploredLocation;
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.SimulationConstants;
@@ -87,7 +85,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		for (ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 			boolean displaySite = !site.isReserved() || displayReserved;
             if (!site.isClaimed() && !displayClaimed)
@@ -107,7 +105,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, Map baseMap, Graphics g) {
+	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
 		if (mapCenter.getAngle(site.getLocation()) < baseMap.getHalfAngle()) {
 

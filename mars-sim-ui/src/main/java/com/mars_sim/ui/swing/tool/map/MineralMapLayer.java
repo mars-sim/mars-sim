@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -22,8 +23,6 @@ import java.util.TreeMap;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
 import com.mars_sim.core.map.IntegerMapData;
-import com.mars_sim.core.map.Map;
-import com.mars_sim.core.map.MapLayer;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
 
@@ -39,8 +38,8 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 	private double rhoCache;
 	
-	private final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
-	private final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH;
+	private final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
+	private final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH;
 	
 	private String mapTypeCache;
 	
@@ -77,7 +76,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 		
 		if (mineralsDisplaySet.isEmpty()) {
 			return;
@@ -93,7 +92,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 		Graphics2D g2d = (Graphics2D) g;
 		
-		String mapType = baseMap.getMapMetaData().getMapString();
+		String mapType = baseMap.getMapMetaData().getId();
 		
 		int numMinerals = mineralsDisplaySet.size();
 
@@ -120,7 +119,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 					double phi = point.getX();
 					double theta = point.getY();
 					
-					java.util.Map<String, Integer> mineralConcentrations = 
+					Map<String, Integer> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
 										phi, 
@@ -146,11 +145,11 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			rhoCache = rho;
 			
 			// Create a new buffered image to draw the map on.
-			mineralImage = new BufferedImage(Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT, 
+			mineralImage = new BufferedImage(MapDisplay.MAP_BOX_WIDTH, MapDisplay.MAP_BOX_HEIGHT, 
 	 				BufferedImage.TYPE_INT_ARGB);
 	 		
 	 		// Create new map image.
-			mineralImage.setRGB(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT, newMineralArray, 0, Map.MAP_BOX_WIDTH);
+			mineralImage.setRGB(0, 0, MapDisplay.MAP_BOX_WIDTH, MapDisplay.MAP_BOX_HEIGHT, newMineralArray, 0, MapDisplay.MAP_BOX_WIDTH);
 
 		}
 		
@@ -180,12 +179,12 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 					continue;
 				}
 				Color baseColor = mineralColorMap.get(mineralType);
-				int index = x + (y * Map.MAP_BOX_WIDTH);
+				int index = x + (y * MapDisplay.MAP_BOX_WIDTH);
 				addColorToMineralConcentrationArray(index, baseColor, concentration, newMineralArray);
 				addColorToMineralConcentrationArray((index + 1), baseColor, concentration, newMineralArray);
 				
-				if (y < Map.MAP_BOX_HEIGHT - 1) {
-					int indexNextLine = x + ((y + 1) * Map.MAP_BOX_WIDTH);
+				if (y < MapDisplay.MAP_BOX_HEIGHT - 1) {
+					int indexNextLine = x + ((y + 1) * MapDisplay.MAP_BOX_WIDTH);
 					addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration, newMineralArray);
 					addColorToMineralConcentrationArray((indexNextLine + 1), baseColor,
 							concentration, newMineralArray);

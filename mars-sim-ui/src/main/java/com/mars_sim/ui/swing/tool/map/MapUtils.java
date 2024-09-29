@@ -7,7 +7,6 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
-import com.mars_sim.core.map.Map;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 
@@ -30,7 +29,7 @@ public class MapUtils {
 	 * @param baseMap the type of map.
 	 * @return display point on map
 	 */
-	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, Map baseMap) {
+	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, MapDisplay baseMap) {
 		int halfMap = baseMap.getPixelHeight()/2;
 		return Coordinates.findRectPosition(coords, mapCenter, baseMap.getRho(),
 											halfMap, halfMap - (MapPanel.MAP_BOX_HEIGHT/2));
@@ -43,7 +42,7 @@ public class MapUtils {
 	 * @param mapType
 	 * @return
 	 */
-	public static int getPixelDistance(double distance, Map baseMap) {
+	public static int getPixelDistance(double distance, MapDisplay baseMap) {
 		return (int) Math.round(distance / Coordinates.MARS_CIRCUMFERENCE * baseMap.getPixelWidth());
 	}
 }

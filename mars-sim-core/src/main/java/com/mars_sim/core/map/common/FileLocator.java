@@ -8,7 +8,6 @@ package com.mars_sim.core.map.common;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-//import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +17,9 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +43,8 @@ public final class FileLocator {
     private static File localBase = new File(System.getProperty("user.home")
                                                 +  "/.mars-sim" + DOWNLOAD_DIR);
     private static String contentURL = "https://raw.githubusercontent.com/mars-sim/mars-sim/master/content";
+
+    private static ExecutorService executorService;
 
     private  FileLocator() {
     }
@@ -106,7 +110,7 @@ public final class FileLocator {
      * @throws DirectoryNotEmptyException
      * @throws IOException
      */
-    public void cleanUp(Path path) throws NoSuchFileException, DirectoryNotEmptyException, IOException {
+    public void cleanUp(Path path) throws IOException {
     	  Files.delete(path);
     }
     
@@ -119,24 +123,118 @@ public final class FileLocator {
     public static File locateFile(String name) {
         // Check file is already downloaded
         File localFile = new File(localBase, name);
+        if (loadFileLocally(localFile, name)) {
+            return localFile;
+        }
+        
+        // Look remotely
+        if (loadFileRemotely(localFile, name)) {
+            return localFile;
+        }
+       
+        return null;
+    }
+  
+    /**
+     * Locates an external file used in the configuration as a background job.
+     * 
+     * @param name Name will be a partial path
+     * @param callback Invoked when the files is loaded in the background. This is not clled if the file is already available.
+     * @return File reference if the contents is immediately available
+     */
+    public static File locateFileAsync(String name, Consumer<File> callback) {
+       
+        // Check file is already downloaded
+        File localFile = new File(localBase, name);
+        if (loadFileLocally(localFile, name)) {
+            return localFile;
+        }
+        
+        // Trigger the async
+        var loader = new ASyncLoad(name, localFile, callback);
+        if (executorService == null) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
+        executorService.submit(loader);
+
+        return null;
+    }
+
+    /**
+     * This represents a request to async load a file from a remote source.
+     */
+    private record ASyncLoad(String name, File localFile, Consumer<File> callback)
+        implements Runnable {
+
+        @Override
+        public void run() {
+            File result = null;
+
+            // Look remotely, this will block
+            if (loadFileRemotely(localFile, name)) {
+                result = localFile;
+            }
+
+            if (callback != null) {
+                callback.accept(result);
+            }
+        }
+
+    }
+
+    /**
+     * Attempt to load file contents from the remote repository. Assumption is the local copy does not exist.
+     * This is a blocking operation where the method wait for the remote response
+     * @param localFile The destination for the copy
+     * @param name Name of the file resource to load.
+     */
+    private static boolean loadFileRemotely(File localFile, String name) {
+        var source = new StringBuilder("remote as ");
+        var resourceStream = locateResource(name, source, n -> {
+            try {
+                return openRemoteContent(n);
+            } catch (URISyntaxException e) {
+                logger.warning("Problem opening remote content: " + e);
+                return null;
+            }
+        });
+            
+        // Have a source location
+        if (resourceStream != null) {
+            logger.info(name + ": " + source.toString());
+            createLocalCopy(resourceStream, localFile);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Attempt to load file contents from a local resources. Local could be out of the classpath
+     * or a local copy already exists.
+     * @param localFile The destination for the local copy
+     * @param name Name of the file resoruce to load.
+     */
+    private static boolean loadFileLocally(File localFile, String name) {
         boolean locateFile = !localFile.exists();
-        boolean canDelete = false;
         
         // Check file is not zero size
-        if (!locateFile && (localFile.length() == 0)) {
-            logger.warning("Local file " + localFile.getAbsolutePath() + " is empty. Removing.");
-            canDelete = localFile.delete();
-            /**
-             * "Use "java.nio.file.Files#delete" here for better messages on error conditions." 
-             * Unsure on how to convert the use of java.io.File.delete to java.nio.file.Files#delete
-             * Path path = Path.of(...);
-             * cleanUp(path);
-             */
+        if (!locateFile) {
+            if (localFile.length() > 0) {
+                // Already on the local store and ready to go
+                return true;
+            }
+
+            if (localFile.delete()) {
+                logger.warning("Local file " + localFile.getAbsolutePath() + " is empty. Removing.");
+            }
+            else {
+                logger.warning("Local file " + localFile.getAbsolutePath() + " is empty but remove failed.");
+            }
             locateFile = true;
         }
 
         // Find the file
-        if (locateFile && !canDelete) {
+        if (locateFile) {
             File folder = localFile.getParentFile();
             folder.mkdirs();
 
@@ -144,49 +242,14 @@ public final class FileLocator {
             // Attempt to find the file in the bundled resources; then remotely
             StringBuilder source = new StringBuilder("bundled as ");
             InputStream resourceStream = locateResource(name, source,
-            		// Use lambda with method reference to avoid codesmell
-            		// Replacing n -> FileLocator.class.getResourceAsStream(n));
-            		// But make sure it works
-            		FileLocator.class::getResourceAsStream); 
- 
-            if (resourceStream == null) {
-                source = new StringBuilder("remote as ");
-                resourceStream = locateResource(name, source, n -> {
-					try {
-						return openRemoteContent(n);
-					} catch (URISyntaxException e) {
-						logger.warning("Problem opening remote content: " + e);
-						return null;
-					}
-				});
-            }
-            
-            // Have a source location
+            		FileLocator.class::getResourceAsStream);
             if (resourceStream != null) {
-            	
-            	StringBuilder text = new StringBuilder("Extracting ");
-            	text.append(name).append(" from ").append(source);
-                logger.info(text.toString());
-                
-                try {
-                    copyFile(resourceStream, localFile);
-                } catch (IOException ioe) {
-                    logger.log(Level.SEVERE, "Problem extracting file: ", ioe);
-                }
-                finally {
-                    try {
-                        resourceStream.close();
-                    } catch (IOException e) {
-                        logger.warning("Problem closing stream: " + e);
-                    }
-                }
-            }
-            else {
-                logger.warning("Cannot find file " + name);
+                logger.info(name + ": " + source.toString());
+                createLocalCopy(resourceStream, localFile);
+                return true;
             }
         }
-
-        return localFile;
+        return false;
     }
 
     /**
@@ -262,47 +325,47 @@ public final class FileLocator {
      * @throws IOException
      */
     private static InputStream getFileFromZip(InputStream resourceStream, String name) throws IOException {
-    	int BUFFER = 512;  	
-    	ZipInputStream zis = new ZipInputStream(resourceStream);
+        String [] parts = name.split("/");
+        String targetName = parts[parts.length-1];
+
+        ZipInputStream zis = new ZipInputStream(resourceStream);
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             long compressedSize = entry.getCompressedSize();
             if (compressedSize == -1) {
                 // Handle unknown size or skip the entry
-            } else {
-                byte[] buffer = new byte[BUFFER];
-                long uncompressedSize = 0;
-                int bytesRead;
-                while ((bytesRead = zis.read(buffer)) != -1) {
-                    uncompressedSize += bytesRead;
-                }
-                // Process the entry with the accurately calculated uncompressed size
+            }
+            else if (entry.getName().equals(targetName)) {
+                return zis;
+
             }
         }
-        
-        String [] parts = name.split("/");
-        if ((entry = zis.getNextEntry()) != null && !entry.getName().equals(parts[parts.length-1])) {
-            logger.severe("Zip file does not contain file " + name);
-            return null;
-        }
-        return zis;
+        logger.severe("Zip file does not contain file " + targetName);
+        return null;
     }
     
     /**
-     * Downloads a file from the remote repository.
+     * Downloads a file from the stream
      * 
-     * @param url
-     * @param dest
-     * @throws IOException
+     * @param source Source content of the file
+     * @param dest Local destination where to create the copy
      */
-    private static void copyFile(InputStream source, File dest) throws IOException {
-
+    private static void createLocalCopy(InputStream source, File dest) {        
         try (BufferedInputStream in = new BufferedInputStream(source);
             FileOutputStream fileOutputStream = new FileOutputStream(dest)) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
-            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+            while ((bytesRead = in.read(dataBuffer, 0, dataBuffer.length)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
+            }   
+        } catch (IOException ioe) {
+            logger.log(Level.SEVERE, "Problem extracting file: ", ioe);
+        }
+        finally {
+            try {
+                source.close();
+            } catch (IOException e) {
+                logger.warning("Problem closing stream: " + e);
             }
         }
     }
