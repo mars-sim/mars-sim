@@ -31,6 +31,7 @@ import com.jogamp.opencl.CLBuffer;
 import com.jogamp.opencl.CLKernel;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.common.FileLocator;
+import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * For png image tiling, see https://github.com/leonbloy/pngj/wiki/Snippets
@@ -66,10 +67,8 @@ import com.mars_sim.core.map.common.FileLocator;
 	private int pixelHeight;
 	/* The cache for the last rho */
 	private double rhoCache;
-	/* The cache for the last phi. */
-	private double centerPhiCache;
-	/* The cache for the last theta. */
-	private double centerThetaCache;
+	/* The cache for the last center. */
+	private Coordinates centerCache;
 	/* The base map color pixels double array. */
  	private int[][] colorPixels = new int[0][0];
 	/* The array of points for generating mineral map in a mapbox. */	
@@ -91,14 +90,14 @@ import com.mars_sim.core.map.common.FileLocator;
  	 * 
 	 * @param mapMetaData Meta data describing this map stack
 	 * @param res The Resolution level in the map stack
+	 * @param dataFilename Golds the source data
  	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData mapMetaData, int res) throws IOException {
+ 	IntegerMapData(MapMetaData mapMetaData, int res, String dataFilename) throws IOException {
 		this.meta = mapMetaData;
 		this.resolution = res;
 
 		// Load data files async
-		String dataFilename = mapMetaData.getFile(resolution);
 		var dataFile = FileLocator.locateFileAsync(MapDataFactory.MAPS_FOLDER + dataFilename,
 						this::loadMapData);
 		
@@ -203,7 +202,6 @@ import com.mars_sim.core.map.common.FileLocator;
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
 	 				
-	 		
 	 		if (!meta.isColourful()) {
 	 			colorPixels = loadMonoImage(cylindricalMapImage);
 			}
@@ -238,7 +236,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	 */
  	private int[][] loadColourImage(byte[] pixels) {
 
-		colorPixels = new int[pixelHeight][pixelWidth];
+		var loadPixels = new int[pixelHeight][pixelWidth];
 
 		final int pixelLength = 3;
 		for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
@@ -257,14 +255,14 @@ import com.mars_sim.core.map.common.FileLocator;
 			argb += ((pixels[pixel + 1] & 0xff) << 8); // green
 			argb += ((pixels[pixel + 2] & 0xff) << 16); // red
 			
-			colorPixels[row][col] = argb;
+			loadPixels[row][col] = argb;
 			col++;
 			if (col == pixelWidth) {
 				col = 0;
 				row++;
 			}
 		}
-		return colorPixels;
+		return loadPixels;
 	}
 
 	/**
@@ -274,7 +272,7 @@ import com.mars_sim.core.map.common.FileLocator;
 	 */
 	private int[][] loadAlphaImage(byte[] pixels) {
 		// Note: 'Viking Geologic' and 'MOLA Shade' have alpha channel.
-		colorPixels = new int[pixelHeight][pixelWidth];
+		var loadPixels = new int[pixelHeight][pixelWidth];
 
 		final int pixelLength = 4;
 
@@ -310,7 +308,7 @@ import com.mars_sim.core.map.common.FileLocator;
 			// do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green
 			// and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
 					
-			colorPixels[row][col] = argb;
+			loadPixels[row][col] = argb;
 			col++;
 			if (col == pixelWidth) {
 				col = 0;
@@ -318,7 +316,7 @@ import com.mars_sim.core.map.common.FileLocator;
 			}
 		}
 
-		return colorPixels;
+		return loadPixels;
 	}
 
 	/**
@@ -328,46 +326,42 @@ import com.mars_sim.core.map.common.FileLocator;
 	 */
 	private int[][] loadMonoImage(BufferedImage cylindricalMapImage) {
 		// Note: May use the shade map to get height values
-		var colorPixels = new int[pixelHeight][pixelWidth];
+		var loadPixels = new int[pixelHeight][pixelWidth];
 
 		Raster raster = cylindricalMapImage.getData();
 		int h = raster.getHeight();
 		int w = raster.getWidth();
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				colorPixels[j][i] = raster.getSample(i, j, 0);
+				loadPixels[j][i] = raster.getSample(i, j, 0);
 			}
 		}
 
-		return colorPixels;
+		return loadPixels;
 	}
 
 	/**
  	 * Gets the map image based on the center phi and theta coordinates given.
  	 * 
- 	 * @param centerPhi Center phi value on the image
- 	 * @param centerTheta Center theta value on the image
+ 	 * @param center Center  value on the image
 	 * @param mapBoxWidth The Width of the requested image
 	 * @param mapBoxHeight The Height of the requested image
 	 * @param newRho The map rho
  	 */
  	@Override
- 	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double newRho) {
- 	
-		 if (Double.isNaN(centerPhi) || Double.isNaN(centerTheta)) {
-			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
-			 return null;
-		 }
+ 	public Image createMapImage(Coordinates center, int mapBoxWidth, int mapBoxHeight, double newRho) {
 		 
  		if (bImageCache != null && newRho == rhoCache
-				&& centerPhiCache == centerPhi && centerThetaCache == centerTheta)
+				&& centerCache.equals(center))
  			return bImageCache;
- 		
+		double centerPhi = center.getPhi();
+		double centerTheta = center.getTheta();
+
+
  		mapBoxArray = new Point2D[mapBoxHeight * mapBoxWidth];
  
  		// Update cache identifiers
-		centerPhiCache = centerPhi;
-		centerThetaCache = centerTheta;
+		centerCache = center;
 		rhoCache = newRho;
 
  		// Create a new buffered image to draw the map on.

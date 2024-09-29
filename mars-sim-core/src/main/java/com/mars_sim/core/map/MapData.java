@@ -10,6 +10,7 @@ package com.mars_sim.core.map;
 import java.awt.Image;
 
 import com.mars_sim.core.data.Range;
+import com.mars_sim.core.map.location.Coordinates;
 
  /**
   * An interface for map data.
@@ -21,14 +22,13 @@ import com.mars_sim.core.data.Range;
 	/**
 	 * Generates and returns a map image with the given parameters.
 	 * 
-	 * @param centerPhi 	The phi center location of the map
-	 * @param centerTheta 	The theta center location of the map
+	 * @param center The center location of the map
 	 * @param mapBoxWidth 	The width of the map box
 	 * @param mapBoxHieght 	The height of the map box
 	 * @param rho 		The map scale
 	 * @return Image		The map image
 	 */
-	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double rho);
+	public Image createMapImage(Coordinates center, int mapBoxWidth, int mapBoxHeight, double rho);
     
    /**
     * Gets the number of pixels height.

@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -66,7 +67,6 @@ import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.MapDataFactory;
-import com.mars_sim.core.map.MapDataUtil;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
@@ -74,7 +74,6 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ConfigurableWindow;
-import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -183,9 +182,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel thetaLabel;
 	private JLabel rhoLabel;
 
-	private transient java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
-
-	private transient MapDataUtil mapDataUtil = MapDataUtil.instance();
+	private transient Map<String, MapOrder> mapLayers = new HashMap<>();
 	
 	private transient MineralMapLayer mineralLayer;
 	
@@ -958,7 +955,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 		var currentMap = mapPanel.getMapMetaData();
 		var currentRes = mapPanel.getMapResolution();
-		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
+		for (MapMetaData metaData: MapDataFactory.getLoadedTypes()) {
 	
 			boolean active = metaData.equals(currentMap);
 			JMenu mapMenu = new JMenu((active ? "> " : "") + metaData.getDescription());

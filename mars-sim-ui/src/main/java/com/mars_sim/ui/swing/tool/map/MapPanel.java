@@ -45,7 +45,6 @@ import javax.swing.UIDefaults;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;
 import com.mars_sim.core.map.MapDataFactory;
-import com.mars_sim.core.map.MapDataUtil;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.MapData.MapState;
 import com.mars_sim.core.map.location.Coordinates;
@@ -94,8 +93,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private JSlider zoomSlider;
 	
 	private List<MapLayer> mapLayers;
-
-	private final MapDataFactory mapFactory = MapDataUtil.instance().getMapDataFactory();
 
 	private MapData backgroundMapData;
 
@@ -433,7 +430,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return MapMetaData
 	 */
 	public MapMetaData getNewMapMetaData(String newMapType) {
-		return mapFactory.getMapMetaData(newMapType);
+		return MapDataFactory.getMapMetaData(newMapType);
 	}
 	
 	public MapDisplay getMap() {
@@ -453,7 +450,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			return false;
 		}
 
-		var newMapData = mapFactory.loadMapData(newMapString, res);
+		var mapmeta = MapDataFactory.getMapMetaData(newMapString);
+		if (mapmeta == null) {
+			logger.severe("No map meta with id " + newMapString);
+			return false;
+		}
+
+		var newMapData = mapmeta.getData(res);
 		if (newMapData.getStatus() == MapState.LOADED) {
 			// It is ready
 			createMapDisplay(newMapData);
@@ -462,7 +465,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 		// Wait for this map to load
 		backgroundMapData = newMapData;
-		setStatusLabel("Loading " + newMapData.getMetaData().getDescription() + " level:" + res);
+		setStatusLabel("Loading " + mapmeta.getDescription() + " level:" + res);
 		return false;
 	}
 

@@ -38,9 +38,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	public static final int OPTICAL_DEPTH_REFRESH = 3;
 
-	/** Maximum mineral concentration estimation diff from actual. */
-//	private static final int MINERAL_ESTIMATION_VARIANCE = 10;
-
 	/** Maximum mineral estimation */
 	private static final double MINERAL_ESTIMATION_MAX = 100D;
 
@@ -820,9 +817,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		weather = null;
 		orbitInfo.destroy();
 		orbitInfo = null;
-		
-		terrainElevation.destroy();
-		terrainElevation = null;
 
 	}
 }

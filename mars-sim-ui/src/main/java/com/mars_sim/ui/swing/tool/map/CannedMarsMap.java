@@ -56,7 +56,7 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	 * @param newCenter the new center location
 	 */
 	public void drawMap(Coordinates newCenter, double rho) {	
-		mapImage = mapData.createMapImage(newCenter.getPhi(), newCenter.getTheta(),
+		mapImage = mapData.createMapImage(newCenter,
 								MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, rho);
 		this.rho = rho;
 		mapImageDone = true;

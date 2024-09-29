@@ -101,13 +101,15 @@ public class MapMetaData {
     }
 
     /**
-     * Gets the filename that represents a resolution layer of this map
+     * Gets the map data associate with a particular resolution
      * 
      * @param newRes
      * @return
      */
-    public String getFile(int newRes) {
-        return listOfMaps.get(newRes).getFilename();
+    public MapData getData(int newRes) {
+        var filename = listOfMaps.get(newRes).getFilename();
+
+        return MapDataFactory.loadMapData(this, newRes, filename);
     }
     
 	/**

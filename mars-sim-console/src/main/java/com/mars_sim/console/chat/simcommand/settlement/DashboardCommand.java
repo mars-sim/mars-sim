@@ -50,13 +50,11 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	void generatedDashboard(Settlement settlement, StructuredResponse response) {
 		Coordinates location = settlement.getCoordinates();
 		double elevationMEDGR = TerrainElevation.getMEGDRElevation(location);
-		double elevationColor = TerrainElevation.getColorElevation(location);
 		
 		response.appendLabeledString("Sponsor", settlement.getReportingAuthority().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
 		response.appendLabeledString("Location", location.getFormattedString());
 		response.appendLabeledString("MEDGR Elevation", String.format(CommandHelper.KM_FORMAT, elevationMEDGR));
-		response.appendLabeledString("Color Elevation", String.format(CommandHelper.KM_FORMAT, elevationColor));
 		response.appendLabelledDigit("Population", settlement.getNumCitizens());	
 
 		String[] cats = new String[] { "Repair", "Maintenance", "EVA Suit Production" };

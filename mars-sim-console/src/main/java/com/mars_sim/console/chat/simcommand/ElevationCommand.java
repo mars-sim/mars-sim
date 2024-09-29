@@ -50,8 +50,6 @@ public class ElevationCommand extends ChatCommand {
 
 		double elevationMEGDR = TerrainElevation.getMEGDRElevation(location);
 		context.println("MEGDR Elevation: " + String.format(CommandHelper.KM_FORMAT, elevationMEGDR));
-		double elevationColor = TerrainElevation.getColorElevation(location);
-		context.println("Color Elevation: " + String.format(CommandHelper.KM_FORMAT, elevationColor));
 		
 		return result;
 	}
