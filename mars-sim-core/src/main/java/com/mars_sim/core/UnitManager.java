@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
@@ -85,8 +84,6 @@ public class UnitManager implements Serializable, Temporal {
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
-	/** A map of all map display units (settlements and vehicles). */
-	private Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
 	private Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
@@ -315,28 +312,30 @@ public class UnitManager implements Serializable, Temporal {
 	public synchronized void addUnit(Unit unit) {
 		int unitIdentifier = unit.getIdentifier();
 
-		if (unit != null) { // is it necessary?
-			switch (unit.getUnitType()) {
-				case SETTLEMENT -> {
-					lookupSettlement.put(unitIdentifier, (Settlement) unit);
-					addDisplayUnit(unit);
-				}
-				case PERSON -> lookupPerson.put(unitIdentifier, (Person) unit);
-				case ROBOT -> lookupRobot.put(unitIdentifier, (Robot) unit);
-				case VEHICLE -> {
-					lookupVehicle.put(unitIdentifier, (Vehicle) unit);
-					addDisplayUnit(unit);
-				}
-                case CONTAINER, EVA_SUIT -> lookupEquipment.put(unitIdentifier, (Equipment) unit);
-				case BUILDING -> lookupBuilding.put(unitIdentifier, (Building) unit);
-				case CONSTRUCTION -> lookupSite.put(unitIdentifier, (ConstructionSite) unit);
-				case MARS -> marsSurface = (MarsSurface) unit;
-				case OUTER_SPACE -> outerSpace = (OuterSpace) unit;
-				case MOON -> moon = (Moon) unit;
-				default -> throw new IllegalArgumentException(
-						"Cannot store unit type:" + unit.getUnitType());
-			}
+		switch(unit) {
+			case Settlement s -> lookupSettlement.put(unitIdentifier, s);
+			case Person p -> lookupPerson.put(unitIdentifier, p);
+			case Robot r -> lookupRobot.put(unitIdentifier, r);
+			case Vehicle v -> lookupVehicle.put(unitIdentifier, v);
+			case Equipment e -> lookupEquipment.put(unitIdentifier, e);
+			case Building b -> lookupBuilding.put(unitIdentifier, b);
+			case ConstructionSite c -> lookupSite.put(unitIdentifier, c);
+			case MarsSurface ms -> marsSurface = ms;
+			case OuterSpace os -> outerSpace = os;
+			case Moon m -> moon = m;
+			default -> throw new IllegalArgumentException(
+					"Cannot store unit type:" + unit.getUnitType());
 		}
+			// switch (unit.getUnitType()) {
+			// 	case SETTLEMENT -> {
+			// 		lookupSettlement.put(unitIdentifier, (Settlement) unit);
+			// 		addDisplayUnit(unit);
+			// 	}
+
+			// 	case VEHICLE -> {
+			// 		lookupVehicle.put(unitIdentifier, (Vehicle) unit);
+			// 		addDisplayUnit(unit);
+			// 	}
 	}
 
 	/**
@@ -580,27 +579,6 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupEquipment.values().stream()
 				.filter(e -> e.getUnitType() == UnitType.EVA_SUIT)
 				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Adds the unit for display.
-	 *
-	 * @param unit
-	 */
-	private void addDisplayUnit(Unit unit) {
-		if (displayUnits == null)
-			displayUnits = new UnitSet<>();
-
-		displayUnits.add(unit);
-	}
-
-	/**
-	 * Obtains the settlement and vehicle units for map display.
-	 *
-	 * @return
-	 */
-	public Set<Unit> getDisplayUnits() {
-		return displayUnits;
 	}
 
 	/**

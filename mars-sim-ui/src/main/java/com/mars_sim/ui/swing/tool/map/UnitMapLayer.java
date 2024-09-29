@@ -14,6 +14,7 @@ import java.util.Collection;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -27,7 +28,7 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	// Domain data
 	private static boolean blinkFlag;
 	private static long blinkTime = 0L;
-	private Collection<Unit> unitsToDisplay;
+	private Collection<Settlement> unitsToDisplay;
 
 	public UnitMapLayer() {
 		blinkFlag = false;
@@ -47,8 +48,8 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	 * 
 	 * @param unitsToDisplay collection of units to display.
 	 */
-	public void setUnitsToDisplay(Collection<Unit> unitsToDisplay) {
-		this.unitsToDisplay = new ArrayList<Unit>(unitsToDisplay);
+	public void setUnitsToDisplay(Collection<Settlement> unitsToDisplay) {
+		this.unitsToDisplay = unitsToDisplay;
 	}
 
 	/**
@@ -60,27 +61,24 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	 */
 	@Override
 	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {		
-		Collection<Unit> units = null;
+		Collection<Settlement> settlements = unitsToDisplay;
+		Collection<Vehicle> vehicles = null;
 				
-		if (unitsToDisplay != null) {
-			units = unitsToDisplay;
-		} else {
-			units = unitManager.getDisplayUnits();
+		if (settlements == null) {
+			settlements = unitManager.getSettlements();
+			vehicles = unitManager.getVehicles();
 		}
 
-		for (Unit unit : units) {
-			if (unit.getUnitType() == UnitType.VEHICLE
-				&& !((Vehicle)unit).isOutsideOnMarsMission()) {
-					continue;
-			}
-			
-			UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-			if (i != null && i.isMapDisplayed(unit)
-				&& mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < baseMap.getHalfAngle()) {
-					displayUnit(unit, mapCenter, baseMap, g);
+		// Display Settlements first
+		settlements.forEach(s -> renderUnit(s, mapCenter, baseMap, g));
+
+		if (vehicles != null) {
+			for(var v : vehicles) {
+				if (v.isOutsideOnMarsMission()) {
+					renderUnit(v, mapCenter, baseMap, g);
+				}
 			}
 		}
-
 
 		long currentTime = System.currentTimeMillis();
 		if ((currentTime - blinkTime) > 1000L) {
@@ -89,6 +87,20 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 		}
 	}
 
+	/**
+	 * Render a unit in the layer if it is within the range` of the map center
+	 * @param unit
+	 * @param mapCenter
+	 * @param baseMap
+	 * @param g
+	 */
+	private void renderUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+		UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+		if (i != null && i.isMapDisplayed(unit)
+			&& mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < baseMap.getHalfAngle()) {
+				displayUnit(unit, mapCenter, baseMap, g);
+		}
+	}
 	/**
 	 * Displays a unit on the map.
 	 * 
