@@ -262,9 +262,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     }
 		
 	/**
-	 * Apply the zoom slider to the current map. This means convert the slider value
+	 * Applies the zoom slider to the current map. This means convert the slider value
 	 * into a rho that is between the min & max of the MapDisplay.
-	 * This will update the rho vlaue and hence redraw map
+	 * This will update the rho value and hence redraw map.
 	 */
 	private void applyZoomToMap() {
 
@@ -280,7 +280,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	/**
-	 * The mouse wheel has moved
+	 * The mouse wheel has moved.
 	 */	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
@@ -577,10 +577,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				// Add some debug
 				if (mapDetails != null) {
 					var range = marsMap.getRhoRange();
-					String buf = marsMap.getMapMetaData().getId() + " res:" + marsMap.getResolution()
-								+ "range:" + StyleManager.DECIMAL_PLACES2.format(range.min())
+					String buf = "id: " + marsMap.getMapMetaData().getId() 
+								+ "  res:" + marsMap.getResolution()
+								+ "  range: " + StyleManager.DECIMAL_PLACES2.format(range.min())
 								+ "->" + StyleManager.DECIMAL_PLACES2.format(range.max())
-								+ " rho:" + StyleManager.DECIMAL_PLACES2.format(rho);
+								+ "  rho: " + StyleManager.DECIMAL_PLACES2.format(rho);
 					mapDetails.setText(buf);
 				}
 

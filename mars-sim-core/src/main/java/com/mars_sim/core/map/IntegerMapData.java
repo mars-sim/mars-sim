@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * IntegerMapData.java
- * @date 2024-09-05
+ * @date 2024-09-30
  * @author Scott Davis
  */
  package com.mars_sim.core.map;
@@ -65,25 +65,29 @@ import com.mars_sim.core.map.location.Coordinates;
 	private int pixelWidth;
 	/* # of pixels in the height of the map image. */
 	private int pixelHeight;
-	/* The cache for the last rho */
+	/* The resolution of the map image. */
+	private int resolution;
+	/* The cache for the last rho. */
 	private double rhoCache;
-	/* The cache for the last center. */
-	private Coordinates centerCache;
+	/* The default value of rho. */
+	private double rhoDefault;
+	
 	/* The base map color pixels double array. */
  	private int[][] colorPixels = new int[0][0];
-	/* The array of points for generating mineral map in a mapbox. */	
- 	private static Point2D[] mapBoxArray;
  	
+	/* The cache for the last center. */
+	private Coordinates centerCache;
  	/* The meta data of the map. */
 	private MapMetaData meta;
  	/* The OpenCL kernel instance. */
 	private CLKernel kernel;
 	
 	private BufferedImage bImageCache;
-	private int resolution;
-	private MapState loaded = MapState.PENDING;
 
-	private double rhoDefault;
+	private MapState loaded = MapState.PENDING;
+	/* The array of points for generating mineral map in a mapbox. */	
+ 	private Point2D[] mapBoxArray;
+ 	
  	
  	/**
  	 * Constructor.
@@ -796,7 +800,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	/**
 	 * Gets the point for generating a mineral map. 
 	 */	
- 	public static Point2D getMapBoxPoint(int index) {
+ 	public Point2D getMapBoxPoint(int index) {
  		return mapBoxArray[index];
  	}
  	

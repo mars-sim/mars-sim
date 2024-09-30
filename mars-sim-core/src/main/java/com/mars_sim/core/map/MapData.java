@@ -1,13 +1,14 @@
 /*
  * Mars Simulation Project
  * MapData.java
- * @date 2023-05-04
+ * @date 2024-09-30
  * @author Scott Davis
  */
 
 package com.mars_sim.core.map;
 
 import java.awt.Image;
+import java.awt.geom.Point2D;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.location.Coordinates;
@@ -57,7 +58,7 @@ import com.mars_sim.core.map.location.Coordinates;
    public int getResolution();
  	
    /**
-	 * Get the min and max value of rho supported by this mao data.
+	 * Get the min and max value of rho supported by this map data.
 	 */
 	public Range getRhoRange();
 	
@@ -71,11 +72,14 @@ import com.mars_sim.core.map.location.Coordinates;
  	public int getRGBColorInt(double phi, double theta);
 
    /**
-    * Is this map data ready to be used? The data may require loading in the background
+    * Is this map data ready to be used? The data may require loading in the background ?
+    * 
     * @return
     */
-   public MapState getStatus();
+	public MapState getStatus();
 
     public double getRhoDefault();
+
+	public Point2D getMapBoxPoint(int index);
 
  }

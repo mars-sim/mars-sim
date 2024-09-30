@@ -113,7 +113,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			
 					int index = x + y * MAP_BOX_WIDTH;
 					
-					Point2D point = IntegerMapData.getMapBoxPoint(index);
+					Point2D point = baseMap.getMapBoxPoint(index);
 					if (point == null)
 						continue;
 					double phi = point.getX();

@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * CannedMarsMap.java
- * @date 2023-06-22
+ * @date 2024-09-30
  * @author Greg Whelan
  */
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Image;
+import java.awt.geom.Point2D;
 
 import javax.swing.JComponent;
 
@@ -160,5 +161,10 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	@Override
 	public double getRhoDefault() {
 		return mapData.getRhoDefault();
+	}
+
+	@Override
+	public Point2D getMapBoxPoint(int index) {
+		return mapData.getMapBoxPoint(index);
 	}
 }
