@@ -127,7 +127,7 @@ import com.mars_sim.core.map.location.Coordinates;
 			logger.config("GPU OpenCL accel enabled.");
 		} catch(Exception e) {
 			hardwareAccel = false;
-			logger.log(Level.SEVERE, "Exception with GPU OpenCL accel when loading kernel program. " + e.getMessage());
+			logger.log(Level.SEVERE, "Exception with GPU OpenCL accel when loading kernel program.", e);
 		}
  	}
 
@@ -372,16 +372,17 @@ import com.mars_sim.core.map.location.Coordinates;
  		
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
- 
+		var rendered = hardwareAccel;
 		if (hardwareAccel) {
 			try {
 				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
 			} catch(Exception e) {
 				hardwareAccel = false;
+				rendered = false; // Fallback to CPU
 				logger.log(Level.SEVERE, "Exception with GPU OpenCL accel when running gpu(). " + e.getMessage());
 			}
 		}
-		else {
+		if (!rendered) {
 			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
 		}
 
