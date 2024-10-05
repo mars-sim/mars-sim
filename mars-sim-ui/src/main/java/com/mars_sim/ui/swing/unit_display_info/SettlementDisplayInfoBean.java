@@ -22,7 +22,7 @@ import java.awt.Font;
 class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     // Navigator click range in km.
-    private static double SETTLEMENT_CLICK_RANGE = 50D;
+    private static final double SETTLEMENT_CLICK_RANGE = 20D;
         
     private Icon buttonIcon;
     private Font mapLabelFont;

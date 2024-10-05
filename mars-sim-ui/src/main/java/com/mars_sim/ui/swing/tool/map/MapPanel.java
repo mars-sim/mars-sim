@@ -230,16 +230,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		    g.drawRoundRect(0, 6, w, 6, 6, 6);
 		});
 
-        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25) {
-					// @Override
-					// public String getToolTipText() {
-					// 	if (marsMap == null)
-					// 		return "No map";
-					// 	return "Rho:" + marsMap.getRho() + " Scale:" + getScale()
-					// 			+ " Range:" + marsMap.getRhoRange()
-					// 			+ " default:" + marsMap.getRhoDefault();
-					// }
-				};
+        zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(60, 400));
         zoomSlider.setSize(new Dimension(60, 400));
@@ -649,8 +640,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                	// Say if the location of a vehicle is updated
 	                	// it doesn't have to redraw the marsMap.
 	                	// It only have to redraw its map layer below
-	                	Iterator<MapLayer> i = mapLayers.iterator();
-	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
+	                	for( var i : mapLayers) {
+	                		i.displayLayer(centerCoords, marsMap, g);
+						}
               		
 		        		g2d.setBackground(Color.BLACK);
 	                }

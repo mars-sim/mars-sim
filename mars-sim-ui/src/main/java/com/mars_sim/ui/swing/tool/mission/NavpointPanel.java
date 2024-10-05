@@ -10,15 +10,10 @@ package com.mars_sim.ui.swing.tool.mission;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -31,11 +26,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitType;
-import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mining;
@@ -48,18 +38,16 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.MapDisplay;
+import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 
 /**
@@ -87,18 +75,11 @@ implements MissionListener {
 	private JTable navpointTable;
 
 	private Coordinates coordCache = new Coordinates(0, 0);
-	
-	private UnitManager unitManager;
-	private List<Landmark> landmarks;
 
 	/**
 	 * Constructor.
 	 */
 	protected NavpointPanel(MissionWindow missionWindow) {
-		Simulation sim = missionWindow.getDesktop().getSimulation();
-
-		unitManager = sim.getUnitManager();
-		landmarks = sim.getConfig().getLandmarkConfiguration().getLandmarkList();
 
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -142,8 +123,10 @@ implements MissionListener {
 		mapPanel.setOpaque(false);
 		// Set up mouse control
 		mapPanel.setMouseDragger(false);
-		mapPanel.addMouseListener(new MapListener());
-		mapPanel.addMouseMotionListener(new MouseMotionListener());
+
+		var mouseListener = new MapMouseListener(missionWindow.getDesktop(), mapPanel);
+		mapPanel.addMouseListener(mouseListener);
+		mapPanel.addMouseMotionListener(mouseListener);
 		
 		mapPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -267,138 +250,6 @@ implements MissionListener {
 		}
 	}
 
-	private class MapListener extends MouseAdapter {
-		@Override
-		public void mouseEntered(MouseEvent event) {
-			// nothing
-		}
-		@Override
-		public void mouseExited(MouseEvent event) {
-			// nothing
-		}
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			checkClick(event);
-		}
-	}
-
-	private class MouseMotionListener extends MouseMotionAdapter {
-		@Override
-		public void mouseMoved(MouseEvent event) {
-			checkHover(event);
-		}
-		@Override
-		public void mouseDragged(MouseEvent event) {
-			checkHover(event);
-		}
-	}
-	
-	/**
-	 * Checks if the mouse clicks over an object.
-	 * 
-	 * @param event
-	 */
-	public void checkClick(MouseEvent event) {
-
-		if (mapPanel.getCenterLocation() != null) {
-			displayUnits(event);
-		}
-	}
-
-	/**
-	 * Displays the units on the map.
-	 * 
-	 * @param event
-	 */
-	public void displayUnits(MouseEvent event) {
-		Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-
-		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
-
-		// Open window if unit is clicked on the map
-		while (i.hasNext()) {
-			Unit unit = i.next();
-			
-			if (unit.getUnitType() == UnitType.VEHICLE
-				&& !((Vehicle)unit).isOutsideOnMarsMission()) {
-				// Display the cursor for this vehicle only when
-				// it's outside on a mission
-				return;
-			}
-			
-			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-			if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-				Coordinates unitCoords = unit.getCoordinates();
-				double clickRange = unitCoords.getDistance(clickedPosition);
-				double unitClickRange = displayInfo.getMapClickRange();
-				if (clickRange < unitClickRange) {
-					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-				} else
-					mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			}
-		}
-	}
-	
-	/**
-	 * Checks if the mouse is hovering over an object.
-	 * 
-	 * @param event
-	 */
-	public void checkHover(MouseEvent event) {
-
-		Coordinates mapCenter = mapPanel.getCenterLocation();
-		if (mapCenter == null) {
-			return;
-		}
-
-		Coordinates mousePos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-		boolean onTarget = false;
-
-		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
-
-		// Change mouse cursor if hovering over an unit on the map
-		while (i.hasNext()) {
-			Unit unit = i.next();
-			
-			if (unit.getUnitType() == UnitType.VEHICLE
-				&& !((Vehicle)unit).isOutsideOnMarsMission()) {
-				// Display the cursor for this vehicle only when
-				// it's outside on a mission
-				return;	
-			}
-			
-			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-			if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-				Coordinates unitCoords = unit.getCoordinates();
-				double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
-				double unitClickRange = displayInfo.getMapClickRange();
-				if (clickRange < unitClickRange) {
-					// Click on this unit.
-					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-					onTarget = true;
-				}
-			}
-		}
-
-		// Change mouse cursor if hovering over a landmark on the map
-		for(Landmark landmark : landmarks) {
-			Coordinates unitCoords = landmark.getLandmarkCoord();
-			double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
-			double unitClickRange = 40D;
-
-			if (clickRange < unitClickRange) {
-				onTarget = true;
-				// Click on a landmark
-				// Note: may open a panel showing any special items at that landmark
-				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-			}
-		}
-
-		if (!onTarget) {
-			mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-	}
-	
 	/**
 	 * Sets the mission object.
 	 * 
