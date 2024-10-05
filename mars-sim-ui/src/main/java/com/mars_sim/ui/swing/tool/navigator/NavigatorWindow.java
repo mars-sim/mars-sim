@@ -1145,7 +1145,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-				double clickRange = Coordinates.computeDistance(unit.getCoordinates(), pos);
+				double clickRange = unit.getCoordinates().getDistance(pos);
 				double unitClickRange = displayInfo.getMapClickRange();
 				if (clickRange < unitClickRange) {
 					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
@@ -1160,7 +1160,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Iterator<Landmark> j = landmarks.iterator();
 		while (j.hasNext()) {
 			Landmark landmark = j.next();
-			double clickRange = Coordinates.computeDistance(landmark.getLandmarkCoord(), pos);
+			double clickRange = landmark.getLandmarkCoord().getDistance(pos);
 			double unitClickRange = 20;
 			if (clickRange < unitClickRange) {
 				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));

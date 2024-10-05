@@ -421,7 +421,7 @@ public class Exploration extends EVAMission
 		}
 
 		// Determine remaining exploration sites.
-		double siteDistance = Coordinates.computeDistance(startingLocation, currentLocation);
+		double siteDistance = startingLocation.getDistance(currentLocation);
 		double remainingRange = (range / 2D) - siteDistance;
 
 		// Add in some existing ones first

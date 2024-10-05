@@ -1,9 +1,7 @@
-package com.mars_sim.core;
+package com.mars_sim.core.map.location;
 
 import java.text.DecimalFormat;
 
-import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.tool.Msg;
 
 import junit.framework.TestCase;
@@ -13,10 +11,10 @@ import junit.framework.TestCase;
  */
 public class TestCoordinates extends TestCase {
 	/* default logger. */
-//	private static final Logger logger = Logger.getLogger(TestCoordinates.class.getName());
 	
     private static final double ERROR_MARGIN_KM = .000000001D;
     private static final double ERROR_MARGIN_RAD = .00001D;
+    private static final String DEG_SIGN = Msg.getString("direction.degreeSign");
 	
     /**
      * Finds the distance resolution for one degree at the equator.
@@ -29,9 +27,7 @@ public class TestCoordinates extends TestCase {
         Coordinates c1 = new Coordinates("1", "0");
     	
         double dist = c0.getDistance(c1);
-        
-//        System.out.println("one degree at the equator is " + dist + " km");
-        
+                
         double expected = 59.219_021_520;
         double error = Math.abs(dist - expected);
         assertTrue(error < ERROR_MARGIN_KM);
@@ -43,9 +39,7 @@ public class TestCoordinates extends TestCase {
         Coordinates c3 = new Coordinates("0.0001", "0");
     	
         double dist4Dec = c2.getDistance(c3) * 1000 ;
-        
-//        System.out.println("one degree at the equator is " + dist4Dec + " m");
-        
+                
         double expected1 = 5.921_902_152;
         
         double error1 = Math.abs(dist4Dec - expected1);
@@ -60,7 +54,6 @@ public class TestCoordinates extends TestCase {
     	
         double dist45 = c4.getDistance(c5) * 1000 ;
         
-//        System.out.println("one degree at latitude 45 deg is " + dist45 + " m");
         
         double expected2 = 4.187_417_169;
         
@@ -343,20 +336,19 @@ public class TestCoordinates extends TestCase {
      */
     public void testParseLongitude() {
         
-        String lonString0 = "226.98" + Msg.getString("direction.degreeSign") + " E";
+        String lonString0 = "226.98" + DEG_SIGN + " E";
         double lon0 = Math.round(Coordinates.parseLongitude2Theta(lonString0)*100.0)/100.0;
         assertEquals(3.96, lon0);
         
-        String lonString1 = "46.98" + Msg.getString("direction.degreeSign") + " E";
+        String lonString1 = "46.98" + DEG_SIGN + " E";
         double lon1 = Math.round(Coordinates.parseLongitude2Theta(lonString1)*100.0)/100.0;
         assertEquals(.82, lon1);
         
-        String lonString01 = "0" + Msg.getString("direction.degreeSign") + " E";
+        String lonString01 = "0" + DEG_SIGN + " E";
         double lon01 = Math.round(Coordinates.parseLongitude2Theta(lonString01)*100.0)/100.0;
-//        System.out.println("lon01 : " + lon01);
         assertEquals(0D, lon01);
         
-        String lonString2 = "90.0" + Msg.getString("direction.degreeSign") + " W";
+        String lonString2 = "90.0" + DEG_SIGN + " W";
         double lon2 = Coordinates.parseLongitude2Theta(lonString2);
         assertEquals(3D * Math.PI / 2D, lon2);
         
@@ -374,15 +366,15 @@ public class TestCoordinates extends TestCase {
      */
     public void testParseLatitude() {
         
-        String latString1 = "0.0" + Msg.getString("direction.degreeSign") + " N";
+        String latString1 = "0.0" + DEG_SIGN + " N";
         double lat1 = Coordinates.parseLatitude2Phi(latString1);
         assertEquals(Math.PI / 2D, lat1);
         
-        String latString2 = "90.0" + Msg.getString("direction.degreeSign") + " S";
+        String latString2 = "90.0" + DEG_SIGN + " S";
         double lat2 = Coordinates.parseLatitude2Phi(latString2);
         assertEquals(Math.PI, lat2);
         
-        String latString01 = "17.23" + Msg.getString("direction.degreeSign") + " N";
+        String latString01 = "17.23" + DEG_SIGN + " N";
         double lat01 = Math.round(Coordinates.parseLatitude2Phi(latString01)*100.0)/100.0;
         assertEquals(1.27, lat01);
                
@@ -404,12 +396,8 @@ public class TestCoordinates extends TestCase {
         String lonString1 = loc1.getFormattedLongitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-//        String s2 = "  0" + decimalPoint + "00" + Msg.getString("direction.degreeSign") + " E";
         String s2 = "0" + decimalPoint + "0000 E";
         assertEquals(s2, lonString1);
-        
-//        String s3 = "0" + decimalPoint + "0001 E";
-//        assertNotEquals(s3, lonString1);
     }
     
     /**
@@ -421,7 +409,6 @@ public class TestCoordinates extends TestCase {
         String lonString1 = loc1.getFormattedLongitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-//        String s2 = " 90" + decimalPoint + "00" + Msg.getString("direction.degreeSign") + " E";
         String s2 = "90" + decimalPoint + "0000 E";
         assertEquals(s2, lonString1);
     }

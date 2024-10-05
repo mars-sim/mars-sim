@@ -22,7 +22,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
@@ -509,7 +508,7 @@ public class EmergencySupply extends RoverMission {
 				&& !hasCurrentEmergencySupplyMission(settlement)) {
 
 				// Check if settlement is within rover range.
-				double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
+				double settlementRange = settlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
 				if (settlementRange <= (rover.getEstimatedRange() * .8D)) {
 
 					// Find what emergency supplies are needed at settlement.

@@ -234,9 +234,7 @@ public final class SettlementBuilder {
 		// Get settlement longitude
 		Coordinates location = spec.getLocation();
 		if (location == null) {
-			double longitude = Coordinates.getRandomLongitude();
-			double latitude = Coordinates.getRandomLatitude();
-			location = new Coordinates(latitude, longitude);
+			location = Coordinates.getRandomLocation();
 		}
 
 		int populationNumber = spec.getPopulationNumber();

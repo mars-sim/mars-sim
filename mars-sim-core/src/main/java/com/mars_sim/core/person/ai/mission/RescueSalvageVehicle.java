@@ -454,7 +454,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		if (vehiclesNeedingRescue.size() > 0) {
 			Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), vehiclesNeedingRescue);
 			if (vehicle != null) {
-				double vehicleRange = Coordinates.computeDistance(settlement.getCoordinates(), vehicle.getCoordinates());
+				double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
 				if (vehicleRange <= halfRange) {
 					result = vehicle;
 				}
@@ -465,7 +465,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		if ((result == null) && (emergencyBeaconVehicles.size() > 0)) {
 			Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), emergencyBeaconVehicles);
 			if (vehicle != null) {
-				double vehicleRange = Coordinates.computeDistance(settlement.getCoordinates(), vehicle.getCoordinates());
+				double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
 				if (vehicleRange <= halfRange) {
 					result = vehicle;
 				}

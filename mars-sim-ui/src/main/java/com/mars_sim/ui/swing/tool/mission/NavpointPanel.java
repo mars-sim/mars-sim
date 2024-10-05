@@ -370,7 +370,7 @@ implements MissionListener {
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 				Coordinates unitCoords = unit.getCoordinates();
-				double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
+				double clickRange = unitCoords.getDistance(mousePos);
 				double unitClickRange = displayInfo.getMapClickRange();
 				if (clickRange < unitClickRange) {
 					// Click on this unit.
@@ -383,7 +383,7 @@ implements MissionListener {
 		// Change mouse cursor if hovering over a landmark on the map
 		for(Landmark landmark : landmarks) {
 			Coordinates unitCoords = landmark.getLandmarkCoord();
-			double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
+			double clickRange = unitCoords.getDistance(mousePos);
 			double unitClickRange = 40D;
 
 			if (clickRange < unitClickRange) {

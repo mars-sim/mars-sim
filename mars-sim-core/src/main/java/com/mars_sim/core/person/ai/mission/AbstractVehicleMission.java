@@ -100,7 +100,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
 	protected static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
-//	private static final MissionPhase RETURNING_HOME = new MissionPhase("returningHome", Stage.CLOSEDOWN);
 	
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
@@ -111,7 +110,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionStatus MISSION_LEAD_NO_SHOW = new MissionStatus("Mission.status.leaderNoShow");
 
 	// Static members
-	private static final Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
+	private static final Integer WHEEL_ID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {ItemResourceUtil.FIBERGLASS});
 	// Data members
@@ -138,8 +137,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private String travelStatus;
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
-	/** The last operator of this vehicle in the mission. */
-//	private Worker lastOperator;
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
 	/** Details of the loading operation */
@@ -738,7 +735,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 			Coordinates current = vehicle.getCoordinates();
 			Coordinates target =  destination.getLocation();
-			double distance = Coordinates.computeDistance(current, target);
+			double distance = current.getDistance(target);
 			
 			reachedDestination = current.equals(target)
 					|| distance < SMALL_DISTANCE;
@@ -746,7 +743,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Add the location to the trail if outside on a mission
 			addToTrail(current);
 
-//			logger.info(vehicle, "Travelling from (" + current + ") to (" + target + "). Distance: " + Math.round(distance * 100.0)/100.0 + " km.");
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 
@@ -1127,10 +1123,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// since the automated process is not reliable
 		switch(vehicle.getVehicleType()) {
 			case EXPLORER_ROVER:
-				result.computeIfAbsent(wheelID, k -> 2);
+				result.computeIfAbsent(WHEEL_ID, k -> 2);
 				break;
 			case CARGO_ROVER, TRANSPORT_ROVER:
-				result.computeIfAbsent(wheelID, k -> 4);
+				result.computeIfAbsent(WHEEL_ID, k -> 4);
 				break;
 			default:
 				break;
@@ -1922,7 +1918,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			double dist = 0;
 			
 			if (c1 != null) {
-				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
+				dist = getCurrentMissionLocation().getDistance(c1);
 			
 				if (Double.isNaN(dist)) {
 					logger.severe(getName() + 
@@ -1979,7 +1975,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 			else {
 				c0 = lastStopNavpoint.getLocation();
-				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c0);
+				dist = getCurrentMissionLocation().getDistance(c0);
 				
 				if (Double.isNaN(dist)) {
 					logger.severe(getName() + 

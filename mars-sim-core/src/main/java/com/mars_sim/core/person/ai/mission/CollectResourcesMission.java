@@ -553,7 +553,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		double remainingRange = RandomUtil.getRandomDouble(range/2 - siteDistance);
 
 		for (int x = 1; x < numSites; x++) {
-			double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
+			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
 			if (remainingRange > currentDistanceToSettlement) {
 				bestScore = 0;
 				bestLocation = null;

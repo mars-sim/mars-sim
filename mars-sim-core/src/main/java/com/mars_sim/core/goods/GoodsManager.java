@@ -23,7 +23,6 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -594,8 +593,8 @@ public class GoodsManager implements Serializable {
 		for (Settlement tempSettlement : unitManager.getSettlements()) {
 			if (tempSettlement != settlement) {
 				double baseValue = tempSettlement.getGoodsManager().getDemandValue(good);
-				double distance = Coordinates.computeDistance(settlement.getCoordinates(),
-						tempSettlement.getCoordinates());
+				double distance = settlement.getCoordinates().getDistance(
+												tempSettlement.getCoordinates());
 				double tradeValue = baseValue / (1D + (distance / 1000D));
 				if (tradeValue > selectedTradeValue)
 					selectedTradeValue = tradeValue;
