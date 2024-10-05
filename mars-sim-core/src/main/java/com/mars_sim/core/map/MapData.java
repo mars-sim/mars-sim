@@ -8,7 +8,6 @@
 package com.mars_sim.core.map;
 
 import java.awt.Image;
-import java.awt.geom.Point2D;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.location.Coordinates;
@@ -78,8 +77,13 @@ import com.mars_sim.core.map.location.Coordinates;
     */
 	public MapState getStatus();
 
-    public double getRhoDefault();
+  public double getRhoDefault();
 
-	public Point2D getMapBoxPoint(int index);
+  /**
+   * Get the point on the last map image created.
+   * @param index
+   * @return
+   */
+	public MapPoint getMapBoxPoint(int index);
 
  }

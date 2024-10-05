@@ -14,8 +14,6 @@ import static com.mars_sim.core.map.OpenCL.getProgram;
 import static com.mars_sim.core.map.OpenCL.getQueue;
 
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
@@ -86,7 +84,7 @@ import com.mars_sim.core.map.location.Coordinates;
 
 	private MapState loaded = MapState.PENDING;
 	/* The array of points for generating mineral map in a mapbox. */	
- 	private Point2D[] mapBoxArray;
+ 	private MapPoint[] mapBoxArray;
  	
  	
  	/**
@@ -360,7 +358,7 @@ import com.mars_sim.core.map.location.Coordinates;
 		double centerTheta = center.getTheta();
 
 
- 		mapBoxArray = new Point2D[mapBoxHeight * mapBoxWidth];
+ 		mapBoxArray = new MapPoint[mapBoxHeight * mapBoxWidth];
  
  		// Update cache identifiers
 		centerCache = center;
@@ -507,7 +505,7 @@ import com.mars_sim.core.map.location.Coordinates;
 			 int y = rows[i];
 			 int index = x + y * mapBoxWidth;
 			 if (index < maxIndex)
-				 mapBoxArray[index] = new Point2D.Double(x, y);
+				 mapBoxArray[index] = new MapPoint(x, y);
 			 
 			 boolean invalid = Double.isNaN(x) || Double.isInfinite(x) || Double.isNaN(y) || Double.isInfinite(y) ;
 			 if (invalid) {
@@ -540,9 +538,9 @@ import com.mars_sim.core.map.location.Coordinates;
 		 for(int y = 0; y < mapBoxHeight; y++) {
 			 for(int x = 0; x < mapBoxWidth; x++) {
 				 int index = x + (y * mapBoxWidth);
-				 Point2D loc = convertRectIntToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
+				 MapPoint loc = convertRectIntToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
 				 mapBoxArray[index] = loc;
-				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
+				 mapArray[index] = getRGBColorInt(loc.phi(), loc.theta());
 			 }
 		 }
 	 }
@@ -621,12 +619,12 @@ import com.mars_sim.core.map.location.Coordinates;
 					 yCorrected -= TWO_PI;
 				 
 				 int index = (int)x + (int)y * mapBoxWidth;
-				 Point loc = findRectPosition(centerPhi, centerTheta, x, yCorrected, rho, halfWidth, halfWidth);
+				 MapPoint loc = findRectPosition(centerPhi, centerTheta, x, yCorrected, rho, halfWidth, halfWidth);
 				 mapBoxArray[index] = loc;
 				 
 				 // Determine the display x and y coordinates for the pixel in the image.
-				 int xx = pixelWidth - (int)loc.getX();
-				 int yy = pixelHeight - (int)loc.getY();
+				 int xx = pixelWidth - (int)loc.phi();
+				 int yy = pixelHeight - (int)loc.theta();
 				
 				 // Check that the x and y coordinates are within the display area.
 				 boolean leftBounds = xx >= 0;
@@ -658,7 +656,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	 * @param low_edge lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
+	public MapPoint findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
 			int half_map, int low_edge) {
 	
 		final double col = newTheta + (- HALF_PI - oldTheta);
@@ -666,7 +664,7 @@ import com.mars_sim.core.map.location.Coordinates;
 		int x = ((int) Math.round(xx * Math.cos(col)) + half_map) - low_edge;
 		int y = ((int) Math.round(((xx * (0D - Math.cos(oldPhi))) * Math.sin(col))
 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + half_map) - low_edge;
-		return new Point(x, y);
+		return new MapPoint(x, y);
 	}
 		
 
@@ -681,7 +679,7 @@ import com.mars_sim.core.map.location.Coordinates;
       * @param rho            radius (in km) or map box height divided by pi (# of pixels)
       * @return a point2d of phi and theta
       */
-	 public static Point2D convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
+	 public static MapPoint convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
 		 double sinPhi = Math.sin(phi);
 		 double sinTheta = Math.sin(theta);
 		 double cosPhi = Math.cos(phi);
@@ -710,7 +708,7 @@ import com.mars_sim.core.map.location.Coordinates;
 				 thetaNew = TWO_PI + thetaNew;
 		 }
 
-		 return new Point2D.Double(phiNew, thetaNew);
+		 return new MapPoint(phiNew, thetaNew);
 	 }
 	 
 	 /**
@@ -724,7 +722,7 @@ import com.mars_sim.core.map.location.Coordinates;
       * @param rho            radius (in km) or map box height divided by pi (# of pixels)
       * @return a point2d of phi and theta
       */
-	 public static Point2D convertRectIntToSpherical(int x, int y, double phi, double theta, double rho) {
+	 public static MapPoint convertRectIntToSpherical(int x, int y, double phi, double theta, double rho) {
 		 double sinPhi = Math.sin(phi);
 		 double sinTheta = Math.sin(theta);
 		 double cosPhi = Math.cos(phi);
@@ -753,7 +751,7 @@ import com.mars_sim.core.map.location.Coordinates;
 				 thetaNew = TWO_PI + thetaNew;
 		 }
 
-		 return new Point2D.Double(phiNew, thetaNew);
+		 return new MapPoint(phiNew, thetaNew);
 	 }
 	 
  	/**
@@ -800,7 +798,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	/**
 	 * Gets the point for generating a mineral map. 
 	 */	
- 	public Point2D getMapBoxPoint(int index) {
+ 	public MapPoint getMapBoxPoint(int index) {
  		return mapBoxArray[index];
  	}
  	

@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.map.location;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -487,8 +486,8 @@ public final class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectIntToSpherical(int x, int y, double rho) {
-		Point2D point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, rho);
-		return new Coordinates(point.getX(), point.getY());
+		var point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, rho);
+		return new Coordinates(point.phi(), point.theta());
 	}
 
 	/**
@@ -501,8 +500,8 @@ public final class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
-		Point2D point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
-		return new Coordinates(point.getX(), point.getY());
+		var point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
+		return new Coordinates(point.phi(), point.theta());
 	}
 	
 	/**
