@@ -27,7 +27,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     // Navigator click range in km.
-    private static double VEHICLE_CLICK_RANGE = 40D;
+    private static final double VEHICLE_CLICK_RANGE = 20D;
     
     // Data members
     private Icon blackMapIcon;

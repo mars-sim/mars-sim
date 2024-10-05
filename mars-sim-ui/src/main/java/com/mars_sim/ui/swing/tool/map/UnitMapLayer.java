@@ -4,15 +4,12 @@
  * @date 2023-04-29
  * @author Scott Davis
  */
-
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.SimulationConstants;
@@ -30,7 +27,7 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 	private static long blinkTime = 0L;
 	private Collection<Settlement> unitsToDisplay;
 
-	public UnitMapLayer() {
+	protected UnitMapLayer() {
 		blinkFlag = false;
 	}
 

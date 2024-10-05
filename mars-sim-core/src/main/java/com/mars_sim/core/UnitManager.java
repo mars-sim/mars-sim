@@ -140,7 +140,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	private Map<Integer, ? extends Unit> getUnitMap(UnitType type) {
-		Map<Integer, ? extends Unit> map = switch (type) {
+		return switch (type) {
 			case PERSON -> lookupPerson;
 			case VEHICLE -> lookupVehicle;
 			case SETTLEMENT -> lookupSettlement;
@@ -150,7 +150,6 @@ public class UnitManager implements Serializable, Temporal {
 			case CONSTRUCTION -> lookupSite;
 			default -> throw new IllegalArgumentException("No Unit map for type " + type);
 		};
-        return map;
 	}
 
 	/**
@@ -326,16 +325,6 @@ public class UnitManager implements Serializable, Temporal {
 			default -> throw new IllegalArgumentException(
 					"Cannot store unit type:" + unit.getUnitType());
 		}
-			// switch (unit.getUnitType()) {
-			// 	case SETTLEMENT -> {
-			// 		lookupSettlement.put(unitIdentifier, (Settlement) unit);
-			// 		addDisplayUnit(unit);
-			// 	}
-
-			// 	case VEHICLE -> {
-			// 		lookupVehicle.put(unitIdentifier, (Vehicle) unit);
-			// 		addDisplayUnit(unit);
-			// 	}
 	}
 
 	/**
@@ -593,9 +582,6 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		synchronized(listeners) {
 			listeners.computeIfAbsent(source, k -> new HashSet<>()).add(newListener);
-
-			// Over adding listeners?
-			//logger.info("Added Listener " + source + " #" + listeners.get(source).size() + " : " + newListener.toString());
 		}
 	}
 
@@ -732,17 +718,6 @@ public class UnitManager implements Serializable, Temporal {
 		setupTasks();
 	}
 
-//	/**
-//	 * Reinitializes instances after deserialization.
-//	 * 
-//	 * @param in
-//	 * @throws IOException
-//	 * @throws ClassNotFoundException
-//	 */
-//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		in.defaultReadObject();
-//	}
-
 	/**
 	 * Prepares object for garbage collection.
 	 */
@@ -796,7 +771,6 @@ public class UnitManager implements Serializable, Temporal {
 
 		marsSurface = null;
 
-//		listeners.clear();
 		listeners = null;
 	}
 

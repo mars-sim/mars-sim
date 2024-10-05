@@ -8,7 +8,6 @@ package com.mars_sim.core.mission;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -74,7 +73,8 @@ public class MissionTravelStep extends MissionStep {
 
 		// Choose a driver
         boolean workedOn = false;
-        if (vehicle.getOperator() == null) {
+        var driver = vehicle.getOperator();
+        if ((driver == null) || driver.equals(worker)) {
             Task operateVehicleTask = createOperateVehicleTask(vehicle, worker);
             workedOn = assignTask(worker, operateVehicleTask);
         }
@@ -109,7 +109,7 @@ public class MissionTravelStep extends MissionStep {
     private Task createOperateVehicleTask(Vehicle vehicle, Worker worker) {
         if (vehicle instanceof GroundVehicle gv) {
             double coveredSoFar = getDistanceCovered();
-            return new DriveGroundVehicle((Person) worker, gv, destination.getLocation(),
+            return new DriveGroundVehicle(worker, gv, destination.getLocation(),
                                             getMission().getPhaseStartTime(), coveredSoFar);
         }
         else {
