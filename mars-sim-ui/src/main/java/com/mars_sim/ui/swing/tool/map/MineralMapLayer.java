@@ -4,14 +4,12 @@
  * @date 2024-08-30
  * @author Scott Davis
  */
-
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,7 +20,6 @@ import java.util.TreeMap;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
-import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.SimulationConstants;
 
@@ -38,8 +35,8 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 	private double rhoCache;
 	
-	private final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
-	private final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH;
+	private static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
+	private static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH;
 	
 	private String mapTypeCache;
 	
@@ -113,17 +110,15 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			
 					int index = x + y * MAP_BOX_WIDTH;
 					
-					Point2D point = baseMap.getMapBoxPoint(index);
+					var point = baseMap.getMapBoxPoint(index);
 					if (point == null)
 						continue;
-					double phi = point.getX();
-					double theta = point.getY();
-					
+
 					Map<String, Integer> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
-										phi, 
-										theta,
+										point.phi(), 
+										point.theta(),
 										mag);
 									
 					if (mineralConcentrations != null && !mineralConcentrations.isEmpty()) {
@@ -226,7 +221,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 //				float minHue = 255f/255; // 300f corresponds to Magenta // 120f corresponds to Green
 //				float maxHue = 0; //corresponds to red
 //				float hue = value * maxHue + (1 - value) * minHue; // ((float) x + 1 / (float) mineralNames.length)
-//				int mineralColor = Color.HSBtoRGB(hue, .9F, .9F);
+//				int mineralColor = Color.HSBtoRGB(hue, .9F, .9F)
 				
 				String rgbString = mineralMap.getColorString(mineralTypeName);
 						
@@ -239,24 +234,6 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			return map;
 		}
 		return mineralColorMap;
-	}
-
-	
-	/**
-	 * Updates the set of minerals to be display.
-	 * 
-	 * @param availableMinerals
-	 * @return
-	 */
-	private Set<String> updateMineralDisplay(Set<String> availableMinerals) {
-
-		Set<String> intersection = new HashSet<>();
-		availableMinerals.forEach((i) -> {
-			if (mineralsDisplaySet.contains(i))
-				intersection.add(i);
-		});
-		
-		return intersection;
 	}
 
 

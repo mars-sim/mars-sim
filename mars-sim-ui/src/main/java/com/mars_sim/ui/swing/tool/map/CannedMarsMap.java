@@ -7,13 +7,13 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Image;
-import java.awt.geom.Point2D;
 
 import javax.swing.JComponent;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;
 import com.mars_sim.core.map.MapMetaData;
+import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
@@ -164,7 +164,7 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	}
 
 	@Override
-	public Point2D getMapBoxPoint(int index) {
+	public MapPoint getMapBoxPoint(int index) {
 		return mapData.getMapBoxPoint(index);
 	}
 }

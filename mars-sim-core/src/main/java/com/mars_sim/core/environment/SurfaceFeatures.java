@@ -77,7 +77,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// non-static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
-//	private MasterClock clock;
 	private Weather weather;
 	private OrbitInfo orbitInfo;
 	private TerrainElevation terrainElevation;
@@ -94,7 +93,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @throws Exception when error in creating surface features.
 	 */
 	public SurfaceFeatures(MasterClock mc, OrbitInfo oi, Weather w) {
-//		clock = mc;
 		orbitInfo = oi;
 		weather = w;
 		w.setSurfaceFeatures(this);
@@ -165,7 +163,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		double newTau = 0.2237 * weather.getDailyVariationAirPressure(location);
 
-		// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
+		// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation
 		// the starting value for opticalDepth is 0.2342. See Ref below
 		if (opticalDepthMap.containsKey(location))
 			tau = (.9 * opticalDepthMap.get(location) 
@@ -583,7 +581,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (totalConc > 0) {
 			
-			double distance = Coordinates.computeDistance(location, settlement.getCoordinates());
+			double distance = location.getDistance(settlement.getCoordinates());
 			
 			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement, distance);
 			

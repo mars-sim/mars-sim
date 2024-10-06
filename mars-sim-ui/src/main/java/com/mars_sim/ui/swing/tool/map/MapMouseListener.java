@@ -87,7 +87,7 @@ public class MapMouseListener extends MouseAdapter {
 		// FUTURE: how to avoid overlapping labels ?		
 		// Change mouse cursor if hovering over a landmark on the map
 		for(Landmark landmark : landmarks) {
-			double clickRange = Coordinates.computeDistance(landmark.getLandmarkCoord(), pos);
+			double clickRange = landmark.getLandmarkCoord().getDistance(pos);
 			double unitClickRange = 20;
 			if (clickRange < unitClickRange) {
 				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));

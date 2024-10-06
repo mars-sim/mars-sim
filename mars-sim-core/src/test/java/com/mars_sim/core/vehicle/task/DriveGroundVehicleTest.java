@@ -40,14 +40,6 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         var task = new DriveGroundVehicle(p, v, dest, getSim().getMasterClock().getMarsTime(),
                                     0D);
         
-        System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
-     
-        System.out.println("1. odo: " + Math.round(v.getOdometerMileage() * 100.0) / 100.0);
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 100.0) / 100.0);
-        System.out.println("elevation: " + Math.round(v.getElevation() * 1000.0) / 1000.0);
-        System.out.println("speed: " + Math.round(v.getSpeed() * 100.0) / 100.0);
-        System.out.println("DIST: " + DIST);
-        System.out.println("dist0: " + Math.round(Coordinates.computeDistance(dest, v.getCoordinates()) * 10.0) / 10.0);
         
         assertFalse("Task created", task.isDone());
         assertEquals(name, p, v.getOperator());
@@ -59,57 +51,20 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
 //        assertEquals("Vehicle is moving", OperateVehicle.MOBILIZE, task.getPhase());
 //        assertGreaterThan("Vehicle speed", 0D, v.getSpeed());
 //        assertEquals("Vehicle primary status", StatusType.MOVING, v.getPrimaryStatus());
-
-        System.out.println("2. odo: " + Math.round(v.getOdometerMileage() * 100.0) / 100.0);
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 100.0) / 100.0);
-        System.out.println("elevation: " + Math.round(v.getElevation() * 1000.0) / 1000.0);
-        System.out.println("speed: " + Math.round(v.getSpeed() * 100.0) / 100.0);
-        System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
-        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 20);
         
-        System.out.println("3. odo: " + Math.round(v.getOdometerMileage() * 100.0) / 100.0);
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 100.0) / 100.0);
-        System.out.println("elevation: " + Math.round(v.getElevation() * 1000.0) / 1000.0);
-        System.out.println("speed: " + Math.round(v.getSpeed() * 100.0) / 100.0);
-        System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
-        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
-        
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 20);
-        
-        System.out.println("4. odo: " + Math.round(v.getOdometerMileage() * 100.0) / 100.0);
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 100.0) / 100.0);
-        System.out.println("elevation: " + Math.round(v.getElevation() * 1000.0) / 1000.0);
-        System.out.println("speed: " + Math.round(v.getSpeed() * 100.0) / 100.0);
-        System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
-        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
-        
 
         // Drive the rest
         executeTask(p, task, 25);
         
-        System.out.println("5. odo: " + Math.round(v.getOdometerMileage() * 100.0) / 100.0);
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 100.0) / 100.0);
-        System.out.println("elevation: " + Math.round(v.getElevation() * 1000.0) / 1000.0);
-        System.out.println("speed: " + Math.round(v.getSpeed() * 100.0) / 100.0);
-        System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
-        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
-        
-//        assertEquals("Vehicle travelled distance", Math.round(DIST), Math.round(v.getOdometerMileage() + task.getDistanceToDestination()));
 
         // Drive the rest
         executeTaskUntilPhase(p, task, 100);
 //        executeTask(p, task, 30);
-        
-        System.out.println("6. odo: " + Math.round(v.getOdometerMileage() * 100.0) / 100.0);
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 100.0) / 100.0);
-        System.out.println("elevation: " + Math.round(v.getElevation() * 1000.0) / 1000.0);
-        System.out.println("speed: " + Math.round(v.getSpeed() * 100.0) / 100.0);
-        System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
-        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
             
 //        assertEquals("Vehicle at destination", dest, v.getCoordinates());
 //        assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());

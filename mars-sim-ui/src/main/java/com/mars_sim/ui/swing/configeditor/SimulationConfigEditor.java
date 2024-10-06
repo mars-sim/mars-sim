@@ -633,7 +633,7 @@ public class SimulationConfigEditor {
 		// Get any known Reporting Authority
 		String sponsor = raFactory.getItemNames().iterator().next();
 		String template = determineNewSettlementTemplate();
-		Coordinates location = determineNewSettlementLocation();
+		Coordinates location = Coordinates.getRandomLocation();
 
 		if (isSettlementSelected()) {
 			settlementTableModel.addPartialSettlement(sponsor, template, location);
@@ -741,15 +741,6 @@ public class SimulationConfigEditor {
 			logger.log(Level.WARNING, Msg.getString("SimulationConfigEditor.log.settlementTemplateNotFound")); //$NON-NLS-1$
 
 		return result;
-	}
-
-	/**
-	 * Gets a new Location for a Settlement.
-	 * 
-	 * @return
-	 */
-	private Coordinates determineNewSettlementLocation() {
-		return new Coordinates(Coordinates.getRandomLatitude(), Coordinates.getRandomLongitude());
 	}
 
 	public JFrame getFrame() {

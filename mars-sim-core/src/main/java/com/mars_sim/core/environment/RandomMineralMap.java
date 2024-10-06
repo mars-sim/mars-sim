@@ -107,34 +107,32 @@ public class RandomMineralMap implements MineralMap {
 	 
 	public static final String TOPO_MAP_FOLDER = "/topography/";
 	
-	private final int W = 300;
-	private final int H = 150;
+	private static final int W = 300;
+	private static final int H = 150;
 	
-	private final int NUM_REGIONS = 100;
+	private static final int NUM_REGIONS = 100;
 
-	private final int REGION_FACTOR = 1500;
-	private final int NON_REGION_FACTOR = 50;
+	private static final int REGION_FACTOR = 1500;
+	private static final int NON_REGION_FACTOR = 50;
 	
-	// The resolution of each pixel is approximately 5.9219 m (or 0.00592 km) 
-//	private final double PIXEL_RADIUS = Coordinates.KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR; //(Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
-	
+
 	// Topographical Region Strings
-	private final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
-	private final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
-	private final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
+	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
+	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
+	private static final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
 
-	private final String CRATER_REGION = "crater";
-	private final String VOLCANIC_REGION = "volcanic";
-	private final String SEDIMENTARY_REGION = "sedimentary";
+	private static final String CRATER_REGION = "crater";
+	private static final String VOLCANIC_REGION = "volcanic";
+	private static final String SEDIMENTARY_REGION = "sedimentary";
 
 	// Frequency Strings
-	private final String COMMON_FREQUENCY = "common";
-	private final String UNCOMMON_FREQUENCY = "uncommon";
-	private final String RARE_FREQUENCY = "rare";
-	private final String VERY_RARE_FREQUENCY = "very rare";
+	private static final String COMMON_FREQUENCY = "common";
+	private static final String UNCOMMON_FREQUENCY = "uncommon";
+	private static final String RARE_FREQUENCY = "rare";
+	private static final String VERY_RARE_FREQUENCY = "very rare";
 
-	private final double PHI_LIMIT = Math.PI / 7;
-	private final double ANGLE_LIMIT = .01;
+	private static final double PHI_LIMIT = Math.PI / 7;
+	private static final double ANGLE_LIMIT = .01;
 	
 	private String[] mineralTypeNames;
 	
@@ -345,16 +343,13 @@ public class RandomMineralMap implements MineralMap {
 	 * @return frequency modifier.
 	 */
 	private float getFrequencyModifier(String frequency) {
-		float result = 1F;
-		if (COMMON_FREQUENCY.equalsIgnoreCase(frequency.trim()))
-			result = 10; // 1F;
-		else if (UNCOMMON_FREQUENCY.equalsIgnoreCase(frequency.trim()))
-			result = 30; // 5F;
-		else if (RARE_FREQUENCY.equalsIgnoreCase(frequency.trim()))
-			result = 60; // 10F;
-		else if (VERY_RARE_FREQUENCY.equalsIgnoreCase(frequency.trim()))
-			result = 90; // 15F;
-		return result;
+		return switch(frequency.trim()) {
+			case COMMON_FREQUENCY -> 10;
+			case UNCOMMON_FREQUENCY -> 30;
+			case RARE_FREQUENCY -> 60;
+			case VERY_RARE_FREQUENCY -> 90;
+			default -> 1;
+		};
 	}
 
 	/**
@@ -408,7 +403,7 @@ public class RandomMineralMap implements MineralMap {
 	private Set<String> updateMineralDisplay(Set<String> displayMinerals, Set<String> availableMinerals) {
 
 		Set<String> intersection = new HashSet<>();
-		availableMinerals.forEach((i) -> {
+		availableMinerals.forEach(i -> {
 			if (displayMinerals.contains(i))
 				intersection.add(i);
 		});
@@ -605,7 +600,7 @@ public class RandomMineralMap implements MineralMap {
 		while (i.hasNext()) {
 			Coordinates c = i.next();
 			if (!foundLocations.contains(c)) {
-				double distance = Coordinates.computeDistance(startingLocation, c);
+				double distance = startingLocation.getDistance(c);
 				if (range >= distance && distance >= MIN_DISTANCE) {
 					locales.put(c, distance);
 				}
@@ -668,7 +663,6 @@ public class RandomMineralMap implements MineralMap {
 			if (distance >= MIN_DISTANCE && prob > 0) {
 				// Fill up the weight map
 				weightedMap.put(c, prob);
-//				System.out.println("c: " + c + "  d: " + distance);
 			}
 		}
 
@@ -687,11 +681,8 @@ public class RandomMineralMap implements MineralMap {
 		logger.info(unitManager.findSettlement(startingLocation), 30_000L, 
 				"Located a mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
 
-//		System.out.println("#: " + weightedMap.size());
 		
-		Map.Entry<Coordinates, Double> result = new SimpleEntry<>(chosen, chosenDist);
-
-		return result;
+		return new SimpleEntry<>(chosen, chosenDist);
 	}
 
 	@Override

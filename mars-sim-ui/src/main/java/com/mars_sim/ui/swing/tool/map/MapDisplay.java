@@ -8,10 +8,10 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Image;
-import java.awt.geom.Point2D;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapMetaData;
+import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
@@ -101,5 +101,5 @@ public interface MapDisplay {
 
     public double getRhoDefault();
 
-	public Point2D getMapBoxPoint(int index);
+	public MapPoint getMapBoxPoint(int index);
 }

@@ -409,15 +409,17 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	 */
 	private void updateLCDs(Coordinates location) {
 
+		var latDeg = location.getLatitudeDouble();
+		var lonDeg = location.getLongitudeDouble();
 		String dirNS = Msg.getString("direction.degreeSign") 
-						+ ((location.getLatitudeDouble() >= 0) ? N : S);
+						+ ((latDeg >= 0) ? N : S);
 		String dirEW = Msg.getString("direction.degreeSign")
-						+ ((location.getLongitudeDouble() >= 0) ? E : W);
+						+ ((lonDeg >= 0) ? E : W);
 
 		lcdLat.setLcdUnitString(dirNS);
 		lcdLong.setLcdUnitString(dirEW);
-		lcdLat.setLcdValueAnimated(Math.abs(location.getLatitudeDouble()));
-		lcdLong.setLcdValueAnimated(Math.abs(location.getLongitudeDouble()));
+		lcdLat.setLcdValueAnimated(Math.abs(latDeg));
+		lcdLong.setLcdValueAnimated(Math.abs(lonDeg));
 	}
 	
 	/**

@@ -4,10 +4,8 @@
  * @date 2022-08-02
  * @author Scott Davis
  */
-
 package com.mars_sim.core.map.location;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -64,11 +62,11 @@ public final class Coordinates implements Serializable {
 	private final double theta;
 
 	/** Formatted string of the latitude. */
-	private String latStr;
+	private transient String latStr;
 	/** Formatted string of the longitude. */
-	private String lonStr;
+	private transient String lonStr;
 	/** Formatted string of both latitude and longitude. */
-	private String formattedString;
+	private transient String formattedString;
 	
 	/** Currently, lat and lon are up to 4 decimal places. Thus the decimal format '0.0000' is used. */
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
@@ -119,6 +117,17 @@ public final class Coordinates implements Serializable {
 	 */
 	public Coordinates(String latitude, String longitude) {
 		this(parseLatitude2Phi(latitude), parseLongitude2Theta(longitude));
+	}
+
+	
+	/**
+	 * Gets a random location
+	 */
+	public static Coordinates getRandomLocation() {
+		var lat = .7 * RandomUtil.getRandomDouble(Math.PI);
+		var lon = RandomUtil.getRandomDouble(2D * Math.PI);
+
+		return new Coordinates(lat, lon);
 	}
 
 	/**
@@ -258,67 +267,6 @@ public final class Coordinates implements Serializable {
 		return rho * angle;
 	}
 
-	/**
-	 * Computes the distance between the two given coordinates.
-	 *
-	 * @param c0
-	 * @param c1
-	 * @return distance (in km)
-	 */
-	public static double computeDistance(Coordinates c0, Coordinates c1) {
-		if (c0 == null) {
-			return 0;
-		}
-		return c0.getDistance(c1);
-	}
-
-	/**
-	 * Computes the x and y displacement distance in km between the two given coordinates.
-	 *
-	 * @param c0
-	 * @param c1
-	 * @return Point2D
-	 */
-	public static Point2D computeDeltaDistance(Coordinates c0, Coordinates c1) {
-		double c0Phi = c0.getPhi();
-		double c1Phi = c1.getPhi();
-		double c0Theta = c0.getTheta();
-		double c1Theta = c1.getTheta();
-	
-		double y = new Coordinates(c1Phi, 0).getDistance(new Coordinates(c0Phi, 0));	
-		double x = new Coordinates(0, c1Theta).getDistance(new Coordinates(0, c0Theta));
-		
-		if (c1Phi < c0Phi) {
-			y = -y;
-		}
-		
-		if (c1Theta < c0Theta) {
-			x = -x;
-		}
-		
-		return new Point2D.Double(x, y);
-	}
-	
-	/**
-	 * Computes the x and y displacement distance in # of pixels between the two given coordinates.
-	 *
-	 * @param c0
-	 * @param c1
-	 * @param halfHeight0 half of mapBoxHeight in # of pixels;
-	 * @return Point2D
-	 */
-	public static Point2D computeDeltaPixels(Coordinates c0, Coordinates c1, double halfHeight) {
-		double c0Phi = c0.getPhi();
-		double c1Phi = c1.getPhi();
-		double c0Theta = c0.getTheta();
-		double c1Theta = c1.getTheta();
-	
-		double y = halfHeight * (c1Phi - c0Phi);	
-		double x = halfHeight * (c1Theta - c0Theta);
-
-		return new Point2D.Double(x, y);
-	}
-	
 	/**
 	 * Gets a common formatted string to represent this location.
 	 * e.g. "3.1244 E 34.4352 S"
@@ -479,33 +427,18 @@ public final class Coordinates implements Serializable {
 	 * and y display coordinates for spherical location.
 	 *
 	 * @param newCoords    the offset location
-	 * @param centerCoords location of the center of the map
-	 * @param rho          height pixels divided by pi
-	 * @param halfMap     half the map's height (in pixels)
-	 * @param lowEdge     lower edge of map (in pixels)
-	 * @return pixel offset value for map
-	 */
-	public static IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords, 
-			double rho, int halfMap, int lowEdge) {
-
-		return centerCoords.findRectPosition(newCoords.phi, newCoords.theta, rho, halfMap, lowEdge);
-	}
-
-	/**
-	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
-	 * and y display coordinates for spherical location.
-	 *
-	 * @param newPhi   the new phi coordinate
-	 * @param newTheta the new theta coordinate
 	 * @param rho      diameter of planet (in km)
 	 * @param halfMap half the map's width (in pixels)
 	 * @param lowEdge lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int halfMap, int lowEdge) {
+	public IntPoint findRectPosition(Coordinates newCoords, double rho, int halfMap, int lowEdge) {
 
 		double sinPhi = Math.sin(this.phi);
 		double cosPhi = Math.cos(this.phi);
+
+		double newTheta = newCoords.getTheta();
+		double newPhi = newCoords.getPhi();
 
 		double col = newTheta + (-PI_HALF - theta);
 		double x = rho * Math.sin(newPhi);
@@ -533,24 +466,12 @@ public final class Coordinates implements Serializable {
 	 *
 	 * @param x change in x value
 	 * @param y change in y value
-	 * @return new spherical location
-	 */
-	public Coordinates convertRectIntToSpherical(int x, int y) {
-		Point2D point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, MARS_RADIUS_KM);
-		return new Coordinates(point.getX(), point.getY());
-	}
-	
-	/**
-	 * Converts linear rectangular XY position change to spherical coordinates.
-	 *
-	 * @param x change in x value
-	 * @param y change in y value
 	 * @param rho
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectIntToSpherical(int x, int y, double rho) {
-		Point2D point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, rho);
-		return new Coordinates(point.getX(), point.getY());
+		var point = IntegerMapData.convertRectIntToSpherical(x, y, phi, theta, rho);
+		return new Coordinates(point.phi(), point.theta());
 	}
 
 	/**
@@ -563,8 +484,8 @@ public final class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
-		Point2D point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
-		return new Coordinates(point.getX(), point.getY());
+		var point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
+		return new Coordinates(point.phi(), point.theta());
 	}
 	
 	/**
@@ -668,7 +589,6 @@ public final class Coordinates implements Serializable {
 			if ((latValue > 90D) || (latValue < -90))
 				throw new IllegalStateException("Latitude value out of range : " + latValue);
 
-			// TODO parse latitude depending on locale and validate
 			String direction = "" + cleanLatitude.charAt(latitude.length() - 1);
 			if (direction.compareToIgnoreCase(NORTH_SHORT) == 0)
 				latValue = 90D - latValue;
@@ -736,27 +656,6 @@ public final class Coordinates implements Serializable {
 		}
 
 		return DEG_TO_RADIAN * longValue;
-	}
-
-	/**
-	 * Gets a random latitude (away from the poles).
-	 *
-	 * @return latitude
-	 */
-	public static double getRandomLatitude() {
-		// Random latitude should be less likely to be near the poles.
-		// Make sure phi is between 0 and PI.
-		return .7 * RandomUtil.getRandomDouble(Math.PI);
-	}
-
-	/**
-	 * Gets a random longitude.
-	 *
-	 * @return longitude
-	 */
-	public static double getRandomLongitude() {
-		// Make sure theta is between 0 and 2 PI.
-		return RandomUtil.getRandomDouble(2D * Math.PI);
 	}
 
 	/**

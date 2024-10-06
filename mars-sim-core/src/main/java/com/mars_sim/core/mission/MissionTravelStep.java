@@ -50,7 +50,7 @@ public class MissionTravelStep extends MissionStep {
         Coordinates target =  destination.getLocation();
 
 		if (current.equals(target)
-					|| Coordinates.computeDistance(current, target) < SMALL_DISTANCE) {
+					|| current.getDistance(target) < SMALL_DISTANCE) {
             Settlement base = destination.getSettlement();
             if (vehicle.getAssociatedSettlement().equals(base)) {
                 logger.info(vehicle, "Arrived back home " + base.getName() + ".");

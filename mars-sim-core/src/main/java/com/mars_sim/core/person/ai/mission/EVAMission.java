@@ -235,7 +235,7 @@ abstract class EVAMission extends RoverMission {
 				// performEVA will check if rover capacity is full
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
-					logger.info((Person) member, "EVA operation Terminated.");
+					logger.info(member, "EVA operation Terminated.");
 					addMissionLog("EVA operation Terminated.");
 				}
 			}
@@ -458,9 +458,9 @@ abstract class EVAMission extends RoverMission {
 		Coordinates currentLocation = startingLocation;
 		while (!unorderedSites2.isEmpty()) {
 			Coordinates shortest = unorderedSites2.get(0);
-			double shortestDistance = Coordinates.computeDistance(currentLocation, shortest);
+			double shortestDistance = currentLocation.getDistance(shortest);
 			for(Coordinates site : unorderedSites2) {
-				double distance = Coordinates.computeDistance(currentLocation, site);
+				double distance = currentLocation.getDistance(site);
 				if (distance < shortestDistance) {
 					shortest = site;
 					shortestDistance = distance;

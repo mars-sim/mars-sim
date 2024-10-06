@@ -31,7 +31,7 @@ public class MapUtils {
 	 */
 	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, MapDisplay baseMap) {
 		int halfMap = baseMap.getPixelHeight()/2;
-		return Coordinates.findRectPosition(coords, mapCenter, baseMap.getRho(),
+		return mapCenter.findRectPosition(coords, baseMap.getRho(),
 											halfMap, halfMap - (MapPanel.MAP_BOX_HEIGHT/2));
 	}
 
