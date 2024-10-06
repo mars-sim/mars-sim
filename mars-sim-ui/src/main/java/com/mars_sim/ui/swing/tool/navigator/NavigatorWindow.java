@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.navigator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -17,9 +16,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,13 +53,10 @@ import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEventType;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.MapDataFactory;
@@ -72,7 +65,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -82,6 +74,7 @@ import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
 import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
+import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
@@ -90,8 +83,6 @@ import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -189,8 +180,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private transient UnitManagerListener umListener;
 	
-	private List<Landmark> landmarks;
-	
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapPanel;
 
@@ -211,7 +200,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		super(NAME, TITLE, desktop);
 
 		Simulation sim = desktop.getSimulation();
-		this.landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 		this.unitManager = sim.getUnitManager();
 	
 		// Prepare content pane		
@@ -231,8 +219,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
 		mapPanel.setMouseDragger(true);
-		mapPanel.addMouseListener(new MouseListener());
-		mapPanel.addMouseMotionListener(new MouseMotionListener());
+
+		// Create a mouse listener to show Units. But update status bar on hover
+		var mapListner = new MapMouseListener(desktop, mapPanel) {
+			@Override
+			protected void checkHover(Coordinates clickedPosition) {
+				updateStatusBar(clickedPosition);
+				super.checkHover(clickedPosition);
+			}
+		};
+		mapPanel.addMouseListener(mapListner);
+		mapPanel.addMouseMotionListener(mapListner);
 		
 		// Create map layers.
 		createMapLayer(DAYLIGHT_LAYER, 0, new ShadingMapLayer(mapPanel));
@@ -654,14 +651,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/**
 	 * Updates the labels on the status bar.
 	 * 
-	 * @param scale
-	 * @param phi
-	 * @param theta
-	 * @param rho
-	 * @param height
-	 * @param coord
+	 * @param pos New positional Coordinate
 	 */
-	private void updateStatusBar(double scale, double phi, double theta, double rho, double height, String coord) {
+	private void updateStatusBar(Coordinates pos) {
+		double phi = pos.getPhi();
+		double theta = pos.getTheta();			
+		double height = TerrainElevation.getMOLAElevation(phi, theta);
+		double scale = mapPanel.getScale();
+		var coord = pos.getFormattedString();
+		double rho = mapPanel.getRho();
+
 		coordLabel.setText(WHITESPACE + coord);
 
 		phiLabel.setText(PHI + StyleManager.DECIMAL_PLACES3.format(phi));
@@ -1033,145 +1032,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Image image = displayComponent.createImage(new MemoryImageSource(10, 10, imageArray, 0, 10));
 		return new ImageIcon(image);
 	}
-
-	private class MouseListener extends MouseAdapter {
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			if (SwingUtilities.isRightMouseButton(event) && event.getClickCount() == 1) {
-				checkClick(event);
-            }
-		}
-	}
-
-	private class MouseMotionListener extends MouseMotionAdapter {
-		@Override
-		public void mouseMoved(MouseEvent event) {
-			checkHover(event);
-		}
-	}
-
-	/**
-	 * Checks the click location.
-	 * 
-	 * @param event
-	 */
-	public void checkClick(MouseEvent event) {
-
-		Coordinates mapCenter = mapPanel.getCenterLocation();
-		if (mapCenter == null) {
-			return;
-		}
-		
-		Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-
-		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
-
-		// Open window if unit is clicked on the map
-		while (i.hasNext()) {
-			Unit unit = i.next();
-			
-			if ((unit.getUnitType() == UnitType.VEHICLE) && ((Vehicle)unit).isOutsideOnMarsMission()) {
-				// Proceed to below to set cursor
-				setCursorOpenWindow(unit, clickedPosition);
-			}
-		}
-	}
-
-	/**
-	 * Sets the cursor and open detail window of a unit.
-	 * 
-	 * @param unit
-	 * @param clickedPosition
-	 */
-	private void setCursorOpenWindow(Unit unit, Coordinates clickedPosition) {
-		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-			Coordinates unitCoords = unit.getCoordinates();
-			double clickRange = unitCoords.getDistance(clickedPosition);
-			double unitClickRange = displayInfo.getMapClickRange();
-			if (clickRange < unitClickRange) {
-				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-				desktop.showDetails(unit);
-			} else
-				mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-	}
-	
-	/**
-	 * Checks if the mouse is hovering over a map.
-	 * 
-	 * @param event
-	 */
-	public void checkHover(MouseEvent event) {
-
-		Coordinates mapCenter = mapPanel.getCenterLocation();
-		if (mapCenter == null) {
-			return;
-		}
-		
-		Coordinates pos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-
-		double phi = pos.getPhi();
-		double theta = pos.getTheta();			
-		double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-		double scale = mapPanel.getScale();
-		
-		updateStatusBar(scale, phi, theta, mapPanel.getRho(), h0, pos.getFormattedString());
-
-		checkOnTarget(pos);
-	}
-
-	/**
-	 * Finds a target.
-	 * 
-	 * @param pos
-	 */
-	private void checkOnTarget(Coordinates pos) {
-		boolean onTarget = false;
-
-		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
-
-		// Change mouse cursor if hovering over an unit on the map
-		while (i.hasNext()) {
-			Unit unit = i.next();
-			if (unit.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Proceed to below to set cursor
-					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-				}
-				else 
-					continue;
-			}
-			
-			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-			if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-				double clickRange = unit.getCoordinates().getDistance(pos);
-				double unitClickRange = displayInfo.getMapClickRange();
-				if (clickRange < unitClickRange) {
-					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-					onTarget = true;
-				}
-			}
-		}
-
-		// FUTURE: how to avoid overlapping labels ?
-		
-		// Change mouse cursor if hovering over a landmark on the map
-		Iterator<Landmark> j = landmarks.iterator();
-		while (j.hasNext()) {
-			Landmark landmark = j.next();
-			double clickRange = landmark.getLandmarkCoord().getDistance(pos);
-			double unitClickRange = 20;
-			if (clickRange < unitClickRange) {
-				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-				onTarget = true;
-			}
-		}
-
-		if (!onTarget) {
-			mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-	}
 	
 	/**
 	 * Updates the map with time pulse.
@@ -1252,7 +1112,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		thetaLabel = null;
 
 		mapLayers  = null;
-		landmarks = null;
 		mapPanel = null;
 		mineralLayer = null;
 

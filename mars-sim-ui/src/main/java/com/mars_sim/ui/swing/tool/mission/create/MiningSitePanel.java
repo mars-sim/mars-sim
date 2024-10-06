@@ -32,11 +32,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
@@ -107,7 +107,7 @@ public class MiningSitePanel extends WizardPanel {
 		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
 		centerPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		centerPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 350));
-		add(centerPane);//, BorderLayout.CENTER);
+		add(centerPane);
 
 		JPanel mapPanel = new JPanel(new BorderLayout(0, 0));//FlowLayout(FlowLayout.CENTER, 0, 0));
 		mapPanel.setBorder(new MarsPanelBorder());
@@ -205,7 +205,7 @@ public class MiningSitePanel extends WizardPanel {
 		
 		JPanel bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(bottomPane);//, BorderLayout.SOUTH);
+		add(bottomPane);
 		
 		// Create vertical glue.
 		bottomPane.add(Box.createVerticalGlue());
@@ -278,7 +278,7 @@ public class MiningSitePanel extends WizardPanel {
 	 */
 	void updatePanel() {
 		try {
-			Collection<Unit> unitsToDisplay = new ArrayList<Unit>(1);
+			Collection<Settlement> unitsToDisplay = new ArrayList<>(1);
 			unitsToDisplay.add(getWizard().getMissionData().getStartingSettlement());
 			unitIconLayer.setUnitsToDisplay(unitsToDisplay);
 			unitLabelLayer.setUnitsToDisplay(unitsToDisplay);

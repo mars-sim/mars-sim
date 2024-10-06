@@ -73,7 +73,8 @@ public class MissionTravelStep extends MissionStep {
 
 		// Choose a driver
         boolean workedOn = false;
-        if (vehicle.getOperator() == null) {
+        var driver = vehicle.getOperator();
+        if ((driver == null) || driver.equals(worker)) {
             Task operateVehicleTask = createOperateVehicleTask(vehicle, worker);
             workedOn = assignTask(worker, operateVehicleTask);
         }

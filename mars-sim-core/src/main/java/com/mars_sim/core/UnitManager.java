@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
@@ -85,8 +84,6 @@ public class UnitManager implements Serializable, Temporal {
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
-	/** A map of all map display units (settlements and vehicles). */
-	private Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
 	private Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
@@ -143,7 +140,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	private Map<Integer, ? extends Unit> getUnitMap(UnitType type) {
-		Map<Integer, ? extends Unit> map = switch (type) {
+		return switch (type) {
 			case PERSON -> lookupPerson;
 			case VEHICLE -> lookupVehicle;
 			case SETTLEMENT -> lookupSettlement;
@@ -153,7 +150,6 @@ public class UnitManager implements Serializable, Temporal {
 			case CONSTRUCTION -> lookupSite;
 			default -> throw new IllegalArgumentException("No Unit map for type " + type);
 		};
-        return map;
 	}
 
 	/**
@@ -315,27 +311,19 @@ public class UnitManager implements Serializable, Temporal {
 	public synchronized void addUnit(Unit unit) {
 		int unitIdentifier = unit.getIdentifier();
 
-		if (unit != null) { // is it necessary?
-			switch (unit.getUnitType()) {
-				case SETTLEMENT -> {
-					lookupSettlement.put(unitIdentifier, (Settlement) unit);
-					addDisplayUnit(unit);
-				}
-				case PERSON -> lookupPerson.put(unitIdentifier, (Person) unit);
-				case ROBOT -> lookupRobot.put(unitIdentifier, (Robot) unit);
-				case VEHICLE -> {
-					lookupVehicle.put(unitIdentifier, (Vehicle) unit);
-					addDisplayUnit(unit);
-				}
-                case CONTAINER, EVA_SUIT -> lookupEquipment.put(unitIdentifier, (Equipment) unit);
-				case BUILDING -> lookupBuilding.put(unitIdentifier, (Building) unit);
-				case CONSTRUCTION -> lookupSite.put(unitIdentifier, (ConstructionSite) unit);
-				case MARS -> marsSurface = (MarsSurface) unit;
-				case OUTER_SPACE -> outerSpace = (OuterSpace) unit;
-				case MOON -> moon = (Moon) unit;
-				default -> throw new IllegalArgumentException(
-						"Cannot store unit type:" + unit.getUnitType());
-			}
+		switch(unit) {
+			case Settlement s -> lookupSettlement.put(unitIdentifier, s);
+			case Person p -> lookupPerson.put(unitIdentifier, p);
+			case Robot r -> lookupRobot.put(unitIdentifier, r);
+			case Vehicle v -> lookupVehicle.put(unitIdentifier, v);
+			case Equipment e -> lookupEquipment.put(unitIdentifier, e);
+			case Building b -> lookupBuilding.put(unitIdentifier, b);
+			case ConstructionSite c -> lookupSite.put(unitIdentifier, c);
+			case MarsSurface ms -> marsSurface = ms;
+			case OuterSpace os -> outerSpace = os;
+			case Moon m -> moon = m;
+			default -> throw new IllegalArgumentException(
+					"Cannot store unit type:" + unit.getUnitType());
 		}
 	}
 
@@ -583,27 +571,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Adds the unit for display.
-	 *
-	 * @param unit
-	 */
-	private void addDisplayUnit(Unit unit) {
-		if (displayUnits == null)
-			displayUnits = new UnitSet<>();
-
-		displayUnits.add(unit);
-	}
-
-	/**
-	 * Obtains the settlement and vehicle units for map display.
-	 *
-	 * @return
-	 */
-	public Set<Unit> getDisplayUnits() {
-		return displayUnits;
-	}
-
-	/**
 	 * Adds a unit manager listener.
 	 *
 	 * @param source UnitType monitored
@@ -615,9 +582,6 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		synchronized(listeners) {
 			listeners.computeIfAbsent(source, k -> new HashSet<>()).add(newListener);
-
-			// Over adding listeners?
-			//logger.info("Added Listener " + source + " #" + listeners.get(source).size() + " : " + newListener.toString());
 		}
 	}
 
@@ -754,17 +718,6 @@ public class UnitManager implements Serializable, Temporal {
 		setupTasks();
 	}
 
-//	/**
-//	 * Reinitializes instances after deserialization.
-//	 * 
-//	 * @param in
-//	 * @throws IOException
-//	 * @throws ClassNotFoundException
-//	 */
-//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		in.defaultReadObject();
-//	}
-
 	/**
 	 * Prepares object for garbage collection.
 	 */
@@ -818,7 +771,6 @@ public class UnitManager implements Serializable, Temporal {
 
 		marsSurface = null;
 
-//		listeners.clear();
 		listeners = null;
 	}
 

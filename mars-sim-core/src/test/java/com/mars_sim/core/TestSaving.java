@@ -8,10 +8,13 @@ import java.util.ArrayList;
 
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
+import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.MedicalManager;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 
 import junit.framework.TestCase;
@@ -43,6 +46,10 @@ public class TestSaving extends TestCase implements SimulationListener {
         Scenario bootstrap = config.getItem("Single Settlement");
         builder.createInitialSettlements(bootstrap);
         
+        // Add Equipment
+        Settlement s = (new ArrayList<>(sim.getUnitManager().getSettlements())).get(0);
+        EquipmentFactory.createEquipment(EquipmentType.BAG, s);
+
         // Find a person and add a medical complaint
         Complaint complaint = sim.getMedicalManager().getComplaintByName(ComplaintType.APPENDICITIS);
         Person p = (new ArrayList<>(sim.getUnitManager().getPeople())).get(0);

@@ -1843,8 +1843,7 @@ public abstract class Vehicle extends MobileUnit
 	 * @return true if yes
 	 */
 	public boolean isOutsideOnMarsMission() {
-		return LocationStateType.MARS_SURFACE == currentStateType
-				|| LocationStateType.VEHICLE_VICINITY == currentStateType;
+		return (mission != null);
 	}
 
 	/**

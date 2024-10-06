@@ -267,22 +267,6 @@ public final class Coordinates implements Serializable {
 		return rho * angle;
 	}
 
-	// /**
-	//  * Computes the distance between the two given coordinates.
-	//  *
-	//  * @param c0
-	//  * @param c1
-	//  * @return distance (in km)
-	//  * @deprecated Use {@link #getDistance(Coordinates)}
-	//  */
-	// @Deprecated
-	// public static double computeDistance(Coordinates c0, Coordinates c1) {
-	// 	if (c0 == null) {
-	// 		return 0;
-	// 	}
-	// 	return c0.getDistance(c1);
-	// }
-
 	/**
 	 * Gets a common formatted string to represent this location.
 	 * e.g. "3.1244 E 34.4352 S"
