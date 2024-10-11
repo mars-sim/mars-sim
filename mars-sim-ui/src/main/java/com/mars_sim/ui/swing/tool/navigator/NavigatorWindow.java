@@ -239,7 +239,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		createMapLayer("unitLabels", 3, new UnitLabelMapLayer());
 		createMapLayer("navPoints", 4, new NavpointMapLayer(mapPanel));
 		createMapLayer("vehicleTrails", 5, new VehicleTrailMapLayer());
-		createMapLayer("landmarks", 6, new LandmarkMapLayer());
+		createMapLayer("landmarks", 6, new LandmarkMapLayer(mapPanel));
 		createMapLayer(EXPLORED_LAYER, 7, new ExploredSiteMapLayer(mapPanel));
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
@@ -858,7 +858,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				try {
 					goToLocation();
 				} catch (NumberFormatException e) {
-					// show exception;
+					// show exception
 				}
 			} break;
 

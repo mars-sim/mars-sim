@@ -695,6 +695,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
     }
 
+	/**
+	 * Get teh parent desktop
+	 */
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+
     /**
      * Gets the rho of the Mars surface map.
      * 

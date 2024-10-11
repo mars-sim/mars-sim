@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.map;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -17,6 +16,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.SurfaceManager;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -32,7 +32,7 @@ public class MapMouseListener extends MouseAdapter {
     private MapPanel mapPanel;
     private MainDesktopPane desktop;
     	
-	private List<Landmark> landmarks;
+	private SurfaceManager<Landmark> landmarks;
 
 
     public MapMouseListener(MainDesktopPane desktop, MapPanel mapPanel) {
@@ -40,7 +40,7 @@ public class MapMouseListener extends MouseAdapter {
         this.unitManager = sim.getUnitManager();
         this.mapPanel = mapPanel;
         this.desktop = desktop;
-        this.landmarks = sim.getConfig().getLandmarkConfiguration().getLandmarkList();
+        this.landmarks = sim.getConfig().getLandmarkConfiguration().getLandmarks();
     }
 
     @Override
@@ -86,13 +86,10 @@ public class MapMouseListener extends MouseAdapter {
 
 		// FUTURE: how to avoid overlapping labels ?		
 		// Change mouse cursor if hovering over a landmark on the map
-		for(Landmark landmark : landmarks) {
-			double clickRange = landmark.getLandmarkCoord().getDistance(pos);
-			double unitClickRange = 20;
-			if (clickRange < unitClickRange) {
-				mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-				return;
-			}
+		var matches = landmarks.getFeatures(pos, 0.01);
+		if (matches.size() == 1) {
+			mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+			return;
 		}
 
 		mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

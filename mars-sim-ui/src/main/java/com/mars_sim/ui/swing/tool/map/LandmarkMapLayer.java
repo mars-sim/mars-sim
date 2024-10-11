@@ -8,86 +8,85 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
-import com.mars_sim.core.tool.SimulationConstants;
+import com.mars_sim.core.map.location.SurfaceManager;
 
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.
  */
-public class LandmarkMapLayer implements MapLayer, SimulationConstants {
+public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 
 	/** Diameter of marking circle. */
-	private int CIRCLE_DIAMETER = 4;
+	private static final int CIRCLE_DIAMETER = 4;
 	/** Diameter of marking circle for artificial objects. */
-	private int AO_CIRCLE_DIAMETER = 4;
+	private static final int AO_CIRCLE_DIAMETER = 4;
 	/** Horizontal offset for label. */
-	private int LABEL_HORIZONTAL_OFFSET = 2;
+	private static final int LABEL_HORIZONTAL_OFFSET = 2;
 	/** Horizontal offset for artificial objects. */
-	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
+	private static final int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
 	/** Light pink color for landmarks on surface map. */
-	private final Color SURFACE_COLOR = new Color(230, 186, 186);
+	private static final Color SURFACE_COLOR = new Color(230, 186, 186);
 	/** Dark pink color for landmarks on topo map. */
-	private final Color TOPO_COLOR = new Color(95, 60, 60);
+	private static final Color TOPO_COLOR = new Color(95, 60, 60);
 	/** Light violet color for artificial objects on surface map. */
-	private final Color AO_COLOR_0 = new Color(127, 127, 255);
+	private static final Color AO_COLOR_0 = new Color(127, 127, 255);
 	/** Gray color for artificial objects on topo map. */
-	private final Color AO_COLOR_1 = new Color(173, 173, 173);
+	private static final Color AO_COLOR_1 = new Color(173, 173, 173);
 	/** Label font for landmarks. */
-	private final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
+	private static final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
 	/** Label font for artificial object. */
-	private final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
+	private static final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
 	
-	private final List<Landmark> landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
+	private SurfaceManager<Landmark> landmarks;
 
-	/**
-	 * Displays the layer on the map image.
-	 *
-	 * @param mapCenter the location of the center of the map.
-	 * @param baseMap   the type of map.
-	 * @param g         graphics context of the map display.
-	 */
+	public LandmarkMapLayer(MapPanel panel) {
+		super("Landmark Layer");
+		landmarks = panel.getDesktop().getSimulation().getConfig()
+							.getLandmarkConfiguration().getLandmarks();
+	}
+
+    /**
+     * Return a list of landmarks that are within the focus specified
+     * @param center Center of the viewpoint
+     * @param arcAngle Angle of the viewpoint
+     * @return
+     */
 	@Override
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
+    protected List<Landmark> getFeatures(Coordinates center, double arcAngle) {
+		return landmarks.getFeatures(center, arcAngle);
+	}
+
+    /**
+     * Setup the graphic context to draw this landmarks to control the font rendering.
+     * @param g2d
+     */
+	@Override
+    protected void prepareGraphics(Graphics2D g2d) {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
-
-		for (Landmark landmark : landmarks) {
-			double a = mapCenter.getAngle(landmark.getLandmarkCoord());
-			double ha = baseMap.getHalfAngle();
-
-			if (a < ha) {
-				displayLandmark(landmark, mapCenter, baseMap, g2d);
-			}
-		}
 	}
 
 	/**
-	 * Displays a landmark on the map layer.
-	 * 
-	 * @param landmark  {@link Landmark} the landmark to be displayed.
-	 * @param mapCenter {@link Coordinates} the location of the center of the map.
-	 * @param baseMap   {@LINK String} type of map.
-	 * @param g         {@link Graphics} the graphics context.
-	 */
-	private void displayLandmark(Landmark landmark, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
-
-		// Determine display location of landmark.
-		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkCoord(), mapCenter, baseMap);
-
+     * Display a feature on the map using a Graphic at a particular point.
+     * @param f Feature to display
+     * @param location Locatino on the Graphic
+     * @param g2d Graphic for drawing
+	 * @param isColourful Is the destination a colourful map
+     */
+	@Override
+    protected void displayFeature(Landmark landmark, IntPoint location, Graphics2D g2d,
+								boolean isColourful) {
 		// Determine circle location.
 		int locX = location.getiX() - (CIRCLE_DIAMETER / 2);
 		int locY = location.getiY() - (CIRCLE_DIAMETER / 2);
@@ -95,14 +94,14 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 		int locLabelX = 0;
 		int locLabelY = 0;
 
-		if (landmark.getLandmarkType().equalsIgnoreCase("AO")) {
+		if (landmark.getType().equalsIgnoreCase(Landmark.AO_TYPE)) {
 			// Find location to display label.
 			locLabelX = location.getiX() + (AO_CIRCLE_DIAMETER / 2) + AO_LABEL_HORIZONTAL_OFFSET;
 			locLabelY = location.getiY() +  AO_CIRCLE_DIAMETER;
 			// Set the label font.
 			g2d.setFont(AO_LABEL_FONT);
 			// Set the label color.
-			if (baseMap.getMapMetaData().isColourful())
+			if (isColourful)
 				g2d.setColor(AO_COLOR_0);
 			else
 				g2d.setColor(AO_COLOR_1);
@@ -111,7 +110,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			g2d.drawOval(locX, locY, AO_CIRCLE_DIAMETER, AO_CIRCLE_DIAMETER);
 			
 			// Draw the landmark name.
-			g2d.drawString(landmark.getLandmarkName(), locLabelX, locLabelY);
+			g2d.drawString(landmark.getName(), locLabelX, locLabelY);
 		}
 		
 		else {
@@ -122,7 +121,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			// Set the label font.
 			g2d.setFont(MAP_LABEL_FONT);
 			// Set the label color.
-			if (baseMap.getMapMetaData().isColourful())
+			if (isColourful)
 				g2d.setColor(SURFACE_COLOR);
 			else
 				g2d.setColor(TOPO_COLOR);
@@ -131,20 +130,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			g2d.drawOval(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 			
 			// Draw the landmark name.
-			g2d.drawString(landmark.getLandmarkName(), locLabelX, locLabelY);
-	
-//		    FontRenderContext frc = g2d.getFontRenderContext();
-//		    TextLayout textTl = new TextLayout(landmark.getLandmarkName(), MAP_LABEL_FONT, frc);
-//		    AffineTransform transform = new AffineTransform();
-//		    Shape outline = textTl.getOutline(null);
-//		    Rectangle outlineBounds = outline.getBounds();
-//		    transform = g2d.getTransform();
-//		    transform.translate(width / 2 - (outlineBounds.width / 2), height / 2
-//		        + (outlineBounds.height / 2));
-//		    g2d.transform(transform);
-//					    
-//		    g2d.draw(outline);
-//		    g2d.setClip(outline);
+			g2d.drawString(landmark.getName(), locLabelX, locLabelY);
 		}
 	}
 }
