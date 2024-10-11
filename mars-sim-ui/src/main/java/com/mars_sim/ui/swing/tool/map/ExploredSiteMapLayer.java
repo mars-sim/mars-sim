@@ -7,17 +7,18 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Component;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 
 import javax.swing.Icon;
 
 import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
-import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.ui.swing.ImageLoader;
 
-public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
+public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> {
 
 	// Static members
 	private static final String EXPLORED_ICON_NAME = "map/flag_smallyellow"; 
@@ -32,13 +33,15 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	private boolean displayClaimed;
 	private boolean displayReserved;
 	private ExploredLocation selectedSite;
+	private SurfaceFeatures surfaceFeatures;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param displayComponent the display component.
 	 */
-	public ExploredSiteMapLayer(Component displayComponent) {
+	public ExploredSiteMapLayer(MapPanel displayComponent) {
+		super("Explored Site");
 
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
@@ -48,6 +51,8 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 		displayClaimed = true;
 		displayReserved = true;
 		selectedSite = null;
+
+		surfaceFeatures = displayComponent.getDesktop().getSimulation().getSurfaceFeatures();
 	}
 
 	/**
@@ -78,53 +83,47 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	}
 
 	/**
-	 * Displays the layer on the map image.
-	 * 
-	 * @param mapCenter the location of the center of the map.
-	 * @param baseMap   the type of map.
-	 * @param g         graphics context of the map display.
-	 */
-	@Override
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
-		for (ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
-			boolean displaySite = !site.isReserved() || displayReserved;
-            if (!site.isClaimed() && !displayClaimed)
-				displaySite = false;
-			if (!site.isExplored())
-				displaySite = false;
-			if (displaySite)
-				displayExploredSite(site, mapCenter, baseMap, g);
-		}
+     * Return a list of features that are within the focus specified
+     * @param center Center of the viewpoint
+     * @param arcAngle Angle of the viewpoint
+     * @return
+     */
+    protected List<ExploredLocation> getFeatures(Coordinates center, double arcAngle) {
+		return surfaceFeatures.getAllPossibleRegionOfInterestLocations();
 	}
-
+	
 	/**
-	 * Displays a navpoint.
-	 * 
-	 * @param navpoint  the navpoint to display.
-	 * @param mapCenter the location of the center of the map.
-	 * @param baseMap   the type of map.
-	 * @param g         graphics context of the map display.
-	 */
-	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
-
-		if (mapCenter.getAngle(site.getLocation()) < baseMap.getHalfAngle()) {
-
-			// Chose a navpoint icon based on the map type.
-			Icon navIcon = null;
-			if (site.equals(selectedSite))
-				navIcon = navpointIconSelected;
-			else if (site.isMinable())
-				navIcon = navpointIconClaimed;
-			else
-				navIcon = navpointIconExplored;
-
-			// Determine the draw location for the icon.
-			IntPoint location = MapUtils.getRectPosition(site.getLocation(), mapCenter, baseMap);
-			IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
-
-			// Draw the navpoint icon.
-			navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
+     * Display a explored site on the map using a Graphic at a particular point.
+     * @param site Feature to display
+     * @param location Location on the Graphic
+     * @param g Graphic for drawing
+     * @param isColourful Is the destination a colourful map
+     */
+	@Override
+    protected void displayFeature(ExploredLocation site, IntPoint location, Graphics2D g, boolean isColourful) {
+		// Check layer filters
+		boolean displaySite = !site.isReserved() || displayReserved;
+		if (!site.isClaimed() && !displayClaimed)
+			displaySite = false;
+		// Need to add this back in
+		// if (!site.isExplored())
+		// 	displaySite = false;
+		if (!displaySite) {
+			return;
 		}
+
+		// Chose a navpoint icon based on the map type.
+		Icon navIcon = navpointIconExplored;
+		if (site.equals(selectedSite))
+			navIcon = navpointIconSelected;
+		else if (site.isMinable())
+			navIcon = navpointIconClaimed;
+
+		// Determine the draw location for the icon.
+		IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
+
+		// Draw the navpoint icon.
+		navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
 	}
 
 	public int getIconWidth() {

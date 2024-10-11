@@ -50,7 +50,7 @@ public abstract class SurfaceFeatureLayer<T extends SurfaceFeature> implements M
         prepareGraphics(g2d);
 
         
-        List<T> features = getFeatures(mapCenter, baseMap.getHalfAngle());
+        List<T> features = getFeatures(mapCenter, baseMap.getHalfAngle() * 1.1);
         boolean isColourful = baseMap.getMapMetaData().isColourful();
 		for (var f : features) {
             // Determine display location of feature on the map.

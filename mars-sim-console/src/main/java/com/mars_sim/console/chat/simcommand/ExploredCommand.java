@@ -11,8 +11,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
@@ -87,7 +85,7 @@ public class ExploredCommand extends ChatCommand {
 	 */
 	private void displayExploredLocations(Conversation context, SurfaceFeatures surface) {
 
-		Set<ExploredLocation> locations = surface.getAllPossibleRegionOfInterestLocations();
+		var locations = surface.getAllPossibleRegionOfInterestLocations();
 			
 		// Filter the list if in a Settlement
 		if (context.getCurrentCommand() instanceof ConnectedUnitCommand cuc) {
@@ -104,7 +102,7 @@ public class ExploredCommand extends ChatCommand {
 			final Settlement sFilter = filter;
 			locations = locations.stream()
 								.filter(s -> (s.getSettlement() == null) || sFilter.equals(s.getSettlement()))
-								.collect(Collectors.toSet());
+								.toList();
 		}
 		
 		StructuredResponse response = new StructuredResponse();

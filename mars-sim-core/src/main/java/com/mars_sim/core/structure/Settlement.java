@@ -906,63 +906,12 @@ public class Settlement extends Unit implements Temporal,
 
 			// Perform the end of day tasks
 			performBeginningOfDayTasks();	
-
-			// Report mineral site improvement
-			reportsMineralSiteImprovement(sol);	
 		}
 
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
 
 		return true;
-	}
-	
-	/**
-	 * Checks and reports on the average mineral site improvement made.
-	 * 
-	 * @param sol
-	 */
-	private void reportsMineralSiteImprovement(int sol) {
-    	/**
-    	 * DO NOT DELETE.
-    	 *
-    	 * A note on benchmark: This mineral map improvement method takes between 2 and 5 ms to complete
-    	 * Debug the real time elapsed [in milliseconds] long tnow = System.currentTimeMillis();
-    	 */
-		
-		int improved = 0;
-		
-		List<ExploredLocation> siteList = surfaceFeatures
-    			.getAllPossibleRegionOfInterestLocations().stream()
-    			.filter(site -> site.isMinable())
-    			.collect(Collectors.toList());  	
-    	
-    	for (ExploredLocation el: siteList) {   	
-    		 int est = el.getNumEstimationImprovement();
-    		 improved += est;
-    	}
-    	    	
-    	int size = siteList.size();
-    	
-    	if (size > 0 && improved > 0) {
-	    	double result = 1.0 * improved / size;
-			logger.info(this, "Sol " + sol + ". Average improvement score on " + size 
-					+ " mineral location(s): " + Math.round(result * 10.0)/10.0);
-    	}
-    	else if (size > 0) {
-			logger.info(this, "Sol " + sol + ". No improvement on " + size 
-					+ " mineral locations.");
-    	}
-    	
-    	/**
-    	 * DO NOT DELETE. 
-    	 * Debug the real time elapsed [in milliseconds]
-    	 *
-    	 * tLast = System.currentTimeMillis();
-    	 * long elapsedMS = tLast - tnow;
-    	 * if (elapsedMS > 1)
-    	 *	logger.severe(this, "checkMineralMapImprovement() elapsedMS: " + elapsedMS);
-    	 */
 	}
 	
 	/**
