@@ -15,7 +15,7 @@ import java.util.List;
  * These are held in a tiled internal structure based on the Coordinates
  * giving it optimised lookup on Coordinate.
  */
-public class SurfaceManager<T extends SurfaceFeature> {
+public class SurfaceManager<T extends SurfacePOI> {
 
     private static final int LATITUDE_SLICES = 6;
     private static final double LATITUDE_RANGE = Math.PI/LATITUDE_SLICES;

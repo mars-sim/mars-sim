@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class SurfaceManagerTest {
 
-    private class TestFeature implements SurfaceFeature {
+    private class TestFeature implements SurfacePOI {
         private Coordinates location;
 
         public TestFeature(Coordinates location) {

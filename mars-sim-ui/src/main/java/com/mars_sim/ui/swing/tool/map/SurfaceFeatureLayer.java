@@ -12,14 +12,14 @@ import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
-import com.mars_sim.core.map.location.SurfaceFeature;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.tool.AverageTimer;
 
 /**
- * This is a map layer for the MapPanel that renders a collection of SurfaceFeatures
+ * This is a map layer for the MapPanel that renders surface feature defed as SurfacePOIs
  * to the map taking into account the viewpoint on the map.
  */
-public abstract class SurfaceFeatureLayer<T extends SurfaceFeature> implements MapLayer {
+public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLayer {
     private AverageTimer timer;
 
 

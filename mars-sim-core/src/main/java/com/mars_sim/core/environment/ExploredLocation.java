@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.SurfaceFeature;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -27,7 +27,7 @@ import com.mars_sim.core.tool.RandomUtil;
  * 
  * @Note Later we may further model it in looking for signature of life. 
  */
-public class ExploredLocation implements Serializable, SurfaceFeature {
+public class ExploredLocation implements Serializable, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

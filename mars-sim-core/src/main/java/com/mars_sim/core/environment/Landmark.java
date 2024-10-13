@@ -10,13 +10,13 @@ package com.mars_sim.core.environment;
 import java.io.Serializable;
 
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.SurfaceFeature;
+import com.mars_sim.core.map.location.SurfacePOI;
 
 /**
  * The Landmark class represents a surface landmark on virtual Mars. It contains
  * information related to the landmark.
  */
-public class Landmark implements Serializable, SurfaceFeature {
+public class Landmark implements Serializable, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
