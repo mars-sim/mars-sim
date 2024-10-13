@@ -21,6 +21,20 @@ import com.mars_sim.core.map.location.SurfaceManager;
  * The LandmarkMapLayer is a graphics layer to display landmarks.
  */
 public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
+	private class LandmarkHotspot extends MapHotspot {
+
+		private Landmark site;
+
+		protected LandmarkHotspot(IntPoint center, Landmark site) {
+			super(center, 5);
+			this.site = site;
+		}
+
+		@Override
+		public String getTooltipText() {
+			return site.getDescription();
+		}	
+	}
 
 	/** Diameter of marking circle. */
 	private static final int CIRCLE_DIAMETER = 4;
@@ -85,7 +99,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 	 * @param isColourful Is the destination a colourful map
      */
 	@Override
-    protected void displayFeature(Landmark landmark, IntPoint location, Graphics2D g2d,
+    protected MapHotspot displayFeature(Landmark landmark, IntPoint location, Graphics2D g2d,
 								boolean isColourful) {
 		// Determine circle location.
 		int locX = location.getiX() - (CIRCLE_DIAMETER / 2);
@@ -132,5 +146,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 			// Draw the landmark name.
 			g2d.drawString(landmark.getName(), locLabelX, locLabelY);
 		}
+
+		return new LandmarkHotspot(location, landmark);
 	}
 }

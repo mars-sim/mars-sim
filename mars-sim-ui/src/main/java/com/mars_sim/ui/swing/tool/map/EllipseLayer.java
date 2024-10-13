@@ -7,19 +7,19 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.util.Collections;
+import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
-import com.mars_sim.core.tool.SimulationConstants;
 
 /**
  * A map layer for displaying ellipses.
  */
-public class EllipseLayer implements MapLayer, SimulationConstants {
+public class EllipseLayer implements MapLayer {
 
 	// Data members.
 	private Color drawColor;
@@ -64,11 +64,10 @@ public class EllipseLayer implements MapLayer, SimulationConstants {
 	 * 
 	 * @param mapCenter the location of the center of the map.
 	 * @param baseMap   the type of map.
-	 * @param g         graphics context of the map display.
+	 * @param g2d         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
 		// Display ellipse if flag is true.
 		if (displayEllipse) {
 			g2d.setColor(drawColor);
@@ -91,6 +90,8 @@ public class EllipseLayer implements MapLayer, SimulationConstants {
 			rat.setToRotation((-1D * getFociAngle()), center.getX(), center.getY());
 			g2d.transform(rat);
 		}
+
+		return Collections.emptyList();
 	}
 
 	/**

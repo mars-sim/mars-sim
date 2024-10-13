@@ -16,6 +16,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -215,17 +216,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPanel mapPane = new JPanel();
 		wholePane.add(mapPane, BorderLayout.CENTER);
 
-		mapPanel = new MapPanel(desktop, this);
+		mapPanel = new MapPanel(desktop);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
 		mapPanel.setMouseDragger(true);
 
-		// Create a mouse listener to show Units. But update status bar on hover
-		var mapListner = new MapMouseListener(desktop, mapPanel) {
-			@Override
-			protected void checkHover(Coordinates clickedPosition) {
-				updateStatusBar(clickedPosition);
-				super.checkHover(clickedPosition);
+		// Create a mouse listener to show hotspots and update status bar
+		var mapListner = new MapMouseListener(mapPanel) {
+		    @Override
+    		public void mouseMoved(MouseEvent event) {
+				var coord = mapPanel.getMouseCoordinates(event.getX(), event.getY());
+				updateStatusBar(coord);
+				super.mouseMoved(event);
 			}
 		};
 		mapPanel.addMouseListener(mapListner);
@@ -236,9 +238,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mineralLayer = new MineralMapLayer(mapPanel);
 		createMapLayer(MINERAL_LAYER, 1, mineralLayer);
 		createMapLayer("unitIcon", 2, new UnitIconMapLayer(mapPanel));
-		createMapLayer("unitLabels", 3, new UnitLabelMapLayer());
+		createMapLayer("unitLabels", 3, new UnitLabelMapLayer(mapPanel));
 		createMapLayer("navPoints", 4, new NavpointMapLayer(mapPanel));
-		createMapLayer("vehicleTrails", 5, new VehicleTrailMapLayer());
+		createMapLayer("vehicleTrails", 5, new VehicleTrailMapLayer(mapPanel));
 		createMapLayer("landmarks", 6, new LandmarkMapLayer(mapPanel));
 		createMapLayer(EXPLORED_LAYER, 7, new ExploredSiteMapLayer(mapPanel));
 

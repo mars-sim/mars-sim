@@ -7,7 +7,6 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
@@ -23,8 +22,11 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * The UnitMapLayer is a graphics layer to display unit labels.
  */
 public class UnitLabelMapLayer extends UnitMapLayer {
-
 	private static final int LABEL_HORIZONTAL_OFFSET = 2;
+
+	public UnitLabelMapLayer(MapPanel panel) {
+		super(panel);
+	}
 
 	/**
 	 * Displays a unit on the map.
@@ -32,10 +34,9 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 	 * @param unit      the unit to display.
 	 * @param mapCenter the location center of the map.
 	 * @param baseMap   the type of map.
-	 * @param g         the graphics context.
+	 * @param g2d         the graphics context.
 	 */
-	protected void displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
+	protected MapHotspot displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -59,6 +60,8 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 				g2d.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
 			}
 		}
+
+		return null;
 	}
 
 	/**

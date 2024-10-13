@@ -124,7 +124,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		
 		mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
-		mapPane.addMapLayer(new UnitLabelMapLayer(), 2);
+		mapPane.addMapLayer(new UnitLabelMapLayer(mapPane), 2);
 		mapPane.addMapLayer(ellipseLayer, 3);
 		mapPane.addMapLayer(navLayer, 4);
 		

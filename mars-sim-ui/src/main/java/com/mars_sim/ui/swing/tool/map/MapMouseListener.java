@@ -7,19 +7,13 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
-
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.environment.Landmark;
-import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.SurfaceManager;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
  * This is a listener to mouse event on a MapPanel. It changes the cursor when hovered over a 
@@ -27,107 +21,95 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * If clicked the appropriate detailed window is shown.
  */
 public class MapMouseListener extends MouseAdapter {
+	
+	private static final Cursor DEFAULT = new Cursor(Cursor.DEFAULT_CURSOR);
+	private static final Cursor CROSSHAIR = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
-    private UnitManager unitManager;
     private MapPanel mapPanel;
-    private MainDesktopPane desktop;
-    	
-	private SurfaceManager<Landmark> landmarks;
+	private Point hotspotPoint;
+	private String pendingTipText;
+	private Popup tipWindow;
 
-
-    public MapMouseListener(MainDesktopPane desktop, MapPanel mapPanel) {
-        var sim = desktop.getSimulation();
-        this.unitManager = sim.getUnitManager();
+    public MapMouseListener(MapPanel mapPanel) {
         this.mapPanel = mapPanel;
-        this.desktop = desktop;
-        this.landmarks = sim.getConfig().getLandmarkConfiguration().getLandmarks();
     }
 
+	/**
+	 * Find if there is a hotspot under the mouse position and execute the clicked method.
+	 */
     @Override
     public void mouseClicked(MouseEvent event) {
         if (SwingUtilities.isRightMouseButton(event) && event.getClickCount() == 1) {
-            checkClick(mapPanel.getMouseCoordinates(event.getX(), event.getY()));
+            var hs = findHotspot(event.getX(), event.getY());
+			if (hs != null) {
+				updateCursor(CROSSHAIR);
+				hs.clicked();
+			}
+			else
+				updateCursor(DEFAULT);
         }
     }
 
-    /**
-	 * Checks the click location.
-	 * 
-	 * @param event
+	/**
+	 * Find the hotspot that matches the mouse position
+	 * @param x
+	 * @param y
+	 * @return
 	 */
-	private void checkClick(Coordinates clickedPosition) {
-
-		Unit foundMatch = findUnitUnderMouse(clickedPosition);
-		if (foundMatch != null) {
-			mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-			desktop.showDetails(foundMatch);
+    private MapHotspot findHotspot(int x, int y) {
+		var hotspots = mapPanel.getHotspots();
+		for(var h : hotspots) {
+			if (h.isWithin(x, y)) {
+				return h;
+			}
 		}
-		else
-			mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	}
 
+		return null;
+ 	}
+
+	/**
+	 * Track the mouse movement as it cross hotspots and render tooltips.
+	 */
     @Override
     public void mouseMoved(MouseEvent event) {
-        checkHover(mapPanel.getMouseCoordinates(event.getX(), event.getY()));
-    }
+		if (tipWindow != null) {
+			tipWindow.hide();
+			tipWindow = null;
+		}
 
-    /**
-	 * Checks if the mouse is hovering over a map.
-	 * 
-	 * @param event
-	 */
-	protected void checkHover(Coordinates pos) {
-        // Check if over a object
-		Unit unit = findUnitUnderMouse(pos);
-		if (unit != null) {
-			mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+		var hs = findHotspot(event.getX(), event.getY());
+		if (hs != null) {
+			updateCursor(CROSSHAIR);
+			hotspotPoint = event.getPoint();
+			pendingTipText = hs.getTooltipText();
+			if (pendingTipText != null) {
+				showTooltip();
+			}
 			return;
 		}
 
-		// FUTURE: how to avoid overlapping labels ?		
-		// Change mouse cursor if hovering over a landmark on the map
-		var matches = landmarks.getFeatures(pos, 0.01);
-		if (matches.size() == 1) {
-			mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-			return;
-		}
-
-		mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		updateCursor(DEFAULT);
 	}
 
-	private Unit findUnitUnderMouse(Coordinates clickedPosition) {
-		// Check Settlements first
-		for(var s : unitManager.getSettlements()) {
-			if (isUnitAtPosition(s, clickedPosition)) {
-				return s;
-			}
-		}
+	private void showTooltip() {
+		var tip = mapPanel.createToolTip();
+		tip.setTipText(pendingTipText);
 
-		// Check vehicles on surface
-		for(var v : unitManager.getVehicles()) {
-			if (v.isOutsideOnMarsMission() && isUnitAtPosition(v, clickedPosition)) {
-				return v;
-			}
-		}
-		return null;
+		var factory = PopupFactory.getSharedInstance();
+
+		var locn = mapPanel.getLocationOnScreen();
+		locn.translate(hotspotPoint.x, hotspotPoint.y);
+		tipWindow = factory.getPopup(mapPanel, tip, locn.x, locn.y);
+		tipWindow.show();
 	}
 
 	/**
-	 * Sets the cursor and open detail window of a unit.
-	 * 
-	 * @param unit
-	 * @param clickedPosition
+	 * Update the cursor for the map panel. The cursor is only updated if it is different.
+	 * @param newCursor
 	 */
-	private boolean isUnitAtPosition(Unit unit, Coordinates clickedPosition) {
-		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-			Coordinates unitCoords = unit.getCoordinates();
-			double clickRange = unitCoords.getDistance(clickedPosition);
-			double unitClickRange = displayInfo.getMapClickRange();
-			if (clickRange < unitClickRange) {
-				return true;
-			}
+	private void updateCursor(Cursor newCursor) {
+		if (!mapPanel.getCursor().equals(newCursor)) {
+			mapPanel.setCursor(newCursor);
 		}
-		return false;
 	}
 }

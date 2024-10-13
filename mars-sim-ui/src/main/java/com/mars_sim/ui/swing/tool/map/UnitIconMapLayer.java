@@ -4,11 +4,9 @@
  * @date 2023-04-28
  * @author Scott Davis
  */
-
 package com.mars_sim.ui.swing.tool.map;
 
-import java.awt.Component;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.Icon;
 
@@ -23,10 +21,31 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * The UnitMapLayer is a graphics layer to display unit icons.
  */
 public class UnitIconMapLayer extends UnitMapLayer {
+	/**
+	 * Is a clickable hotspot for a Unit on the surface
+	 */
+	private class UnitHotspot extends MapHotspot {
 
-	private Component displayComponent;
+		private Unit target;
 
-	public UnitIconMapLayer(Component displayComponent) {
+		protected UnitHotspot(IntPoint center, Unit target) {
+			super(center, 5);
+			this.target = target;
+		}
+
+		/**
+		 * Delegate to the desktop to display the unit window
+		 */
+		@Override
+		public void clicked() {
+			displayComponent.getDesktop().showDetails(target);
+		}
+	}
+
+	private MapPanel displayComponent;
+
+	public UnitIconMapLayer(MapPanel displayComponent) {
+		super(displayComponent);
 		this.displayComponent = displayComponent;
 	}
 
@@ -38,7 +57,7 @@ public class UnitIconMapLayer extends UnitMapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected void displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	protected MapHotspot displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
 
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
@@ -50,9 +69,12 @@ public class UnitIconMapLayer extends UnitMapLayer {
 		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
 			MapMetaData mapType = baseMap.getMapMetaData();
 			Icon displayIcon = displayInfo.getMapIcon(unit, mapType);	
-			if (g != null)
-				displayIcon.paintIcon(displayComponent, g, locX, locY);
+			displayIcon.paintIcon(displayComponent, g, locX, locY);
+
+			return new UnitHotspot(location, unit);
 		}
+
+		return null;
 	}
 
 	/**

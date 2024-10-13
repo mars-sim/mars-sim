@@ -20,6 +20,24 @@ import com.mars_sim.ui.swing.ImageLoader;
 
 public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> {
 
+	/**
+	 * Map hotspot for any explroed sites visible
+	 */
+	private class SiteHotspot extends MapHotspot {
+
+		private ExploredLocation site;
+
+		protected SiteHotspot(IntPoint center, ExploredLocation site) {
+			super(center, 5);
+			this.site = site;
+		}
+
+		@Override
+		public String getTooltipText() {
+			return "Certainty: " + site.getAverageCertainty();
+		}	
+	}
+
 	// Static members
 	private static final String EXPLORED_ICON_NAME = "map/flag_smallyellow"; 
 	private static final String CLAIMED_ICON_NAME = "map/flag_smallgray"; 
@@ -98,9 +116,10 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> 
      * @param location Location on the Graphic
      * @param g Graphic for drawing
      * @param isColourful Is the destination a colourful map
+	 * @return Return a site hotspot is visible
      */
 	@Override
-    protected void displayFeature(ExploredLocation site, IntPoint location, Graphics2D g, boolean isColourful) {
+    protected MapHotspot displayFeature(ExploredLocation site, IntPoint location, Graphics2D g, boolean isColourful) {
 		// Check layer filters
 		boolean displaySite = !site.isReserved() || displayReserved;
 		if (!site.isClaimed() && !displayClaimed)
@@ -109,7 +128,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> 
 		// if (!site.isExplored())
 		// 	displaySite = false;
 		if (!displaySite) {
-			return;
+			return null;
 		}
 
 		// Chose a navpoint icon based on the map type.
@@ -124,6 +143,8 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> 
 
 		// Draw the navpoint icon.
 		navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
+
+		return new SiteHotspot(drawLocation, site);
 	}
 
 	public int getIconWidth() {
