@@ -13,6 +13,7 @@ import java.awt.RenderingHints;
 import java.util.List;
 
 import com.mars_sim.core.environment.Landmark;
+import com.mars_sim.core.environment.LandmarkType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.map.location.SurfaceManager;
@@ -30,9 +31,20 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 			this.site = site;
 		}
 
+		/**
+		 * Create a structured text summary for a tooltip of the Landmark
+		 */
 		@Override
 		public String getTooltipText() {
-			return site.getDescription();
+			String tooltip = "<html>Name: " + site.getName()
+					+ "<br>Origin: " + site.getOrigin()
+					+ "<br>Type: " + site.getType().getName();
+			var desc = site.getDescription();
+			if (desc != null) {
+				tooltip += "<br>Desc: " + desc;
+			}
+			tooltip += "</html>";
+			return tooltip;
 		}	
 	}
 
@@ -108,7 +120,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 		int locLabelX = 0;
 		int locLabelY = 0;
 
-		if (landmark.getType().equalsIgnoreCase(Landmark.AO_TYPE)) {
+		if (landmark.getType() == LandmarkType.AO) {
 			// Find location to display label.
 			locLabelX = location.getiX() + (AO_CIRCLE_DIAMETER / 2) + AO_LABEL_HORIZONTAL_OFFSET;
 			locLabelY = location.getiY() +  AO_CIRCLE_DIAMETER;

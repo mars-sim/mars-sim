@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * MapHotspot.java
+ * @date 2024-10-13
+ * @author Barry Evans
+ */
 package com.mars_sim.ui.swing.tool.map;
 
 import com.mars_sim.core.map.location.IntPoint;
@@ -9,6 +15,9 @@ public abstract class MapHotspot {
     private IntPoint center;
     private int radius;
 
+    /**
+     * Create a circular map hotspot that has a cener and a radius of focus
+     */
     protected MapHotspot(IntPoint center, int radius) {
         this.center = center;
         this.radius = radius;

@@ -4,7 +4,6 @@
  * @date 2023-06-22
  * @author Dalen Kruse
  */
-
 package com.mars_sim.core.environment;
 
 import java.io.Serializable;
@@ -21,9 +20,6 @@ public class Landmark implements Serializable, SurfacePOI {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// Artifical object landmark type; other do exist
-	public static final String AO_TYPE = "AO";
-
 	// Data members
 	/** Name of the landmark. */
 	private String landmarkName;
@@ -38,7 +34,7 @@ public class Landmark implements Serializable, SurfacePOI {
 	/** Origin of the designation. */
 	private String landmarkOrigin;
 	/** Type of feature, e.g. Mons (MO). */
-	private String landmarkType;
+	private LandmarkType type;
 
 	/**
 	 * Constructs a landmark object with the given name at the given location.
@@ -51,7 +47,7 @@ public class Landmark implements Serializable, SurfacePOI {
 	 * @param origin
 	 * @param type
 	 */
-	public Landmark(String name, String description, String landingLocation, Coordinates coord, int diameter, String origin, String type) {
+	public Landmark(String name, String description, String landingLocation, Coordinates coord, int diameter, String origin, LandmarkType type) {
 
 		this.landmarkName = name;
 		this.description = description;
@@ -59,7 +55,7 @@ public class Landmark implements Serializable, SurfacePOI {
 		this.coord = coord;
 		this.landmarkDiameter = diameter;
 		this.landmarkOrigin = origin;
-		this.landmarkType = type;
+		this.type = type;
 	}
 
 	/**
@@ -122,7 +118,7 @@ public class Landmark implements Serializable, SurfacePOI {
 	 * 
 	 * @return type of the landmark
 	 */
-	public String getType() {
-		return landmarkType;
+	public LandmarkType getType() {
+		return type;
 	}
 }

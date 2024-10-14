@@ -13,4 +13,20 @@ public class LandmarkConfigTest extends AbstractMarsSimUnitTest {
 
         assertFalse("No landmarks found", results.isEmpty());
     }
+
+    public void testBeagle() {
+        var mgr = getSim().getConfig().getLandmarkConfiguration().getLandmarks();
+
+        // Check teh lanmark for beagle
+        var center = new Coordinates("10.6 N", "90.0 E");
+        var results = mgr.getFeatures(center, 0.01);
+
+        assertEquals("Beagle found", 1, results.size());
+
+        var beagle = results.get(0);
+        assertEquals("Beagle name", "Beagle 2 Lander", beagle.getName());
+        assertEquals("Beagle origin", "ESA", beagle.getOrigin());
+        assertEquals("Beagel type", LandmarkType.AO, beagle.getType());
+        assertEquals("Beagle location", center, beagle.getLocation());
+    }
 }

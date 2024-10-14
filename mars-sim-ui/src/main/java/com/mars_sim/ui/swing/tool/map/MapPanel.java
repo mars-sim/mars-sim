@@ -66,6 +66,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private static final int MAX_SLIDER = 100;	// Slider internal value max
 	private static final int SLIDER_LABELS = 6; // Number of labels on slider
 
+	private static final boolean SHOW_MAP_DETAILS = false; // Enable for map details in header
+
 	private int dragx;
 	private int dragy;
 
@@ -90,7 +92,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private MapData backgroundMapData;
 
-	private static final boolean SHOW_MAP_DETAILS = true;
 	private JLabel mapDetails;
 	private JLabel statusLabel;
 

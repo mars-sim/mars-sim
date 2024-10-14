@@ -11,6 +11,7 @@ import java.util.List;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfaceManager;
 import com.mars_sim.core.tool.Msg;
@@ -103,7 +104,7 @@ public class LandmarkConfig {
 			String origin = landmark.getAttributeValue(ORIGIN);
 
 			// Get type.
-			String type = landmark.getAttributeValue(TYPE).toUpperCase();
+			var type = ConfigHelper.getEnum(LandmarkType.class, landmark.getAttributeValue(TYPE));
 
 			// Create landmark.
 			newMgr.addFeature(new Landmark(name, description, locationString, location, diameter, origin, type));

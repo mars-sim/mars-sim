@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  * This is a listener to mouse event on a MapPanel. It changes the cursor when hovered over a 
@@ -22,6 +23,7 @@ import javax.swing.SwingUtilities;
  */
 public class MapMouseListener extends MouseAdapter {
 	
+	private static final int TOOLTIP_DELAY = 750;
 	private static final Cursor DEFAULT = new Cursor(Cursor.DEFAULT_CURSOR);
 	private static final Cursor CROSSHAIR = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
@@ -29,9 +31,16 @@ public class MapMouseListener extends MouseAdapter {
 	private Point hotspotPoint;
 	private String pendingTipText;
 	private Popup tipWindow;
+	private Timer popupTimer;
 
+	/*
+	 * Create a mouse listener on a map panel that will respond to movement and click events.
+	 */
     public MapMouseListener(MapPanel mapPanel) {
         this.mapPanel = mapPanel;
+		popupTimer = new Timer(TOOLTIP_DELAY, e -> showTooltip());
+		popupTimer.setRepeats(false);
+		popupTimer.stop();
     }
 
 	/**
@@ -72,18 +81,26 @@ public class MapMouseListener extends MouseAdapter {
 	 */
     @Override
     public void mouseMoved(MouseEvent event) {
+		// Close and previous tooltip window
 		if (tipWindow != null) {
 			tipWindow.hide();
 			tipWindow = null;
 		}
 
+		// Stop the popup timer as user has moved mouse
+		if (popupTimer.isRunning()) {
+			popupTimer.stop();
+		}
+
+		// Fin the hotspot underthe cursor
 		var hs = findHotspot(event.getX(), event.getY());
 		if (hs != null) {
 			updateCursor(CROSSHAIR);
 			hotspotPoint = event.getPoint();
 			pendingTipText = hs.getTooltipText();
 			if (pendingTipText != null) {
-				showTooltip();
+				// Start the popup time
+				popupTimer.start();
 			}
 			return;
 		}
@@ -91,6 +108,9 @@ public class MapMouseListener extends MouseAdapter {
 		updateCursor(DEFAULT);
 	}
 
+	/**
+	 * Show the tooltip window
+	 */
 	private void showTooltip() {
 		var tip = mapPanel.createToolTip();
 		tip.setTipText(pendingTipText);
