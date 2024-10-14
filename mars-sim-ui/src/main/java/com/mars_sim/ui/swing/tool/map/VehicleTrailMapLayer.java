@@ -9,21 +9,30 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
+import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
-import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.
  */
-public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
+public class VehicleTrailMapLayer implements MapLayer {
 
 	// Data members
 	private Vehicle singleVehicle;
+
+	private UnitManager unitManager;
+
+	public VehicleTrailMapLayer(MapPanel parent) {
+		unitManager = parent.getDesktop().getSimulation().getUnitManager();
+	}
 
 	/**
 	 * Sets the single vehicle trail to display. Set to null if display all vehicle
@@ -43,7 +52,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
 
 		// Set trail color
 		g.setColor((baseMap.getMapMetaData().isColourful() ? Color.BLACK : new Color(0, 96, 0)));
@@ -52,10 +61,12 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 		if (singleVehicle != null)
 			displayTrail(singleVehicle, mapCenter, baseMap, g);
 		else {
-			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-			while (i.hasNext())
-				displayTrail(i.next(), mapCenter, baseMap, g);
+			for(var v : unitManager.getVehicles()) {
+				displayTrail(v, mapCenter, baseMap, g);
+			}
 		}
+
+		return Collections.emptyList();
 	}
 
 	/**

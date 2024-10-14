@@ -88,7 +88,7 @@ class ProspectingSitePanel extends WizardPanel {
 		mapPane = new MapPanel(wizard.getDesktop(), 200L);
 		
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
-		mapPane.addMapLayer(new UnitLabelMapLayer(), 1);
+		mapPane.addMapLayer(new UnitLabelMapLayer(mapPane), 1);
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 3);
 		

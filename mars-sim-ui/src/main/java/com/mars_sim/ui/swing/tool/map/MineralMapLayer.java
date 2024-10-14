@@ -8,11 +8,12 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -21,12 +22,11 @@ import java.util.TreeMap;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.tool.SimulationConstants;
 
 /**
  * A map layer showing mineral concentrations.
  */
-public class MineralMapLayer implements MapLayer, SimulationConstants {
+public class MineralMapLayer implements MapLayer {
 
 	// Domain members
 	private boolean updateLayer;
@@ -71,12 +71,13 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 * 
 	 * @param mapCenter the location of the center of the map.
 	 * @param baseMap   the type of map.
-	 * @param g         graphics context of the map display.
+	 * @param g2d       graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	@Override
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
 		
 		if (mineralsDisplaySet.isEmpty()) {
-			return;
+			return Collections.emptyList();
 		}
 
 		boolean isChanging = ((MapPanel)displayComponent).isChanging();
@@ -84,15 +85,11 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 		double rho = baseMap.getRho();
 		
 		if (isChanging) {
-			return;	
+			return Collections.emptyList();
 		}
-
-		Graphics2D g2d = (Graphics2D) g;
 		
-		String mapType = baseMap.getMapMetaData().getId();
-		
+		String mapType = baseMap.getMapMetaData().getId();		
 		int numMinerals = mineralsDisplaySet.size();
-
 		if (mapCenterCache == null || !mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) 
 				|| updateLayer || rhoCache != rho || numMineralsCache != numMinerals) {
 				
@@ -151,7 +148,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 		// Draw the mineral concentration image
 		g2d.drawImage(mineralImage, 0, 0, displayComponent);
 			
-		// Note: Do not call g2d.dispose() here
+		return Collections.emptyList();
 	}
 
 	/**
@@ -244,10 +241,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 * @return true if displayed.
 	 */
 	public boolean isMineralDisplayed(String mineralType) {
-		if (mineralsDisplaySet.contains(mineralType))
-			return true;
-		else
-			return false;
+		return mineralsDisplaySet.contains(mineralType);
 	}
 
 	/**

@@ -23,14 +23,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -44,16 +43,14 @@ import javax.swing.UIDefaults;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;
+import com.mars_sim.core.map.MapData.MapState;
 import com.mars_sim.core.map.MapDataFactory;
 import com.mars_sim.core.map.MapMetaData;
-import com.mars_sim.core.map.MapData.MapState;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.mission.NavpointPanel;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 
 @SuppressWarnings("serial")
@@ -68,6 +65,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private static final int MAX_SLIDER = 100;	// Slider internal value max
 	private static final int SLIDER_LABELS = 6; // Number of labels on slider
+
+	private static final boolean SHOW_MAP_DETAILS = false; // Enable for map details in header
 
 	private int dragx;
 	private int dragy;
@@ -86,9 +85,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private Image mapImage;
 	private MapDisplay marsMap;
 	private MainDesktopPane desktop;
-	private NavigatorWindow navwin;
-	private NavpointPanel navPanel;
-	private Image starfield;
 	
 	private JSlider zoomSlider;
 	
@@ -96,32 +92,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private MapData backgroundMapData;
 
-	private static final boolean SHOW_MAP_DETAILS = true;
 	private JLabel mapDetails;
 	private JLabel statusLabel;
 
-	/**
-	 * Constructor 1.
-	 * 
-	 * @param desktop
-	 * @param navwin
-	 */
-	public MapPanel(MainDesktopPane desktop, NavigatorWindow navwin) {
-		this(desktop);
-		this.navwin = navwin;
-	}
-	
-	/**
-	 * Constructor 2.
-	 * 
-	 * @param desktop
-	 * @param navPanel
-	 */
-	public MapPanel(MainDesktopPane desktop, NavpointPanel navPanel) {
-		this(desktop);
-		this.navPanel = navPanel;
-	}
-	
+	private List<MapHotspot> hotspots = new ArrayList<>();
+
 	/**
 	 * Constructor 3.
 	 * 
@@ -130,7 +105,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		this(desktop);
-		this.desktop = desktop;
 	}
 	
 	/**
@@ -138,7 +112,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @param desktop
 	 */
-	private MapPanel(MainDesktopPane desktop) {
+	public MapPanel(MainDesktopPane desktop) {
 		super();
 		this.desktop = desktop;
 		
@@ -150,8 +124,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
 		setSize(getPreferredSize());
-		
-		starfield = ImageLoader.getImage("map/starfield");
 		
 		executor = Executors.newSingleThreadExecutor();
 		
@@ -610,7 +582,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	        }
 	        else {
 	        	if (mapError) {
-	            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
 	                // Draw error message
 	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
 	                drawCenteredMessage(mapErrorMessage, g2d);
@@ -634,14 +605,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                	else
 	                		return;
 	
-	                	// Display map layers.
-	                	
-	                	// Put the map layers here.
-	                	// Say if the location of a vehicle is updated
-	                	// it doesn't have to redraw the marsMap.
-	                	// It only have to redraw its map layer below
-	                	for( var i : mapLayers) {
-	                		i.displayLayer(centerCoords, marsMap, g);
+	                	// Reset the hotspots
+	                	hotspots = new ArrayList<>();
+
+						// Display the layers and record any hotspots
+	                	for(var i : mapLayers) {
+	                		hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d));
 						}
               		
 		        		g2d.setBackground(Color.BLACK);
@@ -695,6 +664,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
     }
 
+	/**
+	 * Get teh parent desktop
+	 */
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+
     /**
      * Gets the rho of the Mars surface map.
      * 
@@ -730,6 +706,14 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     }
 
 	/**
+	 * Get the current hotspot in the map.
+	 * @return
+	 */
+    public List<MapHotspot> getHotspots() {
+        return hotspots;
+    }
+
+	/**
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
@@ -743,5 +727,4 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		marsMap = null;
 		mapImage = null;
 	}
-
 }

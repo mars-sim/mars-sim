@@ -7,7 +7,8 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
 
@@ -23,5 +24,5 @@ public interface MapLayer {
 	 * @param baseMap   the base map controlling coordinate frame
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g);
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g);
 }

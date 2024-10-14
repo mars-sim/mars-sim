@@ -6,25 +6,21 @@
  */
 package com.mars_sim.core.environment;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.SurfaceManager;
 import com.mars_sim.core.tool.Msg;
 
 /**
  * Provides configuration information about landmarks. Uses a DOM document to
  * get the information.
  */
-public class LandmarkConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class LandmarkConfig {
 
 	// Element names
 	private static final String LANDMARK = "landmark";
@@ -37,7 +33,7 @@ public class LandmarkConfig implements Serializable {
 	private static final String ORIGIN = "origin";
 	private static final String TYPE = "type";
 
-	private transient List<Landmark> landmarkList;
+	private SurfaceManager<Landmark> landmarkList;
 
 	/**
 	 * Constructor.
@@ -49,12 +45,11 @@ public class LandmarkConfig implements Serializable {
 	}
 
 	/**
-	 * Gets a list of landmarks.
+	 * Gets a landmarks.
 	 * 
-	 * @return list of landmarks
-	 * @throws Exception when landmarks can not be parsed.
+	 * @return Manager of landmarks
 	 */
-	public List<Landmark> getLandmarkList() {
+	public SurfaceManager<Landmark> getLandmarks() {
 		return landmarkList;
 	}
 	
@@ -70,7 +65,7 @@ public class LandmarkConfig implements Serializable {
 		}
 			
 		// Build the global list in a temp to avoid access before it is built
-		List<Landmark> newList = new ArrayList<>();
+		SurfaceManager<Landmark> newMgr = new SurfaceManager<>();
 		
 		Element root = landmarkDoc.getRootElement();
 		List<Element> landmarks = root.getChildren(LANDMARK);
@@ -109,22 +104,13 @@ public class LandmarkConfig implements Serializable {
 			String origin = landmark.getAttributeValue(ORIGIN);
 
 			// Get type.
-			String type = landmark.getAttributeValue(TYPE).toUpperCase();
+			var type = ConfigHelper.getEnum(LandmarkType.class, landmark.getAttributeValue(TYPE));
 
 			// Create landmark.
-			newList.add(new Landmark(name, description, locationString, location, diameter, origin, type));
+			newMgr.addFeature(new Landmark(name, description, locationString, location, diameter, origin, type));
 		}
 		
-		// Assign the newList now built
-		landmarkList = Collections.unmodifiableList(newList);
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		if (landmarkList != null) {
-			landmarkList = null;
-		}
+		// Make the new manager visible
+		landmarkList = newMgr;
 	}
 }

@@ -8,6 +8,9 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -15,15 +18,15 @@ import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
  * The NavpointMapLayer is a graphics layer to display mission navpoints.
  */
-public class NavpointMapLayer implements MapLayer, SimulationConstants {
+public class NavpointMapLayer implements MapLayer {
 
 	// Static members
 	private static final String BLUE_ICON_NAME = "map/flag_blue";
@@ -42,17 +45,20 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	
 	private Mission singleMission;
 	private NavPoint selectedNavpoint;
+	private MissionManager missionManager;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param displayComponent the display component.
+	 * @param parent the display component.
 	 */
-	public NavpointMapLayer(Component displayComponent) {
+	public NavpointMapLayer(MapPanel parent) {
 
 		// Initialize domain data.
-		this.displayComponent = displayComponent;
+		this.displayComponent = parent;
 
+		missionManager = parent.getDesktop().getSimulation().getMissionManager();
+		
 		navpointIconColor = ImageLoader.getIconByName(BLUE_ICON_NAME);
 		navpointIconWhite = ImageLoader.getIconByName(WHITE_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIconByName(GREEN_ICON_NAME);
@@ -85,20 +91,22 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
 		if (singleMission != null) {
-			if (singleMission instanceof VehicleMission)
-				displayMission((VehicleMission) singleMission, mapCenter, baseMap, g);
+			if (singleMission instanceof VehicleMission vm)
+				displayMission(vm, mapCenter, baseMap, g);
 		} else {
 			for (Mission mission : missionManager.getMissions()) {
-				if (mission instanceof VehicleMission)
-					displayMission((VehicleMission) mission, mapCenter, baseMap, g);
+				if (mission instanceof VehicleMission vm)
+					displayMission(vm, mapCenter, baseMap, g);
 			}
 		}
 
 		// Make sure selected navpoint is always on top.
 		if (selectedNavpoint != null)
 			displayNavpoint(selectedNavpoint, mapCenter, baseMap, g);
+
+		return Collections.emptyList();
 	}
 
 	/**
@@ -125,7 +133,7 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	 */
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
-		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
+		if (mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
 			MapMetaData mapType = baseMap.getMapMetaData();
 			
 			// Chose a navpoint icon based on the map type.

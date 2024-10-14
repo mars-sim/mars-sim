@@ -1,15 +1,19 @@
 package com.mars_sim.core.map.location;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.text.DecimalFormat;
+
+import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.tool.Msg;
 
-import junit.framework.TestCase;
 
 /**
  * Unit test suite for the Coordinates class.
  */
-public class TestCoordinates extends TestCase {
+class TestCoordinates {
 	/* default logger. */
 	
     private static final double ERROR_MARGIN_KM = .000000001D;
@@ -19,7 +23,8 @@ public class TestCoordinates extends TestCase {
     /**
      * Finds the distance resolution for one degree at the equator.
      */
-    public void testResolution() {
+    @Test
+    void testResolution() {
     	
         // 59.21 km resolution
     	
@@ -63,10 +68,42 @@ public class TestCoordinates extends TestCase {
         
     }
     
+    @Test
+    void testGetAngle() {
+        var locInit = new Coordinates(Math.PI / 2D, 0D);
+
+        double inc = 0.1D;
+        var horzRight = new Coordinates(locInit.getPhi(), locInit.getTheta() + inc);
+        var angle = locInit.getAngle(horzRight);
+        assertEquals("Horizontal right arc", inc, angle, 0.01);
+
+        var horzLeft = new Coordinates(locInit.getPhi(), locInit.getTheta() - inc);
+        angle = locInit.getAngle(horzLeft);
+        assertEquals("Horizontal left arc", inc, angle, 0.01);
+
+        var vertTop = new Coordinates(locInit.getPhi() -inc, locInit.getTheta());
+        angle = locInit.getAngle(vertTop);
+        assertEquals("Vertical top arc", inc, angle, 0.01);
+
+        var vertBottom = new Coordinates(locInit.getPhi() + inc, locInit.getTheta());
+        angle = locInit.getAngle(vertBottom);
+        assertEquals("Vertical bottom arc", inc, angle, 0.01);
+
+        double diagInc = Math.sqrt((inc * inc)/2); 
+        var northEast = new Coordinates(locInit.getPhi() - diagInc, locInit.getTheta() + diagInc);
+        angle = locInit.getAngle(northEast);
+        assertEquals("North East arc", inc, angle, 0.01);
+
+        var southWest = new Coordinates(locInit.getPhi() + diagInc, locInit.getTheta() - diagInc);
+        angle = locInit.getAngle(southWest);
+        assertEquals("SOuth West arc", inc, angle, 0.01);
+    }
+
     /**
      * Test the getDistance method.
      */
-    public void testGetDistance() {
+    @Test
+    void testGetDistance() {
         
         Coordinates locInit = new Coordinates(Math.PI / 2D, 0D);
         
@@ -191,29 +228,30 @@ public class TestCoordinates extends TestCase {
     /**
      * Test the getDirectionToPoint method.
      */
-    public void testGetDirectionToPoint() {
+    @Test
+    void testGetDirectionToPoint() {
         
         Coordinates locInit = new Coordinates(Math.PI / 2D, 0D);
         
         // Position north of initial.
         Coordinates loc1 = new Coordinates(Math.PI / 4D, 0D);
         Direction direction1 = locInit.getDirectionToPoint(loc1);
-        assertEquals(0D, direction1.getDirection());
+        assertEquals("Direction North", 0D, direction1.getDirection(), 0D);
         
         // Position east of initial.
         Coordinates loc2 = new Coordinates(Math.PI / 2D, Math.PI / 4D);
         Direction direction2 = locInit.getDirectionToPoint(loc2);
-        assertEquals(Math.PI / 2D, direction2.getDirection());
+        assertEquals("Direction East", Math.PI / 2D, direction2.getDirection(), 0D);
         
         // Position south of initial.
         Coordinates loc3 = new Coordinates(3D * Math.PI / 4D, 0D);
         Direction direction3 = locInit.getDirectionToPoint(loc3);
-        assertEquals(Math.PI, direction3.getDirection());
+        assertEquals("Direction South", Math.PI, direction3.getDirection(), 0D);
         
         // Position west of initial.
         Coordinates loc4 = new Coordinates(Math.PI / 2D, 3D * Math.PI / 2D);
         Direction direction4 = locInit.getDirectionToPoint(loc4);
-        assertEquals(3D * Math.PI / 2D, direction4.getDirection());
+        assertEquals("Direction west", 3D * Math.PI / 2D, direction4.getDirection(), 0D);
         
         double offset = Math.PI / Coordinates.MARS_CIRCUMFERENCE / 500D;
         
@@ -338,27 +376,27 @@ public class TestCoordinates extends TestCase {
         
         String lonString0 = "226.98" + DEG_SIGN + " E";
         double lon0 = Math.round(Coordinates.parseLongitude2Theta(lonString0)*100.0)/100.0;
-        assertEquals(3.96, lon0);
+        assertEquals(3.96, lon0, 0);
         
         String lonString1 = "46.98" + DEG_SIGN + " E";
         double lon1 = Math.round(Coordinates.parseLongitude2Theta(lonString1)*100.0)/100.0;
-        assertEquals(.82, lon1);
+        assertEquals(.82, lon1, 0);
         
         String lonString01 = "0" + DEG_SIGN + " E";
         double lon01 = Math.round(Coordinates.parseLongitude2Theta(lonString01)*100.0)/100.0;
-        assertEquals(0D, lon01);
+        assertEquals(0D, lon01, 0);
         
         String lonString2 = "90.0" + DEG_SIGN + " W";
         double lon2 = Coordinates.parseLongitude2Theta(lonString2);
-        assertEquals(3D * Math.PI / 2D, lon2);
+        assertEquals(3D * Math.PI / 2D, lon2, 0);
         
         String lonString3 = "90.0 W";
         double lon3 = Coordinates.parseLongitude2Theta(lonString3);
-        assertEquals(3D * Math.PI / 2D, lon3);
+        assertEquals(3D * Math.PI / 2D, lon3, 0);
         
         String lonString4 = "90,0 W";
         double lon4 = Coordinates.parseLongitude2Theta(lonString4);
-        assertEquals(3D * Math.PI / 2D, lon4);
+        assertEquals(3D * Math.PI / 2D, lon4, 0);
     }
     
     /**
@@ -368,23 +406,23 @@ public class TestCoordinates extends TestCase {
         
         String latString1 = "0.0" + DEG_SIGN + " N";
         double lat1 = Coordinates.parseLatitude2Phi(latString1);
-        assertEquals(Math.PI / 2D, lat1);
+        assertEquals(Math.PI / 2D, lat1, 0);
         
         String latString2 = "90.0" + DEG_SIGN + " S";
         double lat2 = Coordinates.parseLatitude2Phi(latString2);
-        assertEquals(Math.PI, lat2);
+        assertEquals(Math.PI, lat2, 0);
         
         String latString01 = "17.23" + DEG_SIGN + " N";
         double lat01 = Math.round(Coordinates.parseLatitude2Phi(latString01)*100.0)/100.0;
-        assertEquals(1.27, lat01);
+        assertEquals(1.27, lat01, 0);
                
         String latString3 = "90.0 N";
         double lat3 = Coordinates.parseLatitude2Phi(latString3);
-        assertEquals(0D, lat3);
+        assertEquals(0D, lat3, 0);
         
         String latString4 = "90,0 N";
         double lat4 = Coordinates.parseLatitude2Phi(latString4);
-        assertEquals(0D, lat4);
+        assertEquals(0D, lat4, 0);
     }
     
     /**

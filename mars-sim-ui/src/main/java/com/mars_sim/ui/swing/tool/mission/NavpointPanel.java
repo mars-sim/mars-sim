@@ -118,26 +118,26 @@ implements MissionListener {
 	    mainPane.add(splitPane, BorderLayout.CENTER);
 		
 		// Create the map panel.
-		mapPanel = new MapPanel(missionWindow.getDesktop(), this);
+		mapPanel = new MapPanel(missionWindow.getDesktop());
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
 		// Set up mouse control
 		mapPanel.setMouseDragger(false);
 
-		var mouseListener = new MapMouseListener(missionWindow.getDesktop(), mapPanel);
+		var mouseListener = new MapMouseListener(mapPanel);
 		mapPanel.addMouseListener(mouseListener);
 		mapPanel.addMouseMotionListener(mouseListener);
 		
 		mapPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
-		trailLayer = new VehicleTrailMapLayer();
-		navpointLayer = new NavpointMapLayer(this);
+		trailLayer = new VehicleTrailMapLayer(mapPanel);
+		navpointLayer = new NavpointMapLayer(mapPanel);
         mineralLayer = new MineralMapLayer(this);
         
         mapPanel.addMapLayer(mineralLayer, 1);
 		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
-		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
+		mapPanel.addMapLayer(new UnitLabelMapLayer(mapPanel), 3);
 		mapPanel.addMapLayer(trailLayer, 4);
 		mapPanel.addMapLayer(navpointLayer, 5);
   

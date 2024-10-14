@@ -10,23 +10,22 @@ package com.mars_sim.ui.swing.tool.map;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Icon;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
-import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
  * A map layer to allow the editing of navpoints.
  */
-public class NavpointEditLayer implements MapLayer, SimulationConstants {
+public class NavpointEditLayer implements MapLayer {
 
 	// Static members
 	private static final String BLUE_ICON_NAME = "map/flag_blue";
@@ -49,7 +48,7 @@ public class NavpointEditLayer implements MapLayer, SimulationConstants {
 	 */
 	public NavpointEditLayer(Component displayComponent, boolean drawNavNumbers) {
 		this.displayComponent = displayComponent;
-		navpointPositions = new ArrayList<IntPoint>();
+		navpointPositions = new ArrayList<>();
 		navpointIconColor = ImageLoader.getIconByName(BLUE_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIconByName(GREEN_ICON_NAME);
 		selectedNavpoint = -1;
@@ -157,12 +156,11 @@ public class NavpointEditLayer implements MapLayer, SimulationConstants {
 	 * 
 	 * @param mapCenter the location of the center of the map.
 	 * @param baseMap   the type of map.
-	 * @param g         graphics context of the map display.
+	 * @param g2d         graphics context of the map display.
 	 */
 	@Override
-	public void displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
 
-		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -206,5 +204,7 @@ public class NavpointEditLayer implements MapLayer, SimulationConstants {
 				g2d.drawString("" + (x + 1), (currentPosition.getiX() + 5), (currentPosition.getiY() + 5));
 			}
 		}
+
+		return Collections.emptyList();
 	}
 }
