@@ -14,7 +14,6 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,7 +26,7 @@ public class JStatusBar extends TexturedPanel {
 
     private static final int MARGIN = 1;
 
-    private int barHeight = 30;
+    private int barHeight = 25;
     private int leftPadding;
     private int rightPadding;
 
@@ -45,60 +44,66 @@ public class JStatusBar extends TexturedPanel {
     	this.leftPadding = leftPadding;
     	this.rightPadding = rightPadding;
     	
-    	createPartControl();
+    	createUI();	
     }
     	 
-    protected void createPartControl() {    
+    protected void createUI() {    
     	
 		setOpaque(false);
 		setBackground(almond);
 		
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(getWidth(), barHeight + (2 * (MARGIN + 2))));
+        setPreferredSize(new Dimension(getWidth(), barHeight + MARGIN + 1));
     
-        leftPanel = new JPanel(new FlowLayout());
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        leftPanel = new JPanel(new BorderLayout());
+//        leftPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));//BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        leftPanel.setAlignmentY(CENTER_ALIGNMENT);
+        leftPanel.setAlignmentX(LEFT_ALIGNMENT);
         add(leftPanel, BorderLayout.WEST);
         
-        centerPanel = new JPanel(new FlowLayout());
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        centerPanel = new JPanel(new BorderLayout());
+//        centerPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        centerPanel.setAlignmentY(CENTER_ALIGNMENT);
+        centerPanel.setAlignmentX(CENTER_ALIGNMENT);
         add(centerPanel, BorderLayout.CENTER);
         
-        rightPanel = new JPanel(new FlowLayout());
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        rightPanel = new JPanel(new BorderLayout());
+//        rightPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        rightPanel.setAlignmentY(CENTER_ALIGNMENT);
+        rightPanel.setAlignmentX(RIGHT_ALIGNMENT);
         add(rightPanel, BorderLayout.EAST);
     }
     
     public void addFullBarComponent(JPanel panel, boolean separator) {
     	JPanel fpanel = new JPanel(new BorderLayout());
         if (separator) {
-            addBorder(panel);
+//            addBorder(panel);
             fpanel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         }
         fpanel.add(panel, BorderLayout.CENTER);
-        centerPanel.add(fpanel);
+        centerPanel.add(fpanel, BorderLayout.CENTER);
     }
     
     public void addLeftComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEFT, 0, leftPadding));
         if (separator) {
-            addBorder(panel);
-        	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+//            addBorder(panel);
+        	add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         }
-        panel.add(component);
-        leftPanel.add(panel);
+        panel.add(component, BorderLayout.WEST);
+        leftPanel.add(panel, BorderLayout.WEST);
     }
     
     public void addCenterComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.CENTER, 0, leftPadding));
         if (separator) {
-            addBorder(panel);
-        	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+//            addBorder(panel);
+        	add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         }
-        panel.add(component);
-        centerPanel.add(panel);
+        panel.add(component, BorderLayout.CENTER);
+        centerPanel.add(panel, BorderLayout.CENTER);
     }
     
     
@@ -106,17 +111,17 @@ public class JStatusBar extends TexturedPanel {
         JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.RIGHT, 0, rightPadding));
         if (separator) {
-            addBorder(panel);
-        	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+//            addBorder(panel);
+        	add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         }
-        panel.add(component);
-        rightPanel.add(panel);
+        panel.add(component, BorderLayout.EAST);
+        rightPanel.add(panel, BorderLayout.EAST);
     }
     
-    private void addBorder(JPanel panel) {
-        panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
-                                                        BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN)));
-    }
+//    private void addBorder(JPanel panel) {
+//        panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+//                                                        BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN)));
+//    }
 
     public void addRightCorner() {
         JPanel panel = new JPanel(new FlowLayout(

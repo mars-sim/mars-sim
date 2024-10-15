@@ -169,8 +169,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
         urlLabel = new JLabel();
         urlLabel.setFont(new Font("Times New Roman", Font.ITALIC, 10));
-        urlLabel.setForeground(Color.DARK_GRAY);
-		statusBar.addLeftComponent(urlLabel, false);
+//        urlLabel.setForeground(Color.DARK_GRAY);
+		statusBar.addCenterComponent(urlLabel, false);
 
         return statusBar;
     }

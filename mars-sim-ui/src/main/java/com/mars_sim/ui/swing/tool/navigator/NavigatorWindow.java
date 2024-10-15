@@ -99,7 +99,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
-	private static final int HEIGHT_STATUS_BAR = 16;
+	private static final int HEIGHT_STATUS_BAR = 18;
 	private static final int CONTROL_PANE_HEIGHT = 85;
 	private static final String DEGREE_SIGN = Msg.getString("direction.degreeSign");
 	
@@ -461,9 +461,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		coordLabel.setFont(font);
 		coordLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 		
-		statusBar.addLeftComponent(coordLabel, false);
-		statusBar.addLeftComponent(phiLabel, false);
-		statusBar.addLeftComponent(thetaLabel, false);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(coordLabel, BorderLayout.WEST);
+		panel.add(phiLabel, BorderLayout.CENTER);
+		panel.add(thetaLabel, BorderLayout.EAST);
+		
+		statusBar.addLeftComponent(panel, false);
 		
 		statusBar.addCenterComponent(rhoLabel, false);
 		statusBar.addCenterComponent(heightLabel, false);

@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
@@ -424,7 +423,7 @@ public class MainWindow
 		memoryBar = new JMemoryMeter();
 		memoryBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-		memoryBar.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
+		memoryBar.setPreferredSize(new Dimension(130, 22));
 		statusBar.addRightComponent(memoryBar, false);
 
 		// Add this class to the master clock's listener
@@ -452,7 +451,7 @@ public class MainWindow
 
 	private void createSpeedButtons(JStatusBar statusBar) {
 		
-		JPanel speedPanel = new JPanel(new FlowLayout());
+		JPanel speedPanel = new JPanel(new BorderLayout());
 		
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton();
@@ -479,9 +478,9 @@ public class MainWindow
 		});
 		
 		// Add the increase speed button
-		speedPanel.add(decreaseSpeed);
-		speedPanel.add(pauseSwitch);
-		speedPanel.add(increaseSpeed);
+		speedPanel.add(decreaseSpeed, BorderLayout.WEST);
+		speedPanel.add(pauseSwitch, BorderLayout.CENTER);
+		speedPanel.add(increaseSpeed, BorderLayout.EAST);
 		statusBar.addLeftComponent(speedPanel, false);
 		
 	}
