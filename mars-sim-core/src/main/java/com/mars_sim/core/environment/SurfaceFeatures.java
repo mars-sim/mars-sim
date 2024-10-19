@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mineral.MineralMap;
+import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -97,7 +98,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		w.setSurfaceFeatures(this);
 		
 		terrainElevation = new TerrainElevation();
-		mineralMap = new MineralMap();
+		mineralMap = RandomMineralFactory.createRandomMap();
 		regionOfInterestLocations = new ArrayList<>();
 		areothermalMap = new AreothermalMap();
 	}

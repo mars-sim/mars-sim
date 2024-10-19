@@ -7,39 +7,25 @@
 
 package com.mars_sim.core.mineral;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.PixelGrabber;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-
-import javax.swing.ImageIcon;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.location.SurfaceManager;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A randomly generated mineral map of Mars.
  */
-public class MineralMap implements Serializable{
+public class MineralMap implements Serializable {
 
 	/*
 	 * Additional Map Resources
@@ -96,28 +82,8 @@ public class MineralMap implements Serializable{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final SimLogger logger = SimLogger.getLogger(MineralMap.class.getName());
 	
 	public static final double MIN_DISTANCE = 0.5;
-	 
-	public static final String TOPO_MAP_FOLDER = "/topography/";
-	
-	private static final int W = 300;
-	private static final int H = 150;
-
-	private static final int REGION_FACTOR = 1500;
-	private static final int NON_REGION_FACTOR = 50;
-
-	// Topographical Region Strings
-	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
-	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
-	private static final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
-
-	private static final String CRATER_REGION = "crater";
-	private static final String VOLCANIC_REGION = "volcanic";
-	private static final String SEDIMENTARY_REGION = "sedimentary";
-
 	private static final double PHI_LIMIT = Math.PI / 7;
 	private static final double ANGLE_LIMIT = .01;
 	
@@ -129,104 +95,10 @@ public class MineralMap implements Serializable{
 	/**
 	 * Constructor.
 	 */
-	public MineralMap() {
-	
+	MineralMap() {
+		// A bit nasty
+		mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		allMinerals = new SurfaceManager<>();
-		
-		// Determine mineral concentrations.
-		determineMineralConcentrations();
-	}
-
-	/**
-	 * Determines all mineral concentrations.
-	 */
-	private void determineMineralConcentrations() {
-		// Load topographical regions.
-		Set<Coordinates> craterRegionSet = getTopoRegionSet(CRATER_IMG);
-		Set<Coordinates> volcanicRegionSet = getTopoRegionSet(VOLCANIC_IMG);
-		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet(SEDIMENTARY_IMG);
-
-		if (mineralMapConfig == null)
-			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
-		
-		List<MineralType> minerals = new ArrayList<>(mineralMapConfig.getMineralTypes());
-		
-		Collections.shuffle(minerals);
-		for(var mineralType : minerals) {
-			
-			// Create super set of topographical regions.
-			List<Coordinates> potentialLocns = new ArrayList<>();
-
-			// Each mineral has unique abundance in each of the 3 regions
-			for(String locale : mineralType.getLocales()) {
-				var newRegion = switch(locale) {
-					case CRATER_REGION -> craterRegionSet;
-					case VOLCANIC_REGION -> volcanicRegionSet;
-					case SEDIMENTARY_REGION -> sedimentaryRegionSet;
-					default -> null;
-				};
-				if (newRegion != null) {
-					potentialLocns.addAll(newRegion);
-				}
-			}
-		
-			// Have one region array for each of 10 types of minerals 
-			// regionArray between 850 and 3420 for each mineral
-			
-			// For now start with a random concentration between 0 to 100
-			int conc = RandomUtil.getRandomInt(100);
-			
-			// Determine individual mineral iteration.
-			int numIteration = calculateIteration(mineralType, true, potentialLocns.size());
-					
-			// Get the new remainingConc
-			double remainingConc = 1.0 * conc * numIteration;
-		
-			for (int x = 0; x < numIteration; x++) {
-				var c = RandomUtil.getRandomElement(potentialLocns);
-
-				// Determine individual mineral concentrations.
-				remainingConc = createMinerals(remainingConc, c, x, numIteration, conc,
-						mineralType);
-								
-				if (remainingConc <= 0.0) 
-					break;
-			}		
-		} // end of iterating MineralType
-	}
-
-	/**
-	 * Generates mineral concentrations.
-	 * 
-	 * @param remainingConc
-	 * @param oldLocation
-	 * @param size
-	 * @param conc
-	 * @param mineral
-	 */
-	private double createMinerals(double remainingConc, Coordinates oldLocation, int x, int last, double conc,
-								MineralType mineral) {
-		Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
-		// Spread it over a 10 km radius
-		double distance = RandomUtil.getRandomDouble(1, 20);
-		Coordinates newLocation = oldLocation.getNewLocation(direction, distance);
-		int concentration = 0;
-
-		if (x != last - 1)
-			concentration = (int) Math.round(RandomUtil.getRandomDouble(conc *.75, conc));
-		else
-			concentration = (int) Math.round(remainingConc);
-
-		remainingConc -= concentration;					
-
-		if (concentration > 100)
-			concentration = 100;
-		if (concentration < 0) {
-			concentration = 0;
-		}
-		
-		addMineral(newLocation, mineral, concentration);
-		return remainingConc;
 	}
 
 	/**
@@ -241,110 +113,7 @@ public class MineralMap implements Serializable{
 			found = new MineralConcentration(locn);
 			allMinerals.addFeature(found);
 		}
-		found.addMineral(mineral.getName(), conc);
-	}
-	
-	/**
-	 * Creates concentration at a specified location.
-	 * 
-	 * @param location
-	 */
-	public void createLocalConcentration(Coordinates location) {
-			
-		if (mineralMapConfig == null)
-			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
-		
-		List<MineralType> minerals = new ArrayList<>(mineralMapConfig.getMineralTypes());
-		Collections.shuffle(minerals);
-	
-		Iterator<MineralType> i = minerals.iterator();
-		while (i.hasNext()) {
-			MineralType mineralType = i.next();
-
-			// For now start with a random concentration between 0 to 25
-			int conc = RandomUtil.getRandomInt(5, 25);
-			// Determine individual mineral iteration.
-			int numIteration = calculateIteration(mineralType, false, 1);
-
-			// Get the new remainingConc
-			double remainingConc = 1.0 * conc * numIteration;
-			
-			for (int x = 0; x < numIteration; x++) {
-				// Determine individual mineral concentrations
-				remainingConc = createMinerals(remainingConc, location, x, 
-						numIteration, conc, mineralType);	
-				
-				if (remainingConc <= 0.0) 
-					break;
-			}
-		}
-	}
-	
-	/**
-	 * Calculate the number of interaction in determining the mineral concentration.
-	 * 
-	 * @param mineralType
-	 * @param isGlobal
-	 * @param length
-	 * @return
-	 */
-	private int calculateIteration(MineralType mineralType, boolean isGlobal, int length) {
-		int num = 0;
-		if ((isGlobal)) {
-			num = (int)Math.round(RandomUtil.getRandomDouble(.75, 1.25) 
-					* REGION_FACTOR / 1800 * length
-					/ mineralType.getFrequency());
-		}
-		else {
-			num = (int)Math.round(RandomUtil.getRandomDouble(.75, 1.25) 
-					* NON_REGION_FACTOR * 2 * length
-					/ mineralType.getFrequency());
-		}
-		return num;
-	}
-	
-
-
-	/**
-	 * Gets a set of location coordinates representing a topographical region.
-	 * 
-	 * @param imageMapName the topographical region map image.
-	 * @return set of location coordinates.
-	 */
-	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
-		Set<Coordinates> result = new HashSet<>(3000);
-		URL imageMapURL = getClass().getResource(TOPO_MAP_FOLDER + imageMapName);
-		ImageIcon mapIcon = new ImageIcon(imageMapURL);
-		Image mapImage = mapIcon.getImage();
-
-		int[] mapPixels = new int[W * H];
-		PixelGrabber topoGrabber = new PixelGrabber(mapImage, 0, 0, W, H, mapPixels, 0, W);
-		try {
-			topoGrabber.grabPixels();
-		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, "grabber error" + e);
-			// Restore interrupted state
-		    Thread.currentThread().interrupt();
-		}
-		if ((topoGrabber.status() & ImageObserver.ABORT) != 0)
-			logger.info("grabber error");
-
-		for (int x = 0; x < H; x++) {
-			for (int y = 0; y < W; y++) {
-				int pixel = mapPixels[(x * W) + y];
-				Color color = new Color(pixel);
-				if (Color.white.equals(color)) {
-					double pixelOffset = (Math.PI / 150D) / 2D;
-					double phi = (((double) x / 150D) * Math.PI) + pixelOffset;
-					double theta = (((double) y / 150D) * Math.PI) + Math.PI + pixelOffset;
-					if (theta > (2D * Math.PI))
-						theta -= (2D * Math.PI);
-					result.add(new Coordinates(phi, theta));
-				}
-			}
-		}
-
-		return result;
+		found.adjustMineral(mineral.getName(), conc);
 	}
 	
 	/**
@@ -402,6 +171,49 @@ public class MineralMap implements Serializable{
 		}
 		
 		return newMap;
+	}
+
+	/**
+	 * Gets the mineral concentration from an area around a location governed by the angle.
+	 * The concentrations within the area are summed but prorated according tothe distance from
+	 * the center point.
+	 * 
+	 * @param mineralsDisplaySet 	a set of mineral strings.
+	 * @param location
+	 * @param angle		 angle to use as the radius of the area
+	 * @return map of mineral types and percentage concentration (0 to 100.0)
+	 */
+	public MineralConcentration getRadiusConcentration(Set<String> mineralsDisplaySet,
+						MapPoint location, double angle) {
+				
+		
+		double phi = location.phi();
+		double theta = location.theta();
+
+		var centerPoint = new Coordinates(phi, theta);
+		var result = new MineralConcentration(centerPoint);
+
+		// Not ideal creating a Coordinate but will resolve in a later commit
+		var found = allMinerals.getFeatures(centerPoint, angle); 
+		for(var locnConc : found) {
+			
+			Coordinates c = locnConc.getLocation();
+
+			// Do a ratio based on how far the location is away from the center
+			var ratio = 1D;
+			if (angle > 0) {
+				ratio -= (centerPoint.getAngle(c)/angle);
+			}
+	
+			// Find each of the minerals
+			for(var displayed : mineralsDisplaySet) {
+				// Addjust by the ratio and add to the existing concentration
+				double conc = ratio * locnConc.getConcentration(displayed);
+				result.addMineral(displayed, (int)conc);
+			}	
+		}
+		
+		return result;
 	}
 
 	/**
@@ -495,8 +307,8 @@ public class MineralMap implements Serializable{
 			
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
-		for (Coordinates c: locales.keySet()) {
-			double distance = locales.get(c);
+		for (var c: locales.entrySet()) {
+			double distance = c.getValue();
 			if (distance < MIN_DISTANCE) {
 				continue;
 			}
@@ -508,7 +320,7 @@ public class MineralMap implements Serializable{
 			
 			if (distance >= MIN_DISTANCE && prob > 0) {
 				// Fill up the weight map
-				weightedMap.put(c, prob);
+				weightedMap.put(c.getKey(), prob);
 			}
 		}
 
@@ -522,7 +334,6 @@ public class MineralMap implements Serializable{
 		}
 		
 		double chosenDist = locales.get(chosen);
-
 		return new SimpleEntry<>(chosen, chosenDist);
 	}
 }

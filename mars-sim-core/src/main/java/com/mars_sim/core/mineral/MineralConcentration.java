@@ -38,13 +38,31 @@ public class MineralConcentration implements Serializable, SurfacePOI {
 	}
 
 	/**
-	 * Add a new mineral to the concentration. If it exits then take the average of the old and new
+	 * Adjust the concentration of a mineral. If it exits then take the average of the old and new.
+	 * THis provides a balanced movement.
+	 * @param mineral
+	 * @param newConc
+	 */
+	void adjustMineral(String mineral, int newConc) {
+		concentration.merge(mineral, newConc, (o,n) -> ((o + n)/2));
+	}
+
+	/**
+	 * Add to the concentration of a mineral. If it exits then take the sum of the old and new.
 	 * @param mineral
 	 * @param newConc
 	 */
 	void addMineral(String mineral, int newConc) {
-		concentration.merge(mineral, newConc, (o,n) -> ((o + n)/2));
+		var existing = concentration.get(mineral);
+		if (existing != null) {
+			newConc += existing.intValue();
+			if (newConc > 100) {
+				newConc = 100;
+			}
+		}
+		concentration.put(mineral, newConc);
 	}
+
 
 	/**
 	 * Get the the concentration of a single mineral at this location
@@ -61,5 +79,13 @@ public class MineralConcentration implements Serializable, SurfacePOI {
 	 */
     public Map<String, Integer> getConcentrations() {
         return concentration;
+    }
+
+	/**
+	 * Does this have any minerals at this point
+	 * @return
+	 */
+    public boolean isEmpty() {
+        return concentration.isEmpty();
     }	
 }

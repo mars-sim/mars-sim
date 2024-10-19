@@ -12,18 +12,16 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mineral.MineralConcentration;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.MineralType;
-import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * A map layer showing mineral concentrations.
@@ -113,13 +111,20 @@ public class MineralMapLayer implements MapLayer {
 					if (point == null)
 						continue;
 
-					Map<String, Integer> mineralConcentrations = 
-							mineralMap.getSomeMineralConcentrations(
-										mineralsDisplaySet, 
-										point,
-										mag);
-									
-					if (mineralConcentrations != null && !mineralConcentrations.isEmpty()) {
+					// New approach
+					// var mineralConcentrations = 
+					// 		mineralMap.getRadiusConcentration(
+					// 					mineralsDisplaySet, 
+					// 					point,
+					// 					0D).getConcentrations();
+
+					// Old Approach
+					var mineralConcentrations = 	
+										mineralMap.getSomeMineralConcentrations(
+											mineralsDisplaySet, 
+											point,
+											mag);		
+					if (!mineralConcentrations.isEmpty()) {
 		
 						computeColorMineralArray(mineralConcentrations, newMineralArray, x, y);
 						
@@ -160,14 +165,12 @@ public class MineralMapLayer implements MapLayer {
 	 * @param x
 	 * @param y
 	 */
-	private void computeColorMineralArray(java.util.Map<String, Integer> mineralConcentrations, int[] newMineralArray, int x, int y) {
-	
-		Iterator<String> i = mineralConcentrations.keySet().iterator();
-		while (i.hasNext()) {
-			String mineralType = i.next();
+	private void computeColorMineralArray(Map<String, Integer> mineralConcentrations, int[] newMineralArray, int x, int y) {
+		for(var entry : mineralConcentrations.entrySet()) {
+			String mineralType = entry.getKey();
 			
 			if (isMineralDisplayed(mineralType)) {
-				double concentration = mineralConcentrations.get(mineralType);
+				double concentration = entry.getValue();
 				if (concentration <= 0) {
 					continue;
 				}

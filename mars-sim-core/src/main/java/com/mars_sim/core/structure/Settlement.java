@@ -56,6 +56,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mineral.MineralMap;
+import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
@@ -483,7 +484,7 @@ public class Settlement extends Unit implements Temporal,
 		logger.config(this, "Regolith Collection Rate: " + Math.round(regolithCollectionRate * 100.0)/100.0 + ".");
 		
 		// Create local/nearby mineral locations
-		surfaceFeatures.getMineralMap().createLocalConcentration(location);
+		RandomMineralFactory.createLocalConcentration(surfaceFeatures.getMineralMap(), location);
 		
 		areothermalPotential = surfaceFeatures.getAreothermalPotential(location);
 		
