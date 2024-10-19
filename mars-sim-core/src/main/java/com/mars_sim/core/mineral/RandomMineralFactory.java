@@ -142,10 +142,17 @@ public final class RandomMineralFactory {
 					
 			// Get the new remainingConc
 			double remainingConc = 1.0 * baseConc * numIteration;
-		
+
+			// Choose initial coord
+			var c = RandomUtil.getRandomElement(potentialLocns);
+
+			// Built mineral for each iteration
 			for (int x = numIteration; x > 0; x--) {
-				// Chose a random location
-				var c = RandomUtil.getRandomElement(potentialLocns);
+				// Introduce randomoness to repeast using same base coord to get clustering
+				if (RandomUtil.getRandomInt(5) == 0) {
+					// Choose a new random location
+					c = RandomUtil.getRandomElement(potentialLocns);
+				}
 				var conc = 0;
 				if (x > 0)
 					conc = (int) Math.round(RandomUtil.getRandomDouble(baseConc *.75, baseConc));
@@ -178,11 +185,9 @@ public final class RandomMineralFactory {
 
 		if (concentration > 100)
 			concentration = 100;
-		if (concentration < 0) {
-			concentration = 0;
+		if (concentration > 0) {
+			map.addMineral(newLocation, mineral, concentration);
 		}
-		
-		map.addMineral(newLocation, mineral, concentration);
 		return concentration;
 	}
 

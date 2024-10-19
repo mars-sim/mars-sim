@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.mineral.MineralConcentration;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.MineralType;
@@ -26,23 +26,41 @@ import com.mars_sim.core.mineral.MineralType;
 /**
  * A map layer showing mineral concentrations.
  */
-public class MineralMapLayer implements MapLayer {
+public class MineralMapLayer extends SurfaceFeatureLayer<MineralConcentration> {
 
-	// Domain members
-	private boolean updateLayer;
+	/**
+	 * Create a tooltip for a mineral concentation showing the details
+	 */
+	private static class MineralHotspot extends MapHotspot {
 
-	private int numMineralsCache;
+		private MineralConcentration conc;
+
+		protected MineralHotspot(IntPoint center, int radius, MineralConcentration conc) {
+			super(center, radius);
+			this.conc = conc;
+		}
+
+		@Override
+		public String getTooltipText() {
+			var body = conc.getConcentrations().entrySet().stream()
+					.map(e -> e.getKey() + " : " + e.getValue() + "%")
+					.collect(Collectors.joining("<br>>"));
+
+			return "<html>" + body + "</html>";
+		}
+	}
 
 	private double rhoCache;
 	
 	private static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
 	private static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH;
+
+	private static final int CIRCLE_RADIUS = 4;
+	private static final int CIRCLE_DIAMETER = (2 * CIRCLE_RADIUS);
 	
 	private String mapTypeCache;
 	
-	private int[] mineralArrayCache;
-
-	private Component displayComponent;
+	private MapPanel displayComponent;
 	
 	private BufferedImage mineralImage;
 
@@ -53,13 +71,20 @@ public class MineralMapLayer implements MapLayer {
 	private Map<String, Color> mineralColorMap;
 
 	private Set<String> mineralsDisplaySet = new HashSet<>();
+
+	private int numMineralsCache;
+
+	private int[] mineralArrayCache;
+
+
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param displayComponent the display component.
 	 */
-	public MineralMapLayer(Component displayComponent) {
+	public MineralMapLayer(MapPanel displayComponent) {
+		super("Mineral");
 		mineralMap = Simulation.instance().getSurfaceFeatures().getMineralMap();
 		this.displayComponent = displayComponent;
 	
@@ -73,14 +98,13 @@ public class MineralMapLayer implements MapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g2d       graphics context of the map display.
 	 */
-	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
+	public List<MapHotspot> displayLayerOld(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
 		
 		if (mineralsDisplaySet.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		boolean isChanging = ((MapPanel)displayComponent).isChanging();
+		boolean isChanging = displayComponent.isChanging();
 		
 		double rho = baseMap.getRho();
 		
@@ -91,10 +115,9 @@ public class MineralMapLayer implements MapLayer {
 		String mapType = baseMap.getMapMetaData().getId();		
 		int numMinerals = mineralsDisplaySet.size();
 		if (mapCenterCache == null || !mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) 
-				|| updateLayer || rhoCache != rho || numMineralsCache != numMinerals) {
+				|| rhoCache != rho || numMineralsCache != numMinerals) {
 				
 			mapTypeCache = mapType;
-			updateLayer = false;
 			
 			int[] newMineralArray = new int[MAP_BOX_WIDTH * MAP_BOX_HEIGHT];
 
@@ -110,7 +133,6 @@ public class MineralMapLayer implements MapLayer {
 					var point = baseMap.getMapBoxPoint(index);
 					if (point == null)
 						continue;
-
 					// New approach
 					// var mineralConcentrations = 
 					// 		mineralMap.getRadiusConcentration(
@@ -123,11 +145,10 @@ public class MineralMapLayer implements MapLayer {
 										mineralMap.getSomeMineralConcentrations(
 											mineralsDisplaySet, 
 											point,
-											mag);		
+											mag);	
+
 					if (!mineralConcentrations.isEmpty()) {
-		
-						computeColorMineralArray(mineralConcentrations, newMineralArray, x, y);
-						
+						newMineralArray[index] = concentrationToColour(mineralConcentrations);
 						hasMinerals = true;
 					}
 				}
@@ -153,8 +174,30 @@ public class MineralMapLayer implements MapLayer {
 		
 		// Draw the mineral concentration image
 		g2d.drawImage(mineralImage, 0, 0, displayComponent);
-			
+
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Convert a mixture of mineral to a combined single color
+	 * @param mineralConcentrations
+	 * @return
+	 */
+	private int concentrationToColour(Map<String, Integer> mineralConcentrations) {
+		int colorRGB = 0;
+
+		for(var entry : mineralConcentrations.entrySet()) {
+			String mineralType = entry.getKey();
+			
+			if (mineralsDisplaySet.contains(mineralType)) {
+				Color baseColor = mineralColorMap.get(mineralType);
+				double concentration = entry.getValue();
+				int concentrationInt = (int) (255 * (concentration / 100D));
+				int concentrationColor = (concentrationInt << 24) | (baseColor.getRGB() & 0x00FFFFFF);
+				colorRGB = colorRGB | concentrationColor;
+			}
+		}
+		return colorRGB;
 	}
 
 	/**
@@ -236,36 +279,50 @@ public class MineralMapLayer implements MapLayer {
 	 * @param displayed   true if displayed, false if not.
 	 */
 	public void setMineralDisplayed(String mineralType, boolean displayed) {
-		if (mineralsDisplaySet.isEmpty()) {
-			if (displayed) {
-				mineralsDisplaySet.add(mineralType);	
-				updateLayer = true;
-			}
+		if (displayed) {
+			mineralsDisplaySet.add(mineralType);	
 		}
 		else {
-			if (displayed) {
-				mineralsDisplaySet.add(mineralType);	
-				updateLayer = true;
-			}
-			else {
-				if (mineralsDisplaySet.contains(mineralType)) {
-					mineralsDisplaySet.remove(mineralType);
-					updateLayer = true;
-				}
-			}
+			mineralsDisplaySet.remove(mineralType);
 		}
 	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
 
-		displayComponent = null;
-		mineralImage = null;
-		mapCenterCache = null;
-		mineralMap = null;
-		mineralsDisplaySet.clear();
-		mineralsDisplaySet = null;
+	/**
+	 * Get the mineral conctrations within the map viewpoint. This ues the MineralMap to
+	 * locate the concentratinos but also applies a filter on minteral type displayed
+	 * 
+	 * @param center The center of the map viewpoint
+	 * @param arcAngle Arc of the viewpoint
+	 * @return List of visible concentrations
+	 */
+	@Override
+	protected List<MineralConcentration> getFeatures(Coordinates center, double arcAngle) {
+		return mineralMap.getConcentrations(center, arcAngle, mineralsDisplaySet);
+	}
+
+	/**
+	 * Render a Mineral concentration as a symbol on the map and a specific point.
+	 * 
+	 * @param f Concentration to render
+	 * @param location Location on the map display
+	 * @param g Graphics to use for drawing
+	 * @param isColourful Is the underlying map colourful
+	 * 
+	 * @return A hotspot
+	 */
+	@Override
+	protected MapHotspot displayFeature(MineralConcentration f, IntPoint location, Graphics2D g,
+										boolean isColourful) {
+		var colour = concentrationToColour(f.getConcentrations());
+
+		g.setColor(new Color(colour));
+
+		int locX = location.getiX() - CIRCLE_RADIUS;
+		int locY = location.getiY() - CIRCLE_RADIUS;
+
+		// Draw a circle at the location.
+		g.fillRect(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+
+		return new MineralHotspot(location, CIRCLE_DIAMETER, f);
 	}
 }

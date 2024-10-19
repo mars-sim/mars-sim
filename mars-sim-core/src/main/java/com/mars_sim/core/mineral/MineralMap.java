@@ -336,4 +336,16 @@ public class MineralMap implements Serializable {
 		double chosenDist = locales.get(chosen);
 		return new SimpleEntry<>(chosen, chosenDist);
 	}
+
+    public List<MineralConcentration> getConcentrations(Coordinates center, double arcAngle, Set<String> displayedMinerals) {
+        return allMinerals.getFeatures(center, arcAngle).stream()
+					.filter(f -> isDisplayed(f, displayedMinerals))
+					.toList();
+    }
+
+	
+	private static boolean isDisplayed(MineralConcentration f, Set<String> displayedMinerals) {
+		return f.getConcentrations().keySet().stream()
+				.anyMatch(e -> displayedMinerals.contains(e));
+	}
 }
