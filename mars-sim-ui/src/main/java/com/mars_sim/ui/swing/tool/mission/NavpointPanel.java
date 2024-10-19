@@ -133,7 +133,7 @@ implements MissionListener {
 		
 		trailLayer = new VehicleTrailMapLayer(mapPanel);
 		navpointLayer = new NavpointMapLayer(mapPanel);
-        mineralLayer = new MineralMapLayer(this);
+        mineralLayer = new MineralMapLayer(mapPanel);
         
         mapPanel.addMapLayer(mineralLayer, 1);
 		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
