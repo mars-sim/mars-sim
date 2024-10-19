@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.map.location;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  * These are held in a tiled internal structure based on the Coordinates
  * giving it optimised lookup on Coordinate.
  */
-public class SurfaceManager<T extends SurfacePOI> {
+public class SurfaceManager<T extends SurfacePOI> implements Serializable {
 
     private static final int LATITUDE_SLICES = 6;
     private static final double LATITUDE_RANGE = Math.PI/LATITUDE_SLICES;
@@ -50,6 +51,18 @@ public class SurfaceManager<T extends SurfacePOI> {
     }
 
     /**
+     * Get a feature at a specific location.
+     * @param newLocation
+     * @return
+     */
+    public T getFeature(Coordinates newLocation) {
+        var top = getSlice(newLocation.getPhi());
+        return slices[top].stream()
+                .filter(c -> c.getLocation().equals(newLocation))
+                .findFirst().orElse(null);
+    }
+
+    /**
      * Find all features within a range from a center location.
      * @param center Center point
      * @param arcAngle 
@@ -59,7 +72,6 @@ public class SurfaceManager<T extends SurfacePOI> {
         // Find the source the sublists based on the 4 points
         var top = getSlice(center.getPhi() + arcAngle);
         var bottom = getSlice(center.getPhi() - arcAngle);
-
 
         List<T> result = new ArrayList<>();
         for(int i = bottom; i <= top; i++) {

@@ -11,15 +11,13 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -99,7 +97,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		w.setSurfaceFeatures(this);
 		
 		terrainElevation = new TerrainElevation();
-		mineralMap = new RandomMineralMap();
+		mineralMap = new MineralMap();
 		regionOfInterestLocations = new ArrayList<>();
 		areothermalMap = new AreothermalMap();
 	}
@@ -542,14 +540,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		ExploredLocation result = null;
 		
-		String [] mineralTypes = mineralMap.getMineralTypeNames();
+		var mineralTypes = mineralMap.getTypes();
 		
-		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
+		Map<String, Double> initialMineralEstimations = new HashMap<>();
 		
 		double totalConc = 0;
 		
-		for (String mineralType : mineralTypes) {
-			
+		for (var m : mineralTypes) {
+			var mineralType = m.getName();
 			double initialEst = mineralMap.getMineralConcentration(mineralType, location);
 
 			if (initialEst <= 0) {
@@ -722,7 +720,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		opticalDepthMap = null;
 		currentIrradiance.clear();
 		currentIrradiance = null;
-		mineralMap.destroy();
 		mineralMap = null;
 		regionOfInterestLocations.clear();
 		regionOfInterestLocations = null;

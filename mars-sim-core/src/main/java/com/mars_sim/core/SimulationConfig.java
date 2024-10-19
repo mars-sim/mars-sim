@@ -22,13 +22,13 @@ import org.jdom2.input.SAXBuilder;
 
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.environment.LandmarkConfig;
-import com.mars_sim.core.environment.MineralMapConfig;
 import com.mars_sim.core.food.FoodProductionConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionConfig;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.map.common.FileLocator;
+import com.mars_sim.core.mineral.MineralMapConfig;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.quotation.QuotationConfig;

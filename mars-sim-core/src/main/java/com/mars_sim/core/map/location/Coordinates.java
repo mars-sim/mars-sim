@@ -36,6 +36,7 @@ public final class Coordinates implements Serializable {
 	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2 * Math.PI;
 	
 	public static final double KM_PER_DEGREE_AT_EQUATOR = MARS_CIRCUMFERENCE / 360;
+	public static final double KM_PER_RADIAN_AT_EQUATOR = MARS_CIRCUMFERENCE / (2 * Math.PI);
 	
 	// The resolution of each pixel is approximately 5.9219 m (or 0.00592 km) 
 	public static final double KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR = MARS_CIRCUMFERENCE / 360 / 10_000;

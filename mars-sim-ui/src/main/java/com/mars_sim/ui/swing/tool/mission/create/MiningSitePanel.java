@@ -180,9 +180,9 @@ public class MiningSitePanel extends WizardPanel {
 		concentrationTableModel = new DefaultTableModel();
 		concentrationTableModel.addColumn("Mineral");
 		concentrationTableModel.addColumn("Concentration %");
-		String[] mineralTypes = surfaceFeatures.getMineralMap().getMineralTypeNames();
-		for (String mineralType : mineralTypes)
-			concentrationTableModel.addRow(new Object[] { mineralType, 0D });
+		var mineralTypes = surfaceFeatures.getMineralMap().getTypes();
+		for (var mineralType : mineralTypes)
+			concentrationTableModel.addRow(new Object[] { mineralType.getName(), 0D });
 		JTable mineralConcentrationTable = new JTable(concentrationTableModel);
 		mineralConcentrationTable.setBorder(new MarsPanelBorder());
 		mineralConcentrationTable.setRowSelectionAllowed(true);

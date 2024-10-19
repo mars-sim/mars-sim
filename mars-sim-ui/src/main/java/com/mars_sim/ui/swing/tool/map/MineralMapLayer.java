@@ -18,9 +18,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.environment.MineralMap;
+import com.mars_sim.core.mineral.MineralMap;
+import com.mars_sim.core.mineral.MineralType;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
@@ -50,7 +52,7 @@ public class MineralMapLayer implements MapLayer {
 	
 	private MineralMap mineralMap;
 	
-	private SortedMap<String, Color> mineralColorMap;
+	private Map<String, Color> mineralColorMap;
 
 	private Set<String> mineralsDisplaySet = new HashSet<>();
 	
@@ -114,8 +116,7 @@ public class MineralMapLayer implements MapLayer {
 					Map<String, Integer> mineralConcentrations = 
 							mineralMap.getSomeMineralConcentrations(
 										mineralsDisplaySet, 
-										point.phi(), 
-										point.theta(),
+										point,
 										mag);
 									
 					if (mineralConcentrations != null && !mineralConcentrations.isEmpty()) {
@@ -204,31 +205,12 @@ public class MineralMapLayer implements MapLayer {
 	 * 
 	 * @return map of names and colors.
 	 */
-	public SortedMap<String, Color> getMineralColors() {
+	public Map<String, Color> getMineralColors() {
 		
-		if (mineralColorMap == null || mineralColorMap.isEmpty()) {
-			String[] mineralNames = mineralMap.getMineralTypeNames();
-			int num = mineralNames.length;
-			SortedMap<String, Color> map = new TreeMap<>();
-			for (int x = 0; x < num ; x++) {
-				String mineralTypeName = mineralMap.getMineralTypeNames()[x];
-				// Determine color of a mineral
-				// See https://stackoverflow.com/questions/44326765/color-mapping-for-specific-range
-//				float value = 1f * x / num; //this is your value between 0 and 1
-//				float minHue = 255f/255; // 300f corresponds to Magenta // 120f corresponds to Green
-//				float maxHue = 0; //corresponds to red
-//				float hue = value * maxHue + (1 - value) * minHue; // ((float) x + 1 / (float) mineralNames.length)
-//				int mineralColor = Color.HSBtoRGB(hue, .9F, .9F)
-				
-				String rgbString = mineralMap.getColorString(mineralTypeName);
-						
-				Color rgbColor = Color.decode(rgbString);
-				
-				map.put(mineralTypeName, rgbColor);
-			}
-			
-			mineralColorMap = map;
-			return map;
+		if (mineralColorMap == null) {
+			mineralColorMap = mineralMap.getTypes().stream()
+				.collect(Collectors.toMap(MineralType::getName,
+								m -> Color.decode(m.getColour())));
 		}
 		return mineralColorMap;
 	}
