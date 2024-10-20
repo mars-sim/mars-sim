@@ -3,7 +3,6 @@ package com.mars_sim.core.mineral;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
 
 public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
@@ -18,8 +17,7 @@ public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
                         .map(MineralType::getName)
                         .collect(Collectors.toSet());
 
-        var results = newMap.getRadiusConcentration(types,
-                        new MapPoint(center.getPhi(), center.getTheta()), 1D);
+        var results = newMap.getDeposits(center, 1D, types);
         assertTrue("Combined in random map found", !results.isEmpty());
     }
 

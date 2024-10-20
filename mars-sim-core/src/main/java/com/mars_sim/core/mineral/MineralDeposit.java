@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * MineralConcentration.java
+ * MineralDeposit.java
  * @date 2022-07-14
  * @author Manny Kung
  */
@@ -14,17 +14,17 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 
 /**
- * Internal class representing a mineral concentration at a location.
- * It has a coordinate and a collection of minerals at different combinations.
+ * Internal class representing a mineral deposit at a location.
+ * It has a coordinate and a collection of minerals at different concentrations.
  */
-public class MineralConcentration implements Serializable, SurfacePOI {
+public class MineralDeposit implements Serializable, SurfacePOI {
 
 	private static final long serialVersionUID = 1L;
 	
 	private Coordinates location;
 	private Map<String,Integer> concentration;
 
-	MineralConcentration(Coordinates location) {
+	MineralDeposit(Coordinates location) {
 		this.location = location;
 		this.concentration = new HashMap<>();
 	}

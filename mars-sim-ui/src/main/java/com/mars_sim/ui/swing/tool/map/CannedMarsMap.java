@@ -13,7 +13,6 @@ import javax.swing.JComponent;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;
 import com.mars_sim.core.map.MapMetaData;
-import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
@@ -161,10 +160,5 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	@Override
 	public double getRhoDefault() {
 		return mapData.getRhoDefault();
-	}
-
-	@Override
-	public MapPoint getMapBoxPoint(int index) {
-		return mapData.getMapBoxPoint(index);
 	}
 }

@@ -10,7 +10,7 @@ class MineralConcentrationTest {
     @Test
     void testAdjustMineral() {
         var base = new Coordinates("45 N", "23 E");
-        MineralConcentration conc = new MineralConcentration(base);
+        MineralDeposit conc = new MineralDeposit(base);
 
         conc.adjustMineral("A", 10);
         conc.adjustMineral("B", 20);
@@ -25,7 +25,7 @@ class MineralConcentrationTest {
     @Test
     void testUpdateMineral() {
         var base = new Coordinates("45 N", "23 E");
-        MineralConcentration conc = new MineralConcentration(base);
+        MineralDeposit conc = new MineralDeposit(base);
 
         conc.adjustMineral("A", 10);
         conc.adjustMineral("A", 20);
@@ -37,7 +37,7 @@ class MineralConcentrationTest {
     @Test
     void testAddMineral() {
         var base = new Coordinates("45 N", "23 E");
-        MineralConcentration conc = new MineralConcentration(base);
+        MineralDeposit conc = new MineralDeposit(base);
 
         conc.addMineral("A", 10);
         conc.addMineral("A", 20);

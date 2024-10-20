@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfaceManager;
 import com.mars_sim.core.tool.RandomUtil;
@@ -84,11 +83,9 @@ public class MineralMap implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static final double MIN_DISTANCE = 0.5;
-	private static final double PHI_LIMIT = Math.PI / 7;
-	private static final double ANGLE_LIMIT = .01;
 	
 	// A map of all mineral concentrations
-	private SurfaceManager<MineralConcentration> allMinerals;
+	private SurfaceManager<MineralDeposit> allMinerals;
 	
 	private transient MineralMapConfig mineralMapConfig;
 	
@@ -110,110 +107,10 @@ public class MineralMap implements Serializable {
 	void addMineral(Coordinates locn, MineralType mineral, int conc) {
 		var found = allMinerals.getFeature(locn);
 		if (found == null) {
-			found = new MineralConcentration(locn);
+			found = new MineralDeposit(locn);
 			allMinerals.addFeature(found);
 		}
 		found.adjustMineral(mineral.getName(), conc);
-	}
-	
-	/**
-	 * Gets some of the mineral concentrations at a given location.
-	 * 
-	 * @param mineralsDisplaySet 	a set of mineral strings.
-	 * @param location
-	 * @param mag		 the map magnification factor
-	 * @return map of mineral types and percentage concentration (0 to 100.0)
-	 */
-	public Map<String, Integer> getSomeMineralConcentrations(Set<String> mineralsDisplaySet,
-						MapPoint location, double mag) {
-		
-		double angle = ANGLE_LIMIT;
-		double magSQ = Math.sqrt(mag);
-		
-		Map<String, Integer> newMap = new HashMap<>();
-		
-		double phi = location.phi();
-		double theta = location.theta();
-
-		// Not ideal creating a Coordinate but will resolve in a later commit
-		for(var locnConc : allMinerals.getFeatures(new Coordinates(phi, theta), angle)) {
-			
-			Coordinates c = locnConc.getLocation();
-			double phiLoc = c.getPhi();
-			double thetaLoc = c.getTheta();
-
-			double phiDiff = Math.abs(phi - phiLoc);
-			double thetaDiff = Math.abs(theta - thetaLoc);
-			
-			// Only take in what's within a certain boundary
-			if (phi > PHI_LIMIT && phi < Math.PI - PHI_LIMIT
-				&& phiDiff < angle && thetaDiff < angle) {
-
-				double deltaAngle = (phiDiff + thetaDiff) / 2;
-				double radius = Math.max(phiDiff, thetaDiff);
-				double limit = 1 - deltaAngle / radius;
-
-				for(var displayed : mineralsDisplaySet) {
-					
-					int conc = 2 * locnConc.getConcentration(displayed);
-					// Tune the fuzzyRange to respond to the map magnification and mineral concentration
-					double fuzzyRange = conc * magSQ;	
-					double effect =  Math.sqrt(limit) * fuzzyRange;
-				
-					int newConc = newMap.getOrDefault(displayed, 0);
-					newConc = (int)(newConc + effect);
-					if (newConc > 100)
-						newConc = 100;
-						
-					newMap.put(displayed, newConc);
-				}
-			}	
-		}
-		
-		return newMap;
-	}
-
-	/**
-	 * Gets the mineral concentration from an area around a location governed by the angle.
-	 * The concentrations within the area are summed but prorated according tothe distance from
-	 * the center point.
-	 * 
-	 * @param mineralsDisplaySet 	a set of mineral strings.
-	 * @param location
-	 * @param angle		 angle to use as the radius of the area
-	 * @return map of mineral types and percentage concentration (0 to 100.0)
-	 */
-	public MineralConcentration getRadiusConcentration(Set<String> mineralsDisplaySet,
-						MapPoint location, double angle) {
-				
-		
-		double phi = location.phi();
-		double theta = location.theta();
-
-		var centerPoint = new Coordinates(phi, theta);
-		var result = new MineralConcentration(centerPoint);
-
-		// Not ideal creating a Coordinate but will resolve in a later commit
-		var found = allMinerals.getFeatures(centerPoint, angle); 
-		for(var locnConc : found) {
-			
-			Coordinates c = locnConc.getLocation();
-
-			// Do a ratio based on how far the location is away from the center
-			var ratio = 1D;
-			if (angle > 0) {
-				ratio -= (centerPoint.getAngle(c)/angle);
-			}
-	
-			// Find each of the minerals
-			for(var displayed : mineralsDisplaySet) {
-				// Addjust by the ratio and add to the existing concentration
-				double conc = ratio * locnConc.getConcentration(displayed);
-				result.addMineral(displayed, (int)conc);
-			}	
-		}
-		
-		return result;
 	}
 
 	/**
@@ -337,15 +234,29 @@ public class MineralMap implements Serializable {
 		return new SimpleEntry<>(chosen, chosenDist);
 	}
 
-    public List<MineralConcentration> getConcentrations(Coordinates center, double arcAngle, Set<String> displayedMinerals) {
+	/**
+	 * Get all the mineral deposit within a range of a specific center point. The deposits are filtered
+	 * by a list of valid minerals
+	 * @param center
+	 * @param arcAngle
+	 * @param minerals
+	 * @return
+	 */
+    public List<MineralDeposit> getDeposits(Coordinates center, double arcAngle,
+								Set<String> minerals) {
         return allMinerals.getFeatures(center, arcAngle).stream()
-					.filter(f -> isDisplayed(f, displayedMinerals))
+					.filter(f -> isPresent(f, minerals))
 					.toList();
     }
 
-	
-	private static boolean isDisplayed(MineralConcentration f, Set<String> displayedMinerals) {
+	/**
+	 * Is the specified mineral present in the deposit
+	 * @param f
+	 * @param minerals
+	 * @return
+	 */
+	private static boolean isPresent(MineralDeposit f, Set<String> minerals) {
 		return f.getConcentrations().keySet().stream()
-				.anyMatch(e -> displayedMinerals.contains(e));
+				.anyMatch(minerals::contains);
 	}
 }
