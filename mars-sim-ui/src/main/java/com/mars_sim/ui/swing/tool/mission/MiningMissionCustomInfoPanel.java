@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -105,7 +106,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		concentrationScrollPane.setViewportView(concentrationTable);
 
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		concentrationTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 		concentrationTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 		
@@ -125,7 +126,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		excavationTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		excavationScrollPane.setViewportView(excavationTable);
 		
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		excavationTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 	}
 
@@ -170,8 +171,8 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	private class ConcentrationTableModel extends AbstractTableModel {
 
 		// Data members.
-		protected Map<String, Double> estimatedConcentrationMap;
-		protected Map<String, Integer> actualConcentrationMap;
+		private Map<String, Double> estimatedConcentrationMap;
+		private Map<String, Integer> actualConcentrationMap;
 
 		/**
 		 * Constructor
@@ -276,7 +277,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	private class ExcavationTableModel extends AbstractTableModel {
 
 		// Data members.
-		protected Map<AmountResource, Double> excavationMap;
+		private Map<AmountResource, Double> excavationMap;
 
 		/**
 		 * Constructor
@@ -351,10 +352,9 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		 */
 		private void updateTable() {
 			excavationMap.clear();
-			String[] mineralNames = surfaceFeatures.getMineralMap()
-					.getMineralTypeNames();
-			for (String mineralName : mineralNames) {
-				AmountResource mineral = ResourceUtil.findAmountResource(mineralName);
+			var minerals = surfaceFeatures.getMineralMap().getTypes();
+			for (var m : minerals) {
+				AmountResource mineral = ResourceUtil.findAmountResource(m.getResourceId());
 				double amount = mission.getTotalMineralExcavatedAmount(mineral);
 				if (amount > 0D)
 					excavationMap.put(mineral, amount);

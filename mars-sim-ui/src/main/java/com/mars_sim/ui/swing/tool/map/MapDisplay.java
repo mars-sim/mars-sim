@@ -11,7 +11,6 @@ import java.awt.Image;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapMetaData;
-import com.mars_sim.core.map.MapPoint;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
@@ -100,6 +99,4 @@ public interface MapDisplay {
     public Range getRhoRange();
 
     public double getRhoDefault();
-
-	public MapPoint getMapBoxPoint(int index);
 }

@@ -83,8 +83,6 @@ import com.mars_sim.core.map.location.Coordinates;
 	private BufferedImage bImageCache;
 
 	private MapState loaded = MapState.PENDING;
-	/* The array of points for generating mineral map in a mapbox. */	
- 	private MapPoint[] mapBoxArray;
  	
  	
  	/**
@@ -356,9 +354,6 @@ import com.mars_sim.core.map.location.Coordinates;
  			return bImageCache;
 		double centerPhi = center.getPhi();
 		double centerTheta = center.getTheta();
-
-
- 		mapBoxArray = new MapPoint[mapBoxHeight * mapBoxWidth];
  
  		// Update cache identifiers
 		centerCache = center;
@@ -500,13 +495,9 @@ import com.mars_sim.core.map.location.Coordinates;
 		 colBuffer.getBuffer().get(cols);
 	 
 		 // Note that maxIndex = 262144
-		 int maxIndex = mapBoxArray.length;
 		 for (int i = 0; i < size; i++) {
 			 int x = cols[i];
 			 int y = rows[i];
-			 int index = x + y * mapBoxWidth;
-			 if (index < maxIndex)
-				 mapBoxArray[index] = new MapPoint(x, y);
 			 
 			 boolean invalid = Double.isNaN(x) || Double.isInfinite(x) || Double.isNaN(y) || Double.isInfinite(y) ;
 			 if (invalid) {
@@ -540,7 +531,6 @@ import com.mars_sim.core.map.location.Coordinates;
 			 for(int x = 0; x < mapBoxWidth; x++) {
 				 int index = x + (y * mapBoxWidth);
 				 MapPoint loc = convertRectIntToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
-				 mapBoxArray[index] = loc;
 				 mapArray[index] = getRGBColorInt(loc.phi(), loc.theta());
 			 }
 		 }
@@ -619,9 +609,7 @@ import com.mars_sim.core.map.location.Coordinates;
 				 while (yCorrected > TWO_PI)
 					 yCorrected -= TWO_PI;
 				 
-				 int index = (int)x + (int)y * mapBoxWidth;
 				 MapPoint loc = findRectPosition(centerPhi, centerTheta, x, yCorrected, rho, halfWidth, halfWidth);
-				 mapBoxArray[index] = loc;
 				 
 				 // Determine the display x and y coordinates for the pixel in the image.
 				 int xx = pixelWidth - (int)loc.phi();
@@ -657,7 +645,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	 * @param low_edge lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public MapPoint findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
+	private MapPoint findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
 			int half_map, int low_edge) {
 	
 		final double col = newTheta + (- HALF_PI - oldTheta);
@@ -795,15 +783,7 @@ import com.mars_sim.core.map.location.Coordinates;
  		
  		return colorPixels[row][column];
  	}
- 	
-	/**
-	 * Gets the point for generating a mineral map. 
-	 */	
- 	public MapPoint getMapBoxPoint(int index) {
- 		return mapBoxArray[index];
- 	}
- 	
- 	
+
  	/**
  	 * Sets the value of GPU hardware accel.
  	 * 

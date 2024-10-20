@@ -6,23 +6,14 @@
  */
 package com.mars_sim.core.environment;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.PixelGrabber;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -32,9 +23,6 @@ public class AreothermalMap implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(AreothermalMap.class.getName());
 
 	// Static members.
 	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
@@ -51,44 +39,7 @@ public class AreothermalMap implements Serializable {
 	 */
 	public AreothermalMap() {
 		// Load the areothermal hot spots.
-		loadHotspots();
-	}
-
-	/**
-	 * Loads areothermal hot spots from volcanic map image.
-	 */
-	private void loadHotspots() {
-		hotspots = new HashSet<Coordinates>(1400);
-		URL imageMapURL = getClass().getResource(RandomMineralMap.TOPO_MAP_FOLDER + VOLCANIC_IMG);
-		ImageIcon mapIcon = new ImageIcon(imageMapURL);
-		Image mapImage = mapIcon.getImage();
-
-		int[] mapPixels = new int[W * H];
-		PixelGrabber grabber = new PixelGrabber(mapImage, 0, 0, W, H, mapPixels, 0, W);
-		try {
-			grabber.grabPixels();
-		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, "grabber error" + e);
-			// Restore interrupted state
-		    Thread.currentThread().interrupt();
-		}
-		if ((grabber.status() & ImageObserver.ABORT) != 0)
-			logger.severe("grabber error");
-
-		for (int x = 0; x < H; x++) {
-			for (int y = 0; y < W; y++) {
-				int pixel = mapPixels[(x * W) + y];
-				Color color = new Color(pixel);
-				if (Color.white.equals(color)) {
-					double pixel_offset = (Math.PI / 150D) / 2D;
-					double phi = (((double) x / 150D) * Math.PI) + pixel_offset;
-					double theta = (((double) y / 150D) * Math.PI) + Math.PI + pixel_offset;
-					if (theta > (2D * Math.PI))
-						theta -= (2D * Math.PI);
-					hotspots.add(new Coordinates(phi, theta));
-				}
-			}
-		}
+		hotspots = RandomMineralFactory.getTopoRegionSet(VOLCANIC_IMG, W, H);
 	}
 
 	/**
@@ -99,10 +50,6 @@ public class AreothermalMap implements Serializable {
 	 */
 	public double getAreothermalPotential(Coordinates location) {
 		double result = 0D;
-
-		// Load hotspots if not loaded already.
-		if (hotspots == null)
-			loadHotspots();
 
 		// Initialize areothermal potential cache.
 		if (areothermalPotentialCache == null)
@@ -121,8 +68,8 @@ public class AreothermalMap implements Serializable {
 
 				double a = 25D; // value at pixel radius.
 				double b = 15D; // ratio max / ratio mid.
-				double T = pixelRadius; // max distance - mid distance.
-				double expo = (distance - pixelRadius) / T;
+				double t = pixelRadius; // max distance - mid distance.
+				double expo = (distance - pixelRadius) / t;
 				double heat = 100D - (a * Math.pow(b, expo));
 				if (heat < 0D)
 					heat = 0D;

@@ -20,11 +20,11 @@ import com.mars_sim.core.tool.AverageTimer;
  * to the map taking into account the viewpoint on the map.
  */
 public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLayer {
+
     private AverageTimer timer;
 
-
     protected SurfaceFeatureLayer(String name) {
-        timer = new AverageTimer(name, 10);
+        timer = new AverageTimer(name, -1);  //Disabled
     }
 
     /**
@@ -52,6 +52,7 @@ public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLa
         prepareGraphics(g2d);
         
         List<T> features = getFeatures(mapCenter, baseMap.getHalfAngle() * 1.1);
+
         boolean isColourful = baseMap.getMapMetaData().isColourful();
 		for (var f : features) {
             // Determine display location of feature on the map.

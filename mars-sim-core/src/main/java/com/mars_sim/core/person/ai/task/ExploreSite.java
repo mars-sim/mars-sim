@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.environment.ExploredLocation;
-import com.mars_sim.core.environment.MineralMap;
+import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;

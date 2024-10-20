@@ -78,12 +78,4 @@ import com.mars_sim.core.map.location.Coordinates;
 	public MapState getStatus();
 
   public double getRhoDefault();
-
-  /**
-   * Get the point on the last map image created.
-   * @param index
-   * @return
-   */
-	public MapPoint getMapBoxPoint(int index);
-
  }
