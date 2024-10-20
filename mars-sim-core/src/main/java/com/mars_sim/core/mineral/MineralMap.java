@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfaceManager;
 import com.mars_sim.core.tool.RandomUtil;
@@ -87,14 +86,16 @@ public class MineralMap implements Serializable {
 	// A map of all mineral concentrations
 	private SurfaceManager<MineralDeposit> allMinerals;
 	
-	private transient MineralMapConfig mineralMapConfig;
+	private List<MineralType> types;
 	
 	/**
-	 * Constructor.
+	 * Create a mineral map that is based on a configuration
+	 * @param mineralMapConfig Defines details of map
 	 */
-	MineralMap() {
-		// A bit nasty
-		mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
+	MineralMap(MineralMapConfig mineralMapConfig) {
+		// Types are locked down when te map is created
+		types = mineralMapConfig.getMineralTypes();
+
 		allMinerals = new SurfaceManager<>();
 	}
 
@@ -151,7 +152,7 @@ public class MineralMap implements Serializable {
 	 * @return
 	 */
 	public List<MineralType> getTypes() {
-		return mineralMapConfig.getMineralTypes();
+		return types;
 	}
 
 	/**

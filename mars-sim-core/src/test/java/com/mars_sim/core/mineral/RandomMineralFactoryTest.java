@@ -7,7 +7,7 @@ import com.mars_sim.core.map.location.Coordinates;
 
 public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
     public void testCreateLocalConcentration() {
-        var newMap = new MineralMap();
+        var newMap = new MineralMap(simConfig.getMineralMapConfiguration());
 
         var center = new Coordinates("30 N", "25 W");
         RandomMineralFactory.createLocalConcentration(newMap, center);
