@@ -15,7 +15,7 @@ public class MineralMapTest extends AbstractMarsSimUnitTest {
         var type2 = minerals.get(1);
         Set<String> all = Set.of(type1.getName(), type2.getName());
 
-        MineralMap newMap = new MineralMap();
+        MineralMap newMap = new MineralMap(config);
 
         var center = new Coordinates("3 S", "67 E");
         
@@ -37,7 +37,7 @@ public class MineralMapTest extends AbstractMarsSimUnitTest {
         var type2 = minerals.get(1);
         Set<String> all = Set.of(type1.getName(), type2.getName());
 
-        MineralMap newMap = new MineralMap();
+        MineralMap newMap = new MineralMap(config);
 
         var center = new Coordinates("3 S", "67 E");
         

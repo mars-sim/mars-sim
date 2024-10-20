@@ -102,7 +102,10 @@ public final class RandomMineralFactory {
 	 */
 	public static MineralMap createRandomMap() {
 	
-		var newMap = new MineralMap();
+		// Should be passed in as argument
+		var mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
+
+		var newMap = new MineralMap(mineralMapConfig);
 
 		// Add random mineral to the map using potential Location based on the type of mineral
 		addRandomMinerals(newMap, 0, 100, new LocationSelector());
@@ -123,10 +126,8 @@ public final class RandomMineralFactory {
 	private static void addRandomMinerals(MineralMap newMap, int lowerBaseCon, int highBaseConc,
 						Function<MineralType,List<Coordinates>> locator) {
 
-		// Should be passed in as argument
-		var mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		
-		List<MineralType> minerals = new ArrayList<>(mineralMapConfig.getMineralTypes());
+		List<MineralType> minerals = new ArrayList<>(newMap.getTypes());
 		
 		Collections.shuffle(minerals);
 		for(var mineralType : minerals) {		
