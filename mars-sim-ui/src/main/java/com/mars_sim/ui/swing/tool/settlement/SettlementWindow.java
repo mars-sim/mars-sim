@@ -44,7 +44,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	private static final int HORIZONTAL = 800;
 	private static final int VERTICAL = 800;
-	private static final int HEIGHT_STATUS_BAR = 16;
+	private static final int HEIGHT_STATUS_BAR = 20;
 	
 	public static final String NAME = "settlement_map";
 	public static final String ICON = "settlement_map";
