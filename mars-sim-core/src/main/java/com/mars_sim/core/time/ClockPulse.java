@@ -142,7 +142,10 @@ public class ClockPulse {
 		// Add the skipped millisols
 		this.marsTime = marsTime.addTime(msolsSkipped);
 
-		return fireClockPulse(actualElapsed);
+		return new ClockPulse(id, actualElapsed, marsTime, master, 
+				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
+		
+//		return fireClockPulse(actualElapsed);
 	}
 	
 	/**
@@ -220,10 +223,10 @@ public class ClockPulse {
 		// Part 4: Update the boolean values
 		////////////////////////////////////////////////////////////////////////////////////
 		
-		this.isNewSol = isNewSol;
-		this.isNewHalfSol = isNewHalfSol;
-		this.isNewIntMillisol = isNewIntMillisol;
-		this.isNewHalfMillisol = isNewHalfMillisol;
+//		this.isNewSol = isNewSol;
+//		this.isNewHalfSol = isNewHalfSol;
+//		this.isNewIntMillisol = isNewIntMillisol;
+//		this.isNewHalfMillisol = isNewHalfMillisol;
 		
 		////////////////////////////////////////////////////////////////////////////////////
 		// Part 5: Create a clock pulse

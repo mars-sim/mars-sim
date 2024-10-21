@@ -111,7 +111,9 @@ public class SettlementTransparentPanel extends JComponent {
 	private static final String PENDING				= " ...  ";
 
 	private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
-
+	
+	private int solCache;
+	
 	private double temperatureCache;
 	private double opticalDepthCache;
 	private double windSpeedCache;
@@ -1160,8 +1162,10 @@ public class SettlementTransparentPanel extends JComponent {
 	}
 	
 	public void update(ClockPulse pulse) {
-		logger.info("New sol: " + pulse.isNewSol() + "   Half sol: " + pulse.isNewHalfSol());
-		if (pulse.isNewHalfSol()) {
+		int sol = pulse.getMarsTime().getMissionSol();
+		
+		if (solCache != sol) {
+			solCache = sol;
 			// Redo the resource string once a sol
 			prepBannerResourceString(pulse);
 			// Update the sun data
