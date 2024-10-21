@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.MSolDataItem;
@@ -742,11 +743,11 @@ public class Weather implements Serializable, Temporal {
 				dailyVariationAirPressure = .05;
 			else if (dailyVariationAirPressure < -.05)
 				dailyVariationAirPressure = -.05;
-		}
-		
-		if (pulse.isNewSol()) {
-			// Calculate the new sun data for each location based on yestersol
-			coordinateList.forEach(this::calculateSunRecord);
+			
+			if (pulse.isNewSol()) {
+				// Calculate the new sun data for each location based on yestersol
+				coordinateList.forEach(this::calculateSunRecord);
+			}
 		}
 		
 		return true;
@@ -766,14 +767,14 @@ public class Weather implements Serializable, Temporal {
 			MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
 	
 			if (!w.isYestersolDataValid()) {
-				logger.warning(30_000, "Weather data from yestersol at " + c + " not available.");
+				logger.warning(0, "Weather data from yestersol at " + c + " not available.");
 				return;
 			}
 			else
 				dailyWeatherList = w.getYestersolData();
 		}
 		else {
-			logger.warning(30_000, "Weather data at " + c + " not available.");
+			logger.warning(0, "Weather data at " + c + " not available.");
 			return;
 		}
 		
@@ -788,11 +789,18 @@ public class Weather implements Serializable, Temporal {
 		int previous = 0;
 		int daylight = 0;
 				
+		// Gets this instant of time
+		int tCache = 0;
+					
 		for (MSolDataItem<DailyWeather> dataPoint : dailyWeatherList) {
+			// Future: consider the gap between two data points.
+			
 			// Gets the solar irradiance at this instant of time
 			int current = (int)(Math.round(dataPoint.getData().getSolarIrradiance()*10.0)/10.0);
+		
 			// Gets this instant of time
 			int t = dataPoint.getMsol();
+		
 			if (current > 0) {
 				// Sun up
 				if (current > previous && previous <= 0) {
@@ -818,6 +826,8 @@ public class Weather implements Serializable, Temporal {
 			}	
 			
 			previous = current;
+			// Save the time of this data point
+			tCache = t;
 		}
 		
 		if (sunrise > sunset)
@@ -846,6 +856,9 @@ public class Weather implements Serializable, Temporal {
 			zenith = zenith - 1000;
 		if (zenith < 0)
 			zenith = zenith + 1000;
+		
+		logger.info(CollectionUtils.findSettlement(c), 0, "sunrise: " + sunrise + "  sunset: " + sunset
+				 + "  zenith: " + zenith + "  maxSun: " + maxSun + "  daylight: " + daylight);
 		
 		SunData sunData = new SunData(sunrise, sunset, daylight, zenith, maxSun);
 		// Overwrite the previous data

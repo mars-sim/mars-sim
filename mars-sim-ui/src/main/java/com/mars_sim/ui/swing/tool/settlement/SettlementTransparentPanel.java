@@ -123,6 +123,7 @@ public class SettlementTransparentPanel extends JComponent {
 	private String odString;
 
 	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+	private Font sunBoldFont = new Font(Font.MONOSPACED, Font.BOLD, 14);
 	
 	private Map<Settlement, String> resourceCache = new HashMap<>();
 
@@ -345,47 +346,52 @@ public class SettlementTransparentPanel extends JComponent {
 		
 	    sunriseLabel = new JLabel(SUNRISE + PENDING);
 		sunsetLabel = new JLabel(SUNSET + PENDING);
+		daylightLabel = new JLabel(DAYLIGHT + PENDING);
+		
 		zenithLabel = new JLabel(ZENITH + PENDING);
 		maxSunLabel = new JLabel(MAX_LIGHT + PENDING);
-		daylightLabel = new JLabel(DAYLIGHT + PENDING);
+
 		currentSunLabel = new JLabel(CURRENT_LIGHT + PENDING);
 
 		projectSunriseLabel.setFont(sunFont);
 		sunriseLabel.setFont(sunFont);
 		projectSunsetLabel.setFont(sunFont);
 		sunsetLabel.setFont(sunFont);
+		projectDaylightLabel.setFont(sunFont);	
+		daylightLabel.setFont(sunFont);
 		
 		zenithLabel.setFont(sunFont);
 		maxSunLabel.setFont(sunFont);
-		daylightLabel.setFont(sunFont);
-		projectDaylightLabel.setFont(sunFont);
-		currentSunLabel.setFont(sunFont);
+		currentSunLabel.setFont(sunBoldFont);
 
 		Color orange = Color.orange;
+		Color brown = new Color(153, 102, 0).brighter(); //204, 153, 102);
 		Color yellow = Color.yellow.brighter().brighter();
 		Color white = Color.white;
-		Color red = Color.red.brighter();
+		Color red = Color.red.brighter().brighter();
+		Color lightBlue = new Color(51, 204, 255).brighter();
+		
 		projectSunriseLabel.setForeground(red);
 		sunriseLabel.setForeground(red);
 		
-		projectSunsetLabel.setForeground(orange);
-		sunsetLabel.setForeground(orange);
+		projectSunsetLabel.setForeground(brown);
+		sunsetLabel.setForeground(brown);
 		
 		projectDaylightLabel.setForeground(yellow);
 		daylightLabel.setForeground(yellow);
-		zenithLabel.setForeground(Color.cyan.brighter());
 		
-		maxSunLabel.setForeground(white);
-		currentSunLabel.setForeground(white);
+		zenithLabel.setForeground(white);
+		maxSunLabel.setForeground(lightBlue);
+		currentSunLabel.setForeground(orange);
 
 		projectSunriseLabel.setToolTipText("The projected time of sunrise");
-		sunriseLabel.setToolTipText("The time of sunrise");
+		sunriseLabel.setToolTipText("The time of yestersol sunrise");
 		projectSunsetLabel.setToolTipText("The projected time of sunset");
-		sunsetLabel.setToolTipText("The time of sunset");
+		sunsetLabel.setToolTipText("The time of yestersol sunset");
 		projectDaylightLabel.setToolTipText("The projected duration of time in a sol having sunlight");
 		daylightLabel.setToolTipText("The duration of time in a sol having sunlight");
 		zenithLabel.setToolTipText("The time at which the solar irradiance is at max");
-		maxSunLabel.setToolTipText("The max solar irradiance of yester-sol as recorded");
+		maxSunLabel.setToolTipText("The max solar irradiance of yestersol as recorded");
 		currentSunLabel.setToolTipText("The current solar irradiance as recorded");
 
 		roundPane.add(projectSunriseLabel);
@@ -1109,23 +1115,26 @@ public class SettlementTransparentPanel extends JComponent {
 	private void displaySunData(Coordinates location) {
 	    double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
 	    
-		projectSunriseLabel.setText (PROJECTED_SUNRISE + StyleManager.DECIMAL_MSOL.format(time[0]));
-		projectSunsetLabel.setText (PROJECTED_SUNSET + StyleManager.DECIMAL_MSOL.format(time[1]));
-		projectDaylightLabel.setText (PROJECTED_DAYLIGHT + StyleManager.DECIMAL_MSOL.format(time[2]));
+		projectSunriseLabel.setText(PROJECTED_SUNRISE + StyleManager.DECIMAL_MSOL.format(time[0]));
+		projectSunsetLabel.setText(PROJECTED_SUNSET + StyleManager.DECIMAL_MSOL.format(time[1]));
+		projectDaylightLabel.setText(PROJECTED_DAYLIGHT + StyleManager.DECIMAL_MSOL.format(time[2]));
+		
+		weather.calculateSunRecord(location);
 		
 		// Retrieve the yestersol's sun record
 		SunData data = weather.getSunRecord(location);
 		
 		if (data == null) {
-			logger.warning(60_000L, "Sunlight data unavailable at " + location + ".");
+			logger.warning(0, "Yestersol sunlight data unavailable at " + location + ".");
 			return;
 		}
 
-		sunriseLabel.setText(   SUNRISE + data.getSunrise() + MSOL);
-		sunsetLabel.setText(    SUNSET + data.getSunset() + MSOL);
-		daylightLabel.setText(  DAYLIGHT + data.getDaylight() + MSOL);
-		zenithLabel.setText( 	ZENITH + data.getZenith() + MSOL);
-		maxSunLabel.setText(    MAX_LIGHT + data.getMaxSun() + WM);
+		sunriseLabel.setText(SUNRISE + data.getSunrise() + MSOL);
+		sunsetLabel.setText(SUNSET + data.getSunset() + MSOL);
+		daylightLabel.setText(DAYLIGHT + data.getDaylight() + MSOL);
+		
+		zenithLabel.setText(ZENITH + data.getZenith() + MSOL);
+		maxSunLabel.setText(MAX_LIGHT + data.getMaxSun() + WM);
 	}
 
 	/**
@@ -1150,12 +1159,13 @@ public class SettlementTransparentPanel extends JComponent {
 		return null;
 	}
 	
-	public void update(ClockPulse pulse) {	
-		if (pulse.isNewSol()) {
+	public void update(ClockPulse pulse) {
+		logger.info("New sol: " + pulse.isNewSol() + "   Half sol: " + pulse.isNewHalfSol());
+		if (pulse.isNewHalfSol()) {
 			// Redo the resource string once a sol
 			prepBannerResourceString(pulse);
 			// Update the sun data
-			Settlement s = (Settlement)settlementListBox.getSelectedItem();
+			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			if (s != null) 
 				displaySunData(s.getCoordinates());
 		}
@@ -1167,17 +1177,17 @@ public class SettlementTransparentPanel extends JComponent {
 				return;
 			displayBanner(s);
 			updateIcon();
-			updateSunlight(s);
+			updateCurrentSunlight(s);
 		}
 	}
 
 	/**
-	 * Updates the sun data.
+	 * Updates the current sunlight.
 	 * 
 	 * @param pulse
 	 * @param s
 	 */
-	private void updateSunlight(Settlement s) {
+	private void updateCurrentSunlight(Settlement s) {
 		if (currentSunLabel == null)
 			return;
 	

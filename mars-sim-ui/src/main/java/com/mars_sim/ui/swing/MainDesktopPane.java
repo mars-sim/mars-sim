@@ -804,10 +804,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (!mainWindow.isIconified()) {
-			// Why not pass the pulse??
-			updateWindows(pulse);
-		}
+		updateWindows(pulse);
 	}
 
 	@Override
