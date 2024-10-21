@@ -430,15 +430,6 @@ public class MainWindow
 		masterClock.addClockListener(this, 1000L);
 	}
 
-	private void createPauseSwitch() {
-		pauseSwitch = new JToggleButton(PAUSE_ICON);
-		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
-//		pauseSwitch.addItemListener(i -> pauseSwitch.setIcon(pauseSwitch.isSelected() ? PLAY_ICON : PAUSE_ICON));
-		pauseSwitch.setSelected(false);
-
-		pauseSwitch.addActionListener(e -> masterClock.setPaused(pauseSwitch.isSelected(), false));
-	}
-
 	/**
 	 * Updates the LAF style to a new value.
 	 */
@@ -483,6 +474,25 @@ public class MainWindow
 		speedPanel.add(increaseSpeed, BorderLayout.EAST);
 		statusBar.addLeftComponent(speedPanel, false);
 		
+	}
+
+	/**
+	 * Creates the pause button.
+	 */
+	private void createPauseSwitch() {
+		pauseSwitch = new JToggleButton(PAUSE_ICON);
+		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
+		pauseSwitch.setSelected(false);
+		pauseSwitch.addActionListener(e -> {
+				boolean isSel = pauseSwitch.isSelected();
+				if (isSel) {
+					pauseSwitch.setIcon(PLAY_ICON);
+				}
+				else {
+					pauseSwitch.setIcon(PAUSE_ICON);
+				}		
+				masterClock.setPaused(isSel, false);	
+			});
 	}
 
 	/**
