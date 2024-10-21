@@ -89,6 +89,8 @@ public class TimeWindow extends ToolWindow {
 	/** The time in ms when last updated. */
 	private long lastUpdateTime = 0;
 	
+	private int solCache;
+	
 	private String northernSeasonTip ="";
 	private String northernSeasonCache = "";
 	private String southernSeasonTip = "";
@@ -470,8 +472,11 @@ public class TimeWindow extends ToolWindow {
 		// Update areocentric longitude
 		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 10_000.0)/10_000.0 + "");	
 		
-		// Update season
-		if (mc.getClockPulse().isNewSol()) {
+		int sol = mc.getMarsTime().getMissionSol();
+		// Note: must use the local solCache for updating UI element
+		if (solCache != sol) {
+			solCache = sol;
+			// Update season
 			updateSeason();
 		}
 	}

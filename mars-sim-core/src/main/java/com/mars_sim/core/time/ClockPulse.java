@@ -93,6 +93,7 @@ public class ClockPulse {
 	
 	/**
 	 * Is this a new sol ?
+	 * @Note do NOT use it for updating UI element
 	 * 
 	 * @return
 	 */
@@ -102,6 +103,7 @@ public class ClockPulse {
 
 	/**
 	 * Is this a new half sol ?
+	 * @Note do NOT use it for updating UI element
 	 * 
 	 * @return
 	 */
@@ -111,6 +113,7 @@ public class ClockPulse {
 
 	/**
 	 * Is this a new half integer millisol ?
+	 * @Note do NOT use it for updating UI element
 	 * 
 	 * @return
 	 */
@@ -120,6 +123,7 @@ public class ClockPulse {
 
 	/**
 	 * Is this a new integer millisol ?
+	 * @Note do NOT use it for updating UI element
 	 * 
 	 * @return
 	 */
