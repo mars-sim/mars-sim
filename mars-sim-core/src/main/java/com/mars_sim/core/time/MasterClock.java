@@ -788,7 +788,11 @@ public class MasterClock implements Serializable {
 	 */
 	private void fireClockPulse(double time) {
 		////////////////////////////////////////////////////////////////////////////////////		
-		// NOTE: Any changes made below may need to be brought to ClockPulse's addElapsed()
+		// NOTE: Any changes (Part 0 to Part 3) made below may need to be brought to ClockPulse's fireClockPulse()
+		////////////////////////////////////////////////////////////////////////////////////
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 0: Retrieve values
 		////////////////////////////////////////////////////////////////////////////////////
 		
 		// Get the current millisol integer
@@ -797,8 +801,7 @@ public class MasterClock implements Serializable {
 		double currentMillisol = marsTime.getMillisol();
 		// Get the current sol
 		int currentSol = marsTime.getMissionSol();
-		
-		
+				
 		////////////////////////////////////////////////////////////////////////////////////
 		// Part 1: Update isNewSol and isNewHalfSol
 		////////////////////////////////////////////////////////////////////////////////////
@@ -848,7 +851,7 @@ public class MasterClock implements Serializable {
 		////////////////////////////////////////////////////////////////////////////////////
 
 		// Update the lastMillisol
-		lastMillisol = currentMillisol;
+		this.lastMillisol = currentMillisol;
 	
 		
 		////////////////////////////////////////////////////////////////////////////////////
@@ -872,7 +875,9 @@ public class MasterClock implements Serializable {
 		// Part 6: Create a clock pulse
 		////////////////////////////////////////////////////////////////////////////////////
 
-		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
+		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
+				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
+		
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 
