@@ -642,7 +642,9 @@ public class EnterAirlock extends Task {
 		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
 			accumulatedTime -= STANDARD_TIME * time;
-
+			// Remove the reservation of this chamber
+			airlock.removeReservation(person.getIdentifier());
+			
 			if (!airlock.isActivated()) {
 				// Only the airlock operator may activate the airlock
 				airlock.setActivated(true);
@@ -934,20 +936,20 @@ public class EnterAirlock extends Task {
 
 		boolean result = true;
 
-		if (person.isInside()) {
-			logger.warning(person, 4_000,
-					"Could not enter " + airlock.getEntityName()
-					+ ". Already inside and not outside.");
-			result = false;
-		}
-
-		else if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-			logger.info(person, 20_000,
+		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+			logger.info(person, 4_000,
 					CHAMBER_FULL + airlock.getEntityName()
 					+ ". Could not enter.");
 			result = false;
 		}
 
+		else if (person.isInside()) {
+			logger.severe(person, 4_000,
+					"Could not enter " + airlock.getEntityName()
+					+ ". Already inside and not outside.");
+			result = false;
+		}
+		
 		return result;
 	}
 
@@ -955,7 +957,8 @@ public class EnterAirlock extends Task {
 	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null) {
-			
+			// Remove the reservation of this chamber
+			airlock.removeReservation(person.getIdentifier());
 			// Release the responsibility of being the airlock operator if he's one
 			airlock.releaseOperatorID(id);
 			

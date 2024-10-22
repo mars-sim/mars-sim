@@ -378,7 +378,7 @@ public class ExitAirlock extends Task {
 	private void walkAway(Person person, String reason) {
 		// Reset accumulatedTime back to zero
 		accumulatedTime = 0;
-		
+
 		clearDown();
 		
 		logger.info(person, 16_000, reason);
@@ -852,6 +852,8 @@ public class ExitAirlock extends Task {
 		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
 			accumulatedTime -= STANDARD_TIME * time;
+			// Remove the reservation of this chamber
+			airlock.removeReservation(person.getIdentifier());
 			
 			if (airlock.isOperator(id)) {
 				// Elect an operator to handle this task
@@ -1406,7 +1408,8 @@ public class ExitAirlock extends Task {
 	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null) {
-					
+			// Remove the reservation of this chamber
+			airlock.removeReservation(person.getIdentifier());
 			// Release the responsibility of being the airlock operator if he's one
 			airlock.releaseOperatorID(id);
 					

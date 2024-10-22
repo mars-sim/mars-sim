@@ -861,7 +861,16 @@ public class Walk extends Task {
 			} else {
 				// the person is still inside the settlement before
 				if (ExitAirlock.canExitAirlock(person, airlock)) {
-					addSubTask(new ExitAirlock(person, airlock));
+					logger.log(person, Level.FINER, 4_000,
+							". Adding subtask ExitAirlock.");
+					// Check reservation
+					if (airlock.hasReservation(person.getIdentifier()) 
+							|| (!airlock.isReservationFull() 
+								&& airlock.addReservation(person.getIdentifier()))) {
+					
+						addSubTask(new ExitAirlock(person, airlock));
+					}
+					
 				} else {
 					logger.log(person, Level.INFO, 4_000,
 							"Unable to physically exit the airlock of "
@@ -900,8 +909,14 @@ public class Walk extends Task {
 		if (person.isOutside()) {
 			if (EnterAirlock.canEnterAirlock(person, airlock)) {
 				logger.log(person, Level.FINER, 4_000,
-						". Starting EnterAirlock.");
-				addSubTask(new EnterAirlock(person, airlock));
+						". Adding subtask EnterAirlock.");
+				// Check reservation
+				if (airlock.hasReservation(person.getIdentifier()) 
+						|| (!airlock.isReservationFull() 
+							&& airlock.addReservation(person.getIdentifier()))) {
+				
+					addSubTask(new EnterAirlock(person, airlock));
+				}
 			} else {
 				logger.log(person, Level.FINER, 4_000,
 								"Ended the walk task. Could not enter the airlock in "

@@ -24,13 +24,10 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
 
 // Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA)
 // "camp out" at low atmospheric pressure, 10.2 psi (0.70 sbar), spending eight sleeping hours
@@ -170,8 +167,8 @@ public abstract class Airlock implements Serializable {
 		awaitingOuterDoor = new HashSet<>();
 
 		reservationMap = new HashMap<>();
-	}
-
+	}		
+			
 	/**
 	 * Is this person's id on the reservation map ?
 	 *
@@ -206,19 +203,9 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean removeReservation(int personInt) {
-		if (getEntity() instanceof Building b) {
-			Airlock a = b.getEVA().getAirlock();
-			if (a.getReservationMap().containsKey(personInt)) {
-				a.getReservationMap().remove(personInt);
-				return true;
-			}
-		}
-		else {
-			Airlock a = ((Rover)(Vehicle)getEntity()).getAirlock();
-			if (a.getReservationMap().containsKey(personInt)) {
-				a.getReservationMap().remove(personInt);
-				return true;
-			}
+		if (reservationMap.containsKey(personInt)) {
+			reservationMap.remove(personInt);
+			return true;
 		}
 		return false;
 	}
@@ -232,8 +219,8 @@ public abstract class Airlock implements Serializable {
 	public boolean addReservation(int personInt) {
 		MarsTime now = clock.getMarsTime();
 		if (!reservationMap.containsKey(personInt)) {
-			// Test if the reservation map already has 4 people
-			if (reservationMap.size() <= MAX_RESERVED) {
+			// Test if the reservation map has been filled up
+			if (!isReservationFull()) {
 				int msol = now.getMillisolInt();
 				reservationMap.put(personInt, msol);
 				return true;
@@ -294,7 +281,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean isReservationFull() {
-		if (reservationMap.size() > MAX_RESERVED - 1) {
+		if (reservationMap.size() >= MAX_RESERVED) {
 			return true;
 		}
 		return false;
