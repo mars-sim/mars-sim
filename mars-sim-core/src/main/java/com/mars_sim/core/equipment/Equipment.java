@@ -341,7 +341,7 @@ public abstract class Equipment extends MobileUnit implements Indoor, Salvagable
 				canStore = true;
 			}
 
-			if (!canStore) {
+			if (cu != null && !canStore) {
 				logger.warning(this, 60_000L, "Could not be stored into '"
 						+ destination + "'.");
 				
@@ -360,11 +360,12 @@ public abstract class Equipment extends MobileUnit implements Indoor, Salvagable
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainer(destination);
+				
 				updateLocationState(destination);
 				// Fire the unit event type
 				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
-				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				if (cu != null) cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		

@@ -111,18 +111,21 @@ public class BigBufferedImage extends BufferedImage {
 					BufferedImage image = create(width, height, imageType);
 					int cores = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
 					int block = Math.min(MAX_PIXELS_IN_MEMORY / cores / width, (int) (Math.ceil(height / (double) cores)));
-					generalExecutor = Executors.newFixedThreadPool(cores);
-					List<Callable<ImagePartLoader>> partLoaders = new ArrayList<>();
-					for (int y = 0; y < height; y += block) {
-						partLoaders.add(new ImagePartLoader(
-							y, width, Math.min(block, height - y), inputFile, image));
-					}
-					generalExecutor.invokeAll(partLoaders);
-					generalExecutor.shutdown();
-					return image;
-				} catch (InterruptedException ex) {
-					logger.severe("Fail to create the image. " + ex);
-					Thread.currentThread().interrupt();
+					
+					try {
+						generalExecutor = Executors.newFixedThreadPool(cores);
+						List<Callable<ImagePartLoader>> partLoaders = new ArrayList<>();
+						for (int y = 0; y < height; y += block) {
+							partLoaders.add(new ImagePartLoader(
+								y, width, Math.min(block, height - y), inputFile, image));
+						}
+						generalExecutor.invokeAll(partLoaders);
+						generalExecutor.shutdown();
+						return image;
+					} catch (Exception e) {
+						logger.severe("Fail to create the executor threads. " + e);
+						Thread.currentThread().interrupt();
+					} 
 				} finally {
 					stream.close();
 					if (generalExecutor != null) {
