@@ -98,9 +98,7 @@ public class BigBufferedImage extends BufferedImage {
 	}
 
 	public static BufferedImage create(File inputFile, int imageType) throws IOException {
-		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile);) {
-			ExecutorService generalExecutor = null;
-			
+		try (ImageInputStream stream = ImageIO.createImageInputStream(inputFile)) {		
 			Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
 			if (readers.hasNext()) {
 				try {
@@ -112,8 +110,7 @@ public class BigBufferedImage extends BufferedImage {
 					int cores = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
 					int block = Math.min(MAX_PIXELS_IN_MEMORY / cores / width, (int) (Math.ceil(height / (double) cores)));
 					
-					try {
-						generalExecutor = Executors.newFixedThreadPool(cores);
+					try (ExecutorService generalExecutor = Executors.newFixedThreadPool(cores)) {
 						List<Callable<ImagePartLoader>> partLoaders = new ArrayList<>();
 						for (int y = 0; y < height; y += block) {
 							partLoaders.add(new ImagePartLoader(
@@ -121,22 +118,24 @@ public class BigBufferedImage extends BufferedImage {
 						}
 						generalExecutor.invokeAll(partLoaders);
 						generalExecutor.shutdown();
+						generalExecutor.close();
 						return image;
 					} catch (Exception e) {
 						logger.severe("Fail to create the executor threads. " + e);
 						Thread.currentThread().interrupt();
 					} finally {
-						stream.close();
-						if (generalExecutor != null) {
-							generalExecutor.shutdown();
-						}
-						generalExecutor.close();
+						stream.close();						
+//						if (generalExecutor != null) {
+//							generalExecutor.shutdown();
+//							generalExecutor.close();
+//						}	
 					}
 				} finally {
 					stream.close();
-					if (generalExecutor != null) {
-						generalExecutor.shutdown();
-					}
+//					if (generalExecutor != null) {
+//						generalExecutor.shutdown();
+//						generalExecutor.close();
+//					}
 				}
 			}
 		}
