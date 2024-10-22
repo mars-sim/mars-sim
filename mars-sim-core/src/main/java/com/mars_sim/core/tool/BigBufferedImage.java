@@ -125,7 +125,13 @@ public class BigBufferedImage extends BufferedImage {
 					} catch (Exception e) {
 						logger.severe("Fail to create the executor threads. " + e);
 						Thread.currentThread().interrupt();
-					} 
+					} finally {
+						stream.close();
+						if (generalExecutor != null) {
+							generalExecutor.shutdown();
+						}
+						generalExecutor.close();
+					}
 				} finally {
 					stream.close();
 					if (generalExecutor != null) {

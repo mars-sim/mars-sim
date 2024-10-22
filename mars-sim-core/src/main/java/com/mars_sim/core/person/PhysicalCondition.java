@@ -967,7 +967,7 @@ public class PhysicalCondition implements Serializable {
 		if (isStressedOut()) {
 			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
 	
-			if (!problems.contains(panic)) {
+			if (panic == null || !problems.contains(panic)) {
 				if (stress >= 100.0) {
 					addMedicalComplaint(medicalManager.getPanicAttack());
 					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -977,7 +977,7 @@ public class PhysicalCondition implements Serializable {
 				}
 			}
 			
-			else if (stress < STRESS_THRESHOLD) {
+			else if (panic != null && stress < STRESS_THRESHOLD) {
 				
 				panic.setCured();
 				
