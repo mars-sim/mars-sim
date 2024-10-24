@@ -469,6 +469,12 @@ public class CommanderWindow extends ToolWindow {
 				JLabel popLabel = popGrid.addRow("Total Population", popRateCacheString + "");
 				popLabels.put(c, popLabel);
 				
+				// Recalculate area per person
+				areaPerPersonCache = totalAreaCache / popCache;
+				areaPerPersonCaches.put(c, areaPerPersonCache);
+				areaPerPersonLabel.setText(Math.round(areaPerPersonCache * 10.0)/10.0 + " SM");
+				areaPerPersonLabels.put(c, areaPerPersonLabel);
+				
 				/////////////////////////
 				
 				int bedCache = c.getPopulation().getNumBed();
@@ -766,7 +772,7 @@ public class CommanderWindow extends ToolWindow {
 				double newAreaPerPerson = Math.round(newTotalArea / newPop * 10.0)/10.0;			
 				if (areaPerPersonCaches.get(c) != newAreaPerPerson) {
 					areaPerPersonCaches.put(c, newAreaPerPerson);
-					areaPerPersonLabels.get(c).setText(newAreaPerPerson + "");
+					areaPerPersonLabels.get(c).setText(newAreaPerPerson + " SM");
 				}
 			}
 		}
