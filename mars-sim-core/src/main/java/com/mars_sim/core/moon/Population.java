@@ -91,7 +91,7 @@ public class Population implements Serializable, Temporal {
 		double engineersCache = numEngineers;
 		
 		int millisolInt = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewIntMillisol() && millisolInt > 5 && millisolInt % 80 == 1) {
+		if (pulse.isNewIntMillisol() && millisolInt > 5 && millisolInt % 120 == 1) {
 
 			// Recalculate tourists growth rate
 			growthRateTourists += RandomUtil.getRandomDouble(-.125, .2) + growthRateBeds / 5;
@@ -151,7 +151,9 @@ public class Population implements Serializable, Temporal {
 				}
 				else {
 					growthRateTourists -= 0.1;
-				}		
+				}
+				
+				growthRateBeds += rand / 5;
 			}
 					
 			// Limit the growth rate

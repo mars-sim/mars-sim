@@ -18,10 +18,12 @@ import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -57,6 +59,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colony;
+import com.mars_sim.core.moon.Zone;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.BasicTaskJob;
@@ -68,6 +71,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.farming.Farming;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -113,7 +117,12 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
 
-
+	private static final String HTML = "<html>";
+	private static final String END_HTML = "</html>";
+	private static final String BR = "<br>";
+	private static final String COLON = ": ";
+	private static final String SM = " SM";
+	
 	private JTabbedPane tabPane;
 	/** Person Combo box */	
 	private JComboBoxMW<Person> personBox;
@@ -774,10 +783,43 @@ public class CommanderWindow extends ToolWindow {
 					areaPerPersonCaches.put(c, newAreaPerPerson);
 					areaPerPersonLabels.get(c).setText(newAreaPerPerson + " SM");
 				}
+				
+				// Set up the tooltip for the total area
+				totalAreaLabels.get(c).setToolTipText(
+						generateZoneAreaToolTip(c.getZones()));
 			}
 		}
 	}
+	
+	/**
+	 * Generates a tool tip describing a Crop Spec.
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	private String generateZoneAreaToolTip(Set<Zone> zoneSet) {
+		List<Zone> zonelist = new ArrayList<>(zoneSet);
+		Collections.sort(zonelist, new ZoneComparator());
+		
+		StringBuilder result = new StringBuilder();
+		
+		result.append(HTML);
+			
+		for (Zone z: zonelist) {
+			result.append(z.getZoneType().getName()).append(COLON)
+				.append(Math.round(z.getArea() * 10.0)/10.0).append(SM).append(BR);
+		}
+		
+		return result.append(END_HTML).toString();
+	}
 
+	public class ZoneComparator implements Comparator<Zone> {
+	    @Override
+	    public int compare(Zone z1, Zone z2) {
+	        return z1.getZoneType().getName().compareTo(z2.getZoneType().getName()); 
+	    }
+	}
+	
 	/**
 	 * Creates the panel for Agriculture.
 	 */
