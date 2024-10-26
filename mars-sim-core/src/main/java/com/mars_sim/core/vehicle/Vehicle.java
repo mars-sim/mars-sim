@@ -64,7 +64,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
@@ -72,7 +72,7 @@ import com.mars_sim.core.vehicle.task.LoadingController;
  * information about the vehicle. This class needs to be subclassed to represent
  * a specific type of vehicle.
  */
-public abstract class Vehicle extends MobileUnit
+public abstract class Vehicle extends AbstractMobileUnit
 		implements Malfunctionable, Salvagable, Temporal, Indoor,
 		LocalBoundedObject, EquipmentOwner, ItemHolder, Towed {
 

@@ -43,6 +43,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -259,8 +260,8 @@ extends ToolWindow {
 				nw.updateCoordsMaps(unit.getCoordinates());
 			}
 			
-			if (settlementCheck.isSelected())
-				openUnit(unit);
+			if (settlementCheck.isSelected() && (unit instanceof MobileUnit mu))
+				openMobileUnit(mu);
 			
 			if (!history.contains(selectedUnitName))
 				history.add(selectedUnitName);
@@ -277,11 +278,11 @@ extends ToolWindow {
 	}
 
 	/**
-	 * Opens the unit in Mars Navigator or Settlement Map.
+	 * Opens the mbile unit in Mars Navigator or Settlement Map.
 	 * 
 	 * @param u
 	 */
-	public void openUnit(Unit u) {
+	private void openMobileUnit(MobileUnit u) {
 		
 		if (u.isInSettlement()) {
 			showPersonRobot(u);
@@ -327,16 +328,14 @@ extends ToolWindow {
 	 * 
 	 * @param u
 	 */
-	private void showPersonRobot(Unit u) {
+	private void showPersonRobot(MobileUnit u) {
 		// person just happens to step outside the settlement at its
 		// vicinity temporarily
 		SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
-		if (u.getUnitType() == UnitType.PERSON) {
-			Person p = (Person) u;
+		if (u instanceof Person p) {
 			sw.displayPerson(p);
 		} 
-		else if (u.getUnitType() == UnitType.ROBOT) {
-			Robot r = (Robot)u;
+		else if (u instanceof Robot r) {
 			sw.displayRobot(r);
 		}
 	}

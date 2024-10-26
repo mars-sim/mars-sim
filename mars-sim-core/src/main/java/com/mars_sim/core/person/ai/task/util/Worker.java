@@ -7,22 +7,20 @@
 
 package com.mars_sim.core.person.ai.task.util;
 
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitIdentifer;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.EquipmentOwner;
-import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
-import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.unit.MobileUnit;
 
-public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
+public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, MobileUnit {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
@@ -30,7 +28,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	 * @return the person's natural attribute manager
 	 */
 	public NaturalAttributeManager getNaturalAttributeManager();
-
 
 	/**
 	 * Gets the workers name.
@@ -47,60 +44,11 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	public String getTaskDescription();
 
 	/**
-	 * Gets the coordinates on Mars surface.
-	 * 
-	 * @return
-	 */
-	public Coordinates getCoordinates();
-
-	/**
-	 * Is the worker in a vehicle ?
-	 *
-	 * @return true if the worker in a vehicle
-	 */
-	public boolean isInVehicle();
-
-	/**
-	 * Gets vehicle worker is in, null if member is not in vehicle/
-	 *
-	 * @return the worker's vehicle
-	 */
-	public Vehicle getVehicle();
-
-	/**
 	 * Is the worker inside a vehicle in a garage ?
 	 * 
 	 * @return
 	 */
 	public boolean isInVehicleInGarage();
-	
-	/**
-	 * Is the worker in a settlement ?
-	 *
-	 * @return true if the worker in a settlement
-	 */
-	public boolean isInSettlement();
-
-	/**
-	 * Gets the current Settlement of the worker; may be different from the associated Settlement.
-	 * 
-	 * @return
-	 */
-	public Settlement getSettlement();
-	
-	/**
-	 * Gets the Worker's building.
-	 * 
-	 * @return building
-	 */
-	public Building getBuildingLocation();
-	
-	/**
-	 * Is the Worker outside ?
-	 *
-	 * @return true if the worker is on the MarsSurface
-	 */
-	public boolean isOutside();
 
 	/**
 	 * Is the worker outside of a settlement but within its vicinity ?
@@ -130,7 +78,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	 */
 	public void removeUnitListener(UnitListener oldListener);
 
-
 	/**
 	 * What is the Mission this Worker is performing.
 	 * 
@@ -144,27 +91,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission);
-
-	/**
-	 * Gets the Worker's position within the Settlement/Vehicle.
-	 * 
-	 * @return
-	 */
-	public LocalPosition getPosition();
-	
-	/**
-	 * Sets the worker's position at a settlement.
-	 *
-	 * @param position
-	 */
-	public void setPosition(LocalPosition position);
-
-	/**
-	 * Sets the building the worker is located at.
-	 *
-	 * @param position
-	 */
-	public void setCurrentBuilding(Building building);
 
 	/**
 	 * Gets the manager of the Worker's Tasks.
@@ -193,4 +119,12 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner {
 	 * @return
 	 */
 	public AllocatedSpot getActivitySpot();
+
+	/**
+	 * Fires a unit update event.
+	 *
+	 * @param updateType the update type.
+	 * @param target     the event target object or null if none.
+	 */
+	public void fireUnitUpdate(UnitEventType updateType, Object target);
 }

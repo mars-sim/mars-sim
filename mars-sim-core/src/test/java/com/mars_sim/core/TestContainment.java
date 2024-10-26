@@ -19,7 +19,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.VehicleGarage;
-import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -45,7 +45,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals("Parent container", container, source.getContainerUnit());
 	}
 
-	private static void assertInsideSettlement(String msg, MobileUnit source, Settlement base) {
+	private static void assertInsideSettlement(String msg, AbstractMobileUnit source, Settlement base) {
 		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType());
 		assertEquals(msg + ": Settlement", base, source.getSettlement());
 		
@@ -137,7 +137,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
 	}
 	
-	private void assertWithinSettlementVicinity(String msg, MobileUnit source) {
+	private void assertWithinSettlementVicinity(String msg, AbstractMobileUnit source) {
 		
 		assertFalse(msg + ": InSettlement", source.isInSettlement());
 		assertNull(msg + ": Settlement", source.getSettlement());
@@ -153,7 +153,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testPersonInGarage() throws Exception {
+	public void testPersonInGarage() {
 		Person person = Person.create("Worker One", settlement, GenderType.MALE).build();
 		unitManager.addUnit(person);
 
@@ -167,7 +167,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testVehicleInGarage() throws Exception {
+	public void testVehicleInGarage() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
         
 		assertVehicleParked("Initial Vehicle", vehicle, settlement);
@@ -181,7 +181,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testVehicleNearSettlement() throws Exception {
+	public void testVehicleNearSettlement() {
 		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1));
 
 		vehicle.setContainerUnitAndID(settlement);
@@ -192,7 +192,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testVehicleOnSurface() throws Exception {
+	public void testVehicleOnSurface() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
 
 		assertTrue("Transfer to Mars surface but still within settlement vicinity", vehicle.transfer(surface));
@@ -203,7 +203,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testBagOnSurface() throws Exception {
+	public void testBagOnSurface() {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
@@ -220,7 +220,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testBagOnVehicle() throws Exception {
+	public void testBagOnVehicle() {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
@@ -243,7 +243,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-	public void testPersonOnVehicle() throws Exception {
+	public void testPersonOnVehicle() {
 
 		Person person = buildPerson("Test Person", settlement);
 		
@@ -273,8 +273,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 		
 		assertFalse("Vehicle has left garage", vehicle.isInGarage());
-
-//		assertNull("Person in a vehicle. Vehicle is not in settlement", person.getSettlement());
 		
 		assertInVehicle("In vehicle", person, vehicle);
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
@@ -288,7 +286,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
-//	public void testEVAOnPerson() throws Exception {
+//	public void testEVAOnPerson() {
 //		Person person = new Person("Worker Two", settlement);
 //		person.initialize(); // TODO This is bad. Why do we have to call a 2nd method after the constructor ???
 //        unitManager.addUnit(person);

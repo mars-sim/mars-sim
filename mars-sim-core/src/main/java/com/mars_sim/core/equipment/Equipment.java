@@ -25,14 +25,14 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.Indoor;
 import com.mars_sim.core.structure.building.task.MaintainBuilding;
-import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
  * equipment, such as a kit, a container, an EVA suit or a medpack.
  */
-public abstract class Equipment extends MobileUnit implements Indoor, Salvagable {
+public abstract class Equipment extends AbstractMobileUnit implements Indoor, Salvagable {
 
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
