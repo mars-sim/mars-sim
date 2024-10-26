@@ -52,13 +52,13 @@ import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Crewable;
 
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends MobileUnit implements Salvagable, Temporal, Malfunctionable, Worker {
+public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, Malfunctionable, Worker {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -214,14 +214,12 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
         return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
     }
 
-	// TODO: allow parts to be recycled
-	public void toBeSalvaged() {
+	private void toBeSalvaged() {
 		((Settlement)getContainerUnit()).removeOwnedRobot(this);
 		isInoperable = true;
 	}
 
-	// TODO: allow robot parts to be stowed in storage
-	void setInoperable() {
+	private  void setInoperable() {
 		// set description for this robot
 		super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
 		botMind.setInactive();
@@ -386,22 +384,13 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 	}
 
 	/**
-	 * Gets the name of the vehicle operator
-	 *
-	 * @return vehicle operator name.
-	 */
-	public String getOperatorName() {
-		return getName();
-	}
-
-	/**
 	 * Gets a collection of people affected by this malfunction bots
 	 *
 	 * @return person collection
 	 */
+	@Override
 	public Collection<Person> getAffectedPeople() {
 		return getBuildingLocation().getAffectedPeople();
-		// TODO: associate each bot with its owner
 	}
 
 	/**
@@ -555,8 +544,6 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 	 */
 	@Override
 	public double getMass() {
-		// TODO because the PErson is not fully initialised in the constructor this
-		// can be null. The initialise method is the culprit.
 		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
 
 	}
@@ -957,7 +944,7 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (cu instanceof Crewable c) { //!((Vehicle)cu instanceof Drone)) {
+			if (cu instanceof Crewable c) {
 				transferred = c.removeRobot(this);
 			}
 			else {
@@ -983,7 +970,7 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 		else {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (destination instanceof Crewable c) { //!((Vehicle)destination instanceof Drone)) {
+				if (destination instanceof Crewable c) {
 					transferred = c.addRobot(this);
 				}
 				else {
@@ -1001,7 +988,7 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 				transferred = ((Building)destination).getSettlement().addRobotsWithin(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				destination = (((Building)destination)).getSettlement();
+				destination = ((Building)destination).getSettlement();
 			}
 
 			if (!transferred) {
@@ -1026,6 +1013,7 @@ public class Robot extends MobileUnit implements Salvagable, Temporal, Malfuncti
 	 *
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
 		int hashCode = getIdentifier();
 		hashCode *= getRobotType().hashCode();
