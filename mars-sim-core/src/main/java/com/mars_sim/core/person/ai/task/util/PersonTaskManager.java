@@ -240,12 +240,9 @@ public class PersonTaskManager extends TaskManager {
 		return selectedMissionRating;
 	}
 	
-	
-	@Override
 	public void reinit() {
 		person = mind.getPerson();
-		worker = person;
-		super.reinit();
+		super.reinit(person);
 	}
 
 	/**

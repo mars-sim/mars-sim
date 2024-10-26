@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.RatingLog;
@@ -43,7 +42,7 @@ public abstract class TaskManager implements Serializable {
 	private static MasterClock master;
 
 	/**The worker **/
-	protected transient Unit worker;
+	private transient Worker worker;
 	/** The current task the worker is doing. */
 	private Task currentTask;
 	private RatingScore currentScore;
@@ -51,7 +50,6 @@ public abstract class TaskManager implements Serializable {
 	/** The last task the person was doing. */
 	private Task lastTask;
 
-//	private transient TaskCache taskProbCache = null;
 	private transient CacheCreator<TaskJob> taskProbCache = null;
 
 
@@ -65,7 +63,7 @@ public abstract class TaskManager implements Serializable {
 	 * 
 	 * @param worker
 	 */
-	protected TaskManager(Unit worker) {
+	protected TaskManager(Worker worker) {
 		this.worker = worker;
 		allActivities = new History<>(150);   // Equivalent of 3 days
 		pendingTasks = new CopyOnWriteArrayList<>();
@@ -231,7 +229,7 @@ public abstract class TaskManager implements Serializable {
 		if (currentTask != null) {
 			currentTask.endTask();
 			currentTask = null;
-			worker.fireUnitUpdate(UnitEventType.TASK_EVENT);
+			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, null);
 		}
 	}
 
@@ -699,11 +697,12 @@ public abstract class TaskManager implements Serializable {
 	/**
 	 * Re-initializes instances when loading from a saved sim
 	 */
-	public void reinit() {
+	protected void reinit(Worker worker) {
 		if (currentTask != null)		
 			currentTask.reinit();
 		if (lastTask != null)
 			lastTask.reinit();
+		this.worker = worker;
 	}
 	
 	/**

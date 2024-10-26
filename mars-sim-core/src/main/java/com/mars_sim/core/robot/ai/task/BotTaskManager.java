@@ -202,12 +202,10 @@ public class BotTaskManager extends TaskManager {
 		return true;
 	}
 	
-	@Override
 	public void reinit() {
-		super.reinit();
 
 		robot = botMind.getRobot();
-		worker = robot;
+		super.reinit(robot);
 	}
 	
 	/**
