@@ -3536,11 +3536,6 @@ public class Settlement extends Unit implements Temporal,
 		return eqmInventory.getAmountResource(type, id);
 	}
 
-	@Override
-	public Unit getOwner() {
-		return eqmInventory.getOwner();
-	}
-	
 	/**
 	 * Gets the EquipmentInventory instance.
 	 * 
@@ -3609,16 +3604,6 @@ public class Settlement extends Unit implements Temporal,
 		return false;
 	}
 
-	/**
-	 * Gets the holder's unit instance.
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
-	}
-	
 	/**
 	 * Gets the preference that this Settlement influences.
 	 * 

@@ -83,7 +83,7 @@ public class EVASuit extends Equipment
 	private static final SimLogger logger = SimLogger.getLogger(EVASuit.class.getName());
 
 	// Static members
-	public final String EVA = "EVA";
+	public static final String EVA = "EVA";
 	
 	/** String name of an EVA suit. */	
 	public static final String TYPE = SystemType.EVA_SUIT.getName();
@@ -411,8 +411,8 @@ public class EVASuit extends Equipment
 						+ " kg O2 left at partial pressure of " + Math.round(pp*1000.0)/1000.0 + " kPa.");
 			return pp;
 		}
-//		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
-		return NOMINAL_O2_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
+//		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates())
+		return NOMINAL_O2_PRESSURE;
 	}
 
 	/**
@@ -422,7 +422,7 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public double getTemperature() {
-		return NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
+		return NORMAL_TEMP;
 //		double ambient = weather.getTemperature(getCoordinates());
 
 //		if (result < ambient) {
@@ -578,11 +578,6 @@ public class EVASuit extends Equipment
 	@Override
 	public int retrieveItemResource(int resource, int quantity) {
 		return microInventory.retrieveItemResource(resource, quantity);
-	}
-
-	@Override
-	public Unit getHolder() {
-		return this;
 	}
 
 	/**

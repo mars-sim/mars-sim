@@ -17,7 +17,6 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
@@ -88,7 +87,6 @@ import com.mars_sim.core.unit.FixedUnit;
 
 /**
  * The Building class is a settlement's building.
- * TODO Is the Item & ResoruceHolder needed if it is delegated to Settlement
  */
 public class Building extends FixedUnit implements Malfunctionable,
 	 InsidePathLocation, Temporal, ResourceHolder, ItemHolder {
@@ -120,7 +118,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private int baseLevel;
 
 	/** Default : 22.5 deg celsius. */
-	private double presetTemperature = 0;//22.5D;
+	private double presetTemperature = 0; //22.5D
 	private double width;
 	// Q: how to handle the indefinite length of hallway/tunnel ?
 	// "-1" if it doesn't exist.
@@ -692,8 +690,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/**
 	 * Gets the building type.
 	 *
-	 * @return building type as a String. TODO internationalize building names for
-	 *         display in user interface.
+	 * @return building type as a String.
 	 */
 	public String getBuildingType() {
 		return buildingType;
@@ -1210,9 +1207,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		if (!isValid(pulse)) {
 			return false;
 		}
-		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		long tnow = System.currentTimeMillis();
 
 		// Send time to each building function.
 		for (Function f : functions)
@@ -1568,16 +1562,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	@Override
 	public Set<Integer> getAllAmountResourceIDs() {
 		return getAssociatedSettlement().getAllAmountResourceIDs();
-	}
-
-	/**
-	 * Gets the holder's unit instance.
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
 	}
 
 	@Override

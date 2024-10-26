@@ -9,23 +9,12 @@ package com.mars_sim.core.equipment;
 import java.util.Collection;
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
-
 /**
  * Represents an entity that can hold resources.
  *
  */
 public interface BinHolder {
 
-//	/**
-//	 * Adds an amount resource container to this container holder
-//	 * 
-//	 * @param container
-//	 * @param type
-//	 * @param resource
-//	 */
-//	void addAmountResourceContainer(AmountResourceContainer container, ContainerType type, int resource);
-	
 	/**
 	 * Finds the number of bins of a particular type.
 	 *
@@ -127,13 +116,6 @@ public interface BinHolder {
 	 * @return resource id
 	 */
 	int getAmountResource(BinType type, int id);
-
-	/**
-	 * Gets the owner unit instance.
-	 *
-	 * @return
-	 */
-	public Unit getOwner();
 
 	/**
 	 * Adds a bin to be owned by the settlement.

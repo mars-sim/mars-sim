@@ -8,8 +8,6 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
-
 /**
  * Represents an entity that can hold item resources.
  *
@@ -63,11 +61,4 @@ public interface ItemHolder {
 	 * @return quantity that cannot be retrieved
 	 */
 	int retrieveItemResource(int resource, int quantity);
-
-	/**
-	 * Gets the holder's unit instance
-	 *
-	 * @return the holder's unit instance
-	 */
-	public Unit getHolder();
 }

@@ -8,13 +8,13 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 
 /**
  * Represents an entity that can hold resources.
  *
  */
-public interface ResourceHolder {
+public interface ResourceHolder extends Entity {
 
 	/**
 	 * Gets the amount resource stored
@@ -88,13 +88,6 @@ public interface ResourceHolder {
 	 * @return a collection of resource ids
 	 */
 	Set<Integer> getAllAmountResourceIDs();
-	
-	/**
-	 * Gets the holder's unit instance
-	 *
-	 * @return the holder's unit instance
-	 */
-	public Unit getHolder();
 	
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
