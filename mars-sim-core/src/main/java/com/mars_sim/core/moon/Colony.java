@@ -27,7 +27,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final SimLogger logger = SimLogger.getLogger(Colony.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Colony.class.getName());
 
 	private boolean startup = true;
 	
@@ -35,7 +35,6 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	
 	private String name;
 	
-	/** The settlement's ReportingAuthority instance. */
 	private Authority sponsor;
 	
 	private Population population;
@@ -56,6 +55,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	/** A set of research projects this colony's researchers engage in. */
 	private Set<Zone> zones = new HashSet<>();
 
+	private Finance finance;
 
 	/**
 	 * Constructor.
@@ -71,12 +71,18 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 		this.name = name;
 		this.sponsor = sponsor;
 		this.location = location;
-		
+
 		population = new Population(this);
 
 		initActivity();
 
 		initZone(startup);
+	
+		finance = new Finance(this);
+	}
+	
+	public Finance getFinance() {
+		return finance;
 	}
 	
 	/**
@@ -318,7 +324,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 */
 	public double getTotalArea() {
 		double sum = 0;
-		for (Zone z: zones) {
+		for (Zone z: getZones()) {
 			sum += z.getArea();
 		}
 		return sum;

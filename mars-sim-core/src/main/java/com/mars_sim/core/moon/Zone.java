@@ -18,7 +18,7 @@ public class Zone implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final SimLogger logger = SimLogger.getLogger(Zone.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Zone.class.getName());
 
 	// Area in square meters
 	private double area;
@@ -73,13 +73,13 @@ public class Zone implements Serializable, Temporal {
 		else if (ZoneType.TRANSPORTATION == type)	
 			area = factor * RandomUtil.getRandomDouble(50, 100);
 		
-		growthPercent = RandomUtil.getRandomDouble(0, 2);
+		growthPercent = RandomUtil.getRandomDouble(0.1, 1);
 	}
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		int missionSol = pulse.getMarsTime().getMissionSol();
+//		int missionSol = pulse.getMarsTime().getMissionSol();
 		
 		if (pulse.isNewHalfSol() || (RandomUtil.getRandomInt(50) == 1)) {
 			
@@ -134,7 +134,7 @@ public class Zone implements Serializable, Temporal {
 			
 			// Slightly adjust the growth rate after making the contribution to 
 			// the increase or decrease of the zone area
-			growthPercent = growthPercent *.9;
+			growthPercent = growthPercent *.95;
 		}
 
 		return false;

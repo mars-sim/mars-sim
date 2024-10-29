@@ -17,7 +17,7 @@ public class LunarWorld implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final SimLogger logger = SimLogger.getLogger(LunarWorld.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(LunarWorld.class.getName());
 
 	@Override
 	public boolean timePassing(ClockPulse pulse) {		

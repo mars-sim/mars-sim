@@ -24,7 +24,7 @@ public class LunarActivity implements Temporal, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final SimLogger logger = SimLogger.getLogger(LunarActivity.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(LunarActivity.class.getName());
 	/** The demand factor for this activity (between -1 and 1). */
 	private double demand = RandomUtil.getRandomDouble(0, .25);
 	

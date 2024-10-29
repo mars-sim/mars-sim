@@ -34,14 +34,14 @@ public class Population implements Serializable, Temporal {
 	private double numResearchers;
 	private double numEngineers;
 	
-	private double numBeds;
+	private double numLodges;
 	
 	private double growthRateTourists;
 	private double growthRateResidents;
 	private double growthRateResearchers;
 	private double growthRateEngineers;
 	
-	private double growthRateBeds;
+	private double growthRateLodge;
 	
 	private Colony colony;
 	
@@ -59,7 +59,7 @@ public class Population implements Serializable, Temporal {
 		growthRateTourists = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateResidents = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateResearchers = RandomUtil.getRandomDouble(-.3, .4);
-		growthRateBeds = RandomUtil.getRandomDouble(-.3, .4);
+		growthRateLodge = RandomUtil.getRandomDouble(-.3, .4);
 		
 		numEngineers = RandomUtil.getRandomInt(5, 10);
 		numTourists = RandomUtil.getRandomInt(0, 3);
@@ -68,7 +68,7 @@ public class Population implements Serializable, Temporal {
 		numEngineers = RandomUtil.getRandomInt(3, 6);
 		
 		int totPop = getTotalPopulation();
-		numBeds = RandomUtil.getRandomInt(totPop, INITIAL);
+		numLodges = RandomUtil.getRandomInt(totPop, INITIAL);
 	}
 	
 	public void init() {
@@ -91,37 +91,37 @@ public class Population implements Serializable, Temporal {
 		double engineersCache = numEngineers;
 		
 		int millisolInt = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewIntMillisol() && millisolInt > 5 && millisolInt % 120 == 1) {
+		if (pulse.isNewHalfSol() || pulse.isNewIntMillisol() && millisolInt > 5 && millisolInt % 120 == 1) {
 
 			// Recalculate tourists growth rate
-			growthRateTourists += RandomUtil.getRandomDouble(-.125, .2) + growthRateBeds / 5;
+			growthRateTourists += RandomUtil.getRandomDouble(-.125, .2) + growthRateLodge / 5;
 			// Recalculate tourists
 			numTourists += growthRateTourists;
 			
 			// Recalculate residents growth rate
-			growthRateResidents += RandomUtil.getRandomDouble(-.125, .2) + growthRateBeds / 4;
+			growthRateResidents += RandomUtil.getRandomDouble(-.125, .2) + growthRateLodge / 4;
 			// Recalculate residents
 			numResidents += growthRateResidents;
 			
 			// Recalculate researchers growth rate
 			growthRateResearchers += RandomUtil.getRandomDouble(-.125, .2) + colony.getResearchDemand()
-								+ growthRateBeds / 5;		
+								+ growthRateLodge / 5;		
 			// Recalculate researchers	
 			numResearchers += growthRateResearchers;
 			
 			// Recalculate engineers growth rate
 			growthRateEngineers += RandomUtil.getRandomDouble(-.125, .2) + colony.getDevelopmentDemand()
-								+ growthRateBeds / 5;		
+								+ growthRateLodge / 5;		
 			// Recalculate engineers	
 			numEngineers += growthRateEngineers;
 
-			// Recalculate beds growth rate
-			growthRateBeds += RandomUtil.getRandomDouble(-.05, .1) 
-					+ .5 * (growthRateBeds 
+			// Recalculate lodge growth rate
+			growthRateLodge += RandomUtil.getRandomDouble(-.05, .1) 
+					+ .5 * (growthRateLodge 
 					+ .2 * (growthRateResidents * 2 + growthRateResearchers 
 					+ growthRateEngineers + growthRateTourists));			
-			// Recalculate beds
-			numBeds += growthRateBeds;
+			// Recalculate available lodges
+			numLodges += growthRateLodge;
 
 			// Set minimum
 			if (numResidents < 0)
@@ -132,12 +132,12 @@ public class Population implements Serializable, Temporal {
 				numEngineers = 0;
 			if (numTourists < 0)
 				numTourists = 0;
-			if (numBeds < 0)
-				numBeds = 0;
+			if (numLodges < 0)
+				numLodges = 0;
 			
-			// Checks if there is enough beds. 
+			// Checks if there is enough lodging units. 
 			// If not, slow the growth rate in one type of pop
-			if (numTourists + numResidents + numResearchers + numEngineers > numBeds * .95) {
+			if (numTourists + numResidents + numResearchers + numEngineers > numLodges * .95) {
 				
 				int rand = RandomUtil.getRandomInt(0, 10);
 				if (rand == 0) {
@@ -153,7 +153,7 @@ public class Population implements Serializable, Temporal {
 					growthRateTourists -= 0.1;
 				}
 				
-				growthRateBeds += rand / 5;
+				growthRateLodge += rand / 6;
 			}
 					
 			// Limit the growth rate
@@ -177,10 +177,10 @@ public class Population implements Serializable, Temporal {
 			else if (growthRateResearchers < -.5)
 				growthRateResearchers = -.5;	
 			
-			if (growthRateBeds > 4)
-				growthRateBeds = 4;
-			else if (growthRateBeds < -0.15)
-				growthRateBeds = -0.15;
+			if (growthRateLodge > 4)
+				growthRateLodge = 4;
+			else if (growthRateLodge < -0.15)
+				growthRateLodge = -0.15;
 			
 			if ((int)researchersCache < (int)numResearchers 
 					&& !colonists.isEmpty()) {
@@ -341,8 +341,8 @@ public class Population implements Serializable, Temporal {
 		return set;
 	}
 	
-	public int getNumBed() {
-		return (int)numBeds;
+	public int getNumLodge() {
+		return (int)numLodges;
 	}
 	
 	public int getNumTourists() {
@@ -365,8 +365,8 @@ public class Population implements Serializable, Temporal {
 		return (int)numTourists + (int)numResidents + (int)numResearchers + (int)numEngineers;
 	}
 	
-	public double getGrowthNumBed() {
-		return growthRateBeds;
+	public double getGrowthLodge() {
+		return growthRateLodge;
 	}
 	
 	public double getGrowthTourists() {

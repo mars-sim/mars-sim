@@ -341,7 +341,6 @@ public class MainWindow
 	/**
 	 * Initializes UI elements for the frame
 	 */
-	@SuppressWarnings("serial")
 	private void init() {
 
 		frame.addWindowListener(new WindowAdapter() {
