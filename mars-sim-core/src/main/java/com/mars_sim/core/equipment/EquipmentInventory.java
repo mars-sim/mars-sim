@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.equipment;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,7 +27,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  * basic capacity management.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, ItemHolder, BinHolder, Serializable {
+		implements EquipmentOwner, ItemHolder, BinHolder {
 
 	private static final long serialVersionUID = 1L;
 
@@ -678,7 +677,6 @@ public class EquipmentInventory
 	/**
 	 * Sets the resource capacities.
 	 *
-	 * TODO should be keyed on resourceID not string.
 	 * @param capacities
 	 */
 	public void setResourceCapacityMap(Map<Integer, Double> capacities) {
@@ -731,16 +729,6 @@ public class EquipmentInventory
 	 */
 	public void removeCapacity(int resource, double capacity) {
 		microInventory.removeCapacity(resource, capacity);
-	}
-
-	/**
-	 * Gets the holder's unit instance.
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return owner.getContainerUnit();
 	}
 
 	/**
@@ -934,17 +922,22 @@ public class EquipmentInventory
 		
 		return 0;
 	}
+	
+	@Override
+	public String getName() {
+		return owner.getName();
+	}
 
 	@Override
-	public Unit getOwner() {
-		return owner;
-	}
-	
+	public String getContext() {
+		return owner.getDescription();
+	}	
+
 	public void destroy() {
 		containerSet.clear();
 		containerSet = null;
 		suitSet.clear();
 		suitSet = null;
 		microInventory = null;
-	}	
+	}
 }

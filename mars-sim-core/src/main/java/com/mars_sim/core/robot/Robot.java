@@ -1025,16 +1025,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return UnitType.ROBOT;
 	}
 
-	/**
-	 * Gets the holder's unit instance
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
-	}
-
 	/** 
 	 * Returns the current amount of energy in kWh. 
 	 */

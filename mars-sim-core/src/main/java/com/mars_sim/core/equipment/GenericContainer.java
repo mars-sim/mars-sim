@@ -11,7 +11,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
@@ -297,16 +296,6 @@ class GenericContainer extends Equipment implements Container {
 		}
 
 		return resourceHeld == -1;
-	}
-
-	/**
-	 * Gets the holder's unit instance.
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
 	}
 
 	@Override

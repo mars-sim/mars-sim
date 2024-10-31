@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -26,10 +25,14 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * A utility class for finding an EVA suit from an inventory
  */
-public class EVASuitUtil {
+public final class EVASuitUtil {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EVASuitUtil.class.getName());
+
+	private EVASuitUtil() {
+		// Static helper class
+	}
 
 	/**
 	 * Take off EVA suit, puts on the garment and get back the thermal bottle.
@@ -54,13 +57,9 @@ public class EVASuitUtil {
 			// Doff this suit.
 			boolean success = suit.transfer((Unit)housing);
 			
-			if (success) {
-				; //logger.log((Unit)housing, person, Level.INFO, 4_000, "Just transferred back " + suit.getName() 
-//						+ " to " + (Unit)housing + ".");
-			}
-			else {
+			if (!success) {
 				logger.warning(person, 4_000,
-						"Could not transfer " + suit + " from " + person + " to " + ((Unit)housing).getName() + ".");
+						"Could not transfer " + suit + " from " + person + " to " + housing.getName() + ".");
 			}
 		}
 		
@@ -207,10 +206,10 @@ public class EVASuitUtil {
 	 */
 	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
 		int otherPeopleNum = 0;
-		if (owner.getHolder().getUnitType() == UnitType.SETTLEMENT)
-			otherPeopleNum = ((Settlement) owner).getIndoorPeopleCount() - 1;
-		else 
-			otherPeopleNum = ((Crewable) owner).getCrewNum();
+		if (owner instanceof Settlement s)
+			otherPeopleNum = s.getIndoorPeopleCount() - 1;
+		else if (owner instanceof Crewable c)
+			otherPeopleNum = c.getCrewNum();
 		
 		// Check if enough oxygen.
 		double neededOxygen = suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);

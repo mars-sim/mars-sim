@@ -294,7 +294,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	/**
 	 * Gets the base image for this Vehicle.
 	 * 
-	 * @todo This needs refactoring to avoid copying out VehicleSpec properties
 	 * @return Name of base image for this vehicle
 	 */
 	public String getBaseImage() {
@@ -1859,16 +1858,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.VEHICLE;
-	}
-
-	/**
-	 * Gets the holder's unit instance.
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
 	}
 
 	/**

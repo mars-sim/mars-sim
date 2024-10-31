@@ -1689,16 +1689,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	}
 
 	/**
-	 * Gets the holder's unit instance.
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
-	}
-
-	/**
 	 * Does this person have a set of clothing ?
 	 */
 	public boolean hasGarment() {
