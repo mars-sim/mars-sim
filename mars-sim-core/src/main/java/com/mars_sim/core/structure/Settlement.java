@@ -2089,10 +2089,9 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return Collection of Unit
 	 */
-	public Collection<Unit> getVehicleTypeUnit(VehicleType vehicleType) {
+	public Collection<Vehicle> getVehicleTypeUnit(VehicleType vehicleType) {
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == vehicleType)
-				.map(Unit.class::cast)
 				.toList();
 	}
 

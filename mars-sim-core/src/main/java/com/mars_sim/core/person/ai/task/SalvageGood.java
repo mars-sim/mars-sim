@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.ManufactureUtil;
@@ -404,10 +403,10 @@ public class SalvageGood extends Task {
 		if (result == null) {
 			Iterator<SalvageProcess> j = workshop.getQueueSalvageProcesses().iterator();
 			while (i.hasNext() && (result == null)) {
-				SalvageProcess process = j.next();
-				if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && (process.getWorkTimeRemaining() > 0D)) {
-					result = process;
-					workshop.loadFromSalvageQueue(process);
+				SalvageProcess queuedProcess = j.next();
+				if ((queuedProcess.getInfo().getSkillLevelRequired() <= skillLevel) && (queuedProcess.getWorkTimeRemaining() > 0D)) {
+					result = queuedProcess;
+					workshop.loadFromSalvageQueue(queuedProcess);
 					break;
 				}
 			}
@@ -448,7 +447,7 @@ public class SalvageGood extends Task {
 			SalvageProcessInfo selectedProcess = RandomUtil.getWeightedRandomObject(processValues);
 
 			if (selectedProcess != null) {
-				Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess,
+				var salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess,
 						person.getSettlement());
 				if (salvagedUnit != null) {
 					result = new SalvageProcess(selectedProcess, workshop, salvagedUnit);

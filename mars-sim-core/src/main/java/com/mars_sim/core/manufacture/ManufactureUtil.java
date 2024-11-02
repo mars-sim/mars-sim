@@ -8,12 +8,12 @@
 package com.mars_sim.core.manufacture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.Equipment;
@@ -22,7 +22,6 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -30,16 +29,13 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -47,9 +43,6 @@ import com.mars_sim.core.vehicle.VehicleType;
  * Utility class for getting manufacturing processes.
  */
 public final class ManufactureUtil {
-
-	/* default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ManufactureUtil.class.getName());
 
 	private static final int OUTPUT_VALUE = 10;
 	private static final int PART_VALUE = 20;
@@ -61,7 +54,7 @@ public final class ManufactureUtil {
 	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
 	
 	/** constructor. */
-	public ManufactureUtil() {
+	private ManufactureUtil() {
 		// Static helper class
 	}
 
@@ -94,9 +87,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
 		List<ManufactureProcessInfo> result = new ArrayList<>();
-		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
+		for(ManufactureProcessInfo process : getAllManufactureProcesses()) {
 			for (String n : process.getOutputNames()) {
 				if (name.equalsIgnoreCase(n))
 					result.add(process);
@@ -144,16 +135,6 @@ public final class ManufactureUtil {
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
 		return manufactureConfig.getSalvageProcessesForTechLevel(techLevel);
-	}
-
-	/**
-	 * Gets a full list of salvage process information.
-	 * 
-	 * @return list of salvage process information.
-	 * @throws Exception if error getting info.
-	 */
-	public static List<SalvageProcessInfo> getSalvageInfoList() {
-		return manufactureConfig.getSalvageInfoList();
 	}
 	
 	/**
@@ -210,7 +191,7 @@ public final class ManufactureUtil {
 	public static double getSalvageProcessValue(SalvageProcessInfo process, Settlement settlement, Person salvager) {
 		double result = 0D;
 
-		Unit salvagedUnit = findUnitForSalvage(process, settlement);
+		var salvagedUnit = findUnitForSalvage(process, settlement);
 		if (salvagedUnit != null) {
 			GoodsManager goodsManager = settlement.getGoodsManager();
 
@@ -267,46 +248,51 @@ public final class ManufactureUtil {
 	 */
 	public static double getManufactureProcessItemValue(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
-		double result;
+		double result = 0;
 
 		GoodsManager manager = settlement.getGoodsManager();
-
-		if (item.getType() == ItemType.AMOUNT_RESOURCE) {
-			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
-			int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-			double amount = item.getAmount();
-			if (isOutput) {
-				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(ar.getID());
-				if (amount > remainingCapacity) {
-					amount = remainingCapacity;
+		switch(item.getType()) {
+			case ItemType.AMOUNT_RESOURCE: {
+				AmountResource ar = ResourceUtil.findAmountResource(item.getName());
+				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+				double amount = item.getAmount();
+				if (isOutput) {
+					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(ar.getID());
+					if (amount > remainingCapacity) {
+						amount = remainingCapacity;
+					}
 				}
-			}
 
-			result = manager.getGoodValuePoint(id) * amount;
+				result = manager.getGoodValuePoint(id) * amount;
+			} break;
 		
-		} else if (item.getType() == ItemType.PART) {
-            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			result = manager.getGoodValuePoint(id) * item.getAmount();
-			if (isOutput)
-				result *= PART_VALUE;
-		} else if (item.getType() == ItemType.EQUIPMENT) {
-			int id = EquipmentType.convertName2ID(item.getName());
-			result = manager.getGoodValuePoint(id) * item.getAmount();
-			if (isOutput)
-				result *= EQUIPMENT_VALUE;
-		} else if (item.getType() == ItemType.BIN) {
-			int id = BinType.convertName2ID(item.getName());
-			result = manager.getGoodValuePoint(id) * item.getAmount();
-			if (isOutput)
-				result *= BIN_VALUE;
-		} else if (item.getType() == ItemType.VEHICLE) {
-			result = manager.getGoodValuePoint(GoodsUtil.getVehicleGood(item.getName()).getID()) * item.getAmount();
-			if (isOutput)
-				result *= VEHICLE_VALUE;
-		}
+			case ItemType.PART: {
+				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+				result = manager.getGoodValuePoint(id) * item.getAmount();
+				if (isOutput)
+					result *= PART_VALUE;
+			} break;
 
-		else
-			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
+			case ItemType.EQUIPMENT: {
+				int id = EquipmentType.convertName2ID(item.getName());
+				result = manager.getGoodValuePoint(id) * item.getAmount();
+				if (isOutput)
+					result *= EQUIPMENT_VALUE;
+			} break;
+
+			case ItemType.BIN: {
+				int id = BinType.convertName2ID(item.getName());
+				result = manager.getGoodValuePoint(id) * item.getAmount();
+				if (isOutput)
+					result *= BIN_VALUE;
+			} break;
+
+			case ItemType.VEHICLE: {
+				result = manager.getGoodValuePoint(GoodsUtil.getVehicleGood(item.getName()).getID()) * item.getAmount();
+				if (isOutput)
+					result *= VEHICLE_VALUE;
+			} break;
+		}
 
 		return result;
 	}
@@ -339,11 +325,7 @@ public final class ManufactureUtil {
 		}
 
 		// Check to see if room for process output items at settlement.
-		if (!canProcessOutputsBeStored(process, settlement)) {
-			return false;
-		}
-
-		return true;
+		return canProcessOutputsBeStored(process, settlement);
     }
 	
 	/**
@@ -379,11 +361,7 @@ public final class ManufactureUtil {
 		}
 
 		// Check to see if room for process output items at settlement.
-		if (!canProcessOutputsBeStored(process, settlement)) {
-			return false;
-		}
-
-		return true;
+		return canProcessOutputsBeStored(process, settlement);
     }
 
 	/**
@@ -403,11 +381,7 @@ public final class ManufactureUtil {
 		}
 
 		// Check to see if a salvagable unit is available at the settlement.
-		if (findUnitForSalvage(process, workshop.getBuilding().getSettlement()) == null) {
-			return false;
-		}
-
-		return true;
+		return findUnitForSalvage(process, workshop.getBuilding().getSettlement()) != null;
 	}
 
 
@@ -433,11 +407,7 @@ public final class ManufactureUtil {
 		}
 
 		// Check to see if a salvagable unit is available at the settlement.
-		if (findUnitForSalvage(process, workshop.getBuilding().getSettlement()) == null) {
-			return false;
-		}
-
-		return true;
+		return findUnitForSalvage(process, workshop.getBuilding().getSettlement()) != null;
 	}
 
 	/**
@@ -480,67 +450,55 @@ public final class ManufactureUtil {
 	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Settlement settlement) {
 
 		for(var item : process.getOutputList()) {
-			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
-				if (item.getAmount() > capacity)
-					return false;
-			}
+			switch(item.getType()) {
+				case ItemType.AMOUNT_RESOURCE: {
+					double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
+					if (item.getAmount() > capacity)
+						return false;
+				} break;
 
-			else if (ItemType.PART == item.getType()) {
-				double mass = item.getAmount() * ((Part) ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
-				double capacity = settlement.getCargoCapacity();
-				if (mass > capacity)
-					return false;
-			}
+				case ItemType.PART: {
+					double mass = item.getAmount() * (ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
+					double capacity = settlement.getCargoCapacity();
+					if (mass > capacity)
+						return false;
+				} break;
 
-			else if (ItemType.EQUIPMENT == item.getType()) {
-				int number = (int) item.getAmount();
-				double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
-				double capacity = settlement.getCargoCapacity();
-				if (mass > capacity)
-					return false;
-			}
+				case ItemType.EQUIPMENT: {
+					int number = (int) item.getAmount();
+					double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
+					double capacity = settlement.getCargoCapacity();
+					if (mass > capacity)
+						return false;
+				} break;
 
-			else if (ItemType.BIN == item.getType()) {
-				int number = (int) item.getAmount();
-				double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
-				double capacity = settlement.getCargoCapacity();
-				if (mass > capacity)
-					return false;
+				case ItemType.BIN: {
+					int number = (int) item.getAmount();
+					double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
+					double capacity = settlement.getCargoCapacity();
+					if (mass > capacity)
+						return false;
+				} break;
+
+				case ItemType.VEHICLE:
+					break;
 			}
-			
-			else
-				logger.severe(settlement, "ManufactureUtil.addProcess(): output: " +
-					item.getType() + " not a valid type.");
 		}
 
 		return true;
 	}
 
 	/**
-	 * Checks if settlement has buildings with manufacture function.
-	 *
-	 * @param settlement the settlement.
-	 * @return true if buildings with manufacture function.
-	 * @throws BuildingException if error checking for manufacturing buildings.
-	 */
-	public static boolean doesSettlementHaveManufacturing(Settlement settlement) {
-		return (!settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).isEmpty());
-	}
-
-	/**
 	 * Gets the highest manufacturing tech level in a settlement.
 	 *
 	 * @param settlement the settlement.
-	 * @return highest manufacturing tech level.
-	 * @throws BuildingException if error determining highest tech level.
+	 * @return highest manufacturing tech level or -1 if no manufacturing supported
 	 */
 	public static int getHighestManufacturingTechLevel(Settlement settlement) {
-		int highestTechLevel = 0;
+		int highestTechLevel = -1;
 		BuildingManager manager = settlement.getBuildingManager();
-		Iterator<Building> i = manager.getBuildingSet(FunctionType.MANUFACTURE).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+
+		for(Building building : manager.getBuildingSet(FunctionType.MANUFACTURE)) {
 			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.getTechLevel() > highestTechLevel)
 				highestTechLevel = manufacturingFunction.getTechLevel();
@@ -557,58 +515,45 @@ public final class ManufactureUtil {
 	 * @return available salvagable unit, or null if none found.
 	 * @throws Exception if problem finding salvagable unit.
 	 */
-	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
-		Unit result = null;
-		List<Unit> salvagableUnits = new ArrayList<>();
+	public static Salvagable findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
+		Salvagable result = null;
+		List<Salvagable> salvagableUnits = Collections.emptyList();
 
 		if (info.getType() == ItemType.VEHICLE) {
-			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
-				salvagableUnits.addAll(settlement.getVehicleTypeUnit(VehicleType.LUV));
-			} else {
-				VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
-				salvagableUnits.addAll(settlement.getVehicleTypeUnit(type));
-			}
+			VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
 
-			// Remove any reserved vehicles.
-			Iterator<? extends Unit> i = salvagableUnits.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.isEmpty();
-				if (vehicle.isReserved() || !isEmpty)
-					i.remove();
-			}
+			// Take any non-empty and unreserved vehicles
+			salvagableUnits = settlement.getVehicleTypeUnit(type).stream()
+								.filter(v -> (v.isEmpty() && !v.isReserved()))
+								.filter(v2 -> (v2.getContainerUnit() != settlement))
+								.map(Salvagable.class::cast)
+								.toList();
 		} 
 		
 		else if (info.getType() == ItemType.EQUIPMENT) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
-			salvagableUnits.addAll(settlement.getContainerSet(eType));
+			salvagableUnits = settlement.getContainerSet(eType).stream()
+								.filter(v2 -> (v2.getContainerUnit() != settlement))
+								.map(Salvagable.class::cast)
+								.toList();
 		} 
-
-		// Make sure container unit is settlement.
-		Iterator<? extends Unit> i = salvagableUnits.iterator();
-		while (i.hasNext()) {
-			if (i.next().getContainerUnit() != settlement)
-				i.remove();
-		}
 
 		// If malfunctionable, find most worn unit.
 		if (!salvagableUnits.isEmpty()) {
-			Unit firstUnit = (Unit) salvagableUnits.toArray()[0];
-			if (firstUnit instanceof Malfunctionable malfunctionable) {
-				Unit mostWorn = null;
-				double lowestWearCondition = Double.MAX_VALUE;
-				Iterator<? extends Unit> k = salvagableUnits.iterator();
-				while (k.hasNext()) {
-					Unit unit = k.next();
-					double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
+			// Defaut is first item found
+			result = salvagableUnits.get(0);
+
+			// Find the lowest wear
+			double lowestWearCondition = Double.MAX_VALUE;
+			for(var s : salvagableUnits) {
+				if (s instanceof Malfunctionable m) {
+					double wearCondition = m.getMalfunctionManager().getWearCondition();
 					if (wearCondition < lowestWearCondition) {
-						mostWorn = unit;
+						result = s;
 						lowestWearCondition = wearCondition;
 					}
 				}
-				result = mostWorn;
-			} else
-				result = firstUnit;
+			}
 		}
 
 		return result;

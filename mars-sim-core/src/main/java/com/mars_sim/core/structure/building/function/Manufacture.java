@@ -422,26 +422,26 @@ public class Manufacture extends Function {
 		}
 
 		ongoingSalvages.add(process);
+		Settlement settlement = building.getSettlement();
 
 		// Retrieve salvaged unit and remove from unit manager.
-		Unit salvagedUnit = process.getSalvagedUnit();
+		var salvagedUnit = process.getSalvagedUnit();
 		if (salvagedUnit != null) {
-			if (salvagedUnit.getUnitType() == UnitType.CONTAINER
-					|| salvagedUnit.getUnitType() == UnitType.EVA_SUIT) {
-				building.getSettlement().removeEquipment((Equipment)salvagedUnit);
-			} else if (salvagedUnit.getUnitType() == UnitType.VEHICLE) {
-				building.getSettlement().removeOwnedVehicle((Vehicle)salvagedUnit);
-				building.getSettlement().removeVicinityParkedVehicle((Vehicle)salvagedUnit);
-			} else if (salvagedUnit.getUnitType() == UnitType.ROBOT) {
-				building.getSettlement().removeOwnedRobot((Robot)salvagedUnit);
+			switch(salvagedUnit) {
+				case Equipment e: settlement.removeEquipment(e); break;
+				case Robot r: settlement.removeOwnedRobot(r); break;
+				case Vehicle v:
+					settlement.removeOwnedVehicle(v);
+					settlement.removeVicinityParkedVehicle(v);
+					break;
+				default: throw new IllegalStateException("Salvage process can not remote target");
 			}
 		} else
 			throw new IllegalStateException("Salvaged unit is null");
 
-		Settlement settlement = building.getSettlement();
 
 		// Set the salvage process info for the salvaged unit.
-		((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement.getIdentifier());
+		salvagedUnit.startSalvage(process.getInfo(), settlement.getIdentifier());
 
 		// Recalculate settlement good value for salvaged unit.
 		Good salvagedGood = null;
@@ -775,9 +775,8 @@ public class Manufacture extends Function {
 
 			// Determine the salvage chance based on the wear condition of the item.
 			double salvageChance = 50D;
-			Unit salvagedUnit = process.getSalvagedUnit();
-			if (salvagedUnit instanceof Malfunctionable) {
-				Malfunctionable malfunctionable = (Malfunctionable) salvagedUnit;
+			var salvagedUnit = process.getSalvagedUnit();
+			if (salvagedUnit instanceof Malfunctionable malfunctionable) {
 				double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
 				salvageChance = (wearCondition * .25D) + 25D;
 			}

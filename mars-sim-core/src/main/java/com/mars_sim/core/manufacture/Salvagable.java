@@ -7,10 +7,12 @@
 
 package com.mars_sim.core.manufacture;
 
+import com.mars_sim.core.Entity;
+
 /**
  * An interface for salvagable items.
  */
-public interface Salvagable {
+public interface Salvagable extends Entity {
 
     /**
      * Checks if the item is salvaged.

@@ -782,8 +782,8 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 
 		// Get highest manufacturing tech level in settlement.
-		if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
-			int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+		if (techLevel >= 0) {
 			for (ManufactureProcessInfo i : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
 				double manufacturingDemand = getResourceManufacturingProcessDemand(owner, settlement, i);
 				demand += manufacturingDemand / 1000D;
