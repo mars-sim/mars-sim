@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -27,7 +25,6 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
-import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
@@ -39,6 +36,7 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
@@ -428,12 +426,16 @@ public class Manufacture extends Function {
 		var salvagedUnit = process.getSalvagedUnit();
 		if (salvagedUnit != null) {
 			switch(salvagedUnit) {
-				case Equipment e: settlement.removeEquipment(e); break;
-				case Robot r: settlement.removeOwnedRobot(r); break;
-				case Vehicle v:
+				case Equipment e: {
+					settlement.removeEquipment(e);
+				} break;
+				case Robot r: {
+					settlement.removeOwnedRobot(r);
+				} break;
+				case Vehicle v: {
 					settlement.removeOwnedVehicle(v);
 					settlement.removeVicinityParkedVehicle(v);
-					break;
+				} break;
 				default: throw new IllegalStateException("Salvage process can not remote target");
 			}
 		} else
@@ -442,18 +444,6 @@ public class Manufacture extends Function {
 
 		// Set the salvage process info for the salvaged unit.
 		salvagedUnit.startSalvage(process.getInfo(), settlement.getIdentifier());
-
-		// Recalculate settlement good value for salvaged unit.
-		Good salvagedGood = null;
-		if (salvagedUnit instanceof Equipment e) {
-			salvagedGood = GoodsUtil.getEquipmentGood(e.getEquipmentType());
-		} else if (salvagedUnit instanceof Vehicle v) {
-			salvagedGood = GoodsUtil.getVehicleGood(v.getDescription());
-		}
-
-		if (salvagedGood == null) {
-			throw new IllegalStateException("Salvaged good is null");
-		}
 
 		// Log salvage process starting.
 		logger.info(getBuilding(), 0, "Starting salvage process: " + process.getInfo().getName());
@@ -821,7 +811,7 @@ public class Manufacture extends Function {
 		}
 
 		// Finish the salvage.
-		((Salvagable) process.getSalvagedUnit()).getSalvageInfo().finishSalvage(partsSalvaged, masterClock.getMarsTime());
+		process.getSalvagedUnit().getSalvageInfo().finishSalvage(partsSalvaged, masterClock.getMarsTime());
 
 		ongoingSalvages.remove(process);
 	}
@@ -886,14 +876,7 @@ public class Manufacture extends Function {
 	public void destroy() {
 		super.destroy();
 
-		Iterator<ManufactureProcess> i = ongoingProcesses.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-
-		Iterator<SalvageProcess> j = ongoingSalvages.iterator();
-		while (j.hasNext()) {
-			j.next().destroy();
-		}
+		ongoingProcesses.forEach(p -> p.destroy());
+        ongoingSalvages.forEach(s -> s.destroy());
 	}
 }
