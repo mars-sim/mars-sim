@@ -1,6 +1,8 @@
 package com.mars_sim.core.manufacture;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -70,5 +72,28 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertFalse("No salvage on low skill found", found.contains(selection));
         found = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(), selection.getSkillLevelRequired());
         assertTrue("Salvage on low skill found", found.contains(selection));
+    }
+
+    public void testCanSalvageBarrel() {
+        var s = buildSettlement();
+        var w = buildManufacture(s);
+        var manu = w.getManufacture();
+
+        SalvageProcessInfo selected = null;
+        var found = ManufactureUtil.getSalvageProcessesForTechLevel(manu.getTechLevel());
+        for(var p : found) {
+            if (p.getItemName().equals("barrel")) {
+                selected = p;
+                break;
+            }
+        }
+
+        assertNotNull("Found barrel salvage", selected);
+        var canstart = ManufactureUtil.canSalvageProcessBeStarted(selected, manu);
+        assertFalse("Cannot start barrel salvage witout barrels", canstart);
+
+        EquipmentFactory.createEquipment(EquipmentType.BARREL, s);
+        canstart = ManufactureUtil.canSalvageProcessBeStarted(selected, manu);
+        assertTrue("Can start barrel salvage with barrel", canstart);
     }
 }

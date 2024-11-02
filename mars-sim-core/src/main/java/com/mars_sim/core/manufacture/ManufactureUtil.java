@@ -387,7 +387,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Checks to see if a salvage process can be started at a given manufacturing
-	 * building.
+	 * building. This also means it coud be queued
 	 *
 	 * @param process  the salvage process to start.
 	 * @param workshop the manufacturing building.
@@ -400,14 +400,9 @@ public final class ManufactureUtil {
 			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 			return false;
 		}
-		
-        // Check to see if process tech level is above workshop tech level.
-		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
-			return false;
-		}
-
-		// Check to see if a salvagable unit is available at the settlement.
-		return findUnitForSalvage(process, workshop.getBuilding().getSettlement()) != null;
+	
+		// To start it the same queue condition must be met
+		return canSalvageProcessBeQueued(process, workshop);
 	}
 
 	/**
@@ -525,7 +520,7 @@ public final class ManufactureUtil {
 			// Take any non-empty and unreserved vehicles
 			salvagableUnits = settlement.getVehicleTypeUnit(type).stream()
 								.filter(v -> (v.isEmpty() && !v.isReserved()))
-								.filter(v2 -> (v2.getContainerUnit() != settlement))
+								.filter(v2 -> (v2.getContainerUnit().equals(settlement)))
 								.map(Salvagable.class::cast)
 								.toList();
 		} 
@@ -533,7 +528,7 @@ public final class ManufactureUtil {
 		else if (info.getType() == ItemType.EQUIPMENT) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
 			salvagableUnits = settlement.getContainerSet(eType).stream()
-								.filter(v2 -> (v2.getContainerUnit() != settlement))
+								.filter(v2 -> (v2.getContainerUnit().equals(settlement)))
 								.map(Salvagable.class::cast)
 								.toList();
 		} 
