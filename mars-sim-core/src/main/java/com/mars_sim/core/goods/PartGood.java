@@ -610,12 +610,10 @@ public class PartGood extends Good {
 		double base = 0D;
 
 		// Get highest manufacturing tech level in settlement.
-		if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
-			int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-			Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)
-					.iterator();
-			while (i.hasNext()) {
-				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, part, i.next());
+		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+		if (techLevel >= 0) {
+			for(ManufactureProcessInfo found : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
+				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, part, found);
 				base += manufacturingDemand * (1 + techLevel);
 			}
 		}

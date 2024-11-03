@@ -483,9 +483,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 		
-	
-        // Initialize ManufactureUtil
-        new ManufactureUtil();
         // Initialize RoleUtil
         new RoleUtil();
         // Initialize RoleUtil
@@ -613,9 +610,7 @@ public class Simulation implements ClockListener, Serializable {
 		ScientificStudy.initializeInstances(masterClock, simulationConfig.getScienceConfig());
 		// Re-nitialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
-		
-		// Initialize ManufactureUtil
-        new ManufactureUtil();
+	
         // Initialize RoleUtil
         new RoleUtil();
         // Initialize RoleUtil

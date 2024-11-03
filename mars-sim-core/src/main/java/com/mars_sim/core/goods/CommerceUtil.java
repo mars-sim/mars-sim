@@ -8,12 +8,10 @@ package com.mars_sim.core.goods;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
@@ -388,9 +386,7 @@ public final class CommerceUtil {
 			case VEHICLE:
 				int count = 0;
 				VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
-				Iterator<Unit> i = settlement.getVehicleTypeUnit(vehicleType).iterator();
-				while (i.hasNext()) {
-					Vehicle vehicle = (Vehicle) i.next();
+				for(Vehicle vehicle : settlement.getVehicleTypeUnit(vehicleType)) {
 					boolean isEmpty = vehicle.isEmpty();
 					if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
 						count++;

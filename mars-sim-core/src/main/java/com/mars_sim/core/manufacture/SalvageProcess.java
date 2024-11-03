@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.manufacture;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.structure.building.function.Manufacture;
 
 import java.io.Serializable;
@@ -22,7 +21,7 @@ public class SalvageProcess implements Serializable {
     private double workTimeRemaining;
     private double averageSkillLevel;
     
-    private Unit salvagedUnit;
+    private Salvagable salvagedUnit;
     
     private Manufacture workshop;
     private SalvageProcessInfo info;
@@ -33,7 +32,7 @@ public class SalvageProcess implements Serializable {
      * @param info information about the salvage process.
      * @param workshop the manufacturing workshop where the salvage is taking place.
      */
-    public SalvageProcess(SalvageProcessInfo info, Manufacture workshop, Unit salvagedUnit) {
+    public SalvageProcess(SalvageProcessInfo info, Manufacture workshop, Salvagable salvagedUnit) {
         this.info = info;
         this.workshop = workshop;
         this.salvagedUnit = salvagedUnit;
@@ -92,7 +91,7 @@ public class SalvageProcess implements Serializable {
      * 
      * @return salvaged unit.
      */
-    public Unit getSalvagedUnit() {
+    public Salvagable getSalvagedUnit() {
         return salvagedUnit;
     }
     
