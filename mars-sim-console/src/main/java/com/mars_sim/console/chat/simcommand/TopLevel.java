@@ -29,6 +29,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	DateCommand.DATE,
 																	DistanceCommand.DISTANCE,
 																	ElevationCommand.ELEVATION,
+																	SunlightCommand.SUNLIGHT,
 																	ExpertCommand.EXPERT,
 																	EventCommand.EVENT,
 																	DiagnosticsCommand.DIAGNOSTICS,

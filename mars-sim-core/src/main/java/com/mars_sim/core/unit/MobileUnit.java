@@ -1,7 +1,7 @@
 package com.mars_sim.core.unit;
 
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -9,13 +9,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * Represents an entity that can be mobile.
  */
-public interface MobileUnit {
-	/**
-	 * Gets the coordinates on Mars surface.
-	 * 
-	 * @return
-	 */
-	public Coordinates getCoordinates();
+public interface MobileUnit extends SurfacePOI {
 
 	/**
 	 * Is the worker in a vehicle ?

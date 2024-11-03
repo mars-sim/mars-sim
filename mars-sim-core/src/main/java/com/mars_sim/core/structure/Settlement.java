@@ -55,6 +55,7 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -106,7 +107,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Unit implements Temporal,
-	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
+	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

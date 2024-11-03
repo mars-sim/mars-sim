@@ -14,7 +14,7 @@ class SurfaceManagerTest {
         }
 
         @Override
-        public Coordinates getLocation() {
+        public Coordinates getCoordinates() {
             return location;
         }
     }

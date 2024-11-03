@@ -33,7 +33,7 @@ public class MineralDeposit implements Serializable, SurfacePOI {
 	 * Where is this mineral concentration located
 	 */
 	@Override
-	public Coordinates getLocation() {
+	public Coordinates getCoordinates() {
 		return location;
 	}
 

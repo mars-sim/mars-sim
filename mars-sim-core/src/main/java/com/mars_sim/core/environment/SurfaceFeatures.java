@@ -615,7 +615,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	private ExploredLocation checkDeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
 		return regionOfInterestLocations.stream()
-				  .filter(e -> e.getLocation().equals(coord)
+				  .filter(e -> e.getCoordinates().equals(coord)
 						  && e.isClaimed() == isClaimed
 						  && e.getSettlement().equals(settlement))
 				  .findFirst()
