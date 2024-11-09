@@ -40,15 +40,10 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.unit.MobileUnit;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
+import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 
@@ -82,10 +77,8 @@ extends ToolWindow {
 	private JLabel statusLabel;
 	/** Checkbox to indicate if unit window is to be opened. */
 	private JCheckBox openWindowCheck;
-	/** Checkbox to indicate if mars navigator map is to be centered on unit. */
-	private JCheckBox marsNavCheck;
-	/** Checkbox to indicate if the settlement map is to be centered on unit. */
-	private JCheckBox settlementCheck;
+	/** Checkbox to indicate if  map is to be centered on unit. */
+	private JCheckBox showMapCheck;
 	/** Button to execute the search of the selected unit. */
 	private JButton searchButton;
 
@@ -211,13 +204,9 @@ extends ToolWindow {
 		openWindowCheck.setSelected(true);
 		selectOptionsPane.add(openWindowCheck);
 
-		// Create open the mars navigator
-		marsNavCheck = new JCheckBox(Msg.getString("SearchWindow.openNav")); //$NON-NLS-1$
-		selectOptionsPane.add(marsNavCheck);
-
-		// Create open the settlement map
-		settlementCheck = new JCheckBox(Msg.getString("SearchWindow.openSettlement")); //$NON-NLS-1$
-		selectOptionsPane.add(settlementCheck);
+		// Create open the map
+		showMapCheck = new JCheckBox(Msg.getString("SearchWindow.openNav")); //$NON-NLS-1$
+		selectOptionsPane.add(showMapCheck);
 
 		// Create status label
 		statusLabel = new JLabel(" ", SwingConstants.CENTER); //$NON-NLS-1$
@@ -255,13 +244,9 @@ extends ToolWindow {
 			if (openWindowCheck.isSelected()) 
 				desktop.showDetails(unit);
 			
-			if (marsNavCheck.isSelected()) {
-				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-				nw.updateCoordsMaps(unit.getCoordinates());
+			if (showMapCheck.isSelected()) {
+				MapSelector.displayOnMap(desktop, unit);
 			}
-			
-			if (settlementCheck.isSelected() && (unit instanceof MobileUnit mu))
-				openMobileUnit(mu);
 			
 			if (!history.contains(selectedUnitName))
 				history.add(selectedUnitName);
@@ -276,70 +261,6 @@ extends ToolWindow {
 		if (selectTextField.getText().length() == 0)
 			statusLabel.setText(Msg.getString("SearchWindow.defaultSearch",tempName)); //$NON-NLS-1$
 	}
-
-	/**
-	 * Opens the mbile unit in Mars Navigator or Settlement Map.
-	 * 
-	 * @param u
-	 */
-	private void openMobileUnit(MobileUnit u) {
-		
-		if (u.isInSettlement()) {
-			showPersonRobot(u);
-		}
-		else if (u.isInVehicle()) {
-			Vehicle vv = u.getVehicle();
-
-			if (vv.getSettlement() == null) {
-				// person is on a mission on the surface of Mars 
-				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-				nw.updateCoordsMaps(vv.getCoordinates());
-			} 	
-			else {
-				// still parked inside a garage or within the premise of a settlement
-				showPersonRobot(u);
-			}
-		}
-		else if (u.isOutside()) {
-			Vehicle vv = u.getVehicle();
-
-			if (vv == null) {
-				// if it's not in a vehicle
-				showPersonRobot(u);			
-			}	
-			else {
-				// if it's in a vehicle			
-				if (vv.getSettlement() != null) {
-					// if the vehicle is in a settlement
-					showPersonRobot(u);
-				}	
-				else {
-					// person is on a mission on the surface of Mars 
-					desktop.openToolWindow(NavigatorWindow.NAME);
-					// he's stepped outside a vehicle
-					desktop.centerMapGlobe(u.getCoordinates());
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Opens the Person or Robot Unit Window.
-	 * 
-	 * @param u
-	 */
-	private void showPersonRobot(MobileUnit u) {
-		// person just happens to step outside the settlement at its
-		// vicinity temporarily
-		SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
-		if (u instanceof Person p) {
-			sw.displayPerson(p);
-		} 
-		else if (u instanceof Robot r) {
-			sw.displayRobot(r);
-		}
-	}
-	
 	
 	/**
 	 * Changes the category of the unit list.

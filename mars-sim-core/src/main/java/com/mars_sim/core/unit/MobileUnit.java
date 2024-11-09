@@ -1,5 +1,6 @@
 package com.mars_sim.core.unit;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
@@ -10,6 +11,12 @@ import com.mars_sim.core.vehicle.Vehicle;
  * Represents an entity that can be mobile.
  */
 public interface MobileUnit extends SurfacePOI {
+
+	/**
+	 * Where is this mobile unit residing
+	 * @return
+	 */
+	public Unit getContainerUnit();
 
 	/**
 	 * Is the worker in a vehicle ?

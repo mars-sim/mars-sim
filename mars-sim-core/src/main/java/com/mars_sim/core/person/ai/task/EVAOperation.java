@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
@@ -22,6 +21,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalConditionFormat;
@@ -41,7 +41,6 @@ import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Airlockable;
@@ -383,7 +382,7 @@ public abstract class EVAOperation extends Task {
 		else { // if a person is already inside, end the task gracefully here
 			logger.log(person, Level.FINE, 4_000,
 					"Walked back inside. Ended '" 
-							+ Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");
+							+ person.getTaskDescription() + "'.");
 			endTask();
 		}
 
@@ -407,25 +406,25 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': too dark already.");
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': too dark already.");
 			return true;
 		}
 
 		// Check for any EVA problems.
 		if (hasEVAProblem(person)) {
-			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': EVA problems.");
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': EVA problems.");
 			return true;
 		}
 
 		// Check if it is at meal time and the person is doubly hungry
 		if (isHungryAtMealTime(person, 0)) {
-			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': Doubly hungry at meal time.");
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': Doubly hungry at meal time.");
 			return true;
 		}
 
         // Checks if the person is physically drained
 		if (isExhausted(person)) {
-			logger.info(worker, 10_000L, "Ending '" + Conversion.setFirstWordLowercase(getName()) + "': Exhausted.");
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
 			return true;
 		}
 		
@@ -435,10 +434,10 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Checks if the sky light is dimming.
 	 *
-	 * @param active The Unit checking the daylight
+	 * @param active The surface POI checking the daylight
 	 * @return
 	 */
-	public static boolean isGettingDark(Unit active) {	
+	public static boolean isGettingDark(SurfacePOI active) {	
 		return orbitInfo.isSunSetting(
         		active.getCoordinates(), false);
     }
@@ -507,7 +506,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void abortEVA(String reason) {
 		if (reason != null) {
- 			logger.info(worker, 20_000, "Aborted '" + Conversion.setFirstWordLowercase(getName()) + "': " + reason);
+ 			logger.info(worker, 20_000, "Aborted '" + getName() + "': " + reason);
 		}
 		
 		if (person.isOutside()) {

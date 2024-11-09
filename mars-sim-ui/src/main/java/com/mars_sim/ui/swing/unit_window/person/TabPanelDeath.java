@@ -10,8 +10,6 @@ package com.mars_sim.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,7 +23,6 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -36,6 +33,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.SpringUtilities;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
+import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 
@@ -44,15 +42,14 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
  */
 @SuppressWarnings("serial")
 public class TabPanelDeath
-extends TabPanel
-implements ActionListener {
+extends TabPanel {
 
 	private static final String RIP_ICON = "rip";
 
 	/** The Person instance. */
 	private Person person = null;
 	
-	private JTextField causeTF, timeTF, malTF, examinerTF;
+	private JTextField examinerTF;
 
 	private DeathInfo death;
 	
@@ -62,7 +59,7 @@ implements ActionListener {
 	 * @param unit the unit to display
 	 * @param desktop the main desktop
 	 */
-	public TabPanelDeath(Unit unit, MainDesktopPane desktop) {
+	public TabPanelDeath(Person unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null,
@@ -71,10 +68,11 @@ implements ActionListener {
 			unit, desktop
 		);
 
-		person = (Person) unit;		
+		person = unit;		
 
 	}
 
+	@Override
 	protected void buildUI(JPanel content) {
 			
 		PhysicalCondition condition = person.getPhysicalCondition();
@@ -89,7 +87,7 @@ implements ActionListener {
 		deathLabelPanel.add(causeLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        causeTF = new JTextField();
+        var causeTF = new JTextField();
         causeTF.setText(death.getIllness().getName());
         causeTF.setEditable(false);
         causeTF.setColumns(20);
@@ -101,7 +99,7 @@ implements ActionListener {
 		deathLabelPanel.add(timeLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        timeTF = new JTextField();
+        var timeTF = new JTextField();
         timeTF.setText(death.getTimeOfDeath().getTruncatedDateTimeStamp());
         timeTF.setEditable(false);
         timeTF.setColumns(20);
@@ -117,8 +115,6 @@ implements ActionListener {
 		String text = "";
 		if (death.getExamDone()) {
 			text = death.getDoctor();
-//				+ " [" 
-//				+ Math.round(death.getTimeExam() * 10.0)/10.0 + " millisols]";
 		}
 		examinerTF.setText(text);
 		examinerTF.setEditable(false);
@@ -131,7 +127,7 @@ implements ActionListener {
 		deathLabelPanel.add(malfunctionLabel);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		malTF = new JTextField();
+		var malTF = new JTextField();
         malTF.setText(death.getMalfunction());
         malTF.setEditable(false);
         malTF.setColumns(20);
@@ -160,7 +156,7 @@ implements ActionListener {
 		final Icon centerIcon = ImageLoader.getIconByName(NavigatorWindow.ICON);
 		JButton centerMapButton = new JButton(centerIcon);
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
-		centerMapButton.addActionListener(this);
+		centerMapButton.addActionListener(e -> MapSelector.displayOnMap(getDesktop(), person));
 		centerMapButton.setToolTipText(Msg.getString("TabPanelDeath.tooltip.centerMap"));
 		locationLabelPanel.add(centerMapButton);
 
@@ -173,19 +169,19 @@ implements ActionListener {
 			JButton topContainerButton = new JButton(death.getContainerUnit().getName());
 			topContainerButton.setHorizontalAlignment(SwingConstants.CENTER);
 			topContainerButton.addActionListener(e -> {
-					DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
-					if (!(death.getContainerUnit() instanceof MarsSurface))
-						getDesktop().showDetails(death.getContainerUnit());
+					DeathInfo d = person.getPhysicalCondition().getDeathDetails();
+					if (!(d.getContainerUnit() instanceof MarsSurface))
+						getDesktop().showDetails(d.getContainerUnit());
 			});
 			locationLabelPanel.add(topContainerButton);
 		}
 		else {
 			JPanel wrapper41 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-			JTextField TF4 = new JTextField();
-	        TF4.setText(death.getPlaceOfDeath());
-	        TF4.setEditable(false);
-	        TF4.setColumns(20);
-	        wrapper41.add(TF4);//, BorderLayout.CENTER);
+			JTextField tf4 = new JTextField();
+	        tf4.setText(death.getPlaceOfDeath());
+	        tf4.setEditable(false);
+	        tf4.setColumns(20);
+	        wrapper41.add(tf4);
 	        locationLabelPanel.add(wrapper41);
 		}
 
@@ -226,7 +222,6 @@ implements ActionListener {
 
 		// Prepare longitude label
 		JTextArea lastWordTA = new JTextArea(5, 25);
-		//lastWordTA.setSize(300, 150);
 		lastWordTA.append(death.getLastWord());
 		lastWordTA.setEditable(false);
 		lastWordTA.setWrapStyleWord(true);
@@ -236,17 +231,6 @@ implements ActionListener {
 		lastWordPanel.add(scrollPane);
 	}
 
-	/**
-	 * Action event occurs.
-	 * 
-	 * @param event the action event
-	 */
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		// Update navigator tool.
-		getDesktop().centerMapGlobe(getUnit().getCoordinates());
-	}
-	
 	/**
 	 * Updates the info on this panel.
 	 */

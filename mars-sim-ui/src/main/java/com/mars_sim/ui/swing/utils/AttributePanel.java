@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.utils;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JComponent;
@@ -23,42 +22,38 @@ import com.mars_sim.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 public class AttributePanel extends JPanel {
 
+	private static final int DEFAULT_GAP = 3;
+
+	private boolean autoLayout = false;
+
+	/**
+	 * Create an Attribute panel that has a single column with fixed number of rows
+	 * @param rows Number of rows
+	 */
     public AttributePanel(int rows) {
         this(rows, 1);
     }
 
+	/**
+	 * Create an Attribute panel that has a fixed number of rows and columns
+	 * @param rows Number of rows
+	 * @param cols Number of cols
+	 */
     public AttributePanel(int rows, int cols) {
-        super(new GridLayout(rows, 2*cols, 3, 3));
+        super(new GridLayout(rows, 2*cols, DEFAULT_GAP, DEFAULT_GAP));
     }
 
     public AttributePanel(int rows, int cols, int hgap, int vgap) {
         super(new GridLayout(rows, 2*cols, hgap, vgap));
     }
-    
-	/**
-	 * Adds a field with labels to a panel. The layout should be a spring layout.
-	 * 
-	 * @param titleLabel 	The fixed label
-	 * @param content 		The first content of the field
-	 * @param content1 		The second content of the field
-	 * @return The JLabel that can be updated
-	 */
-	public JLabel addLabels(String titleLabel, String content, String unicode) {
-		JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 5));
-		JLabel contentLabel = new JLabel();
-		if (unicode.equals("")) {
-			contentLabel.setText(content);
-			wrapper.add(contentLabel);
-		}
-		else {
-			contentLabel.setText("<html>" + content + " (" + String.valueOf(unicode) + ") </html>");
-//			contentLabel.setText(content + " (" + String.valueOf(unicode) + ")");
-			wrapper.add(contentLabel);
-		}
-		addLabelledItem(titleLabel, contentLabel);
-		return contentLabel;
-	}
 	
+	/**
+	 * Create an Attribute panel that has a single column with variable numnber pf rows
+	 */
+	public AttributePanel() {
+		autoLayout = true;
+	}
+
 	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.
 	 * 
@@ -68,12 +63,10 @@ public class AttributePanel extends JPanel {
 	 * @return The JLabel that can be updated.
 	 */
 	public JLabel addTextField(String titleLabel, String content, String tooltip) {
-		JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
 		JLabel contentLabel = new JLabel(content);
 		if (tooltip != null) {
 			contentLabel.setToolTipText(tooltip);
 		}
-		wrapper.add(contentLabel);
 		addLabelledItem(titleLabel, contentLabel);
 		return contentLabel;
 	}
@@ -115,5 +108,11 @@ public class AttributePanel extends JPanel {
         title.setFont(StyleManager.getLabelFont());
 		add(title);
 		add(content);
+
+		// Set the layout as a grid based on the number of rows added
+		if (autoLayout) {
+			int rows = getComponentCount()/2;
+			setLayout(new GridLayout(rows, 2, DEFAULT_GAP, DEFAULT_GAP));
+		}
 	}
 }
