@@ -367,7 +367,7 @@ public class SettlementTransparentPanel extends JComponent {
 		currentSunLabel.setFont(sunBoldFont);
 
 		Color orange = Color.orange;
-		Color brown = new Color(153, 102, 0).brighter(); //204, 153, 102);
+		Color brown = new Color(153, 102, 0).brighter();
 		Color yellow = Color.yellow.brighter().brighter();
 		Color white = Color.white;
 		Color red = Color.red.brighter().brighter();
@@ -1016,7 +1016,7 @@ public class SettlementTransparentPanel extends JComponent {
 				&& newName != null
 				&& !newName.trim().equals("")
 				&& newName.trim().length() != 0) {
-			mapPanel.getSettlement().changeName(newName.trim());
+			mapPanel.getSettlement().setName(newName.trim());
 
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.openToolWindow(SettlementWindow.NAME);

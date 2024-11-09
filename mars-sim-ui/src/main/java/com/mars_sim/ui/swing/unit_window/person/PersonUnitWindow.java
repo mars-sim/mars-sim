@@ -85,20 +85,19 @@ public class PersonUnitWindow extends UnitWindow {
 		
 		getContentPane().add(statusPanel, BorderLayout.NORTH);	
 		
-		initTopPanel(person);
+		initTopPanel();
 		
 		initTabPanel(person);
 		
 		statusUpdate();
 	}
 	
-	
-	public void initTopPanel(Person person) {
+	private void initTopPanel() {
 		statusPanel.setPreferredSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT + 5));
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		String name = SIX_SPACES + unit.getShortenedName() + SIX_SPACES;
+		String name = SIX_SPACES + getShortenedName(unit.getName()) + SIX_SPACES;
 
 		JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
@@ -112,8 +111,8 @@ public class PersonUnitWindow extends UnitWindow {
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);
-		nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
-		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
+		nameLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
+		nameLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		statusPanel.add(namePane, BorderLayout.WEST);
 
@@ -295,6 +294,7 @@ public class PersonUnitWindow extends UnitWindow {
 	/**
 	 * Prepares unit window for deletion.
 	 */
+	@Override
 	public void destroy() {		
 		person = null;
 		statusPanel = null;
@@ -302,6 +302,8 @@ public class PersonUnitWindow extends UnitWindow {
 		jobLabel = null;
 		roleLabel = null;
 		shiftLabel = null;
+
+		super.destroy();
 	}
 
 }

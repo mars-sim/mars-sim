@@ -47,8 +47,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 
 	// Unique Unit identifier
 	private int identifier;
-	/** The mass of the unit without inventory. */
-	private double baseMass;
 	/** The last pulse applied. */
 	private long lastPulse = 0;
 	
@@ -129,7 +127,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, int id, int containerId) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.baseMass = 0;
 		this.identifier = id;
 		this.containerID = containerId;
 		
@@ -146,7 +143,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, Coordinates location) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.baseMass = 0;
 
 		if (masterClock != null) {
 			// Needed for maven test
@@ -238,60 +234,12 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Changes the unit's name.
-	 *
-	 * @param newName new name
-	 */
-	public final void changeName(String newName) {
-		// Create an event here ?
-		setName(newName);
-	}
-
-	/**
 	 * Gets the unit's name.
 	 *
 	 * @return the unit's name
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the unit's shortened name.
-	 *
-	 * @return the unit's shortened name
-	 */
-	public String getShortenedName() {
-		name = name.trim();
-		int num = name.length();
-
-		boolean hasSpace = name.matches("^\\s*$");
-
-		if (hasSpace) {
-			int space = name.indexOf(" ");
-
-			String oldFirst = name.substring(0, space);
-			String oldLast = name.substring(space + 1, num);
-			String newFirst = oldFirst;
-			String newLast = oldLast;
-			String newName = name;
-
-			if (num > 20) {
-
-				if (oldFirst.length() > 10) {
-					newFirst = oldFirst.substring(0, 10);
-				} else if (oldLast.length() > 10) {
-					newLast = oldLast.substring(0, 10);
-				}
-				newName = newFirst + " " + newLast;
-
-			}
-
-			return newName;
-		}
-
-		else
-			return name;
 	}
 
 	/**
@@ -393,36 +341,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected void setContainerID(Integer id) {
 		containerID = id;
 	}
-
-	/**
-	 * Gets the unit's mass including inventory mass.
-	 *
-	 * @return mass of unit and inventory
-	 * @throws Exception if error getting the mass.
-	 */
-	public double getMass() {
-		// Note: this method will be overridden by those inheriting this Unit
-		return baseMass;// + getStoredMass(); ?
-	}
-
-	/**
-	 * Sets the unit's base mass.
-	 *
-	 * @param base mass (kg)
-	 */
-	public final void setBaseMass(double baseMass) {
-		this.baseMass = baseMass;
-		fireUnitUpdate(UnitEventType.MASS_EVENT);
-	}
-
-	/**
-	 * Gets the base mass of the unit.
-	 *
-	 * @return base mass (kg)
-	 */
-	public double getBaseMass() {
-		return baseMass;
-	}
 	
 	/**
 	 * Checks if it has a unit listener.
@@ -441,7 +359,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public synchronized final void addUnitListener(UnitListener newListener) {
+	public final synchronized void addUnitListener(UnitListener newListener) {
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
@@ -457,7 +375,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public synchronized final void removeUnitListener(UnitListener oldListener) {
+	public final synchronized void removeUnitListener(UnitListener oldListener) {
 		if (oldListener == null)
 			throw new IllegalArgumentException();
 
@@ -676,8 +594,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = getIdentifier() % 32;
-		return hashCode;
+		return getIdentifier() % 32;
 	}
 
 	/**

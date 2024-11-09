@@ -24,6 +24,7 @@ public abstract class AbstractMobileUnit extends Unit
     private Settlement owner;
     private LocalPosition localPosn = LocalPosition.DEFAULT_POSITION;
     private int currentBuildingInt;
+	private double baseMass = 0D;
 
     /**
 	 * Constructor.
@@ -241,5 +242,34 @@ public abstract class AbstractMobileUnit extends Unit
             case MARS -> LocationStateType.MARS_SURFACE;
             default -> null;
         };
+	}
+
+	/**
+	 * Gets the unit's mass including inventory mass.
+	 * This method will be overridden by those inheriting this Unit.
+	 * Bt default it returns the base mass.
+	 *
+	 * @return mass of unit
+	 */
+	public double getMass() {
+		return getBaseMass();
+	}
+
+	/**
+	 * Sets the unit's base mass.
+	 *
+	 * @param base mass (kg)
+	 */
+	protected void setBaseMass(double baseMass) {
+		this.baseMass = baseMass;
+	}
+
+	/**
+	 * Gets the base mass of the unit.
+	 *
+	 * @return base mass (kg)
+	 */
+	public double getBaseMass() {
+		return baseMass;
 	}
 }

@@ -24,7 +24,7 @@ public class AttributePanel extends JPanel {
 
 	private static final int DEFAULT_GAP = 3;
 
-	private boolean autoLayout = false;
+	private GridLayout autoLayout = null;
 
 	/**
 	 * Create an Attribute panel that has a single column with fixed number of rows
@@ -51,7 +51,8 @@ public class AttributePanel extends JPanel {
 	 * Create an Attribute panel that has a single column with variable numnber pf rows
 	 */
 	public AttributePanel() {
-		autoLayout = true;
+		autoLayout = new GridLayout(1, 2, DEFAULT_GAP, DEFAULT_GAP);
+		setLayout(autoLayout);
 	}
 
 	/**
@@ -110,9 +111,9 @@ public class AttributePanel extends JPanel {
 		add(content);
 
 		// Set the layout as a grid based on the number of rows added
-		if (autoLayout) {
+		if (autoLayout != null) {
 			int rows = getComponentCount()/2;
-			setLayout(new GridLayout(rows, 2, DEFAULT_GAP, DEFAULT_GAP));
+			autoLayout.setRows(rows);
 		}
 	}
 }
