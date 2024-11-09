@@ -14,6 +14,7 @@ import java.util.List;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -25,13 +26,12 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 abstract class UnitMapLayer implements MapLayer {
 
 	// Domain data
-	private static boolean blinkFlag;
-	private static long blinkTime = 0L;
+	private boolean blinkFlag = false;
+	private long blinkTime = 0L;
 	private Collection<Settlement> unitsToDisplay;
 	private UnitManager unitManager;
 
 	protected UnitMapLayer(MapPanel panel) {
-		blinkFlag = false;
 		unitManager = panel.getDesktop().getSimulation().getUnitManager();
 	}
 
@@ -73,12 +73,12 @@ abstract class UnitMapLayer implements MapLayer {
 		}
 
 		// Display Settlements first
-		settlements.forEach(s -> renderUnit(s, mapCenter, baseMap, g2d, hotspots));
+		settlements.forEach(s -> renderUnit(s, s.getCoordinates(), mapCenter, baseMap, g2d, hotspots));
 
 		if (vehicles != null) {
 			for(var v : vehicles) {
 				if (v.isOutsideOnMarsMission()) {
-					renderUnit(v, mapCenter, baseMap, g2d, hotspots);
+					renderUnit(v, v.getCoordinates(), mapCenter, baseMap, g2d, hotspots);
 				}
 			}
 		}
@@ -95,31 +95,37 @@ abstract class UnitMapLayer implements MapLayer {
 	/**
 	 * Render a unit in the layer if it is within the range` of the map center
 	 * @param unit
+	 * @param unitPosn
 	 * @param mapCenter
 	 * @param baseMap
 	 * @param g
 	 * @param hotspots 
 	 */
-	private void renderUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g,
+	private void renderUnit(Unit unit, Coordinates unitPosn, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g,
 				List<MapHotspot> hotspots) {
+		
 		UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 		if (i != null && i.isMapDisplayed(unit)
-			&& mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < baseMap.getHalfAngle()) {
-				var hs = displayUnit(unit, mapCenter, baseMap, g);
+			&& mapCenter != null && mapCenter.getAngle(unitPosn) < baseMap.getHalfAngle()) {
+				
+				IntPoint locn = MapUtils.getRectPosition(unitPosn, mapCenter, baseMap);
+				var hs = displayUnit(unit, i, locn, baseMap, g);
 				if (hs != null) {
 					hotspots.add(hs);
 				}
 		}
 	}
+
 	/**
 	 * Displays a unit on the map.
 	 * 
 	 * @param unit      the unit to display.
-	 * @param mapCenter the location center of the map.
+	 * @param info		details how to render unit
+	 * @param location  Lociation on the map of this unit
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 * @return Has this unit a hot spot?
 	 */
-	protected abstract MapHotspot displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap,
-												Graphics2D g);
+	protected abstract MapHotspot displayUnit(Unit unit, UnitDisplayInfo info, IntPoint location,
+												MapDisplay baseMap, Graphics2D g);
 }
