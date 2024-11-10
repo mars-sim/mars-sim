@@ -21,12 +21,14 @@ import javax.swing.border.EmptyBorder;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.location.LocationStateType;
+import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -230,7 +232,7 @@ public class LocationTabPanel extends TabPanel {
 		updateSurfacePOI(mu);
 	}
 
-	private void updateVicinityLabel(Unit unit) {
+	private void updateVicinityLabel(AbstractMobileUnit unit) {
 		LocationStateType locationStateType = unit.getLocationStateType();
 		if (locationStateTypeCache != locationStateType) {
 			locationStateTypeCache = locationStateType;
@@ -274,12 +276,12 @@ public class LocationTabPanel extends TabPanel {
 
 		updateBanner(unit);
 		
-		if (unit instanceof MobileUnit mu) {
+		if (unit instanceof AbstractMobileUnit mu) {
 			if (unit instanceof Worker w) {
 				updateActivitySpot(w);
 			}
 			if (vicinityLabel != null) {
-				updateVicinityLabel(unit);
+				updateVicinityLabel(mu);
 			}
 			updateMobileLabels(mu);
 		}
@@ -477,7 +479,10 @@ public class LocationTabPanel extends TabPanel {
 	 */
 	private void updateBanner(Unit unit) {
 
-		String loc = unit.getLocationTag().getExtendedLocation();
+		String loc = LocationTag.MARS_SURFACE;
+		if (unit instanceof AbstractMobileUnit mu) {
+			loc = mu.getLocationTag().getExtendedLocation();
+		}
 
 		if (!locationStringCache.equalsIgnoreCase(loc)) {
 			locationStringCache = loc;

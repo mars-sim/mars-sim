@@ -9,6 +9,7 @@ package com.mars_sim.core.unit;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.location.LocationStateType;
+import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
@@ -25,6 +26,7 @@ public abstract class AbstractMobileUnit extends Unit
     private LocalPosition localPosn = LocalPosition.DEFAULT_POSITION;
     private int currentBuildingInt;
 	private double baseMass = 0D;
+	private LocationTag tag;
 
     /**
 	 * Constructor.
@@ -35,6 +37,7 @@ public abstract class AbstractMobileUnit extends Unit
 	protected AbstractMobileUnit(String name, Settlement owner) {
 		super(name, owner.getCoordinates()); 
         this.owner = owner;
+		this.tag = new LocationTag(this);
 
 		setContainer(owner);
 	}
@@ -190,7 +193,15 @@ public abstract class AbstractMobileUnit extends Unit
 		return (getSettlement() != null);
 	}
 
-    
+	/**
+	 * Is this unit in the vicinity of a settlement ?
+	 *
+	 * @return true if the unit is inside a settlement
+	 */
+	public boolean isInSettlementVicinity() {
+		return tag.isInSettlementVicinity();
+	}
+
 	/**
 	 * Gets vehicle person is in, null if person is not in vehicle.
 	 *
@@ -219,6 +230,14 @@ public abstract class AbstractMobileUnit extends Unit
 			return getContainerUnit().isInVehicle();
 
 		return false;
+	}
+
+	/**
+	 * Get the location tag which refines the vicinity of the Unit.
+	 * @return
+	 */
+	public LocationTag getLocationTag() {
+		return tag;
 	}
 
 	

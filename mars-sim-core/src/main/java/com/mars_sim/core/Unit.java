@@ -13,7 +13,6 @@ import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.location.LocationStateType;
-import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -54,8 +53,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	private String description = "No Description";
 	/** Commander's notes on this unit. */
 	private String notes = "";
-	/** The unit's location tag. */
-	private LocationTag tag;
 	/** The unit's coordinates. */
 	private Coordinates location;
 
@@ -147,9 +144,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		if (masterClock != null) {
 			// Needed for maven test
 			this.lastPulse = masterClock.getNextPulse() - 1;
-
-			// Creates a new location tag instance for each unit
-			tag = new LocationTag(this);
 	
 			// Calculate the new Identifier for this type
 			identifier = unitManager.generateNewId(getUnitType());
@@ -426,10 +420,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	public void setLocationStateType(LocationStateType locationStateType) {
 		currentStateType = locationStateType;
 	}
-	
-	public LocationTag getLocationTag() {
-		return tag;
-	}
 
 	/**
 	 * Gets the building this unit is at.
@@ -515,15 +505,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 * @return true if the unit is inside a settlement
 	 */
 	public abstract boolean isInSettlement();
-
-	/**
-	 * Is this unit in the vicinity of a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	public boolean isInSettlementVicinity() {
-		return tag.isInSettlementVicinity();
-	}
 
 	/**
 	 * Is this unit inside a vehicle in a garage ?

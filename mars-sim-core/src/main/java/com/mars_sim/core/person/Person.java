@@ -1559,7 +1559,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 				//     and the previous cu is in settlement vicinity
 				//     then the new location state is settlement vicinity
 				else if (oldCU.getUnitType() == UnitType.VEHICLE
-						&& oldCU.isInSettlementVicinity()
+						&& ((Vehicle) oldCU).isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}

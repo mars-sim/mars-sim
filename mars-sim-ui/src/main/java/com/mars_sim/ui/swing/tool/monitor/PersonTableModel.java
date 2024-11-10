@@ -358,7 +358,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				break;
 
 			case LOCATION:
-				result = person.getLocationTag().getQuickLocation();
+				result = person.getLocationTag().getImmediateLocation();
 				break;
 
 			case LOCALE:

@@ -1,6 +1,7 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
@@ -80,4 +81,10 @@ public interface MobileUnit extends SurfacePOI {
 	 * @return true if the worker is on the MarsSurface
 	 */
 	public boolean isOutside();
+
+	/**
+	 * Get the definitive assessment of the physical state os this mobile unit.
+	 * @return
+	 */
+	public LocationStateType getLocationStateType();
 }
