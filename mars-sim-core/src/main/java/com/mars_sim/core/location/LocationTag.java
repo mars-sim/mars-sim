@@ -124,8 +124,9 @@ public class LocationTag implements Serializable {
 		String result = UNKNOWN;
 		switch(unit.getLocationStateType()) {
 			case INSIDE_SETTLEMENT:
-				if (unit.getBuildingLocation() != null) {
-					result = unit.getBuildingLocation().getName();
+				var b = unit.getBuildingLocation();
+				if (b != null) {
+					result = b.getName();
 				}			
 				break;
 			case INSIDE_VEHICLE:

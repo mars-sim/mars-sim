@@ -63,7 +63,7 @@ public abstract class HistoricalEvent implements Serializable {
 			String whileDoing, String whoAffected, Unit entity) {
 		this(category, type, source, whatCause, whileDoing, whoAffected, entity,
 				entity.getAssociatedSettlement().getName(),
-				entity.getCoordinates());
+				entity.getAssociatedSettlement().getCoordinates());
 	}
 
 	/**

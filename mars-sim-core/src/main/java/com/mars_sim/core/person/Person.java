@@ -80,6 +80,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -1536,42 +1537,40 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 			}
 			
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.MARS) {
+			if (newContainer instanceof MobileUnit mu) {
+				setCoordinates(mu.getCoordinates());
+			}
+			else if (oldCU instanceof MobileUnit mu) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(oldCU.getCoordinates());
+				setCoordinates(mu.getCoordinates());
 			}
-			else {
-				setCoordinates(newContainer.getCoordinates());
-			}
-			
+
 			// 2. Set new LocationStateType
 			var newLocnState = defaultLocationState(newContainer);
-			if (oldCU != null) {
-				// 2a. If the previous cu is a settlement
-				//     and this person's new cu is mars surface,
-				//     then location state is within settlement vicinity
-				if (oldCU.getUnitType() == UnitType.SETTLEMENT
+			// 2a. If the previous cu is a settlement
+			//     and this person's new cu is mars surface,
+			//     then location state is within settlement vicinity
+			if (oldCU.getUnitType() == UnitType.SETTLEMENT
+				&& newContainer.getUnitType() == UnitType.MARS) {
+					newLocnState = LocationStateType.SETTLEMENT_VICINITY;
+			}	
+			// 2b. If the previous cu is a vehicle
+			//     and the previous cu is in settlement vicinity
+			//     then the new location state is settlement vicinity
+			else if (oldCU.getUnitType() == UnitType.VEHICLE
+					&& ((Vehicle) oldCU).isInSettlementVicinity()
 					&& newContainer.getUnitType() == UnitType.MARS) {
 						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
-				}	
-				// 2b. If the previous cu is a vehicle
-				//     and the previous cu is in settlement vicinity
-				//     then the new location state is settlement vicinity
-				else if (oldCU.getUnitType() == UnitType.VEHICLE
-						&& ((Vehicle) oldCU).isInSettlementVicinity()
-						&& newContainer.getUnitType() == UnitType.MARS) {
-							newLocnState = LocationStateType.SETTLEMENT_VICINITY;
-				}
-				// 2c. If the previous cu is a vehicle
-				//     and the previous cu vehicle is outside on mars surface
-				//     then the new location state is vehicle vicinity
-				else if ((oldCU.getUnitType() == UnitType.VEHICLE)
-						&& ((Vehicle)oldCU).isOutside()
-						&& newContainer.getUnitType() == UnitType.MARS) {
-							newLocnState = LocationStateType.VEHICLE_VICINITY;
-				}
+			}
+			// 2c. If the previous cu is a vehicle
+			//     and the previous cu vehicle is outside on mars surface
+			//     then the new location state is vehicle vicinity
+			else if ((oldCU.getUnitType() == UnitType.VEHICLE)
+					&& ((Vehicle)oldCU).isOutside()
+					&& newContainer.getUnitType() == UnitType.MARS) {
+						newLocnState = LocationStateType.VEHICLE_VICINITY;
 			}
 			
 			// 3. Set containerID

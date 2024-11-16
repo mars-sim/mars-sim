@@ -7,11 +7,12 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -29,6 +30,7 @@ public abstract class AbstractMobileUnit extends Unit
 	private double baseMass = 0D;
 	private LocationTag tag;
 	private LocationStateType locnState;
+	private Coordinates location;
 
     /**
 	 * Constructor.
@@ -37,8 +39,9 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @param owner the unit's location
 	 */
 	protected AbstractMobileUnit(String name, Settlement owner) {
-		super(name, owner.getCoordinates()); 
+		super(name); 
         this.owner = owner;
+		this.location = owner.getCoordinates();
 		this.tag = new LocationTag(this);
 		setContainer(owner, LocationStateType.INSIDE_SETTLEMENT);
 	}
@@ -144,14 +147,26 @@ public abstract class AbstractMobileUnit extends Unit
 	@Override
 	public Coordinates getCoordinates() {
 		Unit cu = getContainerUnit();
-		if (cu.getUnitType() == UnitType.MARS) {	
-			// Since Mars surface has no coordinates, 
-			// Get from its previously setting location
-			return super.getCoordinates();
+		if (cu instanceof SurfacePOI mu) {
+			// Inside a container that is on the surface
+			return mu.getCoordinates();
 		}
-		
-		// Unless it's on Mars surface, get its container unit's coordinates
-		return cu.getCoordinates();
+
+		// Since Mars surface has no coordinates, 
+		// Get from its previously setting location
+		return location;
+	}
+
+	/**
+	 * Sets unit's location coordinates.
+	 *
+	 * @param newLocation the new location of the unit
+	 */
+	public void setCoordinates(Coordinates newLocation) {
+		if (!location.equals(newLocation)) {
+			location = newLocation;
+			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
+		}
 	}
 
     /**

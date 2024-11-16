@@ -366,7 +366,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
-		super(name, location);
+		super(name);
 
 		this.settlementCode = createCode(name);
 		this.location = location;
@@ -412,7 +412,7 @@ public class Settlement extends Unit implements Temporal,
 	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
-		super(name, location);
+		super(name);
 
 		this.settlementCode = createCode(name);
 		this.location = location;
@@ -557,6 +557,15 @@ public class Settlement extends Unit implements Temporal,
 				new GroupActivity(ga, this, masterClock.getMarsTime());
 			}
 		}
+	}
+
+	/**
+	 * Get the fixed location of this Settlement
+	 * @return
+	 */
+	@Override
+	public Coordinates getCoordinates() {
+		return location;
 	}
 
 	/**

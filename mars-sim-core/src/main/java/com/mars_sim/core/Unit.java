@@ -13,7 +13,6 @@ import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -52,8 +51,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	private String description = "No Description";
 	/** Commander's notes on this unit. */
 	private String notes = "";
-	/** The unit's coordinates. */
-	private Coordinates location;
 
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
@@ -129,9 +126,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 * Constructor 2: where the name and location are defined.
 	 *
 	 * @param name     {@link String} the name of the unit
-	 * @param location {@link Coordinates} the unit's location
 	 */
-	protected Unit(String name, Coordinates location) {
+	protected Unit(String name) {
 		// Initialize data members from parameters
 		this.name = name;
 
@@ -166,14 +162,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		default:
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
-
-		if (location != null) {
-			// Set the unit's location coordinates
-			setCoordinates(location);
-		}
-		else
-			// Set to (0, 0) when still initializing Settlement instance
-			this.location = new Coordinates(0D, 0D);
 
 		if (diagnosticFile != null) {
 			logCreation(this);
@@ -272,39 +260,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	public void setNotes(String notes) {
 		this.notes = notes;
 		fireUnitUpdate(UnitEventType.NOTES_EVENT, notes);
-	}
-
-	/**
-	 * Gets the unit's location.
-	 *
-	 * @return the unit's location
-	 */
-	public Coordinates getCoordinates() {
-		if (getUnitType() == UnitType.SETTLEMENT) {	
-			return location;
-		}
-	
-		Unit cu = getContainerUnit();
-		if (cu.getUnitType() == UnitType.MARS) {	
-			// Since Mars surface has no coordinates, 
-			// Get from its previously setting location
-			return location;
-		}
-		
-		// Unless it's on Mars surface, get its container unit's coordinates
-		return cu.getCoordinates();
-	}
-
-	/**
-	 * Sets unit's location coordinates.
-	 *
-	 * @param newLocation the new location of the unit
-	 */
-	public void setCoordinates(Coordinates newLocation) {
-		if (location == null || !location.equals(newLocation)) {
-			location = newLocation;
-			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
-		}
 	}
 
 	/**
@@ -513,10 +468,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		location = null;
 		name = null;
 		description = null;
 		listeners = null;
 	}
-
 }
