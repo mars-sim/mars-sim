@@ -70,6 +70,7 @@ public class UnloadVehicleGarage extends Task {
 
 		if (worker.isOutside()) {
 			endTask();
+			return;
 		}
 
 		this.vehicle = vehicle;

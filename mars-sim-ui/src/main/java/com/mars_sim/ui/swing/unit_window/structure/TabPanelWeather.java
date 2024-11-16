@@ -15,11 +15,11 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -37,19 +37,6 @@ public class TabPanelWeather
 extends TabPanel {
 
 	private static final String WEATHER_ICON = "weather";
-	
-//	private static final String DUSTY_SKY = "large/dusty";
-//	private static final String FRIGID = "large/frigid";
-//	private static final String HAZE = "large/haze";
-//	private static final String HOT = "large/hot";
-//	private static final String LIGHTNING = "large/lightning";	
-//	private static final String SNOW_BLOWING = "large/snow_blowing";
-//	private static final String SUN_STORM = "large/sun_storm";
-//	private static final String SNOW = "large/now";
-//	private static final String SUNNY = "large/sunny";
-//	private static final String WIND = "large/windy"; 
-
-
 	private static final double RADIANS_TO_DEGREES = 180/Math.PI;
 
 	private int windDirectionCache;
@@ -63,10 +50,6 @@ extends TabPanel {
 	private double solarDeclinationCache;
 	private double solarIrradianceCache;
 
-//	private String iconCache;
-
-	private JLabel latitudeLabel;
-	private JLabel longitudeLabel;
 	private JLabel weatherLabel;
 	private JLabel airDensityLabel;
 	private JLabel pressureTF;
@@ -91,7 +74,7 @@ extends TabPanel {
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public TabPanelWeather(Unit unit, MainDesktopPane desktop) {
+    public TabPanelWeather(Settlement unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super(
         	Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
@@ -105,13 +88,11 @@ extends TabPanel {
 		surfaceFeatures = sim.getSurfaceFeatures();
 		orbitInfo = sim.getOrbitInfo();
 		masterClock = sim.getMasterClock();
+		locationCache = unit.getCoordinates();
 	}
 	
 	@Override
 	protected void buildUI(JPanel content) {
-
-        // Initialize location cache
-        locationCache = getUnit().getCoordinates();
 
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
         mainPanel.setBorder(new MarsPanelBorder());
@@ -119,8 +100,8 @@ extends TabPanel {
 		   
 		// Create location panel
 		AttributePanel locnPanel = new AttributePanel(2);
-		latitudeLabel = locnPanel.addRow("Lat", getLatitudeString());
-		longitudeLabel = locnPanel.addRow("Lon", getLongitudeString());
+		locnPanel.addRow("Lat", getLatitudeString());
+		locnPanel.addRow("Lon", getLongitudeString());
 
       	// Create weatherPanel
         JPanel centerEastPanel = new JPanel(new BorderLayout(5, 5));
@@ -229,19 +210,7 @@ extends TabPanel {
      */
 	@Override
     public void update() {
-    	Coordinates location = getUnit().getCoordinates();
         if (!masterClock.isPaused()) {
-
-	        // If unit's location has changed, update location display.
-        	
-	    	// Future: if a person goes outside in settlement vicinity for servicing an equipment,
-	    	//         does the coordinates (down to how many decimals) change ?
-        	
-	        if (!locationCache.equals(location)) {
-	            locationCache = location;
-	            latitudeLabel.setText(getLatitudeString());
-	            longitudeLabel.setText(getLongitudeString());
-	        }
 
 			double p = getAirPressure();
 	        if (airPressureCache != p) {
@@ -279,40 +248,6 @@ extends TabPanel {
 	        	opticalDepthLabel.setText(StyleManager.DECIMAL_PLACES2.format(opticalDepthCache));
 	        }
 
-	        //////////////////////////////////////////////
-//	       	String icon = null;
-//
-//	    	if (temperatureCache <= 0) {
-//	    		if (temperatureCache < -40)
-//	    			icon = FRIGID;
-//	    		else {
-//	    			if (windSpeedCache > 6D)
-//	    				icon = SNOW_BLOWING;
-//	    			else
-//	    				icon = SNOW;
-//	    		}
-//	    	}
-//	    	else if (temperatureCache >= 26)
-//	    		icon = HOT;
-//	    	else { //if (temperatureCache >= 0) {
-//	    		if (windSpeedCache > 20D) {
-//	    			icon = WIND;
-//	    		}
-//	    		else if (opticalDepthCache > 1D) {
-//			    	if (opticalDepthCache > 3D)
-//			    		icon = DUSTY_SKY;
-//			    	else
-//			    		icon = HAZE;
-//		    	}
-//	    		else
-//	    			icon = SUNNY;
-//	    	}
-//	
-//	    	if (!icon.equals(iconCache)) {
-//	    		iconCache = icon;
-//	    		weatherLabel.setIcon(ImageLoader.getIconByName(icon));
-//	    	}
-
 	        double za = getZenithAngle();
 	        if (zenithAngleCache != za) {
 	        	zenithAngleCache = za;
@@ -349,8 +284,6 @@ extends TabPanel {
     	zenithAngleLabel = null;
     	solarDeclinationLabel = null;
     	temperatureLabel = null;
-    	latitudeLabel = null;
-    	longitudeLabel = null;
     	weatherLabel = null;
     	locationCache = null;
     }

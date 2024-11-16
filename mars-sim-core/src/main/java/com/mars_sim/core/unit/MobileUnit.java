@@ -1,7 +1,9 @@
 package com.mars_sim.core.unit;
 
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -9,13 +11,13 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * Represents an entity that can be mobile.
  */
-public interface MobileUnit {
+public interface MobileUnit extends SurfacePOI {
+
 	/**
-	 * Gets the coordinates on Mars surface.
-	 * 
+	 * Where is this mobile unit residing
 	 * @return
 	 */
-	public Coordinates getCoordinates();
+	public Unit getContainerUnit();
 
 	/**
 	 * Is the worker in a vehicle ?
@@ -79,4 +81,10 @@ public interface MobileUnit {
 	 * @return true if the worker is on the MarsSurface
 	 */
 	public boolean isOutside();
+
+	/**
+	 * Get the definitive assessment of the physical state os this mobile unit.
+	 * @return
+	 */
+	public LocationStateType getLocationStateType();
 }

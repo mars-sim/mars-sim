@@ -9,7 +9,6 @@ package com.mars_sim.core.environment;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.location.LocationStateType;
 
 /**
  * OuterSpace is the object unit that represents the outer space
@@ -24,7 +23,5 @@ public class OuterSpace extends PlanetaryEntity {
 	public OuterSpace() {
 		super(NAME, Unit.OUTER_SPACE_UNIT_ID, Unit.OUTER_SPACE_UNIT_ID, null,
 				UnitType.OUTER_SPACE);
-		currentStateType = LocationStateType.OUTER_SPACE;
-
 	}
 }

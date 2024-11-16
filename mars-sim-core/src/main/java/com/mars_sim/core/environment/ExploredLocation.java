@@ -125,7 +125,7 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	 * @return coordinates.
 	 */
 	@Override
-	public Coordinates getLocation() {
+	public Coordinates getCoordinates() {
 		return location;
 	}
 

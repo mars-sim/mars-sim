@@ -26,7 +26,7 @@ public abstract class FixedUnit extends Unit
 	 * @param owner the unit's location
 	 */
 	protected FixedUnit(String name, Settlement owner) {
-		super(name, owner.getCoordinates());
+		super(name);
 
         this.owner = owner;
 
@@ -38,7 +38,6 @@ public abstract class FixedUnit extends Unit
      * Get the coordinates of this fixed unit on the surface.
      * @return Coordinates of the owning Settlement
      */
-    @Override
     public Coordinates getCoordinates() {
         return owner.getCoordinates();
     }

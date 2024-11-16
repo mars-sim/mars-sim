@@ -27,6 +27,6 @@ public class LandmarkConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Beagle name", "Beagle 2 Lander", beagle.getName());
         assertEquals("Beagle origin", "ESA", beagle.getOrigin());
         assertEquals("Beagel type", LandmarkType.AO, beagle.getType());
-        assertEquals("Beagle location", center, beagle.getLocation());
+        assertEquals("Beagle location", center, beagle.getCoordinates());
     }
 }

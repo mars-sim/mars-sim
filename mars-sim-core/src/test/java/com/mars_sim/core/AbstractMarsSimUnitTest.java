@@ -7,6 +7,7 @@ import org.junit.Before;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
@@ -169,7 +170,11 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	protected Settlement buildSettlement(String name, boolean needGoods) {
-		Settlement settlement = new MockSettlement(name, needGoods);
+		return buildSettlement(name, needGoods, MockSettlement.DEFAULT_COORDINATES);
+	}
+	
+	protected Settlement buildSettlement(String name, boolean needGoods, Coordinates locn) {
+		Settlement settlement = new MockSettlement(name, needGoods, locn);
 		unitManager.addUnit(settlement);
 
 		return settlement;

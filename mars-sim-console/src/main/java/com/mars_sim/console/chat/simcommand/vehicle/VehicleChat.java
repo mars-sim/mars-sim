@@ -20,7 +20,6 @@ import com.mars_sim.console.chat.simcommand.unit.MissionCommand;
 import com.mars_sim.console.chat.simcommand.unit.ResourceHolderRefillCommand;
 import com.mars_sim.console.chat.simcommand.unit.UnitLocationCommand;
 import com.mars_sim.console.chat.simcommand.unit.UnitMalfunctionCommand;
-import com.mars_sim.console.chat.simcommand.unit.UnitSunlightCommand;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -37,7 +36,6 @@ public class VehicleChat extends ConnectedUnitCommand {
 																	new InventoryCommand(VEHICLE_GROUP),
 																	new MissionCommand(VEHICLE_GROUP),
 																	new UnitLocationCommand(VEHICLE_GROUP),
-																	new UnitSunlightCommand(VEHICLE_GROUP),
 																	new UnitMalfunctionCommand(VEHICLE_GROUP),
 																	new MalfunctionCreateCommand(VEHICLE_GROUP),
 																	VehicleStatusCommand.STATUS);

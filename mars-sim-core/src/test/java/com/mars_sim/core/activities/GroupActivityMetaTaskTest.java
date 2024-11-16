@@ -14,7 +14,7 @@ import com.mars_sim.core.time.EventSchedule;
 
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50,
+    private static final GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50,
                                 new EventSchedule(0, 0, 800), 1D, 100,
                                 TaskScope.NONWORK_HOUR, BuildingCategory.LIVING, GroupActivityInfo.DEFAULT_IMPACT);
 
@@ -32,10 +32,14 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         var events = s.getFutureManager().getEvents().stream()
                         .filter(e -> e.getHandler() instanceof GroupActivity)
                         .toList();
-        assertFalse("Group Activity found", events.isEmpty());
+        assertFalse("No Group Activities", events.isEmpty());
 
-        var selected = events.get(0);
-        assertEquals("Future event is correct activity", ga, selected.getHandler());
+        // Find my added avtivity
+        var matched = events.stream()
+                    .filter(g -> (ga.equals(g.getHandler())))
+                    .toList();
+        assertEquals("Future event matches found", 1, matched.size());
+        var selected = matched.get(0);
 
         var mt = new GroupActivityMetaTask();
 

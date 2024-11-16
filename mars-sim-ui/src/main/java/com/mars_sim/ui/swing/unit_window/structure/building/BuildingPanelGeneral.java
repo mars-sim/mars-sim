@@ -76,7 +76,7 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		addBorder(labelPanel, "Description");
 		var label = new MultilineLabel();
 		labelPanel.add(label);
-		String text = building.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
+		String text = building.getDescription().replace("\n", " ").replace("\t", "");
 		label.setText(text);
 		label.setPreferredWidthLimit(430);
 		label.setLineSpacing(1.2f);
@@ -86,7 +86,7 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		topPanel.add(labelPanel, BorderLayout.CENTER);
 		
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(8);
+		AttributePanel infoPanel = new AttributePanel();
 		topPanel.add(infoPanel, BorderLayout.SOUTH);
 
 		infoPanel.addRow("Building Type", building.getBuildingType());
@@ -100,10 +100,6 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 			+ " m x 2.5 m", "Length x Width x Height");
 		infoPanel.addRow("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
 				"The floor area in square meters");
-		
-		// Prepare mass label
-		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(building.getBaseMass()), 
-				"The base mass of this building");
 		
 		// Prepare air mass label
 		LifeSupport ls = building.getLifeSupport();

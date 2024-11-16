@@ -12,10 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
-import com.mars_sim.core.location.LocationStateType;
-import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -47,8 +44,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 
 	// Unique Unit identifier
 	private int identifier;
-	/** The mass of the unit without inventory. */
-	private double baseMass;
 	/** The last pulse applied. */
 	private long lastPulse = 0;
 	
@@ -56,13 +51,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	private String description = "No Description";
 	/** Commander's notes on this unit. */
 	private String notes = "";
-	/** The unit's location tag. */
-	private LocationTag tag;
-	/** The unit's coordinates. */
-	private Coordinates location;
 
-	/** The unit's current location state. */
-	protected LocationStateType currentStateType;
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
 
@@ -129,31 +118,22 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	protected Unit(String name, int id, int containerId) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.baseMass = 0;
 		this.identifier = id;
 		this.containerID = containerId;
-		
-		// For now, set currentStateType to MARS_SURFACE
-		currentStateType = LocationStateType.MARS_SURFACE;
 	}
 
 	/**
 	 * Constructor 2: where the name and location are defined.
 	 *
 	 * @param name     {@link String} the name of the unit
-	 * @param location {@link Coordinates} the unit's location
 	 */
-	protected Unit(String name, Coordinates location) {
+	protected Unit(String name) {
 		// Initialize data members from parameters
 		this.name = name;
-		this.baseMass = 0;
 
 		if (masterClock != null) {
 			// Needed for maven test
 			this.lastPulse = masterClock.getNextPulse() - 1;
-
-			// Creates a new location tag instance for each unit
-			tag = new LocationTag(this);
 	
 			// Calculate the new Identifier for this type
 			identifier = unitManager.generateNewId(getUnitType());
@@ -164,36 +144,24 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		// constructors
 		switch (getUnitType()) {
 		case BUILDING, CONTAINER, EVA_SUIT, PERSON, ROBOT:
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			// Why no containerID ?
 			break;
 			
 		case VEHICLE:
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 			containerID = MARS_SURFACE_UNIT_ID;
 			break;
 
 		case CONSTRUCTION, MARS, SETTLEMENT:
-			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = MARS_SURFACE_UNIT_ID;
 			break;
 
 		case MOON:
-			currentStateType = LocationStateType.MOON;
 			containerID = MOON_UNIT_ID;
 			break;
 			
 		default:
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
-
-		if (location != null) {
-			// Set the unit's location coordinates
-			setCoordinates(location);
-		}
-		else
-			// Set to (0, 0) when still initializing Settlement instance
-			this.location = new Coordinates(0D, 0D);
 
 		if (diagnosticFile != null) {
 			logCreation(this);
@@ -238,60 +206,12 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Changes the unit's name.
-	 *
-	 * @param newName new name
-	 */
-	public final void changeName(String newName) {
-		// Create an event here ?
-		setName(newName);
-	}
-
-	/**
 	 * Gets the unit's name.
 	 *
 	 * @return the unit's name
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the unit's shortened name.
-	 *
-	 * @return the unit's shortened name
-	 */
-	public String getShortenedName() {
-		name = name.trim();
-		int num = name.length();
-
-		boolean hasSpace = name.matches("^\\s*$");
-
-		if (hasSpace) {
-			int space = name.indexOf(" ");
-
-			String oldFirst = name.substring(0, space);
-			String oldLast = name.substring(space + 1, num);
-			String newFirst = oldFirst;
-			String newLast = oldLast;
-			String newName = name;
-
-			if (num > 20) {
-
-				if (oldFirst.length() > 10) {
-					newFirst = oldFirst.substring(0, 10);
-				} else if (oldLast.length() > 10) {
-					newLast = oldLast.substring(0, 10);
-				}
-				newName = newFirst + " " + newLast;
-
-			}
-
-			return newName;
-		}
-
-		else
-			return name;
 	}
 
 	/**
@@ -343,39 +263,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the unit's location.
-	 *
-	 * @return the unit's location
-	 */
-	public Coordinates getCoordinates() {
-		if (getUnitType() == UnitType.SETTLEMENT) {	
-			return location;
-		}
-	
-		Unit cu = getContainerUnit();
-		if (cu.getUnitType() == UnitType.MARS) {	
-			// Since Mars surface has no coordinates, 
-			// Get from its previously setting location
-			return location;
-		}
-		
-		// Unless it's on Mars surface, get its container unit's coordinates
-		return cu.getCoordinates();
-	}
-
-	/**
-	 * Sets unit's location coordinates.
-	 *
-	 * @param newLocation the new location of the unit
-	 */
-	public void setCoordinates(Coordinates newLocation) {
-		if (location == null || !location.equals(newLocation)) {
-			location = newLocation;
-			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
-		}
-	}
-
-	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
 	 * @return the unit's container unit
@@ -392,36 +279,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 
 	protected void setContainerID(Integer id) {
 		containerID = id;
-	}
-
-	/**
-	 * Gets the unit's mass including inventory mass.
-	 *
-	 * @return mass of unit and inventory
-	 * @throws Exception if error getting the mass.
-	 */
-	public double getMass() {
-		// Note: this method will be overridden by those inheriting this Unit
-		return baseMass;// + getStoredMass(); ?
-	}
-
-	/**
-	 * Sets the unit's base mass.
-	 *
-	 * @param base mass (kg)
-	 */
-	public final void setBaseMass(double baseMass) {
-		this.baseMass = baseMass;
-		fireUnitUpdate(UnitEventType.MASS_EVENT);
-	}
-
-	/**
-	 * Gets the base mass of the unit.
-	 *
-	 * @return base mass (kg)
-	 */
-	public double getBaseMass() {
-		return baseMass;
 	}
 	
 	/**
@@ -441,7 +298,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public synchronized final void addUnitListener(UnitListener newListener) {
+	public final synchronized void addUnitListener(UnitListener newListener) {
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
@@ -457,7 +314,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public synchronized final void removeUnitListener(UnitListener oldListener) {
+	public final synchronized void removeUnitListener(UnitListener oldListener) {
 		if (oldListener == null)
 			throw new IllegalArgumentException();
 
@@ -501,18 +358,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		}
 	}
 
-	public LocationStateType getLocationStateType() {
-		return currentStateType;
-	}
-
-	public void setLocationStateType(LocationStateType locationStateType) {
-		currentStateType = locationStateType;
-	}
-	
-	public LocationTag getLocationTag() {
-		return tag;
-	}
-
 	/**
 	 * Gets the building this unit is at.
 	 *
@@ -541,71 +386,11 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Is this unit inside an environmentally enclosed breathable living space such
-	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
-	 *
-	 * @return true if the unit is inside a breathable environment
-	 */
-	public boolean isInside() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
-				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInside();
-
-		return false;
-	}
-
-	/**
-	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
-	 * and being just right outside in a settlement/building/vehicle vicinity
-	 * Note: being inside a vehicle (that's on a mission outside) doesn't count being outside
-	 *
-	 * @return true if the unit is outside
-	 */
-	public boolean isOutside() {
-		if (LocationStateType.MARS_SURFACE == currentStateType
-				|| LocationStateType.SETTLEMENT_VICINITY == currentStateType
-				|| LocationStateType.VEHICLE_VICINITY == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isOutside();
-
-		return false;
-	}
-
-	/**
-	 * Is this unit inside a vehicle ?
-	 *
-	 * @return true if the unit is inside a vehicle
-	 */
-	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInVehicle();
-
-		return false;
-	}
-
-	/**
 	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	public abstract boolean isInSettlement();
-
-	/**
-	 * Is this unit in the vicinity of a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	public boolean isInSettlementVicinity() {
-		return tag.isInSettlementVicinity();
-	}
 
 	/**
 	 * Is this unit inside a vehicle in a garage ?
@@ -676,18 +461,15 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = getIdentifier() % 32;
-		return hashCode;
+		return getIdentifier() % 32;
 	}
 
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		location = null;
 		name = null;
 		description = null;
 		listeners = null;
 	}
-
 }

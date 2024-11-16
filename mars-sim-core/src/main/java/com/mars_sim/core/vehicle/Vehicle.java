@@ -140,8 +140,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private double iFuelEconomy;
 	/** The instantaneous fuel consumption of the vehicle [Wh/km]. */
 	private double iFuelConsumption;
-	/** The actual start mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
-	private double startMass = 0;
 	
 	/** The vehicle specification */
 	private String specName;
@@ -210,6 +208,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement);
+		setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 		
 		this.spec = spec;
 		this.specName = spec.getName();
@@ -1070,7 +1069,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * Records the beginning weight of the vehicle and its payload [kg].
 	 */
 	public void recordStartMass() {
-		startMass = getMass();
+		// Needs to be dropped when new Mission logic rolled out
 	}
 	
 	/**
@@ -2197,7 +2196,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public boolean setContainerUnitAndID(Unit newContainer) {
+	protected boolean setContainerUnitAndID(Unit newContainer) {
 		if (newContainer != null) {
 			Unit cu = getContainerUnit();
 			
@@ -2205,20 +2204,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				return true;
 			}
 
-			// Q: How useful is setting coordinates ? 
-			// a vehicle can move on its own 
-			
-			// 1. Set Coordinates
-//			if (newContainer.getUnitType() == UnitType.MARS) {
-				// Since it's on the surface of Mars,
-				// First set its initial location to its old parent's location as it's leaving its parent.
-				// Later it may move around and updates its coordinates by itself
-//				setCoordinates(getContainerUnit().getCoordinates());
-//			}
-//			else {
-//				setCoordinates(newContainer.getCoordinates());
-//			}
-			
+			LocationStateType newState;
 			// 2. Set new LocationStateType
 			// Note: This is a special case for Vehicle
 			//       A vehicle can have settlement as container unit while it's on Mars Surface
@@ -2229,50 +2215,19 @@ public abstract class Vehicle extends AbstractMobileUnit
 					&& (cu.getUnitType() == UnitType.SETTLEMENT
 						|| cu.getUnitType() == UnitType.BUILDING)
 					&& newContainer.getUnitType() == UnitType.MARS) {
-					setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+				newState = LocationStateType.SETTLEMENT_VICINITY;
 			}	
 			else {
-				// 2b. If old cu is null, such as at startup
-				updateVehicleState(newContainer);
+				newState = getNewLocationState(newContainer);
 			}
 			
 			// 3. Set containerID
-			setContainer(newContainer);
+			setContainer(newContainer, newState);
 
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 		return true;
-	}
-
-	/**
-	 * Updates the location state type of a vehicle.
-	 *
-	 * @apiNote (1) : WITHIN_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS.
-	 *
-	 * @apiNote (2) : WITHIN_SETTLEMENT_VICINITY can be used by a person or a vehicle.
-	 *
-	 * @apiNote (3) : If a vehicle may be in a garage inside a building, this vehicle is INSIDE_SETTLEMENT.
-	 *                If a vehicle is parked right outside a settlement, this vehicle is WITHIN_SETTLEMENT_VICINITY.
-	 *
-	 * @param newContainer
-	 */
-	public void updateVehicleState(Unit newContainer) {
-		if (newContainer == null) {
-			setLocationStateType(LocationStateType.UNKNOWN);
-			return;
-		}
-
-		setLocationStateType(getNewLocationState(newContainer));
-	}
-
-	/**
-	 * Updates the location state type directly.
-	 *
-	 * @param type
-	 */
-	public void updateLocationStateType(LocationStateType type) {
-		currentStateType = type;
 	}
 
 	/**
@@ -2317,6 +2272,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			return false;
 		}
 
+		var currentStateType = getLocationStateType();
 		boolean isVehicleInGarage = LocationStateType.INSIDE_SETTLEMENT == currentStateType;
 		boolean isVehicleInSettlementVicinity = LocationStateType.SETTLEMENT_VICINITY == currentStateType;
 		boolean isUnitTypeSettlement = getContainerUnit().getUnitType() == UnitType.SETTLEMENT;

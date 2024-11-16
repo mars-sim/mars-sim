@@ -12,10 +12,8 @@ import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.map.MapMetaData;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
  * The UnitMapLayer is a graphics layer to display unit icons.
@@ -52,15 +50,14 @@ public class UnitIconMapLayer extends UnitMapLayer {
 	/**
 	 * Displays a unit on the map.
 	 * 
-	 * @param unit      the unit to display.
-	 * @param mapCenter the location center of the map.
+ 	 * @param unit      the unit to display.
+	 * @param info		details how to render unit
+	 * @param location  Lociation on the map of this unit
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected MapHotspot displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
-
-		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
-		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+	protected MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
+							MapDisplay baseMap, Graphics2D g) {
 
 		IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getMapIcon(unit, baseMap.getMapMetaData()));
 		int locX = imageLocation.getiX();

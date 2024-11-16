@@ -8,8 +8,8 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.List;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.SurfacePOI;
 
 /**
  * This class represents a unit table displayed within the Monitor Window.
@@ -42,7 +42,7 @@ extends TableTab {
 	@Override
     public Coordinates getSelectedCoordinates() {
 		List<?> rows = getSelection();
-		if (!rows.isEmpty() && (rows.get(0) instanceof Unit u)) {
+		if (!rows.isEmpty() && (rows.get(0) instanceof SurfacePOI u)) {
 			return u.getCoordinates();
 		}
 		return null;

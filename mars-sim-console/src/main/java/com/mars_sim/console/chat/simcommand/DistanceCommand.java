@@ -9,37 +9,22 @@ package com.mars_sim.console.chat.simcommand;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
  * Get the distance to a specific location. The starting point is the location of the calling
  * Unit.
  */
-public class DistanceCommand extends ChatCommand {
+public class DistanceCommand extends CoordinatesCommand {
 
 	public static final ChatCommand DISTANCE = new DistanceCommand();
 
 	private DistanceCommand() {
-		super(TopLevel.SIMULATION_GROUP, "di", "distance", "Distance to a destination");
-		setInteractive(true);
+		super("di", "distance", "Distance to a destination", "Start");
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input) {
-		Coordinates start = null;
-		
-		// If a Unit then that is the start location
-		ChatCommand parent = context.getCurrentCommand();
-		if (parent instanceof ConnectedUnitCommand) {
-			Unit source = ((ConnectedUnitCommand)context.getCurrentCommand()).getUnit();
-			start = source.getCoordinates();
-			context.println("Start location is " + start);
-		}
-		else {
-			// Ask user
-			start = CommandHelper.getCoordinates("Start", context);			
-		}
+	public boolean execute(Conversation context, Coordinates start) {
 		
 		boolean result = false;
 		// If a start then continue

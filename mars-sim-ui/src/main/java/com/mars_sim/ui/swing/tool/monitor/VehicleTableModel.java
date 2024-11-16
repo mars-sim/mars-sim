@@ -26,6 +26,7 @@ import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
+import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -168,7 +169,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			case LOCATION : {
 				Mission mission = vehicle.getMission();
 				if (mission instanceof AbstractVehicleMission vm) {
-					result = vm.getCurrentNavpointDescription();
+					NavPoint nav = vm.getCurrentNavpoint();
+					result = (nav != null ? nav.getDescription() : vehicle.getCoordinates().getFormattedString());
 				}
 				else {
 					Settlement settle = vehicle.getSettlement();
@@ -176,9 +178,13 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 						result = settle.getName();
 					}
 					else {
-						settle = CollectionUtils.findSettlement(vehicle.getCoordinates());
+						var c = vehicle.getCoordinates();
+						settle = CollectionUtils.findSettlement(c);
 						if (settle != null) {
 							result = settle.getName();
+						}
+						else {
+							result = c.getFormattedString();
 						}
 					}
 				}

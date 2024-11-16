@@ -30,7 +30,7 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
 
     public void addFeature(T newFeature) {
         // select the best collection 
-        int subId = getSlice(newFeature.getLocation().getPhi());
+        int subId = getSlice(newFeature.getCoordinates().getPhi());
         slices[subId].add(newFeature);
     }
 
@@ -58,7 +58,7 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
     public T getFeature(Coordinates newLocation) {
         var top = getSlice(newLocation.getPhi());
         return slices[top].stream()
-                .filter(c -> c.getLocation().equals(newLocation))
+                .filter(c -> c.getCoordinates().equals(newLocation))
                 .findFirst().orElse(null);
     }
 
@@ -77,7 +77,7 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
         for(int i = bottom; i <= top; i++) {
             result.addAll(
                 slices[i].stream()
-                    .filter(c -> center.getAngle(c.getLocation()) <= arcAngle)
+                    .filter(c -> center.getAngle(c.getCoordinates()) <= arcAngle)
                     .toList()
             );
         }

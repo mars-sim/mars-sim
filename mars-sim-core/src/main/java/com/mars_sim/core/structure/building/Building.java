@@ -248,9 +248,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		constructionType = buildingSpec.getConstruction();
 
-		// Sets the base mass
-		setBaseMass(buildingSpec.getBaseMass());
-
 		baseLevel = buildingSpec.getBaseLevel();
 		setDescription(buildingSpec.getDescription());
 
@@ -528,7 +525,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		List<Function> goodFunctions = new ArrayList<>();
 
 		// First, use recreation function's empty activity spot if available
-		Function rec = getFunction(FunctionType.RECREATION);
+		getRecreation();
 		if (rec != null && rec.hasEmptyActivitySpot()) {
 			return rec;
 		}
@@ -556,11 +553,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public LocalPosition getRandomEmptyActivitySpot() {
 		
 		// First, use the recreation function activity spot if available
-		Function rec = getFunction(FunctionType.RECREATION);
+		getRecreation();
 		if (rec != null) {
-			LocalPosition loc = rec.getAvailableActivitySpot();
-			if (loc != null) {
-				return loc;
+			LocalPosition availableLoc = rec.getAvailableActivitySpot();
+			if (availableLoc != null) {
+				return availableLoc;
 			}
 		}
 				
@@ -1178,19 +1175,15 @@ public class Building extends FixedUnit implements Malfunctionable,
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this building.
-			if (task instanceof MaintainBuilding maintainBuilding) {
-				if (maintainBuilding.getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
+			if ((task instanceof MaintainBuilding maintainBuilding)
+				&& (maintainBuilding.getEntity() == this) && !people.contains(person)) {
+				people.add(person);
 			}
 
 			// Add all people repairing this facility.
-			if (task instanceof Repair repair) {
-				if (repair.getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
+			if ((task instanceof Repair repair) && (repair.getEntity() == this)
+				&& !people.contains(person)) {
+				people.add(person);
 			}
 		}
 

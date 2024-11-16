@@ -90,7 +90,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
-		JLabel nameLabel = new JLabel(unit.getShortenedName() , displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+		JLabel nameLabel = new JLabel(getShortenedName(unit.getName()), displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
 		JPanel namePane = new JPanel(new BorderLayout(0, 0));
