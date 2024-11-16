@@ -40,7 +40,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
         surface = unitManager.getMarsSurface();
     }
 
-	private void testContainment(Unit source, Unit container, Unit topContainer, LocationStateType lon) {
+	private void testContainment(AbstractMobileUnit source, Unit container, Unit topContainer, LocationStateType lon) {
 		assertEquals("Location state type", lon, source.getLocationStateType());
 		assertEquals("Parent container", container, source.getContainerUnit());
 	}
@@ -184,7 +184,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	public void testVehicleNearSettlement() {
 		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1));
 
-		vehicle.setContainerUnitAndID(settlement);
+		vehicle.transfer(settlement);
 
 		testContainment(vehicle, settlement, settlement, LocationStateType.SETTLEMENT_VICINITY);
 	}

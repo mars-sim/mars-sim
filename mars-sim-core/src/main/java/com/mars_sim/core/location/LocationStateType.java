@@ -23,32 +23,9 @@ public enum LocationStateType {
 	ON_PERSON_OR_ROBOT				(Msg.getString("LocationStateType.onPersonOrRobot")), //$NON-NLS-1$
 	SETTLEMENT_VICINITY				(Msg.getString("LocationStateType.settlementVicinity")), //$NON-NLS-1$
 	VEHICLE_VICINITY				(Msg.getString("LocationStateType.vehicleVicinity")), //$NON-NLS-1$
-	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")), //$NON-NLS-1$
-	OUTER_SPACE						(Msg.getString("LocationStateType.outerSpace")), //$NON-NLS-1$
-	MOON							(Msg.getString("LocationStateType.moon")), //$NON-NLS-1$
-	UNKNOWN							(Msg.getString("LocationStateType.unknown")) //$NON-NLS-1$
+	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")) //$NON-NLS-1$
 	;
 
-
-	// IN_AIRLOCK may be used to denote an intermediate state between being INSIDE_SETTLEMENT and OUTSIDE_ON_MARS for a person
-		
-	//	IN_AIRLOCK
-	//	INSIDE_EVASUIT
-	//  INSIDE_BUILDING
-
-	public static LocationStateType[] TYPES = new LocationStateType[]{
-			INSIDE_SETTLEMENT,
-			INSIDE_VEHICLE,
-			ON_PERSON_OR_ROBOT,
-			SETTLEMENT_VICINITY,
-			MARS_SURFACE,
-			OUTER_SPACE,
-			MOON,
-			UNKNOWN
-	};
-
-	public static int numSponsors = TYPES.length;
-	
 	private String name;
 
 	/** hidden constructor. */
@@ -63,16 +40,5 @@ public enum LocationStateType {
 	@Override
 	public final String toString() {
 		return getName();
-	}
-	
-	public static LocationStateType fromString(String name) {
-		if (name != null) {
-	    	for (LocationStateType t : LocationStateType.values()) {
-	    	  if (name.equalsIgnoreCase(t.name)) {
-	        	return t;
-	        }
-	      }
-	    }
-	    return UNKNOWN;
 	}
 }

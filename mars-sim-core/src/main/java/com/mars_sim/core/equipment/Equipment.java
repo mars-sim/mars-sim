@@ -241,7 +241,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
+        return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType();
     }
 
 	/**
@@ -306,15 +306,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 		boolean canRetrieve = false;
 		boolean canStore = false;
 		Unit cu = getContainerUnit();
-		if (cu == null) {
-			// Fire the unit event type
-			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-			// Set the new container unit (which will internally set the container unit id)
-			setContainer(destination);
-			canRetrieve = true;
-		}
-		
-		else if (cu instanceof EquipmentOwner deo) {
+		if (cu instanceof EquipmentOwner deo) {
 			canRetrieve = deo.removeEquipment(this);
 		}
 		else {
@@ -359,9 +351,8 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
-				setContainer(destination);
+				setContainer(destination, defaultLocationState(destination));
 				
-				updateLocationState(destination);
 				// Fire the unit event type
 				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type

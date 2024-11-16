@@ -1870,7 +1870,7 @@ public class Settlement extends Unit implements Temporal,
 		}
 		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
-			vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+			vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			
 			return true;
 		}

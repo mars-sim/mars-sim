@@ -176,9 +176,13 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 						result = settle.getName();
 					}
 					else {
-						settle = CollectionUtils.findSettlement(vehicle.getCoordinates());
+						var c = vehicle.getCoordinates();
+						settle = CollectionUtils.findSettlement(c);
 						if (settle != null) {
 							result = settle.getName();
+						}
+						else {
+							result = c.getFormattedString();
 						}
 					}
 				}

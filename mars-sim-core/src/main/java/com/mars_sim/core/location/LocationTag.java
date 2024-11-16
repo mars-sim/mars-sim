@@ -26,9 +26,9 @@ public class LocationTag implements Serializable {
 
 	public static final String MARS_SURFACE = LocationStateType.MARS_SURFACE.getName();
 
-	public static final String VICINITY = " Vicinity";
+	private static final String VICINITY = " Vicinity";
 
-	private static final String UNKNOWN = LocationStateType.UNKNOWN.getName();
+	private static final String UNKNOWN = "Unknown";
 
 	private static final String IN = " in ";
 

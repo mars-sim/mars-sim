@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -56,8 +55,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	/** The unit's coordinates. */
 	private Coordinates location;
 
-	/** The unit's current location state. */
-	protected LocationStateType currentStateType;
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
 
@@ -126,9 +123,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		this.name = name;
 		this.identifier = id;
 		this.containerID = containerId;
-		
-		// For now, set currentStateType to MARS_SURFACE
-		currentStateType = LocationStateType.MARS_SURFACE;
 	}
 
 	/**
@@ -154,22 +148,18 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		// constructors
 		switch (getUnitType()) {
 		case BUILDING, CONTAINER, EVA_SUIT, PERSON, ROBOT:
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			// Why no containerID ?
 			break;
 			
 		case VEHICLE:
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 			containerID = MARS_SURFACE_UNIT_ID;
 			break;
 
 		case CONSTRUCTION, MARS, SETTLEMENT:
-			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = MARS_SURFACE_UNIT_ID;
 			break;
 
 		case MOON:
-			currentStateType = LocationStateType.MOON;
 			containerID = MOON_UNIT_ID;
 			break;
 			
@@ -413,14 +403,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		}
 	}
 
-	public LocationStateType getLocationStateType() {
-		return currentStateType;
-	}
-
-	public void setLocationStateType(LocationStateType locationStateType) {
-		currentStateType = locationStateType;
-	}
-
 	/**
 	 * Gets the building this unit is at.
 	 *
@@ -446,57 +428,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public Vehicle getVehicle() {
 		return null;
-	}
-
-	/**
-	 * Is this unit inside an environmentally enclosed breathable living space such
-	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
-	 *
-	 * @return true if the unit is inside a breathable environment
-	 */
-	public boolean isInside() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
-				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInside();
-
-		return false;
-	}
-
-	/**
-	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
-	 * and being just right outside in a settlement/building/vehicle vicinity
-	 * Note: being inside a vehicle (that's on a mission outside) doesn't count being outside
-	 *
-	 * @return true if the unit is outside
-	 */
-	public boolean isOutside() {
-		if (LocationStateType.MARS_SURFACE == currentStateType
-				|| LocationStateType.SETTLEMENT_VICINITY == currentStateType
-				|| LocationStateType.VEHICLE_VICINITY == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isOutside();
-
-		return false;
-	}
-
-	/**
-	 * Is this unit inside a vehicle ?
-	 *
-	 * @return true if the unit is inside a vehicle
-	 */
-	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInVehicle();
-
-		return false;
 	}
 
 	/**

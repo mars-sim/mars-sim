@@ -12,6 +12,7 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -27,6 +28,7 @@ public abstract class AbstractMobileUnit extends Unit
     private int currentBuildingInt;
 	private double baseMass = 0D;
 	private LocationTag tag;
+	private LocationStateType locnState;
 
     /**
 	 * Constructor.
@@ -38,16 +40,54 @@ public abstract class AbstractMobileUnit extends Unit
 		super(name, owner.getCoordinates()); 
         this.owner = owner;
 		this.tag = new LocationTag(this);
-
-		setContainer(owner);
+		setContainer(owner, LocationStateType.INSIDE_SETTLEMENT);
 	}
 
 	/**
 	 * Set the container of this mobile unit
 	 * @param destination New destination of container
+	 * @param newState 
 	 */
-	protected void setContainer(Unit destination) {
+	protected void setContainer(Unit destination, LocationStateType newState) {
+		this.locnState = newState;
 		setContainerID(destination.getIdentifier());
+	}
+
+	/**
+	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
+	 * and being just right outside in a settlement/building/vehicle vicinity
+	 * Note: being inside a vehicle (that's on a mission outside) doesn't count being outside
+	 *
+	 * @return true if the unit is outside
+	 */
+	public boolean isOutside() {
+		if (LocationStateType.MARS_SURFACE == locnState
+				|| LocationStateType.SETTLEMENT_VICINITY == locnState
+				|| LocationStateType.VEHICLE_VICINITY == locnState)
+			return true;
+
+		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+			return ((Worker) getContainerUnit()).isOutside();
+
+		return false;
+	}
+
+	
+	/**
+	 * Is this unit inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
+	 *
+	 * @return true if the unit is inside a breathable environment
+	 */
+	public boolean isInside() {
+		if (LocationStateType.INSIDE_SETTLEMENT == locnState
+				|| LocationStateType.INSIDE_VEHICLE == locnState)
+			return true;
+
+		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+			return ((AbstractMobileUnit)getContainerUnit()).isInside();
+
+		return false;
 	}
 
 	/**
@@ -95,7 +135,6 @@ public abstract class AbstractMobileUnit extends Unit
 			currentBuildingInt = building.getIdentifier();
 		}
 	}
-
 
 	/**
 	 * Gets the unit's location.
@@ -223,11 +262,11 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
+		if (LocationStateType.INSIDE_VEHICLE == locnState)
 			return true;
 
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInVehicle();
+		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+			return ((Worker)getContainerUnit()).isInVehicle();
 
 		return false;
 	}
@@ -239,20 +278,25 @@ public abstract class AbstractMobileUnit extends Unit
 	public LocationTag getLocationTag() {
 		return tag;
 	}
-
 	
+	/**
+	 * Get the current location state for this mobile unit. It will be a refinement of the container.
+	 */
+	public LocationStateType getLocationStateType() {
+		return locnState;
+	}
+
+	public void setLocationStateType(LocationStateType locationStateType) {
+		locnState = locationStateType;
+	}
+
     /**
-	 * Updates the location state type of a person.
+	 * Return the default Location state for a new container
 	 *
 	 * @param newContainer
 	 */
-	protected void updateLocationState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-
-		currentStateType = switch (newContainer.getUnitType()) {
+	protected static LocationStateType defaultLocationState(Unit newContainer) {
+		return switch (newContainer.getUnitType()) {
             case SETTLEMENT -> LocationStateType.INSIDE_SETTLEMENT;
             case BUILDING -> LocationStateType.INSIDE_SETTLEMENT;
             case VEHICLE -> LocationStateType.INSIDE_VEHICLE;

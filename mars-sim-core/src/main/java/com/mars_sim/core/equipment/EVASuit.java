@@ -16,6 +16,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -102,8 +103,6 @@ public class EVASuit extends Equipment
 	public static final double CAPACITY = OXYGEN_CAPACITY + CO2_CAPACITY + WATER_CAPACITY;
 	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
 	private static final double NOMINAL_O2_PRESSURE = 20.7;
-	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 17 kPa. */
-	private static final double TARGET_O2_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value is 1 orbit. */
@@ -442,9 +441,8 @@ public class EVASuit extends Equipment
 	 */
 	public void recordUsageTime(ClockPulse pulse) {
 		Unit container = getContainerUnit();
-		if (container.getUnitType() == UnitType.PERSON
-			&& container.isOutside()
-			&& !((Person) container).getPhysicalCondition().isDead()) {
+		if ((container instanceof Person p)
+			&& p.isOutside() && !p.getPhysicalCondition().isDead()) {
 				malfunctionManager.activeTimePassing(pulse);
 		}
 	}
@@ -471,7 +469,7 @@ public class EVASuit extends Equipment
 	}
 
 	@Override
-	public void setContainer(Unit parent) {
+	public void setContainer(Unit parent, LocationStateType newState) {
 		Unit cu = getContainerUnit();
 		if (parent != cu) {
 			// Add new parent to owner history
@@ -480,7 +478,7 @@ public class EVASuit extends Equipment
 			}
 			locnHistory.add(parent);
 		}
-		super.setContainer(parent);
+		super.setContainer(parent, newState);
 	}
 
 	/**

@@ -211,7 +211,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	@Override
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
+        return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType();
     }
 
 	private void toBeSalvaged() {
@@ -874,9 +874,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set LocationStateType
-			updateLocationState(newContainer);
 			// 3. Set container
-			setContainer(newContainer);
+			setContainer(newContainer, defaultLocationState(newContainer));
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}

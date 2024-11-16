@@ -521,7 +521,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 		//    and a person doing EVA right outside a vehicle that are on a mission far away from the settlement ?
 		// Ans: Use coordinates to see if it matches 
 		
-		return LocationStateType.SETTLEMENT_VICINITY == currentStateType || isBuried;
+		return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType() || isBuried;
 	}
 
 	/**
@@ -1547,13 +1547,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 			}
 			
 			// 2. Set new LocationStateType
+			var newLocnState = defaultLocationState(newContainer);
 			if (oldCU != null) {
 				// 2a. If the previous cu is a settlement
 				//     and this person's new cu is mars surface,
 				//     then location state is within settlement vicinity
 				if (oldCU.getUnitType() == UnitType.SETTLEMENT
 					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
 				}	
 				// 2b. If the previous cu is a vehicle
 				//     and the previous cu is in settlement vicinity
@@ -1561,27 +1562,21 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 				else if (oldCU.getUnitType() == UnitType.VEHICLE
 						&& ((Vehicle) oldCU).isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
-							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+							newLocnState = LocationStateType.SETTLEMENT_VICINITY;
 				}
 				// 2c. If the previous cu is a vehicle
 				//     and the previous cu vehicle is outside on mars surface
 				//     then the new location state is vehicle vicinity
 				else if ((oldCU.getUnitType() == UnitType.VEHICLE)
-						&& oldCU.isOutside()
+						&& ((Vehicle)oldCU).isOutside()
 						&& newContainer.getUnitType() == UnitType.MARS) {
-							currentStateType = LocationStateType.VEHICLE_VICINITY;
+							newLocnState = LocationStateType.VEHICLE_VICINITY;
 				}
-				else {
-					updateLocationState(newContainer);
-				}
-			}
-			else {
-				updateLocationState(newContainer);
 			}
 			
 			// 3. Set containerID
 			// Note: need to decide what to set for a deceased person
-			setContainer(newContainer);
+			setContainer(newContainer, newLocnState);
 			
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
