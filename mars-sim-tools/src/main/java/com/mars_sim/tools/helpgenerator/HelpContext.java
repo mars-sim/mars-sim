@@ -52,6 +52,7 @@ public class HelpContext {
 	private static final String TEMPLATES_DIR = "templates/";
 	private static final String TITLE_PREFIX = " Configurations";
 	private static final String FILE_SUFFIX_PROP = "file_suffix";
+	private static final String TOP_PROP = "generate_top";
 	private static final String PROPS_FILE = "template.properties";
 
 	// All generators are declared here
@@ -79,7 +80,10 @@ public class HelpContext {
 		return (obj-> generateFileName((String) obj, ".html"));
 	}
 	
+	// Loaded from the properties
 	private String fileSuffix;
+	private boolean generateTopLevel;
+
 	private DefaultMustacheFactory mf;
 	private String templateDir;
 	private Map<String, Object> baseScope = null;
@@ -101,6 +105,7 @@ public class HelpContext {
 			throw new IllegalArgumentException("Problem loading template props", e);
 		}
 		this.fileSuffix = "." + templateProps.get(FILE_SUFFIX_PROP);
+		this.generateTopLevel = Boolean.parseBoolean(templateProps.getProperty(TOP_PROP, "true"));
 
 		this.config = config;
 
@@ -288,12 +293,14 @@ public class HelpContext {
 		Map<String,Object> topScope = createScopeMap("Configurations");
 		topScope.put("generators", gens);
 
-		var topTemplate = getTemplate("top-list");
+		if (generateTopLevel) {
+			var topTemplate = getTemplate("top-list");
 
-		// Generate configuration overview page
-		try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
-														generateFileName(INDEX)))) {
-			generateContent(topTemplate, topScope, topIndex);
+			// Generate configuration overview page
+			try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
+															generateFileName(INDEX)))) {
+				generateContent(topTemplate, topScope, topIndex);
+			}
 		}
 	}
 

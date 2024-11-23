@@ -1,0 +1,15 @@
+{{^outputProcesses.isEmpty}}
+## Made by Manufacturing Process
+
+{{#outputProcesses}}
+- [{{name}}]({{processfolder}}{{#filename}}{{name}}{{/filename}})
+{{/outputProcesses}}
+{{/outputProcesses.isEmpty}}
+
+{{^inputProcesses.isEmpty}}
+## Used by Manufacturing Process
+
+{{#inputProcesses}}
+- [{{name}}]({{processfolder}}{{#filename}}{{name}}{{/filename}})
+{{/inputProcesses}}
+{{/inputProcesses.isEmpty}}

@@ -38,7 +38,7 @@ public final class GenericsGrouper {
     }
 
     private static String generateId(String key) {
-        return key.toLowerCase().replaceAll("\\W", "-");
+        return "A-" + key.toLowerCase().replaceAll("\\W", "-");
     }
 
     private GenericsGrouper() {

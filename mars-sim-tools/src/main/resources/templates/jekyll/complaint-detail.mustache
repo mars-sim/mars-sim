@@ -1,0 +1,27 @@
+---
+title: {{complaint.name}}
+parent: {{type.title}}
+nav_exclude: false
+---
+# Complaint - {{complaint.name}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Seriousness:|{{complaint.seriousness}}|
+|Performance Impact:|{{complaint.performanceFactor}}|
+|Probability:|{{complaint.probability}}|
+|Degrade Time:|{{complaint.degradePeriod}} millisols|
+|Bed Rest:|{{complaint.requiresBedRestRecovery}}|
+|Recovery Period:|{{complaint.recoveryRange.min}} to {{complaint.recoveryRange.max}} sols|
+|Influenced by Effort:|{{complaint.effortInfluence}}|
+{{#complaint.recoveryTreatment}}
+|Treatment:|[{{complaint.recoveryTreatment.name}}]({{treatmentfolder}}{{#filename}}{{complaint.recoveryTreatment.name}}{{/filename}})|
+{{/complaint.recoveryTreatment}}
+{{#complaint.nextPhase}}
+|Next Phase:|[{{complaint.nextPhase.name}}]({{complaintfolder}}{{#filename}}{{complaint.nextPhase.name}}{{/filename}})|
+{{/complaint.nextPhase}} 
+
+
+{{>footer}}
