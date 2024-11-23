@@ -14,7 +14,6 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
-import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -51,7 +50,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 		// Setup  
 		// Setup the fixed arguments
 		setArguments(JobUtil.getJobs().stream()
-				.map(j -> j.getName(GenderType.MALE))
+				.map(j -> j.getType().getName())
 				.collect(Collectors.toList()));
 	}
 

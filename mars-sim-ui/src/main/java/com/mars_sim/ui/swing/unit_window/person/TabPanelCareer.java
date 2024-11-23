@@ -81,7 +81,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private RoleType roleCache;
 	private String dateTimeRatingSubmitted;
 
-	private AssignmentType statusCache = AssignmentType.APPROVED;// PENDING;
+	private AssignmentType statusCache = AssignmentType.APPROVED;
 
 	private JComboBox<String> jobComboBox;
 	private JComboBox<String> roleComboBox;
@@ -152,7 +152,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		jobCache = mind.getJob();
 		Vector<String> jobNames = new Vector<>();
 		for (Job job : JobUtil.getJobs()) {
-			jobNames.add(job.getName(person.getGender()));
+			jobNames.add(job.getType().getName());
 		}
 		Collections.sort(jobNames);
 
@@ -510,7 +510,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// If the rating or job reassignment request is at least one day ago
 			if (solCache != solElapsed) {
 				solCache = solElapsed;
-			} // end of if (solElapsed != solCache)
+			}
 
 			jobHistoryTableModel.update();
 			roleHistoryTableModel.update();
@@ -570,7 +570,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else if (source == jobComboBox) {
 
 			JobType selectedJob = JobType.getJobTypeByName((String) jobComboBox.getSelectedItem());
-//			JobType jobCache = person.getMind().getJob();
 
 			if (selectedJob != jobCache) {
 				int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
@@ -595,7 +594,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 */
 	public void considerJobChange(JobType jobCache, JobType selectedJob) {
 
-		// if job is Politician, loads and set to the previous job and quit;
+		// if job is Politician, loads and set to the previous job and quit
 		if (jobCache == JobType.POLITICIAN) {
 			jobComboBox.setSelectedItem(jobCache.getName());
 			displayNotice("Mayor cannot switch job arbitrarily!", true);
@@ -643,7 +642,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				person.getMind().reassignJob(selectedJob, true, JobUtil.USER, statusCache,
 						JobUtil.USER);
 
-				// System.out.println("Yes they are diff");
 				jobCache = selectedJob;
 
 				// updates the jobHistoryList in jobHistoryTableModel
