@@ -12,7 +12,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -24,7 +23,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Research;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -32,11 +30,6 @@ import com.mars_sim.core.vehicle.Vehicle;
  * The Job class represents a person's job.
  */
 public abstract class Job {
-
-	private static final String JOB_STR = "job.";
-	private static final String MALE_STR = "male.";
-	private static final String FEMALE_STR = "female.";
-	private static final String UNKNOWN = "unknown.";
 
 	private Map<RoleType, Double> jobProspects;
 	private JobType jobType;
@@ -53,32 +46,6 @@ public abstract class Job {
 	protected Job(JobType jobType, Map<RoleType, Double> jobProspects) {
 		this.jobType = jobType;
 		this.jobProspects = jobProspects;
-	}
-
-	/**
-	 * Gets the job's internationalized name for display in user interface. This
-	 * uses directly the name of the class that extends {@link Job}, so take care
-	 * not to rename those, or if you do then remember to change the keys in
-	 * <code>messages.properties</code> accordingly.
-	 * 
-	 * @param gender {@link GenderType}
-	 * @return name
-	 */
-	public String getName(GenderType gender) {
-		StringBuilder key = new StringBuilder().append(JOB_STR); // $NON-NLS-1$
-		switch (gender) {
-		case MALE:
-			key.append(MALE_STR);
-			break; // $NON-NLS-1$
-		case FEMALE:
-			key.append(FEMALE_STR);
-			break; // $NON-NLS-1$
-		default:
-			key.append(UNKNOWN);
-			break; // $NON-NLS-1$
-		}
-		key.append(jobType.getName());
-		return Msg.getString(key.toString().replace(" ", "")); // $NON-NLS-1$
 	}
 
 	public JobType getType() {

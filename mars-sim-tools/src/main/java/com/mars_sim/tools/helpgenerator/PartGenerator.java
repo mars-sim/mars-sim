@@ -6,9 +6,8 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -20,8 +19,8 @@ class PartGenerator extends TypeGenerator<Part> {
 
     static final String TYPE_NAME = "part";
 
-    protected PartGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Parts", "Parts used for repairs and processes");
+    protected PartGenerator(HelpContext parent) {
+        super(parent, TYPE_NAME, "Part", "Parts used for repairs and processes");
 
         
         // Groups by part type
@@ -29,21 +28,14 @@ class PartGenerator extends TypeGenerator<Part> {
     }
 
     /**
-     * Generator an output for a specific Part. This will also use the process-flow partial template
+     * Add consumer and processes processes of this Part. This will also use the process-flow partial template
      * as well as the main part-detail template.
-     * @param p Part for generation
-     * @param output Destination of content
+     * @param p The entity to display
+     * @param scope Scope of the properties to use for the template
      */
     @Override
-    public void generateEntity(Part p, OutputStream output) throws IOException {
-        var generator = getParent();
-
-        var pScope = generator.createScopeMap("Part - " +p.getName());
-        pScope.put("part", p);
-        addProcessFlows(p.getName(), pScope);
-
-        generator.generateContent("part-detail", pScope, output);
-
+    protected void addEntityProperties(Part p, Map<String,Object> scope) {
+        addProcessFlows(p.getName(), scope);
     }
 
     /**

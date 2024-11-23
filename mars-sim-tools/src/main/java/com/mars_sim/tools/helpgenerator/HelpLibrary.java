@@ -61,7 +61,7 @@ public final class HelpLibrary {
         }
 
         if (generateHelp) {
-            var gen = HelpGenerator.createHTMLInline(config);
+            var gen = new HelpContext(config, HelpContext.HTML_STYLE);
             File output = new File(location, GENERATED_DIR);
             gen.generateAll(output);
 

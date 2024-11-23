@@ -6,9 +6,8 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 
@@ -19,8 +18,8 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
 
     public static final String TYPE_NAME = "process";
 
-    ProcessGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Manufacturing Processes",
+    ProcessGenerator(HelpContext parent) {
+        super(parent, TYPE_NAME, "Manufacturing Process",
                         "Manufacturing Processes that consume resoruce to create new resources.");
 
         // Groups according to first letter of name
@@ -28,21 +27,15 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
     }
 
     /**
-     * Generator an output for a specific process. This will also use the process-input partial template
+     * Add properties for the consuming and produced Resources. This will also use the process-input partial template
      * as well as the main process-detail template.
      * @param p Process for generation
      * @param output Destination for content
      */
     @Override
-    public void generateEntity(ManufactureProcessInfo p, OutputStream output) throws IOException {
-        var generator = getParent();
-
-		var pScope = generator.createScopeMap("Process - " + p.getName());
-		pScope.put(TYPE_NAME, p);
-		addProcessInputOutput(pScope, "Inputs", toQuantityItems(p.getInputList()),
+    protected void addEntityProperties(ManufactureProcessInfo p, Map<String,Object> scope) {
+		addProcessInputOutput(scope, "Inputs", toQuantityItems(p.getInputList()),
 									"Products", toQuantityItems(p.getOutputList()));
-
-        generator.generateContent("process-detail", pScope, output);
     }
 
     /**

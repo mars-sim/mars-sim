@@ -6,9 +6,8 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 
@@ -19,28 +18,22 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
 
     static final String TYPE_NAME = "food";
 
-    FoodGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Food Recipes", "Recipes (Food Process) to create Food");
+    FoodGenerator(HelpContext parent) {
+        super(parent, TYPE_NAME, "Food Recipe", "Recipe (Food Process) to create Food");
     }
 
     /**
-     * Generator an output for a specific food process. This will also use the process-input partial template
-     * as well as the main food-detail template.
-     * @param v Food recipe being rendered
-     * @param output Destination of content
+     * Add specifics of how the Food process creates and consumes resources
+     * @param process The process to display
+     * @param scope Scope of the properties to use for the template
+     * @return
      */
     @Override
-    public void generateEntity(FoodProductionProcessInfo v, OutputStream output) throws IOException {
-        var generator = getParent();
+    protected void addEntityProperties(FoodProductionProcessInfo process, Map<String,Object> scope) {
 
-        var vScope = generator.createScopeMap("Food - " + v.getName());
-        vScope.put("food", v);
-
-        addProcessInputOutput(vScope,
-                "Ingredients", toQuantityItems(v.getInputList()),
-                "Outcomes", toQuantityItems(v.getOutputList()));
-
-        generator.generateContent("food-detail", vScope, output);
+        addProcessInputOutput(scope,
+                "Ingredients", toQuantityItems(process.getInputList()),
+                "Outcomes", toQuantityItems(process.getOutputList()));
     }
 
     /**

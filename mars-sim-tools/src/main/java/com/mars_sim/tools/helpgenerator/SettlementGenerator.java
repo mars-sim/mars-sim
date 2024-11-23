@@ -7,20 +7,22 @@
 package com.mars_sim.tools.helpgenerator;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.building.BuildingTemplate;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ItemQuantity;
+import com.mars_sim.tools.helpgenerator.HelpContext.ItemQuantity;
 
 public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
     public static final String TYPE_NAME = "settlement";
 
-    protected SettlementGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Settlement Templates",
+    protected SettlementGenerator(HelpContext parent) {
+        super(parent, TYPE_NAME, "Settlement Template",
                 "Settlement templates that can be used in a Scenario");
         
         // Group by sponsor
@@ -41,50 +43,35 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
 
     
 	/**
-	 * Generate the file for the Settlement template.
+	 * Add properties for teh initial suppliers for this Settlement
 	 * @param v Template being rendered.
-     * @param output Destination of content
+     * @param scope Properties
 	 * @throws IOException
 	 */
-	public void generateEntity(SettlementTemplate v, OutputStream output) throws IOException {
-        var generator = getParent();
+    @Override
+    protected void addEntityProperties(SettlementTemplate v, Map<String,Object> scope) {
 
-		// Individual  pages
-	    var vScope = generator.createScopeMap("Settlement Template - " + v.getName());
-		vScope.put(TYPE_NAME, v);
-        addSettlementSupplies(vScope, v); // Uses the settlement supplies template
-
-        // Generate the file
-        generator.generateContent("settlement-detail", vScope, output);
-	}
-    
-    /**
-     * Take a Settlement Supplies instance and prepare the context to use the settlement-supplies template
-     * @param vScope
-     * @param v
-     */
-    private static void addSettlementSupplies(Map<String, Object> vScope, SettlementSupplies v) {
         List<BuildingTemplate> buildings = new ArrayList<>(v.getBuildings());
         Collections.sort(buildings, (o1, o2) -> o1.getBuildingName().compareTo(o2.getBuildingName()));
-        vScope.put("buildings", buildings); 
+        scope.put("buildings", buildings); 
 
         // Add the resources
         List<ItemQuantity> resources = new ArrayList<>();
         resources.addAll(toQuantityItems(v.getBins(), ItemType.BIN));
         resources.addAll(v.getParts().entrySet().stream()
-                            .map(e -> HelpGenerator.createItemQuantity(e.getKey().getName(), ItemType.PART,
+                            .map(e -> HelpContext.createItemQuantity(e.getKey().getName(), ItemType.PART,
                                                                         e.getValue()))
                             .toList());
         resources.addAll(v.getResources().entrySet().stream()
-                            .map(e -> HelpGenerator.createItemQuantity(e.getKey().getName(), ItemType.AMOUNT_RESOURCE,
+                            .map(e -> HelpContext.createItemQuantity(e.getKey().getName(), ItemType.AMOUNT_RESOURCE,
                                                                         e.getValue()))
                             .toList());
         List<ItemQuantity>  sorted = resources.stream()
                     .sorted((o1, o2) -> o1.name().compareTo(o2.name())).toList();
-        vScope.put("resources", sorted);
+        scope.put("resources", sorted);
 
-        vScope.put("vehicles", toQuantityItems(v.getVehicles(), ItemType.VEHICLE));
-        vScope.put("equipment", toQuantityItems(v.getEquipment(), ItemType.EQUIPMENT));
+        scope.put("vehicles", toQuantityItems(v.getVehicles(), ItemType.VEHICLE));
+        scope.put("equipment", toQuantityItems(v.getEquipment(), ItemType.EQUIPMENT));
     }
 
     @Override

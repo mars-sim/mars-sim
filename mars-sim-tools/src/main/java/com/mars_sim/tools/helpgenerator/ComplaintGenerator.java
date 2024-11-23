@@ -6,8 +6,6 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import com.mars_sim.core.person.health.Complaint;
 public class ComplaintGenerator extends TypeGenerator<Complaint> {
     public static final String TYPE_NAME = "complaint";
 
-    protected ComplaintGenerator(HelpGenerator parent) {
+    protected ComplaintGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Complaint",
                 "Health Complaints affecting Persons");
         
@@ -39,27 +37,6 @@ public class ComplaintGenerator extends TypeGenerator<Complaint> {
 		 			.sorted(Comparator.comparing(Complaint::getName))
 					.toList();
     }
-
-    
-	/**
-	 * Generates the file for the Complaint.
-	 * 
-	 * @param v Complaint being rendered.
-     * @param output Destination of content
-	 * @throws IOException
-	 */
-    @Override
-	public void generateEntity(Complaint v, OutputStream output) throws IOException {
-        var generator = getParent();
-
-		// Individual  pages
-	    var vScope = generator.createScopeMap("Complaint - " + v.getName());
-		vScope.put(TYPE_NAME, v);
-
-        // Generate the file
-        generator.generateContent("complaint-detail", vScope, output);
-	}
-    
 
     @Override
     protected String getEntityName(Complaint v) {
