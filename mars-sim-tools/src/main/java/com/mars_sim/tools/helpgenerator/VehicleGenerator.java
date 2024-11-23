@@ -6,13 +6,12 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.VehicleSpec;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ValuePair;
+import com.mars_sim.tools.helpgenerator.HelpContext.ValuePair;
 
 /**
  * Help generator for the VehicleSpec configuration item.
@@ -21,8 +20,8 @@ public class VehicleGenerator extends TypeGenerator<VehicleSpec> {
 
     public static final String TYPE_NAME = "vehicle";
 
-    protected VehicleGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Vehicle Specs",
+    protected VehicleGenerator(HelpContext parent) {
+        super(parent, TYPE_NAME, "Vehicle Spec",
                 "Types of Vehicles Featured for Mars Surface Operations");
     }
     
@@ -36,27 +35,18 @@ public class VehicleGenerator extends TypeGenerator<VehicleSpec> {
     }
 
 	/**
-	 * Generate the file for the Vehicle specifications.
+	 * Add properties for cargo capacity of Vehicle specifications.
 	 * @param v Spec being rendered.
-     * @param output Destination of content
-	 * @throws IOException
+     * @param scope Properties for template
 	 */
-	public void generateEntity(VehicleSpec v, OutputStream output) throws IOException {
-        var generator = getParent();
-
-		// Individual vehicle pages
-	    var vScope = generator.createScopeMap("Vehicle - " + v.getName());
-		vScope.put(TYPE_NAME, v);
-
+    @Override
+    protected void addEntityProperties(VehicleSpec v, Map<String,Object> scope) {
         // Convert capacity to a list that contains the resource name
         var cargos = v.getCargoCapacityMap().entrySet().stream()
                             .map(e -> new ValuePair(ResourceUtil.findAmountResourceName(e.getKey()),
                                     e.getValue()))
                             .toList();
-        vScope.put("cargo", cargos);
-
-        // Generate the file
-        generator.generateContent("vehicle-detail", vScope, output);
+        scope.put("cargo", cargos);
 	}
 
     @Override
