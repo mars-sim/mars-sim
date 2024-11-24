@@ -122,7 +122,7 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Create Settlement");
 
 		// Deliver the supplies
-		createSupplies(template, settlement);
+		createSupplies(template.getSupplies(), settlement);
 		outputTimecheck(settlement, watch, "Create Supplies");
 
 		// TOCO get off the Initial Settlement
@@ -153,7 +153,7 @@ public final class SettlementBuilder {
 
 		watch.stop();
 		if (MEASURE_PHASES) {
-			logger.config(settlement, "Fully created in " + watch.getTime());
+			logger.config(settlement, "Fully created in " + watch.getDuration());
 		}
 
 		return settlement;
@@ -187,7 +187,7 @@ public final class SettlementBuilder {
 	private static void outputTimecheck(Settlement settlement, StopWatch watch, String phase) {
 		if (MEASURE_PHASES) {
 			watch.split();
-			logger.config(settlement, phase + " took " + watch.getTime() + " ms");
+			logger.config(settlement, phase + " took " + watch.getDuration() + " ms");
 			watch.unsplit();
 		}
 	}
@@ -349,9 +349,6 @@ public final class SettlementBuilder {
 		settlement.addOwnedRobot(robot);
 
 		unitManager.addUnit(robot);
-
-		// Set the container unit
-//		robot.setContainerUnit(settlement);
 	}
 
 	/**
@@ -441,8 +438,6 @@ public final class SettlementBuilder {
 
 			unitManager.addUnit(person);
 			
-			// Set the container unit
-//			person.setContainerUnit(settlement);
 			// Set up preference
 			person.getPreference().initializePreference();
 			// Assign a job

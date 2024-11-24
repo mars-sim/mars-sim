@@ -500,14 +500,15 @@ public class Settlement extends Unit implements Temporal,
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
 
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
+		SettlementSupplies supplies = sTemplate.getSupplies();
 
 		// Initialize building manager
-		buildingManager = new BuildingManager(this, sTemplate.getBuildings());
+		buildingManager = new BuildingManager(this, supplies.getBuildings());
 		
 		buildingManager.initializeFunctionsNMeteorite();
 		
 		// Initialize building connector manager.
-		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildings());
+		buildingConnectorManager = new BuildingConnectorManager(this, supplies.getBuildings());
 
 		// Create adjacent building map
 		buildingManager.createAdjacentBuildingMap();

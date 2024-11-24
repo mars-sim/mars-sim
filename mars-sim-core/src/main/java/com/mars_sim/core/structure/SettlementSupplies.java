@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.structure;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import com.mars_sim.core.structure.building.BuildingTemplate;
 /**
  * Represents a set of Supplies provided to a Settlement.
  */
-public interface SettlementSupplies {
+public interface SettlementSupplies extends Serializable {
 
     /**
      * Gets the list of building templates.

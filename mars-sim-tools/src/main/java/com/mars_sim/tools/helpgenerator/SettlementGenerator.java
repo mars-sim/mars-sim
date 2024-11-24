@@ -49,8 +49,10 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
 	 * @throws IOException
 	 */
     @Override
-    protected void addEntityProperties(SettlementTemplate v, Map<String,Object> scope) {
+    protected void addEntityProperties(SettlementTemplate st, Map<String,Object> scope) {
 
+        var v = st.getSupplies();
+        
         List<BuildingTemplate> buildings = new ArrayList<>(v.getBuildings());
         Collections.sort(buildings, (o1, o2) -> o1.getBuildingName().compareTo(o2.getBuildingName()));
         scope.put("buildings", buildings); 

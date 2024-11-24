@@ -19,7 +19,7 @@
 	<!ATTLIST equipment type CDATA #REQUIRED>
 	<!ATTLIST equipment number CDATA #REQUIRED>
 	<!ELEMENT resource EMPTY>
-	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource type CDATA #REQUIRED>
 	<!ATTLIST resource amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
 	<!ATTLIST part type CDATA #REQUIRED>
@@ -44,116 +44,116 @@
  	    <equipment type="wheelbarrow" number="8" />	   	
 	
 	    <!-- Life Support Resources -->
-	    <resource name="food" amount="1000.0" />
-	    <resource name="water" amount="4000.0" />
-	    <resource name="oxygen" amount="1000.0" />
+	    <resource type="food" amount="1000.0" />
+	    <resource type="water" amount="4000.0" />
+	    <resource type="oxygen" amount="1000.0" />
 
 		<!-- Gases -->
-	    <resource name="argon" amount="60.0" />
+	    <resource type="argon" amount="60.0" />
 	
 		<!-- Crop related -->
-	    <resource name="fertilizer" amount="50.0" />
+	    <resource type="fertilizer" amount="50.0" />
 	
 	    <!-- Crop tissues -->
-	    <resource name="blueberry tissue" amount="1.0" />
-	    <resource name="cabbage tissue" amount="1.0" />
-	    <resource name="carrot tissue" amount="1.0" />
-	    <resource name="celery tissue" amount="1.0" />
-	    <resource name="corn tissue" amount="1.0" />
+	    <resource type="blueberry tissue" amount="1.0" />
+	    <resource type="cabbage tissue" amount="1.0" />
+	    <resource type="carrot tissue" amount="1.0" />
+	    <resource type="celery tissue" amount="1.0" />
+	    <resource type="corn tissue" amount="1.0" />
 	
-	    <resource name="cranberry tissue" amount="1.0" />
-	    <resource name="cucumber tissue" amount="1.0" />
-	    <resource name="garlic tissue" amount="1.0" />
-	    <resource name="ginger tissue" amount="1.0" />
-	    <resource name="green bell pepper tissue" amount="1.0" />
+	    <resource type="cranberry tissue" amount="1.0" />
+	    <resource type="cucumber tissue" amount="1.0" />
+	    <resource type="garlic tissue" amount="1.0" />
+	    <resource type="ginger tissue" amount="1.0" />
+	    <resource type="green bell pepper tissue" amount="1.0" />
 	
-	    <resource name="kidney bean tissue" amount="1.0" />
-	    <resource name="lettuce tissue" amount="1.0" />
-	    <resource name="morel mushroom tissue" amount="1.0" />
-	    <resource name="peanut tissue" amount="1.0" />
-	    <resource name="peas tissue" amount="1.0" />
+	    <resource type="kidney bean tissue" amount="1.0" />
+	    <resource type="lettuce tissue" amount="1.0" />
+	    <resource type="morel mushroom tissue" amount="1.0" />
+	    <resource type="peanut tissue" amount="1.0" />
+	    <resource type="peas tissue" amount="1.0" />
 	    
-	    <resource name="potato tissue" amount="1.0" />
-	    <resource name="quinoa tissue" amount="1.0" />
-	    <resource name="radish tissue" amount="1.0" />	    
-	    <resource name="red beet tissue" amount="1.0" />
-	    <resource name="rice tissue" amount="1.0" />
+	    <resource type="potato tissue" amount="1.0" />
+	    <resource type="quinoa tissue" amount="1.0" />
+	    <resource type="radish tissue" amount="1.0" />	    
+	    <resource type="red beet tissue" amount="1.0" />
+	    <resource type="rice tissue" amount="1.0" />
 	    
-	    <resource name="sesame tissue" amount="1.0" />	    
-	    <resource name="soybean tissue" amount="1.0" />
-	   	<resource name="spring onion tissue" amount="1.0" />
-	    <resource name="strawberry tissue" amount="1.0" />
-	    <resource name="sugarcane tissue" amount="1.0" />
+	    <resource type="sesame tissue" amount="1.0" />	    
+	    <resource type="soybean tissue" amount="1.0" />
+	   	<resource type="spring onion tissue" amount="1.0" />
+	    <resource type="strawberry tissue" amount="1.0" />
+	    <resource type="sugarcane tissue" amount="1.0" />
 	    
-	   	<resource name="sweet potato tissue" amount="1.0" />
-	    <resource name="swiss chard tissue" amount="1.0" />
-	    <resource name="taro tissue" amount="1.0" />
-	    <resource name="tomato tissue" amount="1.0" />
-	    <resource name="wheat tissue" amount="1.0" />
+	   	<resource type="sweet potato tissue" amount="1.0" />
+	    <resource type="swiss chard tissue" amount="1.0" />
+	    <resource type="taro tissue" amount="1.0" />
+	    <resource type="tomato tissue" amount="1.0" />
+	    <resource type="wheat tissue" amount="1.0" />
 	    
-	    <resource name="white mustard tissue" amount="1.0" />
-	    <resource name="white onion tissue" amount="1.0" />
-	    <resource name="yam tissue" amount="1.0" />
+	    <resource type="white mustard tissue" amount="1.0" />
+	    <resource type="white onion tissue" amount="1.0" />
+	    <resource type="yam tissue" amount="1.0" />
 	    
 	    <!-- Seeds -->
-	    <resource name="mustard seed" amount="50.0" />
-	    <resource name="sesame seed" amount="50.0" />
+	    <resource type="mustard seed" amount="50.0" />
+	    <resource type="sesame seed" amount="50.0" />
 	
 	    <!-- Kitchen Resources -->
-	    <resource name="chlorine" amount="50.0" />
-	    <resource name="Sodium Hypochlorite" amount="20.0" />
-	    <resource name="Acetic Acid Bacteria" amount="20.0" />
-	    <resource name="Nitrosomonas spp" amount="20.0" />
-	    <resource name="Nitrospira spp" amount="20.0" />
+	    <resource type="chlorine" amount="50.0" />
+	    <resource type="Sodium Hypochlorite" amount="20.0" />
+	    <resource type="Acetic Acid Bacteria" amount="20.0" />
+	    <resource type="Nitrosomonas spp" amount="20.0" />
+	    <resource type="Nitrospira spp" amount="20.0" />
 	    
-	    <resource name="Rhizobia" amount="20.0" />
-	    <resource name="bisphenol-A" amount="100.0" />
-	    <resource name="toilet tissue" amount="100.0" />
-	    <resource name="paper" amount="100.0" />
-	    <resource name="napkin" amount="100.0" />
+	    <resource type="Rhizobia" amount="20.0" />
+	    <resource type="bisphenol-A" amount="100.0" />
+	    <resource type="toilet tissue" amount="100.0" />
+	    <resource type="paper" amount="100.0" />
+	    <resource type="napkin" amount="100.0" />
 	    
-	    <resource name="bleaching chemical" amount="50.0" />
-	    <resource name="Baking Powder" amount="100.0" />
-	    <resource name="pulp" amount="100.0" />
-	    <resource name="Honey" amount="100.0" />
-	    <resource name="Yeast" amount="50.0" />
+	    <resource type="bleaching chemical" amount="50.0" />
+	    <resource type="Baking Powder" amount="100.0" />
+	    <resource type="pulp" amount="100.0" />
+	    <resource type="Honey" amount="100.0" />
+	    <resource type="Yeast" amount="50.0" />
 	    
-	    <resource name="Epsom Salt" amount="50.0" />
-	    <resource name="Table Salt" amount="50.0" />
-	    <resource name="Sugar" amount="50.0" />	    
+	    <resource type="Epsom Salt" amount="50.0" />
+	    <resource type="Table Salt" amount="50.0" />
+	    <resource type="Sugar" amount="50.0" />	    
 	
 	    <!-- Food Derived Items -->
-	    <resource name="mustard" amount="50.0" />
-	    <resource name="Tofu" amount="50.0" />
-	    <resource name="Roasted Peanut" amount="50.0" />
-	    <resource name="White Bread" amount="50.0" />
-	    <resource name="White Bun" amount="50.0" />
+	    <resource type="mustard" amount="50.0" />
+	    <resource type="Tofu" amount="50.0" />
+	    <resource type="Roasted Peanut" amount="50.0" />
+	    <resource type="White Bread" amount="50.0" />
+	    <resource type="White Bun" amount="50.0" />
 	    
-	    <resource name="Veggie Patty" amount="50.0" />
-	    <resource name="Wheat Bread" amount="50" />
-	    <resource name="Wheat Bun" amount="50" />
-	    <resource name="Soy Protein" amount="50.0" />
-	    <resource name="Peanut Butter" amount="50.0" />
+	    <resource type="Veggie Patty" amount="50.0" />
+	    <resource type="Wheat Bread" amount="50" />
+	    <resource type="Wheat Bun" amount="50" />
+	    <resource type="Soy Protein" amount="50.0" />
+	    <resource type="Peanut Butter" amount="50.0" />
 	    
-	    <resource name="Soy Sprout" amount="50.0" />
-	    <resource name="Rice Vinegar" amount="50.0" />
-	    <resource name="Soy Sauce" amount="50.0" />
-	    <resource name="Soy Flour" amount="50.0" />
-	    <resource name="Wheat Flour" amount="50.0" />
+	    <resource type="Soy Sprout" amount="50.0" />
+	    <resource type="Rice Vinegar" amount="50.0" />
+	    <resource type="Soy Sauce" amount="50.0" />
+	    <resource type="Soy Flour" amount="50.0" />
+	    <resource type="Wheat Flour" amount="50.0" />
 	    	    
-	    <resource name="Cane Fiber" amount="100.0" />
+	    <resource type="Cane Fiber" amount="100.0" />
 	    
-	    <resource name="Soybean Oil" amount="50.0" />
-	    <resource name="Peanut Oil" amount="50.0" />
-	    <resource name="Garlic Oil" amount="50.0" />
-	    <resource name="Sesame Oil" amount="50.0" />
+	    <resource type="Soybean Oil" amount="50.0" />
+	    <resource type="Peanut Oil" amount="50.0" />
+	    <resource type="Garlic Oil" amount="50.0" />
+	    <resource type="Sesame Oil" amount="50.0" />
 	    
 	    <!-- Dessert -->
-	    <resource name="Granola Bar" amount="10.0" />
-	    <resource name="Soymilk" amount="50.0" />
+	    <resource type="Granola Bar" amount="10.0" />
+	    <resource type="Soymilk" amount="50.0" />
 	    
 	    <!-- Utility Resources -->
-	    <resource name="iron powder" amount="10.0" />  
+	    <resource type="iron powder" amount="10.0" />  
 	
 	        	
 	</resupply>
@@ -161,109 +161,109 @@
 	<resupply name="Food Resupply 1">
 	
 		<!-- Crop related -->
-	    <resource name="fertilizer" amount="50.0" />
-	    <resource name="Olive" amount="50.0" />
+	    <resource type="fertilizer" amount="50.0" />
+	    <resource type="Olive" amount="50.0" />
 	    	
 	    <!-- Crop tissues -->
-	    <resource name="blueberry tissue" amount="1.0" />
-	    <resource name="cabbage tissue" amount="1.0" />
-	    <resource name="carrot tissue" amount="1.0" />
-	    <resource name="celery tissue" amount="1.0" />
-	    <resource name="corn tissue" amount="1.0" />
+	    <resource type="blueberry tissue" amount="1.0" />
+	    <resource type="cabbage tissue" amount="1.0" />
+	    <resource type="carrot tissue" amount="1.0" />
+	    <resource type="celery tissue" amount="1.0" />
+	    <resource type="corn tissue" amount="1.0" />
 	
-	    <resource name="cranberry tissue" amount="1.0" />
-	    <resource name="cucumber tissue" amount="1.0" />
-	    <resource name="garlic tissue" amount="1.0" />
-	    <resource name="ginger tissue" amount="1.0" />
-	    <resource name="green bell pepper tissue" amount="1.0" />
+	    <resource type="cranberry tissue" amount="1.0" />
+	    <resource type="cucumber tissue" amount="1.0" />
+	    <resource type="garlic tissue" amount="1.0" />
+	    <resource type="ginger tissue" amount="1.0" />
+	    <resource type="green bell pepper tissue" amount="1.0" />
 	
-	    <resource name="kidney bean tissue" amount="1.0" />
-	    <resource name="lettuce tissue" amount="1.0" />
-	    <resource name="morel mushroom tissue" amount="1.0" />
-	    <resource name="peanut tissue" amount="1.0" />
-	    <resource name="peas tissue" amount="1.0" />
+	    <resource type="kidney bean tissue" amount="1.0" />
+	    <resource type="lettuce tissue" amount="1.0" />
+	    <resource type="morel mushroom tissue" amount="1.0" />
+	    <resource type="peanut tissue" amount="1.0" />
+	    <resource type="peas tissue" amount="1.0" />
 	    
-	    <resource name="potato tissue" amount="1.0" />
-	    <resource name="quinoa tissue" amount="1.0" />
-	    <resource name="radish tissue" amount="1.0" />	    
-	    <resource name="red beet tissue" amount="1.0" />
-	    <resource name="rice tissue" amount="1.0" />
+	    <resource type="potato tissue" amount="1.0" />
+	    <resource type="quinoa tissue" amount="1.0" />
+	    <resource type="radish tissue" amount="1.0" />	    
+	    <resource type="red beet tissue" amount="1.0" />
+	    <resource type="rice tissue" amount="1.0" />
 	    
-	    <resource name="sesame tissue" amount="1.0" />	    
-	    <resource name="soybean tissue" amount="1.0" />
-	   	<resource name="spring onion tissue" amount="1.0" />
-	    <resource name="strawberry tissue" amount="1.0" />
-	    <resource name="sugarcane tissue" amount="1.0" />
+	    <resource type="sesame tissue" amount="1.0" />	    
+	    <resource type="soybean tissue" amount="1.0" />
+	   	<resource type="spring onion tissue" amount="1.0" />
+	    <resource type="strawberry tissue" amount="1.0" />
+	    <resource type="sugarcane tissue" amount="1.0" />
 	    
-	   	<resource name="sweet potato tissue" amount="1.0" />
-	    <resource name="swiss chard tissue" amount="1.0" />
-	    <resource name="taro tissue" amount="1.0" />
-	    <resource name="tomato tissue" amount="1.0" />
-	    <resource name="wheat tissue" amount="1.0" />
+	   	<resource type="sweet potato tissue" amount="1.0" />
+	    <resource type="swiss chard tissue" amount="1.0" />
+	    <resource type="taro tissue" amount="1.0" />
+	    <resource type="tomato tissue" amount="1.0" />
+	    <resource type="wheat tissue" amount="1.0" />
 	    
-	    <resource name="white mustard tissue" amount="1.0" />
-	    <resource name="white onion tissue" amount="1.0" />
-	    <resource name="yam tissue" amount="1.0" />
+	    <resource type="white mustard tissue" amount="1.0" />
+	    <resource type="white onion tissue" amount="1.0" />
+	    <resource type="yam tissue" amount="1.0" />
 	    
 	    <!-- Seeds -->
-	    <resource name="mustard seed" amount="50.0" />
-	    <resource name="sesame seed" amount="50.0" />
+	    <resource type="mustard seed" amount="50.0" />
+	    <resource type="sesame seed" amount="50.0" />
 	
 	    <!-- Food Derived Items -->
-	    <resource name="mustard" amount="50.0" />
+	    <resource type="mustard" amount="50.0" />
 	
 	    <!-- Kitchen Resources -->
-	    <resource name="chlorine" amount="50.0" />
-	    <resource name="Sodium Hypochlorite" amount="20.0" />
-	    <resource name="Acetic Acid Bacteria" amount="20.0" />
-	    <resource name="Nitrosomonas spp" amount="20.0" />
-	    <resource name="Nitrospira spp" amount="20.0" />
+	    <resource type="chlorine" amount="50.0" />
+	    <resource type="Sodium Hypochlorite" amount="20.0" />
+	    <resource type="Acetic Acid Bacteria" amount="20.0" />
+	    <resource type="Nitrosomonas spp" amount="20.0" />
+	    <resource type="Nitrospira spp" amount="20.0" />
 	    
-	    <resource name="Rhizobia" amount="20.0" />
-	    <resource name="bisphenol-A" amount="100.0" />
-	    <resource name="toilet tissue" amount="100.0" />
-	    <resource name="paper" amount="100.0" />
-	    <resource name="napkin" amount="100.0" />
+	    <resource type="Rhizobia" amount="20.0" />
+	    <resource type="bisphenol-A" amount="100.0" />
+	    <resource type="toilet tissue" amount="100.0" />
+	    <resource type="paper" amount="100.0" />
+	    <resource type="napkin" amount="100.0" />
 	    
-	    <resource name="bleaching chemical" amount="50.0" />
-	    <resource name="Baking Powder" amount="100.0" />
-	    <resource name="pulp" amount="100.0" />
-	    <resource name="Honey" amount="100.0" />
-	    <resource name="Yeast" amount="50.0" />
+	    <resource type="bleaching chemical" amount="50.0" />
+	    <resource type="Baking Powder" amount="100.0" />
+	    <resource type="pulp" amount="100.0" />
+	    <resource type="Honey" amount="100.0" />
+	    <resource type="Yeast" amount="50.0" />
 	    
-	    <resource name="Epsom Salt" amount="50.0" />
-	    <resource name="Table Salt" amount="50.0" />
-	    <resource name="Sugar" amount="50.0" />	    
+	    <resource type="Epsom Salt" amount="50.0" />
+	    <resource type="Table Salt" amount="50.0" />
+	    <resource type="Sugar" amount="50.0" />	    
 	
 	    <!-- Food Derived Items -->
-	    <resource name="mustard" amount="50.0" />
-	    <resource name="Tofu" amount="50.0" />
-	    <resource name="Roasted Peanut" amount="50.0" />
-	    <resource name="White Bread" amount="50.0" />
-	    <resource name="White Bun" amount="50.0" />
+	    <resource type="mustard" amount="50.0" />
+	    <resource type="Tofu" amount="50.0" />
+	    <resource type="Roasted Peanut" amount="50.0" />
+	    <resource type="White Bread" amount="50.0" />
+	    <resource type="White Bun" amount="50.0" />
 	    
-	    <resource name="Veggie Patty" amount="50.0" />
-	    <resource name="Wheat Bread" amount="50" />
-	    <resource name="Wheat Bun" amount="50" />
-	    <resource name="Soy Protein" amount="50.0" />
-	    <resource name="Peanut Butter" amount="50.0" />
+	    <resource type="Veggie Patty" amount="50.0" />
+	    <resource type="Wheat Bread" amount="50" />
+	    <resource type="Wheat Bun" amount="50" />
+	    <resource type="Soy Protein" amount="50.0" />
+	    <resource type="Peanut Butter" amount="50.0" />
 	    
-	    <resource name="Soy Sprout" amount="50.0" />
-	    <resource name="Soybean Oil" amount="50.0" />
-	    <resource name="Peanut Oil" amount="50.0" />
-	    <resource name="Garlic Oil" amount="50.0" />
-	    <resource name="Sesame Oil" amount="50.0" />
-		<resource name="Olive Oil" amount="50.0" />    
+	    <resource type="Soy Sprout" amount="50.0" />
+	    <resource type="Soybean Oil" amount="50.0" />
+	    <resource type="Peanut Oil" amount="50.0" />
+	    <resource type="Garlic Oil" amount="50.0" />
+	    <resource type="Sesame Oil" amount="50.0" />
+		<resource type="Olive Oil" amount="50.0" />    
 	    
-	    <resource name="Cane Fiber" amount="100.0" />
-	    <resource name="Rice Vinegar" amount="50.0" />
-	    <resource name="Soy Sauce" amount="50.0" />
-	    <resource name="Soymilk" amount="50.0" />
-	    <resource name="Soy Flour" amount="50.0" />
+	    <resource type="Cane Fiber" amount="100.0" />
+	    <resource type="Rice Vinegar" amount="50.0" />
+	    <resource type="Soy Sauce" amount="50.0" />
+	    <resource type="Soymilk" amount="50.0" />
+	    <resource type="Soy Flour" amount="50.0" />
 	    
-	    <resource name="Wheat Flour" amount="50.0" />
-	    <resource name="Granola Bar" amount="10.0" />
-	    <resource name="Protein Bar" amount="10.0" />	    
+	    <resource type="Wheat Flour" amount="50.0" />
+	    <resource type="Granola Bar" amount="10.0" />
+	    <resource type="Protein Bar" amount="10.0" />	    
 	    
 
 	</resupply>
@@ -319,8 +319,8 @@
  	    <equipment type="wheelbarrow" number="2" />
 
 		
-		<resource name="hydrogen" amount="1000.0" />
-		<resource name="food" amount="1657.0" />
+		<resource type="hydrogen" amount="1000.0" />
+		<resource type="food" amount="1657.0" />
 		
 		<part-package name="package 3" number="1" />
 		
@@ -344,8 +344,8 @@
     	<equipment type="thermal bottle" number="12" />	
  	    <equipment type="wheelbarrow" number="12" />
 		
-		<resource name="hydrogen" amount="1000.0" />
-		<resource name="food" amount="4970.0" />
+		<resource type="hydrogen" amount="1000.0" />
+		<resource type="food" amount="4970.0" />
 		
 		<part-package name="package 4" number="1" />
 		
