@@ -1,7 +1,7 @@
 ---
 title: {{settlement.name}}
 parent: {{type.title}}
-nav_exclude: false
+nav_exclude: true
 ---
 # Settlement Template - {{settlement.name}}
 
@@ -36,7 +36,7 @@ nav_exclude: false
 | Name      | 1st Arrival | Supply Plan | Frequency (sols) |
 |--------:|:------|:-----|-------:|
 {{#settlement.resupplyMissionTemplates}}
-|{{name}}|{{firstArrival}}|{{manifest.name}}|{{frequency}}|
+|{{name}}|{{schedule.firstSol}}|{{manifest.name}}|{{schedule.frequency}}|
 {{/settlement.resupplyMissionTemplates}}
 {{/settlement.resupplyMissionTemplates.isEmpty}}
     
