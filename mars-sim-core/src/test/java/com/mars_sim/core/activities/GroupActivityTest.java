@@ -19,12 +19,12 @@ import com.mars_sim.core.time.MarsTime;
 
 public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
-    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 10, 50,
+    private static final GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 10, 50,
                                                             new EventSchedule(0, 2, 250),
                                                             0.5D, 100,
                                                             TaskScope.ANY_HOUR, BuildingCategory.LIVING,
                                                             GroupActivityInfo.DEFAULT_IMPACT);
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50, new EventSchedule(1, 0, 800),
+    private static final GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50, new EventSchedule(1, 0, 800),
                                                             0.5D, 100,
                                                             TaskScope.NONWORK_HOUR, BuildingCategory.LIVING,
                                                             GroupActivityInfo.DEFAULT_IMPACT);
@@ -96,8 +96,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
         var now = new MarsTime(1, 1, 1, 0, 1);
         var locn = new Coordinates("0.0 N", "90.0 E");
 
-        var s = buildSettlement();
-        s.setCoordinates(locn); // THis will mov ethe local timezine by 250
+        var s = buildSettlement("East", false, locn);
 
         new GroupActivity(ONE, s, now);
         testFutureEvent("Initial Event", s, ONE, now, 1, (int)((ONE.calendar().getFirstSol() + 1) * 1000D));

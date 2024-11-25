@@ -18,9 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -29,7 +28,12 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.resource.ItemType;
 
-public class HelpGenerator {
+/**
+ * This is the context of a session to generate a set of help files is a specific format
+ */
+public class HelpContext {
+	// This is the style associated with the html based help
+    public static final String HTML_STYLE = "html-help";
 
 	// Name of the index file for lists of entities
 	private static final String INDEX = "index";
@@ -43,32 +47,66 @@ public class HelpGenerator {
 	// A quantity of an item 
 	record ItemQuantity(String name, String type, String typefolder, String amount) {}
 
-	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
+	// This is the standard Title property used for page title
+	static final String TITLE_ATTR = "title";
 	private static final String TEMPLATES_DIR = "templates/";
-	private static final String TITLE_PREFIX = "List of ";
+	private static final String TITLE_PREFIX = " Configurations";
+	private static final String FILE_SUFFIX_PROP = "file_suffix";
+	private static final String TOP_PROP = "generate_top";
+	private static final String PROPS_FILE = "template.properties";
+
+	// All generators are declared here
+	private static final String[] GENERATORS = {BuildingGenerator.TYPE_NAME,
+												ComplaintGenerator.TYPE_NAME,
+												CrewGenerator.TYPE_NAME,
+												FoodGenerator.TYPE_NAME,
+												PartGenerator.TYPE_NAME,
+												ProcessGenerator.TYPE_NAME,
+												ResourceGenerator.TYPE_NAME,
+												ScenarioGenerator.TYPE_NAME,
+												SettlementGenerator.TYPE_NAME,
+												TreatmentGenerator.TYPE_NAME,
+												VehicleGenerator.TYPE_NAME};
+												
+	
 
 	/**
-	 * Function that converts a string into a valid file name.
+	 * Function that converts a string into a valid file name for an HTML link.
+	 * This is called by the Mustache templates
 	 * 
 	 * @return
 	 */
 	public Function<Object, Object> getFilename() {
-		return (obj-> generateFileName((String) obj));
+		return (obj-> generateFileName((String) obj, ".html"));
 	}
 	
+	// Loaded from the properties
 	private String fileSuffix;
+	private boolean generateTopLevel;
+
 	private DefaultMustacheFactory mf;
 	private String templateDir;
-	private Map<String,Mustache> templates = new HashMap<>();
 	private Map<String, Object> baseScope = null;
 
+	private Mustache indexTemplate;
+	private Mustache groupedTemplate;
 	private Map<String, ResourceUse> resourceUses = null;
 	private SimulationConfig config;
 
 
-    HelpGenerator(SimulationConfig config, String templateSet, String fileSuffix) {
-        this.fileSuffix = "." + fileSuffix;
+    HelpContext(SimulationConfig config, String templateSet) {
 		this.templateDir = TEMPLATES_DIR + templateSet + "/";
+
+		// Load the proeprties of this template
+		Properties templateProps = new Properties();
+		try(var propStream = HelpContext.class.getResourceAsStream("/" + templateDir + PROPS_FILE)) {
+			templateProps.load(propStream);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Problem loading template props", e);
+		}
+		this.fileSuffix = "." + templateProps.get(FILE_SUFFIX_PROP);
+		this.generateTopLevel = Boolean.parseBoolean(templateProps.getProperty(TOP_PROP, "true"));
+
 		this.config = config;
 
 		this.mf = new DefaultMustacheFactory();
@@ -79,29 +117,15 @@ public class HelpGenerator {
 						DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()));
 		
 		// Location of other generated file; used for links
-		addTypeFolder(VehicleGenerator.TYPE_NAME);
-		addTypeFolder(PartGenerator.TYPE_NAME);
-		addTypeFolder(ResourceGenerator.TYPE_NAME);
-		addTypeFolder(ProcessGenerator.TYPE_NAME);
-		addTypeFolder(FoodGenerator.TYPE_NAME);
-		addTypeFolder(BuildingGenerator.TYPE_NAME);
-		addTypeFolder(CrewGenerator.TYPE_NAME);
-		addTypeFolder(SettlementGenerator.TYPE_NAME);
-		addTypeFolder(ComplaintGenerator.TYPE_NAME);
-		addTypeFolder(TreatmentGenerator.TYPE_NAME);
+		for(var f : GENERATORS) {
+			this.baseScope.put(f + "folder", "../" + f + "/");
 
+		}
+		
 		// Add a lambda so a entity name can be converted into aa valid filename
 		this.baseScope.put("filename", getFilename());
     }
 
-	/**
-	 * Adds a variable to the base scope this point to the folder for a type of documents.
-	 * 
-	 * @param typeName
-	 */
-	private void addTypeFolder(String typeName) {
-		this.baseScope.put(typeName + "folder", "../" + typeName + "/");
-	}
 	/**
 	 * Generates a valid file name for a name of a entity.
 	 * 
@@ -109,8 +133,12 @@ public class HelpGenerator {
 	 * @return
 	 */
 	String generateFileName(String name) {
+		return generateFileName(name, fileSuffix);
+	}
+
+	private static String generateFileName(String name, String suffix) {
 		String simpleName = name.toLowerCase().replaceAll("\\W", "-");
-		return simpleName + fileSuffix;
+		return simpleName + suffix;
 	}
 
 	/**
@@ -123,7 +151,9 @@ public class HelpGenerator {
 		Map<String,Object> scope = new HashMap<>(baseScope);
 
 		// Title of the file being created
-		scope.put("title", pageTitle);
+		if (pageTitle != null) {
+			scope.put(TITLE_ATTR, pageTitle);
+		}
 
 		return scope;
 	}
@@ -142,14 +172,20 @@ public class HelpGenerator {
 	 void createFlatIndex(String title, String description,
 			List<? extends Object> entities, String typeFolder, File outputDir) 
 		throws IOException {
-		var scope = createScopeMap(TITLE_PREFIX + title);
+		var scope = createScopeMap(title + TITLE_PREFIX);
+		scope.put("listtitle", title);
 		scope.put("description", description);
 		scope.put("entities", entities);
 		scope.put("typefolder", "../" + typeFolder + "/");
 
+		// Load the template
+		if (indexTemplate == null) {
+			indexTemplate = getTemplate("entity-list");
+		}
+
 		File indexFile = new File(outputDir, generateFileName(INDEX));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
-			generateContent("entity-list", scope, dest);
+			generateContent(indexTemplate, scope, dest);
 		}
 	}
 
@@ -168,16 +204,22 @@ public class HelpGenerator {
 	 void createGroupedIndex(String title, String description,
 			String groupName, List<?> groups,  String typeFolder, File outputDir) 
 		throws IOException {
-		var scope = createScopeMap(TITLE_PREFIX + title);
+		var scope = createScopeMap(title + TITLE_PREFIX);
+		scope.put("listtitle", title);
 		scope.put("description", description);
 		scope.put("groups", groups);
 		scope.put("groupname", groupName);
 
 		scope.put("typefolder", "../" + typeFolder + "/");
 
+		// Load the template
+		if (groupedTemplate == null) {
+			groupedTemplate = getTemplate("entity-grouped");
+		}
+
 		File indexFile = new File(outputDir, generateFileName(INDEX));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
-			generateContent("entity-grouped", scope, dest);
+			generateContent(groupedTemplate, scope, dest);
 		}
 	}
 
@@ -239,18 +281,9 @@ public class HelpGenerator {
 	public void generateAll(File outputDir) throws IOException {
 		List<TypeGenerator<? extends Object>> gens = new ArrayList<>();
 
-		gens.add(new FoodGenerator(this));
-		gens.add(new PartGenerator(this));
-		gens.add(new ProcessGenerator(this));
-		gens.add(new ResourceGenerator(this));
-		gens.add(new VehicleGenerator(this));
-		gens.add(new BuildingGenerator(this));
-		gens.add(new SettlementGenerator(this));
-		gens.add(new CrewGenerator(this));
-		gens.add(new ScenarioGenerator(this));
-		gens.add(new ComplaintGenerator(this));
-		gens.add(new TreatmentGenerator(this));
-
+		for(var f : GENERATORS) {
+			gens.add(getGenerator(f));
+		}
 
 		// Generate all subtype
 		for(var g : gens) {
@@ -260,10 +293,14 @@ public class HelpGenerator {
 		Map<String,Object> topScope = createScopeMap("Configurations");
 		topScope.put("generators", gens);
 
-		// Generate configuration overview page
-		try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
-														generateFileName(INDEX)))) {
-			generateContent("top-list", topScope, topIndex);
+		if (generateTopLevel) {
+			var topTemplate = getTemplate("top-list");
+
+			// Generate configuration overview page
+			try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
+															generateFileName(INDEX)))) {
+				generateContent(topTemplate, topScope, topIndex);
+			}
 		}
 	}
 
@@ -279,52 +316,43 @@ public class HelpGenerator {
 	 * @return
 	 */
 	Mustache getTemplate(String template) {
-		return templates.computeIfAbsent(template,
-				t -> mf.compile(templateDir + t + ".mustache"));
+		return mf.compile(templateDir + template + ".mustache");
 	}
 
 	/**
 	 * Creates a final output by applying a template to a scope.
 
-	 * @param templateName Name of the template to apply. Expanded into file by usign template set.
+	 * @param template Template to use to generate content
 	 * @param scope Scope of properties to apply
 	 * @param output Destination for generated content
 	 * @throws IOException
 	 */
-	void generateContent(String templateName, Map<String, Object> scope, OutputStream output)
+	void generateContent(Mustache template, Map<String, Object> scope, OutputStream output)
 				throws IOException {
-		var template = getTemplate(templateName);
 		var writer = new OutputStreamWriter(output);
         template.execute(writer, scope);
         writer.flush();
 	}
 
 	/**
-	 * Gets a generator that which create HTML inline help pages.
-	 * 
-	 * @param source 
+	 * Factory method to create a Type Generator
+	 * @param name Name of the generator
+	 * @return
 	 */
-	public static HelpGenerator createHTMLInline(SimulationConfig source) {
-		return new HelpGenerator(source, "html-help", "html");
-	}
-
-	/**
-	 * The main starting method for generating html files.
-	 *
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) {
-		// Load config files
-		var config = SimulationConfig.instance();
-		config.loadConfig();
-
-		var gen = createHTMLInline(config);
-
-		try {
-			File output = new File(args[0]);
-			gen.generateAll(output);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Problem generating files", e);
-		}
+	TypeGenerator<? extends Object> getGenerator(String name) {
+		return switch(name.toLowerCase()) {
+			case BuildingGenerator.TYPE_NAME -> new BuildingGenerator(this);
+			case ComplaintGenerator.TYPE_NAME -> new ComplaintGenerator(this);
+			case CrewGenerator.TYPE_NAME -> new CrewGenerator(this);
+			case FoodGenerator.TYPE_NAME -> new FoodGenerator(this);
+			case PartGenerator.TYPE_NAME -> new PartGenerator(this);
+			case ProcessGenerator.TYPE_NAME -> new ProcessGenerator(this);
+			case ResourceGenerator.TYPE_NAME -> new ResourceGenerator(this);
+			case ScenarioGenerator.TYPE_NAME -> new ScenarioGenerator(this);
+			case SettlementGenerator.TYPE_NAME -> new SettlementGenerator(this);
+			case TreatmentGenerator.TYPE_NAME -> new TreatmentGenerator(this);
+			case VehicleGenerator.TYPE_NAME -> new VehicleGenerator(this);
+			default -> null;
+		};
 	}
 }

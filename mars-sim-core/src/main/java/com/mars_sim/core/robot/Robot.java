@@ -53,6 +53,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Crewable;
 
 /**
@@ -211,7 +212,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	@Override
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
+        return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType();
     }
 
 	private void toBeSalvaged() {
@@ -863,20 +864,19 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			}
 	
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.MARS) {
+			if (newContainer instanceof MobileUnit mu) {
+				setCoordinates(mu.getCoordinates());
+			}
+			else if (cu instanceof MobileUnit mu) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(cu.getCoordinates());
+				setCoordinates(mu.getCoordinates());
 			}
-			else {
-				// Null its coordinates since it's now slaved after its parent
-				setCoordinates(newContainer.getCoordinates());
-			}
+
 			// 2. Set LocationStateType
-			updateLocationState(newContainer);
 			// 3. Set container
-			setContainer(newContainer);
+			setContainer(newContainer, defaultLocationState(newContainer));
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}

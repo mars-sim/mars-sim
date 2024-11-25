@@ -213,15 +213,13 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Displays a Vehicle in the appropriate Settlement map. The map will be switched to 
-	 * the appropriate Settlement and focused on the Vehicle. The Vehicle labels will be enabled.
+	 * Displays a position in a Settlement. The map will be flipped if needed
 	 * 
-	 * @param vv Vehicle to display
+	 * @param s Settlement to display
+	 * @param posn Local position for focus
 	 */
-    public void displayVehicle(Vehicle vv) {
-		if (vv.isInSettlement()) {
-			refocusMap(vv.getSettlement(), vv.getPosition());
-		}
+    public void displayPosition(Settlement s, LocalPosition posn) {
+		refocusMap(s, posn);
     }
 
 	/**

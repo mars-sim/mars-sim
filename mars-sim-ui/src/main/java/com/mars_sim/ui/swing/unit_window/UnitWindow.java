@@ -50,7 +50,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	public static final int HEIGHT = 620;
 	public static final int STATUS_HEIGHT = 60;
 	
-	private String title;
+	private String unitTitle;
 	
 	/** The tab panels. */
 	private List<TabPanel> tabPanels;
@@ -79,7 +79,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 		// Initialize data members
 		this.desktop = desktop;
 		this.unit = unit;
-		this.title = title;
+		this.unitTitle = title;
 		
 
 		setFrameIcon(MainWindow.getLanderIcon());
@@ -121,7 +121,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 			if (!newTab.isUIDone() && (oldTab == null || newTab != oldTab)) {
 				oldTab = newTab;
 				newTab.initializeUI();
-				setTitle(title + " - " + newTab.getTabTitle());
+				setTitle(unitTitle + " - " + newTab.getTabTitle());
 			}
 		});
 
@@ -322,6 +322,43 @@ public abstract class UnitWindow extends ModalInternalFrame
 		return agencyLabel;
     }
     
+	/**
+	 * Create a shortened version of a Unit name.
+	 * @param name
+	 * @return
+	 */
+	protected static String getShortenedName(String name) {
+		name = name.trim();
+		int num = name.length();
+
+		boolean hasSpace = name.matches("^\\s*$");
+
+		if (hasSpace) {
+			int space = name.indexOf(" ");
+
+			String oldFirst = name.substring(0, space);
+			String oldLast = name.substring(space + 1, num);
+			String newFirst = oldFirst;
+			String newLast = oldLast;
+			String newName = name;
+
+			if (num > 20) {
+
+				if (oldFirst.length() > 10) {
+					newFirst = oldFirst.substring(0, 10);
+				} else if (oldLast.length() > 10) {
+					newLast = oldLast.substring(0, 10);
+				}
+				newName = newFirst + " " + newLast;
+
+			}
+
+			return newName;
+		}
+
+		else
+			return name;
+	}
     
 	/**
 	 * Prepares unit window for deletion. Close all tabs

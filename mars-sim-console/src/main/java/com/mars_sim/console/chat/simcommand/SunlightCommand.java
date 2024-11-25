@@ -5,30 +5,29 @@
  * @author Barry Evans
  */
 
-package com.mars_sim.console.chat.simcommand.unit;
+package com.mars_sim.console.chat.simcommand;
 
 import com.mars_sim.console.chat.Conversation;
-import com.mars_sim.console.chat.simcommand.StructuredResponse;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 
 /**
- * Command to show Sunlight details for a Unit
+ * Command to show Sunlight details at a Coordinates
  */
-public class UnitSunlightCommand extends AbstractUnitCommand {
+public class SunlightCommand extends CoordinatesCommand {
 
+	public static final SunlightCommand SUNLIGHT = new SunlightCommand();
 
-	public UnitSunlightCommand(String groupName) {
-		super(groupName, "su", "sunlight", "Show Sunlight details at Unit's location");
+	private SunlightCommand() {
+		super("su", "sunlight", "Show Sunlight details at Unit's location",
+					"Location");
 	}
 
 	/** 
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	protected boolean execute(Conversation context, String input, Unit source) {
-		Coordinates locn = source.getCoordinates();
+	protected boolean execute(Conversation context, Coordinates locn) {
 
 		StructuredResponse response = new StructuredResponse();
 

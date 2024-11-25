@@ -155,7 +155,7 @@ public abstract class VehicleMaintenance extends Function {
 				// change the flyer status
 				flyer.setPrimaryStatus(StatusType.GARAGED);
 				// Update the flyer's location state type
-				flyer.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				flyer.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 				
 				double newFacing = getBuilding().getFacing();
 				flyer.setFlyerLocation(newLoc, newFacing);
@@ -206,7 +206,7 @@ public abstract class VehicleMaintenance extends Function {
 				// change the vehicle status
 				vehicle.setPrimaryStatus(StatusType.GARAGED);
 				// Update the vehicle's location state type
-				vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 				
 				double newFacing = getBuilding().getFacing();
 				vehicle.setParkedLocation(newLoc, newFacing);
@@ -345,7 +345,7 @@ public abstract class VehicleMaintenance extends Function {
 
 		vehicle.setPrimaryStatus(StatusType.PARKED);
 		// Update the vehicle's location state type
-		vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+		vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 		// Find a new parking location
 		vehicle.findNewParkingLoc();
 	}

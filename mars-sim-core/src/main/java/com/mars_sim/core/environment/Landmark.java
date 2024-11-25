@@ -91,7 +91,7 @@ public class Landmark implements Serializable, SurfacePOI {
 	 * @return coordinates of the landmark
 	 */
 	@Override
-	public Coordinates getLocation() {
+	public Coordinates getCoordinates() {
 		return coord;
 	}
 

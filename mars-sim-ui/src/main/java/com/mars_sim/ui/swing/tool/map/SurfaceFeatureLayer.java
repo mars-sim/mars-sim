@@ -56,7 +56,7 @@ public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLa
         boolean isColourful = baseMap.getMapMetaData().isColourful();
 		for (var f : features) {
             // Determine display location of feature on the map.
-            IntPoint pointOnMap = MapUtils.getRectPosition(f.getLocation(), mapCenter, baseMap);
+            IntPoint pointOnMap = MapUtils.getRectPosition(f.getCoordinates(), mapCenter, baseMap);
             if ((pointOnMap.getiX() >= 0) && (pointOnMap.getiY() >= 0)) {
                 var h = displayFeature(f, pointOnMap, g2d, isColourful);
                 if (h != null) {

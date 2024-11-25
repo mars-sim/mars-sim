@@ -6,8 +6,6 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import com.mars_sim.core.structure.building.BuildingSpec;
@@ -19,8 +17,8 @@ import com.mars_sim.core.structure.building.BuildingSpec;
 public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
     public static final String TYPE_NAME = "building";
 
-    protected BuildingGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Building Specs",
+    protected BuildingGenerator(HelpContext parent) {
+        super(parent, TYPE_NAME, "Building Spec",
                 "Building Specifications available for bases");
 
         // Groups by category
@@ -37,25 +35,10 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
 							.toList();
     }
 
-	/**
-	 * Generates the file for the building specifications.
-	 * 
-	 * @param v Spec being rendered.
-     * @param output Destination of content
-	 * @throws IOException
-	 */
-	public void generateEntity(BuildingSpec v, OutputStream output) throws IOException {
-        var generator = getParent();
-
-		// Individual vehicle pages
-	    var vScope = generator.createScopeMap("Building - " + v.getName());
-		vScope.put(TYPE_NAME, v);
-
-
-        // Generate the file
-        generator.generateContent("building-detail", vScope, output);
-	}
-    
+    /**
+     * Get the name from a BuildingSpec
+     * @param v Building spec
+     */
     @Override
     protected String getEntityName(BuildingSpec v) {
         return v.getName();

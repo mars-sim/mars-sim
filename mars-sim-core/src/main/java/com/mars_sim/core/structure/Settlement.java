@@ -55,6 +55,7 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -106,7 +107,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Unit implements Temporal,
-	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
+	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -365,7 +366,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
-		super(name, location);
+		super(name);
 
 		this.settlementCode = createCode(name);
 		this.location = location;
@@ -411,7 +412,7 @@ public class Settlement extends Unit implements Temporal,
 	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
-		super(name, location);
+		super(name);
 
 		this.settlementCode = createCode(name);
 		this.location = location;
@@ -556,6 +557,15 @@ public class Settlement extends Unit implements Temporal,
 				new GroupActivity(ga, this, masterClock.getMarsTime());
 			}
 		}
+	}
+
+	/**
+	 * Get the fixed location of this Settlement
+	 * @return
+	 */
+	@Override
+	public Coordinates getCoordinates() {
+		return location;
 	}
 
 	/**
@@ -1869,7 +1879,7 @@ public class Settlement extends Unit implements Temporal,
 		}
 		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
-			vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+			vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			
 			return true;
 		}

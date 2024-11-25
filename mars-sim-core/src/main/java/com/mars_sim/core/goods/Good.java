@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.manufacture.ManufactureProcess;
@@ -636,7 +635,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      */
     protected Stream<Person> getPersonOnEVA(Settlement settlement) {
         return  settlement.getAllAssociatedPeople().stream()
-			              .filter(Unit::isOutside);
+			              .filter(Person::isOutside);
     }
 
     /**

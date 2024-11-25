@@ -6,8 +6,6 @@
  */
 package com.mars_sim.tools.helpgenerator;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import com.mars_sim.core.person.health.Treatment;
 public class TreatmentGenerator extends TypeGenerator<Treatment> {
     public static final String TYPE_NAME = "treatment";
 
-    protected TreatmentGenerator(HelpGenerator parent) {
+    protected TreatmentGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Treatment",
                 "Treatments applied to cure Complaints");
 
@@ -34,26 +32,6 @@ public class TreatmentGenerator extends TypeGenerator<Treatment> {
 		 			.sorted(Comparator.comparing(Treatment::getName))
 					.toList();
     }
-
-    
-	/**
-	 * Generate the file for the Treatment
-	 * @param v Treatment being rendered.
-     * @param output Destination of content
-	 * @throws IOException
-	 */
-    @Override
-	public void generateEntity(Treatment v, OutputStream output) throws IOException {
-        var generator = getParent();
-
-		// Individual  pages
-	    var vScope = generator.createScopeMap("Treatment - " + v.getName());
-		vScope.put(TYPE_NAME, v);
-
-        // Generate the file
-        generator.generateContent("treatment-detail", vScope, output);
-	}
-    
 
     @Override
     protected String getEntityName(Treatment v) {

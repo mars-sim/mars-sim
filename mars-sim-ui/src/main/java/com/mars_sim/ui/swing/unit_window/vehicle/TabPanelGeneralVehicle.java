@@ -90,7 +90,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		addBorder(labelPanel, "Description");
 		var label = new MultilineLabel();
 		labelPanel.add(label);
-		String text = vehicle.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
+		String text = vehicle.getDescription().replace("\n", " ").replace("\t", "");
 		label.setText(text);
 		label.setPreferredWidthLimit(430);
 		label.setLineSpacing(1.2f);
@@ -100,7 +100,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		panel.add(labelPanel, BorderLayout.CENTER);
 		
 		// Prepare attribute panel.
-		AttributePanel infoPanel = new AttributePanel(15);
+		AttributePanel infoPanel = new AttributePanel();
 		
 		panel.add(infoPanel, BorderLayout.SOUTH);
 		

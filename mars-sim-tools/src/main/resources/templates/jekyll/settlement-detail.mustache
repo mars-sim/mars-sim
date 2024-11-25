@@ -1,0 +1,43 @@
+---
+title: {{settlement.name}}
+parent: {{type.title}}
+nav_exclude: true
+---
+# Settlement Template - {{settlement.name}}
+
+## Description
+{{settlement.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Objective:|{{settlement.objective.getName}}|
+|Shift Pattern:|{{settlement.shiftPattern.name}}|
+|Default People #:|{{settlement.defaultPopulation}}|
+|Default Robot #:|{{settlement.defaultNumOfRobots}}|
+|Sponsor:|{{settlement.sponsor}}|
+
+{{>settlement-supplies}}   
+
+{{^settlement.predefinedRobots.isEmpty}}
+## Robots
+
+| Name      | Type | Model |
+|--------:|:------|:-----|
+{{#settlement.predefinedRobots}}
+|{{name}}|{{type}}|{{model}}|
+{{/settlement.predefinedRobots}}
+{{/settlement.predefinedRobots.isEmpty}}
+
+{{^settlement.resupplyMissionTemplates.isEmpty}}
+## Supply Missions
+
+| Name      | 1st Arrival | Supply Plan | Frequency (sols) |
+|--------:|:------|:-----|-------:|
+{{#settlement.resupplyMissionTemplates}}
+|{{name}}|{{schedule.firstSol}}|{{manifest.name}}|{{schedule.frequency}}|
+{{/settlement.resupplyMissionTemplates}}
+{{/settlement.resupplyMissionTemplates.isEmpty}}
+    
+{{>footer}}

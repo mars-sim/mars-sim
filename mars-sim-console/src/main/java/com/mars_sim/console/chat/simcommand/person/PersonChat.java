@@ -17,7 +17,6 @@ import com.mars_sim.console.chat.simcommand.unit.EquipmentCommand;
 import com.mars_sim.console.chat.simcommand.unit.InventoryCommand;
 import com.mars_sim.console.chat.simcommand.unit.MissionCommand;
 import com.mars_sim.console.chat.simcommand.unit.UnitLocationCommand;
-import com.mars_sim.console.chat.simcommand.unit.UnitSunlightCommand;
 import com.mars_sim.console.chat.simcommand.unit.WorkerActivityCommand;
 import com.mars_sim.console.chat.simcommand.unit.WorkerAttributeCommand;
 import com.mars_sim.console.chat.simcommand.unit.WorkerSkillsCommand;
@@ -44,7 +43,6 @@ public class PersonChat extends ConnectedUnitCommand {
 																	JobProspectCommand.JOB_PROSPECT,
 																	new EquipmentCommand(PERSON_GROUP),
 																	new UnitLocationCommand(PERSON_GROUP),
-																	new UnitSunlightCommand(PERSON_GROUP),
 																	new InventoryCommand(PERSON_GROUP),
 																	new MissionCommand(PERSON_GROUP),
 																	new PersonHealthCommand(),

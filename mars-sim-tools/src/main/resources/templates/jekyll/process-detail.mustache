@@ -1,0 +1,26 @@
+---
+title: {{process.name}}
+parent: {{type.title}}
+nav_exclude: true
+---
+# Manufacturing Process - {{process.name}}
+
+{{#process.description}}
+## Description
+{{process.description}}
+{{/process.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Skill Level:|{{process.skillLevelRequired}}|
+|Tech Level:|{{process.techLevelRequired}}|
+|Process Time:|{{process.processTimeRequired}} millisols|
+|Work Level:|{{process.workTimeRequired}} millisols|
+|Power Required:|{{process.powerRequired}} kW/hr|
+
+{{>process-inout}}
+
+{{>footer}}
+

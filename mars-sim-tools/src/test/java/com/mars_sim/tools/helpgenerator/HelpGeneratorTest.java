@@ -22,11 +22,11 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 public class HelpGeneratorTest {
 
-    private HelpGenerator createGenerator() {
+    private HelpContext createGenerator() {
         var config = SimulationConfig.instance();
         config.loadConfig();
 
-        return new HelpGenerator(config, "html-help", "html");
+        return new HelpContext(config, HelpContext.HTML_STYLE);
     }
 
     private <T> Document createDoc(TypeGenerator<T> gen, T entity) throws IOException {
@@ -165,7 +165,8 @@ public class HelpGeneratorTest {
         assertEquals("'" + id + "' has a <div>", "div", node.tagName());
     }
 
-    @Test public void testFullGeneration() throws IOException {
+    @Test
+    public void testFullGeneration() throws IOException {
         var context = createGenerator();
 
         File output = Files.createTempDirectory("generator").toFile();
@@ -176,17 +177,20 @@ public class HelpGeneratorTest {
 
             // Matches number of type generators plus 1 for index
             assertEquals("Top level content", 12, created.length);
+            boolean indexFound = false;
             for(File f : created) {
                 if (f.isFile()) {
                     // Must be index
                     assertEquals("Top Index file", "index.html", f.getName());
                     assertTrue("Index has content", f.length() > 10);
+                    indexFound = true;
                 }
                 else {
                     // Directory
                     assertTrue("Type contents " + f.getName(), f.listFiles().length > 1);
                 }
             }
+            assertTrue("Found index.html file", indexFound);
         }
         finally {
             // Clean up

@@ -16,7 +16,6 @@ import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.unit_window.person.TabPanelActivity;
 import com.mars_sim.ui.swing.unit_window.person.TabPanelAttribute;
-import com.mars_sim.ui.swing.unit_window.person.TabPanelDeath;
 import com.mars_sim.ui.swing.unit_window.person.TabPanelSchedule;
 import com.mars_sim.ui.swing.unit_window.person.TabPanelSkill;
 
@@ -25,9 +24,6 @@ import com.mars_sim.ui.swing.unit_window.person.TabPanelSkill;
  */
 @SuppressWarnings("serial")
 public class RobotUnitWindow extends UnitWindow {
-
-	/** Is robot inoperable? */
-	private boolean inoperableCache = false;
 	
 	private Robot robot;
 
@@ -50,13 +46,6 @@ public class RobotUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelAttribute(robot, desktop));
 		addTabPanel(new MaintenanceTabPanel(robot, desktop));
 		addTabPanel(new MalfunctionTabPanel(robot, desktop));
-
-		// Add death tab panel if robot is inoperable.
-		if (robot.getSystemCondition().isInoperable()) {
-			inoperableCache = true;
-			addTabPanel(new TabPanelDeath(robot, desktop));
-		} else
-			inoperableCache = false;
 
 		addTabPanel(new InventoryTabPanel(robot, desktop));
 		addTabPanel(new LocationTabPanel(robot, desktop));
@@ -84,12 +73,5 @@ public class RobotUnitWindow extends UnitWindow {
 				+ ((robot.getAssociatedSettlement() != null) ? (" of " + robot.getAssociatedSettlement()) : "")
 				+ " (" + (robot.getLocationStateType().getName()) + ")";
 		super.setTitle(title);
-		
-		if (!inoperableCache) {
-			if (robot.getSystemCondition().isInoperable()) {
-				inoperableCache = true;
-				addTabPanel(new TabPanelDeath(robot, desktop));
-			}
-		}
 	}
 }

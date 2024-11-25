@@ -17,14 +17,16 @@ public class MockSettlement extends Settlement {
 	 */
 	public static final String DEFAULT_NAME = "Mock Settlement";
 	public static final String SETTLEMENT_TEMPLATE = "Alpha Base";
+	public static final Coordinates DEFAULT_COORDINATES = new Coordinates(Math.PI / 2D, 0);
+
 
 	public MockSettlement()  {
-		this(DEFAULT_NAME, false);
+		this(DEFAULT_NAME, false, DEFAULT_COORDINATES);
 	}
 
-	public MockSettlement(String name, boolean needGoods) {
+	public MockSettlement(String name, boolean needGoods, Coordinates locn) {
 		// Use Settlement constructor.
-		super(name, new Coordinates(Math.PI / 2D, 0));
+		super(name, locn);
 					
         // Set inventory total mass capacity.
 		getEquipmentInventory().addCargoCapacity(Double.MAX_VALUE);

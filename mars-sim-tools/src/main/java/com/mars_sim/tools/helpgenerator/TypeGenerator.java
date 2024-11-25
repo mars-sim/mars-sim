@@ -15,11 +15,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
+import com.github.mustachejava.Mustache;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.tools.helpgenerator.GenericsGrouper.NamedGroup;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ItemQuantity;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ResourceUse;
+import com.mars_sim.tools.helpgenerator.HelpContext.ItemQuantity;
+import com.mars_sim.tools.helpgenerator.HelpContext.ResourceUse;
 
 /**
  * This is an abstract generator for a configuration type. It provides generic methods.
@@ -28,12 +29,14 @@ public abstract class TypeGenerator<T> {
     private static Logger logger = Logger.getLogger(TypeGenerator.class.getName());
 
     // CReate an empty reosurce use
-    protected static final ResourceUse EMPTY_USE = HelpGenerator.buildEmptyResourceUse();
+    protected static final ResourceUse EMPTY_USE = HelpContext.buildEmptyResourceUse();
 
-    private HelpGenerator parent;
+    private HelpContext parent;
     private String typeName;
     private String title;
     private String description;
+
+    private Mustache detailsTemplate;
 
     // Used to group entities for grouped index
     private Function<T,String> grouper;
@@ -46,7 +49,7 @@ public abstract class TypeGenerator<T> {
     protected static List<ItemQuantity> toQuantityItems(List<ProcessItem> list) {
 		return list.stream()
 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
-					.map(v -> HelpGenerator.createItemQuantity(v.getName(), v.getType(), v.getAmount()))
+					.map(v -> HelpContext.createItemQuantity(v.getName(), v.getType(), v.getAmount()))
 					.toList();
 	}
 
@@ -56,7 +59,7 @@ public abstract class TypeGenerator<T> {
      */
     protected static List<ItemQuantity> toQuantityItems(Map<String,Integer> items, ItemType type) {
 		return items.entrySet().stream()
-					.map(v -> HelpGenerator.createItemQuantity(v.getKey(), type, v.getValue()))
+					.map(v -> HelpContext.createItemQuantity(v.getKey(), type, v.getValue()))
 					.toList();
 	}
 
@@ -67,23 +70,36 @@ public abstract class TypeGenerator<T> {
      * @param title Title in  the index
      * @param description Description of the entity being rendered.
      */
-    protected TypeGenerator(HelpGenerator parent, String typeName, String title, String description) {
+    protected TypeGenerator(HelpContext parent, String typeName, String title, String description) {
         this.typeName = typeName;
         this.parent = parent;
         this.title = title;
         this.description = description;
+        this.detailsTemplate = parent.getTemplate(typeName + "-detail");
     }
 
-    public String getTypeName() {
-        return typeName;
-    }
-
+    /**
+     * Get the title of the type. This is called from Mustache templates.
+     * @return the Type name
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Get the description of the type. This is called from Mustache templates.
+     * @return the description name
+     */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Get the name of the type. This is called from Mustache templates.
+     * @return the Type name
+     */
+    public String getTypeName() {
+        return typeName;
     }
 
     /**
@@ -95,7 +111,7 @@ public abstract class TypeGenerator<T> {
         this.grouper = grouper;
     }
     
-    protected HelpGenerator getParent() {
+    protected HelpContext getParent() {
         return parent;
     }
 
@@ -142,14 +158,6 @@ public abstract class TypeGenerator<T> {
 	}
 
     /**
-     * Get the identifable/unique name for this entity.
-     * If there was a common internface this would not be required.
-     * @param v entity
-     * @return
-     */
-    protected abstract String getEntityName(T v);
-
-    /**
 	 * Prepare the scope to support the process-inout template
 	 * @param scope Scop of properties
 	 * @param inputTitle Title of inputs
@@ -185,15 +193,46 @@ public abstract class TypeGenerator<T> {
 
     /**
      * Generate a help page for a specific entity using the context generator.
-     * @param v Entity to render
+     * @param e Entity to render
      * @param output Destinatino of content
      * @throws IOException
      */
-    public abstract void generateEntity(T v, OutputStream output) throws IOException;
+    public void generateEntity(T e, OutputStream output) throws IOException
+    {
+        // Add base properties
+        var vScope = parent.createScopeMap(description + " - " + getEntityName(e));
+        vScope.put(typeName, e);
+        vScope.put("type.title", title);
+
+        // Add any customer properties
+        addEntityProperties(e, vScope);
+
+        // Generate the file
+        parent.generateContent(detailsTemplate, vScope, output);
+    }
+
+    /**
+     * Add any entity specific properties. Should be overriden by subclasses
+     * @param entity The entity to display
+     * @param scope Scope of the properties to use for the template
+     * @return
+     */
+    protected void addEntityProperties(T entity, Map<String,Object> scope) {
+        // Default implement needs no extra properties
+    }
 
     /**
      * Get a list of the entities to be rendered
      * @return
      */
     protected abstract List<T> getEntities();
+    
+    /**
+     * Get the identifable/unique name for this entity.
+     * If there was a common internface this would not be required.
+     * @param v entity
+     * @return
+     */
+    protected abstract String getEntityName(T v);
+
 }

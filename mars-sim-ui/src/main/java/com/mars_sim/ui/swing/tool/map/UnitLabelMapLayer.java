@@ -13,10 +13,8 @@ import java.awt.RenderingHints;
 import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
  * The UnitMapLayer is a graphics layer to display unit labels.
@@ -28,24 +26,24 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 		super(panel);
 	}
 
+
 	/**
 	 * Displays a unit on the map.
 	 * 
-	 * @param unit      the unit to display.
-	 * @param mapCenter the location center of the map.
+ 	 * @param unit      the unit to display.
+	 * @param info		details how to render unit
+	 * @param location  Lociation on the map of this unit
 	 * @param baseMap   the type of map.
-	 * @param g2d         the graphics context.
+	 * @param g         the graphics context.
 	 */
-	protected MapHotspot displayUnit(Unit unit, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
+	protected MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
+							MapDisplay baseMap, Graphics2D g2d) {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
-
-		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
-		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
 		IntPoint labelLocation = null;
 		

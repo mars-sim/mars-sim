@@ -11,6 +11,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
+import com.mars_sim.core.unit.AbstractMobileUnit;
 
 /**
  * This class represents the historical actions involving missions.
@@ -31,9 +32,11 @@ public class MissionHistoricalEvent extends HistoricalEvent {
 	 * @param entity	 the building/vehicle where it occurs
 	 */
 	public MissionHistoricalEvent(EventType eventType, Mission mission, String cause, String whileDoing, String member,
-			Unit entity) {
+			AbstractMobileUnit entity) {
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, entity);
+		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, entity,
+					mission.getAssociatedSettlement().getName(),
+					entity.getCoordinates());
 	}
 
 	

@@ -7,10 +7,13 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.location.LocationStateType;
+import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SurfacePOI;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -24,6 +27,10 @@ public abstract class AbstractMobileUnit extends Unit
     private Settlement owner;
     private LocalPosition localPosn = LocalPosition.DEFAULT_POSITION;
     private int currentBuildingInt;
+	private double baseMass = 0D;
+	private LocationTag tag;
+	private LocationStateType locnState;
+	private Coordinates location;
 
     /**
 	 * Constructor.
@@ -32,18 +39,58 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @param owner the unit's location
 	 */
 	protected AbstractMobileUnit(String name, Settlement owner) {
-		super(name, owner.getCoordinates()); 
+		super(name); 
         this.owner = owner;
-
-		setContainer(owner);
+		this.location = owner.getCoordinates();
+		this.tag = new LocationTag(this);
+		setContainer(owner, LocationStateType.INSIDE_SETTLEMENT);
 	}
 
 	/**
 	 * Set the container of this mobile unit
 	 * @param destination New destination of container
+	 * @param newState 
 	 */
-	protected void setContainer(Unit destination) {
+	protected void setContainer(Unit destination, LocationStateType newState) {
+		this.locnState = newState;
 		setContainerID(destination.getIdentifier());
+	}
+
+	/**
+	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
+	 * and being just right outside in a settlement/building/vehicle vicinity
+	 * Note: being inside a vehicle (that's on a mission outside) doesn't count being outside
+	 *
+	 * @return true if the unit is outside
+	 */
+	public boolean isOutside() {
+		if (LocationStateType.MARS_SURFACE == locnState
+				|| LocationStateType.SETTLEMENT_VICINITY == locnState
+				|| LocationStateType.VEHICLE_VICINITY == locnState)
+			return true;
+
+		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+			return ((Worker) getContainerUnit()).isOutside();
+
+		return false;
+	}
+
+	
+	/**
+	 * Is this unit inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
+	 *
+	 * @return true if the unit is inside a breathable environment
+	 */
+	public boolean isInside() {
+		if (LocationStateType.INSIDE_SETTLEMENT == locnState
+				|| LocationStateType.INSIDE_VEHICLE == locnState)
+			return true;
+
+		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+			return ((AbstractMobileUnit)getContainerUnit()).isInside();
+
+		return false;
 	}
 
 	/**
@@ -92,7 +139,6 @@ public abstract class AbstractMobileUnit extends Unit
 		}
 	}
 
-
 	/**
 	 * Gets the unit's location.
 	 *
@@ -101,14 +147,26 @@ public abstract class AbstractMobileUnit extends Unit
 	@Override
 	public Coordinates getCoordinates() {
 		Unit cu = getContainerUnit();
-		if (cu.getUnitType() == UnitType.MARS) {	
-			// Since Mars surface has no coordinates, 
-			// Get from its previously setting location
-			return super.getCoordinates();
+		if (cu instanceof SurfacePOI mu) {
+			// Inside a container that is on the surface
+			return mu.getCoordinates();
 		}
-		
-		// Unless it's on Mars surface, get its container unit's coordinates
-		return cu.getCoordinates();
+
+		// Since Mars surface has no coordinates, 
+		// Get from its previously setting location
+		return location;
+	}
+
+	/**
+	 * Sets unit's location coordinates.
+	 *
+	 * @param newLocation the new location of the unit
+	 */
+	public void setCoordinates(Coordinates newLocation) {
+		if (!location.equals(newLocation)) {
+			location = newLocation;
+			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
+		}
 	}
 
     /**
@@ -189,7 +247,15 @@ public abstract class AbstractMobileUnit extends Unit
 		return (getSettlement() != null);
 	}
 
-    
+	/**
+	 * Is this unit in the vicinity of a settlement ?
+	 *
+	 * @return true if the unit is inside a settlement
+	 */
+	public boolean isInSettlementVicinity() {
+		return tag.isInSettlementVicinity();
+	}
+
 	/**
 	 * Gets vehicle person is in, null if person is not in vehicle.
 	 *
@@ -211,28 +277,41 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
+		if (LocationStateType.INSIDE_VEHICLE == locnState)
 			return true;
 
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInVehicle();
+		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+			return ((Worker)getContainerUnit()).isInVehicle();
 
 		return false;
 	}
 
+	/**
+	 * Get the location tag which refines the vicinity of the Unit.
+	 * @return
+	 */
+	public LocationTag getLocationTag() {
+		return tag;
+	}
 	
+	/**
+	 * Get the current location state for this mobile unit. It will be a refinement of the container.
+	 */
+	public LocationStateType getLocationStateType() {
+		return locnState;
+	}
+
+	public void setLocationStateType(LocationStateType locationStateType) {
+		locnState = locationStateType;
+	}
+
     /**
-	 * Updates the location state type of a person.
+	 * Return the default Location state for a new container
 	 *
 	 * @param newContainer
 	 */
-	protected void updateLocationState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-
-		currentStateType = switch (newContainer.getUnitType()) {
+	protected static LocationStateType defaultLocationState(Unit newContainer) {
+		return switch (newContainer.getUnitType()) {
             case SETTLEMENT -> LocationStateType.INSIDE_SETTLEMENT;
             case BUILDING -> LocationStateType.INSIDE_SETTLEMENT;
             case VEHICLE -> LocationStateType.INSIDE_VEHICLE;
@@ -241,5 +320,34 @@ public abstract class AbstractMobileUnit extends Unit
             case MARS -> LocationStateType.MARS_SURFACE;
             default -> null;
         };
+	}
+
+	/**
+	 * Gets the unit's mass including inventory mass.
+	 * This method will be overridden by those inheriting this Unit.
+	 * Bt default it returns the base mass.
+	 *
+	 * @return mass of unit
+	 */
+	public double getMass() {
+		return getBaseMass();
+	}
+
+	/**
+	 * Sets the unit's base mass.
+	 *
+	 * @param base mass (kg)
+	 */
+	protected void setBaseMass(double baseMass) {
+		this.baseMass = baseMass;
+	}
+
+	/**
+	 * Gets the base mass of the unit.
+	 *
+	 * @return base mass (kg)
+	 */
+	public double getBaseMass() {
+		return baseMass;
 	}
 }
