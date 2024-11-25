@@ -1,6 +1,5 @@
 /*
  * Mars Simulation Project
-
  * HelpGenerator.java
  * @date 2024-02-17
  * @author Barry Evans
@@ -56,19 +55,18 @@ public class HelpContext {
 	private static final String PROPS_FILE = "template.properties";
 
 	// All generators are declared here
-	private static final String[] GENERATORS = {BuildingGenerator.TYPE_NAME,
+	static final String[] GENERATORS = {BuildingGenerator.TYPE_NAME,
 												ComplaintGenerator.TYPE_NAME,
 												CrewGenerator.TYPE_NAME,
 												FoodGenerator.TYPE_NAME,
 												PartGenerator.TYPE_NAME,
 												ProcessGenerator.TYPE_NAME,
 												ResourceGenerator.TYPE_NAME,
+												ManifestGenerator.TYPE_NAME,
 												ScenarioGenerator.TYPE_NAME,
 												SettlementGenerator.TYPE_NAME,
 												TreatmentGenerator.TYPE_NAME,
 												VehicleGenerator.TYPE_NAME};
-												
-	
 
 	/**
 	 * Function that converts a string into a valid file name for an HTML link.
@@ -348,6 +346,7 @@ public class HelpContext {
 			case PartGenerator.TYPE_NAME -> new PartGenerator(this);
 			case ProcessGenerator.TYPE_NAME -> new ProcessGenerator(this);
 			case ResourceGenerator.TYPE_NAME -> new ResourceGenerator(this);
+			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
 			case ScenarioGenerator.TYPE_NAME -> new ScenarioGenerator(this);
 			case SettlementGenerator.TYPE_NAME -> new SettlementGenerator(this);
 			case TreatmentGenerator.TYPE_NAME -> new TreatmentGenerator(this);

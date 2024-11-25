@@ -3,6 +3,7 @@ package com.mars_sim.core.structure;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
+import com.mars_sim.core.interplanetary.transport.resupply.ResupplyManifest;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -99,6 +100,13 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         loadUserDefined();
     }
 
+    /**
+     * Get the manifest that are used in the Settlement templates
+     * @return
+     */
+    public List<ResupplyManifest> getSupplyManifests() {
+        return resupplyConfig.getAll();
+    }
 
     /**
      * Loads the settlement templates from the XML document.
@@ -370,7 +378,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             for (Element resupplyMissionElement : resupplyNodes) {
                 String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
                 String manifestName = resupplyMissionElement.getAttributeValue(MANIFEST_NAME);
-                ResupplyConfig.SupplyManifest manifest = resupplyConfig.getSupplyManifest(manifestName);
+                ResupplyManifest manifest = resupplyConfig.getSupplyManifest(manifestName);
 
                 var schedule = ConfigHelper.parseEventCalendar(resupplyMissionElement.getChild(SCHEDULE));
                 ResupplySchedule resupplyMissionTemplate = new ResupplySchedule(resupplyName, schedule, manifest);

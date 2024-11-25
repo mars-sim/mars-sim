@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.tools.helpgenerator.HelpContext.ItemQuantity;
@@ -50,8 +51,15 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
 	 */
     @Override
     protected void addEntityProperties(SettlementTemplate st, Map<String,Object> scope) {
+        addSupplies(st.getSupplies(), scope);
+    }
 
-        var v = st.getSupplies();
+    /**
+     * Load a scope object with properties that are used with the settlement-supplies template.
+     * @param v Supplies to render
+     * @param scope The scope to hold properties
+     */
+    static void addSupplies(SettlementSupplies v, Map<String,Object> scope) {
         
         List<BuildingTemplate> buildings = new ArrayList<>(v.getBuildings());
         Collections.sort(buildings, (o1, o2) -> o1.getBuildingName().compareTo(o2.getBuildingName()));

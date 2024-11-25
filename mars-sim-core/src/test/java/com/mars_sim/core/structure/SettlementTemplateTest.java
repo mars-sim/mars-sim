@@ -29,7 +29,7 @@ public class SettlementTemplateTest extends AbstractMarsSimUnitTest {
 
         var resupply = resupplies.stream().filter(r -> r.getName().equals(RESUPPLY_MISSION))
                                         .findFirst().get();
-        assertEquals("Resupply Manifest", MANIFEST, resupply.getManifest().name());
+        assertEquals("Resupply Manifest", MANIFEST, resupply.getManifest().getName());
         var schedule = resupply.getSchedule();
         assertEquals("Resupply time of day", 400, schedule.getTimeOfDay());
         assertEquals("Resupply time to first sol", 1, schedule.getFirstSol());

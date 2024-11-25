@@ -52,9 +52,9 @@
       {{#settlement.resupplyMissionTemplates}}
         <tr>
           <td>{{name}}</td>
-          <td>{{firstArrival}}</td>
-          <td>{{manifest.name}}</td>
-          <td>{{frequency}}</td>
+          <td>{{schedule.firstArrival}}</td>
+          <td><a href="{{manifestfolder}}{{#filename}}{{manifest.name}}{{/filename}}">{{manifest.name}}</a></td>
+          <td>{{schedule.frequency}}</td>
         </tr>
       {{/settlement.resupplyMissionTemplates}}
       </table>

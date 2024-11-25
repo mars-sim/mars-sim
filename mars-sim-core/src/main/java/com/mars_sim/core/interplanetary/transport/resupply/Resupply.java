@@ -25,7 +25,6 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
-import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.resource.AmountResource;
@@ -111,13 +110,13 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		this.cycle = cycle;
 
 		// Load up the respply according to the manifest
-		SupplyManifest manifest = template.getManifest();
-		var supplies = manifest.supplies();
+		ResupplyManifest manifest = template.getManifest();
+		var supplies = manifest.getSupplies();
 		setBuildings(supplies.getBuildings());
 		setVehicles(supplies.getVehicles());
 		setEquipment(supplies.getEquipment());
 		setBins(supplies.getBins());
-		setNewImmigrantNum(manifest.people());
+		setNewImmigrantNum(manifest.getPeople());
 		setResources(supplies.getResources());
 		setParts(supplies.getParts());
 	}

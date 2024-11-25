@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.interplanetary.transport.resupply;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.resource.PartPackageConfig;
-import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 
@@ -35,7 +33,7 @@ public class ResupplyConfig {
     private static final String TYPE = "type";
 
     // Data members
-    private List<SupplyManifest> resupplyTemplates;
+    private List<ResupplyManifest> resupplyTemplates;
 
     /**
      * Constructor.
@@ -84,7 +82,7 @@ public class ResupplyConfig {
 												partPackageConfig);
                 
 				// Build the 
-                SupplyManifest template = new SupplyManifest(name, people, supplies);
+                ResupplyManifest template = new ResupplyManifest(name, people, supplies);
 	            resupplyTemplates.add(template);
 	        }
     	}
@@ -96,9 +94,9 @@ public class ResupplyConfig {
      * @param resupplyName the resupply mission name.
      * @return the resupply template.
      */
-    public SupplyManifest getSupplyManifest(String resupplyName) {
-        for(SupplyManifest template : resupplyTemplates) {
-            if (template.name.equals(resupplyName)) {
+    public ResupplyManifest getSupplyManifest(String resupplyName) {
+        for(ResupplyManifest template : resupplyTemplates) {
+            if (template.getName().equals(resupplyName)) {
                 return template;
             }
         }
@@ -108,16 +106,10 @@ public class ResupplyConfig {
     }
 
     /**
-     * Gett all decalred supply manifests
+     * Get all declared supply manifests
      * @return
      */
-    public List<SupplyManifest> getAll() {
+    public List<ResupplyManifest> getAll() {
         return resupplyTemplates;
     }
-
-    /**
-     * Definition of a Supply Manifest used in a resupply mission.
-     */
-    public static record SupplyManifest(String name, int people, SettlementSupplies supplies)
-                        implements Serializable {}
 }
