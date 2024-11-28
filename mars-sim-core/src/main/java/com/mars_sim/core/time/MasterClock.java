@@ -930,14 +930,6 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Stops the clock.
-	 */
-	public void stop() {
-		clockThreadTask.stopRunning();
-		logger.info("Simulation put on pause.");
-	}
-
-	/**
 	 * Timestamps the last pulse, used to calculate elapsed pulse time.
 	 */
 	private void timestampPulseStart() {
@@ -952,9 +944,46 @@ public class MasterClock implements Serializable {
 
 		startListenerExecutor();
 
-		if (clockExecutor == null) {
+		startClockExecutor();
+
+		timestampPulseStart();
+		
+		logger.info(3_000, "Simulation (re)started.");
+	}
+	
+	/**
+	 * Stops the clock.
+	 */
+	public void stop() {
+		clockThreadTask.stopRunning();
+		
+		logger.info(3_000, "Simulation paused.");
+	}
+
+	/**
+	 * Starts the listener thread pool executor.
+	 */
+	private void startListenerExecutor() {
+		if (listenerExecutor == null 
+				|| listenerExecutor.isShutdown()
+				|| listenerExecutor.isTerminated()) {
+			int num = Math.min(1, SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores());
+			if (num <= 0) num = 1;
+			logger.config(3_000, "Setting up " + num + " thread(s) for clock listener.");
+			listenerExecutor = Executors.newFixedThreadPool(num,
+					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
+		}
+	}
+	
+	/**
+	 * Starts the clock thread pool executor.
+	 */
+	private void startClockExecutor() {
+		if (clockExecutor == null
+				|| clockExecutor.isShutdown()
+				|| clockExecutor.isTerminated()) {
 			int num = 1; // Should only have 1 thread updating the time
-			logger.config("Setting up " + num + " thread for clock executor.");
+			logger.config(3_000, "Setting up " + num + " thread for clock executor.");
 			clockExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 			
@@ -962,10 +991,6 @@ public class MasterClock implements Serializable {
 			initReferencePulse();
 		}
 		clockExecutor.execute(clockThreadTask);
-
-		timestampPulseStart();
-		
-		logger.info("Starting or restarting simulation...");
 	}
 	
 	/**
@@ -1066,19 +1091,6 @@ public class MasterClock implements Serializable {
 	private void firePauseChange(boolean isPaused, boolean showPane) {
 		if (clockListenerTasks != null) {
 			clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
-		}
-	}
-
-	/**
-	 * Starts the listener thread pool executor.
-	 */
-	private void startListenerExecutor() {
-		if (listenerExecutor == null) {
-			int num = Math.min(1, SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores());
-			if (num <= 0) num = 1;
-			logger.config("Setting up " + num + " thread(s) for clock listener.");
-			listenerExecutor = Executors.newFixedThreadPool(num,
-					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
 		}
 	}
 
