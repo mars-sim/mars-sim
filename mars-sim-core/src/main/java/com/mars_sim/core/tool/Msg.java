@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Msg.java
- * @date 2022-08-31
+ * @date 2024-11-28
  * @author stpa
  */
 package com.mars_sim.core.tool;
@@ -160,11 +160,11 @@ public class Msg {
 		// Note : StringBuffer is thread safe and synchronized whereas StringBuilder is not.
 		// StringBuilder is not synchronized and is faster than StringBuffer.
 		StringBuffer msg = new StringBuffer();
-		msg.append("!!") //$NON-NLS-1$
+		msg.append("!! ") //$NON-NLS-1$
 		.append(key)
-		.append("??") //$NON-NLS-1$
+		.append(" ??") //$NON-NLS-1$
 		.toString();
-		logger.log(Level.WARNING, msg.toString());
+		logger.log(Level.SEVERE, msg.toString());
 		return msg.toString();
 	}
 

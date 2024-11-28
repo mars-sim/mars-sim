@@ -305,14 +305,30 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the number of currently occupied activity spots.
+	 *
+	 * @return
+	 */
+	public int getNumOccupiedActivitySpots() {
+		return spots.size() - getNumEmptyActivitySpots();
+	}
+	
+	/**
 	 * Gets the number of currently empty activity spots.
 	 *
 	 * @return
 	 */
 	public int getNumEmptyActivitySpots() {
-		return (int) spots.stream()
-					.filter(ActivitySpot::isEmpty)
-					.count();
+		int num = 0;
+		for (ActivitySpot s: spots) {
+			if (s.isEmpty()) {
+				num++;
+			}
+		}
+		return num;
+//		return (int) spots.stream()
+//					.filter(ActivitySpot::isEmpty)
+//					.count();
 	}
 
 	/**
@@ -323,16 +339,6 @@ public abstract class Function implements Serializable, Temporal {
 	public boolean hasEmptyActivitySpot() {
 		return spots.stream().anyMatch(ActivitySpot::isEmpty);
 	}
-
-	/**
-	 * Gets the number of currently occupied activity spots.
-	 *
-	 * @return
-	 */
-	public int getNumOccupiedActivitySpots() {
-		return spots.size() - getNumEmptyActivitySpots();
-	}
-
 
 	/**
 	 * Retrieves a resource from settlement.

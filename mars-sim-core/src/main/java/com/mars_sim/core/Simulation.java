@@ -47,7 +47,6 @@ import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.logging.SimuLoggingFormatter;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
-import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.moon.LunarColonyManager;
 import com.mars_sim.core.moon.LunarWorld;

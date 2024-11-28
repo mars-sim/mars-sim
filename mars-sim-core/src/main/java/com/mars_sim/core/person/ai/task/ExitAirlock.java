@@ -64,8 +64,9 @@ public class ExitAirlock extends Task {
 	private static final String NOT_NOMINALLY_FIT = "Not nominally fit";
 	private static final String NOT_EVA_FIT = "Not EVA fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
-	private static final String CHAMBER_FULL = "All chambers occupied";
-	
+	private static final String CHAMBER_FULL = "All chambers occupied in ";
+	private static final String COULDNT_WALK = "Couldn't walk. ";
+
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
 	
@@ -507,7 +508,7 @@ public class ExitAirlock extends Task {
 		}
 
 		if (isOccupantAQuarterPrebreathed()) {
-			walkAway(person, "Can't egress. " + PREBREATH_ONE_QUARTER_DONE + 
+			walkAway(person, "Couldn't egress. " + PREBREATH_ONE_QUARTER_DONE + 
 					" Current task: " + person.getTaskDescription() + ".");
 			return 0;
 		}
@@ -530,13 +531,13 @@ public class ExitAirlock extends Task {
 		
 		if (inSettlement) {
 			if (!airlock.addAwaitingInnerDoor(id)) {
-				walkAway(person, "Can't egress. Cannot get a spot at the inner door of " 
+				walkAway(person, "Couldn't egress. Couldn't get a spot at the inner door of " 
 						+ airlock.getEntity().toString() + ".");
 				return 0;
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				walkAway(person, "Can't egress. " + CHAMBER_FULL 
+				walkAway(person, "Couldn't egress. " + CHAMBER_FULL 
 						+ ". Current task: " + person.getTaskDescription() + ".");
 				return 0;
 			}
@@ -1276,12 +1277,14 @@ public class ExitAirlock extends Task {
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 	
 		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-			logger.info(person, 4_000, CHAMBER_FULL + " in " + airlock.getEntityName() +  ".");
+			logger.info(person, 4_000, 
+					COULDNT_WALK + CHAMBER_FULL + airlock.getEntityName() +  ".");
 			return false;
 		}
 		
 		if (EVAOperation.isHungryAtMealTime(person, 20)) {
-			logger.info(person, "Too close to starting meal time and is doubly hungry.");
+			logger.info(person, 4_000,
+					"Too close to starting meal time and is doubly hungry.");
 			return false;
 		}
 		
@@ -1329,7 +1332,8 @@ public class ExitAirlock extends Task {
 
 		// Check if person is outside.
 		if (person.isOutside()) {
-			logger.severe(person, 4_000, "already outside.");
+			logger.severe(person, 4_000,
+					"Could not enter " + airlock.getEntityName() + ". Already outside and not inside.");
 			return false;
 		}
 

@@ -397,6 +397,13 @@ public class CommanderWindow extends ToolWindow {
 		}
 	}
 
+	/**
+	 * Creates the general panel.
+	 * 
+	 * @param c
+	 * @param generalPanel
+	 * @param name
+	 */
 	private void createGeneralPanel(Colony c, JPanel generalPanel, String name) {
 		
 		AttributePanel labelGrid = new AttributePanel(3, 2);
@@ -521,6 +528,10 @@ public class CommanderWindow extends ToolWindow {
 	
 	/**
 	 * Creates the R&D panel.
+	 * 
+	 * @param c
+	 * @param rNDPanel
+	 * @param name
 	 */
 	private void createRNDPanel(Colony c, JPanel rNDPanel, String name) {
 		
@@ -665,7 +676,7 @@ public class CommanderWindow extends ToolWindow {
 			
 			JPanel colonyMainPanel = new JPanel(new BorderLayout(5, 5));
 			
-			colonyMainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+			colonyMainPanel.setBorder(new EmptyBorder(15, 5, 5, 5));
 			
 			String name = c.getName();
 

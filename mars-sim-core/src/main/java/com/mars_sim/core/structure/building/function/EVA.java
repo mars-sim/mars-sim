@@ -106,11 +106,11 @@ public class EVA extends Function {
 	}
 	
 	public int getNumEmptied() {
-		return airlockCapacity - airlock.getNumInChamber();
+		return airlockCapacity - getNumOccupiedActivitySpots();
 	}
 	
 	public int getNumInChamber() {
-		return airlock.getNumInChamber();
+		return getNumOccupiedActivitySpots();
 	}
 	
 	public String getOperatorName() {

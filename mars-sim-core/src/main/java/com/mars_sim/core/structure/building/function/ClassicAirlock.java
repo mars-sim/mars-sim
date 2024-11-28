@@ -485,15 +485,6 @@ public class ClassicAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the total number of people occupying the chamber in zone 2.
-	 *
-	 * @return a list of occupants inside zone 2
-	 */
-	private int getInsideChamberNum() {
-		return eva.getNumOccupiedActivitySpots();
-	}
-
-	/**
 	 * Gets the total number of people occupying zone 1, 2, and 3 only
 	 * Note: Excludes zone 0 and 4.
 	 * 
@@ -631,13 +622,13 @@ public class ClassicAirlock extends Airlock {
 	}
 
     /**
-     * Gets the exact number of occupants who are within the chamber.
+     * Gets the exact number of occupants who are within the chamber in zone 2.
      * 
      * @return
      */
 	@Override
     public int getNumInChamber() {
-    	return getInsideChamberNum();
+		return eva.getNumOccupiedActivitySpots();
     }
     
     @Override
@@ -657,7 +648,7 @@ public class ClassicAirlock extends Airlock {
 	 */
 	@Override
 	public boolean areAll4ChambersFull() {
-		return getInsideChamberNum() >= MAX_SLOTS;
+		return getNumInChamber() >= MAX_SLOTS;
 	}
 
 	/**
