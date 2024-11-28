@@ -307,7 +307,7 @@ public class SimLogger {
 	}
 
 	/**
-	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * Helper method just to log a warning message. Message timeout is predefined.
 	 * 
 	 * @param actor
 	 * @param string
@@ -316,6 +316,12 @@ public class SimLogger {
 		baseLog(actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
 
+	/**
+	 * Helper method to log a warning message.
+	 * 
+	 * @param timeBetweenLogs
+	 * @param message
+	 */
 	public void warning(long timeBetweenLogs, String message) {
 		baseLog(null, Level.WARNING, timeBetweenLogs, sourceName + " : " + message, null);
 	}
@@ -338,6 +344,16 @@ public class SimLogger {
 		rootLog(Level.SEVERE, message, e);
 	}
 
+	/**
+	 * Helper method to log a severe message.
+	 * 
+	 * @param timeBetweenLogs
+	 * @param message
+	 */
+	public void severe(long timeBetweenLogs, String message) {
+		baseLog(null, Level.SEVERE, timeBetweenLogs, sourceName + " : " + message, null);
+	}
+	
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * 
@@ -401,6 +417,17 @@ public class SimLogger {
 		baseLog(actor, Level.CONFIG, 0, message, null);
 	}
 
+	/**
+	 * Helper method to log a config message.
+	 * 
+	 * @param timeBetweenLogs
+	 * @param message
+	 */
+	public void config(long timeBetweenLogs, String message) {
+		baseLog(null, Level.CONFIG, timeBetweenLogs, sourceName + " : " + message, null);
+	}
+	
+	
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}

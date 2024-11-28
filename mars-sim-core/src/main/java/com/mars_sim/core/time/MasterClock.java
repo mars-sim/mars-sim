@@ -428,11 +428,11 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Resets the clock listener thread.
+	 * Resets the listener executor thread.
 	 */
-	private void resetClockListeners() {
+	private void resetListenerExecutor() {
 		// If the clockListenerExecutor is not working, need to restart it
-		logger.warning("The Clock Thread has died. Restarting...");
+		logger.severe(10_000, "The Clock Thread has died. Restarting...");
 
 		// Re-instantiate clockListenerExecutor
 		if (listenerExecutor != null) {
@@ -441,7 +441,7 @@ public class MasterClock implements Serializable {
 		}
 
 		// Restart executor, listener tasks are still in place
-		startClockListenerExecutor();
+		startListenerExecutor();
 	}
 
 
@@ -485,6 +485,15 @@ public class MasterClock implements Serializable {
 		boolean acceptablePulse = false;
 
 		if (!isPaused) {
+			// Ensure listenerExecutor is working
+			if (listenerExecutor.isTerminated() 
+					|| listenerExecutor.isShutdown()) {
+				// NOTE: check if resuming from power saving can cause this
+				logger.config("ListenerExecutor has died. Restarting listener executor thread.");
+				
+				resetListenerExecutor();
+			}
+			
 			// Find the new up time
 			long tnow = System.currentTimeMillis();
 
@@ -492,20 +501,22 @@ public class MasterClock implements Serializable {
 			// Note: this should not include time for rendering UI elements
 			long realElapsedMillisec = tnow - tLast;
 
-			// Make sure there is not a big jump; suggest power save so skip it
+			// Note: Catch the large realElapsedMillisec below. Probably due to power save
 			if (realElapsedMillisec > MAX_ELAPSED) {
+				// Reset the elapsed clock to ignore this pulse
+				logger.config(10_000, "Elapsed real time is " + realElapsedMillisec 
+						+ " ms (longer than the max time of " + MAX_ELAPSED + " ms).");	
+				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
 				// Reset nextPulseTime
 				nextPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec back to its default time ratio
 				realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL 
 						/ desiredTR);
-				// Reset the elapsed clock to ignore this pulse
-				logger.warning(10_000, "Elapsed real time is " + realElapsedMillisec 
-						+ " ms, longer than the max time " + MAX_ELAPSED + " ms.");				
 			}
-			
+			// Note: Catch the zero realElapsedMillisec below. Probably due to simulation pause
 			else if (realElapsedMillisec == 0.0) {
+				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
 				// Reset nextPulseTime
 				nextPulseTime = optMilliSolPerPulse;
@@ -513,7 +524,7 @@ public class MasterClock implements Serializable {
 				if (nextPulseTime > 0)
 					realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.warning(10_000, "Zero elapsed real time. Resetting it back to " + realElapsedMillisec + " ms.");
+				logger.config(10_000, "Elapsed real time is zero. Resetting it back to " + realElapsedMillisec + " ms.");
 			}
 			
 			else {
@@ -561,17 +572,16 @@ public class MasterClock implements Serializable {
 					// Run the clock listener tasks that are in other package
 					fireClockPulse(nextPulseTime);
 				}
-				else {
-					// NOTE: when resuming from power saving, timePulse becomes zero
-					logger.config("The clockListenerExecutor has died. Restarting...");
-					
-					resetClockListeners();
-				}
+			}
+			else if (!acceptablePulse) {
+				logger.severe(10_000, "Pulse width deviated too much: " + nextPulseDeviation
+						+ "  acceptablePulse is false.");
 			}
 			else {
-				// NOTE: when resuming from power saving, timePulse becomes zero
-				logger.config("Pulse width deviated too much: " + nextPulseDeviation
-						+ "  acceptablePulse is false.");
+				// NOTE: check if resuming from power saving can cause this
+				logger.severe(10_000, "ClockThreadTask is NOT running. Restarting listener executor thread.");
+				
+				resetListenerExecutor();
 			}
 		}
 		
@@ -915,7 +925,7 @@ public class MasterClock implements Serializable {
 		} catch (InterruptedException ie) {
 			// Program closing down
 			Thread.currentThread().interrupt();
-			logger.severe( "InterruptedException. Problem with clock listener tasks: ", ie);
+			logger.severe("InterruptedException. Problem with clock listener tasks: ", ie);
 		}
 	}
 
@@ -924,6 +934,7 @@ public class MasterClock implements Serializable {
 	 */
 	public void stop() {
 		clockThreadTask.stopRunning();
+		logger.info("Simulation put on pause.");
 	}
 
 	/**
@@ -939,7 +950,7 @@ public class MasterClock implements Serializable {
 	public void start() {
 		clockThreadTask.startRunning();
 
-		startClockListenerExecutor();
+		startListenerExecutor();
 
 		if (clockExecutor == null) {
 			int num = 1; // Should only have 1 thread updating the time
@@ -953,6 +964,8 @@ public class MasterClock implements Serializable {
 		clockExecutor.execute(clockThreadTask);
 
 		timestampPulseStart();
+		
+		logger.info("Starting or restarting simulation...");
 	}
 	
 	/**
@@ -1057,9 +1070,9 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Starts clock listener thread pool executor.
+	 * Starts the listener thread pool executor.
 	 */
-	private void startClockListenerExecutor() {
+	private void startListenerExecutor() {
 		if (listenerExecutor == null) {
 			int num = Math.min(1, SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores());
 			if (num <= 0) num = 1;
@@ -1237,17 +1250,18 @@ public class MasterClock implements Serializable {
 		// if sleepTime is negative continuously, will consider calling Thread.sleep() 
 		// to pause the execution of this thread and allow other threads to complete.
 
+		// NOTE: When resuming from power save, executionTime is often very high
 		// Do NOT delete the followings. Very useful for debugging.
 		if (executionTime > 1000) {
 			String msg = String.format(
 				// "sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
-				"execution time = %d ms", 
+				"Abnormal execution time detected : %d ms.", 
 //				+ "millisol/sec=%.2f, pulse/sec=%.2f, mspp=%.2f, ms/pulse=%.2f, ",
 				executionTime
 //				sleepTime, desiredTR, actualTR, 
 //				desiredMsolPerSec, desiredPulsesPerSec, mspp, millisecPerPulse 
 				);
-	    	logger.config(msg);
+	    	logger.severe(msg);
 		}
 	    
 	    if (sleepTime < 0)
