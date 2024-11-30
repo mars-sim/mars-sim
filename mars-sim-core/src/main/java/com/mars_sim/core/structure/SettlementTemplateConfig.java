@@ -420,20 +420,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         }
 
         // Load resources
-        Map<AmountResource, Double> newResources = new HashMap<>();
         List<Element> resourceNodes = supplyElement.getChildren(RESOURCE);
-        for (Element resourceElement : resourceNodes) {
-            String resourceType = resourceElement.getAttributeValue(TYPE);
-            AmountResource resource = ResourceUtil.findAmountResource(resourceType);
-            if (resource == null)
-                logger.severe(resourceType + " shows up in "
-                        + context
-                        + " but doesn't exist in resources.xml.");
-            else {
-                double resourceAmount = ConfigHelper.getAttributeDouble(resourceElement, AMOUNT);
-                newResources.put(resource, resourceAmount);
-            }
-        }
+        Map<AmountResource, Double> newResources = ConfigHelper.parseResourceList(context, resourceNodes);
 
         // Load vehicles
         Map<String, Integer> newVehicles = new HashMap<>();

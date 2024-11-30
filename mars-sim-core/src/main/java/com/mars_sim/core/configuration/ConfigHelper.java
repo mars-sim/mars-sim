@@ -7,10 +7,13 @@
 package com.mars_sim.core.configuration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jdom2.Element;
 
@@ -24,7 +27,9 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
+import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.EventSchedule;
 
 /**
@@ -48,6 +53,8 @@ public class ConfigHelper {
 	private static final String MAX = "max";
 	private static final String MIN = "min";
 
+    private static final String RESOURCE_TYPE = "type";
+    private static final String RESOURCE_AMOUNT = "amount";
 
 	public static final String CALENDAR_START_TIME = "eventTime";
     public static final String CALENDAR_FREQUENCY = "frequency";
@@ -370,5 +377,44 @@ public class ConfigHelper {
 		double max = getOptionalAttributeDouble(element, MAX, min * defaultSpan);
 
 		return new Range(min, max);
+	}
+	
+	/**
+	 * Parse a collection of resources that are in a name and amount pair.
+	 * @param context Context of the parsing
+	 * @param resourceNodes Dom elements
+	 * @return
+	 */
+	public static Map<AmountResource, Double> parseResourceList(String context,
+                                                                List<Element> resourceNodes) {  
+        Map<AmountResource, Double> newResources = new HashMap<>();
+        for (Element resourceElement : resourceNodes) {
+            String resourceType = resourceElement.getAttributeValue(RESOURCE_TYPE);
+            AmountResource resource = ResourceUtil.findAmountResource(resourceType);
+            if (resource == null)
+                throw new IllegalArgumentException(resourceType + " shows up in "
+                        + context
+                        + " but doesn't exist in resources.xml.");
+            
+            double resourceAmount = getAttributeDouble(resourceElement, RESOURCE_AMOUNT);
+            newResources.put(resource, resourceAmount);
+        }
+        return newResources;
+    }
+
+	/**
+	 * Parse a collection of resources that are in a name and amount pair. Returns is keyed on 
+	 * resource id.
+	 * @param context Context of the parsing
+	 * @param resourceNodes Dom elements
+	 * @return
+	 */
+	public static Map<Integer, Double> parseResourceListById(String context,
+                                                                List<Element> resourceNodes) {  
+		var map = parseResourceList(context, resourceNodes);
+
+		// Convert AmountResource key to identifer
+		return map.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().getID(), Entry::getValue));
 	}
 }

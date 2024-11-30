@@ -7,9 +7,6 @@
  */
 package com.mars_sim.core.vehicle;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 
@@ -26,20 +23,7 @@ public enum VehicleType {
 	// they must also match those in vehicles.xml.
 	
 	private String name;
-	
-	private static Set<Integer> idSet;
-	
-	/**
-	 * Returns a set of all vehicle types.
-	 */
-	public static final Set<VehicleType> ALL_VEHICLES =
-				Set.of(VehicleType.LUV,
-						VehicleType.DELIVERY_DRONE,
-						VehicleType.CARGO_DRONE,
-						VehicleType.EXPLORER_ROVER,
-						VehicleType.TRANSPORT_ROVER,
-						VehicleType.CARGO_ROVER);
-	
+
 	private VehicleType(String name) {
 		this.name = name;
 	}
@@ -47,22 +31,7 @@ public enum VehicleType {
 	public String getName() {
 		return this.name;
 	}
-	
-	/**
-	 * Gets a set of vehicle resource ids.
-	 * 
-	 * @return
-	 */
-	public static Set<Integer> getIDs() {
-		if (idSet == null) {
-			idSet = new HashSet<>();
-			for (VehicleType e : VehicleType.values()) {
-				idSet.add(e.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID);
-			}
-		}
-		return idSet;
-	}
-	
+
 	/**
 	 * Converts vehicle name to vehicle type.
 	 * 
@@ -124,11 +93,9 @@ public enum VehicleType {
 	 * @return
 	 */
 	public static boolean isRover(VehicleType type) {
-		if (type == EXPLORER_ROVER
+		return (type == EXPLORER_ROVER
 				|| type == TRANSPORT_ROVER
-				|| type == CARGO_ROVER) 
-			return true;
-		return false;
+				|| type == CARGO_ROVER);
 	}	
 	
 	/**
@@ -138,9 +105,7 @@ public enum VehicleType {
 	 * @return
 	 */
 	public static boolean isDrone(VehicleType type) {
-		if (type == DELIVERY_DRONE
-				|| type == CARGO_DRONE) 
-			return true;
-		return false;
+		return (type == DELIVERY_DRONE
+				|| type == CARGO_DRONE);
 	}	
 }
