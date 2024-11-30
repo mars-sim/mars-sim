@@ -85,6 +85,10 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public Simulation getSim() {
 		return sim;
 	}
+
+	protected SimulationConfig getConfig() {
+		return simConfig;
+	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
 

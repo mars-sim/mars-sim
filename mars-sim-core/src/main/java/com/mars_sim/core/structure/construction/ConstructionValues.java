@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.time.MarsTime;
 
 /**
@@ -27,7 +29,10 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Value modifier for lower stages. */
-    public final static double LOWER_STAGE_VALUE_MODIFIER = .5D;
+    private static final double LOWER_STAGE_VALUE_MODIFIER = .5D;
+
+    private static ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
+
 
     // Data members
     private Settlement settlement;
@@ -154,11 +159,11 @@ implements Serializable {
 
                 ConstructionStage lastStage = site.getCurrentConstructionStage();
                 if (lastStage != null) {
-                    nextStageInfos = ConstructionUtil.getNextPossibleStages(lastStage.getInfo());
+                    nextStageInfos = config.getPotentialNextStages(lastStage.getInfo());
                 }
                 else {
                     nextStageInfos = ConstructionUtil.getConstructionStageInfoList(
-                            ConstructionStageInfo.FOUNDATION, constructionSkill);
+                            ConstructionStageInfo.Stage.FOUNDATION, constructionSkill);
                 }
 
                 if (nextStageInfos != null) {
@@ -187,7 +192,7 @@ implements Serializable {
 
         double result = 0D;
         Map<ConstructionStageInfo, Double> stageProfits = getConstructionStageProfit(
-                ConstructionStageInfo.FOUNDATION, constructionSkill);
+                ConstructionStageInfo.Stage.FOUNDATION, constructionSkill);
         Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo foundationStage = i.next();
@@ -218,7 +223,7 @@ implements Serializable {
         if (lastStage != null) {
             ConstructionStageInfo lastStageInfo = lastStage.getInfo();
             Iterator<ConstructionStageInfo> i = 
-                    ConstructionUtil.getNextPossibleStages(lastStageInfo).iterator();
+                            config.getPotentialNextStages(lastStageInfo).iterator();
             while (i.hasNext()) {
                 ConstructionStageInfo stageInfo = i.next();
                 double profit = getConstructionStageProfit(stageInfo, constructionSkill);
@@ -226,7 +231,7 @@ implements Serializable {
             }
         }
         else {
-            result = getConstructionStageProfit(ConstructionStageInfo.FOUNDATION, 
+            result = getConstructionStageProfit(ConstructionStageInfo.Stage.FOUNDATION, 
                     constructionSkill);
         }
 
@@ -240,16 +245,14 @@ implements Serializable {
      * @param constructionSkill the architect's construction skill.
      * @return map of construction stage infos and their profits (VP).
      */
-    public Map<ConstructionStageInfo, Double> getConstructionStageProfit(String stageType, 
+    public Map<ConstructionStageInfo, Double> getConstructionStageProfit(Stage stageType, 
             int constructionSkill) {
 
         Map<ConstructionStageInfo, Double> result = new HashMap<>();
 
         List<ConstructionStageInfo> nextStages = ConstructionUtil.getConstructionStageInfoList(
                 stageType, constructionSkill);
-        Iterator<ConstructionStageInfo> i = nextStages.iterator();
-        while (i.hasNext()) {
-            ConstructionStageInfo stageInfo = i.next();
+        for(ConstructionStageInfo stageInfo : nextStages) {
             double profit = getConstructionStageProfit(stageInfo, constructionSkill);
             result.put(stageInfo, profit);
         }
@@ -273,7 +276,7 @@ implements Serializable {
             }
             allStageInfoValueCache.clear();
 
-            Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList()
+            Iterator<ConstructionStageInfo> i = config.getAllConstructionStageInfoList()
                     .iterator();
             while (i.hasNext()) {
                 ConstructionStageInfo stageInfo = i.next();
@@ -320,12 +323,12 @@ implements Serializable {
             double result = 0D;
 
             if (constructionSkill >= stageInfo.getArchitectConstructionSkill()) {
-                if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
+                if (ConstructionStageInfo.Stage.BUILDING.equals(stageInfo.getType())) {
                     result = getBuildingConstructionValue(stageInfo.getName());
                 }
                 else {
                     Iterator<ConstructionStageInfo> i = 
-                            ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
+                                    config.getPotentialNextStages(stageInfo).iterator();
                     while (i.hasNext()) {
                         ConstructionStageInfo nextStageInfo = i.next();
                         boolean constructable = nextStageInfo.isConstructable();
@@ -339,7 +342,6 @@ implements Serializable {
                     }
                 }
             }
-            //System.out.println(settlement.getName() + " - " + stageInfo.getName() + ": " + (int) result);
             stageInfoValueCache.put(key, result);
         }
 

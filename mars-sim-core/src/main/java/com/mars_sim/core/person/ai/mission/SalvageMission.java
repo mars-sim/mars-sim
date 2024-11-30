@@ -428,7 +428,7 @@ public class SalvageMission extends AbstractMission
 			constructionSite.setUndergoingSalvage(false);
 
 			// Remove construction site if all salvaging complete.
-			if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.FOUNDATION)) {
+			if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.Stage.FOUNDATION)) {
 				settlement.getConstructionManager().removeConstructionSite(constructionSite);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT, constructionSite);
 				logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.salvagedAt" //$NON-NLS-1$

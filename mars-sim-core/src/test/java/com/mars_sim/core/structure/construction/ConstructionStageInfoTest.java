@@ -51,7 +51,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 
-        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, 
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.Stage.FOUNDATION, 10D, 10D, 
         		"length", false, 0,
                 false, false, 10000D, 1, null, parts, resources, vehicles);
     }
@@ -121,7 +121,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
      * construction.ConstructionStageInfo.getType()'
      */
     public void testGetType() {
-        assertEquals(ConstructionStageInfo.FOUNDATION, info.getType());
+        assertEquals(ConstructionStageInfo.Stage.FOUNDATION, info.getType());
     }
 
     /*

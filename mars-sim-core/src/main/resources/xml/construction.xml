@@ -13,15 +13,15 @@
 	<!ATTLIST foundation work-time CDATA #REQUIRED>
 	<!ATTLIST foundation skill-required CDATA #REQUIRED>
 	<!ELEMENT resource EMPTY>
-	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource type CDATA #REQUIRED>
 	<!ATTLIST resource amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
-	<!ATTLIST part name CDATA #REQUIRED>
+	<!ATTLIST part type CDATA #REQUIRED>
 	<!ATTLIST part number CDATA #REQUIRED>
 	<!ELEMENT vehicle (attachment-part*)>
 	<!ATTLIST vehicle type CDATA #REQUIRED>
 	<!ELEMENT attachment-part EMPTY>
-	<!ATTLIST attachment-part name CDATA #REQUIRED>
+	<!ATTLIST attachment-part type CDATA #REQUIRED>
 	<!ELEMENT frame-list (frame*)>
 	<!ELEMENT frame (resource*, part*, vehicle*)>
 	<!ATTLIST frame name CDATA #REQUIRED>
@@ -54,30 +54,30 @@
 		<foundation name="Surface Foundation 2x3" width="2.0" length="3.0" 
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="0.4" skill-required="1" >
-			<resource name="concrete" amount="6.0" />
+			<resource type="concrete" amount="6.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Surface Foundation 5x5" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="0.8" skill-required="1" >
-			<resource name="concrete" amount="25.0" />
+			<resource type="concrete" amount="25.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Surface Foundation 5x10" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
-			<resource name="concrete" amount="50.0" />
+			<resource type="concrete" amount="50.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
 			</vehicle>
 		</foundation>
 
@@ -85,102 +85,102 @@
 		<foundation name="Surface Foundation 7x9" width="9.0" length="7.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
-			<resource name="concrete" amount="63.0" />
+			<resource type="concrete" amount="63.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Surface Foundation 9x9" width="9.0" length="9.0" 
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="1.4" skill-required="1" >
-			<resource name="concrete" amount="81.0" />
+			<resource type="concrete" amount="81.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Surface Foundation 8x11" width="8.0" length="11.0" 
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="1.8" skill-required="1" >
-			<resource name="concrete" amount="88.0" />
+			<resource type="concrete" amount="88.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Surface Foundation 12x18" width="18.0" length="12.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="2.4" skill-required="1" >
-			<resource name="concrete" amount="216.0" />
+			<resource type="concrete" amount="216.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Subsurface Foundation 5x5x3" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
-			<resource name="concrete" amount="45.0" />
+			<resource type="concrete" amount="45.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Subsurface Foundation 5x10x3" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="12.0" skill-required="1" >
-			<resource name="concrete" amount="80.0" />
+			<resource type="concrete" amount="80.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Subsurface Foundation 10x10x3" width="10.0" length="10.0"
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="15.0" skill-required="1" >
-			<resource name="concrete" amount="140.0" />
+			<resource type="concrete" amount="140.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Ramped Subsurface Foundation 15x18x5" width="18.0" length="15.0"
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
-			<resource name="concrete" amount="369.0" />
+			<resource type="concrete" amount="369.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Shallow Borehole Drilling Site" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="10.0" skill-required="3" >
-		 	<part name="bore drill bit" number="1" />
-		 	<part name="bore drill pipe" number="20" />
+		 	<part type="bore drill bit" number="1" />
+		 	<part type="bore drill pipe" number="20" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
+				<attachment-part type="crane boom" />
+				<attachment-part type="drilling rig" />
 			</vehicle>
 		</foundation>
 
 		<foundation name="Deep Borehole Drilling Site" width="10.0" length="15.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="15.0" skill-required="4" >
-		 	<part name="bore drill bit" number="4" />
-		 	<part name="bore drill pipe" number="60" />
+		 	<part type="bore drill bit" number="4" />
+		 	<part type="bore drill pipe" number="60" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
+				<attachment-part type="crane boom" />
+				<attachment-part type="drilling rig" />
 			</vehicle>
 		</foundation>
 
@@ -189,10 +189,10 @@
 		<foundation name="Surface Foundation Variable Size" width="-1.0" length="-1.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
-			<resource name="concrete" amount="100.0" />
+			<resource type="concrete" amount="100.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
 			</vehicle>
 		</foundation>
 
@@ -201,10 +201,10 @@
 		<foundation name="Subsurface Foundation Variable Size" width="-1.0" length="-1.0"
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="2.0" skill-required="1" >
-		 	<resource name="concrete" amount="150.0" />
+		 	<resource type="concrete" amount="150.0" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
@@ -216,274 +216,274 @@
 		<frame name="Steel Frame Tower" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 5x5" >
-			<resource name="acetylene" amount="1.0" />
-			<resource name="concrete" amount="25.0" />
-			<part name="insulation board" number="4" />				
-			<part name="steel truss" number="20" />
-			<part name="steel cable" number="6" />
+			<resource type="acetylene" amount="1.0" />
+			<resource type="concrete" amount="25.0" />
+			<part type="insulation board" number="4" />				
+			<part type="steel truss" number="20" />
+			<part type="steel cable" number="6" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Small Steel Frame" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="1" foundation="Surface Foundation 5x5" >
-			<resource name="acetylene" amount="1.0" />
-			<resource name="concrete" amount="25.0" />
-			<part name="insulation board" number="4" />			
-			<part name="steel truss" number="10" />
-			<part name="steel sheet" number="5" />
+			<resource type="acetylene" amount="1.0" />
+			<resource type="concrete" amount="25.0" />
+			<part type="insulation board" number="4" />			
+			<part type="steel truss" number="10" />
+			<part type="steel sheet" number="5" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Array Frame" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 5x10" >
-			<resource name="acetylene" amount="1.5" />
-			<resource name="concrete" amount="50.0" />
-			<part name="insulation board" number="6" />				
-			<part name="steel truss" number="20" />
+			<resource type="acetylene" amount="1.5" />
+			<resource type="concrete" amount="50.0" />
+			<part type="insulation board" number="6" />				
+			<part type="steel truss" number="20" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Brick Bin Frame" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="0.5" skill-required="1" foundation="Surface Foundation 2x3" >
-			<resource name="concrete" amount="6.0" />
-			<part name="brick" number="200" />
+			<resource type="concrete" amount="6.0" />
+			<part type="brick" number="200" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Small Brick Shed Frame" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="1" foundation="Subsurface Foundation 5x5x3" >
-			<resource name="concrete" amount="25.0" />
-			<part name="brick" number="250" />
+			<resource type="concrete" amount="25.0" />
+			<part type="brick" number="250" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Round Hab Frame" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 9x9" >
-		 	<resource name="concrete" amount="81.0" />
-			<resource name="acetylene" amount="2.0" />		 	
-			<part name="aluminum sheet" number="10" />
-			<part name="insulation board" number="10" />			
-			<part name="steel truss" number="20" />
-			<part name="steel post" number="8" />			
-			<part name="steel sheet" number="10" />	
-			<part name="plastic sheet" number="20" />					
-			<part name="plastic pipe" number="50" />
-			<part name="electrical wire" number="200" />
-			<part name="wire connector" number="200" />
-			<part name="power cable" number="20" />
-			<part name="steel pipe" number="40" />
-			<part name="gasket" number="40" />
-			<part name="valve" number="10" />
-			<part name="solar panel" number="4" />
+		 	<resource type="concrete" amount="81.0" />
+			<resource type="acetylene" amount="2.0" />		 	
+			<part type="aluminum sheet" number="10" />
+			<part type="insulation board" number="10" />			
+			<part type="steel truss" number="20" />
+			<part type="steel post" number="8" />			
+			<part type="steel sheet" number="10" />	
+			<part type="plastic sheet" number="20" />					
+			<part type="plastic pipe" number="50" />
+			<part type="electrical wire" number="200" />
+			<part type="wire connector" number="200" />
+			<part type="power cable" number="20" />
+			<part type="steel pipe" number="40" />
+			<part type="gasket" number="40" />
+			<part type="valve" number="10" />
+			<part type="solar panel" number="4" />
 		</frame>
 
 		<frame name="Inflatable Frame" width="6.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 7x9" >
-		 	<resource name="concrete" amount="54.0" />
-			<resource name="acetylene" amount="1.25" />		 	
-			<part name="aluminum sheet" number="10" />
-			<part name="insulation board" number="10" />			
-			<part name="steel truss" number="20" />
-			<part name="steel post" number="5" />			
-			<part name="steel sheet" number="10" />	
-			<part name="plastic sheet" number="20" />
-			<part name="plastic pipe" number="50" />
-			<part name="electrical wire" number="80" />
-			<part name="wire connector" number="80" />
-			<part name="power cable" number="12" />
-			<part name="steel pipe" number="40" />
-			<part name="gasket" number="30" />
-			<part name="valve" number="30" />			
+		 	<resource type="concrete" amount="54.0" />
+			<resource type="acetylene" amount="1.25" />		 	
+			<part type="aluminum sheet" number="10" />
+			<part type="insulation board" number="10" />			
+			<part type="steel truss" number="20" />
+			<part type="steel post" number="5" />			
+			<part type="steel sheet" number="10" />	
+			<part type="plastic sheet" number="20" />
+			<part type="plastic pipe" number="50" />
+			<part type="electrical wire" number="80" />
+			<part type="wire connector" number="80" />
+			<part type="power cable" number="12" />
+			<part type="steel pipe" number="40" />
+			<part type="gasket" number="30" />
+			<part type="valve" number="30" />			
 		</frame>
 
 		<frame name="Atmospheric Processor Frame" width="8.0" length="11.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" foundation="Surface Foundation 8x11" >
-		 	<resource name="concrete" amount="88.0" />
-			<resource name="acetylene" amount="1.0" />		 	
-			<part name="aluminum sheet" number="10" />
-			<part name="steel truss" number="20" />
-			<part name="steel post" number="6" />			
-			<part name="steel sheet" number="10" />
-			<part name="plastic sheet" number="20" />			
-			<part name="plastic pipe" number="50" />
-			<part name="valve" number="20" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
-			<part name="power cable" number="10" />
-			<part name="steel pipe" number="10" />
-			<part name="gasket" number="18" />
+		 	<resource type="concrete" amount="88.0" />
+			<resource type="acetylene" amount="1.0" />		 	
+			<part type="aluminum sheet" number="10" />
+			<part type="steel truss" number="20" />
+			<part type="steel post" number="6" />			
+			<part type="steel sheet" number="10" />
+			<part type="plastic sheet" number="20" />			
+			<part type="plastic pipe" number="50" />
+			<part type="valve" number="20" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="power cable" number="10" />
+			<part type="steel pipe" number="10" />
+			<part type="gasket" number="18" />
 		</frame>
 
 		<frame name="Medium Modular Frame" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 7x9" >
-		 	<resource name="concrete" amount="63.0" />
-			<resource name="acetylene" amount="1.0" />		 	
-			<part name="aluminum sheet" number="8" />
-			<part name="insulation board" number="8" />			
-			<part name="steel truss" number="16" />
-			<part name="steel post" number="6" />			
-			<part name="steel sheet" number="8" />
-			<part name="plastic sheet" number="16" />
-			<part name="plastic pipe" number="40" />
-			<part name="valve" number="50" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
-			<part name="power cable" number="15" />
-			<part name="gasket" number="15" />
+		 	<resource type="concrete" amount="63.0" />
+			<resource type="acetylene" amount="1.0" />		 	
+			<part type="aluminum sheet" number="8" />
+			<part type="insulation board" number="8" />			
+			<part type="steel truss" number="16" />
+			<part type="steel post" number="6" />			
+			<part type="steel sheet" number="8" />
+			<part type="plastic sheet" number="16" />
+			<part type="plastic pipe" number="40" />
+			<part type="valve" number="50" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="power cable" number="15" />
+			<part type="gasket" number="15" />
 		</frame>
 
 		<frame name="Round Frame" width="7.0" length="7.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 7x7" >
-		 	<resource name="concrete" amount="49.0" />
-			<resource name="acetylene" amount="1.0" />		 	
-			<part name="aluminum sheet" number="6" />
-			<part name="insulation board" number="7" />			
-			<part name="steel truss" number="14" />
-			<part name="steel post" number="6" />			
-			<part name="steel sheet" number="7" />
-			<part name="plastic sheet" number="14" />
-			<part name="plastic pipe" number="36" />
-			<part name="valve" number="45" />
-			<part name="electrical wire" number="45" />
-			<part name="wire connector" number="45" />
-			<part name="power cable" number="13" />
-			<part name="gasket" number="13" />
+		 	<resource type="concrete" amount="49.0" />
+			<resource type="acetylene" amount="1.0" />		 	
+			<part type="aluminum sheet" number="6" />
+			<part type="insulation board" number="7" />			
+			<part type="steel truss" number="14" />
+			<part type="steel post" number="6" />			
+			<part type="steel sheet" number="7" />
+			<part type="plastic sheet" number="14" />
+			<part type="plastic pipe" number="36" />
+			<part type="valve" number="45" />
+			<part type="electrical wire" number="45" />
+			<part type="wire connector" number="45" />
+			<part type="power cable" number="13" />
+			<part type="gasket" number="13" />
 		</frame>
 		
 		<frame name="Large Greenhouse Frame" width="12.0" length="18.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.5" skill-required="3" foundation="Surface Foundation 12x18" >
-		 	<resource name="concrete" amount="216.0" />
-			<resource name="acetylene" amount="2.5" />		 	
-			<part name="aluminum sheet" number="20" />
-			<part name="insulation board" number="20" />			
-			<part name="steel truss" number="30" />
-			<part name="steel post" number="12" />			
-			<part name="steel sheet" number="20" />
-			<part name="plastic sheet" number="20" />	
-			<part name="glass sheet" number="50" />
-			<part name="plastic pipe" number="150" />
-			<part name="valve" number="90" />
-			<part name="gasket" number="90" />
-			<part name="electrical wire" number="120" />
-			<part name="wire connector" number="120" />
-			<part name="power cable" number="30" />
+		 	<resource type="concrete" amount="216.0" />
+			<resource type="acetylene" amount="2.5" />		 	
+			<part type="aluminum sheet" number="20" />
+			<part type="insulation board" number="20" />			
+			<part type="steel truss" number="30" />
+			<part type="steel post" number="12" />			
+			<part type="steel sheet" number="20" />
+			<part type="plastic sheet" number="20" />	
+			<part type="glass sheet" number="50" />
+			<part type="plastic pipe" number="150" />
+			<part type="valve" number="90" />
+			<part type="gasket" number="90" />
+			<part type="electrical wire" number="120" />
+			<part type="wire connector" number="120" />
+			<part type="power cable" number="30" />
 		</frame>
 
 		<frame name="Garage Frame" width="12.0" length="16.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.2" skill-required="2" foundation="Surface Foundation 12x18" >
-		 	<resource name="concrete" amount="192.0" />
-			<resource name="acetylene" amount="2.5" />			 	
-			<part name="aluminum sheet" number="20" />
-			<part name="insulation board" number="20" />			
-			<part name="steel truss" number="30" />
-			<part name="steel post" number="12" />			
-			<part name="steel sheet" number="20" />
-			<part name="plastic sheet" number="20" />
-			<part name="plastic pipe" number="100" />
-			<part name="valve" number="50" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
-			<part name="power cable" number="20" />
-			<part name="gasket" number="40" />
+		 	<resource type="concrete" amount="192.0" />
+			<resource type="acetylene" amount="2.5" />			 	
+			<part type="aluminum sheet" number="20" />
+			<part type="insulation board" number="20" />			
+			<part type="steel truss" number="30" />
+			<part type="steel post" number="12" />			
+			<part type="steel sheet" number="20" />
+			<part type="plastic sheet" number="20" />
+			<part type="plastic pipe" number="100" />
+			<part type="valve" number="50" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="power cable" number="20" />
+			<part type="gasket" number="40" />
 		</frame>
 
 		<frame name="Small Areothermal Well Frame" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Shallow Borehole Drilling Site" >
-			<resource name="concrete" amount="50.0" />
-			<resource name="acetylene" amount="0.5" />				
-			<part name="steel truss" number="10" />
-			<part name="steel sheet" number="15" />
+			<resource type="concrete" amount="50.0" />
+			<resource type="acetylene" amount="0.5" />				
+			<part type="steel truss" number="10" />
+			<part type="steel sheet" number="15" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Large Areothermal Well Frame" width="10.0" length="15.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.3" skill-required="3" foundation="Deep Borehole Drilling Site" >
-			<resource name="concrete" amount="150.0" />
-			<resource name="acetylene" amount="1.0" />				
-			<part name="steel truss" number="20" />
-			<part name="steel sheet" number="30" />
+			<resource type="concrete" amount="150.0" />
+			<resource type="acetylene" amount="1.0" />				
+			<part type="steel truss" number="20" />
+			<part type="steel sheet" number="30" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Round Vaulted Brick Frame" width="10.0" length="10.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.2" skill-required="2" foundation="Subsurface Foundation 10x10x3" >
-			<resource name="concrete" amount="100.0" />
-			<part name="brick" number="1200" />
+			<resource type="concrete" amount="100.0" />
+			<part type="brick" number="1200" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Large Garage Brick Frame" width="15.0" length="18.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.5" skill-required="3" foundation="Ramped Subsurface Foundation 15x18x5" >
-			<resource name="concrete" amount="270.0" />
-			<resource name="acetylene" amount="2.5" />				
-			<part name="brick" number="3600" />
-			<part name="aluminum sheet" number="50" />
-			<part name="insulation board" number="50" />			
-			<part name="steel truss" number="30" />
-			<part name="steel post" number="12" />			
-			<part name="steel sheet" number="50" />
-			<part name="plastic sheet" number="20" />
-			<part name="plastic pipe" number="100" />
-			<part name="valve" number="50" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
-			<part name="power cable" number="20" />
-			<part name="gasket" number="40" />
+			<resource type="concrete" amount="270.0" />
+			<resource type="acetylene" amount="2.5" />				
+			<part type="brick" number="3600" />
+			<part type="aluminum sheet" number="50" />
+			<part type="insulation board" number="50" />			
+			<part type="steel truss" number="30" />
+			<part type="steel post" number="12" />			
+			<part type="steel sheet" number="50" />
+			<part type="plastic sheet" number="20" />
+			<part type="plastic pipe" number="100" />
+			<part type="valve" number="50" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="power cable" number="20" />
+			<part type="gasket" number="40" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
 		<frame name="Vaulted Glass Brick Frame" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" foundation="Subsurface Foundation 5x10x3" >
-			<resource name="concrete" amount="50.0" />
-			<resource name="acetylene" amount="0.5" />				
-			<part name="brick" number="700" />
-			<part name="aluminum sheet" number="10" />
-			<part name="insulation board" number="10" />			
-			<part name="steel truss" number="8" />
-			<part name="steel post" number="4" />						
-			<part name="glass sheet" number="10" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="5" />
-			<part name="gasket" number="5" />
-			<part name="electrical wire" number="6" />
-			<part name="wire connector" number="6" />
-			<part name="power cable" number="3" />
+			<resource type="concrete" amount="50.0" />
+			<resource type="acetylene" amount="0.5" />				
+			<part type="brick" number="700" />
+			<part type="aluminum sheet" number="10" />
+			<part type="insulation board" number="10" />			
+			<part type="steel truss" number="8" />
+			<part type="steel post" number="4" />						
+			<part type="glass sheet" number="10" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="5" />
+			<part type="gasket" number="5" />
+			<part type="electrical wire" number="6" />
+			<part type="wire connector" number="6" />
+			<part type="power cable" number="3" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
@@ -491,20 +491,20 @@
 		<frame name="Hallway frame" width="2.0" length="-1.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="0.1" skill-required="1" foundation="Surface Foundation Variable Size" >
-			<resource name="concrete" amount="2.0" />
-			<resource name="acetylene" amount="0.25" />	
-			<part name="insulation board" number="4" />						
-			<part name="steel post" number="3" />
+			<resource type="concrete" amount="2.0" />
+			<resource type="acetylene" amount="0.25" />	
+			<part type="insulation board" number="4" />						
+			<part type="steel post" number="3" />
 		</frame>
 
 		<!-- Note brick tunnel frame length is variable. -->
 		<frame name="Brick Tunnel Frame" width="3.0" length="-1.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="0.2" skill-required="1" foundation="Subsurface Foundation Variable Size" >
-			<resource name="concrete" amount="3.0" />			
-			<part name="brick" number="90" />
+			<resource type="concrete" amount="3.0" />			
+			<part type="brick" number="90" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
 
@@ -515,218 +515,218 @@
 		<building name="Wind Turbine" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Steel Frame Tower" >
-			<part name="aerogel tile" number="10" />		 
-			<part name="wind turbine blade" number="4" />
-			<part name="turbine generator" number="1" />
-			<part name="power cable" number="6" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
+			<part type="aerogel tile" number="10" />		 
+			<part type="wind turbine blade" number="4" />
+			<part type="turbine generator" number="1" />
+			<part type="power cable" number="6" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Solar Photovoltaic Array" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Array Frame" >
-			<part name="aerogel tile" number="16" />
-			<part name="solar panel" number="6" />
-			<part name="power cable" number="2" />
-			<part name="Stepper Motor" number="4" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
+			<part type="aerogel tile" number="16" />
+			<part type="solar panel" number="6" />
+			<part type="power cable" number="2" />
+			<part type="Stepper Motor" number="4" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Solar Thermal Collector" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Array Frame" >
-			<resource name="water" amount="200.0" />
-			<part name="aerogel tile" number="32" />
-			<part name="solar parabolic mirror" number="3" />
-			<part name="power cable" number="2" />
-			<part name="glass tube" number="6" />
-			<part name="steel pipe" number="10" />
-			<part name="Stepper Motor" number="4" />
-			<part name="heat pump" number="1" />
-			<part name="water pump large" number="2" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="water tank" number="1" />
+			<resource type="water" amount="200.0" />
+			<part type="aerogel tile" number="32" />
+			<part type="solar parabolic mirror" number="3" />
+			<part type="power cable" number="2" />
+			<part type="glass tube" number="6" />
+			<part type="steel pipe" number="10" />
+			<part type="Stepper Motor" number="4" />
+			<part type="heat pump" number="1" />
+			<part type="water pump large" number="2" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
+			<part type="water tank" number="1" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Methane Power Generator" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Steel Frame" >
-			<part name="aerogel tile" number="65" />		 
-			<part name="methane fuel cell stack" number="4" />
-			<part name="valve" number="6" />
-			<part name="gasket" number="6" />
-			<part name="plastic tubing" number="6" />
-			<part name="power cable" number="6" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="fuel tank" number="5" />
+			<part type="aerogel tile" number="65" />		 
+			<part type="methane fuel cell stack" number="4" />
+			<part type="valve" number="6" />
+			<part type="gasket" number="6" />
+			<part type="plastic tubing" number="6" />
+			<part type="power cable" number="6" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
+			<part type="fuel tank" number="5" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Cement Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="20" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="20" />
 		</building>
 	
 		<building name="Chemical Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 			
 		<building name="Concrete Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />			
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />			
 		</building>
 		
 		<building name="Fuel Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Gas Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 		
 		<building name="Ice Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Metal Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Lime Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Ore Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Regolith Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Sand Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
+			<resource type="concrete" amount="60.0" />
+			<part type="aerogel tile" number="32" />
 		</building>
 
 		<building name="Manufacturing Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
-			<resource name="concrete" amount="75.0" />
-			<part name="aerogel tile" number="90" />
-			<part name="steel pipe" number="3" />
-			<part name="plastic pipe" number="10" />
-			<part name="valve" number="10" />
-			<part name="gasket" number="10" />
-			<part name="plastic tubing" number="10" />
-			<part name="power cable" number="10" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
-			<part name="plastic bottle" number="25" />
-			<part name="Motor 10 kW" number="1" />
-			<part name="brick" number="100" />
-			<part name="gas tank" number="3" />
-			<part name="air duct" number="5" />			
+			<resource type="concrete" amount="75.0" />
+			<part type="aerogel tile" number="90" />
+			<part type="steel pipe" number="3" />
+			<part type="plastic pipe" number="10" />
+			<part type="valve" number="10" />
+			<part type="gasket" number="10" />
+			<part type="plastic tubing" number="10" />
+			<part type="power cable" number="10" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="plastic bottle" number="25" />
+			<part type="Motor 10 kW" number="1" />
+			<part type="brick" number="100" />
+			<part type="gas tank" number="3" />
+			<part type="air duct" number="5" />			
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Bunkhouse" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
-		 	<resource name="cement" amount="75.0" />
-		 	<resource name="concrete" amount="57.0" />
-			<part name="aerogel tile" number="90" />
-			<part name="window" number="2" />				
-			<part name="steel pipe" number="3" />
-			<part name="plastic pipe" number="4" />
-			<part name="valve" number="5" />
-			<part name="gasket" number="5" />
-			<part name="plastic tubing" number="3" />
-			<part name="power cable" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="plastic bottle" number="25" />
-			<part name="air duct" number="3" />				
+		 	<resource type="cement" amount="75.0" />
+		 	<resource type="concrete" amount="57.0" />
+			<part type="aerogel tile" number="90" />
+			<part type="window" number="2" />				
+			<part type="steel pipe" number="3" />
+			<part type="plastic pipe" number="4" />
+			<part type="valve" number="5" />
+			<part type="gasket" number="5" />
+			<part type="plastic tubing" number="3" />
+			<part type="power cable" number="1" />
+			<part type="electrical wire" number="10" />
+			<part type="wire connector" number="10" />
+			<part type="plastic bottle" number="25" />
+			<part type="air duct" number="3" />				
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Large Sabatier Processor" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Steel Frame" >
-			<resource name="nickel" amount="1.0" />
-			<part name="aerogel tile" number="90" />
-			<part name="valve" number="18" />
-			<part name="gasket" number="6" />
-			<part name="Motor 10 kW" number="6" />
-			<part name="plastic tubing" number="18" />
-			<part name="power cable" number="6" />
-			<part name="electrical wire" number="60" />
-			<part name="wire connector" number="60" />
+			<resource type="nickel" amount="1.0" />
+			<part type="aerogel tile" number="90" />
+			<part type="valve" number="18" />
+			<part type="gasket" number="6" />
+			<part type="Motor 10 kW" number="6" />
+			<part type="plastic tubing" number="18" />
+			<part type="power cable" number="6" />
+			<part type="electrical wire" number="60" />
+			<part type="wire connector" number="60" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Medium Battery Array" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Array Frame" >
-			<part name="aerogel tile" number="90" />
-			<part name="battery module" number="20" />
-			<part name="fiberglass cloth" number="10" />
-			<part name="power cable" number="2" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
+			<part type="aerogel tile" number="90" />
+			<part type="battery module" number="20" />
+			<part type="fiberglass cloth" number="10" />
+			<part type="power cable" number="2" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
@@ -734,273 +734,273 @@
 		<building name="Lander Hab" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="2" frame="Round Hab Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="164" />
-			<part name="window" number="4" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="5" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="25" />
-			<part name="wire connector" number="25" />
-			<part name="gas tank" number="5" />
-			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="air duct" number="10" />	
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="164" />
+			<part type="window" number="4" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="5" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="5" />
+			<part type="electrical wire" number="25" />
+			<part type="wire connector" number="25" />
+			<part type="gas tank" number="5" />
+			<part type="fuel tank" number="1" />
+			<part type="water tank" number="1" />
+			<part type="air duct" number="10" />	
 		</building>
 
 		<!-- Storage hab building project that is a modified lander hab. -->
 		<building name="Storage Hab" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Round Hab Frame" >
-			<resource name="polyester resin" amount="5.0" />
-			<resource name="styrene" amount="3.0" />
-			<resource name="polyethylene" amount="20.0" />
-			<part name="aerogel tile" number="164" />
-			<part name="window" number="4" />
-			<part name="steel sheet" number="20" />
-			<part name="aluminum sheet" number="15" />
-			<part name="plastic sheet" number="20" />
-			<part name="fiberglass" number="10" />
-			<part name="fiberglass cloth" number="10" />
-			<part name="plastic pipe" number="15" />
-			<part name="valve" number="15" />
-			<part name="electrical wire" number="15" />
-			<part name="wire connector" number="15" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="5.0" />
+			<resource type="styrene" amount="3.0" />
+			<resource type="polyethylene" amount="20.0" />
+			<part type="aerogel tile" number="164" />
+			<part type="window" number="4" />
+			<part type="steel sheet" number="20" />
+			<part type="aluminum sheet" number="15" />
+			<part type="plastic sheet" number="20" />
+			<part type="fiberglass" number="10" />
+			<part type="fiberglass cloth" number="10" />
+			<part type="plastic pipe" number="15" />
+			<part type="valve" number="15" />
+			<part type="electrical wire" number="15" />
+			<part type="wire connector" number="15" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Research hab building project that is a modified lander hab. -->
 		<building name="Research Hab" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Round Hab Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="164" />
-			<part name="window" number="4" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="5" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="25" />
-			<part name="wire connector" number="25" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="164" />
+			<part type="window" number="4" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="5" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="5" />
+			<part type="electrical wire" number="25" />
+			<part type="wire connector" number="25" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Residential hab building project that is a modified lander hab. -->
 		<building name="Residential Hab" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Round Hab Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="164" />
-			<part name="window" number="4" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="5" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="3" />
-			<part name="valve" number="3" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="164" />
+			<part type="window" number="4" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="5" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="3" />
+			<part type="valve" number="3" />
+			<part type="electrical wire" number="10" />
+			<part type="wire connector" number="10" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Medical hab building project that is a modified lander hab. -->
 		<building name="Medical Hab" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Round Hab Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="164" />
-			<part name="window" number="4" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="5" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="25" />
-			<part name="wire connector" number="25" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="164" />
+			<part type="window" number="4" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="5" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="5" />
+			<part type="electrical wire" number="25" />
+			<part type="wire connector" number="25" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Machinery hab building project that is a modified lander hab. -->
 		<building name="Machinery Hab" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Round Hab Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="164" />
-			<part name="window" number="4" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="5" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="25" />
-			<part name="wire connector" number="25" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="164" />
+			<part type="window" number="4" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="5" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="5" />
+			<part type="electrical wire" number="25" />
+			<part type="wire connector" number="25" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Inflatable greenhouse building project for refitting or salvaging. -->
 		<building name="Inflatable Greenhouse" width="6.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Inflatable Frame" >
-			<resource name="polyester resin" amount="5.0" />
-			<resource name="styrene" amount="1.0" />
-			<resource name="polyethylene" amount="10.0" />
-			<part name="aerogel tile" number="114" />
-			<part name="window" number="6" />	
-			<part name="polycarbonate roofing" number="12" />
-			<part name="aluminum sheet" number="3" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="5.0" />
+			<resource type="styrene" amount="1.0" />
+			<resource type="polyethylene" amount="10.0" />
+			<part type="aerogel tile" number="114" />
+			<part type="window" number="6" />	
+			<part type="polycarbonate roofing" number="12" />
+			<part type="aluminum sheet" number="3" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="5" />
+			<part type="valve" number="5" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Atmospheric processor building project for refitting or salvaging. -->
 		<building name="Atmospheric Processor" width="8.0" length="11.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="5" frame="Atmospheric Processor Frame" >
-			<part name="aerogel tile" number="252" />
-			<part name="steel sheet" number="40" />
-			<part name="aluminum sheet" number="20" />
-			<part name="fiberglass" number="20" />
-			<part name="plastic pipe" number="30" />
-			<part name="steel pipe" number="30" />
-			<part name="copper pipe" number="15" />
-			<part name="plastic pipe" number="15" />
-			<part name="valve" number="50" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
+			<part type="aerogel tile" number="252" />
+			<part type="steel sheet" number="40" />
+			<part type="aluminum sheet" number="20" />
+			<part type="fiberglass" number="20" />
+			<part type="plastic pipe" number="30" />
+			<part type="steel pipe" number="30" />
+			<part type="copper pipe" number="15" />
+			<part type="plastic pipe" number="15" />
+			<part type="valve" number="50" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
 		</building>
 
 		<!-- Residential quarters building project for refitting or salvaging. -->
 		<building name="Residential Quarters" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Medium Modular Frame">
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="190" />		
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="10" />				
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="190" />		
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="10" />				
 		</building>
 
 		<!-- Lounge building project for refitting or salvaging. -->
 		<building name="Lounge" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Medium Modular Frame" >
-			<resource name="polyester resin" amount="5.0" />
-			<resource name="styrene" amount="5.0" />
-			<resource name="polyethylene" amount="10.0" />
-			<part name="aerogel tile" number="190" />
-			<part name="steel sheet" number="2" />
-			<part name="aluminum sheet" number="2" />
-			<part name="fiberglass" number="5" />
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="2" />
-			<part name="air duct" number="10" />			
+			<resource type="polyester resin" amount="5.0" />
+			<resource type="styrene" amount="5.0" />
+			<resource type="polyethylene" amount="10.0" />
+			<part type="aerogel tile" number="190" />
+			<part type="steel sheet" number="2" />
+			<part type="aluminum sheet" number="2" />
+			<part type="fiberglass" number="5" />
+			<part type="electrical wire" number="2" />
+			<part type="wire connector" number="2" />
+			<part type="air duct" number="10" />			
 		</building>
 
 		<!-- Infirmary building project for refitting or salvaging. -->
 		<building name="Infirmary" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="190" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="7" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="190" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="7" />			
 		</building>
 
 		<!-- Command and control building project for refitting or salvaging. -->
 		<building name="Command and Control" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="190" />		
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="7" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="190" />		
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="7" />			
 		</building>
 
 		<!-- Server Farm building project for refitting or salvaging. -->
 		<building name="Server Farm" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="190" />			
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="7" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="190" />			
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="7" />			
 		</building>
 		
 		<!-- Large greenhouse building project for refitting or salvaging. -->
 		<building name="Large Greenhouse" width="12.0" length="18.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="4" frame="Large Greenhouse Frame" >
-			<resource name="polyester resin" amount="15.0" />
-			<resource name="styrene" amount="3.0" />
-			<resource name="polyethylene" amount="30.0" />
-			<part name="aerogel tile" number="336" />
-			<part name="window" number="8" />	
-			<part name="polycarbonate roofing" number="54" />						
-			<part name="aluminum sheet" number="9" />
-			<part name="plastic sheet" number="30" />
-			<part name="fiberglass" number="15" />
-			<part name="plastic pipe" number="15" />
-			<part name="valve" number="15" />
-			<part name="electrical wire" number="15" />
-			<part name="wire connector" number="15" />
-			<part name="air duct" number="15" />			
+			<resource type="polyester resin" amount="15.0" />
+			<resource type="styrene" amount="3.0" />
+			<resource type="polyethylene" amount="30.0" />
+			<part type="aerogel tile" number="336" />
+			<part type="window" number="8" />	
+			<part type="polycarbonate roofing" number="54" />						
+			<part type="aluminum sheet" number="9" />
+			<part type="plastic sheet" number="30" />
+			<part type="fiberglass" number="15" />
+			<part type="plastic pipe" number="15" />
+			<part type="valve" number="15" />
+			<part type="electrical wire" number="15" />
+			<part type="wire connector" number="15" />
+			<part type="air duct" number="15" />			
 		</building>
 
 <!-- Add fish farm -->
@@ -1008,113 +1008,113 @@
 <!--
 		<building name="large algae greenhouse" width="12.0" length="18.0" constructable="true" salvagable="false"
 		 work-time="200.0" skill-required="4" frame="Large Greenhouse Frame" >
-			<resource name="polyester resin" amount="15.0" />
-			<resource name="styrene" amount="3.0" />
-			<resource name="polyethylene" amount="30.0" />
-			<part name="aluminum sheet" number="9" />
-			<part name="plastic sheet" number="30" />
-			<part name="fiberglass" number="15" />
-			<part name="algae tank" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="15" />
-			<part name="electrical wire" number="15" />
-			<part name="wire connector" number="15" />
+			<resource type="polyester resin" amount="15.0" />
+			<resource type="styrene" amount="3.0" />
+			<resource type="polyethylene" amount="30.0" />
+			<part type="aluminum sheet" number="9" />
+			<part type="plastic sheet" number="30" />
+			<part type="fiberglass" number="15" />
+			<part type="algae tank" number="5" />
+			<part type="plastic pipe" number="5" />
+			<part type="valve" number="15" />
+			<part type="electrical wire" number="15" />
+			<part type="wire connector" number="15" />
 		</building>
 -->
 		<!-- Laboratory building project for refitting or salvaging. -->
 		<building name="Laboratory" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="190" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="gas tank" number="5" />
-			<part name="air duct" number="10" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="190" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="gas tank" number="5" />
+			<part type="air duct" number="10" />			
 		</building>
 
 		<!-- Garage building project for refitting or salvaging. -->
 		<building name="Garage" width="12.0" length="16.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.5" skill-required="3" frame="Garage Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="486" />			
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="Motor 30 kW" number="1" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="10" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="aerogel tile" number="486" />			
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="Motor 30 kW" number="1" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="10" />			
 		</building>
 
 		<!-- Workshop building project for refitting or salvaging. -->
 		<building name="Workshop" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="10" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="10" />			
 		</building>
 
 		<!-- Astronomy observatory building project for refitting or salvaging. -->
 		<building name="Astronomy Observatory" width="7.0" length="7.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="5" frame="Round Frame" >
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
-			<part name="glass sheet" number="10" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="7" />			
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />
+			<part type="glass sheet" number="10" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="7" />			
 		</building>
 
 		<!-- Small areothermal well for generating electricity. -->
 		<building name="Small Areothermal Well" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Areothermal Well Frame" >
-			<resource name="water" amount="500.0" />
-			<part name="condenser coil" number="1" />
-			<part name="steel pipe" number="10" />
-			<part name="water pump large" number="1" />
-			<part name="turbine generator" number="1" />
-			<part name="valve" number="5" />
-			<part name="gasket" number="5" />
-			<part name="water tank" number="1" />
-			<part name="fiberglass cloth" number="10" />
-			<part name="power cable" number="2" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
+			<resource type="water" amount="500.0" />
+			<part type="condenser coil" number="1" />
+			<part type="steel pipe" number="10" />
+			<part type="water pump large" number="1" />
+			<part type="turbine generator" number="1" />
+			<part type="valve" number="5" />
+			<part type="gasket" number="5" />
+			<part type="water tank" number="1" />
+			<part type="fiberglass cloth" number="10" />
+			<part type="power cable" number="2" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
@@ -1122,154 +1122,154 @@
 		<building name="Large Areothermal Well" width="10.0" length="15.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Large Areothermal Well Frame" >
-			<resource name="water" amount="1500.0" />
-			<part name="condenser coil" number="2" />
-			<part name="steel pipe" number="20" />
-			<part name="water pump large" number="3" />
-			<part name="turbine generator" number="2" />
-			<part name="valve" number="15" />
-			<part name="gasket" number="15" />
-			<part name="water tank" number="2" />
-			<part name="fiberglass cloth" number="20" />
-			<part name="power cable" number="2" />
-			<part name="electrical wire" number="40" />
-			<part name="wire connector" number="40" />
+			<resource type="water" amount="1500.0" />
+			<part type="condenser coil" number="2" />
+			<part type="steel pipe" number="20" />
+			<part type="water pump large" number="3" />
+			<part type="turbine generator" number="2" />
+			<part type="valve" number="15" />
+			<part type="gasket" number="15" />
+			<part type="water tank" number="2" />
+			<part type="fiberglass cloth" number="20" />
+			<part type="power cable" number="2" />
+			<part type="electrical wire" number="40" />
+			<part type="wire connector" number="40" />
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Outpost Hub" width="10.0" length="10.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="3" frame="Round Vaulted Brick Frame" >
-		 	<resource name="cement" amount="150.0" />
-		 	<resource name="concrete" amount="150.0" />		 	
-			<part name="aerogel tile" number="10" />		 	
-			<part name="steel pipe" number="6" />
-			<part name="plastic pipe" number="8" />
-			<part name="valve" number="10" />
-			<part name="gasket" number="10" />
-			<part name="plastic tubing" number="6" />
-			<part name="power cable" number="2" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="plastic bottle" number="50" />
-			<part name="gas tank" number="5" />
-			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="air duct" number="10" />			
+		 	<resource type="cement" amount="150.0" />
+		 	<resource type="concrete" amount="150.0" />		 	
+			<part type="aerogel tile" number="10" />		 	
+			<part type="steel pipe" number="6" />
+			<part type="plastic pipe" number="8" />
+			<part type="valve" number="10" />
+			<part type="gasket" number="10" />
+			<part type="plastic tubing" number="6" />
+			<part type="power cable" number="2" />
+			<part type="electrical wire" number="20" />
+			<part type="wire connector" number="20" />
+			<part type="plastic bottle" number="50" />
+			<part type="gas tank" number="5" />
+			<part type="fuel tank" number="1" />
+			<part type="water tank" number="1" />
+			<part type="air duct" number="10" />			
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Storage Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
-			<resource name="polyester resin" amount="2.0" />
-			<resource name="styrene" amount="1.0" />
-			<resource name="polyethylene" amount="10.0" />
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="7" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="fiberglass cloth" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="7" />
-			<part name="wire connector" number="7" />
-			<part name="air duct" number="3" />			
+			<resource type="polyester resin" amount="2.0" />
+			<resource type="styrene" amount="1.0" />
+			<resource type="polyethylene" amount="10.0" />
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="7" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="fiberglass cloth" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="7" />
+			<part type="wire connector" number="7" />
+			<part type="air duct" number="3" />			
 		</building>
 
 		<building name="Loading Dock Garage" width="15.0" length="18.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.5" skill-required="4" frame="Large Garage Brick Frame" >
-		 	<resource name="cement" amount="100.0" />
-		 	<resource name="concrete" amount="100.0" />	
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />		
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="valve" number="7" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="20" />			
+		 	<resource type="cement" amount="100.0" />
+		 	<resource type="concrete" amount="100.0" />	
+			<resource type="polyester resin" amount="25.0" />
+			<resource type="styrene" amount="15.0" />
+			<resource type="polyethylene" amount="50.0" />		
+			<part type="steel sheet" number="10" />
+			<part type="aluminum sheet" number="10" />
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="7" />
+			<part type="valve" number="7" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="20" />			
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Mining Lab" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
-		 	<resource name="cement" amount="50.0" />
-		 	<resource name="concrete" amount="50.0" />		 	
-			<part name="steel pipe" number="3" />
-			<part name="plastic pipe" number="10" />
-			<part name="valve" number="10" />
-			<part name="gasket" number="10" />
-			<part name="plastic tubing" number="10" />
-			<part name="power cable" number="10" />
-			<part name="electrical wire" number="50" />
-			<part name="wire connector" number="50" />
-			<part name="plastic bottle" number="25" />
-			<part name="Motor 10 kW" number="1" />
-			<part name="brick" number="100" />
-			<part name="air duct" number="5" />			
+		 	<resource type="cement" amount="50.0" />
+		 	<resource type="concrete" amount="50.0" />		 	
+			<part type="steel pipe" number="3" />
+			<part type="plastic pipe" number="10" />
+			<part type="valve" number="10" />
+			<part type="gasket" number="10" />
+			<part type="plastic tubing" number="10" />
+			<part type="power cable" number="10" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="plastic bottle" number="25" />
+			<part type="Motor 10 kW" number="1" />
+			<part type="brick" number="100" />
+			<part type="air duct" number="5" />			
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Inground Greenhouse" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Vaulted Glass Brick Frame" >
-		 	<resource name="polyester resin" amount="5.0" />
-			<resource name="styrene" amount="1.0" />
-			<resource name="polyethylene" amount="10.0" />
-			<part name="aerogel tile" number="15" />				
-			<part name="aluminum sheet" number="5" />
-			<part name="insulation board" number="5" />			
-			<part name="plastic sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="air duct" number="7" />			
+		 	<resource type="polyester resin" amount="5.0" />
+			<resource type="styrene" amount="1.0" />
+			<resource type="polyethylene" amount="10.0" />
+			<part type="aerogel tile" number="15" />				
+			<part type="aluminum sheet" number="5" />
+			<part type="insulation board" number="5" />			
+			<part type="plastic sheet" number="10" />
+			<part type="fiberglass" number="5" />
+			<part type="plastic pipe" number="5" />
+			<part type="valve" number="5" />
+			<part type="electrical wire" number="5" />
+			<part type="wire connector" number="5" />
+			<part type="air duct" number="7" />			
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 
 		<building name="Hallway" width="2.0" length="-1.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="0.2" skill-required="1" frame="Hallway frame" >
-		    <part name="plastic sheet" number="2" />
-		    <part name="plastic pipe" number="3" />
-			<part name="valve" number="4" />
-			<part name="gasket" number="4" />
-			<part name="electrical wire" number="3" />
-			<part name="wire connector" number="3" />
-			<part name="air duct" number="1" />			
+		    <part type="plastic sheet" number="2" />
+		    <part type="plastic pipe" number="3" />
+			<part type="valve" number="4" />
+			<part type="gasket" number="4" />
+			<part type="electrical wire" number="3" />
+			<part type="wire connector" number="3" />
+			<part type="air duct" number="1" />			
 		</building>
 
 		<building name="Tunnel" width="3.0" length="-1.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="0.3" skill-required="1" frame="Brick Tunnel Frame" >
-			<part name="plastic pipe" number="3" />
-			<part name="valve" number="4" />
-			<part name="gasket" number="4" />
-			<part name="electrical wire" number="3" />
-			<part name="wire connector" number="3" />
-			<part name="plastic bottle" number="15" />
-			<part name="air duct" number="1" />			
+			<part type="plastic pipe" number="3" />
+			<part type="valve" number="4" />
+			<part type="gasket" number="4" />
+			<part type="electrical wire" number="3" />
+			<part type="wire connector" number="3" />
+			<part type="plastic bottle" number="15" />
+			<part type="air duct" number="1" />			
 			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
+				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
 

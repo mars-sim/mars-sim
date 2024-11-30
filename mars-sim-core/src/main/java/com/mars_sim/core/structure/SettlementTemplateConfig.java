@@ -22,14 +22,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Configuration loader that creates SettlementTemplates
  */
 public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementTemplate> {
-
-    private static final Logger logger = Logger.getLogger(SettlementTemplateConfig.class.getName());
 
     private static final String BUILDING_PACKAGE = "building-package";
     private static final String BUILDING = "building";
@@ -57,7 +54,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String SPONSOR = "sponsor";
     private static final String RESUPPLY = "resupply";
     private static final String RESUPPLY_MISSION = "resupply-mission";
-    private static final String AMOUNT = "amount";
     private static final String PART = "part";
     private static final String PART_PACKAGE = "part-package";
     private static final String RESOURCE = "resource";
@@ -433,21 +429,9 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         }
 
         // Load parts
-        Map<Part, Integer> newParts = new HashMap<>();
         List<Element> partNodes = supplyElement.getChildren(PART);
-        for (Element partElement : partNodes) {
-            String partType = partElement.getAttributeValue(TYPE);
-            Part part = (Part) ItemResourceUtil.findItemResource(partType);
-            if (part == null)
-                logger.severe(partType + " shows up in "
-                        + context
-                        + " but doesn't exist in parts.xml.");
-            else {
-                int partNumber = ConfigHelper.getAttributeInt(partElement, NUMBER);
-                newParts.put(part, partNumber);
-            }
-        }
-
+        Map<Part, Integer> newParts = ConfigHelper.parsePartList(context, partNodes);
+        
         // Load part packages
         List<Element> partPackageNodes = supplyElement.getChildren(PART_PACKAGE);
         for (Element partPackageElement : partPackageNodes) {

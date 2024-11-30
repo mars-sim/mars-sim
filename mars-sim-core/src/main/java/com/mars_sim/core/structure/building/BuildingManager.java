@@ -147,11 +147,8 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
-		this.settlement = settlement;
-		this.settlementID = settlement.getIdentifier();
-
-		// Construct all buildings in the settlement.
-		buildings = new UnitSet<>();
+		this(settlement);
+		
 		if (buildingTemplates != null) {
 			for(var template : buildingTemplates) {
 				addBuilding(Building.createBuilding(template, settlement), template, false);
@@ -177,7 +174,7 @@ public class BuildingManager implements Serializable {
 	 * @param buildingTemplates the settlement's building templates.
 	 * @throws Exception if buildings cannot be constructed.
 	 */
-	public BuildingManager(Settlement settlement, String name) {
+	public BuildingManager(Settlement settlement) {
 		this.settlement = settlement;
 		this.settlementID = settlement.getIdentifier();
 
@@ -1637,7 +1634,7 @@ public class BuildingManager implements Serializable {
 			if (newBuilding) {
 				ConstructionStageInfo buildingConstInfo = ConstructionUtil.getConstructionStageInfo(buildingType);
 				if (buildingConstInfo != null) {
-					ConstructionStageInfo frameConstInfo = ConstructionUtil.getPrerequisiteStage(buildingConstInfo);
+					ConstructionStageInfo frameConstInfo = buildingConstInfo.getPrerequisiteStage();
 					if (frameConstInfo != null) {
 						// Check if frame is not constructable.
 						if (!frameConstInfo.isConstructable()) {
@@ -1721,7 +1718,7 @@ public class BuildingManager implements Serializable {
 			ConstructionStageInfo buildingStageInfo = ConstructionUtil
 					.getConstructionStageInfo(building.getBuildingType());
 			if (buildingStageInfo != null) {
-				ConstructionStageInfo frameStageInfo = ConstructionUtil.getPrerequisiteStage(buildingStageInfo);
+				ConstructionStageInfo frameStageInfo = buildingStageInfo.getPrerequisiteStage();
 				if (frameStageInfo != null) {
 					if (frameStageInfo.getName().equals(frameName)) {
 						result = true;

@@ -252,38 +252,22 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
-     * Gets the next construction stage type.
-     * 
-     * @return next construction stage type or null if none.
-     */
-    public String getNextStageType() {
-        String result = null;
-
-        if (buildingStage != null) result = null;
-        else if (frameStage != null) result = ConstructionStageInfo.BUILDING;
-        else if (foundationStage != null) result = ConstructionStageInfo.FRAME;
-        else result = ConstructionStageInfo.FOUNDATION;
-
-        return result;
-    }
-
-    /**
      * Adds a new construction stage to the site.
      * 
      * @param stage the new construction stage.
      * @throws Exception if error adding construction stage.
      */
     public void addNewStage(ConstructionStage stage) {
-        if (ConstructionStageInfo.FOUNDATION.equals(stage.getInfo().getType())) {
+        if (ConstructionStageInfo.Stage.FOUNDATION.equals(stage.getInfo().getType())) {
             if (foundationStage != null) throw new IllegalStateException("Foundation stage already exists.");
             foundationStage = stage;
         }
-        else if (ConstructionStageInfo.FRAME.equals(stage.getInfo().getType())) {
+        else if (ConstructionStageInfo.Stage.FRAME.equals(stage.getInfo().getType())) {
             if (frameStage != null) throw new IllegalStateException("Frame stage already exists");
             if (foundationStage == null) throw new IllegalStateException("Foundation stage hasn't been added yet.");
             frameStage = stage;
         }
-        else if (ConstructionStageInfo.BUILDING.equals(stage.getInfo().getType())) {
+        else if (ConstructionStageInfo.Stage.BUILDING.equals(stage.getInfo().getType())) {
             if (buildingStage != null) throw new IllegalStateException("Building stage already exists");
             if (frameStage == null) throw new IllegalStateException("Frame stage hasn't been added yet.");
             buildingStage = stage;
@@ -340,13 +324,13 @@ public class ConstructionSite extends FixedUnit {
      * @throws Exception if error removing the stage.
      */
     public void removeSalvagedStage(ConstructionStage stage) {
-        if (ConstructionStageInfo.BUILDING.equals(stage.getInfo().getType())) {
+        if (ConstructionStageInfo.Stage.BUILDING.equals(stage.getInfo().getType())) {
             buildingStage = null;
         }
-        else if (ConstructionStageInfo.FRAME.equals(stage.getInfo().getType())) {
+        else if (ConstructionStageInfo.Stage.FRAME.equals(stage.getInfo().getType())) {
             frameStage = null;
         }
-        else if (ConstructionStageInfo.FOUNDATION.equals(stage.getInfo().getType())) {
+        else if (ConstructionStageInfo.Stage.FOUNDATION.equals(stage.getInfo().getType())) {
             foundationStage = null;
         }
         else throw new IllegalStateException("Stage type: " + stage.getInfo().getType() + " not valid");

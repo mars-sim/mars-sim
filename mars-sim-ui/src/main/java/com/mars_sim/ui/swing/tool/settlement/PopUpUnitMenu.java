@@ -132,7 +132,7 @@ public class PopUpUnitMenu extends JPopupMenu {
                 else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
                 	ConstructionSite site = (ConstructionSite) unit;
                 	description = site.getStageInfo().getName();
-                	type = site.getStageInfo().getType();
+                	type = site.getStageInfo().getType().name().toLowerCase();
                 	name = site.getName();
                 }
                 else

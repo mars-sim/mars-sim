@@ -32,7 +32,7 @@ public class MockSettlement extends Settlement {
 		getEquipmentInventory().addCargoCapacity(Double.MAX_VALUE);
 
         // Initialize building manager
-        buildingManager = new BuildingManager(this, DEFAULT_NAME);
+        buildingManager = new BuildingManager(this);
 
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this,
