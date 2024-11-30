@@ -19,7 +19,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Unit test for the ConstructionSite class.
@@ -57,8 +57,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
         attachments.add(atth.getID());
 
-        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
-                attachments));
+        vehicles.add(new ConstructionVehicleType(VehicleType.LUV, attachments));
 
         ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info",
                 ConstructionStageInfo.Stage.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,

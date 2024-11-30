@@ -19,9 +19,7 @@ import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo.Stage;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 
 /**
@@ -163,13 +161,8 @@ public class ConstructionConfig {
             List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
             List<ConstructionVehicleType> vehicles = new ArrayList<>(vehicleList.size());
             for (Element vehicleElement : vehicleList) {
-                String vehicleType = vehicleElement.getAttributeValue(TYPE);
-
-                Class<? extends Vehicle> vehicleClass = null;
-                if (vehicleType.toLowerCase().contains("rover")) vehicleClass = Rover.class;
-                else if (vehicleType.equalsIgnoreCase(LightUtilityVehicle.NAME))
-                    vehicleClass = LightUtilityVehicle.class;
-                else throw new IllegalStateException("Unknown vehicle type: " + vehicleType);
+                var vehicleType = VehicleType.valueOf(ConfigHelper.convertToEnumName(
+                                    vehicleElement.getAttributeValue(TYPE)));
 
                 List<Element> attachmentPartList = vehicleElement.getChildren(ATTACHMENT_PART);
                 List<Integer> attachmentParts = new ArrayList<>(attachmentPartList.size());
@@ -178,7 +171,7 @@ public class ConstructionConfig {
                     attachmentParts.add(ItemResourceUtil.findIDbyItemResourceName(partName));
                 }
 
-                vehicles.add(new ConstructionVehicleType(vehicleType, vehicleClass, attachmentParts));
+                vehicles.add(new ConstructionVehicleType(vehicleType, attachmentParts));
             }
 
             ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stage, width, length,

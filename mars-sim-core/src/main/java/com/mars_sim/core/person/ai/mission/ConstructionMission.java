@@ -56,7 +56,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
- * Mission for construction a stage for a settlement building. TODO externalize
+ * Mission for construction a stage for a settlement building.
  * strings
  */
 public class ConstructionMission extends AbstractMission
@@ -144,7 +144,6 @@ public class ConstructionMission extends AbstractMission
 			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
 
 			// Determine construction site and stage.
-			// TODO Refactor.
 			int constructionSkill = 1;
 			if (startingMember.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) startingMember;
@@ -342,7 +341,6 @@ public class ConstructionMission extends AbstractMission
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		// TODO: Need to pick the best one, not the first one
 		super(missionType, (Worker) members.toArray()[0]);
 
 		this.settlement = settlement;
@@ -458,19 +456,16 @@ public class ConstructionMission extends AbstractMission
 	/**
 	 * Reserves construction vehicles for the mission.
 	 */
-	public void reserveConstructionVehicles() {
+	private void reserveConstructionVehicles() {
 		if (stage != null) {
 			// Construct a new list of construction vehicles
 			constructionVehicles = new ArrayList<>();
-			Iterator<ConstructionVehicleType> j = stage.getInfo().getVehicles().iterator();
-			while (j.hasNext()) {
-				ConstructionVehicleType vehicleType = j.next();
+			for(ConstructionVehicleType vehicleType : stage.getInfo().getVehicles()) {
 				// Only handle light utility vehicles for now.
-				if (vehicleType.getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName())) {
+				if (vehicleType.getVehicleType() == VehicleType.LUV) {
 					LightUtilityVehicle luv = reserveLightUtilityVehicle();
 					if (luv != null) {
 						constructionVehicles.add(luv);
-//						luv.setMission(this);
 						claimVehicle(luv);
 					} else {
 						logger.warning(settlement, "BuildingConstructionMission : LUV not available");
@@ -492,7 +487,6 @@ public class ConstructionMission extends AbstractMission
 		}
 
 		v.setReservedForMission(true);
-//		v.addUnitListener(this);
 		v.setMission(this);
 		
 		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
@@ -604,7 +598,7 @@ public class ConstructionMission extends AbstractMission
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (SELECT_SITE_PHASE.equals(getPhase())) {
-			selectSitePhase(member);
+			selectSitePhase();
 		} else if (PREPARE_SITE_PHASE.equals(getPhase())) {
 			prepareSitePhase(member);
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
@@ -617,7 +611,7 @@ public class ConstructionMission extends AbstractMission
 	 * 
 	 * @param member
 	 */
-	private void selectSitePhase(Worker member) {
+	private void selectSitePhase() {
 		// Need player to acknowledge the site location before proceeding
 		if (site.isSiteLocConfirmed()) {
 			setPhaseEnded(true);
@@ -646,8 +640,7 @@ public class ConstructionMission extends AbstractMission
 	private void digRegolith(Worker member) {
 		// If material not available, prompt settlers to dig local regolith
 		Person p = (Person) member;
-		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)
-			&& member.getUnitType() == UnitType.PERSON) {
+		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)) {
 			
 			Task currentTask = p.getMind().getTaskManager().getTask();
 			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(DigLocalRegolith.NAME)) {
@@ -677,7 +670,6 @@ public class ConstructionMission extends AbstractMission
 		}
 		
 		// Check if site preparation time has expired
-		// TODO: generate a task to truly model what settlers need to do to prep a site
 		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
 			// Automatically confirm the site location after a certain period of time
 			site.setSiteLocConfirmed(true);
@@ -694,7 +686,7 @@ public class ConstructionMission extends AbstractMission
 	 */
 	private boolean loadAvailableConstructionMaterials() {
 		boolean enough = true;
-		// TODO: account for the situation when all the input materials are ready 
+		// Account for the situation when all the input materials are ready 
 		// but since some processes take time to produce the output materials (the construction materials)
 		// It should simply wait for it to finish, without having to compute if resources are 
 		// missing over and over again.
@@ -797,7 +789,6 @@ public class ConstructionMission extends AbstractMission
 			// Assign construction task to member.
 			Person p = (Person) member;
 			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
-				&& member.getUnitType() == UnitType.PERSON
 				&& ConstructBuilding.canConstruct(p, site)) {
 
 				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
@@ -1396,7 +1387,6 @@ public class ConstructionMission extends AbstractMission
 		site.setFacing(facingDegrees);
 		site.setLength(newLength);
 		
-		// TODO: is there any situation it returns false
 		return true;
 	}
 
@@ -1539,13 +1529,6 @@ public class ConstructionMission extends AbstractMission
 				rectRotation -= 360D;
 			}
 
-			// Cause each the site to face a random direction each time this method is run
-//			int rand = RandomUtil.getRandomInt(4);
-//			rectRotation += 90 * rand;
-//			if (rectRotation > 360D) {
-//				rectRotation -= 360D;
-//			}
-
 			double distance = structureDistance + separationDistance;
 			double radianDirection = Math.PI * direction / 180D;
 			LocalPosition rectCenter = building.getPosition().getPosition(distance, radianDirection);
@@ -1566,6 +1549,7 @@ public class ConstructionMission extends AbstractMission
 		return goodPosition;
 	}
 	
+	@Override
 	protected void setPhase(MissionPhase phase, String s) {
 		site.setPhase(phase);
 		super.setPhase(phase, s);

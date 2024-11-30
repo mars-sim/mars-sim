@@ -27,7 +27,6 @@ import com.mars_sim.core.person.ai.task.SalvageBuilding;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.construction.ConstructionManager;
@@ -43,6 +42,7 @@ import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**s
  * Mission for salvaging a construction stage at a building construction site.
@@ -88,9 +88,7 @@ public class SalvageMission extends AbstractMission
 	private ConstructionSite constructionSite;
 	private ConstructionStage constructionStage;
 	
-	private List<GroundVehicle> constructionVehicles;
-	private List<Integer> luvAttachmentParts;
-	
+	private List<GroundVehicle> constructionVehicles;	
 
 	/**
 	 * Constructor.
@@ -115,13 +113,8 @@ public class SalvageMission extends AbstractMission
 			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
 
 			// Determine construction site and stage.
-			// TODO Refactor.
-			int constructionSkill = 0;
-			if (startingMember instanceof Person person) {
-				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			} else if (startingMember instanceof Robot robot) {
-				constructionSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			}
+			int constructionSkill = startingMember.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+
 			ConstructionManager manager = settlement.getConstructionManager();
 			SalvageValues values = manager.getSalvageValues();
 			values.clearCache();
@@ -347,7 +340,7 @@ public class SalvageMission extends AbstractMission
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			prepareSitePhase(member);
+			prepareSitePhase();
 		} else if (SALVAGE_PHASE.equals(getPhase())) {
 			salvagePhase(member);
 		}
@@ -368,15 +361,6 @@ public class SalvageMission extends AbstractMission
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 		return new HashMap<>(0);
-	}
-
-	/**
-	 * Performs the prepare site phase.
-	 * 
-	 * @param member the mission member performing the phase.
-	 */
-	private void prepareSitePhase(Worker member) {
-		prepareSitePhase();
 	}
 
 	private void prepareSitePhase() {
@@ -483,11 +467,9 @@ public class SalvageMission extends AbstractMission
 	private void reserveConstructionVehicles() {
 		if (constructionStage != null) {
 			constructionVehicles = new ArrayList<>();
-			Iterator<ConstructionVehicleType> j = constructionStage.getInfo().getVehicles().iterator();
-			while (j.hasNext()) {
-				ConstructionVehicleType vehicleType = j.next();
+			for(ConstructionVehicleType vehicleType : constructionStage.getInfo().getVehicles()) {
 				// Only handle light utility vehicles for now.
-				if (vehicleType.getVehicleClass() == LightUtilityVehicle.class) {
+				if (vehicleType.getVehicleType() == VehicleType.LUV) {
 					LightUtilityVehicle luv = reserveLightUtilityVehicle();
 					if (luv != null)
 						constructionVehicles.add(luv);
@@ -504,6 +486,7 @@ public class SalvageMission extends AbstractMission
 	 * Retrieve LUV attachment parts from the settlement.
 	 */
 	private void retrieveConstructionLUVParts() {
+  List<Integer> luvAttachmentParts;
 		if (constructionStage != null) {
 			luvAttachmentParts = new ArrayList<>();
 			int vehicleIndex = 0;

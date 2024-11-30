@@ -55,7 +55,7 @@
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="0.4" skill-required="1" >
 			<resource type="concrete" amount="6.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
 			</vehicle>
@@ -65,7 +65,7 @@
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="0.8" skill-required="1" >
 			<resource type="concrete" amount="25.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
 			</vehicle>
@@ -75,7 +75,7 @@
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
 			<resource type="concrete" amount="50.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
 			</vehicle>
@@ -86,7 +86,7 @@
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
 			<resource type="concrete" amount="63.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
 			</vehicle>
@@ -96,7 +96,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="1.4" skill-required="1" >
 			<resource type="concrete" amount="81.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -106,7 +106,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="1.8" skill-required="1" >
 			<resource type="concrete" amount="88.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -116,7 +116,7 @@
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="2.4" skill-required="1" >
 			<resource type="concrete" amount="216.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
 			</vehicle>
@@ -126,7 +126,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
 			<resource type="concrete" amount="45.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -136,7 +136,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="12.0" skill-required="1" >
 			<resource type="concrete" amount="80.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -146,7 +146,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="15.0" skill-required="1" >
 			<resource type="concrete" amount="140.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -156,7 +156,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
 			<resource type="concrete" amount="369.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -167,7 +167,7 @@
 		 constructable="true" salvagable="true" work-time="10.0" skill-required="3" >
 		 	<part type="bore drill bit" number="1" />
 		 	<part type="bore drill pipe" number="20" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 				<attachment-part type="drilling rig" />
 			</vehicle>
@@ -178,7 +178,7 @@
 		 constructable="true" salvagable="true" work-time="15.0" skill-required="4" >
 		 	<part type="bore drill bit" number="4" />
 		 	<part type="bore drill pipe" number="60" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 				<attachment-part type="drilling rig" />
 			</vehicle>
@@ -190,7 +190,7 @@
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
 			<resource type="concrete" amount="100.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
 			</vehicle>
@@ -202,7 +202,7 @@
 		 north-south-alignment="length" base-level="-1"
 		 constructable="true" salvagable="true" work-time="2.0" skill-required="1" >
 		 	<resource type="concrete" amount="150.0" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
@@ -221,7 +221,7 @@
 			<part type="insulation board" number="4" />				
 			<part type="steel truss" number="20" />
 			<part type="steel cable" number="6" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -234,7 +234,7 @@
 			<part type="insulation board" number="4" />			
 			<part type="steel truss" number="10" />
 			<part type="steel sheet" number="5" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -246,7 +246,7 @@
 			<resource type="concrete" amount="50.0" />
 			<part type="insulation board" number="6" />				
 			<part type="steel truss" number="20" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -256,7 +256,7 @@
 		 salvagable="true" work-time="0.5" skill-required="1" foundation="Surface Foundation 2x3" >
 			<resource type="concrete" amount="6.0" />
 			<part type="brick" number="200" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -266,7 +266,7 @@
 		 salvagable="true" work-time="1.0" skill-required="1" foundation="Subsurface Foundation 5x5x3" >
 			<resource type="concrete" amount="25.0" />
 			<part type="brick" number="250" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -415,7 +415,7 @@
 			<resource type="acetylene" amount="0.5" />				
 			<part type="steel truss" number="10" />
 			<part type="steel sheet" number="15" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -427,7 +427,7 @@
 			<resource type="acetylene" amount="1.0" />				
 			<part type="steel truss" number="20" />
 			<part type="steel sheet" number="30" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -437,7 +437,7 @@
 		 salvagable="true" work-time="1.2" skill-required="2" foundation="Subsurface Foundation 10x10x3" >
 			<resource type="concrete" amount="100.0" />
 			<part type="brick" number="1200" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -460,7 +460,7 @@
 			<part type="wire connector" number="50" />
 			<part type="power cable" number="20" />
 			<part type="gasket" number="40" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -482,7 +482,7 @@
 			<part type="electrical wire" number="6" />
 			<part type="wire connector" number="6" />
 			<part type="power cable" number="3" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -503,7 +503,7 @@
 		 salvagable="true" work-time="0.2" skill-required="1" foundation="Subsurface Foundation Variable Size" >
 			<resource type="concrete" amount="3.0" />			
 			<part type="brick" number="90" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</frame>
@@ -521,7 +521,7 @@
 			<part type="power cable" number="6" />
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -535,7 +535,7 @@
 			<part type="Stepper Motor" number="4" />
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -555,7 +555,7 @@
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />
 			<part type="water tank" number="1" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -572,7 +572,7 @@
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />
 			<part type="fuel tank" number="5" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -672,7 +672,7 @@
 			<part type="brick" number="100" />
 			<part type="gas tank" number="3" />
 			<part type="air duct" number="5" />			
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -694,7 +694,7 @@
 			<part type="wire connector" number="10" />
 			<part type="plastic bottle" number="25" />
 			<part type="air duct" number="3" />				
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -711,7 +711,7 @@
 			<part type="power cable" number="6" />
 			<part type="electrical wire" number="60" />
 			<part type="wire connector" number="60" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -725,7 +725,7 @@
 			<part type="power cable" number="2" />
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1113,7 +1113,7 @@
 			<part type="power cable" number="2" />
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1134,7 +1134,7 @@
 			<part type="power cable" number="2" />
 			<part type="electrical wire" number="40" />
 			<part type="wire connector" number="40" />
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1158,7 +1158,7 @@
 			<part type="fuel tank" number="1" />
 			<part type="water tank" number="1" />
 			<part type="air duct" number="10" />			
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1198,7 +1198,7 @@
 			<part type="electrical wire" number="5" />
 			<part type="wire connector" number="5" />
 			<part type="air duct" number="20" />			
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1220,7 +1220,7 @@
 			<part type="Motor 10 kW" number="1" />
 			<part type="brick" number="100" />
 			<part type="air duct" number="5" />			
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1241,7 +1241,7 @@
 			<part type="electrical wire" number="5" />
 			<part type="wire connector" number="5" />
 			<part type="air duct" number="7" />			
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
@@ -1268,7 +1268,7 @@
 			<part type="wire connector" number="3" />
 			<part type="plastic bottle" number="15" />
 			<part type="air duct" number="1" />			
-			<vehicle type="light utility vehicle" >
+			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>

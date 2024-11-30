@@ -13,7 +13,7 @@ import java.util.List;
 import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 import junit.framework.TestCase;
 
@@ -33,8 +33,7 @@ public class ConstructionVehicleTypeTest extends TestCase {
         Part p = ItemResourceUtil.createItemResource("attachment part", 1, "test resource description", type, 1D, 1);
         attachments.add(p.getID());
 
-        vehicleType = new ConstructionVehicleType("Light Utility Vehicle",
-                LightUtilityVehicle.class, attachments);
+        vehicleType = new ConstructionVehicleType(VehicleType.LUV, attachments);
     }
 
     /*
@@ -53,17 +52,9 @@ public class ConstructionVehicleTypeTest extends TestCase {
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
-     * ConstructionVehicleType.getVehicleClass()'
-     */
-    public void testGetVehicleClass() {
-        assertEquals(LightUtilityVehicle.class, vehicleType.getVehicleClass());
-    }
-
-    /*
-     * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionVehicleType.getVehicleType()'
      */
     public void testGetVehicleType() {
-        assertEquals("Light Utility Vehicle", vehicleType.getVehicleType());
+        assertEquals(VehicleType.LUV, vehicleType.getVehicleType());
     }
 }
