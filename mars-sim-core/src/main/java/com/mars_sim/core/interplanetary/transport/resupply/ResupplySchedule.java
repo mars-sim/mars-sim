@@ -8,7 +8,6 @@ package com.mars_sim.core.interplanetary.transport.resupply;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import com.mars_sim.core.time.EventSchedule;
 
 /**
@@ -20,7 +19,7 @@ public class ResupplySchedule implements Serializable {
 
     // Data members
     private String name;
-    private SupplyManifest supplies;
+    private ResupplyManifest supplies;
     private EventSchedule schedule;
 
     
@@ -30,7 +29,7 @@ public class ResupplySchedule implements Serializable {
      * @param maximum
      * @param frequency
      */
-    public ResupplySchedule(String name, EventSchedule schedule, SupplyManifest supplies) {
+    public ResupplySchedule(String name, EventSchedule schedule, ResupplyManifest supplies) {
         this.name = name;
         this.schedule = schedule;
         this.supplies = supplies;
@@ -57,7 +56,7 @@ public class ResupplySchedule implements Serializable {
     /**
      * The payload to be delivered every schedule.
      */
-    public SupplyManifest getManifest() {
+    public ResupplyManifest getManifest() {
         return supplies;
     }
 

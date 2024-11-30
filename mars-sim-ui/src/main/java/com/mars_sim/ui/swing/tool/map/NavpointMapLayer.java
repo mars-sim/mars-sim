@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.map;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +28,27 @@ import com.mars_sim.ui.swing.ImageLoader;
  * The NavpointMapLayer is a graphics layer to display mission navpoints.
  */
 public class NavpointMapLayer implements MapLayer {
+	private class NavpointHotspot extends MapHotspot {
+
+		private Mission parent;
+		private NavPoint point;
+
+		protected NavpointHotspot(IntPoint center, Mission parent, NavPoint point) {
+			super(center, 5);
+			this.parent = parent;
+			this.point = point;
+		}
+
+		/**
+		 * Create a structured text summary for a tooltip of the Mission navpoint
+		 */
+		@Override
+		public String getTooltipText() {
+			return "<html>Mission: " + parent.getName()
+					+ "<br>Nav Point: " + point.getDescription()
+					+ "</html>";
+		}	
+	}
 
 	// Static members
 	private static final String BLUE_ICON_NAME = "map/flag_blue";
@@ -92,21 +114,21 @@ public class NavpointMapLayer implements MapLayer {
 	 */
 	@Override
 	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
+		List<MapHotspot> results;
 		if (singleMission != null) {
 			if (singleMission instanceof VehicleMission vm)
-				displayMission(vm, mapCenter, baseMap, g);
+				results = displayMission(vm, mapCenter, baseMap, g);
+			else
+				results = Collections.emptyList();
 		} else {
+			results = new ArrayList<>();
 			for (Mission mission : missionManager.getMissions()) {
 				if (mission instanceof VehicleMission vm)
-					displayMission(vm, mapCenter, baseMap, g);
+					results.addAll(displayMission(vm, mapCenter, baseMap, g));
 			}
 		}
 
-		// Make sure selected navpoint is always on top.
-		if (selectedNavpoint != null)
-			displayNavpoint(selectedNavpoint, mapCenter, baseMap, g);
-
-		return Collections.emptyList();
+		return results;
 	}
 
 	/**
@@ -117,21 +139,29 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayMission(VehicleMission mission, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	private List<MapHotspot> displayMission(VehicleMission mission, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+		List<MapHotspot> results = new ArrayList<>();
 		for (NavPoint np : mission.getNavpoints()) {
-			displayNavpoint(np, mapCenter, baseMap, g);
+			var hotspot = displayNavpoint(mission, np, mapCenter, baseMap, g);
+			if (hotspot != null) {
+				results.add(hotspot);
+			}
 		}
+
+		return results;
 	}
 
 	/**
 	 * Displays a navpoint.
-	 * 
+	 *
+	 * @param mission   The Mission of the nav point
 	 * @param navpoint  the navpoint to display.
 	 * @param mapCenter the location of the center of the map.
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
+	 * @return 
 	 */
-	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	private NavpointHotspot displayNavpoint(Mission mission, NavPoint navpoint, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
 
 		if (mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
 			MapMetaData mapType = baseMap.getMapMetaData();
@@ -152,6 +182,10 @@ public class NavpointMapLayer implements MapLayer {
 
 			// Draw the navpoint icon.
 			navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
+
+			return new NavpointHotspot(location, mission, navpoint);
 		}
+
+		return null;
 	}
 }

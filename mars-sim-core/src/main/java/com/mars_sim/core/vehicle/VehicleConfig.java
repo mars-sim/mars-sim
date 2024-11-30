@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -20,10 +19,8 @@ import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 
 /**
@@ -31,9 +28,6 @@ import com.mars_sim.core.science.ScienceType;
  * to get the information.
  */
 public class VehicleConfig {
-
-
-	private static final Logger logger = Logger.getLogger(VehicleConfig.class.getName());
 	
 	// Element names
 	private static final String VEHICLE = "vehicle";
@@ -57,7 +51,6 @@ public class VehicleConfig {
 	private static final String CARGO = "cargo";
 	private static final String TOTAL_CAPACITY = "total-capacity";
 	private static final String CAPACITY = "capacity";
-	private static final String RESOURCE = "resource";
 	private static final String SICKBAY = "sickbay";
 	private static final String LAB = "lab";
 	private static final String TECH_LEVEL = "tech-level";
@@ -81,7 +74,7 @@ public class VehicleConfig {
 	private static final String VALUE = "value";
 	private static final String NUMBER = "number";
 
-	private transient Map<String, VehicleSpec> vehicleSpecMap;
+	private Map<String, VehicleSpec> vehicleSpecMap;
 	
 	/**
 	 * Constructor.
@@ -111,170 +104,152 @@ public class VehicleConfig {
 		Element root = vehicleDoc.getRootElement();
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
 		for (Element vehicleElement : vehicleNodes) {
-			String name = vehicleElement.getAttributeValue(NAME);
-			String model = vehicleElement.getAttributeValue(MODEL);
-			VehicleType type = VehicleType.valueOf(ConfigHelper.convertToEnumName(vehicleElement.getAttributeValue(TYPE)));
-
-			String baseImage = vehicleElement.getAttributeValue(BASE_IMAGE);
-			if (baseImage == null) {
-				baseImage = type.name().toLowerCase().replace(" ", "_");
-			}
-
-			// vehicle description
-			double width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
-			double length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
-			String description = "No Description is Available.";
-			if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
-				description = vehicleElement.getChildText(DESCRIPTION);
-			}
-			
-			String powerSourceType = "None";
-			String fuelTypeStr = "None";
-			double powerValue = 0;
-			
-			Element powerSourceElement = vehicleElement.getChild(POWER_SOURCE);
-			powerSourceType = powerSourceElement.getAttributeValue(TYPE);
-			fuelTypeStr = powerSourceElement.getAttributeValue(FUEL);
-			powerValue = Double.parseDouble(powerSourceElement.getAttributeValue(VALUE));
-			
-			int battery = Integer.parseInt(vehicleElement.getChild(BATTERY_MODULE).getAttributeValue(NUMBER));
-			double energyPerModule = Double.parseDouble(vehicleElement.getChild(ENERGY_PER_MODULE).getAttributeValue(VALUE));
-			int fuelCell = Integer.parseInt(vehicleElement.getChild(FUEL_CELL_STACK).getAttributeValue(NUMBER));
-			
-			double drivetrainEff = Double
-					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
-			double baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
-			double basePower = Double.parseDouble(vehicleElement.getChild(BASE_POWER).getAttributeValue(VALUE));
-			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
-			
-			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
-
-			VehicleSpec vSpec = new VehicleSpec(name, type, model, description, baseImage, 
-					powerSourceType, fuelTypeStr, powerValue,
-					battery, energyPerModule, fuelCell, 
-					drivetrainEff, baseSpeed, basePower, emptyMass, 
-					crewSize);
-			
-			vSpec.setWidth(width);
-			vSpec.setLength(length);
-			
-			// Ground vehicle terrain handling ability
-			if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {
-				vSpec.setTerrainHandling(Double.parseDouble(vehicleElement.getChild(TERRAIN_HANDLING).getAttributeValue(VALUE)));
-			}
-
-			// cargo capacities
-			Element cargoElement = vehicleElement.getChild(CARGO);
-			if (cargoElement != null) {
-				Map<Integer, Double> cargoCapacityMap = new HashMap<>();
-				double resourceCapacity = 0D;
-				List<Element> capacityList = cargoElement.getChildren(CAPACITY);
-				for (Element capacityElement : capacityList) {
-					resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
-
-					// toLowerCase() is crucial in matching resource name
-					String resource = capacityElement.getAttributeValue(RESOURCE).toLowerCase();
-
-					AmountResource ar = ResourceUtil.findAmountResource(resource);
-					if (ar == null)
-						logger.severe(
-								resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
-					else
-						cargoCapacityMap.put(ar.getID(), resourceCapacity);		
-					
-				}
-				
-				double totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
-				vSpec.setCargoCapacity(totalCapacity, cargoCapacityMap);
-//				System.out.println(vSpec.getName() + ": " + cargoCapacityMap);
-//				System.out.println(vSpec.getCargoCapacity(vSpec.getFuelType()));
-			}
-
-			// Use the cargo capacity for performance analysis
-			vSpec.calculateDetails(manuConfig);
-			
-			// sickbay
-			if (!vehicleElement.getChildren(SICKBAY).isEmpty()) {
-				Element sickbayElement = vehicleElement.getChild(SICKBAY);
-				if (sickbayElement != null) {
-					int sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
-					int sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
-					vSpec.setSickBay(sickbayTechLevel, sickbayBeds);
-				}
-			}
-
-			// labs
-			if (!vehicleElement.getChildren(LAB).isEmpty()) {
-				Element labElement = vehicleElement.getChild(LAB);
-				if (labElement != null) {
-					List<ScienceType> labTechSpecialties = new ArrayList<>();
-					int labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
-					int labCapacity = Integer.parseInt(labElement.getAttributeValue(CAP_LEVEL));
-					for (Element tech : labElement.getChildren(TECH_SPECIALTY)) {
-						String scienceName = tech.getAttributeValue(VALUE);
-						labTechSpecialties
-								.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(scienceName)));
-					}
-					
-					vSpec.setLabSpec(labTechLevel, labCapacity, labTechSpecialties);
-				}
-			}
-
-			// attachments
-			if (!vehicleElement.getChildren(PART_ATTACHMENT).isEmpty()) {
-				List<Part> attachableParts = new ArrayList<>();
-				Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
-				int attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
-				for (Element part : attachmentElement.getChildren(PART)) {
-					attachableParts.add((Part) ItemResourceUtil
-							.findItemResource(((part.getAttributeValue(NAME)).toLowerCase())));
-				}
-				vSpec.setAttachments(attachmentSlots, attachableParts);
-			}
-
-			// airlock locations (optional).
-			Element airlockElement = vehicleElement.getChild(AIRLOCK);
-			if (airlockElement != null) {
-				LocalPosition airlockLoc = ConfigHelper.parseLocalPosition(airlockElement);
-				LocalPosition airlockInteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(INTERIOR_LOCATION));
-				LocalPosition airlockExteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(EXTERIOR_LOCATION));
-				
-				vSpec.setAirlock(airlockLoc, airlockInteriorLoc, airlockExteriorLoc);
-			}
-
-			// Activity spots.
-			Element activityElement = vehicleElement.getChild(ACTIVITY);
-			if (activityElement != null) {
-
-				// Initialize activity spot lists.
-				List<LocalPosition> operatorActivitySpots = new ArrayList<>();
-				List<LocalPosition> passengerActivitySpots = new ArrayList<>();
-				List<LocalPosition> sickBayActivitySpots = new ArrayList<>();
-				List<LocalPosition> labActivitySpots = new ArrayList<>();
-
-				for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
-					Element activitySpotElement = (Element) activitySpot;
-					LocalPosition spot = ConfigHelper.parseLocalPosition(activitySpotElement);
-					String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
-					if (OPERATOR_TYPE.equals(activitySpotType)) {
-						operatorActivitySpots.add(spot);
-					} else if (PASSENGER_TYPE.equals(activitySpotType)) {
-						passengerActivitySpots.add(spot);
-					} else if (SICKBAY_TYPE.equals(activitySpotType)) {
-						sickBayActivitySpots.add(spot);
-					} else if (LAB_TYPE.equals(activitySpotType)) {
-						labActivitySpots.add(spot);
-					}
-				}
-				
-				vSpec.setActivitySpots(operatorActivitySpots, passengerActivitySpots, sickBayActivitySpots, labActivitySpots);
-			}
+			var vSpec = parseVehicleSpec(vehicleElement, manuConfig);
 
 			// Keep results for later use
-			newMap.put(name.toLowerCase(), vSpec);
+			newMap.put(vSpec.getName().toLowerCase(), vSpec);
 		}
 		
 		vehicleSpecMap = Collections.unmodifiableMap(newMap);
+	}
+
+	private static VehicleSpec parseVehicleSpec(Element vehicleElement, ManufactureConfig manuConfig) {
+		String name = vehicleElement.getAttributeValue(NAME);
+		String model = vehicleElement.getAttributeValue(MODEL);
+		VehicleType type = ConfigHelper.getEnum(VehicleType.class, vehicleElement.getAttributeValue(TYPE));
+
+		String baseImage = vehicleElement.getAttributeValue(BASE_IMAGE);
+		if (baseImage == null) {
+			baseImage = type.name().toLowerCase().replace(" ", "_");
+		}
+
+		// vehicle description
+		double width = ConfigHelper.getAttributeDouble(vehicleElement, WIDTH);
+		double length = ConfigHelper.getAttributeDouble(vehicleElement, LENGTH);
+		String description = "No Description is Available.";
+		if (!vehicleElement.getChildren(DESCRIPTION).isEmpty()) {
+			description = vehicleElement.getChildText(DESCRIPTION);
+		}
+		
+		Element powerSourceElement = vehicleElement.getChild(POWER_SOURCE);
+		String powerSourceType = powerSourceElement.getAttributeValue(TYPE);
+		String fuelTypeStr = powerSourceElement.getAttributeValue(FUEL);
+		double powerValue = ConfigHelper.getAttributeDouble(powerSourceElement, VALUE);
+		
+		int battery = ConfigHelper.getAttributeInt(vehicleElement.getChild(BATTERY_MODULE),
+													NUMBER);
+		double energyPerModule = ConfigHelper.getAttributeDouble(vehicleElement.getChild(ENERGY_PER_MODULE),
+												VALUE);
+		int fuelCell = ConfigHelper.getAttributeInt(vehicleElement.getChild(FUEL_CELL_STACK), NUMBER);
+		
+		double drivetrainEff = ConfigHelper.getAttributeDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY),
+												VALUE);
+		double baseSpeed = ConfigHelper.getAttributeDouble(vehicleElement.getChild(BASE_SPEED), VALUE);
+		double basePower = ConfigHelper.getAttributeDouble(vehicleElement.getChild(BASE_POWER), VALUE);
+		double emptyMass = ConfigHelper.getAttributeDouble(vehicleElement.getChild(EMPTY_MASS), VALUE);
+		
+		int crewSize = ConfigHelper.getAttributeInt(vehicleElement.getChild(CREW_SIZE), VALUE);
+
+		VehicleSpec vSpec = new VehicleSpec(name, type, model, description, baseImage, 
+				powerSourceType, fuelTypeStr, powerValue,
+				battery, energyPerModule, fuelCell, 
+				drivetrainEff, baseSpeed, basePower, emptyMass, 
+				crewSize);
+		
+		vSpec.setWidth(width);
+		vSpec.setLength(length);
+		
+		// Ground vehicle terrain handling ability
+		if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {
+			vSpec.setTerrainHandling(ConfigHelper.getAttributeDouble(
+							vehicleElement.getChild(TERRAIN_HANDLING), VALUE));
+		}
+
+		// cargo capacities
+		Element cargoElement = vehicleElement.getChild(CARGO);
+		if (cargoElement != null) {
+			Map<Integer, Double> cargoCapacityMap = ConfigHelper.parseResourceListById("Vehicle spec " + name,
+															cargoElement.getChildren(CAPACITY));
+
+			double totalCapacity = ConfigHelper.getAttributeDouble(cargoElement, TOTAL_CAPACITY);
+			vSpec.setCargoCapacity(totalCapacity, cargoCapacityMap);
+		}
+
+		// Use the cargo capacity for performance analysis
+		vSpec.calculateDetails(manuConfig);
+		
+		// sickbay
+		Element sickbayElement = vehicleElement.getChild(SICKBAY);
+		if (sickbayElement != null) {
+			int sickbayTechLevel = ConfigHelper.getAttributeInt(sickbayElement, TECH_LEVEL);
+			int sickbayBeds = ConfigHelper.getAttributeInt(sickbayElement, BEDS);
+			vSpec.setSickBay(sickbayTechLevel, sickbayBeds);
+		}
+
+		// labs
+		Element labElement = vehicleElement.getChild(LAB);
+		if (labElement != null) {
+			List<ScienceType> labTechSpecialties = new ArrayList<>();
+			int labTechLevel = ConfigHelper.getAttributeInt(labElement, TECH_LEVEL);
+			int labCapacity = ConfigHelper.getAttributeInt(labElement, CAP_LEVEL);
+			for (Element tech : labElement.getChildren(TECH_SPECIALTY)) {
+				String scienceName = tech.getAttributeValue(VALUE);
+				labTechSpecialties.add(ConfigHelper.getEnum(ScienceType.class, scienceName));
+			}
+			
+			vSpec.setLabSpec(labTechLevel, labCapacity, labTechSpecialties);
+		}
+
+		// attachments
+		if (!vehicleElement.getChildren(PART_ATTACHMENT).isEmpty()) {
+			List<Part> attachableParts = new ArrayList<>();
+			Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
+			int attachmentSlots = ConfigHelper.getAttributeInt(attachmentElement, NUMBER_SLOTS);
+			for (Element part : attachmentElement.getChildren(PART)) {
+				attachableParts.add((Part) ItemResourceUtil
+						.findItemResource(((part.getAttributeValue(NAME)).toLowerCase())));
+			}
+			vSpec.setAttachments(attachmentSlots, attachableParts);
+		}
+
+		// airlock locations (optional).
+		Element airlockElement = vehicleElement.getChild(AIRLOCK);
+		if (airlockElement != null) {
+			LocalPosition airlockLoc = ConfigHelper.parseLocalPosition(airlockElement);
+			LocalPosition airlockInteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(INTERIOR_LOCATION));
+			LocalPosition airlockExteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(EXTERIOR_LOCATION));
+			
+			vSpec.setAirlock(airlockLoc, airlockInteriorLoc, airlockExteriorLoc);
+		}
+
+		// Activity spots.
+		Element activityElement = vehicleElement.getChild(ACTIVITY);
+		if (activityElement != null) {
+
+			// Initialize activity spot lists.
+			List<LocalPosition> operatorActivitySpots = new ArrayList<>();
+			List<LocalPosition> passengerActivitySpots = new ArrayList<>();
+			List<LocalPosition> sickBayActivitySpots = new ArrayList<>();
+			List<LocalPosition> labActivitySpots = new ArrayList<>();
+
+			for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
+				Element activitySpotElement = (Element) activitySpot;
+				LocalPosition spot = ConfigHelper.parseLocalPosition(activitySpotElement);
+				String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
+				if (OPERATOR_TYPE.equals(activitySpotType)) {
+					operatorActivitySpots.add(spot);
+				} else if (PASSENGER_TYPE.equals(activitySpotType)) {
+					passengerActivitySpots.add(spot);
+				} else if (SICKBAY_TYPE.equals(activitySpotType)) {
+					sickBayActivitySpots.add(spot);
+				} else if (LAB_TYPE.equals(activitySpotType)) {
+					labActivitySpots.add(spot);
+				}
+			}
+			
+			vSpec.setActivitySpots(operatorActivitySpots, passengerActivitySpots, sickBayActivitySpots, labActivitySpots);
+		}
+		return vSpec;
 	}
 
 	/**

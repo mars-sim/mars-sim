@@ -3,6 +3,7 @@ package com.mars_sim.core.structure;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
+import com.mars_sim.core.interplanetary.transport.resupply.ResupplyManifest;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -15,12 +16,20 @@ import com.mars_sim.core.structure.building.BuildingTemplate;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * Configuration loader that creates SettlementTemplates
+ */
 public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementTemplate> {
 
-    private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(SettlementTemplateConfig.class.getName());
 
     private static final String BUILDING_PACKAGE = "building-package";
     private static final String BUILDING = "building";
@@ -86,15 +95,18 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         this.settlementConfig = settlementConfig;
         setXSDName("settlement.xsd");
 
-        Element root = settlementDoc.getRootElement();
-
-        String [] defaults = loadSettlementTemplates(settlementDoc);
-
-        loadDefaults(defaults);
+        loadDefaults(loadSettlementTemplates(settlementDoc));
 
         loadUserDefined();
     }
 
+    /**
+     * Get the manifest that are used in the Settlement templates
+     * @return
+     */
+    public List<ResupplyManifest> getSupplyManifests() {
+        return resupplyConfig.getAll();
+    }
 
     /**
      * Loads the settlement templates from the XML document.
@@ -122,7 +134,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
      * @param settlementTemplateName
      * @param existingStreetIDs
      */
-    private void parseBuildingORConnectorList(Element templateElement, SettlementTemplate settlementTemplate,
+    private void parseBuildingORConnectorList(Element templateElement,
+                                              List<BuildingTemplate> buildings,
                                               String elementName,
                                               String settlementTemplateName,
                                               Set<String> existingStreetIDs,
@@ -163,7 +176,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
                     buildingType, uniqueName, bounds);
 
             // Need to check for collision with previous building templates
-            for (BuildingTemplate t: settlementTemplate.getBuildings()) {
+            for (BuildingTemplate t: buildings) {
                 BoundedObject o0 = buildingTemplate.getBounds();
                 BoundedObject o1 = t.getBounds();
                 if (BoundedObject.isCollided(o0, o1)) {
@@ -172,7 +185,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
                 }
             }
 
-            settlementTemplate.addBuildingTemplate(buildingTemplate);
+            buildings.add(buildingTemplate);
 
             // Create building connection templates.
             Element connectionListElement = buildingElement.getChild(CONNECTION_LIST);
@@ -256,29 +269,13 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             activitySchedule = settlementConfig.getActivityByPopulation(defaultPopulation);
         }
 
-        // Add templateID
-        SettlementTemplate settlementTemplate = new SettlementTemplate(
-                settlementTemplateName,
-                description,
-                predefined,
-                sponsor,
-                pattern,
-                activitySchedule,
-                defaultPopulation,
-                defaultNumOfRobots);
-
-        // Check the objective
-        String objectiveText = templateElement.getAttributeValue(OBJECTIVE);
-        if (objectiveText != null) {
-            var oType = ConfigHelper.getEnum(ObjectiveType.class, objectiveText);
-            settlementTemplate.setObjective(oType);
-        }
-
+ 
+        List<BuildingTemplate> buildingTemplates = new ArrayList<>();
         Set<String> existingBuildingIDs = new HashSet<>();
         Map<String, Integer> buildingTypeNumMap = new HashMap<>();
 
         // Process a list of buildings
-        parseBuildingORConnectorList(templateElement, settlementTemplate,
+        parseBuildingORConnectorList(templateElement, buildingTemplates,
                 BUILDING,
                 settlementTemplateName,
                 existingBuildingIDs,
@@ -286,23 +283,41 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         // Process a list of connectors
         Set<String> existingConnectorIDs = new HashSet<>();
-        parseBuildingORConnectorList(templateElement, settlementTemplate,
+        parseBuildingORConnectorList(templateElement, buildingTemplates,
                 CONNECTOR,
                 settlementTemplateName,
                 existingConnectorIDs,
                 buildingTypeNumMap);
 
         // Process a list of standalone buildings
-        parseBuildingORConnectorList(templateElement, settlementTemplate,
+        parseBuildingORConnectorList(templateElement, buildingTemplates,
                 STANDALONE,
                 settlementTemplateName,
                 existingBuildingIDs,
                 buildingTypeNumMap);
 
+       // Load building packages
+       List<Element> buildingPackageNodes = templateElement.getChildren(BUILDING_PACKAGE);
+       for (Element buildingPackageElement : buildingPackageNodes) {
+           String packageName = buildingPackageElement.getAttributeValue(NAME);
+
+           List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
+
+           for (BuildingTemplate buildingTemplate: buildingPackages) {
+
+               // Get the building type
+               String buildingType = buildingTemplate.getBuildingType();
+
+               int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
+
+               String uniqueName = buildingType + " " + last;
+
+               // Overwrite with a new building nick name
+               buildingTemplates.add(new BuildingTemplate(uniqueName, buildingTemplate));
+           }
+       }
 
         // Check that building connections point to valid building ID's.
-        List<BuildingTemplate> buildingTemplates = settlementTemplate.getBuildings();
-
         for (BuildingTemplate buildingTemplate : buildingTemplates) {
 
             List<BuildingTemplate.BuildingConnectionTemplate> connectionTemplates = buildingTemplate
@@ -323,12 +338,27 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             }
         }
 
-        // Load vehicles
-        List<Element> vehicleNodes = templateElement.getChildren(VEHICLE);
-        for (Element vehicleElement : vehicleNodes) {
-            String vehicleType = vehicleElement.getAttributeValue(TYPE);
-            int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
-            settlementTemplate.addVehicles(vehicleType, vehicleNumber);
+        // Get supplies
+        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement,
+                            buildingTemplates, partPackageConfig);
+
+        // Add templateID
+        SettlementTemplate settlementTemplate = new SettlementTemplate(
+                settlementTemplateName,
+                description,
+                predefined,
+                sponsor,
+                pattern,
+                activitySchedule,
+                defaultPopulation,
+                defaultNumOfRobots,
+                supplies);
+
+        // Check the objective
+        String objectiveText = templateElement.getAttributeValue(OBJECTIVE);
+        if (objectiveText != null) {
+            var oType = ConfigHelper.getEnum(ObjectiveType.class, objectiveText);
+            settlementTemplate.setObjective(oType);
         }
 
         // Load robots
@@ -341,91 +371,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             settlementTemplate.addRobot(new RobotTemplate(name, rType, model));
         }
 
-        // Load equipment
-        List<Element> equipmentNodes = templateElement.getChildren(EQUIPMENT);
-        for (Element equipmentElement : equipmentNodes) {
-            String equipmentType = equipmentElement.getAttributeValue(TYPE);
-            int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
-            settlementTemplate.addEquipment(equipmentType, equipmentNumber);
-        }
-
-        // Load bins
-        List<Element> binNodes = templateElement.getChildren(BIN);
-        for (Element binElement : binNodes) {
-            String binType = binElement.getAttributeValue(TYPE);
-            int binNumber = Integer.parseInt(binElement.getAttributeValue(NUMBER));
-            settlementTemplate.addBins(binType, binNumber);
-        }
-
-        // Load resources
-        List<Element> resourceNodes = templateElement.getChildren(RESOURCE);
-        for (Element resourceElement : resourceNodes) {
-            String resourceType = resourceElement.getAttributeValue(TYPE);
-            AmountResource resource = ResourceUtil.findAmountResource(resourceType);
-            if (resource == null)
-                logger.severe(resourceType + " shows up in settlement template "
-                        + settlementTemplateName
-                        + " but doesn't exist in resources.xml.");
-            else {
-                double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-                settlementTemplate.addAmountResource(resource, resourceAmount);
-            }
-        }
-
-        // Load parts
-        List<Element> partNodes = templateElement.getChildren(PART);
-        for (Element partElement : partNodes) {
-            String partType = partElement.getAttributeValue(TYPE);
-            Part part = (Part) ItemResourceUtil.findItemResource(partType);
-            if (part == null)
-                logger.severe(partType + " shows up in settlement template "
-                        + settlementTemplateName
-                        + " but doesn't exist in parts.xml.");
-            else {
-                int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-                settlementTemplate.addPart(part, partNumber);
-            }
-        }
-
-        // Load part packages
-        List<Element> partPackageNodes = templateElement.getChildren(PART_PACKAGE);
-        for (Element partPackageElement : partPackageNodes) {
-            String packageName = partPackageElement.getAttributeValue(NAME);
-            int packageNumber = Integer.parseInt(partPackageElement.getAttributeValue(NUMBER));
-            if (packageNumber > 0) {
-                for (int z = 0; z < packageNumber; z++) {
-                    Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
-                    for (Part part : partPackage.keySet()) {
-                        int partNumber = partPackage.get(part);
-                        settlementTemplate.addPart(part, partNumber);
-                    }
-                }
-            }
-        }
-
-        // Load building packages
-        List<Element> buildingPackageNodes = templateElement.getChildren(BUILDING_PACKAGE);
-        for (Element buildingPackageElement : buildingPackageNodes) {
-            String packageName = buildingPackageElement.getAttributeValue(NAME);
-
-            List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
-
-            for (BuildingTemplate buildingTemplate: buildingPackages) {
-
-                // Get the building type
-                String buildingType = buildingTemplate.getBuildingType();
-
-                int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
-
-                String uniqueName = buildingType + " " + last;
-
-                // Overwrite with a new building nick name
-                buildingTemplate.setBuildingName(uniqueName);
-
-                settlementTemplate.addBuildingTemplate(buildingTemplate);
-            }
-        }
-
         // Load resupplies
         Element resupplyList = templateElement.getChild(RESUPPLY);
         if (resupplyList != null) {
@@ -433,7 +378,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             for (Element resupplyMissionElement : resupplyNodes) {
                 String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
                 String manifestName = resupplyMissionElement.getAttributeValue(MANIFEST_NAME);
-                ResupplyConfig.SupplyManifest manifest = resupplyConfig.getSupplyManifest(manifestName);
+                ResupplyManifest manifest = resupplyConfig.getSupplyManifest(manifestName);
 
                 var schedule = ConfigHelper.parseEventCalendar(resupplyMissionElement.getChild(SCHEDULE));
                 ResupplySchedule resupplyMissionTemplate = new ResupplySchedule(resupplyName, schedule, manifest);
@@ -442,6 +387,83 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         }
 
         return settlementTemplate;
+    }
+
+    /**
+     * Parse an XML to create a Settlement Supply instance. The buildings are created externally.
+     * @param context The conext this is being parsed
+     * @param supplyElement The XML element
+     * @param newBuildings The list of building templates
+     * @param partPackageConfig2 
+     * @return
+     */
+    public static SettlementSupplies parseSupplies(String context, Element supplyElement,
+                                            List<BuildingTemplate> newBuildings,
+                                            PartPackageConfig packageConfig) {
+
+        // Load equipment
+        Map<String, Integer> newEquipment = new HashMap<>();
+        List<Element> equipmentNodes = supplyElement.getChildren(EQUIPMENT);
+        for (Element equipmentElement : equipmentNodes) {
+            String equipmentType = equipmentElement.getAttributeValue(TYPE);
+            int equipmentNumber = ConfigHelper.getAttributeInt(equipmentElement, NUMBER);
+            newEquipment.put(equipmentType, equipmentNumber);
+        }
+
+        // Load bins
+        Map<String, Integer> newBins = new HashMap<>();
+        List<Element> binNodes = supplyElement.getChildren(BIN);
+        for (Element binElement : binNodes) {
+            String binType = binElement.getAttributeValue(TYPE);
+            int binNumber = ConfigHelper.getAttributeInt(binElement, NUMBER);
+            newBins.put(binType, binNumber);
+        }
+
+        // Load resources
+        List<Element> resourceNodes = supplyElement.getChildren(RESOURCE);
+        Map<AmountResource, Double> newResources = ConfigHelper.parseResourceList(context, resourceNodes);
+
+        // Load vehicles
+        Map<String, Integer> newVehicles = new HashMap<>();
+        List<Element> vehicleNodes = supplyElement.getChildren(VEHICLE);
+        for (Element vehicleElement : vehicleNodes) {
+            String vehicleType = vehicleElement.getAttributeValue(TYPE);
+            int vehicleNumber = ConfigHelper.getAttributeInt(vehicleElement, NUMBER);
+            newVehicles.put(vehicleType, vehicleNumber);
+        }
+
+        // Load parts
+        Map<Part, Integer> newParts = new HashMap<>();
+        List<Element> partNodes = supplyElement.getChildren(PART);
+        for (Element partElement : partNodes) {
+            String partType = partElement.getAttributeValue(TYPE);
+            Part part = (Part) ItemResourceUtil.findItemResource(partType);
+            if (part == null)
+                logger.severe(partType + " shows up in "
+                        + context
+                        + " but doesn't exist in parts.xml.");
+            else {
+                int partNumber = ConfigHelper.getAttributeInt(partElement, NUMBER);
+                newParts.put(part, partNumber);
+            }
+        }
+
+        // Load part packages
+        List<Element> partPackageNodes = supplyElement.getChildren(PART_PACKAGE);
+        for (Element partPackageElement : partPackageNodes) {
+            String packageName = partPackageElement.getAttributeValue(NAME);
+            int packageNumber = ConfigHelper.getAttributeInt(partPackageElement, NUMBER);
+            if (packageNumber > 0) {
+                Map<Part, Integer> partPackage = packageConfig.getPartsInPackage(packageName);
+                for (var pp : partPackage.entrySet()) {
+                    int partNumber = pp.getValue();
+                    newParts.merge(pp.getKey(), partNumber * packageNumber, (v1, v2) -> v1 + v2);
+                }
+            }
+        }
+        
+        return new SettlementSuppliesImpl(newBuildings, newVehicles, newEquipment, newBins,
+                                    newResources, newParts);
     }
 
     /**

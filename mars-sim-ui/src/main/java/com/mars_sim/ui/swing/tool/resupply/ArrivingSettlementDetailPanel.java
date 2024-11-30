@@ -12,10 +12,9 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
-import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -64,7 +63,7 @@ extends JPanel
 		// Create the title label.
 		JLabel titleLabel = new JLabel(
 			Msg.getString("ArrivingSettlementDetailPanel.arrivingSettlement"), //$NON-NLS-1$
-			JLabel.CENTER
+			SwingConstants.CENTER
 		);
 		StyleManager.applyHeading(titleLabel);
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
@@ -102,10 +101,10 @@ extends JPanel
 				clearInfo();
 			}
 			else {
-				SettlementTemplateConfig sConfig = SimulationConfig.instance().getSettlementTemplateConfiguration();
-				SettlementSupplies template = sConfig.getItem(arrivingSettlement.getTemplate());
+				SettlementTemplateConfig sConfig = desktop.getSimulation().getConfig().getSettlementTemplateConfiguration();
+				var template = sConfig.getItem(arrivingSettlement.getTemplate());
 				if (template != null) {
-					suppliesPanel.show(template);
+					suppliesPanel.show(template.getSupplies());
 				}
 				else {
 					suppliesPanel.clear();

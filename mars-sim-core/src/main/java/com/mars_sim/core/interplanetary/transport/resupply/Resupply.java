@@ -25,7 +25,6 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
-import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.resource.AmountResource;
@@ -111,14 +110,15 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		this.cycle = cycle;
 
 		// Load up the respply according to the manifest
-		SupplyManifest manifest = template.getManifest();
-		setBuildings(manifest.buildings());
-		setVehicles(manifest.vehicles());
-		setEquipment(manifest.equipment());
-		setBins(manifest.bins());
-		setNewImmigrantNum(manifest.people());
-		setResources(manifest.resources());
-		setParts(manifest.parts());
+		ResupplyManifest manifest = template.getManifest();
+		var supplies = manifest.getSupplies();
+		setBuildings(supplies.getBuildings());
+		setVehicles(supplies.getVehicles());
+		setEquipment(supplies.getEquipment());
+		setBins(supplies.getBins());
+		setNewImmigrantNum(manifest.getPeople());
+		setResources(supplies.getResources());
+		setParts(supplies.getParts());
 	}
 
 	/**
@@ -366,7 +366,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		int leastDistance = 0;
 		// TOD: also check if
 		Set<FunctionType> supported = spec.getFunctionSupported();
-		boolean hasLifeSupport = !spec.isInhabitable(); //supported.contains(FunctionType.LIFE_SUPPORT);
+		boolean hasLifeSupport = !spec.isInhabitable();
 		if (hasLifeSupport) {
 
 			if (supported.contains(FunctionType.ASTRONOMICAL_OBSERVATION)) {
@@ -483,7 +483,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		// Note : only hallway and tunnel has "connection" function
 		Set<FunctionType> supported = spec.getFunctionSupported();
 		boolean isBuildingConnector = supported.contains(FunctionType.CONNECTION);
-		boolean hasLifeSupport = !spec.isInhabitable(); // supported.contains(FunctionType.LIFE_SUPPORT);
+		boolean hasLifeSupport = !spec.isInhabitable();
 
 		if (isBuildingConnector) {
 			// Case 0 : a hallway or tunnel
@@ -555,7 +555,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					Iterator<Building> i = buildingManager.getBuildingSet().iterator();
 					while (i.hasNext()) {
 						Building building = i.next();
-						newPosition = positionNextToBuilding(spec, building, (double) x, false);
+						newPosition = positionNextToBuilding(spec, building, x, false);
 						if (newPosition != null) {
 							logger.config("Case 4: " + POSITIONING + newPosition.getBuildingName() + " at " + x
 									+ " meters away near a different building type with no life support");
@@ -713,7 +713,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			}
 		}
 
-		// Case 2;
+		// Case 2
 		// Try to find valid connection location between two inhabitable buildings with
 		// no joining walking path.
 		if (newTemplate == null) {

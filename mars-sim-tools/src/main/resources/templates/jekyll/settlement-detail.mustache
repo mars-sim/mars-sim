@@ -36,7 +36,7 @@ nav_exclude: true
 | Name      | 1st Arrival | Supply Plan | Frequency (sols) |
 |--------:|:------|:-----|-------:|
 {{#settlement.resupplyMissionTemplates}}
-|{{name}}|{{schedule.firstSol}}|{{manifest.name}}|{{schedule.frequency}}|
+|{{name}}|{{schedule.firstSol}}|[{{manifest.name}}]({{manifestfolder}}{{#filename}}{{manifest.name}}{{/filename}})|{{schedule.frequency}}|
 {{/settlement.resupplyMissionTemplates}}
 {{/settlement.resupplyMissionTemplates.isEmpty}}
     

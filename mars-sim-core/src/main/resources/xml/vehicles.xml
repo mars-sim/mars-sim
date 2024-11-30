@@ -42,7 +42,7 @@
 	<!ELEMENT cargo (capacity*)>
 	<!ATTLIST cargo total-capacity CDATA #REQUIRED>
 	<!ELEMENT capacity EMPTY>
-	<!ATTLIST capacity resource CDATA #REQUIRED>
+	<!ATTLIST capacity type CDATA #REQUIRED>
 	<!ATTLIST capacity value CDATA #REQUIRED>
 	<!ELEMENT part-attachment (part+)>
 	<!ATTLIST part-attachment number-slots CDATA #REQUIRED>
@@ -173,48 +173,39 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methanol" value="100.0" />
+			<capacity type="methanol" amount="100.0" />
 			
 			<!-- ratio of oxidizer to fuel is 1.5:1. Thus 300 kg methanol needs 450 kg oxygen -->
 			<!-- Assuming totalTripHours is 45 hrs, each person consumes .8 kg / 24.66 hrs * totalTripHours -> 1.65 kg -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="180.0" />
+			<capacity type="oxygen" amount="180.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="nitrogen" value="1.0" />
+			<capacity type="nitrogen" amount="1.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="carbon dioxide" value="1.0" />
+			<capacity type="carbon dioxide" amount="1.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="water" value="200.0" />
+			<capacity type="water" amount="200.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food" value="70.0" />
-
-			<!-- Default: varies according to the type of vehicle -->
-			<!--<capacity resource="dessert" value="120.0" />-->
-
-			<!-- Default: varies according to the type of vehicle
-			<capacity resource="rock samples" value="750.0" /> -->
-
-			<!-- Default: varies according to the type of vehicle 
-			<capacity resource="ice" value="750.0" /> -->
+			<capacity type="food" amount="70.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food waste" value="10.0" />
+			<capacity type="food waste" amount="10.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="solid waste" value="20.0" />
+			<capacity type="solid waste" amount="20.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="toxic waste" value="2.0" />
+			<capacity type="toxic waste" amount="2.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="grey water" value="20.0" />
+			<capacity type="grey water" amount="20.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="black water" value="5.0" />
+			<capacity type="black water" amount="5.0" />
 
 		</cargo>
 
@@ -267,23 +258,23 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2400.0">
-			<capacity resource="methanol" value="150.0" />
-			<capacity resource="oxygen" value="250.0" />
+			<capacity type="methanol" amount="150.0" />
+			<capacity type="oxygen" amount="250.0" />
 			
-			<capacity resource="nitrogen" value="2.0" />
-			<capacity resource="carbon dioxide" value="2.0" />
+			<capacity type="nitrogen" amount="2.0" />
+			<capacity type="carbon dioxide" amount="2.0" />
 			
-			<capacity resource="water" value="300.0" />
-			<capacity resource="food" value="90.0" />
+			<capacity type="water" amount="300.0" />
+			<capacity type="food" amount="90.0" />
 			
-			<!--capacity resource="rock samples" value="750.0" />
-			<capacity resource="ice" value="750.0" /> -->
+			<!--capacity type="rock samples" amount="750.0" />
+			<capacity type="ice" amount="750.0" /> -->
 			
-			<capacity resource="food waste" value="8.0" />
-			<capacity resource="solid waste" value="20.0" />
-			<capacity resource="toxic waste" value="4.0" />
-			<capacity resource="grey water" value="20.0" />
-			<capacity resource="black water" value="10.0" />
+			<capacity type="food waste" amount="8.0" />
+			<capacity type="solid waste" amount="20.0" />
+			<capacity type="toxic waste" amount="4.0" />
+			<capacity type="grey water" amount="20.0" />
+			<capacity type="black water" amount="10.0" />
 		</cargo>
 
 		<sickbay tech-level="2" beds="1" />
@@ -324,23 +315,23 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
-			<capacity resource="methanol" value="300.0" />
-			<capacity resource="oxygen" value="450.0" />
+			<capacity type="methanol" amount="300.0" />
+			<capacity type="oxygen" amount="450.0" />
 			
-			<capacity resource="nitrogen" value="16.0" />
-			<capacity resource="carbon dioxide" value="8.0" />
+			<capacity type="nitrogen" amount="16.0" />
+			<capacity type="carbon dioxide" amount="8.0" />
 			
-			<capacity resource="water" value="600.0" />
-			<capacity resource="food" value="200.0" />
+			<capacity type="water" amount="600.0" />
+			<capacity type="food" amount="200.0" />
 			
-			<!--capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" /> -->
+			<!--capacity type="rock samples" amount="400.0" />
+			<capacity type="ice" amount="400.0" /> -->
 			
-			<capacity resource="food waste" value="16.0" />
-			<capacity resource="solid waste" value="80.0" />
-			<capacity resource="toxic waste" value="16.0" />
-			<capacity resource="grey water" value="200.0" />
-			<capacity resource="black water" value="50.0" />
+			<capacity type="food waste" amount="16.0" />
+			<capacity type="solid waste" amount="80.0" />
+			<capacity type="toxic waste" amount="16.0" />
+			<capacity type="grey water" amount="200.0" />
+			<capacity type="black water" amount="50.0" />
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0">
@@ -375,23 +366,23 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="2"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
-			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="650.0" />
+			<capacity type="methanol" amount="400.0" />
+			<capacity type="oxygen" amount="650.0" />
 			
-			<capacity resource="nitrogen" value="16.0" />
-			<capacity resource="carbon dioxide" value="8.0" />
+			<capacity type="nitrogen" amount="16.0" />
+			<capacity type="carbon dioxide" amount="8.0" />
 			
-			<capacity resource="water" value="800.0" />
-			<capacity resource="food" value="250.0" />
+			<capacity type="water" amount="800.0" />
+			<capacity type="food" amount="250.0" />
 			
-			<!--capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" /> -->
+			<!--capacity type="rock samples" amount="400.0" />
+			<capacity type="ice" amount="400.0" /> -->
 			
-			<capacity resource="food waste" value="16.0" />
-			<capacity resource="solid waste" value="80.0" />
-			<capacity resource="toxic waste" value="16.0" />
-			<capacity resource="grey water" value="200.0" />
-			<capacity resource="black water" value="50.0" />
+			<capacity type="food waste" amount="16.0" />
+			<capacity type="solid waste" amount="80.0" />
+			<capacity type="toxic waste" amount="16.0" />
+			<capacity type="grey water" amount="200.0" />
+			<capacity type="black water" amount="50.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0">
@@ -422,8 +413,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
-			<capacity resource="methanol" value="10.0" />
-			<capacity resource="oxygen" value="15.0" />		
+			<capacity type="methanol" amount="10.0" />
+			<capacity type="oxygen" amount="15.0" />		
 		</cargo>
 		<part-attachment number-slots="3">
             <part name="bulldozer blade" />
@@ -451,9 +442,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="187.7" />
 		<crew-size value="0" />
 		<cargo total-capacity="1000.0">
-			<capacity resource="methanol" value="150.0" />
-			<capacity resource="oxygen" value="225.0" />
-			<capacity resource="water" value="300.0" />			
+			<capacity type="methanol" amount="150.0" />
+			<capacity type="oxygen" amount="225.0" />
+			<capacity type="water" amount="300.0" />			
 		</cargo>
 	</vehicle>
 	
@@ -469,9 +460,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="210.4" />
 		<crew-size value="0" />
 		<cargo total-capacity="1500.0">
-			<capacity resource="methane" value="300.0" />
-			<capacity resource="oxygen" value="300.0" />
-			<capacity resource="water" value="600.0" />			
+			<capacity type="methane" amount="300.0" />
+			<capacity type="oxygen" amount="300.0" />
+			<capacity type="water" amount="600.0" />			
 		</cargo>
 	</vehicle>
 	

@@ -49,6 +49,20 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	}
 
 	/**
+	 * Do a deep copy of an existing template but with a different name.
+	 * @param newName
+	 * @param source
+	 */
+	public BuildingTemplate(String newName, BuildingTemplate source) {
+		this.streetNum = source.streetNum;
+		this.zone = source.zone;
+		this.buildingType = source.buildingType;
+		this.buildingName = newName;
+		this.bounds = source.bounds;
+		this.connectionList = new ArrayList<>(source.connectionList);
+	}
+
+	/**
 	 * Gets the building street num.
 	 * 
 	 * @return id.
@@ -83,15 +97,6 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 */
 	public String getBuildingName() {
 		return buildingName;
-	}
-
-	/**
-	 * Sets the building nickname.
-	 * 
-	 * @param building nickname.
-	 */
-	public void setBuildingName(String name) {
-		buildingName = name;
 	}
 
 	/**
@@ -153,8 +158,9 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	/**
 	 * Compares to another building template.
 	 */
+	@Override
 	public int compareTo(BuildingTemplate o) {
-		String compareId = ((BuildingTemplate) o).streetNum;
+		String compareId = o.streetNum;
 		if (this.streetNum.equalsIgnoreCase(compareId)) 
 			return 0;
 		else

@@ -39,6 +39,29 @@ public class HelpGeneratorTest {
     }
 
     @Test
+    public void testManifestHelp() throws IOException {
+        var context = createGenerator();
+
+        // Find a resupplt manifest that has mixture of most things
+        var config = context.getConfig().getSettlementTemplateConfiguration().getSupplyManifests()
+                        .stream()
+                        .filter(v -> v.getName().equals("Resupply for Phase 3"))
+                        .findAny()
+                        .orElseGet(null);
+        
+        assertNotNull("Resupply manifest found", config);
+
+        var vg = new ManifestGenerator(context);
+        var content = createDoc(vg, config);
+
+        assertContent(content, "characteristics");
+        assertContent(content, "vehicles");
+        assertContent(content, "resources");
+        assertContent(content, "equipment");
+
+    }
+
+    @Test
     public void testVehicleHelp() throws IOException {
         var context = createGenerator();
         var vehicleConfig = context.getConfig().getVehicleConfiguration();
@@ -176,7 +199,8 @@ public class HelpGeneratorTest {
             File[] created = output.listFiles();
 
             // Matches number of type generators plus 1 for index
-            assertEquals("Top level content", 12, created.length);
+            assertEquals("Top level content", HelpContext.GENERATORS.length + 1,
+                                        created.length);
             boolean indexFound = false;
             for(File f : created) {
                 if (f.isFile()) {
