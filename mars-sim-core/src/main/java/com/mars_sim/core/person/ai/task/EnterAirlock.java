@@ -54,10 +54,10 @@ public class EnterAirlock extends Task {
 	private static final TaskPhase CLEAN_UP = new TaskPhase(Msg.getString("Task.phase.cleanUp")); //$NON-NLS-1$
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
-	private static final String CHAMBER_FULL = "All chambers occupied in ";
-
-	private static final String COULDNT_WALK = "Couldn't walk. ";
-
+	private static final String ALL_CHAMBERS_OCCUPIED = "All chambers occupied.";
+	private static final String COULDNT_ENTER = "Couldn't enter ";
+	private static final String COULDNT_WALK_TO = "Couldn't walk to ";
+	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
 	private static final double SUIT_DOFFING_TIME = 15;
@@ -276,7 +276,7 @@ public class EnterAirlock extends Task {
 
 		boolean canProceed = false;
 
-		logger.fine(person, 20_000, "Requested EVA ingress in " + airlock.getEntity().toString() + ".");
+		logger.fine(person, 20_000, "Requested EVA ingress in " + airlock.getEntityName() + ".");
 
 		if (!airlock.isActivated()) {
 			// Only the airlock operator may activate the airlock
@@ -311,7 +311,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				logger.info(person, 4_000, "Couldn't ingress. " + CHAMBER_FULL + airlock.getEntityName() + ".");
+				logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
 				clearDown();
@@ -343,7 +343,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				logger.info(person, 4_000, "Couldn't ingress. " + CHAMBER_FULL + airlock.getEntityName() + ".");
+				logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
 				clearDown();
@@ -584,7 +584,8 @@ public class EnterAirlock extends Task {
 
 			// Must check if chambers are full or else getting stuck
 			if (airlock.areAll4ChambersFull()) {
-				logger.warning(person, 16_000, COULDNT_WALK + CHAMBER_FULL + airlock.getEntityName() + ".");
+				
+				logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				clearDown();
 
@@ -907,21 +908,19 @@ public class EnterAirlock extends Task {
 	 */
 	public static boolean canEnterAirlock(Person person, Airlock airlock) {
 
-		boolean result = true;
-
 		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 			logger.info(person, 4_000, 
-					COULDNT_WALK + CHAMBER_FULL + airlock.getEntityName() + ".");
-			result = false;
+					COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+			return false;
 		}
 
-		else if (person.isInside()) {
+		if (person.isInside()) {
 			logger.severe(person, 4_000,
-					"Could not enter " + airlock.getEntityName() + ". Already inside and not outside.");
-			result = false;
+					COULDNT_ENTER + airlock.getEntityName() + ". Already inside and not outside.");
+			return false;
 		}
-
-		return result;
+		
+		return true;
 	}
 
 	@Override
