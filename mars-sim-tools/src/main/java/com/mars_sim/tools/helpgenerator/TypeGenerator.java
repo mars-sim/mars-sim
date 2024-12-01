@@ -26,21 +26,28 @@ import com.mars_sim.tools.helpgenerator.HelpContext.ResourceUse;
  * This is an abstract generator for a configuration type. It provides generic methods.
  */
 public abstract class TypeGenerator<T> {
+    
+	// Name of the index file for lists of entities
+    private static final String TITLE_PREFIX = " Configurations";
+
     private static Logger logger = Logger.getLogger(TypeGenerator.class.getName());
 
     // CReate an empty reosurce use
     protected static final ResourceUse EMPTY_USE = HelpContext.buildEmptyResourceUse();
 
+	private static Mustache indexTemplate;
+	private static Mustache groupedTemplate;
+
     private HelpContext parent;
     private String typeName;
     private String title;
     private String description;
-
+    private boolean changeViaXML;
+    private boolean chnageViaEditor;
     private Mustache detailsTemplate;
 
     // Used to group entities for grouped index
     private Function<T,String> grouper;
-
     private String groupName;
 
     /**
@@ -76,35 +83,21 @@ public abstract class TypeGenerator<T> {
         this.title = title;
         this.description = description;
         this.detailsTemplate = parent.getTemplate(typeName + "-detail");
+        this.changeViaXML = true;
+        this.chnageViaEditor = false;
     }
 
     /**
-     * Get the title of the type. This is called from Mustache templates.
-     * @return the Type name
+     * Can this type of confguration entity be chaned via the UI Scenario Editor
+     * @param newValue New setting
      */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Get the description of the type. This is called from Mustache templates.
-     * @return the description name
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Get the name of the type. This is called from Mustache templates.
-     * @return the Type name
-     */
-    public String getTypeName() {
-        return typeName;
+    protected void setChangeViaEditor(boolean newValue) {
+        chnageViaEditor = newValue;
     }
 
     /**
      * Define an grouper to create a groupe index page.
-     * @param grouper
+     * @param grouper Function to return a String category for a T
      */
     protected void setGrouper(String name, Function<T,String> grouper) {
         this.groupName = name;
@@ -116,21 +109,55 @@ public abstract class TypeGenerator<T> {
     }
 
     /**
-     * Creates an index page for the given entities. This can be overriden for a specialised index
-     * @param entities List of entities
-     * @param targetDir Target folder for output
-     * @throws IOException
-     */
-	private void createIndex(List<T> entities, File targetDir)
-		throws IOException {
-        if (grouper == null) {
-            parent.createFlatIndex(title, description, entities, typeName, targetDir);
+	 * Creates an index page for a set of named entities.
+	 * 
+	 * @param entites List of Entities to render
+	 * @param outputDir Target root folder for the file
+	 * 
+	 */
+	 private void createIndex(List<T> entities, File outputDir) 
+                    throws IOException {
+        var context = getParent();
+        Mustache template;
+
+        var scope = context.createScopeMap(title + TITLE_PREFIX);
+        scope.put("listtitle", title);
+        scope.put("description", description);
+        scope.put("typefolder", "../" + typeName + "/");
+        if (changeViaXML) {
+            scope.put("type.changexml", Boolean.TRUE);
+        }
+        if (chnageViaEditor) {
+            scope.put("type.changeeditor", Boolean.TRUE);
+        }
+
+        if (grouper != null) {
+            List<NamedGroup<T>> groups = GenericsGrouper.getGroups(entities, grouper);
+            scope.put("groups", groups);
+            scope.put("groupname", groupName);
+    
+            // Load the template
+            if (groupedTemplate == null) {
+                groupedTemplate = context.getTemplate("entity-grouped");
+            }
+            template = groupedTemplate;
         }
         else {
-            List<NamedGroup<T>> groups = GenericsGrouper.getGroups(entities, grouper);
-            parent.createGroupedIndex(title, description, groupName, groups, typeName, targetDir);
+            scope.put("entities", entities);
+
+            // Load the template
+            if (indexTemplate == null) {
+                indexTemplate = getParent().getTemplate("entity-list");
+            }
+            template = indexTemplate;
         }
-	}
+       
+        // Generate file
+        File indexFile = new File(outputDir, getParent().generateFileName(HelpContext.INDEX));
+        try (FileOutputStream dest = new FileOutputStream(indexFile)) {
+            getParent().generateContent(template, scope, dest);
+        }
+    }
 
     /**
 	 * Generate the files for all the entities of this type including an index.
@@ -146,7 +173,7 @@ public abstract class TypeGenerator<T> {
 		List<T> vTypes = getEntities(); 
 	
 		// Create index
-		createIndex(vTypes, targetDir);
+        createIndex(vTypes, targetDir);
 
 		// Individual entity pages
 		for(T v : vTypes) {

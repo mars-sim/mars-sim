@@ -19,7 +19,9 @@ nav_exclude: true
 |Maintenance Period:|{{building.maintenanceTime}}|
 |Power Demands:|{{building.basePowerRequirement}} kW|
 |Offline Power Demands:|{{building.basePowerDownPowerRequirement}} kW|
-
+{{#construction}}
+|Construction:|[{{construction.name}}]({{constructionfolder}}{{#filename}}{{construction.name}}{{/filename}})|
+{{/construction}}
 
 ## Functions
       
