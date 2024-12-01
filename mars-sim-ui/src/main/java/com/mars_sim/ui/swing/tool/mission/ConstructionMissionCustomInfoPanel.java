@@ -28,6 +28,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.UnitEvent;
+import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
@@ -35,8 +38,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.construction.ConstructionEvent;
-import com.mars_sim.core.structure.construction.ConstructionListener;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo;
@@ -52,7 +53,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class ConstructionMissionCustomInfoPanel
 extends MissionCustomInfoPanel
-implements ConstructionListener {
+implements UnitListener {
 
     // Data members.
     private MainDesktopPane desktop;
@@ -121,7 +122,6 @@ implements ConstructionListener {
          
         // Create remaining construction materials label panel.
         JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
-//        contentsPanel.add(remainingMaterialsLabelPane,  BorderLayout.SOUTH);
         add(remainingMaterialsLabelPane, BorderLayout.CENTER);
         
         // Create remaining construction materials label.
@@ -137,19 +137,17 @@ implements ConstructionListener {
 
         // Create a scroll pane for the remaining construction materials table.
         scrollPane = new JScrollPane();
-//        add(scrollPane, BorderLayout.CENTER);
         remainingMaterialsLabelPane.add(scrollPane);
         scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(materialsTable);
-//        scrollPane.setPreferredSize(new Dimension(100, 120));      
     }
 
     @Override
     public void updateMission(Mission mission) {
         // Remove as construction listener if necessary.
         if (site != null) {
-            site.removeConstructionListener(this);
+            site.removeUnitListener(this);
         }
 
         if (mission instanceof ConstructionMission m) {
@@ -157,7 +155,7 @@ implements ConstructionListener {
             site = this.mission.getConstructionSite();
             
             if (site != null) {
-                site.addConstructionListener(this);
+                site.addUnitListener(this);
        
                 siteLabel.setText(site.getName());
                 
@@ -186,13 +184,14 @@ implements ConstructionListener {
      * 
      * @param event the mission event.
      */
-    public void constructionUpdate(ConstructionEvent event) {
-        if (ConstructionStage.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
+    @Override
+    public void unitUpdate(UnitEvent event) {
+        if (UnitEventType.ADD_CONSTRUCTION_WORK_EVENT == event.getType()) {
             // Update the progress bar
             updateProgressBar();
 
         }
-        else if (ConstructionStage.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())) {
+        else if (UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()) {
             // Update remaining construction materials table.
             materialsTableModel.updateTable();
         }
@@ -235,15 +234,6 @@ implements ConstructionListener {
         // Update the tool tip string.
         processPanel.setToolTipText(getToolTipString());
     }
-
-//    /**
-//     * Gets the main desktop.
-//     * 
-//     * @return desktop.
-//     */
-//    private MainDesktopPane getDesktop() {
-//        return desktop;
-//    }
 
     /**
      * Gets a tool tip string for the panel.
@@ -346,6 +336,7 @@ implements ConstructionListener {
          * 
          * @return number of rows.
          */
+        @Override
         public int getRowCount() {
             return goodsList.size();
         }
@@ -355,6 +346,7 @@ implements ConstructionListener {
          * 
          * @return number of columns.
          */
+        @Override
         public int getColumnCount() {
             return 4;
         }
@@ -365,6 +357,7 @@ implements ConstructionListener {
          * @param columnIndex the column index.
          * @return column name.
          */
+        @Override
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) {
                 return Msg.getString("ConstructionMissionCustomInfoPanel.column.material"); //$NON-NLS-1$
@@ -387,6 +380,7 @@ implements ConstructionListener {
          * @param column the column whose value is to be queried.
          * @return the value Object at the specified cell.
          */
+        @Override
         public Object getValueAt(int row, int column) {
             Object result = Msg.getString("unknown"); //$NON-NLS-1$
 

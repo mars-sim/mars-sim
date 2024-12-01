@@ -281,7 +281,7 @@ public class ConstructionMission extends AbstractMission
 	 * @param constructionSkill
 	 * @param values
 	 */
-	public void determineNewStage(ConstructionSite cSite, ConstructionStageInfo stageInfo, int constructionSkill,
+	private void determineNewStage(ConstructionSite cSite, ConstructionStageInfo stageInfo, int constructionSkill,
 			ConstructionValues values) {
 		this.site = cSite;
 		logger.info(settlement, "Determining a new stage to work on for " + cSite + ".");
@@ -815,7 +815,7 @@ public class ConstructionMission extends AbstractMission
 
 			if (site.isAllConstructionComplete()) {
 				// Construct building if all 3 stages of the site construction have been complete.
-				Building building = site.createBuilding(settlement);
+				Building building = site.createBuilding();
 				manager.removeConstructionSite(site);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
 				logger.info(settlement, "New building '" + site.getBuildingName() + "' constructed.");

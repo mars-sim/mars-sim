@@ -77,10 +77,17 @@ public enum UnitEventType {
 	START_CONSTRUCTION_SITE_EVENT	("start construction site"),
 	START_CONSTRUCTION_WIZARD_EVENT	("start construction wizard"),
 	END_CONSTRUCTION_WIZARD_EVENT	("end construction wizard"),
-	//START_MANUAL_CONSTRUCTION_WIZARD_EVENT	("start construction event manually"),
+	END_CONSTRUCTION_SITE_EVENT     ("end constructino site"),
+	ADD_CONSTRUCTION_STAGE_EVENT	("add construction stage"),
+	REMOVE_CONSTRUCTION_STAGE_EVENT	("remove construction stage"),
+
+	ADD_CONSTRUCTION_WORK_EVENT		("add construction work"),
+	ADD_CONSTRUCTION_MATERIALS_EVENT("add construction materials"), 
 
 	FINISH_CONSTRUCTION_BUILDING_EVENT	("finish building construction"),
-	FINISH_CONSTRUCTION_SALVAGE_EVENT	("salvage building construction "),
+
+	START_CONSTRUCTION_SALVAGE_EVENT	("start salvage construction "),
+	FINISH_CONSTRUCTION_SALVAGE_EVENT	("end salvage construction "),
 
 	// For BuildingManager
 	ADD_BUILDING_EVENT				("add building"),

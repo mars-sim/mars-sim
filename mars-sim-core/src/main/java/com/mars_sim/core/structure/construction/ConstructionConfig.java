@@ -81,8 +81,9 @@ public class ConstructionConfig {
      */
     public ConstructionStageInfo getConstructionStageInfoByName(String name) {
         return allConstructionStageInfoList.stream()
-                    .filter(s -> name.equals(s.getName()))
-                    .findAny().orElseGet(null);
+                    .filter(s -> name.equalsIgnoreCase(s.getName()))
+                    .findAny()
+                    .orElse(null);
     }
 	
     /**

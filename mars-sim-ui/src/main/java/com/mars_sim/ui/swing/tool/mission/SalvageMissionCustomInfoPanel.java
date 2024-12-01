@@ -17,13 +17,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import com.mars_sim.core.UnitEvent;
+import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionEvent;
-import com.mars_sim.core.structure.construction.ConstructionListener;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo;
@@ -37,8 +38,7 @@ import com.mars_sim.ui.swing.StyleManager;
  */
 @SuppressWarnings("serial")
 public class SalvageMissionCustomInfoPanel
-extends MissionCustomInfoPanel 
-implements ConstructionListener {
+extends MissionCustomInfoPanel implements UnitListener {
 
 	// Data members.
 	private MainDesktopPane desktop;
@@ -107,12 +107,12 @@ implements ConstructionListener {
 	@Override
 	public void updateMission(Mission mission) {
 		// Remove as construction listener if necessary.
-		if (site != null) site.removeConstructionListener(this);
+		if (site != null) site.removeUnitListener(this);
 
 		if (mission instanceof SalvageMission) {
 			this.mission = (SalvageMission) mission;
 			site = this.mission.getConstructionSite();
-			if (site != null) site.addConstructionListener(this);
+			if (site != null) site.addUnitListener(this);
 
 			settlementButton.setText(mission.getAssociatedSettlement().getName());
 			stageLabel.setText(getStageString());
@@ -129,8 +129,8 @@ implements ConstructionListener {
 	}
 
 	@Override
-	public void constructionUpdate(ConstructionEvent event) {
-		if (ConstructionStage.ADD_SALVAGE_WORK_EVENT.equals(event.getType())) {
+	public void unitUpdate(UnitEvent event) {
+		if (UnitEventType.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
 			updateProgressBar();
 
 			// Update the tool tip string.
@@ -197,7 +197,7 @@ implements ConstructionListener {
 			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
 
 			// Add construction parts.
-			if (info.getParts().size() > 0) {
+			if (!info.getParts().isEmpty()) {
 				result.append("<br>Salvagable Parts:<br>");
 				Iterator<Integer> j = info.getParts().keySet().iterator();
 				while (j.hasNext()) {
@@ -208,7 +208,7 @@ implements ConstructionListener {
 			}
 
 			// Add construction vehicles.
-			if (info.getVehicles().size() > 0) {
+			if (!info.getVehicles().isEmpty()) {
 				result.append("<br>Salvage Vehicles:<br>");
 				Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
 				while (k.hasNext()) {

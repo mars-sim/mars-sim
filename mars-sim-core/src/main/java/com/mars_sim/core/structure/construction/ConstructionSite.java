@@ -7,12 +7,11 @@
 
 package com.mars_sim.core.structure.construction;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -37,15 +36,7 @@ public class ConstructionSite extends FixedUnit {
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
-	
-    // Construction site events.
-    private static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
-    private static final String END_UNDERGOING_CONSTRUCTION_EVENT = "end undergoing construction";
-    private static final String START_UNDERGOING_SALVAGE_EVENT = "start undergoing salvage";
-    private static final String END_UNDERGOING_SALVAGE_EVENT = "end undergoing salvage";
-    private static final String ADD_CONSTRUCTION_STAGE_EVENT = "adding construction stage";
-    private static final String REMOVE_CONSTRUCTION_STAGE_EVENT = "removing construction stage";
-    private static final String CREATE_BUILDING_EVENT = "creating new building";
+
 
     // Data members
     private boolean undergoingConstruction;
@@ -69,8 +60,6 @@ public class ConstructionSite extends FixedUnit {
     private double length;
     private LocalPosition position;
     private double facing;
-
-    private transient List<ConstructionListener> listeners;
 
     private Collection<Worker> members;
     private List<GroundVehicle> vehicles;
@@ -107,7 +96,6 @@ public class ConstructionSite extends FixedUnit {
         buildingStage = null;
         undergoingConstruction = false;
         undergoingSalvage = false;
-        listeners = Collections.synchronizedList(new ArrayList<>());
     }
 
 	public void createSiteName() {
@@ -221,8 +209,11 @@ public class ConstructionSite extends FixedUnit {
      */
     public void setUndergoingConstruction(boolean undergoingConstruction) {
         this.undergoingConstruction = undergoingConstruction;
-        if (undergoingConstruction) fireConstructionUpdate(START_UNDERGOING_CONSTRUCTION_EVENT);
-        else fireConstructionUpdate(END_UNDERGOING_CONSTRUCTION_EVENT);
+
+        UnitEventType eventType = (undergoingConstruction  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
+                                        : UnitEventType.END_CONSTRUCTION_SITE_EVENT);
+
+        fireUnitUpdate(eventType);
     }
 
     /**
@@ -232,8 +223,10 @@ public class ConstructionSite extends FixedUnit {
      */
     public void setUndergoingSalvage(boolean undergoingSalvage) {
         this.undergoingSalvage = undergoingSalvage;
-        if (undergoingSalvage) fireConstructionUpdate(START_UNDERGOING_SALVAGE_EVENT);
-        else fireConstructionUpdate(END_UNDERGOING_SALVAGE_EVENT);
+        UnitEventType eventType =  (undergoingSalvage ? UnitEventType.START_CONSTRUCTION_SALVAGE_EVENT
+                                                    : UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT);
+        
+        fireUnitUpdate(eventType);
     }
 
     /**
@@ -278,7 +271,7 @@ public class ConstructionSite extends FixedUnit {
         updateDimensions(stage);
 
         // Fire construction event.
-        fireConstructionUpdate(ADD_CONSTRUCTION_STAGE_EVENT, stage);
+        fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, stage);
     }
 
     /**
@@ -336,7 +329,7 @@ public class ConstructionSite extends FixedUnit {
         else throw new IllegalStateException("Stage type: " + stage.getInfo().getType() + " not valid");
 
         // Fire construction event.
-        fireConstructionUpdate(REMOVE_CONSTRUCTION_STAGE_EVENT, stage);
+        fireUnitUpdate(UnitEventType.REMOVE_CONSTRUCTION_STAGE_EVENT, stage);
     }
 
     /**
@@ -357,11 +350,10 @@ public class ConstructionSite extends FixedUnit {
     /**
      * Creates a new building from the construction site.
      * 
-     * @param manager the settlement's building manager.
      * @return newly constructed building.
-     * @throws Exception if error constructing building.
+
      */
-    public Building createBuilding(Settlement settlement2) {
+    public Building createBuilding() {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
 
         var settlement = getAssociatedSettlement();
@@ -387,7 +379,7 @@ public class ConstructionSite extends FixedUnit {
         constructionManager.getConstructionValues().clearCache();
 
         // Fire construction event.
-        fireConstructionUpdate(CREATE_BUILDING_EVENT, newBuilding);
+        fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
         return newBuilding;
     }
@@ -427,52 +419,6 @@ public class ConstructionSite extends FixedUnit {
         else if ((buildingStage != null) && buildingStage.getInfo().equals(stage)) result = true;
 
         return result;
-    }
-
-    /**
-     * Adds a listener.
-     * 
-     * @param newListener the listener to add.
-     */
-    public final void addConstructionListener(ConstructionListener newListener) {
-        if (listeners == null)
-            listeners = Collections.synchronizedList(new ArrayList<>());
-        if (!listeners.contains(newListener)) listeners.add(newListener);
-    }
-
-    /**
-     * Removes a listener.
-     * 
-     * @param oldListener the listener to remove.
-     */
-    public final void removeConstructionListener(ConstructionListener oldListener) {
-        if (listeners == null)
-            listeners = Collections.synchronizedList(new ArrayList<>());
-        if (listeners.contains(oldListener)) listeners.remove(oldListener);
-    }
-
-    /**
-     * Fires a construction update event.
-     * 
-     * @param updateType the update type.
-     */
-    final void fireConstructionUpdate(String updateType) {
-        fireConstructionUpdate(updateType, null);
-    }
-
-    /**
-     * Fires a construction update event.
-     * 
-     * @param updateType the update type.
-     * @param target the event target or null if none.
-     */
-    final void fireConstructionUpdate(String updateType, Object target) {
-        if (listeners == null)
-            listeners = Collections.synchronizedList(new ArrayList<>());
-        synchronized(listeners) {
-            listeners.forEach(cs -> cs.constructionUpdate(
-                new ConstructionEvent(this, updateType, target)));
-        }
     }
 
     /**
@@ -564,6 +510,7 @@ public class ConstructionSite extends FixedUnit {
 		return false;
 	}
 	
+    @Override
     public String getDescription() {
 		StringBuilder result = new StringBuilder();
 

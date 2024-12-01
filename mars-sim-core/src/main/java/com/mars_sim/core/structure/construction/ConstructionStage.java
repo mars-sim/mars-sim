@@ -11,22 +11,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.tool.Conversion;
 
 /**
  * A construction stage of a construction site.
- * TODO externalize strings
  */
 public class ConstructionStage implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
-    // Construction site events.
-    public static final String ADD_CONSTRUCTION_WORK_EVENT = "adding construction work";
-    public static final String ADD_SALVAGE_WORK_EVENT = "adding salvage work";
-    public static final String ADD_CONSTRUCTION_MATERIALS_EVENT = "adding construction materials";
 
     /** Work time modifier for salvaging a construction stage. */
     private static final double SALVAGE_WORK_TIME_MODIFIER = .25D;
@@ -48,9 +43,6 @@ public class ConstructionStage implements Serializable {
     
     private Map<Integer, Integer> originalReqParts;
     private Map<Integer, Double> originalReqResources;
-    
-//    private Map<Integer, Integer> consumedParts;
-//    private Map<Integer, Double> consumedResources;
     
     /**
      * Constructor.
@@ -141,12 +133,7 @@ public class ConstructionStage implements Serializable {
         }
 
         // Fire construction event
-        if (isSalvaging) {
-            site.fireConstructionUpdate(ADD_SALVAGE_WORK_EVENT, this);
-        }
-        else {
-            site.fireConstructionUpdate(ADD_CONSTRUCTION_WORK_EVENT, this);
-        }
+        site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_WORK_EVENT, this);
     }
 
     /**
@@ -258,7 +245,7 @@ public class ConstructionStage implements Serializable {
                 updateCompletableWorkTime();
                 
                 // Fire construction event
-                site.fireConstructionUpdate(ADD_CONSTRUCTION_MATERIALS_EVENT, this);
+                site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
             }
             else {
                 throw new IllegalStateException("Trying to add " + number + " " + part + 
@@ -297,7 +284,7 @@ public class ConstructionStage implements Serializable {
                 updateCompletableWorkTime();
                 
                 // Fire construction event
-                site.fireConstructionUpdate(ADD_CONSTRUCTION_MATERIALS_EVENT, this);
+                site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
             }
             else {
                 throw new IllegalStateException("Trying to add " + amount + " " + resource + 
