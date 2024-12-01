@@ -492,19 +492,21 @@ public class ClassicAirlock extends Airlock {
 	 */
 	@Override
 	public int getNumOccupants() {
-		int result = 0;
-		for (Integer p : insideExteriorDoorMap.values()) {
-			if (!p.equals(-1))
-				result++;
-		}
+		return getNumOccupant123();
 		
-		result += eva.getNumOccupiedActivitySpots();
-		
-		for (Integer p : insideInteriorDoorMap.values()) {
-			if (!p.equals(-1))
-				result++;
-		}
-		return result;
+//		int result = 0;
+//		for (Integer p : insideExteriorDoorMap.values()) {
+//			if (!p.equals(-1))
+//				result++;
+//		}
+//		
+//		result += eva.getNumOccupiedActivitySpots();
+//		
+//		for (Integer p : insideInteriorDoorMap.values()) {
+//			if (!p.equals(-1))
+//				result++;
+//		}
+//		return result;
 	}
 
 	/**
@@ -753,7 +755,7 @@ public class ClassicAirlock extends Airlock {
 
 			if (pulse.isNewIntMillisol()) {
 				// Check occupants
-				checkOccupantIDs();
+				checkOccupant123IDs();
 				// Check the airlock operator
 				checkOperator();
 			}

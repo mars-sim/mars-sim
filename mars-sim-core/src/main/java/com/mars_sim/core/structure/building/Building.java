@@ -1106,7 +1106,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		if (eva == null)
 			eva = (EVA) getFunction(FunctionType.EVA);
 		if (eva != null) {
-			num = eva.getAirlock().getOccupants().size();
+			num = eva.getAirlock().getOccupants123().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
 			powerNeededForEVAHeater = num * EVA_HEATER_KW * .5D; 
 		}

@@ -281,7 +281,7 @@ extends Airlock {
 			return new HashSet<>();
 
 		// if in zone 2
-		return getOccupants();
+		return getOccupants123();
     }
 
     /**
@@ -300,7 +300,7 @@ extends Airlock {
 	 */
 	@Override
 	public int getNumOccupants() {
-		return getOccupants().size();
+		return getOccupants123().size();
 	}
     
 	/**
@@ -310,7 +310,7 @@ extends Airlock {
 	 */
 	@Override
 	public Set<Integer> getAllInsideOccupants() {
-		return getOccupants();
+		return getOccupants123();
 	}
 
 	/**
@@ -588,7 +588,7 @@ extends Airlock {
 
 			if (pulse.isNewIntMillisol() || RandomUtil.getRandomInt(10) == 0) {
 				// Check occupants
-				checkOccupantIDs();
+				checkOccupant123IDs();
 				// Check the airlock operator
 				checkOperator();
 			}

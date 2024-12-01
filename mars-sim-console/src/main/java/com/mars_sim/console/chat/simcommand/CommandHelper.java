@@ -250,7 +250,7 @@ public class CommandHelper {
 												+ " Outer-" + airlock.getNumAwaitingOuterDoor());
 		
 		response.appendTableHeading("Occupant", PERSON_WIDTH, "<->", "Has Suit");
-		for (int pID : airlock.getOccupants()) {
+		for (int pID : airlock.getOccupants123()) {
 			Person p = airlock.getPersonByID(pID);
 			if (p != null) {
 				findDirection(p, response);

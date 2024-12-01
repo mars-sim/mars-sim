@@ -308,7 +308,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @return
 	 */
 	public boolean isInAirlock(Person person) {
-		return getAirlock().getOccupants().contains(person.getIdentifier());
+		return getAirlock().getOccupants123().contains(person.getIdentifier());
 	}
 
 	/**

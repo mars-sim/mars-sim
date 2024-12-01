@@ -398,9 +398,9 @@ public class ExitAirlock extends Task {
 	 */
 	public boolean isOccupantHalfPrebreathed() {
 		// Verify occupant's whereabout first
-		airlock.checkOccupantIDs();
+		airlock.checkOccupant123IDs();
 		
-		List<Integer> list = new ArrayList<>(airlock.getOccupants());
+		List<Integer> list = new ArrayList<>(airlock.getOccupants123());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
 			// Filter checking on this person doing the ExitAirlock
@@ -424,9 +424,9 @@ public class ExitAirlock extends Task {
 	 */
 	public boolean isOccupantAQuarterPrebreathed() {
 		// Verify occupant's whereabout first
-		airlock.checkOccupantIDs();
+		airlock.checkOccupant123IDs();
 
-		List<Integer> list = new ArrayList<>(airlock.getOccupants());
+		List<Integer> list = new ArrayList<>(airlock.getOccupants123());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
 			// Filter checking on this person doing the ExitAirlock
@@ -450,9 +450,9 @@ public class ExitAirlock extends Task {
 	 */
 	public boolean isOccupant3QuartersPrebreathed() {
 		// Verify occupant's whereabout first
-		airlock.checkOccupantIDs();
+		airlock.checkOccupant123IDs();
 		
-		List<Integer> list = new ArrayList<>(airlock.getOccupants());
+		List<Integer> list = new ArrayList<>(airlock.getOccupants123());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
 			// Filter checking on this person doing the ExitAirlock
@@ -509,7 +509,7 @@ public class ExitAirlock extends Task {
 		}
 
 		if (isOccupantAQuarterPrebreathed()) {
-			walkAway(person, "Couldn't egress. " + PREBREATH_ONE_QUARTER_DONE + 
+			walkAway(person, "Couldn't egress in " + airlock.getEntityName() + ". " + PREBREATH_ONE_QUARTER_DONE + 
 					" Current task: " + person.getTaskDescription() + ".");
 			return 0;
 		}
@@ -532,13 +532,13 @@ public class ExitAirlock extends Task {
 		
 		if (inSettlement) {
 			if (!airlock.addAwaitingInnerDoor(id)) {
-				walkAway(person, "Couldn't egress. Couldn't get a spot at the inner door of " 
+				walkAway(person, "Couldn't egress in " + airlock.getEntityName() + ". Couldn't get a spot at the inner door of " 
 						+ airlock.getEntity().toString() + ".");
 				return 0;
 			}
 
-			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				walkAway(person, "Couldn't egress to " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED
+			if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
+				walkAway(person, "Couldn't egress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED
 						+ " Current task: " + person.getTaskDescription() + ".");
 				return 0;
 			}
@@ -546,7 +546,7 @@ public class ExitAirlock extends Task {
 			if (transitionTo(AirlockZone.ZONE_0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
 				// The inner door will stay locked if the chamber is NOT pressurized
 				canProceed = true;
-				logger.fine(person, 20000L, "Just transitioned into zone 0.");
+				logger.fine(person, 4_000, "Just transitioned into zone 0.");
 			}
 			
 			else if (airlock.isEmpty()) {
@@ -1289,7 +1289,7 @@ public class ExitAirlock extends Task {
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 	
-		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+		if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
 			logger.info(person, 4_000, 
 					COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 			return false;

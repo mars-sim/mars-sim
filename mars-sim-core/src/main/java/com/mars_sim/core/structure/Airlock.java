@@ -127,7 +127,7 @@ public abstract class Airlock implements Serializable {
     private Integer operatorID;
 
 	/** People currently within airlock's zone 1, 2 and 3 only (but NOT zone 0 and 4). */
-    private Set<Integer> occupantIDs;
+    private Set<Integer> occupant123IDs;
 
 	/** People waiting for the airlock by the inner door. */
     protected Set<Integer> awaitingInnerDoor;
@@ -162,7 +162,7 @@ public abstract class Airlock implements Serializable {
 
 		operatorID = Integer.valueOf(-1);
 
-		occupantIDs = new CopyOnWriteArraySet<>();
+		occupant123IDs = new CopyOnWriteArraySet<>();
 		awaitingInnerDoor = new HashSet<>();
 		awaitingOuterDoor = new HashSet<>();
 
@@ -301,7 +301,7 @@ public abstract class Airlock implements Serializable {
 		boolean result = false;
 
 		// Transfer from door queue into the airlock occupantIDs set
-		if (occupantIDs.contains(id)) {
+		if (occupant123IDs.contains(id)) {
 			result = transferOut(id);
 		}
 
@@ -330,7 +330,7 @@ public abstract class Airlock implements Serializable {
 		// List can't tell if the method remove(Object o) should be used.
 
 		// If the airlock is not full
-		if (!occupantIDs.contains(id)) {
+		if (!occupant123IDs.contains(id)) {
 			result = transferIn(person, id, egress);
 		}
 
@@ -389,7 +389,7 @@ public abstract class Airlock implements Serializable {
 			// Add the person's ID to the occupant ID list
 			// Define occupants as being in zone 1, 2, and 3.
 			// Being in zone 0 and 4 are not considered an airlock occupant.
-			occupantIDs.add(id);
+			occupant123IDs.add(id);
 		}
 
 		return result;
@@ -408,7 +408,7 @@ public abstract class Airlock implements Serializable {
 			operatorID = Integer.valueOf(-1);
 		}
 
-		return occupantIDs.remove(id);
+		return occupant123IDs.remove(id);
 	}
 
 	/**
@@ -426,7 +426,7 @@ public abstract class Airlock implements Serializable {
 			operatorID = Integer.valueOf(-1);
 		}
 
-		occupantIDs.remove(id);
+		occupant123IDs.remove(id);
 		awaitingInnerDoor.remove(id);
 		awaitingOuterDoor.remove(id);
 		
@@ -565,9 +565,9 @@ public abstract class Airlock implements Serializable {
 	 */
 	private Set<Integer> getOperatorPool() {
 		
-		if (!occupantIDs.isEmpty()) {
+		if (!occupant123IDs.isEmpty()) {
 			// Priority 1 : zone 2 - inside the chambers
-			return occupantIDs;
+			return occupant123IDs;
 		}
 		else {
 			// Priority 2 : zone 3 - on the inside of the outer door
@@ -802,9 +802,9 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Checks the occupants'id in zone 1, 2, or 3. Removes id if not there.
 	 */
-	public void checkOccupantIDs() {
+	public void checkOccupant123IDs() {
 
-		Iterator<Integer> i = occupantIDs.iterator();
+		Iterator<Integer> i = occupant123IDs.iterator();
 		while (i.hasNext()) {
 			int id = i.next();
 
@@ -815,7 +815,7 @@ public abstract class Airlock implements Serializable {
 				continue;
 			}
 			else
-				occupantIDs.remove(id);
+				occupant123IDs.remove(id);
 		}
 	}
 
@@ -914,7 +914,7 @@ public abstract class Airlock implements Serializable {
 		boolean isDead = person.getPhysicalCondition().isDead();
 		// Check if operator is dead.
 		if (isDead) {
-			occupantIDs.remove(id);
+			occupant123IDs.remove(id);
 			awaitingInnerDoor.remove(id);
 			awaitingOuterDoor.remove(id);
 		}
@@ -927,7 +927,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if person is in airlock
 	 */
 	public boolean inAirlock(Person p) {
-		return occupantIDs.contains((Integer)p.getIdentifier());
+		return occupant123IDs.contains((Integer)p.getIdentifier());
 	}
 
 	/**
@@ -1031,8 +1031,8 @@ public abstract class Airlock implements Serializable {
 	 *
 	 * @return
 	 */
-	public Set<Integer> getOccupants() {
-		return occupantIDs;
+	public Set<Integer> getOccupants123() {
+		return occupant123IDs;
 	}
 
 	/**
@@ -1042,7 +1042,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean isInAnyZones(int id) {
-		return (occupantIDs.contains(id)
+		return (occupant123IDs.contains(id)
 			|| awaitingInnerDoor.contains(id)
 			|| awaitingOuterDoor.contains(id));
 	}
@@ -1060,7 +1060,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean someoneHasNoEVASuit() {
-		for (Integer id: occupantIDs) {
+		for (Integer id: occupant123IDs) {
 			Person p = getPersonByID(id);
 			if (p != null && p.getSuit() == null)
 				return true;
@@ -1089,12 +1089,21 @@ public abstract class Airlock implements Serializable {
 	public abstract int getNumOccupants();
 
 	/**
+	 * Gets the number of occupants in zone 1, 2, and 3.
+	 *
+	 * @return the number of occupants in zone 1, 2, and 3.
+	 */
+	public int getNumOccupant123() {
+		return occupant123IDs.size();
+	}
+	
+	/**
 	 * Gets the number of empty slots.
 	 *
 	 * @return the number of empty slots
 	 */
 	public int getNumEmptied() {
-		return capacity - getNumOccupants();
+		return capacity - occupant123IDs.size(); //getNumOccupants();
 	}
 
 	/**
@@ -1105,12 +1114,12 @@ public abstract class Airlock implements Serializable {
 	public abstract boolean areAll4ChambersFull();
 
 	/**
-	 * Checks if there is no occupants inside the airlock.
+	 * Checks if there is no occupants inside the airlock in Zone 1, 2 and 3.
 	 *
 	 * @return true if the airlock is empty
 	 */
 	public boolean isEmpty() {
-		return occupantIDs.isEmpty() && getNumOccupants() == 0;
+		return occupant123IDs.isEmpty();// && getNumOccupants() == 0;
 	}
 
 	/**
@@ -1198,8 +1207,8 @@ public abstract class Airlock implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		occupantIDs.clear();
-		occupantIDs = null;
+		occupant123IDs.clear();
+		occupant123IDs = null;
 		awaitingInnerDoor.clear();
 		awaitingInnerDoor = null;
 		awaitingOuterDoor.clear();
