@@ -57,6 +57,7 @@ public class EatDrink extends Task {
 	private static final String EATING_PRESERVED = Msg.getString("Task.description.eatDrink.preserved"); //$NON-NLS-1$
 	private static final String DRINKING = Msg.getString("Task.description.eatDrink.drinking"); //$NON-NLS-1$
 	private static final String EATING = Msg.getString("Task.description.eatDrink.eating"); //$NON-NLS-1$
+	private static final String NAME = EATING;
 
 	/** Task phases. */
 	private static final TaskPhase LOOK_FOR_FOOD = new TaskPhase(Msg.getString("Task.phase.lookingforFood")); //$NON-NLS-1$
@@ -124,7 +125,7 @@ public class EatDrink extends Task {
 	 * @param person the person to perform the task
 	 */
 	public EatDrink(Person person) {
-		super(EATING, person, false, false, STRESS_MODIFIER, 10
+		super(NAME, person, false, false, STRESS_MODIFIER, 10
 				+ RandomUtil.getRandomDouble(-2, 2));
 
 		pc = person.getPhysicalCondition();

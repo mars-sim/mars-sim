@@ -488,6 +488,23 @@ public class EnterAirlock extends Task {
 //			return time * .75;
 //		}
 
+		// Must check if chambers are full or else getting stuck
+		if (airlock.isFull()) {
+			
+			logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+
+			clearDown();
+
+			// The outer door is locked probably because of not being
+			// at the correct airlock state. Go back to the previous task phase
+			setPhase(REQUEST_INGRESS);
+
+			// Reset accumulatedTime back to zero accumulatedTime = 0
+			// Do nothing in this frame
+			// Wait and see if he's allowed to be at the outer door in the next frame
+			return 0;	
+		}
+					
 		if (inSettlement) {
 
 			if (airlock.isOuterDoorLocked()) {
@@ -582,22 +599,6 @@ public class EnterAirlock extends Task {
 				canProceed = true;
 			}
 
-			// Must check if chambers are full or else getting stuck
-			if (airlock.isFull()) {
-				
-				logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
-
-				clearDown();
-
-				// The outer door is locked probably because of not being
-				// at the correct airlock state. Go back to the previous task phase
-				setPhase(REQUEST_INGRESS);
-
-				// Reset accumulatedTime back to zero accumulatedTime = 0
-				// Do nothing in this frame
-				// Wait and see if he's allowed to be at the outer door in the next frame
-//				return 0;	
-			}
 
 			if (transitionTo(AirlockZone.ZONE_2)) {
 

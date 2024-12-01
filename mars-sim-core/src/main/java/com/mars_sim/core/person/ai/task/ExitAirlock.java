@@ -687,11 +687,6 @@ public class ExitAirlock extends Task {
 
 		boolean canProceed = false;
 
-//		if (inSettlement && !isNominallyFit()) {
-//			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + NOT_FIT + ".");
-//			return 0;
-//		}
-		
 		if (isEVAUnfit()) {
 			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + NOT_EVA_FIT + ".");
 			return 0;
@@ -805,23 +800,6 @@ public class ExitAirlock extends Task {
 			airlock.setActivated(true);
 		}
 
-		// Must check if chambers are full or else getting stuck
-		if (airlock.isFull()) {
-			
-			logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
-
-			clearDown();
-
-			// The inner door is locked probably because of not being
-			// at the correct airlock state. Go back to the previous task phase
-			setPhase(REQUEST_EGRESS);
-
-			// Reset accumulatedTime back to zero accumulatedTime = 0
-			// Do nothing in this frame
-			// Wait and see if he's allowed to be at the outer door in the next frame
-//			return 0;	
-		}
-	
 		if (isEVAUnfit()) {
 			walkAway(person, NOT_EVA_FIT + TO_WALK_TO_CHAMBER);
 			return 0;
