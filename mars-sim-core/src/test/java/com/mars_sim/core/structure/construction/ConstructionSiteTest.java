@@ -19,7 +19,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Unit test for the ConstructionSite class.
@@ -57,21 +57,20 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
         attachments.add(atth.getID());
 
-        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
-                attachments));
+        vehicles.add(new ConstructionVehicleType(VehicleType.LUV, attachments));
 
         ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info",
-                ConstructionStageInfo.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
+                ConstructionStageInfo.Stage.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
                 resources, vehicles);
         foundationStage = new ConstructionStage(foundationInfo, site);
 
         ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info",
-                ConstructionStageInfo.FRAME, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
+                ConstructionStageInfo.Stage.FRAME, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
                 resources, vehicles);
         frameStage = new ConstructionStage(frameInfo, site);
 
         ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop",
-                ConstructionStageInfo.BUILDING, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
+                ConstructionStageInfo.Stage.BUILDING, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
                 resources, vehicles);
         buildingStage = new ConstructionStage(buildingInfo, site);
     }
@@ -126,23 +125,6 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
         site.addNewStage(buildingStage);
         assertEquals(buildingStage, site.getCurrentConstructionStage());
-    }
-
-    /*
-     * Test method for 'com.mars_sim.simulation.structure.construction.
-     * ConstructionSite.getNextStageType()'
-     */
-    public void testGetNextStageType() {
-        assertEquals(ConstructionStageInfo.FOUNDATION, site.getNextStageType());
-
-        site.addNewStage(foundationStage);
-        assertEquals(ConstructionStageInfo.FRAME, site.getNextStageType());
-
-        site.addNewStage(frameStage);
-        assertEquals(ConstructionStageInfo.BUILDING, site.getNextStageType());
-
-        site.addNewStage(buildingStage);
-        assertNull(site.getNextStageType());
     }
 
     /*

@@ -48,9 +48,9 @@ public class TestSVGMapUtil extends TestCase {
         // Check that all construction stage names are mapped to a SVG image.
         ConstructionConfig cConfig = config.getConstructionConfiguration();
         List<ConstructionStageInfo> constructionStages = new ArrayList<ConstructionStageInfo>();
-        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.FOUNDATION));
-        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.FRAME));
-        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.BUILDING));
+        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.Stage.FOUNDATION));
+        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.Stage.FRAME));
+        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.Stage.BUILDING));
         
         Iterator<ConstructionStageInfo> i = constructionStages.iterator();
         while (i.hasNext()) {

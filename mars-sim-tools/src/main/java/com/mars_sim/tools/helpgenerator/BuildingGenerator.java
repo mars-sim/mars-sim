@@ -7,6 +7,7 @@
 package com.mars_sim.tools.helpgenerator;
 
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.structure.building.BuildingSpec;
 
@@ -24,7 +25,21 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
         // Groups by category
         setGrouper("Category", r-> r.getCategory().getName());
     }
-    
+
+    /**
+     * Add link to associated construction stage
+     * @param r Construction stage for generation
+     * @param output Destination of the content
+     */
+    @Override
+    protected void addEntityProperties(BuildingSpec r, Map<String,Object> scope) {
+        var stage = getParent().getConfig().getConstructionConfiguration()
+                        .getConstructionStageInfoByName(r.getName());
+        if (stage != null) {
+            scope.put("construction", stage);
+        }
+    }
+
     /**
      * Gets a list of all the building specifications configured.
      */

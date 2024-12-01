@@ -34,8 +34,8 @@ public class HelpContext {
 	// This is the style associated with the html based help
     public static final String HTML_STYLE = "html-help";
 
-	// Name of the index file for lists of entities
-	private static final String INDEX = "index";
+	// Name of any generated index file
+	public static final String INDEX = "index";
 
 	// POJO for a named value pair
 	public record ValuePair(String name, double value) {}
@@ -49,24 +49,24 @@ public class HelpContext {
 	// This is the standard Title property used for page title
 	static final String TITLE_ATTR = "title";
 	private static final String TEMPLATES_DIR = "templates/";
-	private static final String TITLE_PREFIX = " Configurations";
 	private static final String FILE_SUFFIX_PROP = "file_suffix";
 	private static final String TOP_PROP = "generate_top";
 	private static final String PROPS_FILE = "template.properties";
 
 	// All generators are declared here
 	static final String[] GENERATORS = {BuildingGenerator.TYPE_NAME,
-												ComplaintGenerator.TYPE_NAME,
-												CrewGenerator.TYPE_NAME,
-												FoodGenerator.TYPE_NAME,
-												PartGenerator.TYPE_NAME,
-												ProcessGenerator.TYPE_NAME,
-												ResourceGenerator.TYPE_NAME,
-												ManifestGenerator.TYPE_NAME,
-												ScenarioGenerator.TYPE_NAME,
-												SettlementGenerator.TYPE_NAME,
-												TreatmentGenerator.TYPE_NAME,
-												VehicleGenerator.TYPE_NAME};
+										ComplaintGenerator.TYPE_NAME,
+										ConstructionGenerator.TYPE_NAME,
+										CrewGenerator.TYPE_NAME,
+										FoodGenerator.TYPE_NAME,
+										PartGenerator.TYPE_NAME,
+										ProcessGenerator.TYPE_NAME,
+										ResourceGenerator.TYPE_NAME,
+										ManifestGenerator.TYPE_NAME,
+										ScenarioGenerator.TYPE_NAME,
+										SettlementGenerator.TYPE_NAME,
+										TreatmentGenerator.TYPE_NAME,
+										VehicleGenerator.TYPE_NAME};
 
 	/**
 	 * Function that converts a string into a valid file name for an HTML link.
@@ -86,8 +86,6 @@ public class HelpContext {
 	private String templateDir;
 	private Map<String, Object> baseScope = null;
 
-	private Mustache indexTemplate;
-	private Mustache groupedTemplate;
 	private Map<String, ResourceUse> resourceUses = null;
 	private SimulationConfig config;
 
@@ -154,71 +152,6 @@ public class HelpContext {
 		}
 
 		return scope;
-	}
-
-	/**
-	 * Creates an index page for a set of named entities. This will use the 
-	 * 'entity-list' template.
-	 * 
-	 * @param title Page title
-	 * @param description Description of the page
-	 * @param entities List of entities
-	 * @param typeFolder Folder for this type
-	 * @param outputDir Target root folder for the file
-	 * 
-	 */
-	 void createFlatIndex(String title, String description,
-			List<? extends Object> entities, String typeFolder, File outputDir) 
-		throws IOException {
-		var scope = createScopeMap(title + TITLE_PREFIX);
-		scope.put("listtitle", title);
-		scope.put("description", description);
-		scope.put("entities", entities);
-		scope.put("typefolder", "../" + typeFolder + "/");
-
-		// Load the template
-		if (indexTemplate == null) {
-			indexTemplate = getTemplate("entity-list");
-		}
-
-		File indexFile = new File(outputDir, generateFileName(INDEX));
-		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
-			generateContent(indexTemplate, scope, dest);
-		}
-	}
-
-	/**
-	 * Creates an index page for a set of named entities that are grouped. This will use the 
-	 * 'entity-grouped' template.
-	 * 
-	 * @param title Page title
-	 * @param description Description of the page
-	 * @param groupName Name of the groups
-	 * @param groups List of groups
-	 * @param typeFolder Folder for this type
-	 * @param outputDir Target root folder for the file
-	 * 
-	 */
-	 void createGroupedIndex(String title, String description,
-			String groupName, List<?> groups,  String typeFolder, File outputDir) 
-		throws IOException {
-		var scope = createScopeMap(title + TITLE_PREFIX);
-		scope.put("listtitle", title);
-		scope.put("description", description);
-		scope.put("groups", groups);
-		scope.put("groupname", groupName);
-
-		scope.put("typefolder", "../" + typeFolder + "/");
-
-		// Load the template
-		if (groupedTemplate == null) {
-			groupedTemplate = getTemplate("entity-grouped");
-		}
-
-		File indexFile = new File(outputDir, generateFileName(INDEX));
-		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
-			generateContent(groupedTemplate, scope, dest);
-		}
 	}
 
 	static ResourceUse buildEmptyResourceUse() {
@@ -341,6 +274,7 @@ public class HelpContext {
 		return switch(name.toLowerCase()) {
 			case BuildingGenerator.TYPE_NAME -> new BuildingGenerator(this);
 			case ComplaintGenerator.TYPE_NAME -> new ComplaintGenerator(this);
+			case ConstructionGenerator.TYPE_NAME -> new ConstructionGenerator(this);
 			case CrewGenerator.TYPE_NAME -> new CrewGenerator(this);
 			case FoodGenerator.TYPE_NAME -> new FoodGenerator(this);
 			case PartGenerator.TYPE_NAME -> new PartGenerator(this);
@@ -351,7 +285,7 @@ public class HelpContext {
 			case SettlementGenerator.TYPE_NAME -> new SettlementGenerator(this);
 			case TreatmentGenerator.TYPE_NAME -> new TreatmentGenerator(this);
 			case VehicleGenerator.TYPE_NAME -> new VehicleGenerator(this);
-			default -> null;
+			default -> throw new IllegalArgumentException("No generator for " + name);
 		};
 	}
 }

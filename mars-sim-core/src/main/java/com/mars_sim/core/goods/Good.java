@@ -432,9 +432,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	protected static boolean isLocallyConstructable(Settlement settlement, ConstructionStageInfo buildingStage) {
 
 		if (buildingStage.isConstructable()) {
-			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
+			ConstructionStageInfo frameStage = buildingStage.getPrerequisiteStage();
 			if (frameStage != null) {
-				ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+				ConstructionStageInfo foundationStage = frameStage.getPrerequisiteStage();
 				if (foundationStage != null) {
 					if (frameStage.isConstructable() && foundationStage.isConstructable()) {
 						return true;
@@ -446,8 +446,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 							ConstructionStageInfo tempBuildingStage = ConstructionUtil
 									.getConstructionStageInfo(b.getBuildingType());
 							if (tempBuildingStage != null) {
-								ConstructionStageInfo tempFrameStage = ConstructionUtil
-										.getPrerequisiteStage(tempBuildingStage);
+								ConstructionStageInfo tempFrameStage = tempBuildingStage.getPrerequisiteStage();
 								if (frameStage.equals(tempFrameStage)) {
 									return true;
 								}
@@ -475,7 +474,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		Map<Integer, Double> result = new HashMap<>(stage.getResources());
 
 		// Add all resources required to build first prestage, if any.
-		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if (preStage1 != null) {
 			for(var e : preStage1.getResources().entrySet()) {
 				Integer resource = e.getKey();
@@ -489,7 +488,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 			}
 
 			// Add all resources required to build second prestage, if any.
-			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if (preStage2 != null) {
 				for(var e : preStage2.getResources().entrySet()) {
 					Integer resource = e.getKey();
@@ -519,7 +518,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		Map<Integer, Integer> result = new HashMap<>(stage.getParts());
 
 		// Add parts from first prestage, if any.
-		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if (preStage1 != null) {
 			for(var e : preStage1.getParts().entrySet()) {
 				Integer part = e.getKey();
@@ -533,7 +532,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 			}
 
 			// Add parts from second pre-stage, if any.
-			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if (preStage2 != null) {
 				for(var e : preStage2.getParts().entrySet()) {
 					Integer part = e.getKey();

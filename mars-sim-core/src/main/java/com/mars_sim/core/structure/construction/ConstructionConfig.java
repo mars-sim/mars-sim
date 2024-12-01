@@ -7,37 +7,25 @@
 
 package com.mars_sim.core.structure.construction;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.resource.AmountResource;
+
+import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.structure.construction.ConstructionStageInfo.Stage;
+import com.mars_sim.core.vehicle.VehicleType;
 
 
 /**
  * Parses construction configuration file.
  */
-public class ConstructionConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private static final Logger logger = Logger.getLogger(ConstructionConfig.class.getName());
+public class ConstructionConfig {
 
     // Element names
     private static final String NAME = "name";
@@ -50,21 +38,17 @@ public class ConstructionConfig implements Serializable {
     private static final String WORK_TIME = "work-time";
     private static final String SKILL_REQUIRED = "skill-required";
     private static final String PART = "part";
-    private static final String NUMBER = "number";
     private static final String RESOURCE = "resource";
-    private static final String AMOUNT = "amount";
     private static final String VEHICLE = "vehicle";
     private static final String TYPE = "type";
     private static final String ATTACHMENT_PART = "attachment-part";
 
     // Data members
-    private transient List<ConstructionStageInfo> foundationStageInfoList;
-    private transient List<ConstructionStageInfo> frameStageInfoList;
-    private transient List<ConstructionStageInfo> buildingStageInfoList;
-    private transient List<ConstructionStageInfo> allConstructionStageInfoList;
+    private Map<Stage,List<ConstructionStageInfo>> stageInfos = new EnumMap<>(Stage.class);
+    private List<ConstructionStageInfo> allConstructionStageInfoList;
 	
-    private transient List<Integer> constructionParts;
-    private transient List<Integer> constructionResources;
+    private List<Integer> constructionParts;
+    private List<Integer> constructionResources;
     
     /**
      * Constructor.
@@ -72,14 +56,11 @@ public class ConstructionConfig implements Serializable {
      * @param constructionDoc DOM document with construction configuration
      */
     public ConstructionConfig(Document constructionDoc) {
-    	foundationStageInfoList = createConstructionStageInfoList(constructionDoc,
-    			ConstructionStageInfo.FOUNDATION);
-
-    	frameStageInfoList = createConstructionStageInfoList(constructionDoc,
-    			ConstructionStageInfo.FRAME);
-
-    	buildingStageInfoList = createConstructionStageInfoList(constructionDoc,
-    			ConstructionStageInfo.BUILDING);
+        Map<String, ConstructionStageInfo> loaded = new HashMap<>();
+        for(var e : Stage.values()) {
+            stageInfos.put(e, createConstructionStageInfoList(constructionDoc, e, loaded));
+        }
+        allConstructionStageInfoList = new ArrayList<>(loaded.values());
     }
 
     /**
@@ -89,164 +70,120 @@ public class ConstructionConfig implements Serializable {
      * @return list of construction stage infos.
      * @throws Exception if error parsing list.
      */
-    public List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) {
+    public List<ConstructionStageInfo> getConstructionStageInfoList(Stage stageType) {
+        return stageInfos.get(stageType);
+    }
 
-        List<ConstructionStageInfo> stageInfo = null;
-
-        if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {
-            stageInfo = foundationStageInfoList;
-        }
-        else if (ConstructionStageInfo.FRAME.equals(stageType)) {
-            stageInfo = frameStageInfoList;
-        }
-        else if (ConstructionStageInfo.BUILDING.equals(stageType)) {
-            stageInfo = buildingStageInfoList;
-        }
-        else
-        	stageInfo = new ArrayList<>(stageInfo);
-
-        return stageInfo;
+    /**
+     * Find a stage info by it's name
+     * @param name
+     * @return
+     */
+    public ConstructionStageInfo getConstructionStageInfoByName(String name) {
+        return allConstructionStageInfoList.stream()
+                    .filter(s -> name.equalsIgnoreCase(s.getName()))
+                    .findAny()
+                    .orElse(null);
+    }
+	
+    /**
+     * Get all stages which follow the specified Stage. 
+     * @param start
+     * @return
+     */
+    public List<ConstructionStageInfo> getPotentialNextStages(ConstructionStageInfo start) {
+        return allConstructionStageInfoList.stream()
+                    .filter(s -> start.equals(s.getPrerequisiteStage()))
+                    .toList();
     }
 
     /**
      * Creates a stage info list.
      *
      * @param constructionDoc
-     * @param stageType the stage type.
+     * @param stage the stage type.
+     * @param loadedStage Stages already loaded keyed by name
      * @return list of construction stage infos.
      * @throws Exception if error parsing XML file.
      */
-	private List<ConstructionStageInfo> createConstructionStageInfoList(Document constructionDoc, String stageType) {
+	private List<ConstructionStageInfo> createConstructionStageInfoList(Document constructionDoc,
+                        Stage stage, Map<String,ConstructionStageInfo> loadedStages) {
 
-		List<ConstructionStageInfo> stageInfoList = null;
-		if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {
-			foundationStageInfoList = new ArrayList<>();
-			stageInfoList = foundationStageInfoList;
-		}
-		else if (ConstructionStageInfo.FRAME.equals(stageType)) {
-			frameStageInfoList = new ArrayList<>();
-			stageInfoList = frameStageInfoList;
-		}
-		else if (ConstructionStageInfo.BUILDING.equals(stageType)) {
-			buildingStageInfoList = new ArrayList<>();
-			stageInfoList = buildingStageInfoList;
-		}
-		else throw new IllegalStateException("stageType: " + stageType + " not valid.");
-
+		List<ConstructionStageInfo> stageInfoList = new ArrayList<>();
+		
+        String stageType = stage.name().toLowerCase();
         Element stageInfoListElement = constructionDoc.getRootElement().getChild(stageType + "-list");
         List<Element> stageInfoNodes = stageInfoListElement.getChildren(stageType);
 
         for (Element stageInfoElement : stageInfoNodes) {
-            String name = "";
+            String name = stageInfoElement.getAttributeValue(NAME);
+            int baseLevel = ConfigHelper.getAttributeInt(stageInfoElement, BASE_LEVEL);
+            int skillRequired = ConfigHelper.getAttributeInt(stageInfoElement, SKILL_REQUIRED);
+            String alignment = stageInfoElement.getAttributeValue(N_S_ALIGNMENT);
 
-            try {
-                // Get name
-                name = stageInfoElement.getAttributeValue(NAME);
+            double width = ConfigHelper.getAttributeDouble(stageInfoElement, WIDTH);
+            double length = ConfigHelper.getAttributeDouble(stageInfoElement, LENGTH);	
+            boolean unsetDimensions = (width == -1D) || (length == -1D);
 
-                if (stageInfoList == buildingStageInfoList) {
+            // Get constructable.
+            // Note should be false if constructable attribute doesn't exist.
+            boolean constructable = ConfigHelper.getAttributeBool(stageInfoElement, CONSTRUCTABLE);
 
-	                Set<String> types = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes().stream()
-                                            .map(b -> b.getName().toLowerCase()).collect(Collectors.toSet());
-	                if (!types.contains(name.toLowerCase()))
-	                	throw new IllegalStateException("ConstructionConfig : '" + name +
-	                			"' in constructions.xml does not match to any building types in buildings.xml.");
-                }
+            // Get salvagable.
+            // Note should be false if salvagable attribute doesn't exist.
+            boolean salvagable = ConfigHelper.getAttributeBool(stageInfoElement, SALVAGABLE);
 
-                String widthStr = stageInfoElement.getAttributeValue(WIDTH);
-                double width = Double.parseDouble(widthStr);
+            // convert work time from sols to millisols.
+            double workTime = ConfigHelper.getAttributeDouble(stageInfoElement, WORK_TIME) * 1000D;
 
-                String lengthStr = stageInfoElement.getAttributeValue(LENGTH);
-                double length = Double.parseDouble(lengthStr);
-
-        		String alignment = stageInfoElement.getAttributeValue(N_S_ALIGNMENT);
-        		
-                boolean unsetDimensions = (width == -1D) || (length == -1D);
-
-                String baseLevelStr = stageInfoElement.getAttributeValue(BASE_LEVEL);
-                int baseLevel = Integer.parseInt(baseLevelStr);
-
-                // Get constructable.
-                // Note should be false if constructable attribute doesn't exist.
-                boolean constructable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(CONSTRUCTABLE));
-
-                // Get salvagable.
-                // Note should be false if salvagable attribute doesn't exist.
-                boolean salvagable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(SALVAGABLE));
-
-                double workTime = Double.parseDouble(stageInfoElement.getAttributeValue(WORK_TIME));
-                // convert work time from sols to millisols.
-                workTime *= 1000D;
-
-                int skillRequired = Integer.parseInt(stageInfoElement.getAttributeValue(SKILL_REQUIRED));
-
-                String prerequisiteStage = null;
-                String prerequisiteStageType = null;
-                if (ConstructionStageInfo.FRAME.equals(stageType))
-                    prerequisiteStageType = ConstructionStageInfo.FOUNDATION;
-                else if (ConstructionStageInfo.BUILDING.equals(stageType))
-                    prerequisiteStageType = ConstructionStageInfo.FRAME;
-                if (prerequisiteStageType != null)
-                    prerequisiteStage = stageInfoElement.getAttributeValue(prerequisiteStageType);
-
-                List<Element> partList = stageInfoElement.getChildren(PART);
-
-                Map<Integer, Integer> parts = new HashMap<>(partList.size());
-                for (Element partElement : partList) {
-                    String partName = partElement.getAttributeValue(NAME);
-                    int partNum = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-                    Part part = (Part) ItemResourceUtil.findItemResource(partName);
-
-    				if (part == null)
-    					logger.severe(partName + " shows up in constructions.xml but doesn't exist in parts.xml.");
-    				else
-                        parts.put(ItemResourceUtil.findIDbyItemResourceName(partName), partNum);
-
-                }
-
-                List<Element> resourceList = stageInfoElement.getChildren(RESOURCE);
-                Map<Integer, Double> resources =
-                    new HashMap<>(resourceList.size());
-                for (Element resourceElement : resourceList) {
-                    String resourceName = resourceElement.getAttributeValue(NAME);
-                    double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-                    AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-       				if (resource == null)
-    					logger.severe(resourceName + " shows up in constructions.xml but doesn't exist in resources.xml.");
-    				else
-    					resources.put(ResourceUtil.findIDbyAmountResourceName(resourceName), resourceAmount);
-                }
-
-                List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
-                List<ConstructionVehicleType> vehicles =
-                    new ArrayList<>(vehicleList.size());
-
-                for (Element vehicleElement : vehicleList) {
-                    String vehicleType = vehicleElement.getAttributeValue(TYPE);
-
-                    Class<? extends Vehicle> vehicleClass = null;
-                    if (vehicleType.toLowerCase().contains("rover")) vehicleClass = Rover.class;
-                    else if (vehicleType.equalsIgnoreCase(LightUtilityVehicle.NAME))
-                        vehicleClass = LightUtilityVehicle.class;
-                    else throw new IllegalStateException("Unknown vehicle type: " + vehicleType);
-
-                    List<Element> attachmentPartList = vehicleElement.getChildren(ATTACHMENT_PART);
-                    List<Integer> attachmentParts = new ArrayList<>(attachmentPartList.size());
-                    for (Element attachmentPartElement : attachmentPartList) {
-                        String partName = attachmentPartElement.getAttributeValue(NAME);
-                        attachmentParts.add(ItemResourceUtil.findIDbyItemResourceName(partName));
+            // Find any prestage that must be earlier that this one
+            ConstructionStageInfo preStage = null;
+            for(Stage s : Stage.values()) {
+                var preStageName = stageInfoElement.getAttributeValue(s.name().toLowerCase());
+                if (preStageName != null) {
+                    // Check correct sequence
+                    if (s.ordinal() >= stage.ordinal()) {
+                        throw new IllegalStateException("Construction stage " + name
+                                            + " references a prestage from a later stage type.");
                     }
+                    preStage = loadedStages.get(preStageName);
+                    break;
+                }
+            }
 
-                    vehicles.add(new ConstructionVehicleType(vehicleType, vehicleClass, attachmentParts));
+            String context = "Construction " + name;
+            List<Element> partList = stageInfoElement.getChildren(PART);
+            Map<Integer, Integer> parts = ConfigHelper.parsePartListById(context, partList);
+
+            List<Element> resourceList = stageInfoElement.getChildren(RESOURCE);
+            Map<Integer, Double> resources = ConfigHelper.parseResourceListById(context,
+                                        resourceList);
+
+            List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
+            List<ConstructionVehicleType> vehicles = new ArrayList<>(vehicleList.size());
+            for (Element vehicleElement : vehicleList) {
+                var vehicleType = VehicleType.valueOf(ConfigHelper.convertToEnumName(
+                                    vehicleElement.getAttributeValue(TYPE)));
+
+                List<Element> attachmentPartList = vehicleElement.getChildren(ATTACHMENT_PART);
+                List<Integer> attachmentParts = new ArrayList<>(attachmentPartList.size());
+                for (Element attachmentPartElement : attachmentPartList) {
+                    String partName = attachmentPartElement.getAttributeValue(TYPE);
+                    attachmentParts.add(ItemResourceUtil.findIDbyItemResourceName(partName));
                 }
 
-                ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stageType, width, length,
-                		alignment, unsetDimensions, baseLevel, constructable, salvagable, workTime, skillRequired,
-                        prerequisiteStage, parts, resources, vehicles);
-                stageInfoList.add(stageInfo);
+                vehicles.add(new ConstructionVehicleType(vehicleType, attachmentParts));
             }
-            catch (Exception e) {
-                throw new IllegalStateException("Error reading construction stage '" + name + "': " + e.getMessage());
+
+            ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stage, width, length,
+                    alignment, unsetDimensions, baseLevel, constructable, salvagable, workTime, skillRequired,
+                    preStage, parts, resources, vehicles);
+            stageInfoList.add(stageInfo);
+
+            if (loadedStages.containsKey(name)) {
+                throw new IllegalStateException("Construction stage name is not unique:" + name);
             }
+            loadedStages.put(name, stageInfo);
         }
 
         return stageInfoList;
@@ -259,28 +196,10 @@ public class ConstructionConfig implements Serializable {
 	 * @throws Exception if error getting list.
 	 */
 	public List<ConstructionStageInfo> getAllConstructionStageInfoList() {
-
-		if (allConstructionStageInfoList == null) {
-			
-			List<ConstructionStageInfo> result = new ArrayList<>();
-			
-			List<ConstructionStageInfo> foundations = getConstructionStageInfoList(
-					ConstructionStageInfo.FOUNDATION);
-			List<ConstructionStageInfo> frames = getConstructionStageInfoList(
-					ConstructionStageInfo.FRAME);
-			List<ConstructionStageInfo> buildings = getConstructionStageInfoList(
-					ConstructionStageInfo.BUILDING);
-
-			result.addAll(foundations);
-			result.addAll(frames);
-			result.addAll(buildings);
-
-			allConstructionStageInfoList = result;
-		}
-		
-		return allConstructionStageInfoList;
+        return allConstructionStageInfoList;
 	}
-	
+
+
 	/**
 	 * Determines all resources needed for construction projects.
 	 *
@@ -290,14 +209,10 @@ public class ConstructionConfig implements Serializable {
 		
 		if (constructionResources == null) {
 			List<Integer> resources = new ArrayList<>();
-	
-			Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
-			while (i.hasNext()) {
-				ConstructionStageInfo info = i.next();
+
+			for(ConstructionStageInfo info : allConstructionStageInfoList) {
 				if (info.isConstructable()) {
-					Iterator<Integer> j = info.getResources().keySet().iterator();
-					while (j.hasNext()) {
-						Integer resource = j.next();
+					for(Integer resource : info.getResources().keySet()) {
 						if (!resources.contains(resource)) {
 							resources.add(resource);
 						}
@@ -322,13 +237,9 @@ public class ConstructionConfig implements Serializable {
 			
 			List<Integer> parts = new ArrayList<>();
 	
-			Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
-			while (i.hasNext()) {
-				ConstructionStageInfo info = i.next();
+			for(ConstructionStageInfo info : allConstructionStageInfoList) {
 				if (info.isConstructable()) {
-					Iterator<Integer> j = info.getParts().keySet().iterator();
-					while (j.hasNext()) {
-						Integer part = j.next();
+					for(Integer part : info.getParts().keySet()) {
 						if (!parts.contains(part)) {
 							parts.add(part);
 						}
@@ -341,14 +252,4 @@ public class ConstructionConfig implements Serializable {
 		
 		return constructionParts;
 	}
-
-    /**
-     * Prepares object for garbage collection.
-     */
-    public void destroy() {
-
-    	foundationStageInfoList = null;
-    	frameStageInfoList = null;
-    	buildingStageInfoList = null;
-    }
 }

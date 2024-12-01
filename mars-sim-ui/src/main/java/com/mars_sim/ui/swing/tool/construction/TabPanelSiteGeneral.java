@@ -59,17 +59,10 @@ public class TabPanelSiteGeneral extends TabPanel {
 		String name = constructionSite.getName();
 		ConstructionStageInfo stageInfo = constructionSite.getStageInfo();
 		String stageInfoName = stageInfo.getName();
-		String stageInfoType = stageInfo.getType();
+		String stageInfoType = stageInfo.getType().name().toLowerCase();
 		
 		infoPanel.addTextField("Site Name", name, null);
 		infoPanel.addTextField("Stage Info Name", stageInfoName, null);
 		infoPanel.addTextField("Stage Info Type", stageInfoType, null);
-	}
-	
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
 	}
 }

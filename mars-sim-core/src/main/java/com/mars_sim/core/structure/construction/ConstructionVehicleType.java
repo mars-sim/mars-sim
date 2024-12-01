@@ -9,6 +9,8 @@ package com.mars_sim.core.structure.construction;
 import java.io.Serializable;
 import java.util.List;
 
+import com.mars_sim.core.vehicle.VehicleType;
+
 /**
  * Construction vehicle information.
  */
@@ -19,23 +21,19 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private String vehicleType;
-	private Class<?> vehicleClass;
+	private VehicleType vehicleType;
 	private List<Integer> attachmentParts;
 
 	/**
 	 * Constructor.
 	 * @param vehicleType the vehicle type.
-	 * @param vehicleClass the vehicle class.
 	 * @param attachmentParts list of attachment parts.
 	 */
 	public ConstructionVehicleType(
-		String vehicleType, Class<?> vehicleClass, 
-		List<Integer> attachmentParts
+		VehicleType vehicleType, List<Integer> attachmentParts
 	) {
 
 		this.vehicleType = vehicleType;
-		this.vehicleClass = vehicleClass;
 		this.attachmentParts = attachmentParts;
 	}
 
@@ -48,23 +46,15 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the vehicle class.
-	 * @return class.
-	 */
-	public Class<?> getVehicleClass() {
-		return vehicleClass;
-	}
-
-	/**
 	 * Gets the vehicle type.
 	 * @return vehicle type.
 	 */
-	public String getVehicleType() {
+	public VehicleType getVehicleType() {
 		return vehicleType;
 	}
 
 	@Override
 	public String toString() {
-		return vehicleType;
+		return vehicleType.name();
 	}
 }

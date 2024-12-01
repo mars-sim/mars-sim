@@ -28,7 +28,9 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.EventSchedule;
 
@@ -53,6 +55,7 @@ public class ConfigHelper {
 	private static final String MAX = "max";
 	private static final String MIN = "min";
 
+	private static final String PART_TYPE = "type";
     private static final String RESOURCE_TYPE = "type";
     private static final String RESOURCE_AMOUNT = "amount";
 
@@ -203,6 +206,22 @@ public class ConfigHelper {
 		return Double.parseDouble(str);
     }
 
+	
+	/**
+	 * A generic extract to get an Attribute as boolean value.
+	 * 
+	 * @param sourceElement The XML Element to extract Attribute from
+	 * @param attrName Attribute name to look for
+	 * @return The Attribute value converted to a boolean
+	 */
+    public static boolean getAttributeBool(Element sourceElement, String attrName) {
+		var str = sourceElement.getAttributeValue(attrName);
+		if (str == null) {
+			throw new IllegalArgumentException("Attribute " + attrName + " not found in " + sourceElement.getName());
+		}
+		return Boolean.parseBoolean(str);
+    }
+
 	/**
 	 * A generic extract to get an optional Attribute as bool value.
 	 * 
@@ -228,10 +247,10 @@ public class ConfigHelper {
 	 */
     public static PopulationCharacteristics parsePopulation(Element el) {
 		return new PopulationCharacteristics(
-								Double.parseDouble(el.getAttributeValue(MALE_HEIGHT)),
-								Double.parseDouble(el.getAttributeValue(FEMALE_HEIGHT)),
-								Double.parseDouble(el.getAttributeValue(MALE_WEIGHT)),
-								Double.parseDouble(el.getAttributeValue(FEMALE_WEIGHT)));
+								getAttributeDouble(el, MALE_HEIGHT),
+								getAttributeDouble(el, FEMALE_HEIGHT),
+								getAttributeDouble(el, MALE_WEIGHT),
+								getAttributeDouble(el, FEMALE_WEIGHT));
     }
 
 		/**
@@ -394,7 +413,7 @@ public class ConfigHelper {
             if (resource == null)
                 throw new IllegalArgumentException(resourceType + " shows up in "
                         + context
-                        + " but doesn't exist in resources.xml.");
+                        + " but doesn't exist");
             
             double resourceAmount = getAttributeDouble(resourceElement, RESOURCE_AMOUNT);
             newResources.put(resource, resourceAmount);
@@ -412,6 +431,43 @@ public class ConfigHelper {
 	public static Map<Integer, Double> parseResourceListById(String context,
                                                                 List<Element> resourceNodes) {  
 		var map = parseResourceList(context, resourceNodes);
+
+		// Convert AmountResource key to identifer
+		return map.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().getID(), Entry::getValue));
+	}
+
+	/**
+	 * Parse a collection of Parts that are in a name and number pair.
+	 * @param context Context of the parsing
+	 * @param partNodes Dom elements
+	 * @return
+	 */
+	public static Map<Part, Integer> parsePartList(String context, List<Element> partNodes) {
+		Map<Part, Integer> newParts = new HashMap<>();
+		for (Element partElement : partNodes) {
+            String partType = partElement.getAttributeValue(PART_TYPE);
+            Part part = (Part) ItemResourceUtil.findItemResource(partType);
+            if (part == null) {
+				throw new IllegalArgumentException(partType + " shows up in "
+											+ context + " but doesn't exist");
+			}
+			int partNumber = getAttributeInt(partElement, NUMBER);
+			newParts.put(part, partNumber);
+        }
+		return newParts;
+	}
+
+	/**
+	 * Parse a collection of parts that are in a type and amount pair. Returns is keyed on 
+	 * resource id.
+	 * @param context Context of the parsing
+	 * @param partNodes Dom elements
+	 * @return
+	 */
+	public static Map<Integer, Integer> parsePartListById(String context,
+                                                                List<Element> partNodes) {  
+		var map = parsePartList(context, partNodes);
 
 		// Convert AmountResource key to identifer
 		return map.entrySet().stream()

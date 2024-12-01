@@ -166,15 +166,13 @@ implements Serializable {
 	 */
 	public List<ConstructionSite> getConstructionSitesNeedingSalvageMission() {
 		List<ConstructionSite> result = new ArrayList<>();
-		Iterator<ConstructionSite> i = sites.iterator();
-		while (i.hasNext()) {
-			ConstructionSite site = i.next();
+		for(ConstructionSite site : sites) {
 			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() &&
 					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
-				if (currentStage != null) {
-					if (currentStage.isComplete()) result.add(site);
-					else if (currentStage.isSalvaging()) result.add(site);
+				if ((currentStage != null)
+					&& (currentStage.isComplete() || currentStage.isSalvaging())) {
+					result.add(site);
 				}
 			}
 		}
@@ -294,33 +292,28 @@ implements Serializable {
 		site.setFacing(salvagedBuilding.getFacing());
 		ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(salvagedBuilding.getBuildingType());
 		if (buildingStageInfo != null) {
-			String frameName = buildingStageInfo.getPrerequisiteStage();
-			ConstructionStageInfo frameStageInfo = ConstructionUtil.getConstructionStageInfo(frameName);
+			ConstructionStageInfo frameStageInfo = buildingStageInfo.getPrerequisiteStage();
 			if (frameStageInfo != null) {
-				String foundationName = frameStageInfo.getPrerequisiteStage();
-				ConstructionStageInfo foundationStageInfo = ConstructionUtil.getConstructionStageInfo(foundationName);
+				ConstructionStageInfo foundationStageInfo = frameStageInfo.getPrerequisiteStage();
 				if (foundationStageInfo != null) {
 					// Add foundation stage.
 					ConstructionStage foundationStage = new ConstructionStage(foundationStageInfo, site);
 					foundationStage.setCompletedWorkTime(foundationStageInfo.getWorkTime());
 					site.addNewStage(foundationStage);
-
-					// Add frame stage.
-					ConstructionStage frameStage = new ConstructionStage(frameStageInfo, site);
-					frameStage.setCompletedWorkTime(frameStageInfo.getWorkTime());
-					site.addNewStage(frameStage);
-
-					// Add building stage and prepare for salvage.
-					ConstructionStage buildingStage = new ConstructionStage(buildingStageInfo, site);
-					buildingStage.setSalvaging(true);
-					site.addNewStage(buildingStage);
 				}
-				else throw new IllegalStateException("Could not find foundation construction stage for building: " + salvagedBuilding.getBuildingType());
-			}
-			else throw new IllegalStateException("Could not find frame construction stage for building: " + salvagedBuilding.getBuildingType());
-		}
-		else throw new IllegalStateException("Could not find building construction stage for building: " + salvagedBuilding.getBuildingType());
 
+				// Add frame stage.
+				ConstructionStage frameStage = new ConstructionStage(frameStageInfo, site);
+				frameStage.setCompletedWorkTime(frameStageInfo.getWorkTime());
+				site.addNewStage(frameStage);
+			}
+
+			// Add building stage and prepare for salvage.
+			ConstructionStage buildingStage = new ConstructionStage(buildingStageInfo, site);
+			buildingStage.setSalvaging(true);
+			site.addNewStage(buildingStage);
+		}
+	
 		// Clear construction values cache.
 		values.clearCache();
 

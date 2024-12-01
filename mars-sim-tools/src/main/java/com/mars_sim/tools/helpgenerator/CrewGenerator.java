@@ -17,6 +17,7 @@ public class CrewGenerator extends TypeGenerator<Crew> {
     protected CrewGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Crew",
                 "Predefined Crew for use in Scenarios");
+        setChangeViaEditor(true);
     }
 
     /**

@@ -19,7 +19,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 import junit.framework.TestCase;
 
@@ -50,11 +50,10 @@ public class ConstructionStageTest extends TestCase {
             new ArrayList<>(1);
         List<Integer> attachments = new ArrayList<>(1);
         attachments.add(new Part("attachment part", 2, "test resource description", GoodType.UTILITY, 1D, 1).getID());
-        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
-                attachments));
+        vehicles.add(new ConstructionVehicleType(VehicleType.LUV, attachments));
 
         foundationInfo = new ConstructionStageInfo("test foundation info",
-                ConstructionStageInfo.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null,
+                ConstructionStageInfo.Stage.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null,
                 parts, resources, vehicles);
     }
 

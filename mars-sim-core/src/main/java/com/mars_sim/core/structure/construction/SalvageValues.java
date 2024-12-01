@@ -152,7 +152,7 @@ implements Serializable {
 
 		if (!site.isUndergoingSalvage()) {
 			ConstructionStage stage = site.getCurrentConstructionStage();
-			ConstructionStageInfo prerequisiteStage = ConstructionUtil.getPrerequisiteStage(stage.getInfo());
+			ConstructionStageInfo prerequisiteStage = stage.getInfo().getPrerequisiteStage();
 
 			if (site.hasUnfinishedStage()) {
 				if (stage.getInfo().getArchitectConstructionSkill() <= constructionSkill) {
@@ -228,7 +228,7 @@ implements Serializable {
 		ConstructionStageInfo buildingStage = ConstructionUtil.getConstructionStageInfo(building.getBuildingType());
 		if ((buildingStage != null) && buildingStage.isSalvagable() && 
 				(constructionSkill >= buildingStage.getArchitectConstructionSkill())) {
-			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
+			ConstructionStageInfo frameStage = buildingStage.getPrerequisiteStage();
 			frameStageValue = getSalvageStageValue(frameStage);
 
 			// Determine value of estimated salvaged parts.

@@ -36,12 +36,13 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo;
-import com.mars_sim.core.structure.construction.ConstructionUtil;
 import com.mars_sim.core.structure.construction.ConstructionVehicleType;
+import com.mars_sim.core.structure.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -380,12 +381,12 @@ class ConstructionProjectPanel extends WizardPanel {
     private String getToolTipText(ConstructionStageInfo stageInfo) {
         String result = null;
         if (stageInfo != null) {
-            if (!stageInfo.getType().equals(ConstructionStageInfo.BUILDING)) {
+            if (!stageInfo.getType().equals(ConstructionStageInfo.Stage.BUILDING)) {
                 try {
                     StringBuilder s = new StringBuilder(Msg.HTML_START); //$NON-NLS1$
                     s.append("Next possible stages:");
-                    Iterator<ConstructionStageInfo> i = ConstructionUtil
-                            .getNextPossibleStages(stageInfo).iterator();
+                    Iterator<ConstructionStageInfo> i = getConfig()
+                            .getPotentialNextStages(stageInfo).iterator();
                     while (i.hasNext()) {
                         s.append(Msg.BR)
                         .append(Msg.NBSP)
@@ -450,13 +451,12 @@ class ConstructionProjectPanel extends WizardPanel {
         projectListModel.clear();
 
         int selectedSiteIndex = siteList.getSelectedIndex();
-        String selectedSite = (String) siteList.getSelectedValue();
+        String selectedSite = siteList.getSelectedValue();
         if (selectedSite != null) {
             if (selectedSite.equals("New Site")) {
                 try {
                     // Show all foundation projects.
-                    Iterator<ConstructionStageInfo> ii = ConstructionUtil
-                            .getFoundationConstructionStageInfoList()
+                    Iterator<ConstructionStageInfo> ii = getConfig().getConstructionStageInfoList(Stage.FOUNDATION)
                             .iterator();
                     while (ii.hasNext()) {
                         ConstructionStageInfo info = ii.next();
@@ -488,6 +488,10 @@ class ConstructionProjectPanel extends WizardPanel {
         }
     }
 
+    private ConstructionConfig getConfig() {
+        return getSimulation().getConfig().getConstructionConfiguration();
+    }
+
     public void loadSite(String selectedSite, int selectedSiteIndex) {
         Settlement settlement = getConstructionSettlement();
         if (settlement != null) {
@@ -507,8 +511,8 @@ class ConstructionProjectPanel extends WizardPanel {
                         ConstructionStageInfo info = site
                                 .getCurrentConstructionStage()
                                 .getInfo();
-                        Iterator<ConstructionStageInfo> i = ConstructionUtil
-                                .getNextPossibleStages(info).iterator();
+                        Iterator<ConstructionStageInfo> i = getConfig()
+                                .getPotentialNextStages(info).iterator();
                         while (i.hasNext()) {
                             ConstructionStageInfo stageInfo = i.next();
                             if (stageInfo.isConstructable())

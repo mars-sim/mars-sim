@@ -17,10 +17,8 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ConstructionStageInfo implements Serializable {
 
-    // Stage types
-    public static final String FOUNDATION = "foundation";
-    public static final String FRAME = "frame";
-    public static final String BUILDING = "building";
+    // Stage 
+    public enum Stage {FOUNDATION, FRAME, BUILDING}
 
     // Data members
     private boolean unsetDimensions;
@@ -35,9 +33,9 @@ public class ConstructionStageInfo implements Serializable {
     private double workTime;
     
     private String name;
-    private String type;
+    private Stage type;
     private String alignment;
-    private String prerequisiteStage;
+    private ConstructionStageInfo prerequisiteStage;
     
     private Map<Integer, Integer> parts;
     private Map<Integer, Double> resources;
@@ -61,11 +59,11 @@ public class ConstructionStageInfo implements Serializable {
      * @param resources map of resources required and their amount.
      * @param vehicles list of construction vehicles required.
      */
-    ConstructionStageInfo(String name, String type, double width, double length,
+    ConstructionStageInfo(String name, Stage type, double width, double length,
     		String alignment,
     		boolean unsetDimensions, int baseLevel, boolean constructable,
     		boolean salvagable, double workTime, int architectConstructionSkill,
-    		String prerequisiteStage, Map<Integer, Integer> parts, Map<Integer,
+    		ConstructionStageInfo prerequisiteStage, Map<Integer, Integer> parts, Map<Integer,
     		Double> resources, List<ConstructionVehicleType> vehicles) {
 
         this.name = name;
@@ -179,7 +177,7 @@ public class ConstructionStageInfo implements Serializable {
      * 
      * @return name.
      */
-    public String getPrerequisiteStage() {
+    public ConstructionStageInfo getPrerequisiteStage() {
         return prerequisiteStage;
     }
 
@@ -197,7 +195,7 @@ public class ConstructionStageInfo implements Serializable {
      * 
      * @return type.
      */
-    public String getType() {
+    public Stage getType() {
         return type;
     }
 
@@ -217,21 +215,6 @@ public class ConstructionStageInfo implements Serializable {
      */
     public double getWorkTime() {
         return workTime;
-    }
-
-    /**
-     * Prepares for garbage collection.
-     */
-    public void destroy() {
-       name = null;
-       type = null;
-       prerequisiteStage = null;
-       parts.clear();
-       parts = null;
-       resources.clear();
-       resources = null;
-       vehicles.clear();
-       vehicles = null;
     }
 
     @Override

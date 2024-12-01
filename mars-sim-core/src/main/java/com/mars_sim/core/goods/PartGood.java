@@ -746,7 +746,7 @@ public class PartGood extends Good {
 		while (i.hasNext()) {
 			ConstructionStageInfo stage = i.next();
 			double stageValue = stageValues.get(stage);
-			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
+			if (stageValue > 0D && ConstructionStageInfo.Stage.BUILDING.equals(stage.getType())
 					&& isLocallyConstructable(settlement, stage)) {
 				double constructionStageDemand = getPartConstructionStageDemand(getID(), stage, stageValue);
 				if (constructionStageDemand > 0D) {
@@ -814,7 +814,7 @@ public class PartGood extends Good {
 		}
 
 		// Add all parts from first prestage, if any.
-		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if ((preStage1 != null) && preStage1.isConstructable()) {
 			Map<Integer, Integer> preStage1Parts = preStage1.getParts();
 			if (preStage1Parts.containsKey(part)) {
@@ -822,7 +822,7 @@ public class PartGood extends Good {
 			}
 
 			// Add all parts from second prestage, if any.
-			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if ((preStage2 != null) && preStage2.isConstructable()) {
 				Map<Integer, Integer> preStage2Parts = preStage2.getParts();
 				if (preStage2Parts.containsKey(part)) {

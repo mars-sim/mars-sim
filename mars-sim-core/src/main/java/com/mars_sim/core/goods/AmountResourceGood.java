@@ -1085,7 +1085,7 @@ class AmountResourceGood extends Good {
 		for(Entry<ConstructionStageInfo, Double> stageDetail : values.getAllConstructionStageValues(bestConstructionSkill).entrySet()) {
 			ConstructionStageInfo stage = stageDetail.getKey();
 			double stageValue = stageDetail.getValue();
-			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
+			if (stageValue > 0D && ConstructionStageInfo.Stage.BUILDING.equals(stage.getType())
 					// TODO: reduce the utilization on this method using 5.7% of total cpu
 					&& isLocallyConstructable(settlement, stage)) {
 				double constructionDemand = getResourceConstructionStageDemand(stage, stageValue);
@@ -1153,12 +1153,12 @@ class AmountResourceGood extends Good {
 		double result = stage.getResources().getOrDefault(resource, 0D);
 
 		// Add resource amount needed for first prestage, if any.
-		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if ((preStage1 != null) && preStage1.isConstructable()) {
 			result += preStage1.getResources().getOrDefault(resource, 0D);
 
 			// Add resource amount needed for second prestage, if any.
-			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if ((preStage2 != null) && preStage2.isConstructable()) {
 				result += preStage2.getResources().getOrDefault(resource, 0D);
 			}

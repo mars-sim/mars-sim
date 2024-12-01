@@ -1,0 +1,46 @@
+{{<help-layout}}
+  {{$body}}
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Type:</td><td>{{construction.type.name}}</td></tr>
+        <tr><td>Work Time:</td><td>{{construction.workTime}}</td></tr>
+        <tr><td>Architectural Skill:</td><td>{{construction.architectConstructionSkill}}</td></tr>
+        {{#construction.prerequisiteStage}}
+<tr><td>PreReq:</td><td><a href="{{constructionfolder}}{{#filename}}{{construction.prerequisiteStage.name}}{{/filename}}">{{construction.prerequisiteStage.name}}</a></td></tr>
+{{/construction.prerequisiteStage}}
+      </table>
+    </div>
+
+{{^resources.isEmpty}}
+<div id="resources">
+    <h3>Resources</h3>
+    <table class="details">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            </tr>
+        </thead>
+        {{#resources}}
+        <tr><td>
+        {{#typefolder}}
+            <a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a>
+        {{/typefolder}}
+        {{^typefolder}}
+            {{name}}
+        {{/typefolder}}
+        </td>
+        <td>{{type}}</td>
+        <td>{{amount}}</td>
+        </tr>
+        {{/resources}}
+    </table>
+</div>
+{{/resources.isEmpty}}
+   
+   
+    <a class="backlink" href="index.html">Back to Settlement list</a>
+  {{/body}}
+{{/help-layout}}

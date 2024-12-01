@@ -18,7 +18,7 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Unit test for the ConstructionStageInfo class.
@@ -48,10 +48,9 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
         Part atth = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
         attachments.add(atth.getID());
 
-        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
-                attachments));
+        vehicles.add(new ConstructionVehicleType(VehicleType.LUV, attachments));
 
-        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, 
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.Stage.FOUNDATION, 10D, 10D, 
         		"length", false, 0,
                 false, false, 10000D, 1, null, parts, resources, vehicles);
     }
@@ -121,7 +120,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
      * construction.ConstructionStageInfo.getType()'
      */
     public void testGetType() {
-        assertEquals(ConstructionStageInfo.FOUNDATION, info.getType());
+        assertEquals(ConstructionStageInfo.Stage.FOUNDATION, info.getType());
     }
 
     /*
@@ -132,12 +131,9 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
         List<ConstructionVehicleType> vehicles = info.getVehicles();
         assertEquals(1, vehicles.size());
         ConstructionVehicleType vehicle = vehicles.get(0);
-        assertEquals("Light Utility Vehicle", vehicle.getVehicleType());
-        assertEquals(LightUtilityVehicle.class, vehicle.getVehicleClass());
+        assertEquals(VehicleType.LUV, vehicle.getVehicleType());
         List<Integer> parts = vehicle.getAttachmentParts();
         assertEquals(1, parts.size());
-//        assertEquals("attachment part", ItemResourceUtil.findItemResource(parts.get(2)).getName());
-//        assertEquals("attachment part", parts.get(2).getName());
     }
 
     /*
