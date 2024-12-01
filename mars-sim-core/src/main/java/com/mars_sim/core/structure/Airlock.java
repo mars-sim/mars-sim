@@ -1082,11 +1082,20 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Checks if the airlock is full (numbers of occupants in zone 1, 2 and 3).
+	 *
+	 * @return
+	 */
+	public boolean isFull() {
+		return getNumOccupant123() >= capacity;
+	}
+	
+	/**
 	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3.
 	 *
 	 * @return the number of occupants in zone 1, 2, and 3.
 	 */
-	public abstract int getNumOccupants();
+	public abstract int getNumInside();
 
 	/**
 	 * Gets the number of occupants in zone 1, 2, and 3.
@@ -1103,7 +1112,7 @@ public abstract class Airlock implements Serializable {
 	 * @return the number of empty slots
 	 */
 	public int getNumEmptied() {
-		return capacity - occupant123IDs.size(); //getNumOccupants();
+		return capacity - occupant123IDs.size(); 
 	}
 
 	/**
@@ -1119,7 +1128,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if the airlock is empty
 	 */
 	public boolean isEmpty() {
-		return occupant123IDs.isEmpty();// && getNumOccupants() == 0;
+		return occupant123IDs.isEmpty();
 	}
 
 	/**
@@ -1129,7 +1138,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if there is space
 	 */
 	public boolean hasSpace() {
-		return getNumOccupants() < capacity;
+		return getNumInside() < capacity;
 	}
 
 	public void addCheckEVASuit() {

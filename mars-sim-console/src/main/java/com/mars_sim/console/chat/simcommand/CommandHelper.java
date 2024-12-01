@@ -227,7 +227,7 @@ public class CommandHelper {
 			response.appendTableRow(airlock.getEntityName(), airlock.getState().name(),
 									airlock.isActivated(),
 									airlock.getOperatorName(),
-									String.format("%d/%d", airlock.getNumOccupants(), airlock.getCapacity()),
+									String.format("%d/%d", airlock.getNumInside(), airlock.getCapacity()),
 									(airlock.isInnerDoorLocked() ? "LCK" : "ULK"),
 									(airlock.isOuterDoorLocked() ? "LCK" : "ULK"));
 		}

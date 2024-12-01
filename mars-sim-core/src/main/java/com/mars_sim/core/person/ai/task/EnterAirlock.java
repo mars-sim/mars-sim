@@ -310,9 +310,7 @@ public class EnterAirlock extends Task {
 				return 0;
 			}
 
-			// !airlock.hasSpace() : ClassicAirlock::getNumOccupants() < capacity; -> eva.getNumOccupiedActivitySpots
-			// airlock.areAll4ChambersFull() : ClassicAirlock::getNumInChamber() >= MAX_SLOTS; -> eva.getNumOccupiedActivitySpots() -> Function::spots.size() - getNumEmptyActivitySpots();
-			if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
+			if (airlock.isFull()) {
 				logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
@@ -344,7 +342,7 @@ public class EnterAirlock extends Task {
 				return 0;
 			}
 
-			if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
+			if (airlock.isFull()) {
 				logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
@@ -585,7 +583,7 @@ public class EnterAirlock extends Task {
 			}
 
 			// Must check if chambers are full or else getting stuck
-			if (airlock.areAll4ChambersFull()) {
+			if (airlock.isFull()) {
 				
 				logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
@@ -910,7 +908,7 @@ public class EnterAirlock extends Task {
 	 */
 	public static boolean canEnterAirlock(Person person, Airlock airlock) {
 
-		if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
+		if (airlock.isFull()) {
 			logger.info(person, 4_000, 
 					COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 			return false;

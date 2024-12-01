@@ -537,7 +537,7 @@ public class ExitAirlock extends Task {
 				return 0;
 			}
 
-			if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
+			if (airlock.isFull()) {
 				walkAway(person, "Couldn't egress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED
 						+ " Current task: " + person.getTaskDescription() + ".");
 				return 0;
@@ -717,7 +717,7 @@ public class ExitAirlock extends Task {
 				return 0;
 			}
 
-			if (airlock.areAll4ChambersFull()) {
+			if (airlock.isFull()) {
 				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + ALL_CHAMBERS_OCCUPIED);
 				return 0;
 			}
@@ -806,7 +806,7 @@ public class ExitAirlock extends Task {
 		}
 
 		// Must check if chambers are full or else getting stuck
-		if (airlock.areAll4ChambersFull()) {
+		if (airlock.isFull()) {
 			
 			logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
@@ -841,7 +841,7 @@ public class ExitAirlock extends Task {
 		
 		if (inSettlement) {
 
-			if (!isInZone(AirlockZone.ZONE_2) && airlock.areAll4ChambersFull()) {
+			if (!isInZone(AirlockZone.ZONE_2) && airlock.isFull()) {
 				walkAway(person, "Can't walk to chamber. " + ALL_CHAMBERS_OCCUPIED);
 				return 0;
 			}
@@ -1289,7 +1289,7 @@ public class ExitAirlock extends Task {
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 	
-		if (airlock.areAll4ChambersFull()) {// || !airlock.hasSpace()) {
+		if (airlock.isFull()) {
 			logger.info(person, 4_000, 
 					COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 			return false;

@@ -491,7 +491,7 @@ public class ClassicAirlock extends Airlock {
 	 * @return number of occupants
 	 */
 	@Override
-	public int getNumOccupants() {
+	public int getNumInside() {
 		return getNumOccupant123();
 		
 //		int result = 0;

@@ -285,26 +285,26 @@ extends Airlock {
     }
 
     /**
-     * Gets the exact number of occupants who are within the chamber
+     * Gets the exact number of occupants who are within the chamber.
      * 
      * @return
      */
     public int getNumInChamber() {
-    	return getNumOccupants();
+    	return getNumInside();
     }
     
 	/**
-	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3
+	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3.
 	 *
 	 * @return the number of occupants
 	 */
 	@Override
-	public int getNumOccupants() {
+	public int getNumInside() {
 		return getOccupants123().size();
 	}
     
 	/**
-	 * Gets a collection of occupants' ids
+	 * Gets a collection of occupants' ids in zone 1, 2, and 3.
 	 *
 	 * @return
 	 */

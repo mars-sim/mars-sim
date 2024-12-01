@@ -1302,7 +1302,7 @@ public class Settlement extends Unit implements Temporal,
             Building nextBuilding = unitManager.getBuildingByID(bldg);
             Airlock airlock = nextBuilding.getEVA().getAirlock();
 
-            boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+            boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
 
             if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
 
@@ -1350,7 +1350,7 @@ public class Settlement extends Unit implements Temporal,
         for (Integer bldg : bldgs) {
             Building building = unitManager.getBuildingByID(bldg);
             Airlock airlock = building.getEVA().getAirlock();
-            boolean chamberFull = airlock.areAll4ChambersFull();
+            boolean chamberFull = airlock.isFull();
 
             // Select airlock that fulfill either conditions:
             // 1. Chambers are NOT full
@@ -1381,7 +1381,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private void trackAirlocks(Set<Building> bldgs, boolean pressurized) {	
 		for (Building building : bldgs) {
-			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
+			boolean chamberFull = building.getEVA().getAirlock().isFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			int id = building.getIdentifier();
@@ -1436,7 +1436,7 @@ public class Settlement extends Unit implements Temporal,
         for (Building nextBuilding : airlocks) {
             Airlock airlock = nextBuilding.getEVA().getAirlock();
 
-            boolean chamberFull = airlock.areAll4ChambersFull();
+            boolean chamberFull = airlock.isFull();
             if (chamberFull
                     || !buildingConnectorManager.hasValidPath(building, nextBuilding)) {
                 // This will eliminate airlocks that are not in the same zone
@@ -1450,7 +1450,7 @@ public class Settlement extends Unit implements Temporal,
 
             int numInnerDoor = airlock.getNumAwaitingInnerDoor();
             int numOuterDoor = airlock.getNumAwaitingOuterDoor();
-            int numOccupants = airlock.getNumOccupants();
+            int numOccupants = airlock.getNumInside();
             int numEmpty = airlock.getNumEmptied();
 
             // Select an airlock that fulfill these conditions:
@@ -1537,7 +1537,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private boolean hasClosestWalkableAvailableAirlock(Building building) {
         for (Building nextBuilding : buildingManager.getBuildingSet(FunctionType.EVA)) {
-            boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+            boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
             if (!chamberFull
                     && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
                 return true;

@@ -505,7 +505,7 @@ public class Walk extends Task {
 		Iterator<Building> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Airlock airlock = i.next().getEVA().getAirlock();
-			boolean chamberFull = airlock.areAll4ChambersFull();
+			boolean chamberFull = airlock.isFull();
 			AirlockMode airlockMode = airlock.getAirlockMode();
 			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
 			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
