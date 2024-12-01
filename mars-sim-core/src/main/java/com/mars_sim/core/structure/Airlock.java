@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Airlock.java
- * @date 2024-07-10
+ * @date 2024-11-30
  * @author Scott Davis
  */
 
@@ -207,6 +207,7 @@ public abstract class Airlock implements Serializable {
 			reservationMap.remove(personInt);
 			return true;
 		}
+
 		return false;
 	}
 

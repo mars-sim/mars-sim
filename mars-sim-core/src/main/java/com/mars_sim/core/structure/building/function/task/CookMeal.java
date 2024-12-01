@@ -42,6 +42,7 @@ public class CookMeal extends Task {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.cookMeal"); //$NON-NLS-1$
 
+	private static final String FINISH_COOKING = Msg.getString("Task.description.cookMeal.detail.finish"); //$NON-NLS-1$
 	
 	/** Task phases. */
 	private static final TaskPhase COOKING = new TaskPhase(Msg.getString("Task.phase.cooking")); //$NON-NLS-1$
@@ -90,7 +91,7 @@ public class CookMeal extends Task {
 		}
 		
 		// Initialize data members
-		setDescription(Msg.getString("Task.description.cookMeal.detail", getTypeOfMeal())); // $NON-NLS-1$
+		setDescription(NAME + " " + getTypeOfMeal());
 
 		// Get an available kitchen.
 		kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.COOKING);
@@ -125,7 +126,7 @@ public class CookMeal extends Task {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
 
 		// Initialize data members
-		setDescription(Msg.getString("Task.description.cookMeal.detail", getTypeOfMeal())); // $NON-NLS-1$
+		setDescription(NAME + " " + getTypeOfMeal()); // $NON-NLS-1$
 
 		// Get available kitchen if any.
 		kitchenBuilding = BuildingManager.getAvailableKitchen(robot, FunctionType.COOKING);
@@ -224,8 +225,9 @@ public class CookMeal extends Task {
 
 		if (nameOfMeal != null) {
 			lastCookedMeal = nameOfMeal;
-			logger.log(worker, Level.INFO, 4_000, Msg.getString("Task.description.cookMeal.detail.finish", nameOfMeal)); // $NON-NLS-1$
-			setDescription(Msg.getString("Task.description.cookMeal.detail.finish", nameOfMeal)); // $NON-NLS-1$
+			String s = FINISH_COOKING + " " + nameOfMeal;
+			logger.log(worker, Level.INFO, 4_000, s); 
+			setDescription(s);
 			endTask();
 		}
 

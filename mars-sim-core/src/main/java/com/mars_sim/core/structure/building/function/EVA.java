@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVA.java
- * @date 2023-11-21
+ * @date 2024-11-30
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;

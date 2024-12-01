@@ -54,7 +54,9 @@ public class EatDrink extends Task {
 	private static SimLogger logger = SimLogger.getLogger(EatDrink.class.getName());
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
+	private static final String EATING_PRESERVED = Msg.getString("Task.description.eatDrink.preserved"); //$NON-NLS-1$
+	private static final String DRINKING = Msg.getString("Task.description.eatDrink.drinking"); //$NON-NLS-1$
+	private static final String EATING = Msg.getString("Task.description.eatDrink.eating"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase LOOK_FOR_FOOD = new TaskPhase(Msg.getString("Task.phase.lookingforFood")); //$NON-NLS-1$
@@ -122,7 +124,7 @@ public class EatDrink extends Task {
 	 * @param person the person to perform the task
 	 */
 	public EatDrink(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, 10
+		super(EATING, person, false, false, STRESS_MODIFIER, 10
 				+ RandomUtil.getRandomDouble(-2, 2));
 
 		pc = person.getPhysicalCondition();
@@ -567,7 +569,7 @@ public class EatDrink extends Task {
 		}
 		else {
 			// Report eating preserved food.
-			setDescription(Msg.getString("Task.description.eatDrink.preserved")); //$NON-NLS-1$
+			setDescription(EATING_PRESERVED);
 
 			// Make sure it does not exceed eatingDuration
 			if ((totalEatingTime + eatingTime) >= eatingDuration) {
@@ -728,7 +730,7 @@ public class EatDrink extends Task {
 		
 		if (eatingTime > 0) {
 			
-			String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
+			String s = EATING + " " + cookedMeal.getName();
 			// Set description for eating cooked meal.
 			setDescription(s); //$NON-NLS-1$
 			// Eat cooked meal.
@@ -936,22 +938,11 @@ public class EatDrink extends Task {
 	private void showDessertDescription(AmountResource dessertAR, boolean prepared) {
 		String s = dessertAR.getName();
 		String text = "";
-		if (s.contains(MILK) || s.contains(JUICE)) {
-			if (prepared) {
-				text = Msg.getString("Task.description.eatDrink.preparedDessert.drink", Conversion.capitalize(s)); //$NON-NLS-1$
-			}
-			else {
-				text = Msg.getString("Task.description.eatDrink.unpreparedDessert.drink", Conversion.capitalize(s)); //$NON-NLS-1$
-			}
+		if (s.contains(MILK) || s.contains(JUICE)) {	
+			text = DRINKING + " " + Conversion.capitalize(s);
 			
 		} else {
-			if (prepared) {
-				text = Msg.getString("Task.description.eatDrink.preparedDessert.eat", Conversion.capitalize(s)); //$NON-NLS-1$
-			}
-				
-			else {
-				text = Msg.getString("Task.description.eatDrink.unpreparedDessert.eat", Conversion.capitalize(s)); //$NON-NLS-1$
-			}
+			text = EATING + " " +  Conversion.capitalize(s); 
 		}
 		
 		setDescription(text);
@@ -1173,7 +1164,7 @@ public class EatDrink extends Task {
 		pc.recordFoodConsumption(amount, 3);
 
 		if (waterOnly) {
-			setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
+			setDescription(DRINKING + " water");
 		}
 
 		if (pc.getThirst() < PhysicalCondition.THIRST_THRESHOLD / 6)

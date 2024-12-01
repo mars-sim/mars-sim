@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Walk.java
- * @date 2023-09-03
+ * @date 2024-11-30
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -63,7 +63,18 @@ public class Walk extends Task {
 	private static final double STRESS_MODIFIER = -.25D;
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
+	
+	private static final String ARRIVED_AIRLOCK = Msg.getString("Task.description.walk.arrivedAirlock"); //$NON-NLS-1$
 
+	private static final String EGRESSING_AIRLOCK = Msg.getString("Task.description.walk.egressingAirlock"); //$NON-NLS-1$
+	private static final String INGRESSING_AIRLOCK = Msg.getString("Task.description.walk.ingressingAirlock"); //$NON-NLS-1$
+
+	private static final String ENTERING_GARAGE = Msg.getString("Task.description.walk.enteringRoverInsideGarage"); //$NON-NLS-1$
+	private static final String EXITING_GARAGE = Msg.getString("Task.description.walk.exitingRoverInGarage"); //$NON-NLS-1$
+	
+	private static final String WALKING_OUTSIDE = Msg.getString("Task.description.walk.outside"); //$NON-NLS-1$
+	private static final String WALKING_IN_ROVER = Msg.getString("Task.description.walk.rover"); //$NON-NLS-1$
+	
 	/** Task phases. */
 	private static final TaskPhase WALKING_SETTLEMENT_INTERIOR = new TaskPhase(
 			Msg.getString("Task.phase.walkingSettlementInterior")); //$NON-NLS-1$
@@ -76,9 +87,9 @@ public class Walk extends Task {
 	private static final TaskPhase ENTERING_ROVER_GARAGE = new TaskPhase(Msg.getString("Task.phase.enteringRoverGarage")); //$NON-NLS-1$
 	private static final TaskPhase CLIMB_UP_LADDER = new TaskPhase(Msg.getString("Task.phase.climbUpLadder")); //$NON-NLS-1$
 	private static final TaskPhase CLIMB_DOWN_LADDER = new TaskPhase(Msg.getString("Task.phase.climbDownLadder")); //$NON-NLS-1$
-	
+
 	/** The minimum pulse time for completing a task phase in this class.  */
-	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
+//	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
 	private int walkingStepIndex;
@@ -645,7 +656,7 @@ public class Walk extends Task {
 	 */
 	private double walkingRoverInteriorPhase(double time) {
 		
-		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
+		setDescription(WALKING_IN_ROVER);
 
 		if (person != null) {
 
@@ -749,7 +760,7 @@ public class Walk extends Task {
 	 */
 	private double walkingExteriorPhase(double time) {
 	
-		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
+		setDescription(WALKING_OUTSIDE);
 
 		if (person != null) {
 			logger.log(person, Level.FINER, 4000,
@@ -769,7 +780,7 @@ public class Walk extends Task {
 			}
 			else {
 				if (person.isOutside()) {
-					setDescription("Walking outside toward " + step.loc.getShortFormat());
+					setDescription(WALKING_OUTSIDE + " toward " + step.loc.getShortFormat());
 //					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
 //							+ xx + ", " + yy + ")");
 	        		// Note that addSubTask() will internally check if the task is a duplicate
@@ -830,7 +841,7 @@ public class Walk extends Task {
 	 */
 	private double egressingAirlockPhase(double time) {
 		
-		setDescription(Msg.getString("Task.description.walk.egressingAirlock")); //$NON-NLS-1$
+		setDescription(EGRESSING_AIRLOCK);
 
 		if (person != null) {
 
@@ -875,7 +886,8 @@ public class Walk extends Task {
 					logger.log(person, Level.INFO, 4_000,
 							"Unable to physically exit the airlock of "
 		      				+ airlock.getEntityName() + ".");
-					endTask(); // will call Walk many times again
+					// Note: will call below many times
+					endTask();
 				}
 			}
 
@@ -898,7 +910,7 @@ public class Walk extends Task {
 		
 		double remainingTime = time;
 
-		setDescription(Msg.getString("Task.description.walk.ingressingAirlock")); //$NON-NLS-1$
+		setDescription(INGRESSING_AIRLOCK);
 
 		logger.log(person, Level.FINER, 4_000,
 				"Calling ingressingAirlockPhase.");
@@ -919,10 +931,11 @@ public class Walk extends Task {
 				}
 			} else {
 				logger.log(person, Level.FINER, 4_000,
-								"Ended the walk task. Could not enter the airlock in "
+								"Unable to physically enter the airlock of "
 	      						+ airlock.getEntityName() + ".");
 				// Consume all of the time waiting to enter; prevents repeated tries
 				remainingTime = 0D;
+				// Note: will call below many times
 				endTask();
 			}
 
@@ -934,7 +947,7 @@ public class Walk extends Task {
 				// setDescription("is INSIDE and still walking toward an airlock");
 				setPhase(getWalkingStepPhase());
 			} else {
-				setDescription("Arrived at an airlock");
+				setDescription(ARRIVED_AIRLOCK);
 				endTask();
 			}
 		}
@@ -957,7 +970,7 @@ public class Walk extends Task {
 		Rover rover = step.rover;
 		Building garageBuilding = step.building;
 
-		setDescription(Msg.getString("Task.description.walk.exitingRoverInGarage")); //$NON-NLS-1$
+		setDescription(EXITING_GARAGE);
 
 		// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
 		// can be problematic if no building is assigned.
@@ -1012,7 +1025,8 @@ public class Walk extends Task {
 		Building garageBuilding = step.building;
 		double distance = garageBuilding.getWidth() / 2.0;
 		double timeTraveled = 0;
-		setDescription(Msg.getString("Task.description.walk.enteringRoverInsideGarage")); //$NON-NLS-1$
+		
+		setDescription(ENTERING_GARAGE);
 
 		if (person != null) {
 			// Place this person within a vehicle inside a garage in a settlement
