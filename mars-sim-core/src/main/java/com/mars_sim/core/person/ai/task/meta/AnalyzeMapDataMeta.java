@@ -75,14 +75,14 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         	return EMPTY_TASKLIST;
 		}
 		
-		int unclaimedSites = person.getAssociatedSettlement().numDeclaredLocation(false);
+		var eMgr = person.getAssociatedSettlement().getExplorations();
+		int unclaimedSites = eMgr.numDeclaredLocation(false);
 			
-		Set<Coordinates> nearbySites = person.getAssociatedSettlement()
-				.getNearbyMineralLocations();	
+		Set<Coordinates> nearbySites = eMgr.getNearbyMineralLocations();	
 	
 		int numNearby = nearbySites.size();
 		
-		Set<ExploredLocation> minableLocs = person.getAssociatedSettlement().getDeclaredLocations()
+		Set<ExploredLocation> minableLocs = eMgr.getDeclaredLocations()
 				.stream()
 				.filter(el -> el != null && el.isMinable())
 				.collect(Collectors.toSet());

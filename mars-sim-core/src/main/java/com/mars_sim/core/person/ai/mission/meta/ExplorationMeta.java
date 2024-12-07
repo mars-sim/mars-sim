@@ -12,7 +12,6 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -75,14 +74,13 @@ public class ExplorationMeta extends AbstractMetaMission {
 				}
 
 				missionProbability = new RatingScore(1);
-				
-				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-				
+								
 				// Get available rover.
 				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 				if (rover != null) {
 					// Check if any mineral locations within rover range and obtain their concentration
-					missionProbability.addModifier(MINERALS, Math.min(MAX, settlement.getTotalMineralValue(rover, skill)) / VALUE);
+					missionProbability.addModifier(MINERALS, Math.min(MAX,
+									settlement.getExplorations().getTotalMineralValue(rover)) / VALUE);
 				}
 
 				// Job modifier.

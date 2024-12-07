@@ -189,11 +189,10 @@ public class MineralMap implements Serializable {
 	 * 
 	 * @param startingLocation the starting location.
 	 * @param range            the distance range (km).
-	 * @param sol			the mission sol
 	 * @param foundLocations
 	 * @return location and distance pair
 	 */
-	public Map.Entry<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol,
+	public Map.Entry<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range,
 			Collection<Coordinates> foundLocations) {
 
 		Map<Coordinates, Double> locales = generateMineralLocations(startingLocation, range, foundLocations);
@@ -211,7 +210,7 @@ public class MineralMap implements Serializable {
 				continue;
 			}
 			double prob = 0;
-			double delta = range - distance + Math.max(0, 100 - sol);
+			double delta = range - distance + 100;
 			if (delta > 0) {
 				prob = delta * delta / range / range;
 			}
