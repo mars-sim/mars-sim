@@ -28,7 +28,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
@@ -110,15 +109,15 @@ public class EVASuit extends Equipment
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 50D;
 	/** The ratio of CO2 expelled to O2 breathed in. */
-	private static double GAS_RATIO;
+	private static double gasRatio;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
-	private static double MIN_O2_PRESSURE;
+	private static double minO2Pressure;
 	/** The full O2 partial pressure if at full tank. */
-	private static double FULL_O2_PARTIAL_PRESSURE;
+	private static double fullO2PartialPressure;
 	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
-	private static double MASS_O2_NOMINAL_LIMIT;
+	private static double massO2NominalLimit;
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
-	private static double MASS_O2_MINIMUM_LIMIT;
+	private static double massO2MinimumLimit;
 
 	private static double usualMass = -1;
 
@@ -140,24 +139,24 @@ public class EVASuit extends Equipment
 		double o2Consumed = personConfig.getHighO2ConsumptionRate();
 		double co2Expelled = personConfig.getCO2ExpelledRate();
 		
-		GAS_RATIO = co2Expelled / o2Consumed;
+		gasRatio = co2Expelled / o2Consumed;
 				
-		MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
+		minO2Pressure = personConfig.getMinSuitO2Pressure();
 		
-		FULL_O2_PARTIAL_PRESSURE = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
+		fullO2PartialPressure = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
 		
-		MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
+		massO2MinimumLimit = minO2Pressure / fullO2PartialPressure * OXYGEN_CAPACITY;
 		
-		MASS_O2_NOMINAL_LIMIT = NOMINAL_O2_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
+		massO2NominalLimit = NOMINAL_O2_PRESSURE / minO2Pressure * massO2MinimumLimit;
 		
 		logger.config(DASHES);
 		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
-		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
+		logger.config("           Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 
 					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
 		logger.config("             Nomimal O2 : " + NOMINAL_O2_PRESSURE + "  kPa -> "
-					+ Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
-		logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
-					+ Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
+					+ Math.round(massO2NominalLimit * 100.0)/100.0  + " kg - Suit Target Pressure");
+		logger.config("             Minimum O2 : " + Math.round(minO2Pressure * 100.0)/100.0 + " kPa -> "
+					+ Math.round(massO2MinimumLimit * 100.0)/100.0  + " kg - Safety Limit");
 		logger.config(DASHES);
 			
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
@@ -299,7 +298,7 @@ public class EVASuit extends Equipment
 	public boolean lifeSupportCheck() {
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
-			if (getAmountResourceStored(OXYGEN_ID) <= MASS_O2_MINIMUM_LIMIT) {
+			if (getAmountResourceStored(OXYGEN_ID) <= massO2MinimumLimit) {
 				logger.log(this, Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
@@ -317,7 +316,7 @@ public class EVASuit extends Equipment
 
 
 			double p = getAirPressure();
-			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minO2Pressure) {
 				logger.log(this, Level.WARNING, 30_000,
 						"Detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
@@ -363,7 +362,7 @@ public class EVASuit extends Equipment
 
 		oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 
-		double carbonDioxideProvided = GAS_RATIO * (oxygenTaken - oxygenLacking);
+		double carbonDioxideProvided = gasRatio * (oxygenTaken - oxygenLacking);
 		storeAmountResource(CO2_ID, carbonDioxideProvided);
 
 		return oxygenTaken - oxygenLacking;
@@ -403,7 +402,7 @@ public class EVASuit extends Equipment
 
 		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
-		if (oxygenLeft < MASS_O2_NOMINAL_LIMIT) {
+		if (oxygenLeft < massO2NominalLimit) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
 			logger.log(this, Level.WARNING, 30_000,
 					"Only " + Math.round(oxygenLeft*1000.0)/1000.0
@@ -422,15 +421,6 @@ public class EVASuit extends Equipment
 	@Override
 	public double getTemperature() {
 		return NORMAL_TEMP;
-//		double ambient = weather.getTemperature(getCoordinates());
-
-//		if (result < ambient) {
-			// if outside temperature is higher than the EVA normally allowed temp
-			// Note: Add codes to simulate the use of cooling coil to turn on cooler to
-			// reduce the temperature inside the EVA suit.
-			// if cooling coil malfunction, then return ambient only
-//			return result;
-//		}
 	}
 
 	/**
@@ -461,11 +451,6 @@ public class EVASuit extends Equipment
 		malfunctionManager.timePassing(pulse);
 
 		return true;
-	}
-
-	@Override
-	public Building getBuildingLocation() {
-		return getContainerUnit().getBuildingLocation();
 	}
 
 	@Override

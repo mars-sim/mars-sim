@@ -59,17 +59,6 @@ public abstract class FixedUnit extends Unit
     }
 
     /**
-	 * Is this unit inside a settlement
-     * TODO This will be removed once completed
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return true;
-	}
-
-    /**
 	 * This method return the context of this FixedUnit which is always the parent 
 	 */
 	@Override

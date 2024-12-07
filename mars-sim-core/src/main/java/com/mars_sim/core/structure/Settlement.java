@@ -3605,16 +3605,6 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return false;
-	}
-
-	/**
 	 * Gets the preference that this Settlement influences.
 	 * 
 	 * @return A read only copy of preferences

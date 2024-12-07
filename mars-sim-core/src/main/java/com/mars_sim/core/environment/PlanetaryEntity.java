@@ -144,17 +144,6 @@ public abstract class PlanetaryEntity extends Unit {
 	}
 
 	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return false;
-	}
-
-
-	/**
 	 * Gets the hash code for this object.
 	 *
 	 * @return hash code.

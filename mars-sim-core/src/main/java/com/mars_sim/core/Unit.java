@@ -15,10 +15,8 @@ import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The Unit class is the abstract parent class to all units in the simulation.
@@ -359,51 +357,12 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the building this unit is at.
-	 *
-	 * @return the building
-	 */
-	public Building getBuildingLocation() {
-		return null;
-	}
-
-	/**
 	 * Gets the associated settlement this unit is with.
 	 *
 	 * @return the associated settlement
 	 */
 	public Settlement getAssociatedSettlement() {
 		return null;
-	}
-
-	/**
-	 * Gets the vehicle this unit is in, null if not in vehicle.
-	 *
-	 * @return the vehicle
-	 */
-	public Vehicle getVehicle() {
-		return null;
-	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	public abstract boolean isInSettlement();
-
-	/**
-	 * Is this unit inside a vehicle in a garage ?
-	 *
-	 * @return true if the unit is in a vehicle inside a garage
-	 */
-	public boolean isInVehicleInGarage() {
-		Unit cu = getContainerUnit();
-		if (cu.getUnitType() == UnitType.VEHICLE) {
-			// still inside the garage
-			return ((Vehicle)cu).isInGarage();
-		}
-		return false;
 	}
 
 	/**
