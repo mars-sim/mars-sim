@@ -11,7 +11,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -24,12 +24,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
+import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -50,8 +48,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * single mission's details.
  */
 @SuppressWarnings("serial")
-public class TabPanelMissions
-extends TabPanel {
+public class TabPanelMissions extends TabPanel {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
@@ -110,37 +107,34 @@ extends TabPanel {
 
 		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
 		content.add(topPanel, BorderLayout.NORTH);
-		
-		int site[] = settlement.getStatistics(0);
-		int claimed[] = settlement.getStatistics(1);
-		int unclaimed[] = settlement.getStatistics(2);
+
 		
 		AttributePanel sitePanel = new AttributePanel(4, 1);
 		topPanel.add(sitePanel, BorderLayout.NORTH);
 		sitePanel.setBorder(BorderFactory.createTitledBorder("Nearby Sites"));
 		
-		siteLabel = sitePanel.addRow("Sites Found", settlement.numNearbyMineralLocations() + "");
-		numROIsLabel = sitePanel.addRow("Declared ROIs", settlement.numDeclaredLocation() + "");
-		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(site[0])); 
-		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(site[1]));
+		siteLabel = sitePanel.addRow("Sites Found","");
+		numROIsLabel = sitePanel.addRow("Declared ROIs", "");
+		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", ""); 
+		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", "");
 		
 		
 		AttributePanel twoPanel = new AttributePanel(3, 1);
 		topPanel.add(twoPanel, BorderLayout.CENTER);
 		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
 		
-		claimedSiteLabel = twoPanel.addRow("Sites", settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(claimed[0]));
-		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(claimed[0]));
+		claimedSiteLabel = twoPanel.addRow("Sites", "");
+		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", "");
+		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", "");
 		
 		
 		AttributePanel unclaimPanel = new AttributePanel(3, 1);
 		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
 		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
 		
-		unclaimedSiteLabel = unclaimPanel.addRow("Sites", settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(unclaimed[0]));
-		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		unclaimedSiteLabel = unclaimPanel.addRow("Sites", "");		
+		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", "");
+		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", "");
 		
 		
 		// Create center panel.
@@ -151,9 +145,12 @@ extends TabPanel {
 		JPanel missionListPanel = new JPanel();
 		centerPanel.add(missionListPanel, BorderLayout.CENTER);
 
-		buildScrollPanel(centerPanel, missionListPanel);
+		buildScrollPanel(missionListPanel);
 		buildButtonPanel(centerPanel);
 		buildBottomPanel(content);
+
+		// Add values to components
+		update();
 	}
 		
 	/**
@@ -162,8 +159,7 @@ extends TabPanel {
 	 * @param centerPanel
 	 * @param missionListPanel
 	 */
-	public void buildScrollPanel(JPanel centerPanel, JPanel missionListPanel) {
-		MissionManager missionManager = getSimulation().getMissionManager();
+	private void buildScrollPanel(JPanel missionListPanel) {
 
 		// Create mission scroll panel.
 		JScrollPane missionScrollPanel = new JScrollPane();
@@ -171,21 +167,16 @@ extends TabPanel {
 		missionListPanel.add(missionScrollPanel);
 
 		// Create mission list model.
-		missionListModel = new DefaultListModel<Mission>();
-		//MissionManager manager = Simulation.instance().getMissionManager();
-		missionsCache = missionManager.getMissionsForSettlement(settlement);
-		Iterator<Mission> i = missionsCache.iterator();
-		while (i.hasNext()) missionListModel.addElement(i.next());
+		missionListModel = new DefaultListModel<>();
+		missionsCache = Collections.emptyList();
 
 		// Create mission list.
-		missionList = new JList<Mission>(missionListModel);
+		missionList = new JList<>(missionListModel);
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		missionList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				boolean missionSelected = !missionList.isSelectionEmpty();
-				missionButton.setEnabled(missionSelected);
-				monitorButton.setEnabled(missionSelected);
-			}
+		missionList.addListSelectionListener(e -> {
+			boolean missionSelected = !missionList.isSelectionEmpty();
+			missionButton.setEnabled(missionSelected);
+			monitorButton.setEnabled(missionSelected);
 		});
 		missionScrollPanel.setViewportView(missionList);
 	}
@@ -243,23 +234,25 @@ extends TabPanel {
 	@Override
 	public void update() {
 		
-		int site[] = settlement.getStatistics(0);
-		int claimed[] = settlement.getStatistics(1);
-		int unclaimed[] = settlement.getStatistics(2);
+		var eMgr = settlement.getExplorations();
+
+		var site = eMgr.getStatistics(ExplorationManager.SITE_STAT);
+		var claimed = eMgr.getStatistics(ExplorationManager.CLAIMED_STAT);
+		var unclaimed = eMgr.getStatistics(ExplorationManager.UNCLAIMED_STAT);
 		
-		siteLabel.setText(settlement.numNearbyMineralLocations() + "");
-		numROIsLabel.setText(settlement.numDeclaredLocation() + "");
-		siteMeanLabel.setText(StyleManager.DECIMAL_KM.format(site[0]));
-		siteSDevLabel.setText(StyleManager.DECIMAL_KM.format(site[0]));
+		siteLabel.setText(eMgr.numNearbyMineralLocations() + "");
+		numROIsLabel.setText(eMgr.numDeclaredLocation() + "");
+		siteMeanLabel.setText(StyleManager.DECIMAL_KM.format(site.mean()));
+		siteSDevLabel.setText(StyleManager.DECIMAL_KM.format(site.sd()));
 		
-		claimedSiteLabel.setText(settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed[0]));
-		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed[0]));
+		claimedSiteLabel.setText(eMgr.numDeclaredLocation(true) + "");
+		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed.mean()));
+		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed.sd()));
 		
 		
-		unclaimedSiteLabel.setText(settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed[0]));
-		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		unclaimedSiteLabel.setText(eMgr.numDeclaredLocation(false) + "");		
+		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.mean()));
+		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.sd()));
 		
 		
 		// Get all missions for the settlement.
@@ -267,12 +260,11 @@ extends TabPanel {
 
 		// Update mission list if necessary.
 		if (!missions.equals(missionsCache)) {
-			Mission selectedMission = (Mission) missionList.getSelectedValue();
+			Mission selectedMission = missionList.getSelectedValue();
 
 			missionsCache = missions;
 			missionListModel.clear();
-			Iterator<Mission> i = missionsCache.iterator();
-			while (i.hasNext()) missionListModel.addElement(i.next());
+			missionsCache.forEach(m -> missionListModel.addElement(m));
 
 			if ((selectedMission != null) && missionListModel.contains(selectedMission))
 				missionList.setSelectedValue(selectedMission, true);
@@ -287,7 +279,7 @@ extends TabPanel {
 	 * Opens the mission tool to the selected mission in the mission list.
 	 */
 	private void openMissionTool() {
-		Mission mission = (Mission) missionList.getSelectedValue();
+		Mission mission = missionList.getSelectedValue();
 		if (mission != null) {
 			getDesktop().showDetails(mission);
 		}
@@ -298,7 +290,7 @@ extends TabPanel {
 	 * in the mission list.
 	 */
 	private void openMonitorTool() {
-		Mission mission = (Mission) missionList.getSelectedValue();
+		Mission mission = missionList.getSelectedValue();
 		if (mission != null) {
 			try {
 				getDesktop().addModel(new PersonTableModel(mission));

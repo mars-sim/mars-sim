@@ -91,11 +91,13 @@ public class AnalyzeMapData extends Task {
 		
         int now = getMarsTime().getMillisolInt();
         
-        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.HIGH, now, getDuration(), NAME);
+		var s = person.getAssociatedSettlement();
+        this.compute = new ComputingJob(s, ComputingLoadType.HIGH, now, getDuration(), NAME);
 
         compute.pickMultipleNodes(0, now);
         
-    	Set<Coordinates> mineralLocs = person.getAssociatedSettlement().getNearbyMineralLocations();  	
+		var eMgr = s.getExplorations();
+    	Set<Coordinates> mineralLocs = eMgr.getNearbyMineralLocations();  	
     	
     	int numSites = mineralLocs.size(); 	
     	if (numSites == 0) {
@@ -106,7 +108,7 @@ public class AnalyzeMapData extends Task {
     	}
     	else {
 
-    		Set<ExploredLocation> locROIs = person.getAssociatedSettlement().getDeclaredLocations();
+    		Set<ExploredLocation> locROIs = eMgr.getDeclaredLocations();
 
     		numROIs = locROIs.size();
     		
@@ -167,8 +169,6 @@ public class AnalyzeMapData extends Task {
     		// The higher the numImprovement, the more difficult the numerical solution, and 
     		// the more the computing resources needed to do the refinement.		
     		// The higher the composite skill, the less the computing resource.  
-    		double score = (1 + certainty) / compositeSkill;
-    		double rand1 = RandomUtil.getRandomDouble(score/60, score/30);
     			
     		// If a person is in a vehicle, either the vehicle has a computing core or 
     		// it relies on some comm bandwith to connect with its settlement's computing core
@@ -183,13 +183,6 @@ public class AnalyzeMapData extends Task {
     				+ Math.round(compute.getRemainingNeed() * 100.0)/100.0 
     				+ " CUs for "
     				+ NAME
-//    				+ ". value: " + value
-//    				+ ". rand: " + Math.round(rand * 1000.0)/1000.0
-//		     		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
-//		     		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 
-//		     		+ ". score: " + Math.round(score * 1000.0)/1000.0 
-//		     		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
-//		     		+ ". numROIs: " + numROIs 
 		     		+ ". Selected site: " + exploredLoc.getLocation().getFormattedString() + ".");
     		
     		if (rand < value) {
@@ -236,7 +229,7 @@ public class AnalyzeMapData extends Task {
      */
     private double discoveringPhase(double time) {
 
-    	consumeComputingResource(time);
+    	consumeComputingResource();
 
     	totalWork += time;
         
@@ -250,21 +243,19 @@ public class AnalyzeMapData extends Task {
 			double limit =  300 + (range - 200) * Math.min(100, 2 * getMarsTime().getMissionSol()) / 200;
      		
      		Coordinates aSite = null;
+			var eMgr = person.getAssociatedSettlement().getExplorations();
      		// If there's no ROI zoned up yet, get the first one right away.
      		
      		if (numROIs == 0) {
 	     		// Look for the first site to be analyzed and explored
-	     		aSite = person.getAssociatedSettlement().getNextClosestMineralLoc(limit);
+	     		aSite = eMgr.getNextClosestMineralLoc(limit);
 	
 	     		if (aSite != null) {
 		         	// Creates an initial explored site in SurfaceFeatures
-	     			ExploredLocation el = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
+	     			ExploredLocation el = eMgr.createARegionOfInterest(aSite, skill);
 		         			
 	     			if (el != null) {
 	     				logger.info(person, 20_000, "Analyzed map data and zoned up the first new ROI at " +  aSite.getFormattedString() + ".");
-	     			}
-	     			else {
-//	     				logger.info(person, 20_000, "Analyzed map data and could not zone up a ROI.");
 	     			}
 	     		}
 	     		else {
@@ -276,17 +267,17 @@ public class AnalyzeMapData extends Task {
      			
      			if (rand == 0) {
      				// Pick one of the existing nearby mineral location that's not a ROI yet.
-     				aSite = person.getAssociatedSettlement().getExistingNearbyMineralLocation();
+     				aSite = eMgr.getExistingNearbyMineralLocation();
      			}
      			
      			else {
          			// Or get a new nearby mineral location  				
-     				aSite = person.getAssociatedSettlement().acquireNearbyMineralLocation(limit, getMarsTime().getMissionSol());         		
+     				aSite = eMgr.acquireNearbyMineralLocation(limit);         		
      			}
      			
          		if (aSite != null) {
     	         	// Creates an initial explored site in SurfaceFeatures
-         			ExploredLocation loc = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
+         			ExploredLocation loc = eMgr.createARegionOfInterest(aSite, skill);
     	         			
          			if (loc != null) {
          				logger.info(person, 20_000, "Analyzed map data and zoned up a new ROI at " +  aSite.getFormattedString() + ".");
@@ -321,7 +312,7 @@ public class AnalyzeMapData extends Task {
      * 
      * @param time
      */
-    private void consumeComputingResource(double time) {
+    private void consumeComputingResource() {
     	
 		if (compute.isCompleted()) {
         	// this task has ended
@@ -344,14 +335,13 @@ public class AnalyzeMapData extends Task {
     		endTask();
     	}
     	
-    	consumeComputingResource(time);
+    	consumeComputingResource();
         
     	double duration = getDuration();
     	
         effort += time;
           
         if (effort > duration * .95) {
-//        	logger.log(person, Level.INFO, 20_000, "Analyzing map data. Effort: " + Math.round(effort * 10.0)/10.0 + " out of " + Math.round(duration * 10.0)/10.0);
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
         	improveMineralConcentrationEstimates(time, effort);

@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -27,7 +26,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.ExploreSite;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -87,6 +86,10 @@ public class Exploration extends EVAMission
 	
 	/** The current exploration site. */
 	private ExploredLocation currentSite;
+
+	/** Manager of the explorations at the home Settlement */
+	private ExplorationManager explorationMgr;
+
 	/**
 	 * Constructor.
 	 *
@@ -106,6 +109,8 @@ public class Exploration extends EVAMission
 		Settlement s = getStartingSettlement();
 
 		if (s != null && !isDone()) {
+			explorationMgr = s.getExplorations();
+
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS)) {
 				logger.warning(getVehicle(), "Not enough members recruited for mission " 
@@ -260,7 +265,7 @@ public class Exploration extends EVAMission
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
 		double range = getVehicle().getRange();
-		return getStartingSettlement().getNextClosestMineralLoc(range);
+		return explorationMgr.getNextClosestMineralLoc(range);
 	}
 	
 	/**
@@ -322,7 +327,7 @@ public class Exploration extends EVAMission
 	 */
 	private ExploredLocation declareARegionOfInterest(Coordinates siteLocation, int skill) {
 		
-		ExploredLocation el = getStartingSettlement().createARegionOfInterest(siteLocation, skill);
+		ExploredLocation el = explorationMgr.createARegionOfInterest(siteLocation, skill);
 		
 		if (claimedSites == null || claimedSites.isEmpty())
 			claimedSites = new HashSet<>();
@@ -399,7 +404,7 @@ public class Exploration extends EVAMission
 			// Use the confidence score to limit the range
 			double dist = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 			
-			currentLocation = determineFirstSiteCoordinate(dist, areologySkill);
+			currentLocation = determineFirstSiteCoordinate(dist);
 			
 			if (currentLocation != null) {
 				// Creates an initial explored site in SurfaceFeatures
@@ -412,10 +417,10 @@ public class Exploration extends EVAMission
 		}
 		else {
 			if (el == null) {
-				logger.info(unitManager.findSettlement(startingLocation), 10_000L, "Unable to pinpoint a good site. Need to further analyze maps.");
+				logger.info(getStartingSettlement(), 10_000L, "Unable to pinpoint a good site. Need to further analyze maps.");
 			}
 			else {
-				logger.info(unitManager.findSettlement(startingLocation), 10_000L, "Could not determine first exploration site.");
+				logger.info(getStartingSettlement(), 10_000L, "Could not determine first exploration site.");
 			}
 			return unorderedSites;
 		}
@@ -476,9 +481,9 @@ public class Exploration extends EVAMission
 	 *
 	 * @return first exploration site or null if none.
 	 */
-	private Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
+	private Coordinates determineFirstSiteCoordinate(double limit) {
 		// Get a random site that is one of the closest
-		return getStartingSettlement().getARandomNearbyMineralLocation(true, limit, areologySkill);
+		return explorationMgr.getARandomNearbyMineralLocation(true, limit);
 	}
 	
 	/**
@@ -492,14 +497,14 @@ public class Exploration extends EVAMission
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = home.getDeclaredLocations()
+		List<Coordinates> candidateLocs = explorationMgr.getDeclaredLocations()
 				//surfaceFeatures.getAllPossibleRegionOfInterestLocations()
 				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
 				.map(ExploredLocation::getLocation)
-				.collect(Collectors.toList());
+				.toList();
 		
 		if (!candidateLocs.isEmpty()) {
 			return getMinimalPath(startingLoc, candidateLocs);
@@ -559,34 +564,6 @@ public class Exploration extends EVAMission
 	 */
 	protected double getEstimatedTimeAtEVASite(boolean buffer) {
 		return STANDARD_TIME_PER_SITE;
-	}
-
-	
-	/**
-	 * Gets the estimated total mineral value of a mining site.
-	 *
-	 * @param site       the mining site.
-	 * @param settlement the settlement valuing the minerals.
-	 * @return estimated value of the minerals at the site (VP).
-	 * @throws MissionException if error determining the value.
-	 */
-	public static int getTotalMineralValue(Settlement settlement, Map<String, Integer> minerals) {
-
-		double result = 0D;
-
-		for (Map.Entry<String, Integer> entry : minerals.entrySet()) {
-		    String mineralType = entry.getKey();
-		    double concentration = entry.getValue();
-			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
-			double mineralAmount = (concentration / 100) * Mining.MINERAL_GOOD_VALUE_FACTOR;
-			result += mineralValue * mineralAmount;
-		}
-		
-		result = Math.round(result * 100.0)/100.0;
-		
-		logger.info(settlement, "A site has an Exploration Value of " + result + ".");
-		return (int)result;
 	}
 
 	/**

@@ -13,26 +13,26 @@
 	partial-pressure-of-nitrogen, partial-pressure-of-carbon-dioxide, temperature,
 	relative-humidity, ventilation)>
 	<!ELEMENT total-pressure EMPTY>
-	<!ATTLIST total-pressure low CDATA #REQUIRED>
-	<!ATTLIST total-pressure high CDATA #REQUIRED>
+	<!ATTLIST total-pressure min CDATA #REQUIRED>
+	<!ATTLIST total-pressure max CDATA #REQUIRED>
 	<!ELEMENT partial-pressure-of-oxygen EMPTY>
-	<!ATTLIST partial-pressure-of-oxygen low CDATA #REQUIRED>
-	<!ATTLIST partial-pressure-of-oxygen high CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-oxygen min CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-oxygen max CDATA #REQUIRED>
 	<!ELEMENT partial-pressure-of-nitrogen EMPTY>
-	<!ATTLIST partial-pressure-of-nitrogen low CDATA #REQUIRED>
-	<!ATTLIST partial-pressure-of-nitrogen high CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-nitrogen min CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-nitrogen max CDATA #REQUIRED>
 	<!ELEMENT partial-pressure-of-carbon-dioxide EMPTY>
-	<!ATTLIST partial-pressure-of-carbon-dioxide low CDATA #REQUIRED>
-	<!ATTLIST partial-pressure-of-carbon-dioxide high CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-carbon-dioxide min CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-carbon-dioxide max CDATA #REQUIRED>
 	<!ELEMENT temperature EMPTY>
-	<!ATTLIST temperature low CDATA #REQUIRED>
-	<!ATTLIST temperature high CDATA #REQUIRED>
+	<!ATTLIST temperature min CDATA #REQUIRED>
+	<!ATTLIST temperature max CDATA #REQUIRED>
 	<!ELEMENT relative-humidity EMPTY>
-	<!ATTLIST relative-humidity low CDATA #REQUIRED>
-	<!ATTLIST relative-humidity high CDATA #REQUIRED>
+	<!ATTLIST relative-humidity min CDATA #REQUIRED>
+	<!ATTLIST relative-humidity max CDATA #REQUIRED>
 	<!ELEMENT ventilation EMPTY>
-	<!ATTLIST ventilation low CDATA #REQUIRED>
-	<!ATTLIST ventilation high CDATA #REQUIRED>
+	<!ATTLIST ventilation min CDATA #REQUIRED>
+	<!ATTLIST ventilation max CDATA #REQUIRED>
 
 	<!ELEMENT essential-resources (resource*)>
 	<!ELEMENT resource EMPTY>
@@ -125,22 +125,22 @@
 	<life-support-requirements>
 
 		<!-- recommended range of total air pressure in kPa -->
-		<total-pressure low="32" high="36" />
+		<total-pressure min="32" max="36" />
 		<!-- recommended range of partial pressure for O2 in kPa -->
-		<partial-pressure-of-oxygen low="18"
-			high="22" />
+		<partial-pressure-of-oxygen min="18"
+			max="22" />
 		<!-- recommended range of partial pressure for NO2 in kPa -->
-		<partial-pressure-of-nitrogen low="10"
-			high="14" />
+		<partial-pressure-of-nitrogen min="10"
+			max="14" />
 		<!-- recommended range of partial pressure for CO2 in kPa -->
 		<partial-pressure-of-carbon-dioxide
-			low="0.03" high="0.07" />
+			min="0.03" max="0.07" />
 		<!-- recommended range of temperatures [in degree celsius] -->
-		<temperature low="18" high="26" />
+		<temperature min="18" max="26" />
 		<!-- humidity in % -->
-		<relative-humidity low="30" high="70" />
+		<relative-humidity min="30" max="70" />
 		<!-- ventilation in m/s -->
-		<ventilation low="0.076" high="0.203" />
+		<ventilation min="0.076" max="0.203" />
 
 	</life-support-requirements>
 

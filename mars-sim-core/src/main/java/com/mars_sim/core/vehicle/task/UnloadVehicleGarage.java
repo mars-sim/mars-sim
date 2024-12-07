@@ -67,8 +67,10 @@ public class UnloadVehicleGarage extends Task {
 		// Use Task constructor.
 		super("Unloading vehicle", worker, false, IMPACT,
 					RandomUtil.getRandomDouble(40D) + 10D);
+		
+		settlement = worker.getSettlement();
 
-		if (worker.isOutside()) {
+		if (worker.isOutside() || (settlement == null)) {
 			endTask();
 			return;
 		}
@@ -79,8 +81,6 @@ public class UnloadVehicleGarage extends Task {
 			return;
 		}
 		
-		settlement = worker.getSettlement();
-
 		if (isFullyUnloaded(vehicle)) {
 			clearTask(vehicle.getName() + " already unloaded.");
 			return;

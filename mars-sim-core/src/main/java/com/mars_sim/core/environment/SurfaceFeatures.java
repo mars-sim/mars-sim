@@ -540,16 +540,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		}
 		
 		ExploredLocation result = null;
-		
-		var mineralTypes = mineralMap.getTypes();
-		
-		Map<String, Double> initialMineralEstimations = new HashMap<>();
-		
+				
+		Map<String, Double> initialMineralEstimations = new HashMap<>();		
 		double totalConc = 0;
 		
-		for (var m : mineralTypes) {
-			var mineralType = m.getName();
-			double initialEst = mineralMap.getMineralConcentration(mineralType, location);
+		for (var m : mineralMap.getAllMineralConcentrations(location).entrySet()) {
+			var mineralType = m.getKey();
+			double initialEst = m.getValue();
 
 			if (initialEst <= 0) {
 				continue;
@@ -579,9 +576,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement);
 			
 			regionOfInterestLocations.add(result);
-		}
-		else {
-			logger.info(settlement, "Initially found no mineral concentrations in " + location.getFormattedString() + ".");
 		}
 		
 		return result;

@@ -30,10 +30,10 @@ import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
-import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.AmountResourceBin;
@@ -56,15 +56,12 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
-import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
-import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
@@ -120,7 +117,6 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int CHECK_MISSION = 20; // once every 10 millisols
 	private static final int MAX_NUM_SOLS = 3;
 	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
@@ -136,47 +132,28 @@ public class Settlement extends Unit implements Temporal,
 
 	private static final int MIN_WATER_RESERVE = 400; // per person
 	private static final int MIN_ICE_RESERVE = 400; // per person
-	
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
-	private static final int METHANOL_ID = ResourceUtil.methanolID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int ICE_ID = ResourceUtil.iceID;
-	private static final int BRINE_WATER_ID = ResourceUtil.brineWaterID;
-
-	private static final int REGOLITH_ID = ResourceUtil.regolithID;
-	private static final int SAND_ID = ResourceUtil.sandID;
-	private static final int CONCRETE_ID = ResourceUtil.concreteID;
-	private static final int CEMENT_ID = ResourceUtil.cementID;
-	
-	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
-	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
-	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 
 	/** The settlement sampling resources. */
-	protected static final int[] samplingResources;
+	private static final int[] samplingResources;
 
 	/** The definition of static arrays */
 	static {
 		samplingResources = new int[] {
-				OXYGEN_ID,
-				HYDROGEN_ID,
-				CO2_ID,
-				METHANE_ID,
-				METHANOL_ID,
-				BRINE_WATER_ID,
-				WATER_ID,
+				ResourceUtil.oxygenID,
+				ResourceUtil.hydrogenID,
+				ResourceUtil.co2ID,
+				ResourceUtil.methaneID,
+				ResourceUtil.methanolID,
+				ResourceUtil.brineWaterID,
+				ResourceUtil.waterID,
 				
-				ICE_ID,
-				BRINE_WATER_ID,
-				GREY_WATER_ID,
-				BLACK_WATER_ID,
-				ROCK_SAMPLES_ID,
+				ResourceUtil.iceID,
+				ResourceUtil.brineWaterID,
+				ResourceUtil.greyWaterID,
+				ResourceUtil.blackWaterID,
+				ResourceUtil.rockSamplesID,
 
-				REGOLITH_ID };
+				ResourceUtil.regolithID };
 	}
 	
 	/** Threshold to adjust filtering rate. */
@@ -197,7 +174,7 @@ public class Settlement extends Unit implements Temporal,
 	/** The settlement minimum air pressure requirement. */
 	private static double minimumAirPressure;
 	/** The settlement life support requirements. */
-	private static double[][] lifeSupportValues = new double[2][7];
+	private static Range tempRange;
 	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
@@ -227,13 +204,9 @@ public class Settlement extends Unit implements Temporal,
 	private int numOwnedBots;
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
-	/** The composite value of the minerals nearby. */
-	private int mineralValue = -1;
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
-	/** The extra search radius [in km] to be added. */
-	private double extraKM;
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
 	/** The average regolith collection rate at this location. */
@@ -339,23 +312,21 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Robot> robotsWithin;
 	/** The settlement's preference map. */
 	private ParameterManager preferences = new ParameterManager();
-	/** A set of nearby mineral locations. */
-	private Map<Coordinates, Double> nearbyMineralLocations = new HashMap<>();
-	/** A list of nearby mineral locations. */
-	private Set<ExploredLocation> declaredMineralLocations = new HashSet<>();
+	/** Manage local Explorations */
+	private ExplorationManager explorations;
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(40);
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static SettlementTemplateConfig settlementTemplateConfig = SimulationConfig.instance().getSettlementTemplateConfiguration();
-	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
 	
 	static {
+		var personConfig = SimulationConfig.instance().getPersonConfig();
 		waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		minimumAirPressure = personConfig.getMinAirPressure();
-		lifeSupportValues = settlementConfig.getLifeSupportRequirements();
+		tempRange = settlementConfig.getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
 	}
 
 	/**
@@ -364,7 +335,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @param name
 	 * @param location
 	 */
-	public Settlement(String name, Coordinates location) {
+	protected Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
 		super(name);
 
@@ -441,6 +412,8 @@ public class Settlement extends Unit implements Temporal,
 
 		// Call weather to add this location
 		weather.addLocation(location);
+
+		explorations = new ExplorationManager(this);
 	}
 
 
@@ -750,7 +723,7 @@ public class Settlement extends Unit implements Temporal,
 				logger.warning(this, "No more oxygen.");
 				return false;
 			}
-			amount = getAmountResourceStored(WATER_ID);
+			amount = getAmountResourceStored(ResourceUtil.waterID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more water.");
 				return false;
@@ -764,8 +737,8 @@ public class Settlement extends Unit implements Temporal,
 			}
 
 			double t = currentTemperature;
-			if (t < lifeSupportValues[0][4] - SAFE_TEMPERATURE_RANGE
-					|| t > lifeSupportValues[1][4] + SAFE_TEMPERATURE_RANGE) {
+			if (t < tempRange.min() - SAFE_TEMPERATURE_RANGE
+					|| t > tempRange.max() + SAFE_TEMPERATURE_RANGE) {
 				logger.warning(this, "Out-of-range overall temperature at "
 						   + Math.round(t * 10D) / 10D
 						   + " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
@@ -812,7 +785,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public double provideWater(double waterTaken) {
-		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
+		double lacking = retrieveAmountResource(ResourceUtil.waterID, waterTaken);
 		return waterTaken - lacking;
 	}
 
@@ -960,13 +933,7 @@ public class Settlement extends Unit implements Temporal,
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
-			int remainder = msol % CHECK_MISSION;
-			if (remainder == 1) {
-				// Reset the mission probability back to 1
-				mineralValue = -1;
-			}
-
-			remainder = msol % RESOURCE_SAMPLING_FREQ;
+			int remainder = msol % RESOURCE_SAMPLING_FREQ;
 			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
@@ -1041,9 +1008,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @param now
 	 */
 	private void sampleAllResources(MarsTime now) {
-		int size = samplingResources.length;
-		for (int i = 0; i < size; i++) {
-			int id = samplingResources[i];
+		for (int id : samplingResources) {
 			sampleOneResource(id, now);
 		}
 	}
@@ -1092,10 +1057,8 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public Map<Integer, Double> gatherResourceStat(int sol) {
 		Map<Integer, Double> map = new HashMap<>();
-		int size = samplingResources.length;
 
-		for (int i=0; i<size; i++) {
-			int id = samplingResources[i];
+		for (int id : samplingResources) {
 			double amount = calculateDailyAverageResource(sol, id);
 			map.put(id, amount);
 		}
@@ -1147,14 +1110,14 @@ public class Settlement extends Unit implements Temporal,
 		minimumPassingScore *= 0.9D;
 
 		// Check the Grey water situation
-		if (getAmountResourceStored(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		if (getAmountResourceStored(ResourceUtil.greyWaterID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
 			logger.log(this, Level.WARNING, 10_000,
 					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
-		else if (getAmountResourceRemainingCapacity(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		else if (getAmountResourceRemainingCapacity(ResourceUtil.greyWaterID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(true);
 			double r = getGreyWaterFilteringRate();
@@ -1446,7 +1409,7 @@ public class Settlement extends Unit implements Temporal,
             AirlockMode airlockMode = airlock.getAirlockMode();
             boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
             boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
-            // May also consider boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+            // May also consider boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE
 
             int numInnerDoor = airlock.getNumAwaitingInnerDoor();
             int numOuterDoor = airlock.getNumAwaitingOuterDoor();
@@ -2345,7 +2308,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return level of water ration.
 	 */
 	public boolean isWaterRatioChanged() {
-		double storedWater = getAmountResourceStored(WATER_ID);
+		double storedWater = getAmountResourceStored(ResourceUtil.waterID);
 		int reserveWater = getNumCitizens() * MIN_WATER_RESERVE;
 		// Assuming a 90-day supply of water
 		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
@@ -2406,6 +2369,13 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
+	 * Get the Exploration manager for this Settlement
+	 */
+	public ExplorationManager getExplorations() {
+		return explorations;
+	}
+
+	/**
 	 * Gets the total area of Crops in this Settlement.
 	 */
 	public double getTotalCropArea() {
@@ -2427,34 +2397,34 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private double computeRegolithProbability() {
 		double result = 0;
-		double regolithDemand = goodsManager.getDemandValueWithID(REGOLITH_ID);
+		double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
 		if (regolithDemand > REGOLITH_MAX)
 			regolithDemand = REGOLITH_MAX;
 		else if (regolithDemand < 1)
 			regolithDemand = 1;
 
-		double sandDemand = goodsManager.getDemandValueWithID(SAND_ID);
+		double sandDemand = goodsManager.getDemandValueWithID(ResourceUtil.sandID);
 		if (sandDemand > REGOLITH_MAX)
 			sandDemand = REGOLITH_MAX;
 		else if (sandDemand < 1)
 			sandDemand = 1;
 		
-		double concreteDemand = goodsManager.getDemandValueWithID(CONCRETE_ID);
+		double concreteDemand = goodsManager.getDemandValueWithID(ResourceUtil.concreteID);
 		if (concreteDemand > REGOLITH_MAX)
 			concreteDemand = REGOLITH_MAX;
 		else if (concreteDemand < 1)
 			concreteDemand = 1;
 		
-		double cementDemand = goodsManager.getDemandValueWithID(CEMENT_ID);
+		double cementDemand = goodsManager.getDemandValueWithID(ResourceUtil.cementID);
 		if (cementDemand > REGOLITH_MAX)
 			cementDemand = REGOLITH_MAX;
 		else if (cementDemand < 1)
 			cementDemand = 1;
 
-		double regolithAvailable = goodsManager.getSupplyValue(REGOLITH_ID);
+		double regolithAvailable = goodsManager.getSupplyValue(ResourceUtil.regolithID);
 		regolithAvailable = regolithAvailable * regolithAvailable - 1;
 		
-		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
+		double sandAvailable = goodsManager.getSupplyValue(ResourceUtil.sandID);
 		sandAvailable = sandAvailable * sandAvailable - 1;
 		
 		int pop = numCitizens;
@@ -2488,20 +2458,20 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private double computeIceProbability() {
 		double result = 0;
-		double iceDemand = goodsManager.getDemandValueWithID(ICE_ID);
+		double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
 		if (iceDemand > ICE_MAX)
 			iceDemand = ICE_MAX;
 		if (iceDemand < 1)
 			iceDemand = 1;
 		
-		double waterDemand = goodsManager.getDemandValueWithID(WATER_ID);
+		double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
 		waterDemand = waterDemand * waterRatioCache / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
-		double brineWaterDemand = goodsManager.getDemandValueWithID(BRINE_WATER_ID);
+		double brineWaterDemand = goodsManager.getDemandValueWithID(ResourceUtil.brineWaterID);
 		brineWaterDemand = brineWaterDemand * waterRatioCache / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
@@ -2509,9 +2479,9 @@ public class Settlement extends Unit implements Temporal,
 			waterDemand = 1;
 		
 		// Compare the available amount of water and ice reserve
-		double iceSupply = goodsManager.getSupplyValue(ICE_ID);
-		double waterSupply = goodsManager.getSupplyValue(WATER_ID);
-		double brineWaterSupply = goodsManager.getSupplyValue(BRINE_WATER_ID);
+		double iceSupply = goodsManager.getSupplyValue(ResourceUtil.iceID);
+		double waterSupply = goodsManager.getSupplyValue(ResourceUtil.waterID);
+		double brineWaterSupply = goodsManager.getSupplyValue(ResourceUtil.brineWaterID);
 		
 		int pop = numCitizens;
 		int reserve = (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop;
@@ -2725,364 +2695,7 @@ public class Settlement extends Unit implements Temporal,
 
 		return result;
 	}
-	
-	/**
-	 * Adds a nearby mineral location in random.
-	 * 
-	 * @param limit
-	 * @param sol
-	 */
-	public Coordinates acquireNearbyMineralLocation(double limit, int sol) {
-		
-		Map.Entry<Coordinates, Double> pair = surfaceFeatures.getMineralMap().
-				findRandomMineralLocation(getCoordinates(), limit + extraKM, sol, nearbyMineralLocations.keySet());
-		
-		if (pair == null) {
-			logger.warning(this, 30_000, "No nearby mineral locations found within " + Math.round(limit + extraKM) + " km.");
-			extraKM = extraKM + 0.3;
-			return null;
-		}
-		
-		nearbyMineralLocations.put(pair.getKey(), pair.getValue());
-		
-		return pair.getKey();
-	}
-	
-	/**
-	 * Gets the next closest mineral location.
-	 * 
-	 * @param limit
-	 * @return
-	 */
-	public Coordinates getNextClosestMineralLoc(double limit) {
-		int sol = masterClock.getMarsTime().getMissionSol();
-		
-		acquireNearbyMineralLocation(limit, sol);
-		
-		int size =  nearbyMineralLocations.size();
-		
-		double shortestDist = 1000;
-		Coordinates chosen = null;
-		
-		List<Coordinates> keys = new ArrayList<>(nearbyMineralLocations.keySet());
-		for (int i = 0; i < size; i++) {
-			Coordinates c = keys.get(i);
-			double dist = nearbyMineralLocations.get(c);
-			if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, false)) {
-				continue;
-			}
-			if (shortestDist >= dist) {
-				shortestDist = dist;
-				chosen = c;
-			}
-		}	
-		
-		return chosen;
-	}
-	
-	/**
-	 * Gets a set of nearby potential mineral locations.
-	 */
-	public Set<Coordinates> getNearbyMineralLocations() {
-		return nearbyMineralLocations.keySet();
-	}
-	
-	/**
-	 * Gets the number of nearby potential mineral location.
-	 * 
-	 * @return
-	 */
-	public int numNearbyMineralLocations() {
-		return nearbyMineralLocations.size();
-	}
-	
-	
-	/**
-	 * Gets one of the existing nearby mineral location that has not been declared yet.
-	 *
-	 * @return
-	 */
-	public Coordinates getExistingNearbyMineralLocation() {
 
-		for (Coordinates c : nearbyMineralLocations.keySet()) {
-			for (ExploredLocation el : declaredMineralLocations) {
-				if (!c.equals(el.getLocation())) {
-					return c;
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Gets a random nearby mineral location that can be reached by any rover.
-	 * 
-	 * @param closest is selecting to return one of the closest locations
-	 * @param limit
-	 * @param skill
-	 * @return
-	 */
-	public Coordinates getARandomNearbyMineralLocation(boolean closest, double limit, int skill) {
-		int sol = masterClock.getMarsTime().getMissionSol();
-		
-		double newRange = limit;
-		
-		if (limit == -1) {		
-			return getNextClosestMineralLoc(limit);
-		}
-//		else
-//			acquireNearbyMineralLocation(getCoordinates(), limit, sol);
-		
-		logger.info(this, "nearbyMineralLocations: " + nearbyMineralLocations.size());
-		
-		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
-			return null;
-		}
-		
-		Map<Coordinates, Double> weightedMap = new HashMap<>();
-		
-		for (Coordinates c : nearbyMineralLocations.keySet()) {
-			for (ExploredLocation el : declaredMineralLocations) {
-				if (c.equals(el.getLocation())) {
-					// Skip this c
-					continue;
-				}
-			
-				double distance = nearbyMineralLocations.get(c);
-				double prob = 0;
-				double delta = newRange - distance + Math.max(0, 100 - sol);
-				if (delta > 0) {
-					prob = 0;
-					continue;
-				}
-					
-				if (closest) {		
-					prob = delta * delta / newRange / newRange;
-	
-				}
-				else {
-					prob = delta / newRange;
-				}
-				
-				if (distance >= MineralMap.MIN_DISTANCE && prob > 0) {
-					// Fill up the weight map
-					weightedMap.put(c, prob);
-				}
-			}
-		}
-
-		// Choose one with weighted randomness 
-		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
-
-		if (weightedMap.isEmpty() || chosen == null) {
-			logger.info(this, 30_000, "No ROIs found within " + Math.round(limit + extraKM) + " km.");
-			extraKM = extraKM + 0.3;
-			return null;
-		}
-		
-		return chosen;
-	}
-
-	/**
-	 * Returns number of locations being claimed or not being claimed as a Region Of Interest (ROI).
-	 * 
-	 * @param isClaimed
-	 * @return
-	 */
-	public int numDeclaredLocation(boolean isClaimed) {	
-		int num = 0;
-		for (Coordinates c: nearbyMineralLocations.keySet()) {
-			if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, isClaimed))
-				num++;
-		}
-		return num;
-	}
-	
-	/**
-	 * Returns number of locations being claimed or not being claimed as a Region Of Interest (ROI).
-	 * 
-	 * @return
-	 */
-	public int numDeclaredLocation() {	
-		return declaredMineralLocations.size();
-	}
-	
-	/**
-	 * Returns list of declared locations of Region Of Interest (ROI).
-	 * 
-	 * @return
-	 */
-	public Set<ExploredLocation> getDeclaredLocations() {	
-		return declaredMineralLocations;
-	}
-
-	/**
-	 * Computes the mineral sites statistics.
-	 * 
-	 * @param status; if 0, all sites; if 1, claimed sites; if 2, unclaimed sites
-	 * @return
-	 */
-	public int[] getStatistics(int status) {
-		List<Coordinates> keys = new ArrayList<>(nearbyMineralLocations.keySet());
-		List<Double> list = new ArrayList<>();
-		int size = keys.size();
-		for (int i = 0; i < size; i++) {
-			Coordinates c = keys.get(i);		
-			if (status == 0) {
-				list.add(nearbyMineralLocations.get(c));
-			}
-			else if (status == 1) {
-				if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, true)) {
-					list.add(nearbyMineralLocations.get(c));
-				}
-			}
-			else if (status == 2) {
-				if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, false)) {
-					list.add(nearbyMineralLocations.get(c));
-				}
-			}
-		}
-		
-		double sum = 0.0;
-	    double total = 0.0;
-	    double mean = 0.0;
-	    double sd = 0.0;
-	    double variance = 0.0;
-	    size = list.size();
-	    
-		for (int i = 0; i < size; i++) {
-            sum += list.get(i);
-        }
-       
-		if (size == 0) {
-			// everything is zero
-		}
-			
-		else {
-			mean = sum / size;
- 
-	        for (int i = 0; i < size; i++) {
-	            total += Math.pow((list.get(i) - mean), 2);
-	        }
-	       
-	        variance = total / size;
-	        sd = Math.sqrt(variance);
-		}
-		
-        return new int[] {(int)mean, (int)sd};
-	}
-	
-	/**
-	 * Creates a Region of Interest (ROI) at a given location and
-	 * estimate its mineral concentrations.
-	 * 
-	 * @param siteLocation
-	 * @param skill
-	 * @return ExploredLocation
-	 */
-	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
-		ExploredLocation el = surfaceFeatures.createARegionOfInterest(siteLocation, this, skill);
-		if (el != null) {
-			declaredMineralLocations.add(el);
-			return el;
-		}
-		return null;
-	}
-	
-	/**
-	 * Checks if there are any mineral locations within rover/mission range.
-	 * Note: Called by getTotalMineralValue()
-	 *
-	 * @param rover          the rover to use.
-	 * @return true if mineral locations.
-	 * @throws Exception if error determining mineral locations.
-	 */
-	private Map<String, Integer> getNearbyMineral(Rover rover, int skill) {
-		int sol = masterClock.getMarsTime().getMissionSol();
-				
-		Map<String, Integer> minerals = new HashMap<>();
-
-		double roverRange = rover.getEstimatedRange();
-		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
-		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
-		double range = roverRange;
-		if (tripRange < range)
-			range = tripRange;
-
-		Map<Coordinates, Double> weightedMap = new HashMap<>();
-		
-		for (Coordinates c : nearbyMineralLocations.keySet()) {
-			double distance = nearbyMineralLocations.get(c);
-			double prob = 0;
-			double delta = range - distance + Math.max(0, 100 - sol);
-			if (delta > 0) {
-				prob = delta * delta / range / range;
-			}
-			
-			if (distance >= MineralMap.MIN_DISTANCE && prob > 0) {
-				// Fill up the weight map
-				weightedMap.put(c, prob);
-			}
-		}
-		
-		// Choose one with weighted randomness 
-		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
-
-		if (weightedMap.isEmpty() || chosen == null) {
-			logger.info(this, 30_000, "No mineral site of interest found within " + Math.round(range + extraKM) + " km.");
-			return null;
-		}
-		
-		double chosenDist = weightedMap.get(chosen);
-		
-		logger.info(unitManager.findSettlement(getCoordinates()), 30_000L, 
-				"Investigating a mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km away).");
-		
-		if (chosen != null)
-			minerals = surfaceFeatures.getMineralMap().getAllMineralConcentrations(chosen);
-
-		return minerals;
-	}
-	
-	
-	/**
-	 * Gets the total mineral value, based on the range of a given rover.
-	 * 
-	 * @param rover
-	 * @return
-	 */
-	public int getTotalMineralValue(Rover rover, int skill) {
-		if (mineralValue == -1) {
-			// Check if any mineral locations within rover range and obtain their
-			// concentration
-			Map<String, Integer> minerals = getNearbyMineral(rover, skill);
-			if (minerals != null && !minerals.isEmpty()) {
-				mineralValue = Exploration.getTotalMineralValue(this, minerals);
-			}
-		}
-		return mineralValue;
-	}
-	
-	
-	/**
-	 * Gets the range of a trip based on its time limit and exploration sites.
-	 *
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param averageSpeed  the average speed of the vehicle.
-	 * @return range (km) limit.
-	 */
-	private double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
-		int sol = masterClock.getMarsTime().getMissionSol();
-		int numSites = 2 + (int)(1.0 * sol / 20);
-		double siteTime = 250;
-		
-		double tripTimeTravellingLimit = tripTimeLimit - (numSites * siteTime);
-		double millisolsInHour = MarsTime.convertSecondsToMillisols(60D * 60D);
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		return tripTimeTravellingLimit * averageSpeedMillisol;
-	}
-	
 	/**
 	 * Returns the ice collection rate in the vicinity of this settlement.
 	 * 
@@ -3649,21 +3262,11 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return the associated settlement
 	 */
+	@Override
 	public Settlement getAssociatedSettlement() {
 		return this;
 	}
-	
-	/**
-	 * Gets the preset life support value.
-	 * 
-	 * @param i
-	 * @param j
-	 * @return
-	 */
-	public static double getLifeSupportValues(int i, int j) {
-		return lifeSupportValues[i][j];
-	}
-	
+
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */
@@ -3707,41 +3310,9 @@ public class Settlement extends Unit implements Temporal,
 	public void destroy() {
 		super.destroy();
 
-		for (Person p: citizens) {
-			p.destroy();
-		}
-		citizens.clear();
-		citizens = null;
-		
-		for (Person p: indoorPeople) {
-			p.destroy();
-		}
-		indoorPeople.clear();
-		indoorPeople = null;
-		
-		for (Robot r: ownedRobots) {
-			r.destroy();
-		}
-		ownedRobots.clear();
-		ownedRobots = null;
-		
-		for (Robot r: robotsWithin) {
-			r.destroy();
-		}
-		robotsWithin.clear();
-		robotsWithin = null;
-		
-		for (Vehicle v: ownedVehicles) {
-			v.destroy();
-		}
-		ownedVehicles.clear();
-		ownedVehicles = null;
-		
-		for (Vehicle v: vicinityParkedVehicles) {
-			v.destroy();
-		}
-		vicinityParkedVehicles.clear();
-		vicinityParkedVehicles = null;
+		citizens.forEach(Person::destroy);
+		ownedRobots.forEach(Robot::destroy);
+		ownedVehicles.forEach(Vehicle::destroy);
 		
 		if (buildingManager != null) {
 			buildingManager.destroy();

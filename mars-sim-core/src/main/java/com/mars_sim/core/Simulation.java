@@ -68,6 +68,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.science.ScientificStudyUtil;
 import com.mars_sim.core.structure.Airlock;
+import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.Function;
@@ -387,6 +388,7 @@ public class Simulation implements ClockListener, Serializable {
 
 
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
+		ExplorationManager.initialise(surfaceFeatures);
 
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
@@ -545,7 +547,7 @@ public class Simulation implements ClockListener, Serializable {
 		SalvageValues.initializeInstances(unitManager, masterClock);
 		
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
-
+		ExplorationManager.initialise(surfaceFeatures);
 		
 		doneInitializing = true;
 		
@@ -676,6 +678,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Re-initialize Structure related class
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
+		ExplorationManager.initialise(surfaceFeatures);
 	
 		// Start a chain of calls to set instances
 		// Warning: must call this at the end of this method

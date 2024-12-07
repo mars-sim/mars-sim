@@ -67,7 +67,7 @@ public class Mining extends EVAMission
 	public static final int NUMBER_OF_LARGE_BAGS = 4;
 
 	/** The good value factor of a site. */
-	static final double MINERAL_GOOD_VALUE_FACTOR = 500;
+	public static final double MINERAL_GOOD_VALUE_FACTOR = 500;
 	
 	/** The averge good value of a site. */
 	static final double AVERAGE_RESERVE_GOOD_VALUE = 50_000;
