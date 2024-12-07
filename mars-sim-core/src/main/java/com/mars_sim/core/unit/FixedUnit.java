@@ -29,9 +29,6 @@ public abstract class FixedUnit extends Unit
 		super(name);
 
         this.owner = owner;
-
-        // TODO Place holder; once completed this can be removed
-		setContainerID(owner.getIdentifier());
 	}
 
     /**

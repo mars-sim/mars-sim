@@ -343,12 +343,12 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager.addUnit(outerSpace);
 		
 		// Initialize Moon instance
-		Moon moon = new Moon(outerSpace);
+		Moon moon = new Moon();
 		// Add it to unitManager
 		unitManager.addUnit(moon);
 		
 		// Build planetary objects
-		MarsSurface marsSurface = new MarsSurface(outerSpace);
+		MarsSurface marsSurface = new MarsSurface();
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 	
@@ -456,12 +456,12 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager.addUnit(outerSpace);
 		
 		// Initialize Moon instance
-		Moon moon = new Moon(outerSpace);
+		Moon moon = new Moon();
 		// Add it to unitManager
 		unitManager.addUnit(moon);
 		
 		// Initialize MarsSurface instance
-		MarsSurface marsSurface = new MarsSurface(outerSpace);
+		MarsSurface marsSurface = new MarsSurface();
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 		

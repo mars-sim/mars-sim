@@ -37,8 +37,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	public static final Integer UNKNOWN_UNIT_ID = -3;
 
 	// Data members
-	/** The unit containing this unit. */
-	protected Integer containerID = UNKNOWN_UNIT_ID;
 
 	// Unique Unit identifier
 	private int identifier;
@@ -111,13 +109,11 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param name     {@link String} the name of the unit
 	 * @param id Unit identifier
-	 * @param containerId Identifier of the container
 	 */
-	protected Unit(String name, int id, int containerId) {
+	protected Unit(String name, int id) {
 		// Initialize data members from parameters
 		this.name = name;
 		this.identifier = id;
-		this.containerID = containerId;
 	}
 
 	/**
@@ -135,30 +131,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	
 			// Calculate the new Identifier for this type
 			identifier = unitManager.generateNewId(getUnitType());
-		}
-
-		// Define the default LocationStateType of an unit at the start of the sim
-		// Instantiate Inventory as needed. Still needs to be pushed to subclass
-		// constructors
-		switch (getUnitType()) {
-		case BUILDING, CONTAINER, EVA_SUIT, PERSON, ROBOT:
-			// Why no containerID ?
-			break;
-			
-		case VEHICLE:
-			containerID = MARS_SURFACE_UNIT_ID;
-			break;
-
-		case CONSTRUCTION, MARS, SETTLEMENT:
-			containerID = MARS_SURFACE_UNIT_ID;
-			break;
-
-		case MOON:
-			containerID = MOON_UNIT_ID;
-			break;
-			
-		default:
-			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
 
 		if (diagnosticFile != null) {
@@ -260,25 +232,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		fireUnitUpdate(UnitEventType.NOTES_EVENT, notes);
 	}
 
-	/**
-	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 *
-	 * @return the unit's container unit
-	 */
-	public Unit getContainerUnit() {
-		if (unitManager == null) // for maven test
-			return null;
-		return unitManager.getUnitByID(containerID);
-	}
-
-	public int getContainerID() {
-		return containerID;
-	}
-
-	protected void setContainerID(Integer id) {
-		containerID = id;
-	}
-	
 	/**
 	 * Checks if it has a unit listener.
 	 * 

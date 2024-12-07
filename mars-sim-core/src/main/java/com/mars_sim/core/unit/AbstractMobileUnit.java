@@ -32,6 +32,7 @@ public abstract class AbstractMobileUnit extends Unit
 	private LocationTag tag;
 	private LocationStateType locnState;
 	private Coordinates location;
+	private Unit container;
 
     /**
 	 * Constructor.
@@ -48,13 +49,21 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
+	 * Get the container of this mobile unit.
+	 * @return Should never be null
+	 */
+	public Unit getContainerUnit() {
+		return container;
+	}
+
+	/**
 	 * Set the container of this mobile unit
 	 * @param destination New destination of container
 	 * @param newState 
 	 */
 	protected void setContainer(Unit destination, LocationStateType newState) {
 		this.locnState = newState;
-		setContainerID(destination.getIdentifier());
+		container = destination;
 	}
 
 	/**
@@ -217,10 +226,8 @@ public abstract class AbstractMobileUnit extends Unit
 	 *
 	 * @return the settlement
 	 */
+	@Override
 	public Settlement getSettlement() {
-
-		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
-			return null;
 
 		var c = getContainerUnit();
 
