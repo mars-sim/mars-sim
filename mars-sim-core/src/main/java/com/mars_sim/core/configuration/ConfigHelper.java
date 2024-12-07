@@ -388,12 +388,18 @@ public class ConfigHelper {
 	 * max equals min * defaultSpan.
 	 * 
 	 * @param element
-	 * @param defaultSpan
+	 * @param defaultSpan If =1 then the MAx must be specified
 	 * @return
 	 */
 	public static Range parseRange(Element element, double defaultSpan) {
 		double min = getAttributeDouble(element, MIN);
-		double max = getOptionalAttributeDouble(element, MAX, min * defaultSpan);
+		double max;
+		if (defaultSpan < 0) {
+			max = getAttributeDouble(element, MAX);
+		}
+		else {
+			max = getOptionalAttributeDouble(element, MAX, min * defaultSpan);
+		}
 
 		return new Range(min, max);
 	}

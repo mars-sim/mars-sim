@@ -17,6 +17,7 @@ import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.air.AirComposition;
+import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -33,6 +34,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
@@ -81,6 +83,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	private static final double GAS_RATIO;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi) */
 	private static final double MIN_O2_PRESSURE;
+
+	private static Range tempRange;
 	
 	// Data members
 	/** The rover's capacity for crew members. */
@@ -130,6 +134,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		GAS_RATIO = cO2Expelled/o2Consumed;
 		
 		MIN_O2_PRESSURE = simulationConfig.getPersonConfig().getMinSuitO2Pressure();
+		tempRange = simulationConfig.getSettlementConfiguration().getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
 	}
 	
 	/**
@@ -461,8 +466,8 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 
 		double t = getTemperature();
-		if (t < Settlement.getLifeSupportValues(0, 4) - Settlement.SAFE_TEMPERATURE_RANGE
-				|| t > Settlement.getLifeSupportValues(1, 4) + Settlement.SAFE_TEMPERATURE_RANGE) {
+		if (t < tempRange.min() - Settlement.SAFE_TEMPERATURE_RANGE
+				|| t > tempRange.max() + Settlement.SAFE_TEMPERATURE_RANGE) {
 			logger.log(this, Level.WARNING, 10_000,
 					"Out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");

@@ -18,6 +18,7 @@ import org.jdom2.Element;
 
 import com.mars_sim.core.activities.GroupActivityInfo;
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.data.Range;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.shift.ShiftSpec;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -37,19 +38,18 @@ public class SettlementConfig {
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
 	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
 	private static final String MISSION_CONTROL = "mission-control";
+
 	private static final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
 	private static final String TOTAL_PRESSURE = "total-pressure";
 	private static final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; 
 	private static final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";
 	private static final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; 
-	private static final String TEMPERATURE = "temperature";
+	public static final String TEMPERATURE = "temperature";
 	private static final String RELATIVE_HUMIDITY = "relative-humidity"; 
 	private static final String VENTILATION = "ventilation";
-	private static final String LOW = "low";
-	private static final String HIGH = "high";
+
+
 	private static final String NAME = "name";
-
-
 	private static final String TYPE = "type";
 	private static final String VALUE = "value";
 	private static final String RESOURCE = "resource";
@@ -83,13 +83,14 @@ public class SettlementConfig {
 	private static final String CALENDAR = "calendar";
 
 	private double[] roverValues = new double[] { 0, 0 };
-	private double[][] lifeSupportValues = new double[2][7];
+	private Map<String,Range> lifeSupportValues = new HashMap<>();
 	
 	private List<ShiftPattern> shiftDefinitions = new ArrayList<>();
 
 	private Map<Integer, ResourceLimits> resLimits = new HashMap<>();
 
 	private List<GroupActivitySchedule> rulesets = new ArrayList<>();
+	
 	/**
 	 * Constructor.
 	 *
@@ -335,11 +336,10 @@ public class SettlementConfig {
 	/**
 	 * Loads the life support requirements from the XML document.
 	 *
-	 * @return an array of double.
-	 * @throws Exception if error reading XML document.
+	 * @return range of values for the parameter
 	 */
-	public double[][] getLifeSupportRequirements() {
-		return lifeSupportValues;
+	public Range getLifeSupportRequirements(String name) {
+		return lifeSupportValues.get(name);
 	}
 
 	/**
@@ -349,11 +349,6 @@ public class SettlementConfig {
 	 * @throws Exception if error reading XML document.
 	 */
 	private void loadLifeSupportRequirements(Element req) {
-		if (lifeSupportValues[0][0] != 0) {
-			// testing only the value at [0][0]
-			return;
-		}
-
 		String[] types = new String[] {
 				TOTAL_PRESSURE,
 				PARTIAL_PRESSURE_OF_O2,
@@ -363,19 +358,9 @@ public class SettlementConfig {
 				RELATIVE_HUMIDITY,
 				VENTILATION};
 
-		for (int j = 0; j < 2; j++) {
-			for (int i = 0; i < types.length; i++) {
-				double [] t = getLowHighValues(req, types[i]);
-				lifeSupportValues[j][i] = t[j];
-			}
+		for (var t : types) {
+			var r = ConfigHelper.parseRange(req.getChild(t), -1);
+			lifeSupportValues.put(t, r);
 		}
-	}
-
-	private double[] getLowHighValues(Element element, String name) {
-		Element el = element.getChild(name);
-		double a = Double.parseDouble(el.getAttributeValue(LOW));
-		double b = Double.parseDouble(el.getAttributeValue(HIGH));
-
-		return new double[] { a, b };
 	}
 }

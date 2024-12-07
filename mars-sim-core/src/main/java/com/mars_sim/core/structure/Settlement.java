@@ -30,6 +30,7 @@ import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
@@ -59,7 +60,6 @@ import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
@@ -132,47 +132,28 @@ public class Settlement extends Unit implements Temporal,
 
 	private static final int MIN_WATER_RESERVE = 400; // per person
 	private static final int MIN_ICE_RESERVE = 400; // per person
-	
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
-	private static final int METHANOL_ID = ResourceUtil.methanolID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int ICE_ID = ResourceUtil.iceID;
-	private static final int BRINE_WATER_ID = ResourceUtil.brineWaterID;
-
-	private static final int REGOLITH_ID = ResourceUtil.regolithID;
-	private static final int SAND_ID = ResourceUtil.sandID;
-	private static final int CONCRETE_ID = ResourceUtil.concreteID;
-	private static final int CEMENT_ID = ResourceUtil.cementID;
-	
-	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
-	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
-	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 
 	/** The settlement sampling resources. */
-	protected static final int[] samplingResources;
+	private static final int[] samplingResources;
 
 	/** The definition of static arrays */
 	static {
 		samplingResources = new int[] {
-				OXYGEN_ID,
-				HYDROGEN_ID,
-				CO2_ID,
-				METHANE_ID,
-				METHANOL_ID,
-				BRINE_WATER_ID,
-				WATER_ID,
+				ResourceUtil.oxygenID,
+				ResourceUtil.hydrogenID,
+				ResourceUtil.co2ID,
+				ResourceUtil.methaneID,
+				ResourceUtil.methanolID,
+				ResourceUtil.brineWaterID,
+				ResourceUtil.waterID,
 				
-				ICE_ID,
-				BRINE_WATER_ID,
-				GREY_WATER_ID,
-				BLACK_WATER_ID,
-				ROCK_SAMPLES_ID,
+				ResourceUtil.iceID,
+				ResourceUtil.brineWaterID,
+				ResourceUtil.greyWaterID,
+				ResourceUtil.blackWaterID,
+				ResourceUtil.rockSamplesID,
 
-				REGOLITH_ID };
+				ResourceUtil.regolithID };
 	}
 	
 	/** Threshold to adjust filtering rate. */
@@ -193,7 +174,7 @@ public class Settlement extends Unit implements Temporal,
 	/** The settlement minimum air pressure requirement. */
 	private static double minimumAirPressure;
 	/** The settlement life support requirements. */
-	private static double[][] lifeSupportValues = new double[2][7];
+	private static Range tempRange;
 	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
@@ -338,14 +319,14 @@ public class Settlement extends Unit implements Temporal,
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static SettlementTemplateConfig settlementTemplateConfig = SimulationConfig.instance().getSettlementTemplateConfiguration();
-	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
 	
 	static {
+		var personConfig = SimulationConfig.instance().getPersonConfig();
 		waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		minimumAirPressure = personConfig.getMinAirPressure();
-		lifeSupportValues = settlementConfig.getLifeSupportRequirements();
+		tempRange = settlementConfig.getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
 	}
 
 	/**
@@ -742,7 +723,7 @@ public class Settlement extends Unit implements Temporal,
 				logger.warning(this, "No more oxygen.");
 				return false;
 			}
-			amount = getAmountResourceStored(WATER_ID);
+			amount = getAmountResourceStored(ResourceUtil.waterID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more water.");
 				return false;
@@ -756,8 +737,8 @@ public class Settlement extends Unit implements Temporal,
 			}
 
 			double t = currentTemperature;
-			if (t < lifeSupportValues[0][4] - SAFE_TEMPERATURE_RANGE
-					|| t > lifeSupportValues[1][4] + SAFE_TEMPERATURE_RANGE) {
+			if (t < tempRange.min() - SAFE_TEMPERATURE_RANGE
+					|| t > tempRange.max() + SAFE_TEMPERATURE_RANGE) {
 				logger.warning(this, "Out-of-range overall temperature at "
 						   + Math.round(t * 10D) / 10D
 						   + " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
@@ -804,7 +785,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public double provideWater(double waterTaken) {
-		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
+		double lacking = retrieveAmountResource(ResourceUtil.waterID, waterTaken);
 		return waterTaken - lacking;
 	}
 
@@ -1027,9 +1008,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @param now
 	 */
 	private void sampleAllResources(MarsTime now) {
-		int size = samplingResources.length;
-		for (int i = 0; i < size; i++) {
-			int id = samplingResources[i];
+		for (int id : samplingResources) {
 			sampleOneResource(id, now);
 		}
 	}
@@ -1078,10 +1057,8 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public Map<Integer, Double> gatherResourceStat(int sol) {
 		Map<Integer, Double> map = new HashMap<>();
-		int size = samplingResources.length;
 
-		for (int i=0; i<size; i++) {
-			int id = samplingResources[i];
+		for (int id : samplingResources) {
 			double amount = calculateDailyAverageResource(sol, id);
 			map.put(id, amount);
 		}
@@ -1133,14 +1110,14 @@ public class Settlement extends Unit implements Temporal,
 		minimumPassingScore *= 0.9D;
 
 		// Check the Grey water situation
-		if (getAmountResourceStored(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		if (getAmountResourceStored(ResourceUtil.greyWaterID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
 			logger.log(this, Level.WARNING, 10_000,
 					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
-		else if (getAmountResourceRemainingCapacity(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		else if (getAmountResourceRemainingCapacity(ResourceUtil.greyWaterID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(true);
 			double r = getGreyWaterFilteringRate();
@@ -2331,7 +2308,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return level of water ration.
 	 */
 	public boolean isWaterRatioChanged() {
-		double storedWater = getAmountResourceStored(WATER_ID);
+		double storedWater = getAmountResourceStored(ResourceUtil.waterID);
 		int reserveWater = getNumCitizens() * MIN_WATER_RESERVE;
 		// Assuming a 90-day supply of water
 		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
@@ -2420,34 +2397,34 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private double computeRegolithProbability() {
 		double result = 0;
-		double regolithDemand = goodsManager.getDemandValueWithID(REGOLITH_ID);
+		double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
 		if (regolithDemand > REGOLITH_MAX)
 			regolithDemand = REGOLITH_MAX;
 		else if (regolithDemand < 1)
 			regolithDemand = 1;
 
-		double sandDemand = goodsManager.getDemandValueWithID(SAND_ID);
+		double sandDemand = goodsManager.getDemandValueWithID(ResourceUtil.sandID);
 		if (sandDemand > REGOLITH_MAX)
 			sandDemand = REGOLITH_MAX;
 		else if (sandDemand < 1)
 			sandDemand = 1;
 		
-		double concreteDemand = goodsManager.getDemandValueWithID(CONCRETE_ID);
+		double concreteDemand = goodsManager.getDemandValueWithID(ResourceUtil.concreteID);
 		if (concreteDemand > REGOLITH_MAX)
 			concreteDemand = REGOLITH_MAX;
 		else if (concreteDemand < 1)
 			concreteDemand = 1;
 		
-		double cementDemand = goodsManager.getDemandValueWithID(CEMENT_ID);
+		double cementDemand = goodsManager.getDemandValueWithID(ResourceUtil.cementID);
 		if (cementDemand > REGOLITH_MAX)
 			cementDemand = REGOLITH_MAX;
 		else if (cementDemand < 1)
 			cementDemand = 1;
 
-		double regolithAvailable = goodsManager.getSupplyValue(REGOLITH_ID);
+		double regolithAvailable = goodsManager.getSupplyValue(ResourceUtil.regolithID);
 		regolithAvailable = regolithAvailable * regolithAvailable - 1;
 		
-		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
+		double sandAvailable = goodsManager.getSupplyValue(ResourceUtil.sandID);
 		sandAvailable = sandAvailable * sandAvailable - 1;
 		
 		int pop = numCitizens;
@@ -2481,20 +2458,20 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private double computeIceProbability() {
 		double result = 0;
-		double iceDemand = goodsManager.getDemandValueWithID(ICE_ID);
+		double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
 		if (iceDemand > ICE_MAX)
 			iceDemand = ICE_MAX;
 		if (iceDemand < 1)
 			iceDemand = 1;
 		
-		double waterDemand = goodsManager.getDemandValueWithID(WATER_ID);
+		double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
 		waterDemand = waterDemand * waterRatioCache / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
-		double brineWaterDemand = goodsManager.getDemandValueWithID(BRINE_WATER_ID);
+		double brineWaterDemand = goodsManager.getDemandValueWithID(ResourceUtil.brineWaterID);
 		brineWaterDemand = brineWaterDemand * waterRatioCache / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
@@ -2502,9 +2479,9 @@ public class Settlement extends Unit implements Temporal,
 			waterDemand = 1;
 		
 		// Compare the available amount of water and ice reserve
-		double iceSupply = goodsManager.getSupplyValue(ICE_ID);
-		double waterSupply = goodsManager.getSupplyValue(WATER_ID);
-		double brineWaterSupply = goodsManager.getSupplyValue(BRINE_WATER_ID);
+		double iceSupply = goodsManager.getSupplyValue(ResourceUtil.iceID);
+		double waterSupply = goodsManager.getSupplyValue(ResourceUtil.waterID);
+		double brineWaterSupply = goodsManager.getSupplyValue(ResourceUtil.brineWaterID);
 		
 		int pop = numCitizens;
 		int reserve = (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop;
@@ -3285,21 +3262,11 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return the associated settlement
 	 */
+	@Override
 	public Settlement getAssociatedSettlement() {
 		return this;
 	}
-	
-	/**
-	 * Gets the preset life support value.
-	 * 
-	 * @param i
-	 * @param j
-	 * @return
-	 */
-	public static double getLifeSupportValues(int i, int j) {
-		return lifeSupportValues[i][j];
-	}
-	
+
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */
