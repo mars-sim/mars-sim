@@ -21,7 +21,6 @@ public class OuterSpace extends PlanetaryEntity {
 	private static final String NAME = "Outer Space";
 
 	public OuterSpace() {
-		super(NAME, Unit.OUTER_SPACE_UNIT_ID, Unit.OUTER_SPACE_UNIT_ID, null,
-				UnitType.OUTER_SPACE);
+		super(NAME, Unit.OUTER_SPACE_UNIT_ID, UnitType.OUTER_SPACE);
 	}
 }

@@ -413,12 +413,9 @@ public class ConstructionSite extends FixedUnit {
     public boolean hasStage(ConstructionStageInfo stage) {
         if (stage == null) throw new IllegalArgumentException("stage cannot be null");
 
-        boolean result = false;
-        if ((foundationStage != null) && foundationStage.getInfo().equals(stage)) result = true;
-        else if ((frameStage != null) && frameStage.getInfo().equals(stage)) result = true;
-        else if ((buildingStage != null) && buildingStage.getInfo().equals(stage)) result = true;
-
-        return result;
+        return (((foundationStage != null) && foundationStage.getInfo().equals(stage))
+                    || ((frameStage != null) && frameStage.getInfo().equals(stage))
+                    || ((buildingStage != null) && buildingStage.getInfo().equals(stage)));
     }
 
     /**
@@ -499,17 +496,11 @@ public class ConstructionSite extends FixedUnit {
 	public UnitType getUnitType() {
 		return UnitType.CONSTRUCTION;
 	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return false;
-	}
 	
+    /**
+     * Get the dynamic description based on the current stage.
+     * @return Description of site
+     */
     @Override
     public String getDescription() {
 		StringBuilder result = new StringBuilder();

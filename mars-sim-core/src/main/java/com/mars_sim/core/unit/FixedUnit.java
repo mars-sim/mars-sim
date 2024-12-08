@@ -29,9 +29,6 @@ public abstract class FixedUnit extends Unit
 		super(name);
 
         this.owner = owner;
-
-        // TODO Place holder; once completed this can be removed
-		setContainerID(owner.getIdentifier());
 	}
 
     /**
@@ -57,17 +54,6 @@ public abstract class FixedUnit extends Unit
     public Settlement getSettlement() {
         return getAssociatedSettlement();
     }
-
-    /**
-	 * Is this unit inside a settlement
-     * TODO This will be removed once completed
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return true;
-	}
 
     /**
 	 * This method return the context of this FixedUnit which is always the parent 

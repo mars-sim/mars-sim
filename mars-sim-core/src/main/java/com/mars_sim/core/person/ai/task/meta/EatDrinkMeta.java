@@ -8,8 +8,6 @@ package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.List;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
@@ -66,7 +64,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		double foodAmount = person.getAmountResourceStored(FOOD_ID);
 		double waterAmount = person.getAmountResourceStored(WATER_ID);
 		
-		Unit container = person.getContainerUnit();
+		var container = person.getContainerUnit();
 		if (container instanceof ResourceHolder rh) {
 			if (foodAmount == 0)
 				foodAmount = rh.getAmountResourceStored(FOOD_ID);
@@ -117,9 +115,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		}
 		else if (person.isInVehicle()) {
 			
-			if (UnitType.VEHICLE == container.getUnitType()) {
-				Vehicle vehicle = (Vehicle)container;
-				
+			if (container instanceof Vehicle vehicle) {
 				if (vehicle.isInSettlement()) {
 					inSettlement = true;
 

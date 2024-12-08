@@ -65,6 +65,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
@@ -982,11 +983,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		double estFE = getEstimatedFuelEconomy();
 		double estFC = getEstimatedFuelConsumption();
 		
-//		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed > 0)
-//			// [km / kg]  / [Wh / km]  * [kW] / [km / h]
-//			// km / kg / Wh * km * kW / km * h = km / kg * k 
-//			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
-		
 		if (estFE > 0 && estFC > 0)
 			// [km / kg]  / [Wh / km]  
 			// km / kg / Wh * km 
@@ -1318,17 +1314,14 @@ public abstract class Vehicle extends AbstractMobileUnit
 	@Override
 	public Settlement getSettlement() {
 
-		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
-			return null;
-
 		Unit c = getContainerUnit();
 
-		if (c.getUnitType() == UnitType.SETTLEMENT)
-			return (Settlement) c;
+		if (c instanceof Settlement s)
+			return s;
 
 		// If this unit is an LUV and it is within a rover
-		if (c.getUnitType() == UnitType.VEHICLE)
-			return ((Vehicle)c).getSettlement();
+		if (c instanceof MobileUnit mu)
+			return mu.getSettlement();
 
 		return null;
 	}
@@ -2268,7 +2261,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	@Override
 	public boolean isInSettlement() {
-		if (containerID <= MARS_SURFACE_UNIT_ID) {
+		if (getContainerUnit() instanceof MarsSurface) {
 			return false;
 		}
 
@@ -2276,7 +2269,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		boolean isVehicleInGarage = LocationStateType.INSIDE_SETTLEMENT == currentStateType;
 		boolean isVehicleInSettlementVicinity = LocationStateType.SETTLEMENT_VICINITY == currentStateType;
 		boolean isUnitTypeSettlement = getContainerUnit().getUnitType() == UnitType.SETTLEMENT;
-		boolean isVicinityParkedVehicle = ((Settlement)(getContainerUnit())).containsVicinityParkedVehicle(this);
+		boolean isVicinityParkedVehicle = (getContainerUnit() instanceof Settlement s) && s.containsVicinityParkedVehicle(this);
 
 		return isVehicleInGarage || isVehicleInSettlementVicinity || isUnitTypeSettlement || isVicinityParkedVehicle;
 	}

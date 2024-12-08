@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -66,7 +65,7 @@ public class LocationTag implements Serializable {
 				}
 			} break;
 			case ON_PERSON_OR_ROBOT: {
-				Unit container = unit.getContainerUnit();
+				var container = unit.getContainerUnit();
 				if (container instanceof AbstractMobileUnit w) {
 					result = w.getLocationTag().getImmediateLocation();
 				}
@@ -146,7 +145,7 @@ public class LocationTag implements Serializable {
 				}
 			} break;
 			case ON_PERSON_OR_ROBOT: {
-				Unit container = unit.getContainerUnit();
+				var container = unit.getContainerUnit();
 				if (container instanceof AbstractMobileUnit w) {
 					result = w.getLocationTag().getImmediateLocation();
 				}

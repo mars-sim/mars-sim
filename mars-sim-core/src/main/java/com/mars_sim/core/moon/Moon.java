@@ -22,7 +22,7 @@ public class Moon extends PlanetaryEntity {
 	private static final String NAME = "Moon";
 
 
-	public Moon(Unit outerSpace) {
-		super(NAME, Unit.MOON_UNIT_ID, outerSpace.getIdentifier(), outerSpace, UnitType.MOON);
+	public Moon() {
+		super(NAME, Unit.MOON_UNIT_ID, UnitType.MOON);
 	}
 }

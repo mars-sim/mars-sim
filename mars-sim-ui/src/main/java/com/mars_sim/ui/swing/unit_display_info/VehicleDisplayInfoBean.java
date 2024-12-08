@@ -15,8 +15,6 @@ import javax.swing.Icon;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.map.MapMetaData;
-import com.mars_sim.core.vehicle.Drone;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -52,12 +50,12 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     @Override
     public boolean isMapDisplayed(Unit unit) {
         boolean result = true;
+        Vehicle vehicle = (Vehicle) unit;
         
-        Unit container = unit.getContainerUnit();
+        var container = vehicle.getContainerUnit();
 		if (container == null || container instanceof MarsSurface)
         	result = true;
         
-        Vehicle vehicle = (Vehicle) unit;
         if (vehicle.isSalvaged()) result = false;
         
         // Do not display towed vehicle on map.
@@ -130,15 +128,11 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
      */
     @Override
     public boolean isGlobeDisplayed(Unit unit) {
-        boolean result = true;
         
         Vehicle vehicle = (Vehicle) unit;
         
         // Show the vehicle only if it's on a mission outside
-        int containerID = vehicle.getContainerID();
-        result = (containerID == Unit.MARS_SURFACE_UNIT_ID || containerID == Unit.UNKNOWN_UNIT_ID)
-                && (vehicle instanceof Rover || vehicle instanceof Drone);
-		
+        boolean result = !vehicle.isInSettlement() && !vehicle.isInSettlementVicinity();
         if (vehicle.isSalvaged()) 
         	result = false;
         

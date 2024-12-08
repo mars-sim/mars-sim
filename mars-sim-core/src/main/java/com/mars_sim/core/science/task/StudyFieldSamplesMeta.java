@@ -8,7 +8,6 @@ package com.mars_sim.core.science.task;
 
 import java.util.List;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
@@ -64,7 +63,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		// Check that there are available field samples to study.
 		double mostStored = 0D;
 
-		Unit container = person.getContainerUnit();
+		var container = person.getContainerUnit();
 		if (container instanceof ResourceHolder rh) {
 			for (int i: ResourceUtil.rockIDs) {
 				double stored = rh.getAmountResourceStored(i);

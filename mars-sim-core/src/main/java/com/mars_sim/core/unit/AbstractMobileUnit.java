@@ -8,6 +8,7 @@ package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.UnitType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
@@ -31,6 +32,7 @@ public abstract class AbstractMobileUnit extends Unit
 	private LocationTag tag;
 	private LocationStateType locnState;
 	private Coordinates location;
+	private Unit container;
 
     /**
 	 * Constructor.
@@ -47,13 +49,21 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
+	 * Get the container of this mobile unit.
+	 * @return Should never be null
+	 */
+	public Unit getContainerUnit() {
+		return container;
+	}
+
+	/**
 	 * Set the container of this mobile unit
 	 * @param destination New destination of container
 	 * @param newState 
 	 */
 	protected void setContainer(Unit destination, LocationStateType newState) {
 		this.locnState = newState;
-		setContainerID(destination.getIdentifier());
+		container = destination;
 	}
 
 	/**
@@ -112,13 +122,18 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
     /**
-	 * Computes the building the person is currently located at.
+	 * Computes the building the unit is currently located at. Accounts for the mobile unit
+	 * being in another MobileUnit
 	 * Returns null if outside of a settlement.
 	 *
 	 * @return building
 	 */
 	@Override
 	public Building getBuildingLocation() {
+		if (getContainerUnit() instanceof MobileUnit mu) {
+			return mu.getBuildingLocation();
+		}
+	
 		if (currentBuildingInt == -1)
 			return null;
 		return unitManager.getBuildingByID(currentBuildingInt);
@@ -211,10 +226,8 @@ public abstract class AbstractMobileUnit extends Unit
 	 *
 	 * @return the settlement
 	 */
+	@Override
 	public Settlement getSettlement() {
-
-		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
-			return null;
 
 		var c = getContainerUnit();
 
@@ -283,6 +296,20 @@ public abstract class AbstractMobileUnit extends Unit
 		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
 			return ((Worker)getContainerUnit()).isInVehicle();
 
+		return false;
+	}
+
+	/**
+	 * Is this unit inside a vehicle in a garage ?
+	 *
+	 * @return true if the unit is in a vehicle inside a garage
+	 */
+	public boolean isInVehicleInGarage() {
+		Unit cu = getContainerUnit();
+		if (cu.getUnitType() == UnitType.VEHICLE) {
+			// still inside the garage
+			return ((Vehicle)cu).isInGarage();
+		}
 		return false;
 	}
 

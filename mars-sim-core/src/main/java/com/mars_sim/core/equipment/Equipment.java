@@ -26,6 +26,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.Indoor;
 import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.unit.AbstractMobileUnit;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -229,8 +230,9 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 		Unit container = getContainerUnit();
 		if (container instanceof Vehicle v)
 			return v;
-		if (container.getContainerUnit() instanceof Vehicle v)
-			return v;
+		if ((container instanceof MobileUnit mu)
+				&& mu.getContainerUnit() instanceof Vehicle vu)
+			return vu;
 
 		return null;
 	}

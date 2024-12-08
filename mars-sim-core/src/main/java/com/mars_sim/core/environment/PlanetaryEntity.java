@@ -26,16 +26,12 @@ public abstract class PlanetaryEntity extends Unit {
 
 	private Set<Unit> unitList;
 
-	private Unit owner;
-
 	private UnitType objectType;
 
-	protected PlanetaryEntity(String name, int id, int containerId, Unit owner,
-							UnitType objectType) {
-		super(name, id, containerId);
+	protected PlanetaryEntity(String name, int id, UnitType objectType) {
+		super(name, id);
 
 		unitList = new UnitSet<>();
-		this.owner = owner;
 		this.objectType = objectType;				
 	}
 
@@ -132,27 +128,6 @@ public abstract class PlanetaryEntity extends Unit {
 			return unitList.remove(vehicle);
 		}
 	}
-
-	/**
-	 * Gets the unit's container unit.
-	 *
-	 * @return the unit's container unit
-	 */
-	@Override
-	public Unit getContainerUnit() {
-		return owner;
-	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return false;
-	}
-
 
 	/**
 	 * Gets the hash code for this object.
