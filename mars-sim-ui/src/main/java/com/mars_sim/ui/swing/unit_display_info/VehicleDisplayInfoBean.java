@@ -52,7 +52,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         boolean result = true;
         Vehicle vehicle = (Vehicle) unit;
         
-        Unit container = vehicle.getContainerUnit();
+        var container = vehicle.getContainerUnit();
 		if (container == null || container instanceof MarsSurface)
         	result = true;
         

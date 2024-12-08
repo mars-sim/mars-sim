@@ -95,13 +95,12 @@ public final class EVASuitUtil {
 		if (suit != null)
 			return suit;
 		
-		Unit cu = p.getContainerUnit();
-		if (!(cu instanceof EquipmentOwner)) {
-			logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
-			return null;
+		var cu = p.getContainerUnit();
+		if (cu instanceof EquipmentOwner eo) {
+			return findEVASuitWithResources(eo, p);
 		}
-		
-		return findEVASuitWithResources((EquipmentOwner)cu, p);
+		logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
+		return null;
 	}
 
 	/**

@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.location.LocationStateType;
@@ -79,7 +80,7 @@ public class LocationTabPanel extends TabPanel {
 	private DisplayCircular gauge;
 
 	
-	private Unit containerCache;
+	private Entity containerCache;
 	private Building buildingCache;
 	private Coordinates locationCache = new Coordinates(0D, 0D);
 
@@ -223,7 +224,7 @@ public class LocationTabPanel extends TabPanel {
 		posnLabel.setText(mu.getPosition().getShortFormat());
 
 		// Update labels as necessary
-		Unit container = mu.getContainerUnit();
+		Entity container = mu.getContainerUnit();
 		if ((containerCache == null) || !containerCache.equals(container)) {
 			containerCache = container;
 			String n = container != null ? container.getName() : "";

@@ -78,11 +78,6 @@ public class Kit extends Equipment
 	}
 
 	@Override
-	public Settlement getAssociatedSettlement() {
-		return getContainerUnit().getAssociatedSettlement();
-	}
-
-	@Override
 	public double storeAmountResource(int resource, double quantity) {
 		return 0;
 	}

@@ -430,7 +430,7 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error during time.
 	 */
 	public void recordUsageTime(ClockPulse pulse) {
-		Unit container = getContainerUnit();
+		var container = getContainerUnit();
 		if ((container instanceof Person p)
 			&& p.isOutside() && !p.getPhysicalCondition().isDead()) {
 				malfunctionManager.activeTimePassing(pulse);
@@ -455,7 +455,7 @@ public class EVASuit extends Equipment
 
 	@Override
 	public void setContainer(Unit parent, LocationStateType newState) {
-		Unit cu = getContainerUnit();
+		var cu = getContainerUnit();
 		if (parent != cu) {
 			// Add new parent to owner history
 			if (locnHistory == null) {
