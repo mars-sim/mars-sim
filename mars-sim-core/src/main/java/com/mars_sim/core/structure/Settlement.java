@@ -3200,31 +3200,9 @@ public class Settlement extends Unit implements Temporal,
 		return futureEvents;
 	}
 
-	/**
-	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 *
-	 * @return the unit's container unit
-	 */
-	@Override
-	public Unit getContainerUnit() {
-		if (unitManager == null) // for maven test
-			return null;
-		return unitManager.getMarsSurface();
-	}
-
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.SETTLEMENT;
-	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		return false;
 	}
 
 	/**

@@ -16,7 +16,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 
 /**
  * A container class for holding resources.
@@ -267,11 +266,6 @@ class GenericContainer extends Equipment implements Container {
 			return totalCapacity;
 		}
 		return 0;
-	}
-
-	@Override
-	public Building getBuildingLocation() {
-		return getContainerUnit().getBuildingLocation();
 	}
 
 	/**

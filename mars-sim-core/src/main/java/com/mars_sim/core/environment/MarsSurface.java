@@ -21,8 +21,8 @@ public class MarsSurface extends PlanetaryEntity {
 
 	private static final String NAME = "Mars Surface";
 
-	public MarsSurface(Unit outerSpace) {
-		super(NAME, Unit.MARS_SURFACE_UNIT_ID, outerSpace.getIdentifier(), outerSpace, UnitType.MARS);
+	public MarsSurface() {
+		super(NAME, Unit.MARS_SURFACE_UNIT_ID, UnitType.MARS);
 	}
 
 	/**

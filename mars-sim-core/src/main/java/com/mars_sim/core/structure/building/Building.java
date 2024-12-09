@@ -1428,12 +1428,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return p * AirComposition.KPA_PER_ATM;
 	}
 
-	@Override
-	public Building getBuildingLocation() {
-		return this;
-	}
-
-
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
         return buildingType.contains(" Hab")
