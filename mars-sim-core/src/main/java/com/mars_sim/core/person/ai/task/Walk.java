@@ -841,6 +841,8 @@ public class Walk extends Task {
 	 */
 	private double egressingAirlockPhase(double time) {
 		
+		double remainingTime = time *.75;
+		
 		setDescription(EGRESSING_AIRLOCK);
 
 		if (person != null) {
@@ -853,20 +855,20 @@ public class Walk extends Task {
 				return 0;
 
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-
 			// Future: if this airlock is not available (e.g. chambers are full), how to look for another airlock ?
 			Airlock airlock = step.airlock;
 
 			if (person.isOutside()) {
-				// the person is already outside
+				// the person is outside
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
-					// setDescription("Walking outside to an airlock");
-					// setDescription("is OUTSIDE and still walking...");
 					setPhase(getWalkingStepPhase());
-				} else {
-					// setDescription("Arriving at an airlock outside a building");
-					// setDescription("is OUTSIDE and have arrived");
+				} 
+				else {
+					setDescription(ARRIVED_AIRLOCK);
+					// Consume all of the time waiting to enter; prevents repeated tries
+					remainingTime = 0D;
+					
 					endTask();
 				}
 			} else {
@@ -886,17 +888,21 @@ public class Walk extends Task {
 					logger.log(person, Level.INFO, 4_000,
 							"Unable to physically exit the airlock of "
 		      				+ airlock.getEntityName() + ".");
+					// Consume all of the time waiting to enter; prevents repeated tries
+					remainingTime = 0D;
 					// Note: will call below many times
 					endTask();
 				}
 			}
 
 		} else {
+			// Consume all of the time waiting to enter; prevents repeated tries
+			remainingTime = 0D;
 			// Note : robot is NOT allowed to leave the settlement
 			endTask();
 		}
 
-		return 0;
+		return remainingTime;
 	}
 
 	/**
@@ -908,7 +914,7 @@ public class Walk extends Task {
 	 */
 	private double ingressingAirlockPhase(double time) {
 		
-		double remainingTime = time;
+		double remainingTime = time *.75;
 
 		setDescription(INGRESSING_AIRLOCK);
 
@@ -917,8 +923,11 @@ public class Walk extends Task {
 
 		// Check if person has reached the inside of the airlock.
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+		
 		Airlock airlock = step.airlock;
+		
 		if (person.isOutside()) {
+			// the person is outside
 			if (EnterAirlock.canEnterAirlock(person, airlock)) {
 				logger.log(person, Level.FINER, 4_000,
 						". Adding subtask EnterAirlock.");
@@ -943,11 +952,13 @@ public class Walk extends Task {
 			// the person is inside the settlement
 			if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 				walkingStepIndex++;
-				// setDescription("Walking outside to an airlock to enter");
-				// setDescription("is INSIDE and still walking toward an airlock");
 				setPhase(getWalkingStepPhase());
-			} else {
+			} 
+			else {
 				setDescription(ARRIVED_AIRLOCK);
+				// Consume all of the time waiting to enter; prevents repeated tries
+				remainingTime = 0D;
+				
 				endTask();
 			}
 		}
