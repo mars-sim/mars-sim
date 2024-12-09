@@ -200,7 +200,13 @@ public class ToggleFuelPowerSource extends Task {
         Walk walk = Walk.createWalkingTask(person, settlementLoc, powerBuilding);
         if (walk != null) {
             // Add subtask for walking to power building.
-            addSubTask(walk);
+			boolean canAdd = addSubTask(walk);
+			if (!canAdd) {
+				logger.log(person, Level.WARNING, 4_000,
+						". Unable to add subtask Walk.createWalkingTask.");
+				// Note: may call below many times
+				endTask();
+			}
         }
         else {
             logger.log(person, Level.WARNING, 3_000,

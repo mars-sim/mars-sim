@@ -291,7 +291,14 @@ public abstract class EVAOperation extends Task {
         	// A person is walking toward an airlock or inside an airlock
             Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, null);
             if (walkingTask != null) {
-                addSubTask(walkingTask);
+
+				boolean canAdd = addSubTask(walkingTask);
+				if (!canAdd) {
+					logger.log(person, Level.WARNING, 4_000,
+							". Unable to add subtask Walk.createWalkingTask.");
+					// Note: may call below many times
+					endTask();
+				}
             }
             else {
                 endTask();
@@ -340,7 +347,14 @@ public abstract class EVAOperation extends Task {
 
 			if (interiorObject == null) {
 				logger.log(person, Level.SEVERE, 30_000, "Trying to walk somewhere. interiorObject is null.");
-				addSubTask(new Walk(person));
+
+				boolean canAdd = addSubTask(new Walk(person));
+				if (!canAdd) {
+					logger.log(person, Level.WARNING, 4_000,
+							". Unable to add subtask Walk.");
+					// Note: may call below many times
+					endTask();
+				}
 			}
 
 			else {

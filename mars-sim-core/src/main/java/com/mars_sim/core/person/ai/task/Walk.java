@@ -593,7 +593,14 @@ public class Walk extends Task {
 					// setDescription("Walking inside from " + building.getNickName() + " to " +
 					// step.building.getNickName());
 					if (step.building != null) {
-						addSubTask(new WalkSettlementInterior(person, step.building, step.loc, 0));
+
+						boolean canAdd = addSubTask(new WalkSettlementInterior(person, step.building, step.loc, 0));
+						if (!canAdd) {
+							logger.log(person, Level.WARNING, 4_000,
+									". Unable to add subtask WalkSettlementInterior.");
+							// Note: may call below many times
+							endTask();
+						}
 					}
 					else {
 						logger.log(person, Level.SEVERE, 5_000,
@@ -703,7 +710,14 @@ public class Walk extends Task {
 	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
 	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))
 	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))) {	
-						addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
+					
+						boolean canAdd = addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
+						if (!canAdd) {
+							logger.log(person, Level.WARNING, 4_000,
+									". Unable to add subtask WalkRoverInterior.");
+							// Note: may call below many times
+							endTask();
+						}
 	        		}
 				}
 
@@ -774,17 +788,21 @@ public class Walk extends Task {
 					setPhase(getWalkingStepPhase());
 				}
 				else {
-					// setDescription("Arriving at (" + xx + ", " + yy + ")");
 					endTask();
 				}
 			}
 			else {
 				if (person.isOutside()) {
 					setDescription(WALKING_OUTSIDE + " toward " + step.loc.getShortFormat());
-//					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
-//							+ xx + ", " + yy + ")");
+
 	        		// Note that addSubTask() will internally check if the task is a duplicate
-					addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
+					boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
+					if (!canAdd) {
+						logger.log(person, Level.WARNING, 4_000,
+								". Unable to add subtask WalkOutside.");
+						// Note: may call below many times
+						endTask();
+					}
 				}
 				else {
 					logger.log(person, Level.SEVERE, 5_000,
@@ -804,11 +822,10 @@ public class Walk extends Task {
 			if (step.loc.isClose(robot.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
-					// setDescription("Walking toward (" + xx + ", " + yy + ")");
+
 					setPhase(getWalkingStepPhase());
 				}
 				else {
-					// setDescription("Arriving at (" + xx + ", " + yy + ")");
 					endTask();
 				}
 			}
@@ -817,9 +834,13 @@ public class Walk extends Task {
 
 					logger.log(robot, Level.FINER, 4_000,
 							"Outside. Starting WalkOutside.");
-					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
-					// + yy + ")");
-					addSubTask(new WalkOutside(robot, robot.getPosition(), step.loc, true));
+					boolean canUse = addSubTask(new WalkOutside(robot, robot.getPosition(), step.loc, true));
+					if (!canUse) {
+						logger.log(robot, Level.WARNING, 4_000,
+								". Unable to add subtask WalkOutside.");
+						// Note: may call below many times
+						endTask();
+					}
 				}
 				else {
 					logger.log(robot, Level.SEVERE, 5_000,
@@ -881,7 +902,15 @@ public class Walk extends Task {
 							|| (!airlock.isReservationFull() 
 								&& airlock.addReservation(person.getIdentifier()))) {
 					
-						addSubTask(new ExitAirlock(person, airlock));
+						boolean canAdd = addSubTask(new ExitAirlock(person, airlock));
+						if (!canAdd) {
+							logger.log(person, Level.WARNING, 4_000,
+									". Unable to add subtask ExitAirlock.");
+							// Consume all of the time waiting to enter; prevents repeated tries
+							remainingTime = 0D;
+							// Note: may call below many times
+							endTask();
+						}
 					}
 					
 				} else {
@@ -890,7 +919,7 @@ public class Walk extends Task {
 		      				+ airlock.getEntityName() + ".");
 					// Consume all of the time waiting to enter; prevents repeated tries
 					remainingTime = 0D;
-					// Note: will call below many times
+					// Note: may call below many times
 					endTask();
 				}
 			}
@@ -936,7 +965,13 @@ public class Walk extends Task {
 						|| (!airlock.isReservationFull() 
 							&& airlock.addReservation(person.getIdentifier()))) {
 				
-					addSubTask(new EnterAirlock(person, airlock));
+					boolean canAdd = addSubTask(new EnterAirlock(person, airlock));
+					if (!canAdd) {
+						logger.log(person, Level.WARNING, 4_000,
+								". Unable to add subtask EnterAirlock.");
+						// Note: may call below many times
+						endTask();
+					}
 				}
 			} else {
 				logger.log(person, Level.FINER, 4_000,

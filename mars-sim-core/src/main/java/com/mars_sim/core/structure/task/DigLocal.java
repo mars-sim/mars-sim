@@ -27,6 +27,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.WalkOutside;
+import com.mars_sim.core.person.ai.task.WalkSettlementInterior;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -213,8 +214,14 @@ public abstract class DigLocal extends EVAOperation {
         		// FUTURE: how to get the walk time and return the remaining time ?
     			
         		// Note that addSubTask() will internally check if the task is a duplicate
-        		addSubTask(new WalkOutside(person, person.getPosition(),
-        				dropOffLoc, false));
+
+				boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(), dropOffLoc, false));
+				if (!canAdd) {
+					logger.log(person, Level.WARNING, 4_000,
+							". Unable to add subtask WalkOutside.");
+					// Note: may call below many times
+					endTask();
+				}
         	}
     		
         	else {
