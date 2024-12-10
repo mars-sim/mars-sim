@@ -502,9 +502,15 @@ public class ResourceProcess implements Serializable {
 	 */
 	public boolean isInputsPresent(Settlement settlement) {
 		double stored = 0;
-		for(int resource: getInputResources()) {
+		for (int resource: getInputResources()) {
 			if (!isAmbientInputResource(resource)) {
 				stored += settlement.getAmountResourceStored(resource);
+			}
+			else {
+				// Note: the ambient resource is always available
+				return true;
+				// Gets the exact input rate for ambient resource
+//				stored += engine.getBaseSingleInputRate(resource);
 			}
 		}
 		if (stored < SMALL_AMOUNT) {

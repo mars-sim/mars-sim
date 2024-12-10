@@ -223,7 +223,8 @@
 		<input resource="oxygen" rate="32"  />
 		
 		<output resource="methanol" rate="64"  />
-	</process>
+	</process> <!--"Selective Partial Oxidation (SPO) of Methane to Methanol"-->
+	
 
 
 	<process name="Oxygen Generation System (OGS)" power-required="0.25" defaultOn="true">

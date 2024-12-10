@@ -915,14 +915,15 @@ public class GoodsManager implements Serializable {
 
 		// Note: may need to further limit each increase to a value only to avoid an abrupt rise or drop in demand 
 
-		double delta = lacking / stored * demand - demand;
+		// Warning: make sure stored is not zero so that delta is not infinite
+		double delta = lacking / Math.max(1, stored) * demand - demand;
 		
 		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(resourceID);
 			logger.info(settlement, 30_000L,
 					gasName + " - " 
 					+ "Injecting demand " + Math.round(demand * 100.0)/100.0 
-					+ "  -> " + Math.round((demand + delta) * 100.0)/100.0 
+					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
 					+ "  Stored: " + Math.round(stored * 100.0)/100.0
 					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0

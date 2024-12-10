@@ -42,6 +42,7 @@ public class ResourceProcessEngine implements Serializable {
     public double getBaseSingleInputRate(Integer resource) {
         return processSpec.getBaseInputRate(resource);
     }
+    
     public double getBaseFullInputRate(Integer resource) {
         return processSpec.getBaseInputRate(resource) * modules;
     }

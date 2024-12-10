@@ -241,11 +241,15 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			// Therefore, the second selection process is needed to filter out 
 			// and avoid picking a process having a score of, say, 0.5.
 			
-			// Note: May multiply the score by a factor to boost the chance
-			if (score < 1 && score > 0)
+			// For +ve score
+			if (score > 0 && score < 1)
 				score = 1;
-			
-			if (score > 100 || RandomUtil.getRandomDouble(100) < score) {
+			// For -ve score	
+			else if (score < 0 && score > -1)
+				score = -1;
+			// Consider +ve score and -ve score separately
+			if (score >= 1 && (score > 100 || score > RandomUtil.getRandomDouble(100))
+				|| score <= -1 && (score < -100 || -score > RandomUtil.getRandomDouble(100))) {
 				return new ToggleProcessJob(this, building, selectedProcess, new RatingScore(score));
 			}
 		}
