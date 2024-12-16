@@ -65,6 +65,11 @@
 			<location longitude="81.9044 E" latitude="17.3983 N" />
 		</settlement>
 
+		<settlement name="Korolev" template="Alpha Base" persons="24" robots="12" sponsor="RKA">
+ 			<!--  An ice-filled impact crater. https://pubs.usgs.gov/publication/70029300 https://en.wikipedia.org/wiki/Korolev_(Martian_crater) --> 
+			<location longitude="164.58 E" latitude="72.77 N" />
+		</settlement>
+
 		<settlement name="Terminus" template="Alpha Base" crew="Alpha" persons="24" robots="12" sponsor="NASA">
 			<location longitude="0.0 W" latitude="0.0 N" />
 		</settlement>

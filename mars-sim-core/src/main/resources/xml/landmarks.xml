@@ -15,7 +15,7 @@
 ]>
 
   <!-- Landmark coordinates from USGS Astrogeology Research Program -->
-  <!-- See list at https://planetarynames.wr.usgs.gov/SearchResults?target=MARS -->
+  <!-- See Advanced Nomenclature Search at https://planetarynames.wr.usgs.gov/AdvancedSearch -->
   <!--  -->
   <!-- https://planetarynames.wr.usgs.gov/AdvancedSearch -->
   <!-- https://planetarynames.wr.usgs.gov/Page/MARS/system -->
@@ -91,6 +91,8 @@
 	  	<landmark approvaldate="1973" diameter="201.67" latitude="46.19 S" longitude="19.11 E" name="Kaiser" origin="Frederick; Dutch astronomer (1808-1872)." type="AA"/>
 	  	<landmark approvaldate="1973" diameter="228.24" latitude="46.69 S" longitude="140.98 E" name="Kepler" origin="Johannes; German astronomer (1571-1630)." type="AA"/>
 	  	<landmark approvaldate="1985" diameter="296.67" latitude="29.56 S" longitude="141.54 W" name="Koval'sky" origin="M. A.; Russian astronomer (1821-1884)." type="AA"/>
+	
+		 <landmark approvaldate="1973" diameter="81.37" latitude="72.77 N" longitude="164.58 E" name="Korolev Crater" origin="	Sergey Pavlovich; Russian engineer (1906-1966)." type="AA"/>
 	  	
 	  	<!-- https://www.wikidata.org/wiki/Q24066212  https://www.uahirise.org/ESP_053568_2175-->
 	  	<landmark name="Labeatis Mons" origin="Named for albedo feature Labeatis Lacus." type="MO"
