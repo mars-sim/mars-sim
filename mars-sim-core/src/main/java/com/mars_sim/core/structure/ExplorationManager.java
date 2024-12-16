@@ -31,7 +31,10 @@ import com.mars_sim.core.vehicle.Rover;
  * It interacts with the central SurfaceFeatures.
  */
 public class ExplorationManager implements Serializable {
-    /**
+	
+    private static final long serialVersionUID = 1L;
+
+	/**
      * This is the statistics output for a category of explored locations.
      */
     public record ExploredStats(double mean, double sd) {}
@@ -347,7 +350,7 @@ public class ExplorationManager implements Serializable {
 		
 		double chosenDist = weightedMap.get(chosen);
 		
-		logger.info(base, 30_000L, 
+		logger.info(base, 30_000, 
 				"Investigating a mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km away).");
 		
 		return surfaceFeatures.getMineralMap().getAllMineralConcentrations(chosen);
@@ -394,7 +397,7 @@ public class ExplorationManager implements Serializable {
 		
 		result = Math.round(result * 100.0)/100.0;
 		
-		logger.info(settlement, "A site has an Exploration Value of " + result + ".");
+		logger.info(settlement, 30_000, "A site has an Exploration Value of " + result + ".");
 		return (int)result;
 	}
     	
