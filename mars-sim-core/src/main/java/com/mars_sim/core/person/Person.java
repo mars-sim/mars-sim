@@ -118,7 +118,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 
 	// Transient data members
 	/** The extrovert score of a person. */
-	private transient int extrovertScore = -1;
+	private int extrovertScore = -1;
 
 	// Data members
 	/** True if the person is buried. */
