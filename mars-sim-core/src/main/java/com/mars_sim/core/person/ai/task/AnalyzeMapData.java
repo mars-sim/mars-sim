@@ -372,20 +372,11 @@ public class AnalyzeMapData extends Task {
 		double probability = time * effort;
 		if (probability > .75)
 			probability = .75;
-		
-		int oldNum = exploredLoc.getNumEstimationImprovement();
-		
+				
 		if ((exploredLoc.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 		
 			// Improve the mineral concentration estimation
 			ExploreSite.improveSiteEstimates(exploredLoc, compositeSkill);
-			
-			int newNum = exploredLoc.getNumEstimationImprovement();
-			
-			logger.info(person, 20_000,
-					"Improved " + exploredLoc.getLocation().getFormattedString()
-					+ ". # of estimation: " + oldNum 
-					+ " -> " + newNum + ".");
 		}
 	}
 

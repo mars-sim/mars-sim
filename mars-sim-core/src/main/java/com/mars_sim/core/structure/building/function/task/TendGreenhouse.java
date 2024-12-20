@@ -43,13 +43,11 @@ public class TendGreenhouse extends TendHousekeeping {
 	private static final String GROWING_DETAIL = Msg.getString("Task.description.tendGreenhouse.grow.detail"); //$NON-NLS-1$
 	private static final String DONE_GROWING = "Done with growing ";
 
-	private static final String SEED = Msg.getString("Task.description.tendGreenhouse.seed"); //$NON-NLS-1$
 	private static final String DONE_SEEDING = Msg.getString("Task.description.tendGreenhouse.seed.done"); //$NON-NLS-1$
 	
 	private static final String TEND = Msg.getString("Task.description.tendGreenhouse.tend"); //$NON-NLS-1$
 	private static final String DONE_TENDING = Msg.getString("Task.description.tendGreenhouse.tend.done"); //$NON-NLS-1$
 		
-	private static final String SAMPLE = Msg.getString("Task.description.tendGreenhouse.sample");
 	private static final String SAMPLE_DETAIL = Msg.getString("Task.description.tendGreenhouse.sample.detail");
 
 	
@@ -167,9 +165,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double tendingPhase(double time) {
-		
-		double remainingTime = 0;
-		
+				
 		if (isDone()) {
 			return time;
 		}
@@ -191,24 +187,22 @@ public class TendGreenhouse extends TendHousekeeping {
 		if (needyCrop == null) {
 			// Select a new needy crop
 			needyCrop = greenhouse.getNeedyCrop();
+			if (needyCrop == null) {
+				setDescriptionTendingDone();
+				endTask();
+				return 0;
+			}
+			setDescription(TEND + " " + needyCrop.getName());
+			previousCropName = needyCrop.getCropName();
 		}
 		
-		if (needyCrop == null) {
-			setDescriptionTendingDone();
-			endTask();
-			return 0;
-		}
-		
-		previousCropName = needyCrop.getCropName();
 		
 		boolean needTending = needyCrop.getCurrentWorkRequired() > CROP_RESILIENCY;
-		
 		if (needTending) {
-			remainingTime = tendCrop(time);
-			return 0;
+			tendCrop(time);
 		}
 
-		return remainingTime;
+		return 0;
 	}
 	
 	/**
@@ -235,9 +229,7 @@ public class TendGreenhouse extends TendHousekeeping {
 		
 	
 		double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
-		
-		updateDescription(TEND + " " + needyCrop.getName());
-		
+				
 		if (remain > workTime * .75)
 			remain = workTime * .75;
 
@@ -296,7 +288,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	
 			addExperience(workTime);
 			
-			updateDescription(DONE_SEEDING + " " + cropSpec + ".");
+			setDescription(DONE_SEEDING + " " + cropSpec + ".");
 			
 			endTask();
 		}
@@ -321,7 +313,7 @@ public class TendGreenhouse extends TendHousekeeping {
 			goal = greenhouse.chooseCrop2Extract(Farming.STANDARD_AMOUNT_TISSUE_CULTURE);
 			if (goal != null) {
 				greenhouse.getResearch().addToIncubator(goal, Farming.STANDARD_AMOUNT_TISSUE_CULTURE);	
-				updateDescription(GROWING_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
+				setDescription(GROWING_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
 			}
 			else {
 				// Can't find any matured crop to sample
@@ -357,8 +349,6 @@ public class TendGreenhouse extends TendHousekeeping {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double samplingPhase(double time) {
-
-		updateDescription(SAMPLE);
 				
 		CropSpec type = null;
 
@@ -395,7 +385,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	
 					double workTime = time * mod;
 					
-					updateDescription(SAMPLE_DETAIL + " " + Farming.TISSUE + " for " + Math.round(time * 100.0)/100.0 + " msol");
+					setDescription(SAMPLE_DETAIL + " " + Farming.TISSUE + " for " + Math.round(time * 100.0)/100.0 + " msol");
 			
 					addExperience(workTime);
 				}
