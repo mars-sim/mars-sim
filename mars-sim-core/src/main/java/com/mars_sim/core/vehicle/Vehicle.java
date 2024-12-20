@@ -2276,7 +2276,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public boolean transfer(Unit destination) {
 		boolean leaving = false;
 		boolean transferred = false;
-		Unit cu = getContainerUnit();
+		var cu = getContainerUnit();
 		// Note: at startup, a vehicle has Mars Surface as the container unit by default
 		
 		if (cu instanceof MarsSurface ms) {
@@ -2311,10 +2311,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 				}
 
 				setContainerUnitAndID(destination);
-				// Fire the unit event type
-				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type
-				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		return transferred;

@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
@@ -238,6 +239,7 @@ public class EquipmentInventory
 			
 			double newCapacity = cargoCapacity - totalStored - equipment.getMass();
 			if (newCapacity >= 0D) {
+				owner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
 				return set.add(equipment);
 			}
 			else {
@@ -264,6 +266,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
+		owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, equipment);
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 			return suitSet.remove(equipment);
 		}

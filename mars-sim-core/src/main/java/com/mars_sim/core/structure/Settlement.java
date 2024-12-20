@@ -1621,6 +1621,9 @@ public class Settlement extends Unit implements Temporal,
 		if (indoorPeople.contains(p)) {
 			return true;
 		}
+		
+		// Fire the unit event type
+		fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, p);
 		return indoorPeople.add(p);
 	}
 	
@@ -1634,6 +1637,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public boolean removePeopleWithin(Person p) {
 		if (!indoorPeople.contains(p)) {
+			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, p);
 			return true;
 		}
 		return indoorPeople.remove(p);
@@ -1816,6 +1820,8 @@ public class Settlement extends Unit implements Temporal,
 		if (robotsWithin.contains(r)) {
 			return true;
 		}
+		fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, r);
+
 		return robotsWithin.add(r);
 	}
 
@@ -1844,6 +1850,8 @@ public class Settlement extends Unit implements Temporal,
 		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
 			vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+
+			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
 		}
@@ -1859,6 +1867,9 @@ public class Settlement extends Unit implements Temporal,
 	public boolean removeVicinityParkedVehicle(Vehicle vehicle) {
 		if (!vicinityParkedVehicles.contains(vehicle))
 			return true;
+		
+		fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
+
 		return vicinityParkedVehicles.remove(vehicle);
 	}
 

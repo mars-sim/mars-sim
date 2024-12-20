@@ -1200,8 +1200,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	 */
 	@Override
 	public double getMass() {
-		// TODO because the Person is not fully initialised in the constructor this
-		// can be null. The initialise method is the culprit.
 		return (eqmInventory != null ? eqmInventory.getModifiedMass(EquipmentType.WHEELBARROW, 20) : 0) + getBaseMass();
 	}
 	
@@ -1584,7 +1582,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	 */
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-		Unit cu = getContainerUnit();
+		var cu = getContainerUnit();
 		if (destination.equals(cu)) {
 			return true;
 		}
@@ -1640,10 +1638,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
-				// Fire the unit event type
-				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type for old container
-				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 

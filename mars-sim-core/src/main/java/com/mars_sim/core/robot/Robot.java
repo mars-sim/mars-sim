@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
@@ -922,7 +921,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-		Unit cu = getContainerUnit();
+		var cu = getContainerUnit();
 
 		if (destination.equals(cu)) {
 			return true;
@@ -976,10 +975,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
-				// Fire the unit event type
-				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type
-				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 
