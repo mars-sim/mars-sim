@@ -1268,11 +1268,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.addEquipment(e);
 	}
 
 	/**
@@ -1576,9 +1572,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 			// 3. Set containerID
 			// Note: need to decide what to set for a deceased person
 			setContainer(newContainer, newLocnState);
-			
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 		return true;
 	}
@@ -1592,38 +1585,23 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
 		Unit cu = getContainerUnit();
-		if (cu == null) {
-			// Fire the unit event type
-			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-			// Set the new container unit (which will internally set the container unit id)
-			return setContainerUnit(destination);
-		}
-		
-		UnitType ut = cu.getUnitType();
-
 		if (destination.equals(cu)) {
 			return true;
 		}
 
 		// Check if the origin is a vehicle
-		if (ut == UnitType.VEHICLE) {
-			if (cu instanceof Crewable c) { //!(VehicleType.isDrone(((Vehicle)cu).getVehicleType()))) { 
-				transferred = c.removePerson(this);
-			}
-			else {
-				logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
-			}
+		if (cu instanceof Crewable c) {
+			transferred = c.removePerson(this);
 		}
-		else if (ut == UnitType.MARS) {
-			transferred = ((MarsSurface)cu).removePerson(this);
+		else if (cu instanceof MarsSurface ms) {
+			transferred = ms.removePerson(this);
 		}
-		else if (ut == UnitType.BUILDING 
-				|| ut == UnitType.SETTLEMENT) {
+		else if (cu instanceof Settlement s) {
 			// Q1: should one remove this person from settlement's peopleWithin list,
 			//     especially if he is still inside a vehicle in the garage of a settlement ?
 			// Q2: should it be the vehicle's responsibility to remove the person from the settlement
 			//     as the vehicle leaves the garage ?
-			transferred = ((Settlement)cu).removePeopleWithin(this);
+			transferred = s.removePeopleWithin(this);
 			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}
 
@@ -1634,30 +1612,25 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 		
 		else {
 			// Check if the destination is a vehicle
-			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (destination instanceof Crewable c) {
-					transferred = c.addPerson(this);
-				}
-				else {
-					logger.warning(this, 20_000, "Not possible to be stored into " + cu + ".");
-				}
+			if (destination instanceof Crewable c) {
+				transferred = c.addPerson(this);
 			}
-			else if (destination.getUnitType() == UnitType.MARS) {
-				transferred = ((MarsSurface)destination).addPerson(this);
+			else if (destination instanceof MarsSurface ms) {
+				transferred = ms.addPerson(this);
 			}
 			
-			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addToIndoor(this);
+			else if (destination instanceof Settlement s) {
+				transferred = s.addToIndoor(this);
 				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
 				// can be problematic if no building is assigned.
 				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
-			else if (destination.getUnitType() == UnitType.BUILDING) {
-				transferred = ((Building)destination).getSettlement().addToIndoor(this);
+			else if (destination instanceof Building b) {
+				transferred = b.getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				BuildingManager.setToBuilding(this, (Building)destination);
-				destination = (((Building)destination)).getSettlement();
+				BuildingManager.setToBuilding(this, b);
+				destination = b.getSettlement();
 			}
 
 			if (!transferred) {
@@ -1772,14 +1745,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	public void dropOffThermalBottle() {
 
 		if (isInside()) {
-			for(Equipment e : getContainerSet()) {
-				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
-					// Transfer to this person's container unit 
-					e.transfer(getContainerUnit());
-					
-					break;
-				}
-			}
+			var bottles = getContainerSet().stream()
+					.filter(e -> e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE)
+					.toList();
+			
+			bottles.forEach(e -> e.transfer(getContainerUnit()));
 		}
 	}
 	

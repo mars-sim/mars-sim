@@ -1936,11 +1936,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.addEquipment(e);
 	}
 
 	/**
@@ -1950,11 +1946,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean removeEquipment(Equipment e) {
-		if (eqmInventory.removeEquipment(e)) {
-			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.removeEquipment(e);
 	}
 
 	/**

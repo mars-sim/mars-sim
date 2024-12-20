@@ -1314,7 +1314,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	@Override
 	public Settlement getSettlement() {
 
-		Unit c = getContainerUnit();
+		var c = getContainerUnit();
 
 		if (c instanceof Settlement s)
 			return s;
@@ -1930,11 +1930,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.addEquipment(e);
 	}
 
 	/**
@@ -2216,9 +2212,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 			
 			// 3. Set containerID
 			setContainer(newContainer, newState);
-
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 		return true;
 	}
@@ -2286,19 +2279,12 @@ public abstract class Vehicle extends AbstractMobileUnit
 		Unit cu = getContainerUnit();
 		// Note: at startup, a vehicle has Mars Surface as the container unit by default
 		
-		if (cu == null) {
-			// Fire the unit event type
-			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-			return setContainerUnitAndID(destination);
+		if (cu instanceof MarsSurface ms) {
+			transferred = ms.removeVehicle(this);
 		}
 		
-		else if (cu.getUnitType() == UnitType.MARS) {
-			transferred = ((MarsSurface)cu).removeVehicle(this);
-		}
-		
-		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
-			Settlement currentBase = (Settlement)cu;
-			transferred = currentBase.removeVicinityParkedVehicle(this);
+		else if (cu instanceof Settlement s) {
+			transferred = s.removeVicinityParkedVehicle(this);
 			leaving = true;
 		}
 
@@ -2307,12 +2293,12 @@ public abstract class Vehicle extends AbstractMobileUnit
 			// NOTE: need to revert back the retrieval action			
 		}
 		else {
-			if (destination.getUnitType() == UnitType.MARS) {
-				transferred = ((MarsSurface)destination).addVehicle(this);
+			if (destination instanceof MarsSurface ms) {
+				transferred = ms.addVehicle(this);
 				leaving = true;
 			}
-			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addVicinityVehicle(this);
+			else if (destination instanceof Settlement s) {
+				transferred = s.addVicinityVehicle(this);
 			}
 
 			if (!transferred) {

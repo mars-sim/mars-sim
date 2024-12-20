@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
@@ -669,7 +667,7 @@ public class EatDrink extends Task {
 		// Assume the person carries preserved food 	
 		double shortfall = person.retrieveAmountResource(FOOD_ID, proportion);
 		if (shortfall > 0) {
-			Unit container = person.getContainerUnit();
+			var container = person.getContainerUnit();
 			shortfall = ((ResourceHolder)container).retrieveAmountResource(FOOD_ID, shortfall);
 		}
 		
@@ -933,7 +931,7 @@ public class EatDrink extends Task {
 		
 		if (proportion > MIN) {
 			// Dessert amount eaten over this period of time.
-			Unit containerUnit = person.getContainerUnit();
+			var containerUnit = person.getContainerUnit();
 
 			if (containerUnit != null) {
 				// Take dessert resource from inventory if it is available.
@@ -1198,10 +1196,9 @@ public class EatDrink extends Task {
 
 		List<AmountResource> result = new ArrayList<>();
 
-		Unit containerUnit = person.getContainerUnit();
+		var containerUnit = person.getContainerUnit();
 
-		if (containerUnit.getUnitType() != UnitType.MARS) {
-			ResourceHolder rh = (ResourceHolder)containerUnit;
+		if (containerUnit instanceof ResourceHolder rh) {
 			boolean option = true;
 
 			AmountResource[] resources = PreparingDessert.getArrayOfDessertsAR();

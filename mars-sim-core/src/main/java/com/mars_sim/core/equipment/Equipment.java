@@ -11,7 +11,6 @@ import java.util.Collection;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.Salvagable;
@@ -227,7 +226,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 	 */
 	@Override
 	public Vehicle getVehicle() {
-		Unit container = getContainerUnit();
+		var container = getContainerUnit();
 		if (container instanceof Vehicle v)
 			return v;
 		if ((container instanceof MobileUnit mu)
@@ -321,10 +320,10 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 						+ cu + "'.");
 		}
 		else {	
-			if (destination.getUnitType() == UnitType.BUILDING) {
+			if (destination instanceof Building b) {
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				destination = ((Building)destination).getAssociatedSettlement();
+				destination = b.getAssociatedSettlement();
 			}
 
 			if (destination instanceof EquipmentOwner eo) {
