@@ -21,7 +21,7 @@
 		<!-- These 3 have an interdepency -->
 		<junit-jupiter.version>5.11.3</junit-jupiter.version>
         <junit.version>4.13.2</junit.version>
-		<junit-launcher.version>1.11.0</junit-launcher.version>
+		<junit-launcher.version>1.11.4</junit-launcher.version>
 		
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
