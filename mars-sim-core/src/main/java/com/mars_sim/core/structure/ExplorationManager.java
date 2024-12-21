@@ -348,11 +348,6 @@ public class ExplorationManager implements Serializable {
 			return Collections.emptyMap();
 		}
 		
-		double chosenDist = weightedMap.get(chosen);
-		
-		logger.info(base, 30_000, 
-				"Investigating a mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km away).");
-		
 		return surfaceFeatures.getMineralMap().getAllMineralConcentrations(chosen);
 	}
 	
@@ -397,7 +392,6 @@ public class ExplorationManager implements Serializable {
 		
 		result = Math.round(result * 100.0)/100.0;
 		
-		logger.info(settlement, 30_000, "A site has an Exploration Value of " + result + ".");
 		return (int)result;
 	}
     	

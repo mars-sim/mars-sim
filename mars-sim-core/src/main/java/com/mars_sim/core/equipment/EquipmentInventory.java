@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -467,22 +465,16 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Finds the number of empty containers (from a copy set of containers) of a particular equipment type.
-	 * Note: this method is experimental 
+	 * Finds the number of empty containers of a particular equipment type.
 	 * 
 	 * @param containerType
 	 * @param brandNew
 	 * @return
 	 */
 	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		Set<Equipment> copy = new HashSet<>();
-		for (Equipment e : containerSet) {
-			// Use org.apache.commons.lang3.SerializationUtils to do a deep copy of containerSet's elements
-		    copy.add(SerializationUtils.clone(e));
-		}
-		
-		return (int) copy.stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-								.count();
+		return (int) containerSet.stream()
+					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+					.count();
 	}
 	
 	

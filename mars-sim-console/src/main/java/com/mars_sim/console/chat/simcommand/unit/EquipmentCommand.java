@@ -10,6 +10,7 @@ package com.mars_sim.console.chat.simcommand.unit;
 import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
@@ -38,11 +39,6 @@ public class EquipmentCommand extends AbstractUnitCommand {
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
-
-		boolean showAll = ((input != null) && input.equalsIgnoreCase("all"));
-		
-		StructuredResponse buffer = new StructuredResponse();
-		
 		Collection<Equipment> equipment = null;
 		if (source instanceof EquipmentOwner eo) {
 			equipment = eo.getEquipmentSet();
@@ -51,7 +47,39 @@ public class EquipmentCommand extends AbstractUnitCommand {
 			context.println("Sorry this Entity does not hold Equipment");
 			return false;
 		}
+
+		if (input == null) {
+			showDetails(context, equipment, false);
+		}
+		else if (input.equalsIgnoreCase("all")) {
+			showDetails(context, equipment, true);
+		}
+		else if (input.equalsIgnoreCase("stats")) {
+			showStats(context, equipment);
+		}
 		
+		return true;
+	}
+
+	private void showStats(Conversation context, Collection<Equipment> equipment) {
+		var eqmsByType = equipment.stream()
+				.collect(Collectors.groupingBy(Equipment::getEquipmentType));
+
+		StructuredResponse buffer = new StructuredResponse();
+		buffer.appendTableHeading("Equipment", 20, "# Empty", "# Total");
+		for(var e : eqmsByType.entrySet()) {
+			var v = e.getValue();
+			buffer.appendTableRow(e.getKey().getName(),
+									v.stream().filter(b -> b.isEmpty(false)).count(),
+									v.size());			
+		}
+		
+		context.println(buffer.getOutput());
+		
+	}
+
+	private void showDetails(Conversation context, Collection<Equipment> equipment, boolean showAll) {
+		StructuredResponse buffer = new StructuredResponse();
 		SortedMap<String,String> entries = new TreeMap<>();
 		for (Equipment e : equipment) {
 			String stored = null;
@@ -83,7 +111,6 @@ public class EquipmentCommand extends AbstractUnitCommand {
 				}
 			}
 
-			
 			if (stored != null) {
 				entries.put(e.getName(), stored);
 			}
@@ -91,12 +118,11 @@ public class EquipmentCommand extends AbstractUnitCommand {
 
 		// Output entries which will be order via TreeMap
 		buffer.appendTableHeading("Equipment", 20, "Stored (kg)");
-		for(String name : entries.keySet()) {
-			buffer.appendTableRow(name, entries.get(name));			
+		for(var e : entries.entrySet()) {
+			buffer.appendTableRow(e.getKey(), e.getValue());			
 		}
 		
 		context.println(buffer.getOutput());
-		return true;
 	}
 	
 	private static String formatResource(ResourceHolder holder, int resourceID) {
