@@ -153,7 +153,7 @@ public class Population implements Serializable, Temporal {
 					growthRateTourists -= 0.1;
 				}
 				
-				growthRateLodge += rand / 6;
+				growthRateLodge += rand / 6.0;
 			}
 					
 			// Limit the growth rate

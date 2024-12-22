@@ -31,7 +31,6 @@ import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.mineral.MineralMapConfig;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.health.MedicalConfig;
-import com.mars_sim.core.quotation.QuotationConfig;
 import com.mars_sim.core.resource.AmountResourceConfig;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.resource.PartPackageConfig;
@@ -82,7 +81,7 @@ public class SimulationConfig {
 	private static final String FOODPRODUCTION_FILE = "food_production";
 	private static final String MEAL_FILE = "meals";
 	private static final String ROBOT_FILE = "robots";
-	private static final String QUOTATION_FILE = "quotations";
+//	private static final String QUOTATION_FILE = "quotations";
 	private static final String VALUE = "value";
 
 	// Simulation element names.
@@ -132,7 +131,7 @@ public class SimulationConfig {
 
 	// Subset configuration classes
 	private PartConfig partConfig;
-	private PartPackageConfig partPackageConfig;
+//	private PartPackageConfig partPackageConfig;
 	private AmountResourceConfig resourceConfig;
 	private PersonConfig personConfig;
 	private MedicalConfig medicalConfig;
@@ -145,13 +144,13 @@ public class SimulationConfig {
 	private SettlementConfig settlementConfig;
 	private SettlementTemplateConfig settlementTemplateConfig;
 	private ManufactureConfig manufactureConfig;
-	private ResupplyConfig resupplyConfig;
+//	private ResupplyConfig resupplyConfig;
 	private ConstructionConfig constructionConfig;
 
 	private FoodProductionConfig foodProductionConfig;
 	private MealConfig mealConfig;
 	private RobotConfig robotConfig;
-	private QuotationConfig quotationConfig;
+//	private QuotationConfig quotationConfig;
 	private ScienceConfig scienceConfig;
 
 	private AuthorityFactory raFactory;
@@ -368,6 +367,17 @@ public class SimulationConfig {
 		return defaultTimePulse;
 	}
 
+	
+	/**
+	 * Gets the accuracy bias.
+	 * @Note: currently not being used 
+	 * 
+	 * @return
+	 */
+	public double getAccuracyBias() {
+		return accuracyBias;
+	}
+	
 	/**
 	 * The difference between number of cores in the machine and the simulation threads created, 
 	 * i.e. the unused cores. Must be positive.
@@ -376,6 +386,16 @@ public class SimulationConfig {
 	 */
 	public int getUnusedCores() {
 		return unusedCores;
+	}
+	
+	/**
+	 * Gets the min EVA light.
+	 * @Note: currently not being used 
+	 * 
+	 * @return
+	 */
+	public double getMinEVALight() {
+		return minEVALight;
 	}
 	
 	/**
@@ -648,7 +668,7 @@ public class SimulationConfig {
 		raFactory = new AuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
-		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
+		PartPackageConfig partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 		buildingPackageConfig = new BuildingPackageConfig(parseXMLFileAsJDOMDocument(BUILDING_PACKAGE_FILE, true));
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
 		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
@@ -660,7 +680,7 @@ public class SimulationConfig {
 		vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true), manufactureConfig);
 		ResourceProcessConfig resourceProcessConfig = new ResourceProcessConfig(parseXMLFileAsJDOMDocument(RESPROCESS_FILE, true));
 		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true), resourceProcessConfig);
-		resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
+		ResupplyConfig resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true));
 		settlementTemplateConfig = new SettlementTemplateConfig(parseXMLFileAsJDOMDocument(
 				SETTLEMENT_TEMPLATE_FILE, true), partPackageConfig, buildingPackageConfig, resupplyConfig, settlementConfig);
@@ -670,7 +690,9 @@ public class SimulationConfig {
 		foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
 		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
-		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
+		// Note: Do NOT delete QuotationConfig. 
+		//       Will reinstate quoatation config after deciding how to best make use of the quotes
+//		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
 		scienceConfig = new ScienceConfig();
 
 		logger.config("Done loading all xml config files.");

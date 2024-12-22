@@ -13,9 +13,6 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
     
-	/** Default logger. */
-	// May add back private static final SimLogger logger = SimLogger.getLogger(MarketData.class.getName());
-
 	private Good good;
 	
 	private double value = -1;
@@ -28,6 +25,10 @@ public class MarketData implements Serializable {
 		this.good = good;
 	}
 
+	public Good getGood() {
+		return good;
+	}
+	
 	public void setValue(double data) {
 		this.value = data;
 	}

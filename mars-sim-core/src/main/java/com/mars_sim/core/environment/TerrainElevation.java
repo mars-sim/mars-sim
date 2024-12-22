@@ -15,7 +15,6 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.megdr.MEGDRFactory;
@@ -40,7 +39,7 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
+//	private static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
 	
 	private static final double STEP_KM = 2;
 	private static final double DEG_TO_RAD = Math.PI/180;

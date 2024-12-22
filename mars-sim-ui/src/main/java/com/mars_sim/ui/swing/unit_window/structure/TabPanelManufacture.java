@@ -357,16 +357,16 @@ public class TabPanelManufacture extends TabPanel {
 	private List<SalvageProcess> getSalvageProcesses() {
 		List<SalvageProcess> result = new ArrayList<>();
 
-		for(var i : target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {	
+		for (var i : target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {	
 			Manufacture manufacture = i.getManufacture();
 			result.addAll(manufacture.getSalvageProcesses());
 			
 			if (!manufacture.isFull()) {
-				for(var process : manufacture.getQueueSalvageProcesses()) {
+				for (var process : manufacture.getQueueSalvageProcesses()) {
 					result.add(process);
 					manufacture.loadFromSalvageQueue(process);
-					// Add only one at a time to ensure it's not full
-					break;
+					// Add only one at a time
+//					break;
 				}	
 			}
 		}

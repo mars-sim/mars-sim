@@ -298,7 +298,7 @@ public class DustStorm implements Serializable {
 	 * Gets the originating settlement.
 	 */
 	public Settlement getSettlement() {
-		return (Settlement) Simulation.instance().getUnitManager().getSettlementByID(settlementId);
+		return Simulation.instance().getUnitManager().getSettlementByID(settlementId);
 	}
 	
 	/**

@@ -397,7 +397,7 @@ public class SimulationBuilder {
 	 * @return InitialSettlement
 	 */
 	private InitialSettlement loadSettlementTemplate(SimulationConfig simulationConfig) {
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
+//		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 		SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 			
 		// Find the template

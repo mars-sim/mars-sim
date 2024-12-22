@@ -30,6 +30,9 @@ public final class EVASuitUtil {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EVASuitUtil.class.getName());
 
+	private static final String FROM = " from ";
+	private static final String TO = " to ";
+	
 	private EVASuitUtil() {
 		// Static helper class
 	}
@@ -59,7 +62,7 @@ public final class EVASuitUtil {
 			
 			if (!success) {
 				logger.warning(person, 4_000,
-						"Could not transfer " + suit + " from " + person + " to " + housing.getName() + ".");
+						"Could not transfer " + suit + FROM + person + TO + housing.getName() + ".");
 			}
 		}
 		
@@ -280,14 +283,14 @@ public final class EVASuitUtil {
 		if (suit1 != null) {
 			boolean success = suit1.transfer(vehicle);
 			if (!success)
-				logger.warning(person, "Unable to fetch " + suit1 + " from " 
-						+ settlement + " to " + vehicle + ".");
+				logger.warning(person, "Unable to fetch " + suit1 + FROM 
+						+ settlement + TO + vehicle + ".");
 			else {
 //				// Register this suit to a person
 				suit1.setRegisteredOwner(person);
 				
-				logger.info(person, "Just fetched " + suit1 + " from " 
-						+ settlement + " to " + vehicle + ".");
+				logger.info(person, "Just fetched " + suit1 + FROM
+						+ settlement + TO + vehicle + ".");
 			}
 		} else {
 			logger.warning(person, "No EVA suit available from " + settlement + ".");

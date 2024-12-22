@@ -2,7 +2,6 @@ package com.mars_sim.core.structure.construction;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.construction.ConstructionStageInfo.Stage;
 
