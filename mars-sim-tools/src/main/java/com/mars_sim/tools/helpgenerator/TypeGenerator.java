@@ -53,10 +53,11 @@ public abstract class TypeGenerator<T> {
     /**
      * Converts a set of Process inputs/outputs to a generic item quantity
      */
-    protected static List<ItemQuantity> toQuantityItems(List<ProcessItem> list) {
+    protected List<ItemQuantity> toQuantityItems(List<ProcessItem> list) {
+        var hc = getParent();
 		return list.stream()
 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
-					.map(v -> HelpContext.createItemQuantity(v.getName(), v.getType(), v.getAmount()))
+					.map(v -> hc.createItemQuantity(v.getName(), v.getType(), v.getAmount()))
 					.toList();
 	}
 
@@ -64,9 +65,14 @@ public abstract class TypeGenerator<T> {
     /**
      * Converts a set of resource value pairs of a specific type to a generic item quantity
      */
-    protected static List<ItemQuantity> toQuantityItems(Map<String,Integer> items, ItemType type) {
-		return items.entrySet().stream()
-					.map(v -> HelpContext.createItemQuantity(v.getKey(), type, v.getValue()))
+    protected List<ItemQuantity> toQuantityItems(Map<String,Integer> items, ItemType type) {
+        var hc = getParent();
+        return toQuantityItems(hc, items, type);
+    }
+    
+    static List<ItemQuantity> toQuantityItems(HelpContext hc, Map<String,Integer> items, ItemType type) {
+        return items.entrySet().stream()
+					.map(v -> hc.createItemQuantity(v.getKey(), type, v.getValue()))
 					.toList();
 	}
 
@@ -153,7 +159,7 @@ public abstract class TypeGenerator<T> {
         }
        
         // Generate file
-        File indexFile = new File(outputDir, getParent().generateFileName(HelpContext.INDEX));
+        File indexFile = new File(outputDir, getParent().generateFileName(getParent().getIndexName()));
         try (FileOutputStream dest = new FileOutputStream(indexFile)) {
             getParent().generateContent(template, scope, dest);
         }

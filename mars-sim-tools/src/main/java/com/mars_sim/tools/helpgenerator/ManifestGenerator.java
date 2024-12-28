@@ -36,7 +36,7 @@ public class ManifestGenerator extends TypeGenerator<ResupplyManifest> {
 	 */
     @Override
     protected void addEntityProperties(ResupplyManifest st, Map<String,Object> scope) {
-        SettlementGenerator.addSupplies(st.getSupplies(), scope);
+        SettlementGenerator.addSupplies(getParent(), st.getSupplies(), scope);
     }
 
     @Override

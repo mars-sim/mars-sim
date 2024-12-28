@@ -1,0 +1,19 @@
+---
+title: {{title}}
+linkTitle: {{crew.name}}
+toc_hide: true
+hide_summary: true
+---
+
+## Description
+{{crew.description}}
+
+## Members
+
+|Name|Gender|Age|Job|Country|Sponsor|
+|----|------|---|---|-------|-------|
+{{#crew.team}}
+|{{name}}|{{gender.getName}}|{{age}}|{{job}}|{{country}}|{{sponsor}}|
+{{/crew.team}}
+
+{{>footer}}

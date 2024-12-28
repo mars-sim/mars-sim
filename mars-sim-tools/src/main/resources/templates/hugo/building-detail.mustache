@@ -1,0 +1,49 @@
+---
+title: {{title}}
+linkTitle: {{building.name}}
+toc_hide: true
+hide_summary: true
+---
+
+## Description
+{{building.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Category:|{{building.category.getName}}|
+|Construction:|{{building.construction}}|
+|Size:|{{building.width}} x {{building.length}} m|
+|Level:|{{building.baseLevel}}|
+|Maintenance Period:|{{building.maintenanceTime}}|
+|Power Demands:|{{building.basePowerRequirement}} kW|
+|Offline Power Demands:|{{building.basePowerDownPowerRequirement}} kW|
+{{#construction}}
+|Construction:|[{{construction.name}}]({{constructionfolder}}{{#filename}}{{construction.name}}{{/filename}})|
+{{/construction}}
+
+## Functions
+      
+{{#building.functionSupported}}
+- {{name}}
+{{/building.functionSupported}}
+
+
+{{^building.powerSource.isEmpty}}
+## Power Sources
+      
+{{#building.powerSource}}
+- {{type}}
+{{/building.powerSource}}
+{{/building.powerSource.isEmpty}}
+
+{{^building.heatSource.isEmpty}}
+## Heating Sources
+
+{{#building.heatSource}}
+- {{type}}
+{{/building.heatSource}}
+{{/building.heatSource.isEmpty}}
+
+{{>footer}}

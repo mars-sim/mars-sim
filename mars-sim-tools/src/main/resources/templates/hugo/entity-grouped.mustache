@@ -1,0 +1,19 @@
+---
+title: {{listtitle}}
+---
+{{description}}
+
+{{>labels}}
+
+Grouped by {{groupname}}.
+
+{{#groups}}
+### {{name}} {#{{id}}}
+
+{{#items}}
+- [{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}})
+{{/items}}
+
+{{/groups}}
+
+{{>footer}}

@@ -1,0 +1,39 @@
+{{^buildings.isEmpty}}
+## Buildings
+
+| Name | Building Spec |
+|:------|:------|
+{{#buildings}}
+|{{buildingName}}|[{{buildingType}}]({{buildingfolder}}{{#filename}}{{buildingType}}{{/filename}})|
+{{/buildings}}
+{{/buildings.isEmpty}}
+
+{{^resources.isEmpty}}
+## Resources
+
+| Name | Type | Quantity |
+|:-----|:-----|-----:|
+{{#resources}}
+|{{#typefolder}}[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}}){{/typefolder}}{{^typefolder}}{{name}}{{/typefolder}}|{{type}}|{{amount}}|
+{{/resources}}
+{{/resources.isEmpty}}
+
+{{^equipment.isEmpty}}
+## Equipment
+
+| Name | Quantity |
+|:-----|-----:|
+{{#equipment}}
+|[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}})|{{amount}}|
+{{/equipment}}
+{{/equipment.isEmpty}}
+
+{{^vehicles.isEmpty}}
+## Vehicles
+
+| Vehicle Spec. | Quantity |
+|:-----|-----:|
+{{#vehicles}}
+|[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}})|{{amount}}|
+{{/vehicles}}
+{{/vehicles.isEmpty}}

@@ -45,15 +45,17 @@ public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> 
         }
         scope.put("dependents", dependents);
 
+        var hc = getParent();
+        
         List<ItemQuantity>resources = new ArrayList<>();
         resources.addAll(r.getParts().entrySet().stream()
-                            .map(e -> HelpContext.createItemQuantity(
+                            .map(e -> hc.createItemQuantity(
                                             ItemResourceUtil.findItemResourceName(e.getKey()),
                                             ItemType.PART,
                                             e.getValue()))
                             .toList());
         resources.addAll(r.getResources().entrySet().stream()
-                            .map(e -> HelpContext.createItemQuantity(
+                            .map(e -> hc.createItemQuantity(
                                             ResourceUtil.findAmountResourceName(e.getKey()),
                                             ItemType.AMOUNT_RESOURCE,
                                             e.getValue()))

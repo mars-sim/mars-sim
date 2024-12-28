@@ -1,0 +1,37 @@
+---
+title: {{title}}
+linkTitle: {{construction.name}}
+toc_hide: true
+hide_summary: true
+---
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Type:|{{construction.type.name}}|
+|Work Time:|{{construction.workTime}}|
+|Architectural Skill:|{{construction.architectConstructionSkill}}|
+{{#construction.prerequisiteStage}}
+|PreReq:|[{{construction.prerequisiteStage.name}}]({{constructionfolder}}{{#filename}}{{construction.prerequisiteStage.name}}{{/filename}})|
+{{/construction.prerequisiteStage}}
+
+{{^resources.isEmpty}}
+## Resources
+
+| Name | Type | Quantity |
+|:-----|:-----|-----:|
+{{#resources}}
+|{{#typefolder}}[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}}){{/typefolder}}{{^typefolder}}{{name}}{{/typefolder}}|{{type}}|{{amount}}|
+{{/resources}}
+{{/resources.isEmpty}}
+
+{{^dependents.isEmpty}}
+## Later Stages
+{{#dependents}}
+- [{{name}}]({{constructionfolder}}{{#filename}}{{name}}{{/filename}})
+{{/dependents}}
+{{/dependents.isEmpty}}
+
+
+{{>footer}}
