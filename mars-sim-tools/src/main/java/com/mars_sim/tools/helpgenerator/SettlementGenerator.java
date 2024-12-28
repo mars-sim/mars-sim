@@ -24,7 +24,8 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
 
     protected SettlementGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Settlement Template",
-                "Settlement templates that can be used in a Scenario");
+                "Settlement templates that can be used in a Scenario",
+                "settlement_name");
         
         // Group by sponsor
         setGrouper("Sponsor", t -> t.getSponsor());

@@ -16,7 +16,8 @@ public class ScenarioGenerator extends TypeGenerator<Scenario> {
 
     protected ScenarioGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Scenario",
-                "Predefined Scenarios used to start the simulation");
+                "Predefined Scenarios used to start the simulation",
+                "scenario_name");
         setChangeViaEditor(true);
     }
 

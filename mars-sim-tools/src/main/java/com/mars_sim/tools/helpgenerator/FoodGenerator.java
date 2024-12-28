@@ -19,7 +19,8 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
     static final String TYPE_NAME = "food";
 
     FoodGenerator(HelpContext parent) {
-        super(parent, TYPE_NAME, "Food Recipe", "Recipe (Food Process) to create Food");
+        super(parent, TYPE_NAME, "Food Recipe", "Recipe (Food Process) to create Food",
+        "food_production");
     }
 
     /**

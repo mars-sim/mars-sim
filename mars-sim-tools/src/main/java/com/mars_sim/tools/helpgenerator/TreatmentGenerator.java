@@ -16,7 +16,7 @@ public class TreatmentGenerator extends TypeGenerator<Treatment> {
 
     protected TreatmentGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Treatment",
-                "Treatments applied to cure Complaints");
+                "Treatments applied to cure Complaints", "medical");
 
         // Groups by part type
         setGrouper("Medical Tech Level", r-> Integer.toString(r.getFacilityLevel()));

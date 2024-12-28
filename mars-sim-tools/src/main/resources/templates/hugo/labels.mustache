@@ -1,7 +1,10 @@
-{{#type.changexml}}
-Change via XML
-{{/type.changexml}}
+{{! Must change the delimiters to avoind clashing with Docsy shortcode !!!!! }}
 
-{{#type.changeeditor}}
-Change via ConfigEditor
-{{/type.changeeditor}}
+{{=<% %>=}}
+<%#type.changexml%>
+{{< alert color="success" >}}These can be changed via the XML file _<%type.changexml%>.xml_. See [XML Files](/docs/guide/xml-files/){{< /alert >}}
+<%/type.changexml%>
+<%#type.changeeditor%>
+{{< alert color="success" >}}These can be changed via the UI ConfigEditor.{{< /alert >}}
+<%/type.changeeditor%>
+<%={{ }}=%>

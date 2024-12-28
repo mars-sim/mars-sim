@@ -20,7 +20,8 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
 
     protected BuildingGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Building Spec",
-                "Building Specifications available for bases");
+                "Building Specifications available for bases",
+                "buildings");
 
         // Groups by category
         setGrouper("Category", r-> r.getCategory().getName());

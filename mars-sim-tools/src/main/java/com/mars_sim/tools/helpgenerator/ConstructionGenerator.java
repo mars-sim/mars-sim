@@ -20,7 +20,8 @@ public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> 
 
     protected ConstructionGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Construction Stage",
-                "Stages available for constructing a new site");
+                "Stages available for constructing a new site",
+                "construction");
         
         // Groups according to stage
         setGrouper("Stage", r-> r.getType().name());

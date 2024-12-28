@@ -20,7 +20,8 @@ class PartGenerator extends TypeGenerator<Part> {
     static final String TYPE_NAME = "part";
 
     protected PartGenerator(HelpContext parent) {
-        super(parent, TYPE_NAME, "Part", "Parts used for repairs and processes");
+        super(parent, TYPE_NAME, "Part", "Parts used for repairs and processes",
+        "parts");
 
         
         // Groups by part type

@@ -16,7 +16,8 @@ public class ComplaintGenerator extends TypeGenerator<Complaint> {
 
     protected ComplaintGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Complaint",
-                "Health Complaints affecting Persons");
+                "Health Complaints affecting Persons",
+                "medical");
         
         // Groups according to Seriousness
         setGrouper("Seriousness", r-> getSeriousnessRange(r.getSeriousness()));

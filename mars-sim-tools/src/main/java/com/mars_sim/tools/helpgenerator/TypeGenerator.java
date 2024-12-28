@@ -42,8 +42,8 @@ public abstract class TypeGenerator<T> {
     private String typeName;
     private String title;
     private String description;
-    private boolean changeViaXML;
-    private boolean chnageViaEditor;
+    private String configXML;
+    private boolean changedViaEditor;
     private Mustache detailsTemplate;
 
     // Used to group entities for grouped index
@@ -82,15 +82,17 @@ public abstract class TypeGenerator<T> {
      * @param typeName The type name used for the folder and reference.
      * @param title Title in  the index
      * @param description Description of the entity being rendered.
+     * @param configXML Name of teh assoicated config XML file; can be null
      */
-    protected TypeGenerator(HelpContext parent, String typeName, String title, String description) {
+    protected TypeGenerator(HelpContext parent, String typeName, String title, String description,
+                            String configXML) {
         this.typeName = typeName;
         this.parent = parent;
         this.title = title;
         this.description = description;
         this.detailsTemplate = parent.getTemplate(typeName + "-detail");
-        this.changeViaXML = true;
-        this.chnageViaEditor = false;
+        this.configXML = configXML;
+        this.changedViaEditor = false;
     }
 
     /**
@@ -98,7 +100,7 @@ public abstract class TypeGenerator<T> {
      * @param newValue New setting
      */
     protected void setChangeViaEditor(boolean newValue) {
-        chnageViaEditor = newValue;
+        changedViaEditor = newValue;
     }
 
     /**
@@ -130,10 +132,10 @@ public abstract class TypeGenerator<T> {
         scope.put("listtitle", title);
         scope.put("description", description);
         scope.put("typefolder", "../" + typeName + "/");
-        if (changeViaXML) {
-            scope.put("type.changexml", Boolean.TRUE);
+        if (configXML != null) {
+            scope.put("type.changexml", configXML);
         }
-        if (chnageViaEditor) {
+        if (changedViaEditor) {
             scope.put("type.changeeditor", Boolean.TRUE);
         }
 

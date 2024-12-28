@@ -20,7 +20,8 @@ public class ManifestGenerator extends TypeGenerator<ResupplyManifest> {
 
     protected ManifestGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Resupply Manifest",
-                "Resupply Manifests that are used to resupply a Settlement templates");
+                "Resupply Manifests that are used to resupply a Settlement templates",
+                null);
     }
 
     @Override
