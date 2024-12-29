@@ -22,7 +22,7 @@ public class VehicleGenerator extends TypeGenerator<VehicleSpec> {
 
     protected VehicleGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Vehicle Spec",
-                "Types of Vehicles Featured for Mars Surface Operations");
+                "Types of Vehicles Featured for Mars Surface Operations", "vehicles");
     }
     
     /**

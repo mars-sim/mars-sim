@@ -1,0 +1,33 @@
+---
+title: {{title}}
+linkTitle: {{scenario.name}}
+toc_hide: true
+hide_summary: true
+---
+
+## Description
+{{scenario.description}}
+
+## Settlements
+
+|Name|Sponsor|Template|Persons|Robots|Location|Crew|
+|---|---|---|---|---|---|---|
+{{#scenario.settlements}}
+|{{name}}|{{sponsor}}|[{{settlementTemplate}}]({{settlementfolder}}{{#filename}}{{settlementTemplate}}{{/filename}})|{{populationNumber}}|{{numOfRobots}}|{{location.formattedString}}|[{{crew}}]({{crewfolder}}{{#filename}}{{crew}}{{/filename}})|
+{{/scenario.settlements}}
+
+
+{{^scenario.arrivals.isEmpty}}
+## New Settlements
+
+|Name|Sponsor|Template|Persons|Robots|Arrival (sols)|Location|
+|---|---|---|---|---|---|------|
+{{#scenario.arrivals}}
+|{{name}}|{{sponsorCode}}|[{{template}}]({{settlementfolder}}{{#filename}}{{template}}{{/filename}})|{{populationNum}}|{{numOfRobots}}|{{arrivalSols}}|{{landingLocation.formattedString}}|
+{{/scenario.arrivals}}
+
+{{/scenario.arrivals.isEmpty}}
+
+
+
+{{>footer}}

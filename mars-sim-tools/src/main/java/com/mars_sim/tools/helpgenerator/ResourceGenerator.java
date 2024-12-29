@@ -26,7 +26,8 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
 
     protected ResourceGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Resource",
-        "Resources that can be stored and used for manufacturing and cooking.");
+        "Resources that can be stored and used for manufacturing and cooking.",
+        "resources");
 
         // Groups according to Resource Phase
         setGrouper("Phase", r-> r.getPhase().getName());

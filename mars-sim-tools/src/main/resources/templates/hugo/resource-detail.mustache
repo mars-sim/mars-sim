@@ -1,0 +1,41 @@
+---
+title: {{title}}
+linkTitle: {{resource.name}}
+toc_hide: true
+hide_summary: true
+---
+
+{{#resource.description}}
+## Description
+{{resource.description}}
+{{/resource.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Edible:|{{resource.isEdible}}|
+|Type:|{{resource.goodType.getName}}|
+|Form:|{{resource.phase.getName}}|
+ 
+{{>process-flow}}
+
+{{^foodOutput.isEmpty}}
+## Made by Food Process
+
+{{#foodOutput}}
+- [{{name}}]({{foodfolder}}{{#filename}}{{name}}{{/filename}})
+{{/foodOutput}}
+
+{{/foodOutput.isEmpty}}
+    
+{{^foodInput.isEmpty}}
+## Used by Food Process
+
+{{#foodInput}}
+- [{{name}}]({{foodfolder}}{{#filename}}{{name}}{{/filename}})
+{{/foodInput}}
+
+{{/foodInput.isEmpty}}
+
+{{>footer}}

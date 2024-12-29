@@ -1,0 +1,26 @@
+---
+title: {{title}}
+linkTitle: {{process.name}}
+toc_hide: true
+hide_summary: true
+---
+
+{{#process.description}}
+## Description
+{{process.description}}
+{{/process.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Skill Level:|{{process.skillLevelRequired}}|
+|Tech Level:|{{process.techLevelRequired}}|
+|Process Time:|{{process.processTimeRequired}} millisols|
+|Work Level:|{{process.workTimeRequired}} millisols|
+|Power Required:|{{process.powerRequired}} kW/hr|
+
+{{>process-inout}}
+
+{{>footer}}
+

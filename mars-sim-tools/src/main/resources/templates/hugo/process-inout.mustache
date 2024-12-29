@@ -1,0 +1,16 @@
+## {{inputsTitle}}
+
+| Input      | Amount |
+|--------:|:------|
+{{#inputs}}
+|{{#typefolder}}[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}}){{/typefolder}}{{^typefolder}}{{name}}{{/typefolder}}|{{type}}|{{amount}}|
+{{/inputs}}
+
+## {{outputsTitle}}
+
+
+| Produce      | Amount |
+|--------:|:------|
+{{#outputs}}
+|{{#typefolder}}[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}}){{/typefolder}}|{{amount}}|
+{{/outputs}}

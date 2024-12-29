@@ -34,9 +34,6 @@ public class HelpContext {
 	// This is the style associated with the html based help
     public static final String HTML_STYLE = "html-help";
 
-	// Name of any generated index file
-	public static final String INDEX = "index";
-
 	// POJO for a named value pair
 	public record ValuePair(String name, double value) {}
 
@@ -51,6 +48,9 @@ public class HelpContext {
 	private static final String TEMPLATES_DIR = "templates/";
 	private static final String FILE_SUFFIX_PROP = "file_suffix";
 	private static final String TOP_PROP = "generate_top";
+	private static final String BASE_PROP = "base_folder";
+	private static final String LINK_PROP = "link_suffix";
+	private static final String INDEX_PROP = "index_name";
 	private static final String PROPS_FILE = "template.properties";
 
 	// All generators are declared here
@@ -75,12 +75,15 @@ public class HelpContext {
 	 * @return
 	 */
 	public Function<Object, Object> getFilename() {
-		return (obj-> generateFileName((String) obj, ".html"));
+		return (obj-> generateFileName((String) obj, linkSuffix));
 	}
 	
 	// Loaded from the properties
 	private String fileSuffix;
 	private boolean generateTopLevel;
+	private String indexName;
+	private String linkSuffix;
+	private String baseFolder;
 
 	private DefaultMustacheFactory mf;
 	private String templateDir;
@@ -102,7 +105,9 @@ public class HelpContext {
 		}
 		this.fileSuffix = "." + templateProps.get(FILE_SUFFIX_PROP);
 		this.generateTopLevel = Boolean.parseBoolean(templateProps.getProperty(TOP_PROP, "true"));
-
+		this.indexName = templateProps.getProperty(INDEX_PROP, "index");
+		this.linkSuffix = templateProps.getProperty(LINK_PROP, ".html");
+		this.baseFolder = templateProps.getProperty(BASE_PROP, "../");
 		this.config = config;
 
 		this.mf = new DefaultMustacheFactory();
@@ -114,7 +119,7 @@ public class HelpContext {
 		
 		// Location of other generated file; used for links
 		for(var f : GENERATORS) {
-			this.baseScope.put(f + "folder", "../" + f + "/");
+			this.baseScope.put(f + "folder", baseFolder + f + "/");
 
 		}
 		
@@ -189,7 +194,7 @@ public class HelpContext {
 	 * @param amount
 	 * @return
 	 */
-	static ItemQuantity createItemQuantity(String name, ItemType type, double amount) {
+	ItemQuantity createItemQuantity(String name, ItemType type, double amount) {
 		String typeFolder = switch(type) {
 			case AMOUNT_RESOURCE -> ResourceGenerator.TYPE_NAME;
 			case BIN -> null;
@@ -200,7 +205,7 @@ public class HelpContext {
 
 		String amountTxt = (type == ItemType.AMOUNT_RESOURCE ? amount + " kg"
 													: Integer.toString((int) amount));
-		return new ItemQuantity(name, type.getName(), "../" + typeFolder + "/", amountTxt);
+		return new ItemQuantity(name, type.getName(), baseFolder + typeFolder + "/", amountTxt);
 	}
 
 	/**
@@ -229,7 +234,7 @@ public class HelpContext {
 
 			// Generate configuration overview page
 			try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
-															generateFileName(INDEX)))) {
+															generateFileName(indexName)))) {
 				generateContent(topTemplate, topScope, topIndex);
 			}
 		}
@@ -238,6 +243,13 @@ public class HelpContext {
     public SimulationConfig getConfig() {
         return config;
     }
+
+	/**
+	 * Get the name of the index file.
+	 */
+	public String getIndexName() {
+		return indexName;
+	}
 
 	/**
 	 * Looks up a template. This will select the appropriate Mustache template for the defined

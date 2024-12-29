@@ -1,0 +1,23 @@
+---
+title: {{title}}
+linkTitle: {{part.name}}
+toc_hide: true
+hide_summary: true
+---
+
+{{#part.description}}
+## Description
+{{part.description}}
+{{/part.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Mass:|{{part.massPerItem}} kg|
+|Type:|{{part.goodType.getName}}|
+
+{{>process-flow}}
+
+{{>footer}}
+

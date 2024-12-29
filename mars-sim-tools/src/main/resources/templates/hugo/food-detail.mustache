@@ -1,0 +1,26 @@
+---
+title: {{title}}
+linkTitle: {{food.name}}
+toc_hide: true
+hide_summary: true
+---
+
+{{#food.description}}
+## Description
+{{food.description}}
+{{/food.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Skill Level:|{{food.skillLevelRequired}}|
+|Tech Level:|{{food.techLevelRequired}}|
+|Process Time:|{{food.processTimeRequired}} millisols|
+|Work Level:|{{food.workTimeRequired}} millisols|
+|Power Required:|{{food.powerRequired}} kW/hr|
+
+{{>process-inout}}
+
+{{>footer}}
+

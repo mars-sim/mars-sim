@@ -20,7 +20,8 @@ public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> 
 
     protected ConstructionGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Construction Stage",
-                "Stages available for constructing a new site");
+                "Stages available for constructing a new site",
+                "construction");
         
         // Groups according to stage
         setGrouper("Stage", r-> r.getType().name());
@@ -45,15 +46,17 @@ public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> 
         }
         scope.put("dependents", dependents);
 
+        var hc = getParent();
+        
         List<ItemQuantity>resources = new ArrayList<>();
         resources.addAll(r.getParts().entrySet().stream()
-                            .map(e -> HelpContext.createItemQuantity(
+                            .map(e -> hc.createItemQuantity(
                                             ItemResourceUtil.findItemResourceName(e.getKey()),
                                             ItemType.PART,
                                             e.getValue()))
                             .toList());
         resources.addAll(r.getResources().entrySet().stream()
-                            .map(e -> HelpContext.createItemQuantity(
+                            .map(e -> hc.createItemQuantity(
                                             ResourceUtil.findAmountResourceName(e.getKey()),
                                             ItemType.AMOUNT_RESOURCE,
                                             e.getValue()))

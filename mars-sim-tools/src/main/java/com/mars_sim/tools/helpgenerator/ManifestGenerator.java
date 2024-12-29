@@ -20,7 +20,8 @@ public class ManifestGenerator extends TypeGenerator<ResupplyManifest> {
 
     protected ManifestGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Resupply Manifest",
-                "Resupply Manifests that are used to resupply a Settlement templates");
+                "Resupply Manifests that are used to resupply a Settlement templates",
+                null);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class ManifestGenerator extends TypeGenerator<ResupplyManifest> {
 	 */
     @Override
     protected void addEntityProperties(ResupplyManifest st, Map<String,Object> scope) {
-        SettlementGenerator.addSupplies(st.getSupplies(), scope);
+        SettlementGenerator.addSupplies(getParent(), st.getSupplies(), scope);
     }
 
     @Override
