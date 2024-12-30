@@ -164,14 +164,14 @@ extends TabPanel {
 		JLabel locationLabel = new JLabel("  " + Msg.getString("TabPanelDeath.placeOfDeath") + "  ", SwingConstants.CENTER); //$NON-NLS-1$
 		locationLabelPanel.add(locationLabel);
 
-		if (death.getContainerUnit() != null) {
+		if (death.getDeathVicinity() != null) {
 			// Prepare top container button
-			JButton topContainerButton = new JButton(death.getContainerUnit().getName());
+			JButton topContainerButton = new JButton(death.getDeathVicinity().getName());
 			topContainerButton.setHorizontalAlignment(SwingConstants.CENTER);
 			topContainerButton.addActionListener(e -> {
 					DeathInfo d = person.getPhysicalCondition().getDeathDetails();
-					if (!(d.getContainerUnit() instanceof MarsSurface))
-						getDesktop().showDetails(d.getContainerUnit());
+					if (!(d.getDeathVicinity() instanceof MarsSurface))
+						getDesktop().showDetails(d.getDeathVicinity());
 			});
 			locationLabelPanel.add(topContainerButton);
 		}

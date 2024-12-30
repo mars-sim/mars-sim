@@ -9,11 +9,14 @@ package com.mars_sim.core.unit;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
+import com.mars_sim.core.mission.Construction;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -161,7 +164,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public Coordinates getCoordinates() {
-		Unit cu = getContainerUnit();
+		var cu = getContainerUnit();
 		if (cu instanceof SurfacePOI mu) {
 			// Inside a container that is on the surface
 			return mu.getCoordinates();
@@ -337,14 +340,14 @@ public abstract class AbstractMobileUnit extends Unit
 	 *
 	 * @param newContainer
 	 */
-	protected static LocationStateType defaultLocationState(Unit newContainer) {
-		return switch (newContainer.getUnitType()) {
-            case SETTLEMENT -> LocationStateType.INSIDE_SETTLEMENT;
-            case BUILDING -> LocationStateType.INSIDE_SETTLEMENT;
-            case VEHICLE -> LocationStateType.INSIDE_VEHICLE;
-            case CONSTRUCTION -> LocationStateType.MARS_SURFACE;
-            case PERSON -> LocationStateType.ON_PERSON_OR_ROBOT;
-            case MARS -> LocationStateType.MARS_SURFACE;
+	protected static LocationStateType defaultLocationState(Object newContainer) {
+		return switch (newContainer) {
+            case Settlement s -> LocationStateType.INSIDE_SETTLEMENT;
+            case Building b -> LocationStateType.INSIDE_SETTLEMENT;
+            case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
+            case Construction c -> LocationStateType.MARS_SURFACE;
+            case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
+            case MarsSurface m -> LocationStateType.MARS_SURFACE;
             default -> null;
         };
 	}

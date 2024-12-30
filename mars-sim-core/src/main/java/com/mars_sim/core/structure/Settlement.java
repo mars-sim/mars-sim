@@ -1674,9 +1674,6 @@ public class Settlement extends Unit implements Temporal,
 
 			// Set x and y coordinates first prior to adding the person 
 			p.setCoordinates(getCoordinates());
-				
-			// Transfer the person to this settlement
-			p.transfer(this);
 						
 			// Add this person indoor map of the settlement
 			addToIndoor(p);
@@ -1775,9 +1772,6 @@ public class Settlement extends Unit implements Temporal,
 			
 			// Set x and y coordinates first prior to adding the robot 
 			r.setCoordinates(getCoordinates());	
-			
-			// Transfer the robot to this settlement
-			r.transfer(this);
 			
 			// Add the robot to the settlement
 			addRobotsWithin(r);

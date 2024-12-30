@@ -2187,7 +2187,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	protected boolean setContainerUnitAndID(Unit newContainer) {
 		if (newContainer != null) {
-			Unit cu = getContainerUnit();
+			var cu = getContainerUnit();
 			
 			if (newContainer.equals(cu)) {
 				return true;
@@ -2200,10 +2200,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 			// 2a. If the old cu is a settlement or building
 			//     and the new cu is mars surface,
 			//     then location state is within settlement vicinity
-			if (cu != null 
-					&& (cu.getUnitType() == UnitType.SETTLEMENT
-						|| cu.getUnitType() == UnitType.BUILDING)
-					&& newContainer.getUnitType() == UnitType.MARS) {
+			if ((cu instanceof Settlement
+						|| cu instanceof Building)
+					&& newContainer instanceof MarsSurface) {
 				newState = LocationStateType.SETTLEMENT_VICINITY;
 			}	
 			else {

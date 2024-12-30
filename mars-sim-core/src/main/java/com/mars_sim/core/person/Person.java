@@ -537,8 +537,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 		// Q: When should a person be removed from being a citizen of a settlement ?
 		// A: after being buried ? 
 		
-		// Back up the last container unit
-		condition.getDeathDetails().backupContainerUnit(getContainerUnit());
 		// Set his/her buried settlement
 		buriedSettlement = getAssociatedSettlement().getIdentifier();
 		// Throw unit event.
@@ -1524,7 +1522,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	private boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
 			// Gets the old container unit
-			Unit oldCU = getContainerUnit();
+			var oldCU = getContainerUnit();
 			
 			if (newContainer.equals(oldCU)) {
 				return true;
@@ -1546,24 +1544,24 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 			// 2a. If the previous cu is a settlement
 			//     and this person's new cu is mars surface,
 			//     then location state is within settlement vicinity
-			if (oldCU.getUnitType() == UnitType.SETTLEMENT
-				&& newContainer.getUnitType() == UnitType.MARS) {
+			if (oldCU instanceof Settlement
+				&& newContainer instanceof MarsSurface) {
 					newLocnState = LocationStateType.SETTLEMENT_VICINITY;
 			}	
 			// 2b. If the previous cu is a vehicle
 			//     and the previous cu is in settlement vicinity
 			//     then the new location state is settlement vicinity
-			else if (oldCU.getUnitType() == UnitType.VEHICLE
-					&& ((Vehicle) oldCU).isInSettlementVicinity()
-					&& newContainer.getUnitType() == UnitType.MARS) {
+			else if (oldCU instanceof Vehicle v
+					&& v.isInSettlementVicinity()
+					&& newContainer instanceof MarsSurface) {
 						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
 			}
 			// 2c. If the previous cu is a vehicle
 			//     and the previous cu vehicle is outside on mars surface
 			//     then the new location state is vehicle vicinity
-			else if ((oldCU.getUnitType() == UnitType.VEHICLE)
-					&& ((Vehicle)oldCU).isOutside()
-					&& newContainer.getUnitType() == UnitType.MARS) {
+			else if (oldCU instanceof Vehicle v
+					&& v.isOutside()
+					&& newContainer instanceof MarsSurface) {
 						newLocnState = LocationStateType.VEHICLE_VICINITY;
 			}
 			

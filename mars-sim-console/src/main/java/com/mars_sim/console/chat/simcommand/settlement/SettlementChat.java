@@ -46,7 +46,6 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	MissionCreateCommand.MISSION,
 																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
-																    ResuscitationCommand.RESURRECT,
 																	TradeCommand.TRADE,
 																	new ResourceHolderRefillCommand(SETTLEMENT_GROUP),
 																	new PartFurnishedCommand(SETTLEMENT_GROUP),

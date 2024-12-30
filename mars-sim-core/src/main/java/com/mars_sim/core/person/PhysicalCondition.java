@@ -1455,14 +1455,9 @@ public class PhysicalCondition implements Serializable {
 		person.getMind().setActive();
 		// Starts the recovery
 		problem.startRecovery();
-		
-		// If a person is outside or in a vehicle when he passed away,
-		// should he be revived in the same container unit ? 
-		// Get the saved container unit
-		Unit cu = deathDetails.getContainerUnit();
 
-		// Transfer this person back to where he was last spotted
-		person.transfer(cu);
+		// Transfer this person back to home settlement
+		person.getAssociatedSettlement().addACitizen(person);
 		
 		// Set death detail to null
 		deathDetails = null;

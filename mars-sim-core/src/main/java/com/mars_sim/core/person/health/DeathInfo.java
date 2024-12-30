@@ -9,8 +9,8 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.Coordinates;
@@ -81,7 +81,7 @@ public class DeathInfo implements Serializable {
 	/** Medical problem contributing to the death. */
 	private HealthProblem problem;
 	/** Container unit at time of death. */
-	private Unit containerUnit;
+	private Entity containerUnit;
 	/** Coordinate at time of death. */
 	private Coordinates locationOfDeath;
 	/** The person's job at time of death. */
@@ -260,17 +260,8 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @return container unit
 	 */
-	public Unit getContainerUnit() {
+	public Entity getDeathVicinity() {
 		return containerUnit;
-	}
-
-	/**
-	 * Backs up the container unit.
-	 * 
-	 * @param c
-	 */
-	public void backupContainerUnit(Unit c) {
-		containerUnit = c;
 	}
 	
 	/**
