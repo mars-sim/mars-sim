@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
@@ -798,11 +797,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.addEquipment(e);
 	}
 
 	/**
@@ -877,8 +872,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			// 2. Set LocationStateType
 			// 3. Set container
 			setContainer(newContainer, defaultLocationState(newContainer));
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 
 		return true;
@@ -928,38 +921,27 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-		Unit cu = getContainerUnit();
-		if (cu == null) {
-			// Fire the unit event type
-			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-			// Set the new container unit (which will internally set the container unit id)
-			return setContainerUnit(destination);
-		}
-		
-		UnitType ut = cu.getUnitType();
+		var cu = getContainerUnit();
 
 		if (destination.equals(cu)) {
 			return true;
 		}
 
 		// Check if the origin is a vehicle
-		if (ut == UnitType.VEHICLE) {
-			if (cu instanceof Crewable c) {
-				transferred = c.removeRobot(this);
-			}
-			else {
-				logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
-			}
+		if (cu instanceof Crewable c) {
+			transferred = c.removeRobot(this);
 		}
-		else if (ut == UnitType.MARS) {
-			transferred = ((MarsSurface)cu).removeRobot(this);
+		else if (cu instanceof MarsSurface ms) {
+			transferred = ms.removeRobot(this);
 		}
-		else if (ut == UnitType.BUILDING
-				|| ut == UnitType.SETTLEMENT) {
+		else if (cu instanceof Settlement s) {
 			// Question: should we remove this unit from settlement's robotWithin list
 			// especially if it is still inside the garage of a settlement
-			transferred = ((Settlement)cu).removeRobotsWithin(this);
+			transferred = s.removeRobotsWithin(this);
 			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
+		}
+		else {
+			logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
 		}
 
 		if (!transferred) {
@@ -969,26 +951,21 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		
 		else {
 			// Check if the destination is a vehicle
-			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (destination instanceof Crewable c) {
-					transferred = c.addRobot(this);
-				}
-				else {
-					logger.warning(this, 20_000, "Not possible to be stored into " + cu + ".");
-				}
+			if (destination instanceof Crewable c) {
+				transferred = c.addRobot(this);
 			}
-			else if (destination.getUnitType() == UnitType.MARS) {
-				transferred = ((MarsSurface)destination).addRobot(this);
+			else if (destination instanceof MarsSurface ms) {
+				transferred = ms.addRobot(this);
 			}
-			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addRobotsWithin(this);
+			else if (destination instanceof Settlement s) {
+				transferred = s.addRobotsWithin(this);
 			}
-			else if (destination.getUnitType() == UnitType.BUILDING) {
-				BuildingManager.setToBuilding(this, (Building)destination);
-				transferred = ((Building)destination).getSettlement().addRobotsWithin(this);
+			else if (destination instanceof Building b) {
+				BuildingManager.setToBuilding(this, b);
+				transferred = b.getSettlement().addRobotsWithin(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				destination = ((Building)destination).getSettlement();
+				destination = b.getSettlement();
 			}
 
 			if (!transferred) {
@@ -998,10 +975,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
-				// Fire the unit event type
-				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type
-				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 

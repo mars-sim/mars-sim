@@ -22,7 +22,6 @@ public enum UnitEventType {
 	DESCRIPTION_EVENT				("description"),
 	MASS_EVENT						("mass"),
 	LOCATION_EVENT					("location"),
-	CONTAINER_UNIT_EVENT			("container unit"),
 	NOTES_EVENT						("notes"),
 	
 	// For Settlement
@@ -33,15 +32,11 @@ public enum UnitEventType {
 	REMOVE_ASSOCIATED_ROBOT_EVENT	("remove associated robot"),
 	
 	ADD_ASSOCIATED_EQUIPMENT_EVENT		("add associated equipment"),
-	REMOVE_ASSOCIATED_EQUIPMENT_EVENT	("remove associated equipment"),
 
 	ADD_ASSOCIATED_BIN_EVENT			("add associated bin"),
 	REMOVE_ASSOCIATED_BIN_EVENT			("remove associated bin"),
 	
 	BACKLOG_EVENT						("backlog event"),
-
-
-//	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
 
 	// For PhysicalCondition
 	FATIGUE_EVENT					("fatigue event"),

@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.Salvagable;
@@ -227,7 +225,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 	 */
 	@Override
 	public Vehicle getVehicle() {
-		Unit container = getContainerUnit();
+		var container = getContainerUnit();
 		if (container instanceof Vehicle v)
 			return v;
 		if ((container instanceof MobileUnit mu)
@@ -307,7 +305,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 	public boolean transfer(Unit destination) {
 		boolean canRetrieve = false;
 		boolean canStore = false;
-		Unit cu = getContainerUnit();
+		var cu = getContainerUnit();
 		if (cu instanceof EquipmentOwner deo) {
 			canRetrieve = deo.removeEquipment(this);
 		}
@@ -321,10 +319,10 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 						+ cu + "'.");
 		}
 		else {	
-			if (destination.getUnitType() == UnitType.BUILDING) {
+			if (destination instanceof Building b) {
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				destination = ((Building)destination).getAssociatedSettlement();
+				destination = b.getAssociatedSettlement();
 			}
 
 			if (destination instanceof EquipmentOwner eo) {
@@ -349,16 +347,10 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 					logger.warning(this, 60_000L, "Could not be stored back into '"
 							+ cu + "'.");
 				}
-				
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainer(destination, defaultLocationState(destination));
-				
-				// Fire the unit event type
-				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type
-				if (cu != null) cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		

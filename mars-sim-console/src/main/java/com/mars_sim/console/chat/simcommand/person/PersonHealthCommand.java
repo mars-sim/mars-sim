@@ -17,10 +17,20 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.hazard.HazardEvent;
+import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.Complaint;
+import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.RadiationExposure;
+import com.mars_sim.core.person.health.RadiationType;
+import com.mars_sim.core.tool.RandomUtil;
 
 /** 
  * Reports on a Persons health.
@@ -34,14 +44,14 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	private static final String STRESS = "Stress";
 	private static final String PERFORMANCE = "Performance";
 	private static final String ENERGY = "Energy";
-	private static final String PROBLEMS = "Health problems";
+	private static final String ILLNESS = "Illness";
 
 	private static final List<String> CHARACTERISTICS = List.of(
 													FATIGUE, 
 													HUNGER,
 													STRESS,
 													THIRST,
-													PROBLEMS);
+													ILLNESS);
 
 	public PersonHealthCommand() {
 		super("h", "health", "About health");
@@ -87,7 +97,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 				String change = context.getInput("Change values (Y/N)?");
 		        
 		        if ("Y".equalsIgnoreCase(change)) {
-		        	changeCondition(context, pc);
+		        	changeCondition(context, person, pc);
 		        }
 		        else {
 		        	active = false;
@@ -104,7 +114,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	 * @param context
 	 * @param pc
 	 */
-	private void changeCondition(Conversation context, PhysicalCondition pc) {
+	private void changeCondition(Conversation context,Person person, PhysicalCondition pc) {
 		// Choose characteristic
 		int choice = CommandHelper.getOptionInput(context, CHARACTERISTICS, "Which attribute to change?");
 		if (choice < 0) {
@@ -112,8 +122,8 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 		}
 
 		String choosen = CHARACTERISTICS.get(choice);
-		if (choosen.equals(PROBLEMS)) {
-			addHealthProblem(context, pc);
+		if (choosen.equals(ILLNESS)) {
+			addHealthProblem(context,person, pc);
 		}
 		else {
 			// Simple numeric value
@@ -150,19 +160,52 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	 * @param context
 	 * @param pc
 	 */
-	private void addHealthProblem(Conversation context, PhysicalCondition pc) {
+	private void addHealthProblem(Conversation context, Person person, PhysicalCondition pc) {
 	
 		// Choose one
 		List<Complaint> complaints = new ArrayList<>(SimulationConfig.instance().getMedicalConfiguration().getComplaintList());
 		Collections.sort(complaints, Comparator.comparing(Complaint::getType));
 		List<String> problems = complaints.stream().map(c -> c.getType().getName()).collect(Collectors.toList());
-		int choice = CommandHelper.getOptionInput(context, problems, "Choose a new health complaint");
+		int choice = CommandHelper.getOptionInput(context, problems, "Choose a new Complaint");
 		if (choice <= 0) {
 			return;
 		}
 	
 		Complaint choosen = complaints.get(choice);
 		context.println("Adding new Complaint " + choosen.getType().getName());
-		pc.addMedicalComplaint(choosen);
+		var problem = pc.addMedicalComplaint(choosen);
+
+		// Radition has extra values
+		if (choosen.getType() == ComplaintType.RADIATION_SICKNESS) {			
+			RadiationExposure exposure = person.getPhysicalCondition().getRadiationExposure();
+					
+			int region = RandomUtil.getRandomInt(2);
+			double buffer = exposure.getBufferDose(region);
+			BodyRegionType regionType = switch(region) {
+				case 0 -> BodyRegionType.BFO;
+				case 1 -> BodyRegionType.OCULAR;
+				case 2 -> BodyRegionType.SKIN;
+				default -> BodyRegionType.BFO;
+			};
+			
+			var rad = exposure.addDose(RadiationType.SEP, regionType, buffer * 1.2);
+			
+			HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
+					rad,
+					rad.toString(),
+					person.getTaskDescription(),
+					person.getName(), 
+					person
+					);
+			Simulation.instance().getEventManager().registerNewEvent(hEvent);
+
+			person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
+		}
+
+		String toSave = context.getInput("Caused death (Y/N)?");
+		if ("Y".equalsIgnoreCase(toSave)) {
+			context.println(person + " is now dead.");
+			person.getPhysicalCondition().recordDead(problem, true, "Act of God");
+		}
 	}
 }

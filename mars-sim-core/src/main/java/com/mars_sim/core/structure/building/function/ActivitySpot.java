@@ -45,7 +45,7 @@ public final class ActivitySpot implements Serializable {
 		 * @param release Release the permanent reservation
 		 */
 		public void leave(Worker w, boolean release) {
-			if (spot.leave(w, release)) {
+			if (spot != null && spot.leave(w, release)) {
 				spot = null;
 			}
 		}

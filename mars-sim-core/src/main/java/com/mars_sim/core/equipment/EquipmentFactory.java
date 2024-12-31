@@ -11,6 +11,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
@@ -57,24 +58,21 @@ public final class EquipmentFactory {
 			newEqm = new EVASuit(newName, settlement);
 			break;
 
-		case BAG:
-		case BARREL:
-		case GAS_CANISTER:
-		case LARGE_BAG:
+		case BAG, BARREL, GAS_CANISTER, LARGE_BAG:
 			newEqm = new GenericContainer(newName, type, false, settlement);
 			break;
 			
-		case SPECIMEN_BOX:
-		case THERMAL_BOTTLE:
-		case WHEELBARROW:			
+		case SPECIMEN_BOX, THERMAL_BOTTLE, WHEELBARROW:			
 			// Reusable Containers
 			newEqm = new GenericContainer(newName, type, true, settlement);
 			break;
 		}
 
 		unitManager.addUnit(newEqm);
-		// Add this equipment as being owned by this settlement
+
+		// Add this equipment as being placed in this settlement
 		settlement.addEquipment(newEqm);
+		settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, newEqm);
 
 		return newEqm;
 	}

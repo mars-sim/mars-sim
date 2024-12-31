@@ -1621,6 +1621,9 @@ public class Settlement extends Unit implements Temporal,
 		if (indoorPeople.contains(p)) {
 			return true;
 		}
+		
+		// Fire the unit event type
+		fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, p);
 		return indoorPeople.add(p);
 	}
 	
@@ -1634,6 +1637,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public boolean removePeopleWithin(Person p) {
 		if (!indoorPeople.contains(p)) {
+			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, p);
 			return true;
 		}
 		return indoorPeople.remove(p);
@@ -1670,9 +1674,6 @@ public class Settlement extends Unit implements Temporal,
 
 			// Set x and y coordinates first prior to adding the person 
 			p.setCoordinates(getCoordinates());
-				
-			// Transfer the person to this settlement
-			p.transfer(this);
 						
 			// Add this person indoor map of the settlement
 			addToIndoor(p);
@@ -1772,9 +1773,6 @@ public class Settlement extends Unit implements Temporal,
 			// Set x and y coordinates first prior to adding the robot 
 			r.setCoordinates(getCoordinates());	
 			
-			// Transfer the robot to this settlement
-			r.transfer(this);
-			
 			// Add the robot to the settlement
 			addRobotsWithin(r);
 			
@@ -1816,6 +1814,8 @@ public class Settlement extends Unit implements Temporal,
 		if (robotsWithin.contains(r)) {
 			return true;
 		}
+		fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, r);
+
 		return robotsWithin.add(r);
 	}
 
@@ -1844,6 +1844,8 @@ public class Settlement extends Unit implements Temporal,
 		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
 			vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+
+			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
 		}
@@ -1859,6 +1861,9 @@ public class Settlement extends Unit implements Temporal,
 	public boolean removeVicinityParkedVehicle(Vehicle vehicle) {
 		if (!vicinityParkedVehicles.contains(vehicle))
 			return true;
+		
+		fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
+
 		return vicinityParkedVehicles.remove(vehicle);
 	}
 
@@ -1936,11 +1941,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.addEquipment(e);
 	}
 
 	/**
@@ -1950,11 +1951,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean removeEquipment(Equipment e) {
-		if (eqmInventory.removeEquipment(e)) {
-			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
+		return eqmInventory.removeEquipment(e);
 	}
 
 	/**
