@@ -84,12 +84,13 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.FixedUnit;
+import com.mars_sim.core.unit.UnitHolder;
 
 /**
  * The Building class is a settlement's building.
  */
 public class Building extends FixedUnit implements Malfunctionable,
-	 InsidePathLocation, Temporal, ResourceHolder, ItemHolder {
+	 InsidePathLocation, Temporal, ResourceHolder, UnitHolder, ItemHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

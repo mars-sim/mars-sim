@@ -81,6 +81,7 @@ import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -89,7 +90,7 @@ import com.mars_sim.core.vehicle.Vehicle;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends AbstractMobileUnit implements Worker, Temporal, Appraiser {
+public class Person extends AbstractMobileUnit implements Worker, Temporal, UnitHolder, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1519,7 +1520,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	private boolean setContainerUnit(Unit newContainer) {
+	private boolean setContainerUnit(UnitHolder newContainer) {
 		if (newContainer != null) {
 			// Gets the old container unit
 			var oldCU = getContainerUnit();
@@ -1578,7 +1579,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Appr
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	public boolean transfer(Unit destination) {
+	@Override
+	public boolean transfer(UnitHolder destination) {
 		boolean transferred = false;
 		var cu = getContainerUnit();
 		if (destination.equals(cu)) {

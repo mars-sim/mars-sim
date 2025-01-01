@@ -8,7 +8,6 @@ package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
@@ -35,7 +34,7 @@ public abstract class AbstractMobileUnit extends Unit
 	private LocationTag tag;
 	private LocationStateType locnState;
 	private Coordinates location;
-	private Unit container;
+	private UnitHolder container;
 
     /**
 	 * Constructor.
@@ -55,7 +54,8 @@ public abstract class AbstractMobileUnit extends Unit
 	 * Get the container of this mobile unit.
 	 * @return Should never be null
 	 */
-	public Unit getContainerUnit() {
+	@Override
+	public UnitHolder getContainerUnit() {
 		return container;
 	}
 
@@ -64,7 +64,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @param destination New destination of container
 	 * @param newState 
 	 */
-	protected void setContainer(Unit destination, LocationStateType newState) {
+	protected void setContainer(UnitHolder destination, LocationStateType newState) {
 		this.locnState = newState;
 		container = destination;
 	}
@@ -308,10 +308,10 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		Unit cu = getContainerUnit();
-		if (cu.getUnitType() == UnitType.VEHICLE) {
+		var cu = getContainerUnit();
+		if (cu instanceof Vehicle v) {
 			// still inside the garage
-			return ((Vehicle)cu).isInGarage();
+			return v.isInGarage();
 		}
 		return false;
 	}

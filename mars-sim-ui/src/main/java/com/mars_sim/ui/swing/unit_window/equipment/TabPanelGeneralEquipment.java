@@ -17,6 +17,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
@@ -94,7 +95,7 @@ public class TabPanelGeneralEquipment extends TabPanel {
 					pOwnerCache, null);
 	
 			historyPanel = new HistoryPanel(suit.getHistory());
-			historyPanel.setPreferredSize(new Dimension(225, 100));
+			historyPanel.setPreferredSize(new Dimension(225, 200));
 	
 			content.add(historyPanel, BorderLayout.SOUTH);
 		}
@@ -125,16 +126,16 @@ public class TabPanelGeneralEquipment extends TabPanel {
 	/**
 	 * Internal class used as model for the attribute table.
 	 */
-	private class HistoryPanel extends JHistoryPanel<Unit> {
+	private class HistoryPanel extends JHistoryPanel<UnitHolder> {
 		private static final ColumnSpec[] COLUMNS = {new ColumnSpec("Location", String.class)};
 
 
-		HistoryPanel(History<Unit> source) {
+		HistoryPanel(History<UnitHolder> source) {
 			super(source, COLUMNS);
 		}
 
 		@Override
-		protected Object getValueFrom(Unit value, int columnIndex) {
+		protected Object getValueFrom(UnitHolder value, int columnIndex) {
 			return value.getName();
 		}
 	}

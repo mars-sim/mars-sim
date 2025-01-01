@@ -12,7 +12,6 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.History;
@@ -32,6 +31,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.unit.UnitHolder;
 
 /**
  * 
@@ -127,7 +127,7 @@ public class EVASuit extends Equipment
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
 	
-	private History<Unit> locnHistory;
+	private History<UnitHolder> locnHistory;
 	
 	static {
 
@@ -454,7 +454,7 @@ public class EVASuit extends Equipment
 	}
 
 	@Override
-	public void setContainer(Unit parent, LocationStateType newState) {
+	public void setContainer(UnitHolder parent, LocationStateType newState) {
 		var cu = getContainerUnit();
 		if (parent != cu) {
 			// Add new parent to owner history
@@ -471,7 +471,7 @@ public class EVASuit extends Equipment
 	 * 
 	 * @return
 	 */
-	public History<Unit> getHistory() {
+	public History<UnitHolder> getHistory() {
 		return locnHistory;
 	}
 	

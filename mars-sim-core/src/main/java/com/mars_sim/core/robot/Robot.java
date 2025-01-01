@@ -53,6 +53,7 @@ import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
 
 /**
@@ -850,9 +851,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	private boolean setContainerUnit(Unit newContainer) {
+	private boolean setContainerUnit(UnitHolder newContainer) {
 		if (newContainer != null) {
-			Unit cu = getContainerUnit();
+			var cu = getContainerUnit();
 			
 			if (newContainer.equals(cu)) {
 				return true;
@@ -919,7 +920,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	public boolean transfer(Unit destination) {
+	@Override
+	public boolean transfer(UnitHolder destination) {
 		boolean transferred = false;
 		var cu = getContainerUnit();
 

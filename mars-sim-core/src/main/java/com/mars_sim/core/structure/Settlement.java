@@ -94,6 +94,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -104,7 +105,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Unit implements Temporal,
-	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser, SurfacePOI {
+	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, UnitHolder, Appraiser, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -2823,7 +2824,7 @@ public class Settlement extends Unit implements Temporal,
 			}
 		}
 		
-		return null;
+		return Collections.emptyList();
 	}
 
 	/**
