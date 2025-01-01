@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -18,6 +17,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -58,7 +58,7 @@ public final class EVASuitUtil {
 		// Transfer the EVA suit from person to the new destination
 		if (suit != null) {
 			// Doff this suit.
-			boolean success = suit.transfer((Unit)housing);
+			boolean success = suit.transfer((UnitHolder)housing);
 			
 			if (!success) {
 				logger.warning(person, 4_000,

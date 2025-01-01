@@ -1,6 +1,5 @@
 package com.mars_sim.core.unit;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
@@ -17,7 +16,14 @@ public interface MobileUnit extends SurfacePOI {
 	 * Where is this mobile unit residing
 	 * @return
 	 */
-	public Unit getContainerUnit();
+	public UnitHolder getContainerUnit();
+
+	/**
+	 * Transfer this mobile unit to a new container
+	 * @param destination
+	 * @return
+	 */
+	public boolean transfer(UnitHolder destination);
 
 	/**
 	 * Is the worker in a vehicle ?

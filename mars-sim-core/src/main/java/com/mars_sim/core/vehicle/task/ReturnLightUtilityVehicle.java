@@ -6,7 +6,9 @@
  */
 package com.mars_sim.core.vehicle.task;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
@@ -24,6 +26,7 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -63,11 +66,12 @@ public class ReturnLightUtilityVehicle extends Task {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 0D);
 		
 		Vehicle personVehicle = person.getVehicle();
-		if ((personVehicle != null) && (personVehicle instanceof LightUtilityVehicle)) {
-			luv = (LightUtilityVehicle) personVehicle;
+		if (personVehicle instanceof LightUtilityVehicle l) {
+			luv = l;
 		} else {
 			endTask();
 			logger.severe(person, "Is not in a light utility vehicle.");
+			return;
 		}
 
 		// Return container may be settlement or rover.
@@ -76,8 +80,7 @@ public class ReturnLightUtilityVehicle extends Task {
 		// Attempt to determine return container based on mission.
 		Mission mission = person.getMind().getMission();
 		if (mission != null) {
-			if (mission instanceof RoverMission) {
-				RoverMission roverMission = (RoverMission) mission;
+			if (mission instanceof RoverMission roverMission) {
 				returnContainer = roverMission.getRover();
 			} else {
 				returnContainer = mission.getAssociatedSettlement();
@@ -161,7 +164,6 @@ public class ReturnLightUtilityVehicle extends Task {
 			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
 				s = (Settlement)returnContainer;
 				done = s.addVicinityVehicle(r);
-//				luv.findNewParkingLoc();
 				// Unload any attachment parts or inventory from light utility vehicle.
 				unloadLUVInventory(s);
 			}
@@ -192,11 +194,12 @@ public class ReturnLightUtilityVehicle extends Task {
 	 */
 	private void unloadLUVInventory(EquipmentOwner eo) {
 
+		UnitHolder eqmHolder = (UnitHolder) eo;
+		
 		// Unload all units.
-		Iterator<Equipment> j = luv.getContainerSet().iterator();
-		while (j.hasNext()) {
-			Equipment unit = j.next();
-			if (!unit.transfer(returnContainer)) {
+		List<Equipment> eqmCopy = new ArrayList<>(luv.getContainerSet());
+		for(Equipment unit : eqmCopy) {
+			if (!unit.transfer(eqmHolder)) {
 				logger.severe(unit, "Cannot be stored in " + returnContainer.getName());
 			}
 		}

@@ -56,16 +56,17 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.Indoor;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.structure.building.function.VehicleMaintenance;
 import com.mars_sim.core.structure.building.task.MaintainBuilding;
+import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
@@ -74,8 +75,8 @@ import com.mars_sim.core.vehicle.task.LoadingController;
  * a specific type of vehicle.
  */
 public abstract class Vehicle extends AbstractMobileUnit
-		implements Malfunctionable, Salvagable, Temporal, Indoor,
-		LocalBoundedObject, EquipmentOwner, ItemHolder, Towed {
+		implements Malfunctionable, Salvagable, Temporal,
+		LocalBoundedObject, EquipmentOwner, ItemHolder, UnitHolder, Towed {
 
 	private static final long serialVersionUID = 1L;
 
@@ -2185,7 +2186,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	protected boolean setContainerUnitAndID(Unit newContainer) {
+	protected boolean setContainerUnitAndID(UnitHolder newContainer) {
 		if (newContainer != null) {
 			var cu = getContainerUnit();
 			
@@ -2221,29 +2222,17 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param newContainer
 	 * @return {@link LocationStateType}
 	 */
-	private LocationStateType getNewLocationState(Unit newContainer) {
+	private LocationStateType getNewLocationState(UnitHolder newContainer) {
 
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
-			if (isInGarage()) {
-				return LocationStateType.INSIDE_SETTLEMENT;
-			}
-			else
-				return LocationStateType.SETTLEMENT_VICINITY;
-		}
-
-		if (newContainer.getUnitType() == UnitType.VEHICLE)
-			return LocationStateType.INSIDE_VEHICLE;
-
-		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.MARS_SURFACE;
-
-		if (newContainer.getUnitType() == UnitType.PERSON)
-			return LocationStateType.ON_PERSON_OR_ROBOT;
-
-		if (newContainer.getUnitType() == UnitType.MARS)
-			return LocationStateType.MARS_SURFACE;
-
-		return null;
+		return switch(newContainer) {
+			case Settlement s -> (isInGarage() ? LocationStateType.INSIDE_SETTLEMENT
+						: LocationStateType.SETTLEMENT_VICINITY);
+			case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
+			case ConstructionSite cs -> LocationStateType.MARS_SURFACE;
+			case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
+			case MarsSurface ms -> LocationStateType.MARS_SURFACE;
+			default -> null;
+		};
 	}
 
 	/**
@@ -2260,10 +2249,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 		var currentStateType = getLocationStateType();
 		boolean isVehicleInGarage = LocationStateType.INSIDE_SETTLEMENT == currentStateType;
 		boolean isVehicleInSettlementVicinity = LocationStateType.SETTLEMENT_VICINITY == currentStateType;
-		boolean isUnitTypeSettlement = getContainerUnit().getUnitType() == UnitType.SETTLEMENT;
-		boolean isVicinityParkedVehicle = (getContainerUnit() instanceof Settlement s) && s.containsVicinityParkedVehicle(this);
+		boolean isUnitTypeSettlement = getContainerUnit() instanceof Settlement;
 
-		return isVehicleInGarage || isVehicleInSettlementVicinity || isUnitTypeSettlement || isVicinityParkedVehicle;
+		return isVehicleInGarage || isVehicleInSettlementVicinity || isUnitTypeSettlement ;
 	}
 
 	/**
@@ -2272,7 +2260,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	public boolean transfer(Unit destination) {
+	@Override
+	public boolean transfer(UnitHolder destination) {
 		boolean leaving = false;
 		boolean transferred = false;
 		var cu = getContainerUnit();

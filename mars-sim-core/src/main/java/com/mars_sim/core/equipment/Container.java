@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.equipment;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.unit.UnitHolder;
 
 /**
  * This interface accounts for units that are considered container for resources
@@ -24,7 +24,7 @@ public interface Container extends ResourceHolder {
 	
 	public double getBaseMass();
 
-	public boolean transfer(Unit newOwner);
+	public boolean transfer(UnitHolder newOwner);
 
 	public double getStoredMass();
 

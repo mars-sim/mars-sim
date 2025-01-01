@@ -10,11 +10,13 @@ package com.mars_sim.core.environment;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.unit.UnitHolder;
 
 /**
  * MarsSurface is the object unit that represents the surface of Mars
  */
-public class MarsSurface extends PlanetaryEntity {
+public class MarsSurface extends PlanetaryEntity
+	implements UnitHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;

@@ -21,17 +21,17 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.Indoor;
 import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
  * equipment, such as a kit, a container, an EVA suit or a medpack.
  */
-public abstract class Equipment extends AbstractMobileUnit implements Indoor, Salvagable {
+public abstract class Equipment extends AbstractMobileUnit implements Salvagable {
 
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -302,7 +302,8 @@ public abstract class Equipment extends AbstractMobileUnit implements Indoor, Sa
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	public boolean transfer(Unit destination) {
+	@Override
+	public boolean transfer(UnitHolder destination) {
 		boolean canRetrieve = false;
 		boolean canStore = false;
 		var cu = getContainerUnit();
