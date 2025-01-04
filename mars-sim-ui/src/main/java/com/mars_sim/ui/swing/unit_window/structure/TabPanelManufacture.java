@@ -102,7 +102,7 @@ public class TabPanelManufacture extends TabPanel {
 		manufactureOuterListPane.add(manufactureListPane, BorderLayout.NORTH);
 
 		// Create the process panels.
-		manufactureListPane.update(getManufactureProcesses(), getSalvageProcesses());
+		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
 		
 		// CReate tabbed pane and add Active
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -190,19 +190,17 @@ public class TabPanelManufacture extends TabPanel {
 			target.getManuManager().addManufacturing(selectedProcess);
 
 			update();
-			showRenderer();
-		}
-	}
 
-	private void showRenderer() {
+		}
 		processSelection.setSelectedIndex(-1);
 	}
-	
+
+
 	@Override
 	public void update() {
 
 		// Update processes if necessary.
-		manufactureListPane.update(getManufactureProcesses(), getSalvageProcesses());
+		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
 		manufactureScrollPane.validate();
 
 		queueModel.update(target);
@@ -213,7 +211,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * 
 	 * @return list of manufacture processes.
 	 */
-	private List<ManufactureProcess> getManufactureProcesses() {
+	private List<ManufactureProcess> getActiveManufacturing() {
 		List<ManufactureProcess> result = new ArrayList<>();
 
 		for(var i : target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
@@ -229,7 +227,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * 
 	 * @return list of salvage processes.
 	 */
-	private List<SalvageProcess> getSalvageProcesses() {
+	private List<SalvageProcess> getActiveSalvaging() {
 		List<SalvageProcess> result = new ArrayList<>();
 
 		for (var i : target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {	
@@ -268,6 +266,9 @@ public class TabPanelManufacture extends TabPanel {
 		target.setProcessOverride(type, override);
 	}
 
+	/**
+	 * Model of the queued processes
+	 */
 	private static class ProcessQueueModel extends AbstractTableModel {
 
 		private static final int NAME_COL = 0;

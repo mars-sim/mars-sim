@@ -8,6 +8,7 @@
 package com.mars_sim.core.manufacture;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -29,7 +30,10 @@ public class ManufactureConfigTest {
 
     private static final String MAKE_FERTILIZERS = "Make crop fertilizers";
     private static final String MAKE_RADIO_ANTENNA ="Make radio antenna";
-    private static final int FERTILIZER_ALT = 9;
+    private static final String[] FERTILIZER_ALT_NAMES = {
+        "Nitrite","Ammonia","potash lye", "Crop Waste",
+        "Nitrospira SPP","Rhizobia","iron powder","copper","hydrogen"
+    };
     private static final int FERTILIZER_INPUTS = 10;
 
 
@@ -41,8 +45,24 @@ public class ManufactureConfigTest {
 
     @Test
     void testProcessesLoaded() {
-        var manuProcesses = getManufactureConfig().getManufactureProcessList();
+        var conf = getManufactureConfig();
+        var manuProcesses = conf.getManufactureProcessList();
         assertTrue("Manufacturing processes defined", !manuProcesses.isEmpty());
+
+        List<ManufactureProcessInfo> previous = null;
+
+        // Check each level is larger than the previous; highest level can do more processing
+        // 3 is highest tech level
+        for(int i = 0; i <= 3; i++) {
+            var p = conf.getManufactureProcessesForTechLevel(i);
+            assertFalse("Tech list level " + i, p.isEmpty());
+            if (previous != null) {
+                assertTrue("Level is more than previous #" + i, p.size() > previous.size());
+                assertTrue("Level contains previous #" + i, p.containsAll(previous));
+            }
+
+            previous = p;
+        }
 
     }
 
@@ -60,14 +80,14 @@ public class ManufactureConfigTest {
         Set<List<ProcessItem>> alternatives = new HashSet<>();
         alternatives.add(fertilizerP.getInputList());
 
-        for(int i = 1; i <= FERTILIZER_ALT; i++) {
-            var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.ALT_PREFIX + i);
-            assertNotNull(MAKE_FERTILIZERS + " alternative " + i, found);
-            assertEquals(MAKE_FERTILIZERS + " alternative " + i + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
+        for(var alt : FERTILIZER_ALT_NAMES) {
+            var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.WITH_PREFIX + alt);
+            assertNotNull(MAKE_FERTILIZERS + " alternative " + alt, found);
+            assertEquals(MAKE_FERTILIZERS + " alternative " + alt + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", FERTILIZER_ALT + 1, alternatives.size());
+        assertEquals("All alternatives have different inputs", FERTILIZER_ALT_NAMES.length + 1, alternatives.size());
     }
 
     @Test

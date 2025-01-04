@@ -17,6 +17,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 
@@ -36,11 +37,11 @@ public class FoodProductionConfig {
 	private static final String PART = "part";
 	private static final String EQUIPMENT = "equipment";
 
-	public static final String RECIPE_PREFIX = " Recipe #";
+	public static final String RECIPE_PREFIX = " with ";
 	/**
 	 * A map of a list of processes at or below a tech level.
 	 */
-	private transient Map<Integer, List<FoodProductionProcessInfo>> techLevelProcesses;
+	private List<List<FoodProductionProcessInfo>> processByTech;
 	
 	private List<FoodProductionProcessInfo> processList;
 
@@ -50,9 +51,6 @@ public class FoodProductionConfig {
      * @param foodProductionDoc DOM document containing foodProduction process configuration.
      */
     public FoodProductionConfig(Document foodProductionDoc) {
-    	
-		techLevelProcesses = new HashMap<>();
-
     	buildProcessList(foodProductionDoc);
     }
 
@@ -74,15 +72,11 @@ public class FoodProductionConfig {
 	 * @throws Exception if error getting processes.
 	 */
 	public List<FoodProductionProcessInfo> getProcessesForTechLevel(int techLevel) {
-		List<FoodProductionProcessInfo> list = new ArrayList<>();
-		
-		for (int i = 0; i <= techLevel; i++) {
-			if (techLevelProcesses.containsKey(i)) {
-				list.addAll(techLevelProcesses.get(i));
-			}
+		if (techLevel < 0) {
+			return Collections.emptyList();
 		}
-		
-		return list;
+		techLevel = Math.min(techLevel, processByTech.size()-1);
+		return processByTech.get(techLevel);
 	}
 	
 	
@@ -140,68 +134,30 @@ public class FoodProductionConfig {
 						inputList, outputList);
 
 			newList.add(process);
-		
-			// Add the process to a list and a map
-			addToTechLevelProcesses(process, techLevel);
 
 			if (!alternateResourceMap.isEmpty()) {
 				// Create a list for the original resources from alternateResourceMap
 				String processName = process.getName();
-				int i = 1;
-				for (var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList)) {
+				for (var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList).entrySet()) {
 					
 					// Write the modified input resource list onto the new list
-					String altProcessName = processName + RECIPE_PREFIX + i++;
+					String altProcessName = processName + RECIPE_PREFIX + newInputItems.getKey();
 
 					FoodProductionProcessInfo process1 = new FoodProductionProcessInfo(altProcessName, process.getDescription(),
 							process.getTechLevelRequired(), process.getSkillLevelRequired(),
 							process.getWorkTimeRequired(), process.getProcessTimeRequired(),
-							process.getPowerRequired(), newInputItems,
+							process.getPowerRequired(), newInputItems.getValue(),
 							process.getOutputList());
 					
 					// Add process to newList.
 					newList.add(process1);
-								
-					// Add the process to a list and a map
-					addToTechLevelProcesses(process, techLevel);
+
 				}
 			}
 		}
         
 		// Assign the newList now built
 		processList = Collections.unmodifiableList(newList);
-    }
-    
-	/**
-	 * Adds a process to a list and then the process map.
-	 * 
-	 * @param process
-	 * @param techLevel
-	 */
-	private void addToTechLevelProcesses(FoodProductionProcessInfo process, int techLevel) {
-		List<FoodProductionProcessInfo> existingProcesses = null;
-		
-		if (techLevelProcesses.containsKey(techLevel)) {
-			existingProcesses = techLevelProcesses.get(techLevel);
-		}
-		
-		else {
-			existingProcesses = new ArrayList<>();
-		}
-		
-		existingProcesses.add(process);
-		
-		techLevelProcesses.put(techLevel, existingProcesses);
-	}
-	
-
-    /**
-     * Prepares object for garbage collection.
-     */
-    public void destroy() {
-        if(processList != null){
-            processList.clear();
-            processList = null;
-        }
+		processByTech = ManufactureConfig.createListByTech(processList);
     }
 }

@@ -21,7 +21,9 @@ class FoodProductionConfigTest {
 
     private static final String PACKAGE_FOOD = "Package Preserved Food";
     private static final int PACKAGE_INPUTS = 2;
-    private static final int PACKAGE_ALTERNATIVES = 4;
+    private static final String [] PACKAGE_ALTERNATIVES = {
+                    "Carrot", "Leaves", "Swiss Chard", "Potato"
+    };
 
 
     private FoodProductionConfig getFoodConfig() {
@@ -50,14 +52,14 @@ class FoodProductionConfigTest {
         Set<List<ProcessItem>> alternatives = new HashSet<>();
         alternatives.add(process.getInputList());
 
-        for(int i = 1; i <= PACKAGE_ALTERNATIVES; i++) {
-            var found = processByName.get(PACKAGE_FOOD + FoodProductionConfig.RECIPE_PREFIX + i);
-            assertNotNull(PACKAGE_FOOD + " alternative " + i, found);
-            assertEquals(PACKAGE_FOOD + " alternative " + i + "inputs", PACKAGE_INPUTS, found.getInputList().size());
+        for(var altName : PACKAGE_ALTERNATIVES) {
+            var found = processByName.get(PACKAGE_FOOD + FoodProductionConfig.RECIPE_PREFIX + altName);
+            assertNotNull(PACKAGE_FOOD + " alternative " + altName, found);
+            assertEquals(PACKAGE_FOOD + " alternative  inputs " + altName, PACKAGE_INPUTS, found.getInputList().size());
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", PACKAGE_ALTERNATIVES + 1, alternatives.size());
+        assertEquals("All alternatives have different inputs", PACKAGE_ALTERNATIVES.length + 1, alternatives.size());
     }
 
     @Test
