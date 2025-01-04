@@ -53,29 +53,19 @@ public class ManufactureProcessInfo extends ProcessInfo {
 	public double calculateTotalInputMass() {
 		double mass = 0;
 		
-		for (var item : getInputList()) {
-			String name = item.getName();
-	
-			AmountResource ar = ResourceUtil.findAmountResource(name);
+		for (var item : getInputList()) {	
+			AmountResource ar = ResourceUtil.findAmountResource(item.getId());
 			if (ar != null) {
 				double amt = item.getAmount();
 				mass += amt;
 			}		
 			else {
-				ItemResource ir = ItemResourceUtil.findItemResource(name);
+				ItemResource ir = ItemResourceUtil.findItemResource(item.getId());
 				if (ir != null) {
 					double quantity = item.getAmount();
 					double massPerItem = ir.getMassPerItem();
 					mass += quantity * massPerItem;
 				}
-//				else {
-//					BinType type = BinType.convertName2Enum(name);
-//					if (type != null) {
-//						double quantity = item.getAmount();
-//						// Will need to find getMassPerBin
-//						mass += quantity * 2;
-//					}
-//				}
 			}
 		}
 		return mass;

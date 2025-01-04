@@ -53,6 +53,7 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
@@ -272,6 +273,7 @@ public class Settlement extends Unit implements Temporal,
 	private ShiftManager shiftManager;
 	private SettlementTaskManager taskManager;
 	private ScheduledEventManager futureEvents;
+	private ManufacturingManager manuManager;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
@@ -355,9 +357,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-		// Create schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
-		// Create credit manager
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
@@ -490,28 +490,17 @@ public class Settlement extends Unit implements Temporal,
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
 
-
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
 
-		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
-		
-		// Initialize goods manager.
+		manuManager = new ManufacturingManager(this);
 		goodsManager = new GoodsManager(this);
-
-		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
-
-		// Initialize power grid
 		powerGrid = new PowerGrid(this);
-
-		// Initialize thermal control system
 		thermalSystem = new ThermalSystem(this);
-
-		// Initialize settlement task manager
 		taskManager = new SettlementTaskManager(this);
-
+		
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
 
@@ -1146,6 +1135,13 @@ public class Settlement extends Unit implements Temporal,
 		for (Person p : people) {
 			p.getCircadianClock().inflateSleepHabit();
 		}
+	}
+
+	/**
+	 * Get the manager controllign Manufacturing in Workshops.
+	 */
+	public ManufacturingManager getManuManager() {
+		return manuManager;
 	}
 
 	/**

@@ -72,13 +72,11 @@ public class Manufacture extends Function {
 	private int numPrintersInUse;
 	private final int numMaxConcurrentProcesses;
 
-	private List<ManufactureProcessInfo> possibleManuProcesses;
 	private List<SalvageProcessInfo> possibleSalvages;
 	
 	private List<ManufactureProcess> ongoingProcesses;
 	private List<SalvageProcess> ongoingSalvages;
 	
-	private List<ManufactureProcess> queueManuProcesses;
 	private List<SalvageProcess> queueSalvageProcesses;
 	
 	// NOTE: create a map to show which process has a 3D printer in use and which doesn't
@@ -101,34 +99,15 @@ public class Manufacture extends Function {
 		ongoingProcesses = new CopyOnWriteArrayList<>();
 		ongoingSalvages = new CopyOnWriteArrayList<>();
 		
-		possibleManuProcesses = new CopyOnWriteArrayList<>();
 		possibleSalvages = new CopyOnWriteArrayList<>();
 			
-		queueManuProcesses = new CopyOnWriteArrayList<>();
 		queueSalvageProcesses = new CopyOnWriteArrayList<>();
 		
-		// Put together a list of manu process infos
-		getPossibleManufactureProcesses();
+
 		// Put together a list of salvage process infos
 		getPossibleSalvageProcesses();
 	}
 
-	/**
-	 * Gets a list of the possible manufacturing process for this building.
-	 *
-	 * @return
-	 */
-	public List<ManufactureProcessInfo> getPossibleManufactureProcesses() {
-
-		if (!possibleManuProcesses.isEmpty())
-			return possibleManuProcesses;
-
-		List<ManufactureProcessInfo> list = ManufactureUtil.getManufactureProcessesForTechLevel(techLevel);
-		possibleManuProcesses.addAll(list);
-
-		return possibleManuProcesses;
-	}
-	
 	/**
 	 * Gets a list of the possible salvage process info for this building.
 	 *
@@ -275,26 +254,6 @@ public class Manufacture extends Function {
 	public List<ManufactureProcess> getProcesses() {
 		return Collections.unmodifiableList(ongoingProcesses);
 	}
-
-	/**
-	 * Gets a list of queue manu processes.
-	 * 
-	 * @return
-	 */
-	public List<ManufactureProcess> getQueueManuProcesses() {
-		return Collections.unmodifiableList(queueManuProcesses);
-	}
-	
-	/**
-	 * Transfer a salvage process from queue to ongoing list.
-	 * 
-	 * @param process
-	 */
-	public void loadFromManuQueue(ManufactureProcess process) {
-		if (queueManuProcesses.remove(process)) {
-			addProcess(process);
-		}
-	}
 	
 	/**
 	 * Gets a list of queue salvage processes.
@@ -316,11 +275,6 @@ public class Manufacture extends Function {
 		}
 	}
 	
-	public void addToManuQueue(ManufactureProcess process) {
-		// Add this process to the queue
-		queueManuProcesses.add(process);
-	}
-	
 	public boolean isFull() {
 		return getCurrentTotalProcesses() >= numPrintersInUse;
 	}
@@ -331,27 +285,11 @@ public class Manufacture extends Function {
 	 * @param process the new manufacturing process.
 	 * @throws BuildingException if error adding process.
 	 */
-	public void addProcess(ManufactureProcess process) {
-		if (process == null) {
-			throw new IllegalArgumentException("process is null");
-		}
+	public boolean addProcess(ManufactureProcess process) {
 
 		if (getCurrentTotalProcesses() >= numPrintersInUse) {
-			logger.info(getBuilding().getSettlement(), 20_000,
-					getBuilding()
-					+ ": " + getCurrentTotalProcesses() + " concurrent processes.");
-			logger.info(getBuilding().getSettlement(), 20_000,
-					getBuilding()
-					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use.");
-			logger.info(getBuilding().getSettlement(), 20_000,
-					getBuilding()
-					+ ": " + (numMaxConcurrentProcesses-numPrintersInUse)
-					+ " 3D-printer slot(s) available.");
-			logger.info(getBuilding(), 20_000, "Adding '" + process.getInfo().getName() + "' to the queue only.");
-			// Add this process to the queue
-			queueManuProcesses.add(process);
-			
-			return;
+			logger.warning(getBuilding(), "No capacity adding ManuProcess " + process.getInfo().getName());
+			return false;
 		}
 
 		ongoingProcesses.add(process);
@@ -372,6 +310,8 @@ public class Manufacture extends Function {
 		// Log manufacturing process starting.
 		logger.log(getBuilding(), Level.FINEST, 20_000,
 						"Starting manufacturing process: " + process.getInfo().getName());
+		
+		return true;
 	}
 
 	/**

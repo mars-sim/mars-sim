@@ -3,6 +3,7 @@ package com.mars_sim.core.structure;
 import java.util.ArrayList;
 
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
@@ -19,6 +20,7 @@ public class MockSettlement extends Settlement {
 	public static final String SETTLEMENT_TEMPLATE = "Alpha Base";
 	public static final Coordinates DEFAULT_COORDINATES = new Coordinates(Math.PI / 2D, 0);
 
+	private ManufacturingManager manuManager;
 
 	public MockSettlement()  {
 		this(DEFAULT_NAME, false, DEFAULT_COORDINATES);
@@ -44,9 +46,16 @@ public class MockSettlement extends Settlement {
         // Initialize power grid
         powerGrid = new PowerGrid(this);
 
-		if (needGoods)
+		if (needGoods) {
 			goodsManager = new GoodsManager(this);
+			manuManager = new ManufacturingManager(this);
+		}
 	}	
+
+	@Override
+	public ManufacturingManager getManuManager() {
+		return manuManager;
+	}
 
 	@Override
 	public String getTemplate() {

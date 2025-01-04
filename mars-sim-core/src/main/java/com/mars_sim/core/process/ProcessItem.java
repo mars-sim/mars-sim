@@ -23,13 +23,19 @@ public class ProcessItem implements Serializable {
 	private String name;
 	private ItemType type;
 	private double amount;
+    private int id;
 
     
-	public ProcessItem(String name, ItemType type, double amount) {
+	public ProcessItem(int id, String name, ItemType type, double amount) {
         this.name = name;
         this.type = type;
         this.amount = amount;
+        this.id = id;
     }
+
+    public int getId() {
+		return id;
+	}
 
     public String getName() {
 		return name;
@@ -55,7 +61,7 @@ public class ProcessItem implements Serializable {
         boolean result = false;
         if (object instanceof ProcessItem) {
             ProcessItem item = (ProcessItem) object;
-            result = (name.equals(item.getName())
+            result = ((id == item.getId())
                     && type.equals(item.getType())
                     && (amount == item.getAmount()));
         }

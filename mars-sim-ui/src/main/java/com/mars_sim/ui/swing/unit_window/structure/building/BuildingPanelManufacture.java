@@ -111,17 +111,6 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
 		result.addAll(workshop.getProcesses());
 
-		if (!workshop.isFull()) {
-			Iterator<ManufactureProcess> j = workshop.getQueueManuProcesses().iterator();
-			while (j.hasNext()) {
-				ManufactureProcess process = j.next();
-				result.add(process);
-				workshop.loadFromManuQueue(process);
-				// Add only one at a time to ensure it's not full
-				break;
-			}
-		}
-
 		return result;
 	}
 

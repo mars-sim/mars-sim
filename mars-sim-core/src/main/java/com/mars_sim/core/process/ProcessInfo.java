@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.structure.Settlement;
+
 /**
  * Information about a type of manufacturing process.
  */
@@ -158,6 +161,25 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 		return inputList.stream()
 					.map(ProcessItem::getName)
 					.toList();
+	}
+
+	/**
+	 * Does a Settlement have the required input resources for this process.
+	 * @param source Source of the resources
+	 * @return
+	 */
+	public boolean isResourcesAvailable(Settlement source) {
+		for(ProcessItem item : inputList) {
+			if (((ItemType.AMOUNT_RESOURCE == item.getType()) 
+					&& (source.getAmountResourceStored(item.getId()) < item.getAmount()))
+				|| ((ItemType.PART == item.getType())
+					&& (source.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
+				return false;
+			}
+		}
+
+		// Checked everything
+		return true;
 	}
 
 	@Override

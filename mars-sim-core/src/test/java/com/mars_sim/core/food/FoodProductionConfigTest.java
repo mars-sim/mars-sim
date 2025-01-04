@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Maps;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.manufacture.ManufactureConfigTest;
 import com.mars_sim.core.process.ProcessItem;
-import com.mars_sim.core.resource.ItemType;
 
 class FoodProductionConfigTest {
 
@@ -70,17 +70,18 @@ class FoodProductionConfigTest {
         assertNotNull("Food processes defined", process);
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(new ProcessItem("Soybean", ItemType.AMOUNT_RESOURCE, 1D));
-        expectedInputs.add(new ProcessItem("Water", ItemType.AMOUNT_RESOURCE, 1D));
-        expectedInputs.add(new ProcessItem("oven", ItemType.PART, 1D));
+        expectedInputs.add(ManufactureConfigTest.createAmount("Soybean", 1D));
+        expectedInputs.add(ManufactureConfigTest.createAmount("Water", 1D));
+        expectedInputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
         assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(new ProcessItem("Soy Flour", ItemType.AMOUNT_RESOURCE, 1D));
-        expectedOutputs.add(new ProcessItem("oven", ItemType.PART, 1D));
+        expectedOutputs.add(ManufactureConfigTest.createAmount("Soy Flour", 1D));
+        expectedOutputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
         assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
 
     }
+
 }

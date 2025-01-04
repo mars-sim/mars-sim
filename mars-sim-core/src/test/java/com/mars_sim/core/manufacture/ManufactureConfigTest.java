@@ -21,9 +21,11 @@ import org.junit.jupiter.api.Test;
 import com.google.common.collect.Maps;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.process.ProcessItem;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.resource.ResourceUtil;
 
-class ManufactureConfigTest {
+public class ManufactureConfigTest {
 
     private static final String MAKE_FERTILIZERS = "Make crop fertilizers";
     private static final String MAKE_RADIO_ANTENNA ="Make radio antenna";
@@ -78,17 +80,28 @@ class ManufactureConfigTest {
         assertNotNull("Manufacturng processes defined", process);
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(new ProcessItem("Polyester Resin", ItemType.AMOUNT_RESOURCE, 0.5D));
-        expectedInputs.add(new ProcessItem("styrene", ItemType.AMOUNT_RESOURCE, 0.5D));
-        expectedInputs.add(new ProcessItem("fiberglass", ItemType.PART, 1D));
-        expectedInputs.add(new ProcessItem("aluminum sheet", ItemType.PART, 1D));
-        expectedInputs.add(new ProcessItem("electrical wire", ItemType.PART, 1D));
-        expectedInputs.add(new ProcessItem("wire connector", ItemType.PART, 3D));
-        expectedInputs.add(new ProcessItem("optical cable", ItemType.PART, 1D));
+        expectedInputs.add(createAmount("Polyester Resin", 0.5D));
+        expectedInputs.add(createAmount("styrene", 0.5D));
+        expectedInputs.add(createPart("fiberglass", 1D));
+        expectedInputs.add(createPart("aluminum sheet", 1D));
+        expectedInputs.add(createPart("electrical wire", 1D));
+        expectedInputs.add(createPart("wire connector", 3D));
+        expectedInputs.add(createPart("optical cable", 1D));
         assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(new ProcessItem("radio antenna", ItemType.PART, 5D));
+        expectedOutputs.add(createPart("radio antenna", 5D));
         assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
+    }
+
+    
+    public static ProcessItem createPart(String name, double amount) {
+        int id = ItemResourceUtil.findIDbyItemResourceName(name);
+        return new ProcessItem(id, name, ItemType.PART, amount);
+    }
+
+    public static ProcessItem createAmount(String name, double amount) {
+        int id = ResourceUtil.findIDbyAmountResourceName(name);
+        return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount);
     }
 }

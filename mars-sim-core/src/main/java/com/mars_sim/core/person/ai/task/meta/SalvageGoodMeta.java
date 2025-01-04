@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.manufacture.task.ManufactureGood;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
@@ -20,7 +21,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.task.ManufactureGood;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -79,7 +79,7 @@ public class SalvageGoodMeta extends FactoryMetaTask {
         int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
         
         // See if there is an available manufacturing building.
-        Building manufacturingBuilding = null; // SalvageGood.getAvailableManufacturingBuilding(person);
+        Building manufacturingBuilding = null;
         
         for (Building potentialBuilding :
                 ManufactureGood.getAvailableManufacturingBuilding(person.getSettlement(), skill)) {

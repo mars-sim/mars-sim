@@ -320,7 +320,7 @@ public final class ManufactureUtil {
 		Settlement settlement = workshop.getBuilding().getSettlement();
 
 		// Check to see if process input items are available at settlement.
-        if (!areProcessInputsAvailable(process, settlement)) {
+        if (!process.isResourcesAvailable(settlement)) {
 			return false;
 		}
 
@@ -355,8 +355,13 @@ public final class ManufactureUtil {
 
 		Settlement settlement = workshop.getBuilding().getSettlement();
 
+		return canProcessBeStarted(settlement, process);
+	}
+
+	public static boolean canProcessBeStarted(Settlement settlement, ManufactureProcessInfo process) {
+
 		// Check to see if process input items are available at settlement.
-        if (!areProcessInputsAvailable(process, settlement)) {
+        if (!process.isResourcesAvailable(settlement)) {
 			return false;
 		}
 
@@ -403,35 +408,6 @@ public final class ManufactureUtil {
 	
 		// To start it the same queue condition must be met
 		return canSalvageProcessBeQueued(process, workshop);
-	}
-
-	/**
-	 * Checks if process inputs are available in an inventory.
-	 *
-	 * @param process the manufacturing process.
-	 * @param inv     the inventory.
-	 * @return true if process inputs are available.
-	 * @throws Exception if error determining if process inputs are available.
-	 */
-	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Settlement settlement) {
-		boolean result = true;
-
-		Iterator<ProcessItem> i = process.getInputList().iterator();
-		while (result && i.hasNext()) {
-			ProcessItem item = i.next();
-			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
-			} else if (ItemType.PART.equals(item.getType())) {
-				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
-				if (!result)
-					return false;
-			} else
-				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
-		}
-
-		return result;
 	}
 
     /**
