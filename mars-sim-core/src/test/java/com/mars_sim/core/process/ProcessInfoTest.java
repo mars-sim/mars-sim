@@ -19,6 +19,28 @@ public class ProcessInfoTest extends AbstractMarsSimUnitTest {
         assertTrue("Resources available", selected.isResourcesAvailable(s));
     }
 
+    public void testIsInput() {
+        var p = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1).get(0);
+
+        for(var o : p.getInputList()) {
+            var output = o.getName();
+            assertTrue("Process contains " + output, p.isInput(output));
+        }
+
+        assertFalse("Process does not input", p.isInput("Not exists"));
+    }
+
+    public void testIsOutput() {
+        var p = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1).get(0);
+
+        for(var o : p.getOutputList()) {
+            var output = o.getName();
+            assertTrue("Process contains " + output, p.isOutput(output));
+        }
+
+        assertFalse("Process does not output", p.isOutput("Not exists"));
+    }
+
     /**
      * Load a Settlement with the resources needed for a process
      */

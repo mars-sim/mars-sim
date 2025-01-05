@@ -53,7 +53,7 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertFalse("No barrel processes found", results.isEmpty());
 
         var selection = results.get(0);
-        assertTrue("Output for barrel process", selection.getOutputNames().contains("barrel"));
+        assertTrue("Output for barrel process", selection.isOutput("barrel"));
     }
 
     public void testGetSalvageProcessesForTechLevel() {

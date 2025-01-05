@@ -7,9 +7,7 @@
 
 package com.mars_sim.core.manufacture;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,14 +84,9 @@ public final class ManufactureUtil {
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
-		List<ManufactureProcessInfo> result = new ArrayList<>();
-		for(ManufactureProcessInfo process : getAllManufactureProcesses()) {
-			for (String n : process.getOutputNames()) {
-				if (name.equalsIgnoreCase(n))
-					result.add(process);
-			}
-		}
-		return result;
+		return getAllManufactureProcesses().stream()
+				.filter(p -> p.isOutput(name))
+				.toList();
 	}
 
 	/**

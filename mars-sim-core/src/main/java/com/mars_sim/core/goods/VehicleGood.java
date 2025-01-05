@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.goods;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,8 +34,6 @@ import com.mars_sim.core.vehicle.VehicleType;
 class VehicleGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
-	
-//	private static SimLogger logger = SimLogger.getLogger(VehicleGood.class.getName());
 
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
@@ -91,19 +88,10 @@ class VehicleGood extends Good {
 		this.theoreticalRange = getVehicleRange(vs);
 
         // Pre-calculate manufactureProcessInfos
-		List<ManufactureProcessInfo> infos = new ArrayList<>();
-		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
-			for (String n : process.getOutputNames()) {
-				if (getName().equalsIgnoreCase(n)) {
-					infos.add(process);
-				}
-			}
-		}
-		
-		manufactureProcessInfos = infos;
-		
+		manufactureProcessInfos = ManufactureUtil.getAllManufactureProcesses().stream()
+					.filter(p -> p.isOutput(vs.getName()))
+					.toList();
+
         // Calculate fixed values
      	flattenDemand = calculateFlattenDemand(vehicleType);
     }
@@ -115,10 +103,6 @@ class VehicleGood extends Good {
 	 * @return
 	 */
 	private double calculateFlattenDemand(VehicleType vehicleType) {
-//		if (vehicleType == VehicleType.) {
-//			return _FLATTENING_FACTOR;
-//        }
-		
 		return VEHICLE_FLATTENING_FACTOR; 
 	}
 	
@@ -248,7 +232,7 @@ class VehicleGood extends Good {
 		// Gets the repair demand
 		// Note: need to look into parts and vehicle reliability in MalfunctionManager 
 		// to derive the repair value. 
-		// Look at each part in vehicleType: if (vehicleType == VehicleType.)
+		// Look at each part in vehicleType
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
 				* owner.getDemandValue(this);
 	
@@ -470,12 +454,10 @@ class VehicleGood extends Good {
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
 		// TODO should come from MissionMeta classes
 		switch(missionType) {
-			case CONSTRUCTION:
-			case SALVAGE:
+		case CONSTRUCTION, SALVAGE:
 				return JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
-		case TRAVEL_TO_SETTLEMENT:
-		case RESCUE_SALVAGE_VEHICLE:
+		case TRAVEL_TO_SETTLEMENT, RESCUE_SALVAGE_VEHICLE:
 			return JobUtil.numJobs(JobType.PILOT, settlement)
 					* ((double) settlement.getNumCitizens() 
 					/ (double) settlement.getPopulationCapacity());
@@ -483,16 +465,13 @@ class VehicleGood extends Good {
 		case COLLECT_ICE:
 			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.iceID)), 100);
 		
-		case TRADE:
-		case DELIVERY:
+		case TRADE, DELIVERY:
 			return JobUtil.numJobs(JobType.TRADER, settlement);
 		
 		case COLLECT_REGOLITH:
 			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.regolithID)), 100);
 		
-		case MINING:
-		case AREOLOGY:
-		case EXPLORATION:
+		case MINING, AREOLOGY, EXPLORATION:
 			return JobUtil.numJobs(JobType.AREOLOGIST, settlement);
 		
 		case BIOLOGY:
@@ -562,8 +541,7 @@ class VehicleGood extends Good {
 					capacity = 0D;
 			} break;
 
-		case COLLECT_ICE:
-		case COLLECT_REGOLITH: {
+		case COLLECT_ICE, COLLECT_REGOLITH: {
 				if (crewCapacity >= 2)
 					capacity = 1D;
 
@@ -583,8 +561,7 @@ class VehicleGood extends Good {
 			}
 			break;
 
-		case TRADE:
-		case EMERGENCY_SUPPLY: {
+		case TRADE, EMERGENCY_SUPPLY: {
 				if (crewCapacity >= 2)
 					capacity = 1D;
 

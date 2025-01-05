@@ -138,29 +138,33 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 					.filter(i -> i.getName().equalsIgnoreCase(name))
 					.toList();
 	}
-	
+
 	/**
-	 * Convenience method that gives back a list of
-	 * strings of the output items' names.
-	 * 
-	 * @return {@link List}<{@link String}>
+	 * Is the named resource one of the inputs.
+	 * @param name
+	 * @return
 	 */
-	public List<String> getOutputNames() {
-		return outputList.stream()
-					.map(ProcessItem::getName)
-					.toList();
+	public boolean isInput(String name) {
+		for(var o : inputList) {
+			if (o.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	/**
-	 * Convenience method that gives back a list of
-	 * strings of the input items' names.
-	 * 
-	 * @return {@link List}<{@link String}>
+	 * Is the named resource one of the outputs.
+	 * @param name
+	 * @return
 	 */
-	public List<String> getInputNames() {
-		return inputList.stream()
-					.map(ProcessItem::getName)
-					.toList();
+	public boolean isOutput(String name) {
+		for(var o : outputList) {
+			if (o.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

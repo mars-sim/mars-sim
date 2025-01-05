@@ -41,12 +41,12 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
 		if (foodProductionUse == null) {
 			foodProductionUse = new HashMap<>();
 			for (var m: getParent().getConfig().getFoodProductionConfiguration().getProcessList()) {
-				for (var r: m.getInputNames()) {
-					foodProductionUse.computeIfAbsent(r.toLowerCase(),
+				for (var r: m.getInputList()) {
+					foodProductionUse.computeIfAbsent(r.getName().toLowerCase(),
                                 k -> HelpContext.buildEmptyResourceUse()).asInput().add(m);
 				}
-				for (var r: m.getOutputNames()) {
-					foodProductionUse.computeIfAbsent(r.toLowerCase(),
+				for (var r: m.getOutputList()) {
+					foodProductionUse.computeIfAbsent(r.getName().toLowerCase(),
                                 k-> HelpContext.buildEmptyResourceUse()).asOutput().add(m);
 				}
 			}

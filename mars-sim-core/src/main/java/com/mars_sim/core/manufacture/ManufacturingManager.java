@@ -84,7 +84,7 @@ public class ManufacturingManager implements Serializable {
         public int execute(MarsTime currentTime) {
             updateQueue();
 
-            return 1000; // TODO; this needs to adjust to the every morning hours of the owner Settlement
+            return 1000; // this needs to adjust to the every morning hours of the owner Settlement
         }
 
     }
@@ -229,29 +229,34 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
+     * Get the highest skill level of all the Workers at this Settlement
+     * @return
+     */
+    private int getHighestSkill() {
+        int highestSkillLevel = owner.getAllAssociatedPeople().stream()
+                                .map(Person::getSkillManager)
+                                .map(sm -> sm.getSkillLevel(SkillType.MATERIALS_SCIENCE))
+                                .mapToInt(v -> v)
+                                .max().orElse(-1);
+
+        // Get skill for robots
+        int highestRobotSkillLevel = owner.getAllAssociatedRobots().stream()
+            .map(Robot::getSkillManager)
+            .map(sm -> sm.getSkillLevel(SkillType.MATERIALS_SCIENCE))
+            .mapToInt(v -> v)
+            .max().orElse(-1);
+        return Math.max(highestSkillLevel, highestRobotSkillLevel);
+    }
+
+    /**
      * Get the mau processed that can be supported by this Settlement. It considers
      * - Maxtechlevel of any workshops
      * - MaterialScience skill of settlement workers; this is recalculated each time
      * @return Processes that can be processed by this Settlment
      */
     private List<ManufactureProcessInfo> getSupportedManuProcesses() {
-
-		int highestSkillLevel = owner.getAllAssociatedPeople().stream()
-			.map(Person::getSkillManager)
-			.map(sm -> sm.getSkillLevel(SkillType.MATERIALS_SCIENCE))
-			.mapToInt(v -> v)
-			.max().orElse(-1);
-
-		// Get skill for robots
-		int highestRobotSkillLevel = owner.getAllAssociatedRobots().stream()
-			.map(Robot::getSkillManager)
-			.map(sm -> sm.getSkillLevel(SkillType.MATERIALS_SCIENCE))
-			.mapToInt(v -> v)
-			.max().orElse(-1);
-		highestSkillLevel = Math.max(highestSkillLevel, highestRobotSkillLevel);  
-        
         return ManufactureUtil.getManufactureProcessesForTechSkillLevel(getMaxTechLevel(),
-                                                                        highestSkillLevel);
+                                                                        getHighestSkill());
     }
 
     /**
@@ -277,11 +282,19 @@ public class ManufacturingManager implements Serializable {
         
         // Add filter by output if required
         if (outputName != null) {
-            stream = stream.filter(p -> !p.getOutputItemsByName(outputName).isEmpty());
+            stream = stream.filter(p -> p.isOutput(outputName));
         }
         return stream
                 .sorted()
                 .toList();
+    }
+
+    /**
+     * Get the Salvage processes that can be processed by this Settlement
+     * @return List of salvage processes.
+     */
+    public List<SalvageProcessInfo> getQueuableSalvageProcesses() {
+        return ManufactureUtil.getSalvageProcessesForTechSkillLevel(getMaxTechLevel(), getHighestSkill());
     }
 
     /**

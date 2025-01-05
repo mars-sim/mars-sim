@@ -76,8 +76,14 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         int techLevel = b.getManufacture().getTechLevel();
         assertEquals("Mgr tech level", techLevel, mgr.getMaxTechLevel());
 
+        // Nothign without an engineer
         var o = mgr.getPossibleOutputs();
-        assertTrue("Outputs found", !o.isEmpty());
+        assertTrue("Outputs without engineer", o.isEmpty());
+
+        // Try agains with an engineer
+        buildEngineer(s, 1);
+        o = mgr.getPossibleOutputs();
+        assertFalse("Outputs found", o.isEmpty());
     }
 
     public void testManuQueuable() {
@@ -109,12 +115,12 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         assertEquals("Too hard processes offered", 0L, tooHard);
 
         // Filter by an output; take output from first process
-        var outputResource = p.get(0).getOutputNames().get(0);
+        var outputResource = p.get(0).getOutputList().get(0).getName();
         p = mgr.getQueuableManuProcesses(outputResource);
         assertFalse("Output filtered " + outputResource, p.isEmpty());
         for(var po : p) {
             assertTrue("Process " + po.getName() + " has " + outputResource,
-                        po.getOutputNames().contains(outputResource));
+                        po.isOutput(outputResource));
         }
 
         // Check filtering with not found output

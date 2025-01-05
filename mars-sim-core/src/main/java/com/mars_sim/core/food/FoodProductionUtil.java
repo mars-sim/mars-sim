@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.food;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -79,16 +78,9 @@ public final class FoodProductionUtil {
 	 * @return {@link List}<{@link ProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenOutput(String name) {
-		List<FoodProductionProcessInfo> result = new ArrayList<>();
-		Iterator<FoodProductionProcessInfo> i = getAllFoodProductionProcesses().iterator();
-		while (i.hasNext()) {
-			FoodProductionProcessInfo process = i.next();
-			for (String n : process.getOutputNames()) {
-				if (name.equalsIgnoreCase(n))
-					result.add(process);
-			}
-		}
-		return result;
+		return getAllFoodProductionProcesses().stream()
+					.filter(p -> p.isOutput(name))
+					.toList();
 	}
 
 	/**
@@ -98,16 +90,9 @@ public final class FoodProductionUtil {
 	 * @return {@link List}<{@link ProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenInput(String name) {
-		List<FoodProductionProcessInfo> result = new ArrayList<>();
-		Iterator<FoodProductionProcessInfo> i = getAllFoodProductionProcesses().iterator();
-		while (i.hasNext()) {
-			FoodProductionProcessInfo process = i.next();
-			for (String n : process.getInputNames()) {
-				if (name.equalsIgnoreCase(n))
-					result.add(process);
-			}
-		}
-		return result;
+		return getAllFoodProductionProcesses().stream()
+					.filter(p -> p.isInput(name))
+					.toList();
 	}
 
 	/**
