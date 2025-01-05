@@ -2,6 +2,7 @@ package com.mars_sim.core.manufacture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,6 +92,7 @@ public class ManufacturingManager implements Serializable {
 
     private List<QueuedProcess> queue;
     private Settlement owner;
+    private int maxTechLevel = -2;
 
     public ManufacturingManager(Settlement owner) {
         this.owner = owner;
@@ -149,30 +151,30 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Add a manufacturing process to the queue for later processing.
+     * Add a process to the queue for later processing.
      * @param newProcess Process definition to add
      */
-    public void addManufacturing(ManufactureProcessInfo newProcess) {
-        var available = newProcess.isResourcesAvailable(owner);
-        var newItem = new QueuedProcess(newProcess, null, 1, available);
-        synchronized(queue) {
-            queue.add(newItem);
-        }
-        logger.info(owner, "Added new ManuProcess to queue " + newProcess.getName());
-
+    public void addProcessToQueue(ProcessInfo newProcess) {
+        addToQueue(newProcess, null);
     }
 
     /**
-     * Add a salvage  process to the queue for later processing.
+     * Add a salvage process to the queue for later processing. This is targeted at a specific
+     * entity.
      * @param newProcess Process definition to add
      * @param target Item to salvage in this process
      */
     public void addSalvage(SalvageProcessInfo newProcess, Salvagable target) {
+        addToQueue(newProcess, target);
+    }
+
+    private void addToQueue(ProcessInfo newProcess, Salvagable target) {
         var available = newProcess.isResourcesAvailable(owner);
         var newItem = new QueuedProcess(newProcess, target, 1, available);
         synchronized(queue) {
             queue.add(newItem);
         }   
+        logger.info(owner, "Added new Process to queue " + newProcess.getName());
     }
 
     /**
@@ -187,9 +189,23 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
+     * Calculate the maximum tech level process this Settlement can run.
+     * Scans the connected Workshops.
+     */
+    public void updateTechLevel() {
+        maxTechLevel = owner.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)
+                    .stream()
+                    .mapToInt(w -> w.getManufacture().getTechLevel())
+                    .max().orElse(-1);
+    }
+
+    /**
      * Find any manufacturing proesses that can be added to the queue
      */
     void updateQueue() {
+        // Check no workshop have been added/removed/upgraded
+        updateTechLevel();
+
         // Update the resources available flag on existing queue
         updateQueueItems();
 
@@ -213,11 +229,12 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get a list of Manufacturing processes that can be queued.
-     * There is no process of the type already queue and workers with the skill present.
-     * @return
+     * Get the mau processed that can be supported by this Settlement. It considers
+     * - Maxtechlevel of any workshops
+     * - MaterialScience skill of settlement workers; this is recalculated each time
+     * @return Processes that can be processed by this Settlment
      */
-    public List<ManufactureProcessInfo> getQueuableManuProcesses() {
+    private List<ManufactureProcessInfo> getSupportedManuProcesses() {
 
 		int highestSkillLevel = owner.getAllAssociatedPeople().stream()
 			.map(Person::getSkillManager)
@@ -231,13 +248,21 @@ public class ManufacturingManager implements Serializable {
 			.map(sm -> sm.getSkillLevel(SkillType.MATERIALS_SCIENCE))
 			.mapToInt(v -> v)
 			.max().orElse(-1);
-		highestSkillLevel = Math.max(highestSkillLevel, highestRobotSkillLevel);
-	
-        // Look for highest workshop tech level
-        int highestTechLevel = owner.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)
-                                .stream()
-                                .mapToInt(w -> w.getManufacture().getTechLevel())
-                                .max().orElse(-1);      
+		highestSkillLevel = Math.max(highestSkillLevel, highestRobotSkillLevel);  
+        
+        return ManufactureUtil.getManufactureProcessesForTechSkillLevel(getMaxTechLevel(),
+                                                                        highestSkillLevel);
+    }
+
+    /**
+     * Get a list of Manufacturing processes that can be queued.
+     * There is no process of the type already queue and workers with the skill present.
+     * Optionally the queuable processes can be filtered by a manatory output of the process.
+     * 
+     * @param outputName Optional name of an output that must be produced
+     * @return
+     */
+    public List<ManufactureProcessInfo> getQueuableManuProcesses(String outputName) {
 
         // Get set of what is already queued
         Set<ManufactureProcessInfo> alreadyQueued = queue.stream()
@@ -247,10 +272,43 @@ public class ManufacturingManager implements Serializable {
                     .collect(Collectors.toSet());
                     
         // Determine all manufacturing processes that are possible and profitable.
-        return ManufactureUtil.getManufactureProcessesForTechSkillLevel(highestTechLevel, highestSkillLevel)
-                .stream()
-                .filter(q -> !alreadyQueued.contains(q))
+        var stream = getSupportedManuProcesses().stream()
+                .filter(q -> !alreadyQueued.contains(q));
+        
+        // Add filter by output if required
+        if (outputName != null) {
+            stream = stream.filter(p -> !p.getOutputItemsByName(outputName).isEmpty());
+        }
+        return stream
                 .sorted()
                 .toList();
+    }
+
+    /**
+     * Get the maximum tech level that can be supported by this Settlement.
+     * The value is updated if not initialised.
+     * @return
+     */
+    public int getMaxTechLevel() {
+        if (maxTechLevel == -2) {
+            updateTechLevel();
+        }
+        return maxTechLevel;
+    }
+
+    /**
+     * Get the list of resources that could be manufactured bu this Settlement based on it's workshops.
+     * This does not consder avaialble resources
+     */
+    public List<String> getPossibleOutputs() {
+        var supported = getSupportedManuProcesses();
+
+        return supported.stream()
+                    .map(ProcessInfo::getOutputList)
+                    .flatMap(Collection::stream)
+                    .map(m -> m.getName())
+                    .distinct()
+                    .sorted()
+                    .toList();
     }
 }

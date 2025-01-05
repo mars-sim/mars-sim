@@ -38,9 +38,9 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
 
         // Add 2 processes with the correct input resoruces at Settlement
         var select2 = getManuAtTechLevel(2);
-        mgr.addManufacturing(select2);
+        mgr.addProcessToQueue(select2);
         var select1 = getManuAtTechLevel(1);
-        mgr.addManufacturing(select1);
+        mgr.addProcessToQueue(select1);
         assertEquals("Queue at start", 2, mgr.getQueue().size());
 
         int skill = Math.min(select1.getSkillLevelRequired(), select2.getSkillLevelRequired());
@@ -66,21 +66,39 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
 
     }
 
+    public void testManuOutputs() {
+        var s = buildSettlement();
+
+        // Build workshop before manager
+        var b = buildWorkshop(this, s.getBuildingManager());
+        var mgr = new ManufacturingManager(s);
+
+        int techLevel = b.getManufacture().getTechLevel();
+        assertEquals("Mgr tech level", techLevel, mgr.getMaxTechLevel());
+
+        var o = mgr.getPossibleOutputs();
+        assertTrue("Outputs found", !o.isEmpty());
+    }
+
     public void testManuQueuable() {
         var s = buildSettlement();
         var mgr = new ManufacturingManager(s);
 
-        var p = mgr.getQueuableManuProcesses();
+        // No workshop
+        var p = mgr.getQueuableManuProcesses(null);
         assertTrue("No Workshop; no queuable", p.isEmpty());
 
         var b = buildWorkshop(this, s.getBuildingManager());
         int techLevel = b.getManufacture().getTechLevel();
+        mgr.updateTechLevel();
 
-        p = mgr.getQueuableManuProcesses();
+        // No queuable because no engineers
+        p = mgr.getQueuableManuProcesses(null);
         assertTrue("No Engineers; no queuable", p.isEmpty());
 
+        // Match to return potentials only
         buildEngineer(s, 1);
-        p = mgr.getQueuableManuProcesses();
+        p = mgr.getQueuableManuProcesses(null);
         assertFalse("Queuable", p.isEmpty());
 
         // Find any offered processes that are beyond the scope
@@ -89,6 +107,19 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
                                         || (q.getTechLevelRequired() > techLevel))
                         .count();
         assertEquals("Too hard processes offered", 0L, tooHard);
+
+        // Filter by an output; take output from first process
+        var outputResource = p.get(0).getOutputNames().get(0);
+        p = mgr.getQueuableManuProcesses(outputResource);
+        assertFalse("Output filtered " + outputResource, p.isEmpty());
+        for(var po : p) {
+            assertTrue("Process " + po.getName() + " has " + outputResource,
+                        po.getOutputNames().contains(outputResource));
+        }
+
+        // Check filtering with not found output
+        p = mgr.getQueuableManuProcesses("non-existent resource");
+        assertTrue("Not output", p.isEmpty());
     }
 
     public void testManuQueue() {
@@ -97,14 +128,14 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
 
         // Add 
         var select2 = getManuAtTechLevel(2);
-        mgr.addManufacturing(select2);
+        mgr.addProcessToQueue(select2);
         assertEquals("One item in queue", 1, mgr.getQueue().size());
         assertEquals("Select2 is queued", select2, mgr.getQueue().get(0).getInfo());
         assertEquals("Lowest on queue", 2, mgr.getLowestOnQueue());
 
         // Add second lwest process
         var select1 = getManuAtTechLevel(1);
-        mgr.addManufacturing(select1);
+        mgr.addProcessToQueue(select1);
         assertEquals("Items in queue", 2, mgr.getQueue().size());
         assertEquals("Select2 is queued", select1, mgr.getQueue().get(1).getInfo());
         assertEquals("Lowest on queue", 1, mgr.getLowestOnQueue());

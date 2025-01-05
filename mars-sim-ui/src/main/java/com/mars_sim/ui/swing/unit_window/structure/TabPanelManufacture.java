@@ -54,7 +54,8 @@ public class TabPanelManufacture extends TabPanel {
 	
 	private static final String MANU_ICON ="manufacture";
 	private static final String BUTTON_TEXT = Msg.getString("TabPanelManufacture.button.createNewProcess"); // $NON-NLS-1$
-	
+	private static final String SALVAGE = "Salvage";
+
 	/** The Settlement instance. */
 	private Settlement target;
 
@@ -64,6 +65,8 @@ public class TabPanelManufacture extends TabPanel {
 
 	/** Process selector. */
 	private JComboBoxMW<ManufactureProcessInfo> processSelection;	
+	private JComboBoxMW<String> outputSelection;	
+
 
 	/**
 	 * Constructor.
@@ -117,18 +120,19 @@ public class TabPanelManufacture extends TabPanel {
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		queuePanel.add(interactionPanel, BorderLayout.NORTH);
 
+		// Create output selection
+		outputSelection = new JComboBoxMW<>();
+		interactionPanel.add(outputSelection);
+		var outputs = target.getManuManager().getPossibleOutputs();
+		outputSelection.addItem(SALVAGE);
+		outputs.forEach(p -> outputSelection.addItem(p));
+		outputSelection.addActionListener(e -> changeProcessOptions());
+
 		// Create new manufacture process selection.
-		var processSelectionCache = getAvailableProcesses();
 		processSelection = new JComboBoxMW<>();
-		processSelectionCache.forEach(p -> processSelection.addItem(p));
-		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
-
-		// Add available salvage processes.
-		var salvageSelectionCache = getAvailableSalvageProcesses();
-		salvageSelectionCache.forEach(k -> processSelection.addItem(k));
 
 		// Create new process button.
 		var newProcessButton = new JButton(BUTTON_TEXT); //$NON-NLS-1$
@@ -181,13 +185,29 @@ public class TabPanelManufacture extends TabPanel {
 	}
 
 	/**
+	 * Change the new process selection based on the output
+	 */
+	private void changeProcessOptions() {
+		processSelection.removeAllItems();
+
+		String output = (String) outputSelection.getSelectedItem();
+		if (SALVAGE.equals(output)) {
+			getAvailableSalvageProcesses().forEach(p -> processSelection.addItem(p));
+		}
+		else {
+			var processes = target.getManuManager().getQueuableManuProcesses(output);
+			processes.forEach(p -> processSelection.addItem(p));
+		}
+	}
+
+	/**
 	 * Creates a new process in a given building.
 	 */
 	private void createNewProcess() {
 
 		Object selectedItem = processSelection.getSelectedItem();
-		if (selectedItem instanceof ManufactureProcessInfo selectedProcess) {
-			target.getManuManager().addManufacturing(selectedProcess);
+		if (selectedItem instanceof ProcessInfo selectedProcess) {
+			target.getManuManager().addProcessToQueue(selectedProcess);
 
 			update();
 
@@ -238,14 +258,6 @@ public class TabPanelManufacture extends TabPanel {
 		return result;
 	}
 
-	/**
-	 * Gets all manufacturing processes available at Settlement
-	 * 
-	 * @return vector of processes.
-	 */
-	private List<ManufactureProcessInfo> getAvailableProcesses() {
-		return target.getManuManager().getQueuableManuProcesses();
-	}
 
 	/**
 	 * Gets all salvage processes available at the workshop.
