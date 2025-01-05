@@ -32,7 +32,44 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         return conf.stream().filter(q -> q.getTechLevelRequired() == level).findAny().get();
     }
 
-    public void testClaim() {
+    private SalvageProcessInfo getSalvageAtTechLevel(int level) {
+        var conf = getConfig().getManufactureConfiguration().getSalvageProcessesForTechLevel(level);
+        return conf.stream().filter(q -> q.getTechLevelRequired() == level).findAny().get();
+    }
+
+    public void testSalvageClaim() {
+        var s = buildSettlement();
+        var mgr = new ManufacturingManager(s);
+
+        // Add 2 processes with the correct input resources at Settlement
+        var select2 = getSalvageAtTechLevel(2);
+        mgr.addProcessToQueue(select2);
+        var select1 = getSalvageAtTechLevel(1);
+        mgr.addProcessToQueue(select1);
+        assertEquals("Queue at start", 2, mgr.getQueue().size());
+
+        int skill = Math.min(select1.getSkillLevelRequired(), select2.getSkillLevelRequired());
+        var claimed = mgr.claimNextProcess(0, 0, false);
+        assertNull("Claim skill 0, tech 0", claimed);
+
+        claimed = mgr.claimNextProcess(0, skill, false);
+        assertNull("Claim tech 0 required skill", claimed);
+
+        claimed = mgr.claimNextProcess(1, skill-1, false);
+        assertNull("Claim tech 2 skill 0", claimed);
+
+        // Valid but no resources
+        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired(), true);
+        assertNull("Claim match but for manu", claimed);
+
+        // Do the fully matched request
+        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired(), false);
+        assertNotNull("Claim matched", claimed);
+        assertEquals("Queue matched", 1, mgr.getQueue().size());
+        assertEquals("Claim is correct", select1, claimed.getInfo());
+    }
+
+    public void testManuClaim() {
         var s = buildSettlement();
         var mgr = new ManufacturingManager(s);
 
@@ -44,26 +81,29 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         assertEquals("Queue at start", 2, mgr.getQueue().size());
 
         int skill = Math.min(select1.getSkillLevelRequired(), select2.getSkillLevelRequired());
-        var claimed = mgr.claimNextProcess(0, 0);
+        var claimed = mgr.claimNextProcess(0, 0, true);
         assertNull("Claim skill 0, tech 0", claimed);
 
-        claimed = mgr.claimNextProcess(0, skill);
+        claimed = mgr.claimNextProcess(0, skill, true);
         assertNull("Claim tech 0 required skill", claimed);
 
-        claimed = mgr.claimNextProcess(1, skill-1);
+        claimed = mgr.claimNextProcess(1, skill-1, true);
         assertNull("Claim tech 2 skill 0", claimed);
 
         // Valid but no resources
-        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired());
+        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired(), true);
         assertNull("Claim match but no resources", claimed);
 
-        // Load resoruces into settlement and try again
+        // Load resources into settlement and try again for Salvage
         ProcessInfoTest.loadSettlement(s, select1);
-        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired());
+        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired(), false);
+        assertNull("Claim match but for salvage", claimed);
+
+        // Do the fully matched request
+        claimed = mgr.claimNextProcess(select1.getTechLevelRequired(), select1.getSkillLevelRequired(), true);
         assertNotNull("Claim matched", claimed);
         assertEquals("Queue matched", 1, mgr.getQueue().size());
         assertEquals("Claim is correct", select1, claimed.getInfo());
-
     }
 
     public void testManuOutputs() {

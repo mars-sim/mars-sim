@@ -114,19 +114,26 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Claim the nxt process on the queue that matches a tech level.
+     * Claim the next process on the queue that matches a tech level.
      * @param techLevel Maximum tech level of process
      * @param skillLevel Maximum skill level of worker
+     * @param manuFilter Filter to just Manufacturing or Salvage
      * @return
      */
-    public QueuedProcess claimNextProcess(int techLevel, int skillLevel) {     
+    public QueuedProcess claimNextProcess(int techLevel, int skillLevel, boolean manuFilter) {     
         // Update the available resource status of everything queued
         updateQueueItems();
 
-        // Find startable process grouped by prioirity
+        // Find startable process grouped by priority and filtered by
+        // 1. Tech level
+        // 2. Worker skill
+        // 3. Type of process
+        // 4. Resoruce are available
         var startableByPri = queue.stream()
-                        .filter(q -> (q.getInfo().getTechLevelRequired() <= techLevel)
-                                        && (q.getInfo().getSkillLevelRequired() <= skillLevel)
+                        .filter(q -> (q.info.getTechLevelRequired() <= techLevel)
+                                        && (q.info.getSkillLevelRequired() <= skillLevel)
+                                        && ((manuFilter && q.info instanceof ManufactureProcessInfo)
+                                            || (!manuFilter && q.info instanceof SalvageProcessInfo))
                                         && q.isResourcesAvailable())
                         .collect(Collectors.groupingBy(QueuedProcess::getPriority));
 

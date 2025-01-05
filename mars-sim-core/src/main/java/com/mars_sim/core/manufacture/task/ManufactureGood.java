@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.manufacture.task;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -23,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -105,47 +103,6 @@ public class ManufactureGood extends Task {
 		// Initialize phase
 		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
-	}
-
-	/**
-	 * Cancels any manufacturing processes that's beyond the skill of any people
-	 * associated with the settlement.
-	 * 
-	 * @param settlement
-	 */
-	private static void cancelDifficultManufacturingProcesses(Settlement settlement) {
-
-		int highestSkillLevel = 0;
-		for (Person tempPerson : settlement.getAllAssociatedPeople()) {
-			int skill = getWorkerSkill(tempPerson);
-			if (skill > highestSkillLevel) {
-				highestSkillLevel = skill;
-			}
-		}
-
-		for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
-			if (tempRobot.getRobotType() == RobotType.MAKERBOT) {
-				int skill = getWorkerSkill(tempRobot);
-				if (skill > highestSkillLevel) {
-					highestSkillLevel = skill;
-				}
-			}
-		}
-
-		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
-			Manufacture manufacturingFunction = building.getManufacture();
-			Set<ManufactureProcess> processes = new HashSet<>(
-					manufacturingFunction.getProcesses());
-			for (ManufactureProcess process : processes) {
-				int processSkillLevel = process.getInfo().getSkillLevelRequired();
-				// NOTE: allow a low material science skill person to have access to do the next 2 levels 
-				// of skill process or else difficult tasks are not learned.
-				if (processSkillLevel - 2 > highestSkillLevel) {
-					// Cancel manufacturing process.
-					manufacturingFunction.endManufacturingProcess(process, true);
-				}
-			}
-		}
 	}
 
 	/**
@@ -302,10 +259,6 @@ public class ManufactureGood extends Task {
 			endTask();
 			return time * .75;
 		}
-
-        // Cancel any manufacturing processes that's beyond the skill of any people
-        // associated with the settlement.
-		cancelDifficultManufacturingProcesses(entity.getSettlement());
         
 		// Determine amount of effective work time based on "Materials Science"
 		// skill.
@@ -370,19 +323,15 @@ public class ManufactureGood extends Task {
 	 * @return process or null if none.
 	 */
 	private ManufactureProcess getRunningManufactureProcess() {
-		ManufactureProcess result = null;
-
 		int skillLevel = getEffectiveSkillLevel();
-		Iterator<ManufactureProcess> i = workshop.getProcesses().iterator();
-		while (i.hasNext() && (result == null)) {
-			ManufactureProcess process = i.next();
-			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && (process.getWorkTimeRemaining() > 0D)) {
-				result = process;
-				break;
+		for(ManufactureProcess process : workshop.getProcesses()) {
+			if ((process.getInfo().getSkillLevelRequired() <= skillLevel)
+							&& (process.getWorkTimeRemaining() > 0D)) {
+				return process;
 			}
 		}
 
-		return result;
+		return null;
 	}
 
 	/**
@@ -419,7 +368,7 @@ public class ManufactureGood extends Task {
 
 			// Get something off the queue
 			ManufacturingManager mgr = workshop.getBuilding().getAssociatedSettlement().getManuManager();
-			var queued = mgr.claimNextProcess(workshop.getTechLevel(), skill);
+			var queued = mgr.claimNextProcess(workshop.getTechLevel(), skill, true);
 
 			// Create chosen manufacturing process.
 			if (queued != null) {

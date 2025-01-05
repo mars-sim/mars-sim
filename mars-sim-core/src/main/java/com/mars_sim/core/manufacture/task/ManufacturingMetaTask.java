@@ -11,10 +11,14 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager;
+import com.mars_sim.core.manufacture.SalvageInfo;
+import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.task.SalvageGood;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -32,19 +36,31 @@ import com.mars_sim.core.structure.building.function.FunctionType;
  */
 public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTask {
 	
-    /**
-     * A potential job to manufacture goods
-     */
-    private static class ManufactureGoodJob extends SettlementTask {
+    private abstract static class WorkshopJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
         private int minSkill;
 
-        public ManufactureGoodJob(SettlementMetaTask owner, Building target, int minSkill,
-                                RatingScore score, int demand) {
-            super(owner, "Manufacture goods", target, score);
+        public WorkshopJob(String name, SettlementMetaTask owner, Building target,
+                           int minSkill, RatingScore score, int demand) {
+            super(owner, name, target, score);
             this.minSkill = minSkill;
             setDemand(demand);
+        }
+
+        public int getMinSkill() {
+            return minSkill;
+        }
+
+        public Building getBuilding() {
+            return (Building) getFocus();
+        }
+    }
+
+    private class ManufactureGoodJob extends WorkshopJob {
+        ManufactureGoodJob(SettlementMetaTask owner, Building target,
+                           int minSkill, RatingScore score, int demand) {
+            super("Manufacture Job", owner, target, minSkill, score, demand);
         }
 
         @Override
@@ -56,13 +72,22 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         public Task createTask(Robot robot) {
 			return new ManufactureGood(robot, getBuilding());
         }
+    }
 
-        public int getMinSkill() {
-            return minSkill;
+    private class SalvageGoodJob extends WorkshopJob {
+        SalvageGoodJob(SettlementMetaTask owner, Building target,
+                           int minSkill, RatingScore score, int demand) {
+            super("Salvage Job", owner, target, minSkill, score, demand);
         }
 
-        public Building getBuilding() {
-            return (Building) getFocus();
+        @Override
+        public Task createTask(Person person) {
+            return new SalvageGood(person);
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+			return null;
         }
     }
     
@@ -89,6 +114,8 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
 
         for(var w : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
             addManuProcesses(settlement, w, lowestTechNeeded, results);
+
+            addSalvageProcesses(settlement, w, lowestTechNeeded, results);
         }
 
         return results;
@@ -113,7 +140,11 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         // Add demands if spare capacity
         if (!m.isFull() && m.getTechLevel() >= lowestTechNeeded) {
             var capacity = m.getNumPrintersInUse() - m.getCurrentTotalProcesses();
-            var queueSize = s.getManuManager().getQueue().size();
+
+            // How many Manufacturing jobs ar on the queue
+            var queueSize = (int)s.getManuManager().getQueue().stream()
+                        .filter(p -> p.getInfo() instanceof ManufactureProcessInfo)
+                        .count();
 
             // Demand cannot be greater than queue or capacity
             demand = Math.min(queueSize, capacity);
@@ -138,6 +169,54 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         }
     }
 
+    /**
+     * Assess whether a Manufacture building needs assistent either for new or existing
+     * manufacturing processes.
+     * 
+     * @param s
+     * @param w
+     * @param lowestTechNeeded
+     * @param results
+     */
+    private void addSalvageProcesses(Settlement s, Building w, int lowestTechNeeded,
+                    List<SettlementTask> results) {
+        int demand = 0;
+        int base = 100;
+        var m = w.getManufacture();
+        int lowestSkillNeeded = 0;
+        
+        // Add demands if spare capacity
+        if (!m.isFull() && m.getTechLevel() >= lowestTechNeeded) {
+            var capacity = m.getNumPrintersInUse() - m.getCurrentTotalProcesses();
+
+            // How many Manufacturing jobs ar on the queue
+            var queueSize = (int)s.getManuManager().getQueue().stream()
+                        .filter(p -> p.getInfo() instanceof SalvageProcessInfo)
+                        .count();
+
+            // Demand cannot be greater than queue or capacity
+            demand = Math.min(queueSize, capacity);
+        }
+
+        // Count active manufacturing processes
+        var active = m.getSalvageProcesses().stream()
+                            .filter(p -> p.getWorkTimeRemaining() > 0D)
+                            .toList();
+        if (!active.isEmpty()) {
+            demand += active.size();
+            base += 100;
+            lowestSkillNeeded = active.stream()
+                                    .mapToInt(p -> p.getInfo().getSkillLevelRequired())
+                                    .min().orElse(0);
+        }
+
+        if (demand > 0) {
+            RatingScore score = new RatingScore(base);
+            score = applyCommerceFactor(score, s, CommerceType.MANUFACTURING);
+            results.add(new SalvageGoodJob(this, w, lowestSkillNeeded, score, demand));
+        }
+    }
+
      /**
      * Assesses a Person for a specific SettlementTask of this type.
      * 
@@ -150,7 +229,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         RatingScore score = RatingScore.ZERO_RATING;
         if (p.isInSettlement()
                 && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-            ManufactureGoodJob mgj = (ManufactureGoodJob)t;
+            WorkshopJob mgj = (WorkshopJob)t;
 
             // Check person has minimum skill
 		    int skill = ManufactureGood.getWorkerSkill(p);
@@ -174,9 +253,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
     @Override
     public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
         RatingScore score = RatingScore.ZERO_RATING;
-        if (r.isInSettlement()) {
-            ManufactureGoodJob mgj = (ManufactureGoodJob)t;
-
+        if (r.isInSettlement() && (t instanceof ManufactureGoodJob mgj)) {
             // Check person has minimum skill
 		    int skill = ManufactureGood.getWorkerSkill(r);
             if (skill < mgj.getMinSkill()) {
