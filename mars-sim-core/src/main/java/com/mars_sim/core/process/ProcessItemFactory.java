@@ -12,6 +12,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Factory class to create ProcessItem objects
@@ -53,13 +54,17 @@ public final class ProcessItemFactory {
 				if (BinType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
 					throw new IllegalArgumentException(name + " is not a known Bin");	
 				}
+				id = BinType.convertName2ID(name);
 				break;
 			case EQUIPMENT:
 				if (EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
 					throw new IllegalArgumentException(name + " is not a known Equipment");	
 				}
+				id = EquipmentType.convertName2ID(name);
 				break;
 			case VEHICLE:
+				id = VehicleType.convertName2ID(name);
+				break;
 			default:
 		}
 

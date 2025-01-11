@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.equipment.BinFactory;
-import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
@@ -24,14 +21,9 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessItem;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -246,11 +238,10 @@ public final class ManufactureUtil {
 		GoodsManager manager = settlement.getGoodsManager();
 		switch(item.getType()) {
 			case ItemType.AMOUNT_RESOURCE: {
-				AmountResource ar = ResourceUtil.findAmountResource(item.getName());
-				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+				int id = item.getId();
 				double amount = item.getAmount();
 				if (isOutput) {
-					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(ar.getID());
+					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(id);
 					if (amount > remainingCapacity) {
 						amount = remainingCapacity;
 					}
@@ -260,22 +251,19 @@ public final class ManufactureUtil {
 			} break;
 		
 			case ItemType.PART: {
-				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				result = manager.getGoodValuePoint(id) * item.getAmount();
+				result = manager.getGoodValuePoint(item.getId()) * item.getAmount();
 				if (isOutput)
 					result *= PART_VALUE;
 			} break;
 
 			case ItemType.EQUIPMENT: {
-				int id = EquipmentType.convertName2ID(item.getName());
-				result = manager.getGoodValuePoint(id) * item.getAmount();
+				result = manager.getGoodValuePoint(item.getId()) * item.getAmount();
 				if (isOutput)
 					result *= EQUIPMENT_VALUE;
 			} break;
 
 			case ItemType.BIN: {
-				int id = BinType.convertName2ID(item.getName());
-				result = manager.getGoodValuePoint(id) * item.getAmount();
+				result = manager.getGoodValuePoint(item.getId()) * item.getAmount();
 				if (isOutput)
 					result *= BIN_VALUE;
 			} break;
@@ -289,78 +277,6 @@ public final class ManufactureUtil {
 
 		return result;
 	}
-
-	/**
-	 * Checks to see if a manufacturing process can be started at a given
-	 * manufacturing building.
-	 *
-	 * @param process  the manufacturing process to start.
-	 * @param workshop the manufacturing building.
-	 * @return true if process can be started.
-	 * @throws Exception if error determining if process can be started.
-	 */
-	public static boolean canProcessBeQueued(ManufactureProcessInfo process, Manufacture workshop) {
-
-		// Q: Are the numbers of 3D printers available for another processes ?
-		// Check for workshop.getNumPrintersInUse()
-		// NOTE: create a map to show which process has a 3D printer in use and which doesn't
-
-		// Check to see if process tech level is above workshop tech level.
-		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
-			return false;
-		}
-
-		Settlement settlement = workshop.getBuilding().getSettlement();
-
-		// Check to see if process input items are available at settlement.
-        if (!process.isResourcesAvailable(settlement)) {
-			return false;
-		}
-
-		// Check to see if room for process output items at settlement.
-		return canProcessOutputsBeStored(process, settlement);
-    }
-	
-	/**
-	 * Checks to see if a manufacturing process can be started at a given
-	 * manufacturing building.
-	 *
-	 * @param process  the manufacturing process to start.
-	 * @param workshop the manufacturing building.
-	 * @return true if process can be started.
-	 * @throws Exception if error determining if process can be started.
-	 */
-	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
-		// Check to see if this workshop can accommodate another process.
-		if (workshop.getMaxProcesses() < workshop.getCurrentTotalProcesses()) {
-			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
-			return false;
-		}
-
-		// Q: Are the numbers of 3D printers available for another processes ?
-		// Check for workshop.getNumPrintersInUse()
-		// NOTE: create a map to show which process has a 3D printer in use and which doesn't
-
-		// Check to see if process tech level is above workshop tech level.
-		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
-			return false;
-		}
-
-		Settlement settlement = workshop.getBuilding().getSettlement();
-
-		return canProcessBeStarted(settlement, process);
-	}
-
-	public static boolean canProcessBeStarted(Settlement settlement, ManufactureProcessInfo process) {
-
-		// Check to see if process input items are available at settlement.
-        if (!process.isResourcesAvailable(settlement)) {
-			return false;
-		}
-
-		// Check to see if room for process output items at settlement.
-		return canProcessOutputsBeStored(process, settlement);
-    }
 
 	/**
 	 * Checks to see if a salvage process can be started at a given manufacturing
@@ -403,55 +319,6 @@ public final class ManufactureUtil {
 		return canSalvageProcessBeQueued(process, workshop);
 	}
 
-    /**
-     * Checks if enough storage room for process outputs in an inventory.
-     *
-     * @param process the manufacturing process.
-     * @param inv the inventory.
-     * @return true if storage room.
-     * @throws Exception if error determining storage room for outputs.
-     */
-	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Settlement settlement) {
-
-		for(var item : process.getOutputList()) {
-			switch(item.getType()) {
-				case ItemType.AMOUNT_RESOURCE: {
-					double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
-					if (item.getAmount() > capacity)
-						return false;
-				} break;
-
-				case ItemType.PART: {
-					double mass = item.getAmount() * (ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
-					double capacity = settlement.getCargoCapacity();
-					if (mass > capacity)
-						return false;
-				} break;
-
-				case ItemType.EQUIPMENT: {
-					int number = (int) item.getAmount();
-					double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
-					double capacity = settlement.getCargoCapacity();
-					if (mass > capacity)
-						return false;
-				} break;
-
-				case ItemType.BIN: {
-					int number = (int) item.getAmount();
-					double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
-					double capacity = settlement.getCargoCapacity();
-					if (mass > capacity)
-						return false;
-				} break;
-
-				case ItemType.VEHICLE:
-					break;
-			}
-		}
-
-		return true;
-	}
-
 	/**
 	 * Gets the highest manufacturing tech level in a settlement.
 	 *
@@ -459,16 +326,7 @@ public final class ManufactureUtil {
 	 * @return highest manufacturing tech level or -1 if no manufacturing supported
 	 */
 	public static int getHighestManufacturingTechLevel(Settlement settlement) {
-		int highestTechLevel = -1;
-		BuildingManager manager = settlement.getBuildingManager();
-
-		for(Building building : manager.getBuildingSet(FunctionType.MANUFACTURE)) {
-			Manufacture manufacturingFunction = building.getManufacture();
-			if (manufacturingFunction.getTechLevel() > highestTechLevel)
-				highestTechLevel = manufacturingFunction.getTechLevel();
-		}
-
-		return highestTechLevel;
+		return settlement.getManuManager().getMaxTechLevel();
 	}
 
 	/**

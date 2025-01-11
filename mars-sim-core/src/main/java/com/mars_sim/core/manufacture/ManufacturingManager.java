@@ -3,9 +3,12 @@ package com.mars_sim.core.manufacture;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -74,6 +77,11 @@ public class ManufacturingManager implements Serializable {
 
     private class UpdateEvent implements ScheduledEventHandler {
         private static final long serialVersionUID = 1L;
+        private int nextRefresh;
+
+        UpdateEvent(int nextRefresh) {
+            this.nextRefresh = nextRefresh;
+        }
 
         @Override
         public String getEventDescription() {
@@ -84,13 +92,17 @@ public class ManufacturingManager implements Serializable {
         public int execute(MarsTime currentTime) {
             updateQueue();
 
-            return 1000; // this needs to adjust to the every morning hours of the owner Settlement
+            return nextRefresh;
         }
 
     }
 
     private static final int REFRESH_TIME = 10;
-	private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
+    private static final Integer DEFAULT_VALUE = 100;
+    private static final Integer DEFAULT_ADD = 1;
+    private static final Integer DEFAULT_QUEUE_SIZE = 10;
+
+    private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
 
     private List<QueuedProcess> queue;
     private Settlement owner;
@@ -104,7 +116,18 @@ public class ManufacturingManager implements Serializable {
         // First event is slightly in the future
         var futures = owner.getFutureManager();
 
-        futures.addEvent(owner.getTimeOffset() + REFRESH_TIME, new UpdateEvent());
+        // Add a daily refresh event
+        futures.addEvent(owner.getTimeOffset() + REFRESH_TIME, new UpdateEvent(1000));
+
+        // Add a one off event to build the queue
+        futures.addEvent(1, new UpdateEvent(0));
+
+        // Add the controlling preferences 
+        var pMgr = owner.getPreferences();
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_ADD);
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
+
     }
 
     /**
@@ -150,10 +173,6 @@ public class ManufacturingManager implements Serializable {
         // Remove as it's been claimed
         if (selected != null) {
             queue.remove(selected);
-            if (queue.isEmpty()) {
-                // Repopulate the queue
-                updateQueue();
-            }
         }
 
         return selected;
@@ -209,6 +228,17 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
+     * Get the prefered capacity to add new items to the queue.
+     * @return This could be negative
+     */
+    private int getQueueCapacity() {
+        // Add new queue items if queue is within limit
+        var maxQueue = owner.getPreferences().getIntValue(ManufacturingParameters.INSTANCE,
+                                        ManufacturingParameters.MAX_QUEUE_SIZE,
+                                        DEFAULT_QUEUE_SIZE);
+        return maxQueue - queue.size();
+    }
+    /**
      * Find any manufacturing proesses that can be added to the queue
      */
     void updateQueue() {
@@ -218,13 +248,81 @@ public class ManufacturingManager implements Serializable {
         // Update the resources available flag on existing queue
         updateQueueItems();
 
-        // Add new queue items if automatic enabled
-        if (!owner.getProcessOverride(OverrideType.MANUFACTURE)) {
-            int added = 0;
-            // Auto select processes to add based on value
-            if (added > 0)
-                logger.info(owner, "Automatically added ManuProcesses: added " + added);
+        // Add new queue items if queue is within limit
+        if (getQueueCapacity() > 0) {
+            if (!owner.getProcessOverride(OverrideType.MANUFACTURE)) {
+                createManuQueueItems();
+            }
+
+            if (!owner.getProcessOverride(OverrideType.SALVAGE)) {
+                int added = 0;
+                // Auto select processes to add based on value
+                if (added > 0)
+                    logger.info(owner, "Automatically added Salvage process: added " + added);
+            }
         }
+    }
+
+    /**
+     * Create and add new items to the queue for manufacturing. Get any queuable manu process
+     * that has resources available. Then score the remaining set.
+     * The score of the potential processes are check for the threshold value.
+     * The top N processes with the highest process values are added to the queue.
+     */
+    private void createManuQueueItems() {
+        var pMgr = owner.getPreferences();
+        int maxProcesses = Math.min(getQueueCapacity(),
+                                    pMgr.getIntValue(ManufacturingParameters.INSTANCE,
+                                                     ManufacturingParameters.NEW_MANU_LIMIT,
+                                                     DEFAULT_ADD));
+        if (maxProcesses > 0) {
+
+            var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
+
+            var potential = getQueuableManuProcesses()
+                    .filter(i -> i.isResourcesAvailable(owner))
+                    .toList();
+            addTopValueProcesses("Manu", potential, scoreThreshold, maxProcesses);
+        }   
+    }
+
+    /**
+     * Add the top value processes from the potential list where the value is above the 
+     * threshold.
+     * @param name Tag of the potentials
+     * @param potential Potential processes to evualted.
+     * @param scoreThreshold Value threshold of processes to add
+     * @param maxProcesses Max number of processes to add
+     * @return Number added
+     */
+    private int addTopValueProcesses(String name, List<? extends ProcessInfo> potential,
+                                     int scoreThreshold, int maxProcesses) {
+
+        record ProcessValue(ProcessInfo info, double value) {}
+            
+        // Score the potential processes and take those above threshold
+        List<ProcessValue> candidates = new ArrayList<>();
+        for(var p : potential) {
+            double processValue = p.getOutputList().stream()
+                    .mapToDouble(i -> ManufactureUtil.getManufactureProcessItemValue(i, owner, true))
+                    .sum();
+            if (processValue > scoreThreshold) {
+                // Add
+                candidates.add(new ProcessValue(p, processValue));
+            }
+            logger.info("Potential score " + p.getName() + " = " + processValue + " (threshold " + scoreThreshold);
+        }
+
+        // Take the top N of what is left
+        Collections.sort(candidates, Comparator.comparingDouble(ProcessValue::value));
+        int added = Math.min(candidates.size(), maxProcesses);
+        for(int i = 0; i < added; i++) {
+            addProcessToQueue(candidates.get(i).info());
+        }
+
+        logger.info(owner, "Automatically added " + name + ": added " + added + "/" + candidates.size());
+
+        return added;
     }
 
     /**
@@ -268,15 +366,14 @@ public class ManufacturingManager implements Serializable {
                                                                         getHighestSkill());
     }
 
+    
     /**
      * Get a list of Manufacturing processes that can be queued.
      * There is no process of the type already queue and workers with the skill present.
-     * Optionally the queuable processes can be filtered by a manatory output of the process.
      * 
-     * @param outputName Optional name of an output that must be produced
      * @return
      */
-    public List<ManufactureProcessInfo> getQueuableManuProcesses(String outputName) {
+    private Stream<ManufactureProcessInfo> getQueuableManuProcesses() {
 
         // Get set of what is already queued
         Set<ManufactureProcessInfo> alreadyQueued = queue.stream()
@@ -286,16 +383,27 @@ public class ManufacturingManager implements Serializable {
                     .collect(Collectors.toSet());
                     
         // Determine all manufacturing processes that are possible and profitable.
-        var stream = getSupportedManuProcesses().stream()
+        return getSupportedManuProcesses().stream()
                 .filter(q -> !alreadyQueued.contains(q));
+    }
+
+    /**
+     * Get a list of Manufacturing processes that can be queued.
+     * There is no process of the type already queue and workers with the skill present.
+     * Optionally the queuable processes can be filtered by a manatory output of the process.
+     * 
+     * @param outputName Optional name of an output that must be produced
+     * @return
+     */
+    public List<ManufactureProcessInfo> getQueuableManuProcesses(String outputName) {
+        // Determine all manufacturing processes that are possible and profitable.
+        var stream = getQueuableManuProcesses();
         
         // Add filter by output if required
         if (outputName != null) {
             stream = stream.filter(p -> p.isOutput(outputName));
         }
-        return stream
-                .sorted()
-                .toList();
+        return stream.sorted().toList();
     }
 
     /**

@@ -126,6 +126,38 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         assertFalse("Outputs found", o.isEmpty());
     }
 
+    public void testQueueUpdate() {
+        var s = buildSettlement("factory", true);
+        var mgr = new ManufacturingManager(s);
+        buildWorkshop(this, s.getBuildingManager());
+        buildEngineer(s, 1);
+
+        var p = mgr.getQueuableManuProcesses(null);
+        assertFalse("Queuable processes", p.isEmpty());
+
+        // No resources
+        mgr.updateQueue();
+        assertTrue("Queue without resources", mgr.getQueue().isEmpty());
+
+        // Add resources and configure paameters
+        var pMgr = s.getPreferences();
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, 0);
+        var first = p.get(0);
+        ProcessInfoTest.loadSettlement(s, first);
+        var second = p.get(1);
+        ProcessInfoTest.loadSettlement(s, second);
+
+        // Resources, no limit
+        mgr.updateQueue();
+        assertTrue("Queue with zero limit", mgr.getQueue().isEmpty());
+
+        // Resources
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, 1);
+        mgr.updateQueue();
+        assertEquals("Queue contains single item", 1, mgr.getQueue().size());
+    }
+
+
     public void testManuQueuable() {
         var s = buildSettlement();
         var mgr = new ManufacturingManager(s);

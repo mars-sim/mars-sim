@@ -17,12 +17,13 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
     }
     
     public void testGetHighestManufacturingTechLevel() {
-        var s = buildSettlement();
+        var s = buildSettlement("tech", true);
         
         int highest = ManufactureUtil.getHighestManufacturingTechLevel(s);
         assertEquals("No manufacturing", -1, highest);
 
         var w = buildManufacture(s);
+        s.getManuManager().updateTechLevel(); // Simulate a daily recheck after a new building
         highest = ManufactureUtil.getHighestManufacturingTechLevel(s);
 
         assertEquals("Highest tech level found", w.getManufacture().getTechLevel(), highest);
