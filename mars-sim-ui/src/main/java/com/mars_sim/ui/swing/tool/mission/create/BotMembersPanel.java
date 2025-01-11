@@ -12,8 +12,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -27,8 +27,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -107,55 +105,50 @@ implements ActionListener {
 		botsTable.setRowSelectionAllowed(true);
 		botsTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		botsTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						// Get the selected rows.
-						int[] selectedRows = botsTable.getSelectedRows();
-						if (selectedRows.length > 0) {
-							if (e.getValueIsAdjusting()) {
-								botMembersTable.clearSelection();
+				e -> {
+					// Get the selected rows.
+					int[] selectedRows = botsTable.getSelectedRows();
+					if (selectedRows.length > 0) {
+						if (e.getValueIsAdjusting()) {
+							botMembersTable.clearSelection();
 
-								// Check if any of the rows failed.
-								boolean failedRow = false;
-								for (int selectedRow : selectedRows)
-									if (botsTableModel.isFailureRow(selectedRow)) failedRow = true;
+							// Check if any of the rows failed.
+							boolean failedRow = false;
+							for (int selectedRow : selectedRows)
+								if (botsTableModel.isFailureRow(selectedRow)) failedRow = true;
 
-								if (failedRow) {
-									// Display failed row message and disable add button.
-									errorMessageLabel.setText("One or more selected bots cannot be used on the mission " +
-											"(see red cells).");
+							if (failedRow) {
+								// Display failed row message and disable add button.
+								errorMessageLabel.setText("One or more selected bots cannot be used on the mission " +
+										"(see red cells).");
+								addButton.setEnabled(false);
+							}
+							else {
+								// Check if number of rows exceed drone remaining capacity.
+								if (selectedRows.length > 1) {
+									// Display over capacity message and disable add button.
+									errorMessageLabel.setText("Not allow to have more than 1 bot to navigate the drone.");
 									addButton.setEnabled(false);
 								}
 								else {
-									// Check if number of rows exceed drone remaining capacity.
-									if (selectedRows.length > 1) {
-										// Display over capacity message and disable add button.
-										errorMessageLabel.setText("Not allow to have more than 1 bot to navigate the drone.");
-										addButton.setEnabled(false);
-									}
-									else {
-										// Enable add button.
-										errorMessageLabel.setText(" ");
-										addButton.setEnabled(true);
-									}
+									// Enable add button.
+									errorMessageLabel.setText(" ");
+									addButton.setEnabled(true);
 								}
 							}
 						}
-						else {
-							// Disable add button when no rows are selected.
-							addButton.setEnabled(false);
-							errorMessageLabel.setText(" ");
-						}
+					}
+					else {
+						// Disable add button when no rows are selected.
+						addButton.setEnabled(false);
+						errorMessageLabel.setText(" ");
 					}
 				}
 				);
 		// call it a click to add button when user double clicks the table
 		botsTable.addMouseListener(
-				new MouseListener() {
-					public void mouseReleased(MouseEvent e) {}
-					public void mousePressed(MouseEvent e) {}
-					public void mouseExited(MouseEvent e) {}
-					public void mouseEntered(MouseEvent e) {}
+				new MouseAdapter() {
+					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2 && !e.isConsumed()) {
 							
@@ -198,7 +191,7 @@ implements ActionListener {
 		removeButton.addActionListener(e -> {
 			// Remove the selected rows in the members table to the bots table.
 			int[] selectedRows = botMembersTable.getSelectedRows();
-			Collection<Robot> bots = new ConcurrentLinkedQueue<Robot>();
+			Collection<Robot> bots = new ConcurrentLinkedQueue<>();
 			for (int selectedRow : selectedRows)
 				bots.add((Robot) botMembersTableModel.getUnit(selectedRow));
 			botsTableModel.addRobots(bots);
@@ -209,18 +202,11 @@ implements ActionListener {
 
 		skipButton = new JButton("Skip");
 		skipButton.setEnabled(true);
-		skipButton.addActionListener(e -> {
-			wizard.buttonClickedNext();
-		});
+		skipButton.addActionListener(e -> wizard.buttonClickedNext());
 		buttonPane.add(skipButton);
 		
 		// Add a vertical strut to make UI space.
 		add(Box.createVerticalStrut(10));
-
-		// Create the rover capacity label.
-//		roverCapacityLabel = new JLabel("Remaining Rover Capacity: ");
-//		roverCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		add(roverCapacityLabel);
 
 		// Add a vertical strut to make UI space.
 		add(Box.createVerticalStrut(10));
@@ -250,18 +236,16 @@ implements ActionListener {
 		botMembersTable.setRowSelectionAllowed(true);
 		botMembersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		botMembersTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						int[] selectedRows = botMembersTable.getSelectedRows();
-						if (selectedRows.length > 0) {
-							if (e.getValueIsAdjusting()) {
-								// Enable the remove button.
-								botsTable.clearSelection();
-								removeButton.setEnabled(true);
-							}
+				e -> {
+					int[] selectedRows = botMembersTable.getSelectedRows();
+					if (selectedRows.length > 0) {
+						if (e.getValueIsAdjusting()) {
+							// Enable the remove button.
+							botsTable.clearSelection();
+							removeButton.setEnabled(true);
 						}
-						else removeButton.setEnabled(false);
 					}
+					else removeButton.setEnabled(false);
 				});
 		membersScrollPane.setViewportView(botMembersTable);
 	}
@@ -287,11 +271,9 @@ implements ActionListener {
 		for (int x = 0; x < size; x++) {
 			members.add((Worker) botMembersTableModel.getUnit(x));
 		}
-//		if (!isTesting) {
-			// Note: Compare the effect of addMixedMembers and setMixedMembers
-			getWizard().getMissionData().setBotMembers(members);
-//			return true;
-//		}
+		// Note: Compare the effect of addMixedMembers and setMixedMembers
+		getWizard().getMissionData().setBotMembers(members);
+
 		// Note: if player goes back and forth from panels to panels,
 		// how do we handle those members that have been added previously ? 
 		// How to remove those previous members ?
@@ -343,6 +325,7 @@ implements ActionListener {
 		 * @param column the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
 		 */
+		@Override
 		public Object getValueAt(int row, int column) {
 			Object result = null;
 
@@ -386,9 +369,13 @@ implements ActionListener {
 			else if (MissionType.SALVAGE == missionData.getMissionType())
 				settlement = missionData.getSalvageSettlement();
 			// Pick only deliverybot for delivery mission
-			Collection<Robot> robots = CollectionUtils.sortByName(settlement.getRobots(RobotType.DELIVERYBOT));
-			Iterator<Robot> i = robots.iterator();
-			while (i.hasNext()) units.add(i.next());
+			var robots = settlement.getAllAssociatedRobots().stream()
+							.filter(r -> r.getRobotType() == RobotType.DELIVERYBOT)
+							.sorted()
+							.toList();
+			
+			units.addAll(robots);
+
 			fireTableDataChanged();
 		}
 
@@ -469,34 +456,31 @@ implements ActionListener {
 		 * @param column the column whose value is to be queried
 		 * @return the value Object at the specified cell
 		 */
+		@Override
 		public Object getValueAt(int row, int column) {
 			Object result = null;
 
 			if (row < units.size()) {
 				Robot robot = (Robot) getUnit(row);
 
-				try {
-					if (column == 0) 
-						result = robot.getName();
-					else if (column == 1) 
-						result = robot.getRobotType().getName();
-					else if (column == 2) {
+				switch(column) { 
+					case 0 -> result = robot.getName();
+					case 1 -> result = robot.getRobotType().getName();
+					case 2 -> {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
 						else 
 							result = "None";
 					}
-					else if (column == 3) 
-						result = (int) (robot.getPerformanceRating() * 100D) + "%";
-					else if (column == 4) {			
+					case 3 -> result = (int) (robot.getPerformanceRating() * 100D) + "%";
+					case 4 -> {			
 						if (robot.getSystemCondition().isInoperable())
 							result = "Inoperable";
 						else 
 							result = "Operable";
 					}
-
+					default -> result = null;
 				}
-				catch (Exception e) {}
 			}
 
 			return result;
@@ -533,7 +517,7 @@ implements ActionListener {
 			units = CollectionUtils.sortByName(units);
 			fireTableDataChanged();
 
-			getWizard().setButtons(units.size() > 0);
+			getWizard().setButtons(!units.isEmpty());
 		}
 
 		/**
@@ -548,7 +532,7 @@ implements ActionListener {
 			}
 			fireTableDataChanged();
 
-			getWizard().setButtons(units.size() > 0);
+			getWizard().setButtons(!units.isEmpty());
 		}
 	}
 
@@ -563,11 +547,10 @@ implements ActionListener {
 	private final void addButtonClicked() {
 		// Add the selected rows in the robots table to the members table.
 		int[] selectedRows = botsTable.getSelectedRows();
-		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
+		Collection<Robot> robots = new ConcurrentLinkedQueue<>();
 		for (int selectedRow : selectedRows) robots.add((Robot) botsTableModel.getUnit(selectedRow));
 		botsTableModel.removeRobots(robots);
 		botMembersTableModel.addRobots(robots);
-//		updateRoverCapacityLabel();
 	}
 
 }

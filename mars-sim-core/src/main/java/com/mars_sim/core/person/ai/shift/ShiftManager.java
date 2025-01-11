@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.logging.SimLogger;
@@ -66,7 +65,6 @@ public class ShiftManager implements Serializable {
     private Settlement settlement;
     private int leavePercentage = 0;
     private int rotationSols = 0;
-    private int offset;
 
     /**
      * Creates a Shift Manager based on a shared ShiftPattern.
@@ -80,7 +78,8 @@ public class ShiftManager implements Serializable {
         this.settlement = settlement;
         this.leavePercentage = shiftDefinition.getLeavePercentage();
         this.rotationSols = shiftDefinition.getRotationSols();
-        this.offset = MarsSurface.getTimeOffset(settlement.getCoordinates());
+
+        var offset = settlement.getTimeOffset();
 
         // Create future event to rotate shifts
         ScheduledEventManager futures = settlement.getFutureManager();
@@ -194,13 +193,6 @@ public class ShiftManager implements Serializable {
     public List<Shift> getShifts() {
 		return shifts;
 	}
-
-    /**
-     * Gets the time mSol offset for this shift.
-     */
-    public int getOffset() {
-        return offset;
-    }
 
     /**
      * Gets how often does shifts get changes in terms of Sols.

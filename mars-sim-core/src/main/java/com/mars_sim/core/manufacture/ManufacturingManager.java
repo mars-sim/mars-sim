@@ -88,6 +88,8 @@ public class ManufacturingManager implements Serializable {
         }
 
     }
+
+    private static final int REFRESH_TIME = 10;
 	private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
 
     private List<QueuedProcess> queue;
@@ -102,7 +104,7 @@ public class ManufacturingManager implements Serializable {
         // First event is slightly in the future
         var futures = owner.getFutureManager();
 
-        futures.addEvent(10, new UpdateEvent());
+        futures.addEvent(owner.getTimeOffset() + REFRESH_TIME, new UpdateEvent());
     }
 
     /**

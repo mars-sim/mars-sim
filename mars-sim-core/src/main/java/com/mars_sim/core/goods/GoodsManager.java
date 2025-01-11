@@ -20,7 +20,6 @@ import java.util.Set;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -195,7 +194,7 @@ public class GoodsManager implements Serializable {
 	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
 
-		int startOfDayOffset = MarsSurface.getTimeOffset(settlement.getCoordinates());
+		int startOfDayOffset = settlement.getTimeOffset();
 		
 		// Schedule an event to recalculate shopping lists just after start of day
 		settlement.getFutureManager().addEvent(startOfDayOffset + 10, new TradeListUpdater());
