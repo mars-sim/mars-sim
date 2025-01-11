@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -24,8 +23,6 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
-
-
 
 /**
  * A building panel displaying the manufacture building function.
@@ -120,22 +117,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 * @return list of salvage processes.
 	 */
 	private List<SalvageProcess> getSalvageProcesses() {
-		List<SalvageProcess> result = new ArrayList<>();
-
-		result.addAll(workshop.getSalvageProcesses());
-			
-		if (!workshop.isFull()) {
-			Iterator<SalvageProcess> j = workshop.getQueueSalvageProcesses().iterator();
-			while (j.hasNext()) {
-				SalvageProcess process = j.next();
-				result.add(process);
-				workshop.loadFromSalvageQueue(process);
-				// Add only one at a time to ensure it's not full
-				break;
-			}	
-		}
-
-		return result;
+		return workshop.getSalvageProcesses();
 	}
 	
 	@Override

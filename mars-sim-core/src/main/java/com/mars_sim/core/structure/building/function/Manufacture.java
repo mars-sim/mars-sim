@@ -26,8 +26,6 @@ import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.manufacture.SalvageProcess;
-import com.mars_sim.core.manufacture.SalvageProcessInfo;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.resource.AmountResource;
@@ -71,14 +69,10 @@ public class Manufacture extends Function {
 	private int techLevel;
 	private int numPrintersInUse;
 	private final int numMaxConcurrentProcesses;
-
-	private List<SalvageProcessInfo> possibleSalvages;
 	
 	private List<ManufactureProcess> ongoingProcesses;
 	private List<SalvageProcess> ongoingSalvages;
-	
-	private List<SalvageProcess> queueSalvageProcesses;
-	
+		
 	// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 
 	/**
@@ -98,32 +92,8 @@ public class Manufacture extends Function {
 
 		ongoingProcesses = new CopyOnWriteArrayList<>();
 		ongoingSalvages = new CopyOnWriteArrayList<>();
-		
-		possibleSalvages = new CopyOnWriteArrayList<>();
-			
-		queueSalvageProcesses = new CopyOnWriteArrayList<>();
-		
-
-		// Put together a list of salvage process infos
-		getPossibleSalvageProcesses();
 	}
 
-	/**
-	 * Gets a list of the possible salvage process info for this building.
-	 *
-	 * @return
-	 */
-	public List<SalvageProcessInfo> getPossibleSalvageProcesses() {
-
-		if (!possibleSalvages.isEmpty())
-			return possibleSalvages;
-
-		List<SalvageProcessInfo> list = ManufactureUtil.getSalvageProcessesForTechLevel(techLevel);
-		possibleSalvages.addAll(list);
-
-		return possibleSalvages;
-	}
-	
 	/**
 	 * Gets the value of the function for a named building type.
 	 *
@@ -140,11 +110,9 @@ public class Manufacture extends Function {
 		FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.MANUFACTURE);
 		int buildingTech = spec.getTechLevel();
 
-		double demand = 0D;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			demand += i.next().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
-		}
+		double demand = settlement.getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE))
+				.sum();
 
 		double supply = 0D;
 		int highestExistingTechLevel = 0;
@@ -254,26 +222,7 @@ public class Manufacture extends Function {
 	public List<ManufactureProcess> getProcesses() {
 		return Collections.unmodifiableList(ongoingProcesses);
 	}
-	
-	/**
-	 * Gets a list of queue salvage processes.
-	 * 
-	 * @return
-	 */
-	public List<SalvageProcess> getQueueSalvageProcesses() {
-		return Collections.unmodifiableList(queueSalvageProcesses);
-	}
 
-	/**
-	 * Transfer a salvage process from queue to ongoing list.
-	 * 
-	 * @param process
-	 */
-	public void loadFromSalvageQueue(SalvageProcess process) {
-		if (queueSalvageProcesses.remove(process)) {
-			addSalvageProcess(process);
-		}
-	}
 	
 	public boolean isFull() {
 		return getCurrentTotalProcesses() >= numPrintersInUse;
@@ -322,11 +271,6 @@ public class Manufacture extends Function {
 	public List<SalvageProcess> getSalvageProcesses() {
 		return Collections.unmodifiableList(ongoingSalvages);
 	}
-
-	public void addToSalvageQueue(SalvageProcess process) {
-		// Add this process to the queue
-		queueSalvageProcesses.add(process);
-	}
 	
 	/**
 	 * Adds a new salvage process to the building.
@@ -339,21 +283,8 @@ public class Manufacture extends Function {
 			throw new IllegalArgumentException("process is null");
 
 		if (getCurrentTotalProcesses() >= numPrintersInUse) {
-			logger.info(getBuilding().getSettlement(), 0,
-					getBuilding()
-					+ ": " + getCurrentTotalProcesses() + " concurrent processes.");
-			logger.info(getBuilding().getSettlement(), 0,
-					getBuilding()
-					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use."
-					+ "");
-			logger.info(getBuilding().getSettlement(), 0,
-					getBuilding()
-					+ ": " + (numMaxConcurrentProcesses-numPrintersInUse)
-					+ " 3D-printer slot(s) available."
-					+ "");
-			logger.info(getBuilding(), 20_000, "Adding '" + process.getInfo().getName() + "' to the queue only.");
-			// Add this process to the queue
-			queueSalvageProcesses.add(process);
+			// BUT Salvage does not use printers ??
+			logger.warning(getBuilding(), "No capacity to start process '" + process.getInfo().getName() + "'.");
 			
 			return;
 		}

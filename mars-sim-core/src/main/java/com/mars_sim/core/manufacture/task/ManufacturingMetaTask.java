@@ -13,12 +13,10 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager;
-import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.task.SalvageGood;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -82,7 +80,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
 
         @Override
         public Task createTask(Person person) {
-            return new SalvageGood(person);
+            return new SalvageGood(person, getBuilding());
         }
 
         @Override
