@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
@@ -17,26 +16,29 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
+import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
-import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Msg;
@@ -44,6 +46,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
 import com.mars_sim.ui.swing.utils.SalvagePanel;
@@ -55,7 +58,7 @@ import com.mars_sim.ui.swing.utils.SalvagePanel;
 public class TabPanelManufacture extends TabPanel {
 	
 	private static final String MANU_ICON ="manufacture";
-	private static final String BUTTON_TEXT = Msg.getString("TabPanelManufacture.button.createNewProcess"); // $NON-NLS-1$
+	private static final String BUTTON_TEXT = Msg.getString("TabPanelManufacture.button.createNewProcess"); // -NLS-1$
 	private static final String SALVAGE = "Salvage";
 
 	/** The Settlement instance. */
@@ -79,9 +82,9 @@ public class TabPanelManufacture extends TabPanel {
 	public TabPanelManufacture(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelManufacture.title"), //-NLS-1$
 			ImageLoader.getIconByName(MANU_ICON),
-			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelManufacture.title"), //-NLS-1$
 			unit, desktop
 		);
 
@@ -119,7 +122,9 @@ public class TabPanelManufacture extends TabPanel {
 		tabbedPane.addTab("Queue", queuePanel);
 
 		// Create control panel.
-		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		JPanel interactionPanel = new JPanel();
+		interactionPanel.setLayout(new BoxLayout(interactionPanel, BoxLayout.Y_AXIS));
+
 		queuePanel.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create output selection
@@ -137,33 +142,22 @@ public class TabPanelManufacture extends TabPanel {
 		interactionPanel.add(processSelection);
 
 		// Create new process button.
-		var newProcessButton = new JButton(BUTTON_TEXT); //$NON-NLS-1$
+		var newProcessButton = new JButton(BUTTON_TEXT); //-NLS-1$
 		newProcessButton.setEnabled(false);
-		newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process"); //$NON-NLS-1$
+		newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process"); //-NLS-1$
 		newProcessButton.addActionListener(event -> createNewProcess());
 		interactionPanel.add(newProcessButton);
 
 		// Link the enabled button to the process selection
 		processSelection.addItemListener(event -> newProcessButton.setEnabled(event.getStateChange() == ItemEvent.SELECTED));
 
-		// Create manufacturing override check box.
-		var controlPanel = new JPanel();
-		
-		var overrideManuCheckbox = new JCheckBox(Msg.getString("TabPanelManufacture.checkbox.overrideManufacturing")); //$NON-NLS-1$
-		overrideManuCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideManufacturing")); //$NON-NLS-1$
-		overrideManuCheckbox.addActionListener(arg0 ->
-						setOverride(OverrideType.MANUFACTURE, overrideManuCheckbox.isSelected()));
-		overrideManuCheckbox.setSelected(target.getProcessOverride(OverrideType.MANUFACTURE));
-		controlPanel.add(overrideManuCheckbox);
-		
-		// Create salvaging override check box.
-		JCheckBox overrideSalvageCheckbox = new JCheckBox(Msg.getString("TabPanelManufacture.checkbox.overrideSalvaging")); //$NON-NLS-1$
-		overrideSalvageCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideSalvaging")); //$NON-NLS-1$
-		overrideSalvageCheckbox.addActionListener(arg0 ->
-						setOverride(OverrideType.SALVAGE, overrideSalvageCheckbox.isSelected()));
-		overrideSalvageCheckbox.setSelected(target.getProcessOverride(OverrideType.SALVAGE));
-		controlPanel.add(overrideSalvageCheckbox);
-		interactionPanel.add(controlPanel);
+		// Create parameter controls
+		var pMgr = target.getPreferences();
+		var parameterPanel = new AttributePanel();
+		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_VALUE, 500);
+		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_LIMIT, 10);
+		addParameter(parameterPanel, pMgr, ManufacturingParameters.MAX_QUEUE_SIZE, 20);
+		interactionPanel.add(parameterPanel);
 
 		// Create 
 		var scrollPane = new JScrollPane();
@@ -184,6 +178,22 @@ public class TabPanelManufacture extends TabPanel {
 		table.setAutoCreateRowSorter(true);
 
 		scrollPane.setViewportView(table);
+
+		changeProcessOptions(); // Trigger to populate 2nd drop down
+	}
+
+	private void addParameter(AttributePanel panel, ParameterManager pMgr, String parmId, int maxValue) {
+		var spec = ManufacturingParameters.INSTANCE.getSpec(parmId);
+
+		int value = pMgr.getIntValue(ManufacturingParameters.INSTANCE, parmId, -1);
+		JSpinner spinner = new JSpinner(new SpinnerNumberModel(value, 0, maxValue, 1));
+		spinner.setValue(value);
+		spinner.addChangeListener(e -> {
+			var v = (Integer)((JSpinner)e.getSource()).getValue();
+			pMgr.putValue(ManufacturingParameters.INSTANCE, parmId, v);
+		});
+
+		panel.addLabelledItem(spec.displayName(), spinner);
 	}
 
 	/**
@@ -268,14 +278,6 @@ public class TabPanelManufacture extends TabPanel {
 		}
 
 		processSelection.setToolTipText(tip);
-	}
-	/**
-	 * Sets the settlement override flag.
-	 * 
-	 * @param override the override flag.
-	 */
-	private void setOverride(OverrideType type, boolean override) {
-		target.setProcessOverride(type, override);
 	}
 
 	/**

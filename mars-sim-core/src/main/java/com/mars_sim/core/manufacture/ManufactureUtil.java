@@ -12,21 +12,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessItem;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
@@ -166,63 +159,6 @@ public final class ManufactureUtil {
 	}
 
 	/**
-	 * Gets the estimated goods value of a salvage process at a settlement.
-	 *
-	 * @param process    the salvage process.
-	 * @param settlement the settlement.
-	 * @return goods value of estimated salvaged parts minus salvaged unit.
-	 * @throws Exception if error determining good values.
-	 */
-	public static double getSalvageProcessValue(SalvageProcessInfo process, Settlement settlement, Person salvager) {
-		double result = 0D;
-
-		var salvagedUnit = findUnitForSalvage(process, settlement);
-		if (salvagedUnit != null) {
-			GoodsManager goodsManager = settlement.getGoodsManager();
-
-			double wearConditionModifier = 1D;
-			if (salvagedUnit instanceof Malfunctionable salvagedMalfunctionable) {
-				double wearCondition = salvagedMalfunctionable.getMalfunctionManager().getWearCondition();
-				wearConditionModifier = wearCondition / 100D;
-			}
-
-			// Determine salvaged good value.
-			double salvagedGoodValue;
-			Good salvagedGood = null;
-			if (salvagedUnit instanceof Equipment e) {
-				salvagedGood = GoodsUtil.getEquipmentGood(e.getEquipmentType());
-			} else if (salvagedUnit instanceof Vehicle v) {
-				salvagedGood = GoodsUtil.getVehicleGood(v.getVehicleType());
-			}
-
-			if (salvagedGood != null)
-				salvagedGoodValue = goodsManager.getGoodValuePoint(salvagedGood.getID());
-			else
-				throw new IllegalStateException("Salvaged good is null");
-
-			salvagedGoodValue *= (wearConditionModifier * .75D) + .25D;
-
-			// Determine total estimated parts salvaged good value.
-			double totalPartsGoodValue = 0D;
-			for(var partSalvage : process.getOutputList()) {
-				Good partGood = GoodsUtil.getGood(ItemResourceUtil.findItemResource(partSalvage.getName()).getID());
-				double partValue = goodsManager.getGoodValuePoint(partGood.getID()) * partSalvage.getAmount();
-				totalPartsGoodValue += partValue;
-			}
-
-			// Modify total parts good value by item wear and salvager skill.
-			int skill = salvager.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-			double valueModifier = .25D + (wearConditionModifier * .25D) + (skill * .05D);
-			totalPartsGoodValue *= valueModifier;
-
-			// Determine process value.
-			result = totalPartsGoodValue - salvagedGoodValue;
-		}
-
-		return result;
-	}
-
-	/**
 	 * Gets the good value of a manufacturing process item for a settlement.
 	 *
 	 * @param item       the manufacturing process item.
@@ -276,47 +212,6 @@ public final class ManufactureUtil {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Checks to see if a salvage process can be started at a given manufacturing
-	 * building.
-	 *
-	 * @param process  the salvage process to start.
-	 * @param workshop the manufacturing building.
-	 * @return true if salvage process can be started.
-	 * @throws Exception if error determining if salvage process can be started.
-	 */
-	public static boolean canSalvageProcessBeQueued(SalvageProcessInfo process, Manufacture workshop) {
-
-        // Check to see if process tech level is above workshop tech level.
-		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
-			return false;
-		}
-
-		// Check to see if a salvagable unit is available at the settlement.
-		return findUnitForSalvage(process, workshop.getBuilding().getSettlement()) != null;
-	}
-
-
-	/**
-	 * Checks to see if a salvage process can be started at a given manufacturing
-	 * building. This also means it coud be queued
-	 *
-	 * @param process  the salvage process to start.
-	 * @param workshop the manufacturing building.
-	 * @return true if salvage process can be started.
-	 * @throws Exception if error determining if salvage process can be started.
-	 */
-	public static boolean canSalvageProcessBeStarted(SalvageProcessInfo process, Manufacture workshop) {
-		// Check to see if this workshop can accommodate another process.
-		if (workshop.getMaxProcesses() < workshop.getCurrentTotalProcesses()) {
-			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
-			return false;
-		}
-	
-		// To start it the same queue condition must be met
-		return canSalvageProcessBeQueued(process, workshop);
 	}
 
 	/**

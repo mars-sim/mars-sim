@@ -16,7 +16,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
@@ -250,16 +249,10 @@ public class ManufacturingManager implements Serializable {
 
         // Add new queue items if queue is within limit
         if (getQueueCapacity() > 0) {
-            if (!owner.getProcessOverride(OverrideType.MANUFACTURE)) {
-                createManuQueueItems();
-            }
+            createManuQueueItems();
 
-            if (!owner.getProcessOverride(OverrideType.SALVAGE)) {
-                int added = 0;
-                // Auto select processes to add based on value
-                if (added > 0)
-                    logger.info(owner, "Automatically added Salvage process: added " + added);
-            }
+            // Could add Salvage processes following the pattern of createManuQueue method
+            // Would need to could Equipment present
         }
     }
 

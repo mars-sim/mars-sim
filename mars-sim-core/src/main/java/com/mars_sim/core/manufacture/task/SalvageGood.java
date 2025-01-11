@@ -16,7 +16,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Manufacture;
@@ -165,66 +164,6 @@ public class SalvageGood extends Task {
 			if (workRequired && skillRequired) {
 				result = true;
 				break;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the highest salvaging process goods value for the person and the
-	 * manufacturing building.
-	 * 
-	 * @param person the person to perform manufacturing.
-	 * @param manufacturingBuilding the manufacturing building.
-	 * @return highest process good value.
-	 */
-	public static double getHighestSalvagingProcessValue(Person person,
-			Building manufacturingBuilding) {
-
-		double highestProcessValue = 0D;
-
-		int skillLevel = person.getSkillManager().getEffectiveSkillLevel(
-				SkillType.MATERIALS_SCIENCE);
-
-		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
-		int techLevel = manufacturingFunction.getTechLevel();
-
-		Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
-				techLevel, skillLevel).iterator();
-		while (i.hasNext()) {
-			SalvageProcessInfo process = i.next();
-			if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) ||
-					isSalvageProcessRunning(process, manufacturingFunction)) {
-				Settlement settlement = manufacturingBuilding.getSettlement();
-				double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement,
-						person);
-				if (processValue > highestProcessValue) {
-					highestProcessValue = processValue;
-				}
-			}
-		}
-
-		return highestProcessValue;
-	}
-
-	/**
-	 * Checks if a process type is currently running at a manufacturing
-	 * building.
-	 * 
-	 * @param processInfo the process type.
-	 * @param manufactureBuilding the manufacturing building.
-	 * @return true if process is running.
-	 */
-	private static boolean isSalvageProcessRunning(SalvageProcessInfo processInfo,
-			Manufacture manufactureBuilding) {
-		boolean result = false;
-
-		Iterator<SalvageProcess> i = manufactureBuilding.getSalvageProcesses().iterator();
-		while (i.hasNext()) {
-			SalvageProcess process = i.next();
-			if (process.getInfo().equals(processInfo)) {
-				result = true;
 			}
 		}
 
