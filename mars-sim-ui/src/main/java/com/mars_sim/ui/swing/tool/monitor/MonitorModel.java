@@ -4,14 +4,12 @@
  * @date 2024-76-29
  * @author Manny Kung
  */
-
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.Set;
 
-import javax.swing.table.TableModel;
-
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * This defines a table model for use in the Monitor tool.
@@ -19,7 +17,7 @@ import com.mars_sim.core.structure.Settlement;
  * Simulation. This interface defines simple extra method that provide a richer
  * interface for the Monitor window to be based upon.
  */
-interface MonitorModel extends TableModel {
+interface MonitorModel extends ToolTipTableModel {
 
 	/**
 	 * Gets the name of this model. The name will be a description helping
@@ -65,15 +63,6 @@ interface MonitorModel extends TableModel {
 	 * @return
 	 */
 	public int getSettlementColumn();
-
-	/**
-	 * Gets a tooltip representation of a cell. Most cells with return null.
-	 * 
-	 * @param rowIndex
-	 * @param colIndex
-	 * @return
-	 */
-    public String getToolTipAt(int rowIndex, int colIndex);
     
 	/**
 	 * Prepares the model for deletion.

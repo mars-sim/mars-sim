@@ -38,7 +38,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
     }
 
     public void testSalvageClaim() {
-        var s = buildSettlement();
+        var s = buildSettlement("factory", true);
         var mgr = new ManufacturingManager(s);
 
         // Add 2 processes with the correct input resources at Settlement
@@ -70,7 +70,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
     }
 
     public void testManuClaim() {
-        var s = buildSettlement();
+        var s = buildSettlement("factory", true);
         var mgr = new ManufacturingManager(s);
 
         // Add 2 processes with the correct input resoruces at Settlement
@@ -201,7 +201,8 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
     }
 
     public void testManuQueue() {
-        var s = buildSettlement();
+        var s = buildSettlement("factory", true);
+
         var mgr = new ManufacturingManager(s);
 
         // Add 

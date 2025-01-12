@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * A class to represent a score Rating. Consists of a base value and a set
  * of modifiers that are applied to create a final score.
  */
-public class RatingScore implements Serializable {
+public class RatingScore implements Comparable<RatingScore>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -189,5 +189,15 @@ public class RatingScore implements Serializable {
                                 .collect(Collectors.joining(", ")));
         output.append(")");
         return output.toString();
+    }
+
+    /**
+     * Compare bsed on the total
+     * @param o
+     * @return
+     */
+    @Override
+    public int compareTo(RatingScore o) {
+        return Double.compare(score, o.getScore());
     }
 }

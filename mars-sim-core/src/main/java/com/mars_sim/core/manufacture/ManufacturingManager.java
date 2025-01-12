@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -19,7 +20,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This manages the manufacturing and salvage processes of a Settlement.
@@ -34,14 +34,14 @@ public class ManufacturingManager implements Serializable {
 
         private ProcessInfo info;
         private Salvagable target;
-        private int priority;
+        private RatingScore value;
         private boolean resourcesAvailable;
 
-        private QueuedProcess(ProcessInfo info, Salvagable target, int priority,
+        private QueuedProcess(ProcessInfo info, Salvagable target, RatingScore value,
                             boolean resourcesAvailable) {
             this.info = info;
             this.target = target;
-            this.priority = priority;
+            this.value = value;
             this.resourcesAvailable = resourcesAvailable;
         }
 
@@ -57,12 +57,12 @@ public class ManufacturingManager implements Serializable {
          * Change the priority of this queued process
          * @param newPri
          */
-        public void setPriority(int newPri) {
-            priority = newPri;
+        public void setValue(RatingScore newScore) {
+            value = newScore;
         }
 
-        public int getPriority() {
-            return priority;
+        public RatingScore getValue() {
+            return value;
         }
 
         private void setResourcesAvailable(boolean avail) {
@@ -100,6 +100,7 @@ public class ManufacturingManager implements Serializable {
     private static final Integer DEFAULT_VALUE = 100;
     private static final Integer DEFAULT_ADD = 1;
     private static final Integer DEFAULT_QUEUE_SIZE = 10;
+    private static final String USER_BONUS = "user-bonus";
 
     private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
 
@@ -159,30 +160,30 @@ public class ManufacturingManager implements Serializable {
                                         && ((manuFilter && q.info instanceof ManufactureProcessInfo)
                                             || (!manuFilter && q.info instanceof SalvageProcessInfo))
                                         && q.isResourcesAvailable())
-                        .collect(Collectors.groupingBy(QueuedProcess::getPriority));
+                        .sorted(Comparator.comparing(QueuedProcess::getValue).reversed())
+                        .toList();
 
         if (startableByPri.isEmpty()) {
             return null;
         }
 
-        // Select random task from top priority
-        int highest = startableByPri.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1);
-        var selected = RandomUtil.getRandomElement(startableByPri.get(highest));
-
-        // Remove as it's been claimed
-        if (selected != null) {
-            queue.remove(selected);
-        }
+        // Select top value item
+        var selected = startableByPri.get(0);
+        queue.remove(selected);
 
         return selected;
     }
 
     /**
-     * Add a process to the queue for later processing.
+     * Add a process to the queue for later processing. THis is usually triggered by
+     * the end user
      * @param newProcess Process definition to add
      */
     public void addProcessToQueue(ProcessInfo newProcess) {
-        addToQueue(newProcess, null);
+        var available = newProcess.isResourcesAvailable(owner);
+        var value = getProcessValue(newProcess);
+        var newItem = new QueuedProcess(newProcess, null, value, available);
+        addToQueue(newItem);
     }
 
     /**
@@ -192,16 +193,22 @@ public class ManufacturingManager implements Serializable {
      * @param target Item to salvage in this process
      */
     public void addSalvage(SalvageProcessInfo newProcess, Salvagable target) {
-        addToQueue(newProcess, target);
+        var available = newProcess.isResourcesAvailable(owner);
+        var value = getProcessValue(newProcess);
+        var newItem = new QueuedProcess(newProcess, target, value, available);
+
+        addToQueue(newItem);
     }
 
-    private void addToQueue(ProcessInfo newProcess, Salvagable target) {
-        var available = newProcess.isResourcesAvailable(owner);
-        var newItem = new QueuedProcess(newProcess, target, 1, available);
+    /**
+     * Add a new item to the processing queue
+     * @param newItem Queued item to add
+     */
+    private void addToQueue(QueuedProcess newItem) {
         synchronized(queue) {
             queue.add(newItem);
         }   
-        logger.info(owner, "Added new Process to queue " + newProcess.getName());
+        logger.info(owner, "Added new Process to queue " + newItem.getInfo().getName());
     }
 
     /**
@@ -210,9 +217,25 @@ public class ManufacturingManager implements Serializable {
     private void updateQueueItems() {
         // Check resoruces on queue
         for(var q : queue) {
-            var ready = q.getInfo().isResourcesAvailable(owner);
-            q.setResourcesAvailable(ready);
+            var p = q.getInfo();
+            q.setResourcesAvailable(p.isResourcesAvailable(owner));
+
+            // Get a new value to this Settlement and reapply the user bonus
+            var newValue = getProcessValue(p);
+            var bonus = q.getValue().getModifiers().getOrDefault(USER_BONUS, 1D);
+            newValue.addModifier(USER_BONUS, bonus);
+            q.setValue(newValue);
         }   
+    }
+
+    /**
+     * Set the percentage of boost the user applies to a QueuedProcess. This will
+     * apply a modifer to the value. The bonus is a percentage of the value so 100% is zero bonus
+     * @param q
+     * @param bonusPerc A positive value that represents a percentage modifier
+     */
+    public void setBonus(QueuedProcess q, int bonusPerc) {
+        q.getValue().addModifier(USER_BONUS, bonusPerc/100D);
     }
 
     /**
@@ -280,6 +303,18 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
+     * Get the value of a process to the settlement. This is captured as a RatingScore so 
+     * the inidividual parts can be seen.
+     */
+    private RatingScore getProcessValue(ProcessInfo info) {
+        RatingScore value = new RatingScore();
+        info.getOutputList().forEach(i -> value.addBase(i.getName(),
+                        ManufactureUtil.getManufactureProcessItemValue(i, owner, true)));  
+        
+        return value;
+    }
+
+    /**
      * Add the top value processes from the potential list where the value is above the 
      * threshold.
      * @param name Tag of the potentials
@@ -291,19 +326,21 @@ public class ManufacturingManager implements Serializable {
     private int addTopValueProcesses(String name, List<? extends ProcessInfo> potential,
                                      int scoreThreshold, int maxProcesses) {
 
-        record ProcessValue(ProcessInfo info, double value) {}
+        record ProcessValue(ProcessInfo info, RatingScore score) {
+            double value() {return score.getScore();}
+        }
             
         // Score the potential processes and take those above threshold
         List<ProcessValue> candidates = new ArrayList<>();
         for(var p : potential) {
-            double processValue = p.getOutputList().stream()
-                    .mapToDouble(i -> ManufactureUtil.getManufactureProcessItemValue(i, owner, true))
-                    .sum();
-            if (processValue > scoreThreshold) {
+            // Add the individual output values
+            RatingScore value = getProcessValue(p);
+            
+            if (value.getScore() > scoreThreshold) {
                 // Add
-                candidates.add(new ProcessValue(p, processValue));
+                candidates.add(new ProcessValue(p, value));
             }
-            logger.info("Potential score " + p.getName() + " = " + processValue + " (threshold " + scoreThreshold);
+            logger.info("Potential score " + p.getName() + " = " + value.getScore() + " (threshold " + scoreThreshold);
         }
 
         // Take the top N of what is left

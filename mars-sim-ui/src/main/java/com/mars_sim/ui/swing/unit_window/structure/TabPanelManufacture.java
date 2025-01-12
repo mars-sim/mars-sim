@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +50,9 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
+import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 import com.mars_sim.ui.swing.utils.SalvagePanel;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * A tab panel displaying settlement manufacturing information.
@@ -170,7 +173,12 @@ public class TabPanelManufacture extends TabPanel {
 		queueModel.update(target);
 		
 		// Prepare table.
-		JTable table = new JTable(queueModel);
+		JTable table = new JTable(queueModel) {
+			@Override
+			public String getToolTipText(MouseEvent e) {
+				return ToolTipTableModel.extractToolTip(e, this);
+			}
+		};
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
@@ -283,10 +291,11 @@ public class TabPanelManufacture extends TabPanel {
 	/**
 	 * Model of the queued processes
 	 */
-	private static class ProcessQueueModel extends AbstractTableModel {
+	private static class ProcessQueueModel extends AbstractTableModel
+		implements ToolTipTableModel {
 
 		private static final int NAME_COL = 0;
-		private static final int PRIORITY_COL = 1;
+		private static final int VALUE_COL = 1;
 		private static final int AVAILABLE_COL = 2;
 		private static final int SALVAGE_COL = 3;
 		private List<QueuedProcess> queue = Collections.emptyList();
@@ -309,10 +318,31 @@ public class TabPanelManufacture extends TabPanel {
 				case SALVAGE_COL:
 					var target = item.getTarget();
 					return (target != null ? target.getName() : null);
-				case PRIORITY_COL: return item.getPriority();
+				case VALUE_COL: return item.getValue().getScore();
 				case AVAILABLE_COL: return item.isResourcesAvailable();
 				default: return null;
 			}
+		}
+
+		/**
+		 * Returns a detailed breakdownof the value property
+		 * @param rowIndex
+		 * @param columnIndex
+		 * @return
+		 */
+		@Override
+		public String getToolTipAt(int rowIndex, int columnIndex)  {
+			String result = null;
+			if (columnIndex == VALUE_COL) {
+				var item = queue.get(rowIndex);
+				StringBuilder builder = new StringBuilder();
+				builder.append("<html>");
+				builder.append(RatingScoreRenderer.getHTMLFragment(item.getValue()));
+				builder.append("</html>");
+	
+				result = builder.toString();
+			}
+			return result;
 		}
 
 		private void update(Settlement s) {
@@ -325,7 +355,7 @@ public class TabPanelManufacture extends TabPanel {
 			return switch(column) {
 				case NAME_COL -> "Process";
 				case SALVAGE_COL -> "Target";
-				case PRIORITY_COL -> "Pri.";
+				case VALUE_COL -> "Value";
 				case AVAILABLE_COL -> "Resources";
 				default -> null;
 			};
@@ -335,7 +365,7 @@ public class TabPanelManufacture extends TabPanel {
 		public Class<?> getColumnClass(int column) {
 			return switch(column) {
 				case NAME_COL, SALVAGE_COL -> String.class;
-				case PRIORITY_COL -> Integer.class;
+				case VALUE_COL -> Double.class;
 				case AVAILABLE_COL -> Boolean.class;
 				default -> null;
 			};
