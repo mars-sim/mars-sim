@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.MarsTime;
@@ -56,7 +55,7 @@ public final class ResupplyUtil {
 				var schedule = template.getSchedule();
 				// Get the local time at teh Settlemnt when this will arrive
 				MarsTime arrivalDate = schedule.getFirstEvent(currentTime,
-						MarsSurface.getTimeOffset(settlement.getCoordinates()));
+						settlement.getTimeOffset());
 
 				// If the frequency is less than transport time also add the next ones
 				for(int cycle = 0; cycle < template.getActiveMissions(); cycle++) {

@@ -12,6 +12,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Factory class to create ProcessItem objects
@@ -33,32 +34,41 @@ public final class ProcessItemFactory {
      * @throws IllegalArgumentException if the item name or type is not recognized.
      */
     public static ProcessItem createByName(String name, ItemType type, double amount) {
+		int id = -1;
 		switch(type) {
 			case AMOUNT_RESOURCE:
-				if (ResourceUtil.findAmountResource(name) == null) {
+				var v = ResourceUtil.findAmountResource(name);
+				if (v  == null) {
 					throw new IllegalArgumentException(name + " is not a known Resource");
 				}
+				id = v.getID();
 				break;
 			case PART:
-				if (ItemResourceUtil.findItemResource(name) == null) {
+				var p = ItemResourceUtil.findItemResource(name);
+				if (p == null) {
 					throw new IllegalArgumentException(name + " is not a known Part");	
 				}
+				id = p.getID();
 				break;
 			case BIN:
 				if (BinType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
 					throw new IllegalArgumentException(name + " is not a known Bin");	
 				}
+				id = BinType.convertName2ID(name);
 				break;
 			case EQUIPMENT:
 				if (EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
 					throw new IllegalArgumentException(name + " is not a known Equipment");	
 				}
+				id = EquipmentType.convertName2ID(name);
 				break;
 			case VEHICLE:
+				id = VehicleType.convertName2ID(name);
+				break;
 			default:
 		}
 
-        return new ProcessItem(name, type, amount);
+        return new ProcessItem(id, name, type, amount);
 	}
 
 }

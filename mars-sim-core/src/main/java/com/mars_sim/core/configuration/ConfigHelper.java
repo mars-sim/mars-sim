@@ -312,24 +312,24 @@ public class ConfigHelper {
 	 * @param inputList
 	 * @return
 	 */
-	public static List<List<ProcessItem>> getAlternateInputsList(Map<ProcessItem, String> alternateResourceMap,
+	public static Map<String,List<ProcessItem>> getAlternateInputsList(Map<ProcessItem, String> alternateResourceMap,
 												List<ProcessItem> inputList) {
-		List<List<ProcessItem>> results = new ArrayList<>();
+		Map<String,List<ProcessItem>> results = new HashMap<>();
 
 		// Create a list for the original resources from alternateResourceMap
-		for(var entry : alternateResourceMap.entrySet()) {
-			String originalResource = entry.getValue();
+		for(var replacement : alternateResourceMap.entrySet()) {
+			String originalResource = replacement.getValue();
 
 			// Create a brand new list
 			List<ProcessItem> newInputItems = new ArrayList<>();
 			for (var item: inputList) {
 				String resName = item.getName();														
 				if (resName.equalsIgnoreCase(originalResource)) {
-					item = entry.getKey();
+					item = replacement.getKey();
 				}
 				newInputItems.add(item);	
 			}
-			results.add(newInputItems);
+			results.put(replacement.getKey().getName(), newInputItems);
 		}
 
 		return results;

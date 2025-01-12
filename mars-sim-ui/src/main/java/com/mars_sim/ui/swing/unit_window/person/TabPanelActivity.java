@@ -49,6 +49,7 @@ import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and
@@ -181,15 +182,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		JTable missionCacheTable = new JTable(missionCacheModel) {
 		    @Override
             public String getToolTipText(MouseEvent e) {
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-				var sorter = getRowSorter();
-				if (sorter != null) {
-					rowIndex = sorter.convertRowIndexToModel(rowIndex);
-				}
-				MissionCacheModel model = (MissionCacheModel) getModel();
-				return model.getScoreText(rowIndex, colIndex);
+                return ToolTipTableModel.extractToolTip(e, this);
             }
 		};
 		missionCacheTable.setDefaultRenderer(Double.class,
@@ -237,15 +230,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		JTable taskCacheTable = new JTable(taskCacheModel) {
 		    @Override
             public String getToolTipText(MouseEvent e) {
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-				var sorter = getRowSorter();
-				if (sorter != null) {
-					rowIndex = sorter.convertRowIndexToModel(rowIndex);
-				}
-				TaskCacheModel model = (TaskCacheModel) getModel();
-				return model.getScoreText(rowIndex, colIndex);
+                return ToolTipTableModel.extractToolTip(e, this);
             }
 		};
 		taskCacheTable.setDefaultRenderer(Double.class,
@@ -389,7 +374,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	}
 
 	@SuppressWarnings("serial")
-	private static class MissionCacheModel extends AbstractTableModel {
+	private static class MissionCacheModel extends AbstractTableModel
+			implements ToolTipTableModel {
 		
 		private List<MissionRating> missions = Collections.emptyList();
 
@@ -415,7 +401,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		 * @param colIndex
 		 * @return
 		 */
-		public String getScoreText(int rowIndex, int colIndex) {
+		@Override
+		public String getToolTipAt(int rowIndex, int colIndex) {
 			if ((colIndex == 1) && (rowIndex < missions.size())) {
 				var t = missions.get(rowIndex);
 				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
@@ -471,7 +458,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 	}
 	
-	private static class TaskCacheModel extends AbstractTableModel {
+	private static class TaskCacheModel extends AbstractTableModel
+			implements ToolTipTableModel {
 		private List<TaskJob> tasks = Collections.emptyList();
 
 		void setCache(CacheCreator<TaskJob> newCache) {
@@ -485,7 +473,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			fireTableDataChanged();
 		}
 
-		public String getScoreText(int rowIndex, int colIndex) {
+		@Override
+		public String getToolTipAt(int rowIndex, int colIndex) {
 			if ((colIndex == 1) && (rowIndex < tasks.size())) {
 				var t = tasks.get(rowIndex);
 				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";

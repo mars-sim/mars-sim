@@ -50,4 +50,15 @@ public class RatingTest extends TestCase {
         r.addBase("tests", BASE2);
         assertEquals("Set base " + MOD1, (BASE + BASE2) * MOD1_VALUE, r.getScore());
     }
+
+    public void testCompare() {
+        RatingScore r1 = new RatingScore("test", 2);
+        RatingScore r2 = new RatingScore("test", 1);
+
+        assertTrue("Compare base only", r1.compareTo(r2) > 0);
+
+        r2.addModifier(MOD1, 4);
+        assertTrue("Compare modifiers", r1.compareTo(r2) < 0);
+
+    }
 }

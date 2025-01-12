@@ -8,6 +8,7 @@
 package com.mars_sim.core.manufacture;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -21,13 +22,18 @@ import org.junit.jupiter.api.Test;
 import com.google.common.collect.Maps;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.process.ProcessItem;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.resource.ResourceUtil;
 
-class ManufactureConfigTest {
+public class ManufactureConfigTest {
 
     private static final String MAKE_FERTILIZERS = "Make crop fertilizers";
     private static final String MAKE_RADIO_ANTENNA ="Make radio antenna";
-    private static final int FERTILIZER_ALT = 9;
+    private static final String[] FERTILIZER_ALT_NAMES = {
+        "Nitrite","Ammonia","potash lye", "Crop Waste",
+        "Nitrospira SPP","Rhizobia","iron powder","copper","hydrogen"
+    };
     private static final int FERTILIZER_INPUTS = 10;
 
 
@@ -39,8 +45,24 @@ class ManufactureConfigTest {
 
     @Test
     void testProcessesLoaded() {
-        var manuProcesses = getManufactureConfig().getManufactureProcessList();
+        var conf = getManufactureConfig();
+        var manuProcesses = conf.getManufactureProcessList();
         assertTrue("Manufacturing processes defined", !manuProcesses.isEmpty());
+
+        List<ManufactureProcessInfo> previous = null;
+
+        // Check each level is larger than the previous; highest level can do more processing
+        // 3 is highest tech level
+        for(int i = 0; i <= 3; i++) {
+            var p = conf.getManufactureProcessesForTechLevel(i);
+            assertFalse("Tech list level " + i, p.isEmpty());
+            if (previous != null) {
+                assertTrue("Level is more than previous #" + i, p.size() > previous.size());
+                assertTrue("Level contains previous #" + i, p.containsAll(previous));
+            }
+
+            previous = p;
+        }
 
     }
 
@@ -58,14 +80,14 @@ class ManufactureConfigTest {
         Set<List<ProcessItem>> alternatives = new HashSet<>();
         alternatives.add(fertilizerP.getInputList());
 
-        for(int i = 1; i <= FERTILIZER_ALT; i++) {
-            var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.ALT_PREFIX + i);
-            assertNotNull(MAKE_FERTILIZERS + " alternative " + i, found);
-            assertEquals(MAKE_FERTILIZERS + " alternative " + i + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
+        for(var alt : FERTILIZER_ALT_NAMES) {
+            var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.WITH_PREFIX + alt);
+            assertNotNull(MAKE_FERTILIZERS + " alternative " + alt, found);
+            assertEquals(MAKE_FERTILIZERS + " alternative " + alt + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", FERTILIZER_ALT + 1, alternatives.size());
+        assertEquals("All alternatives have different inputs", FERTILIZER_ALT_NAMES.length + 1, alternatives.size());
     }
 
     @Test
@@ -78,17 +100,28 @@ class ManufactureConfigTest {
         assertNotNull("Manufacturng processes defined", process);
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(new ProcessItem("Polyester Resin", ItemType.AMOUNT_RESOURCE, 0.5D));
-        expectedInputs.add(new ProcessItem("styrene", ItemType.AMOUNT_RESOURCE, 0.5D));
-        expectedInputs.add(new ProcessItem("fiberglass", ItemType.PART, 1D));
-        expectedInputs.add(new ProcessItem("aluminum sheet", ItemType.PART, 1D));
-        expectedInputs.add(new ProcessItem("electrical wire", ItemType.PART, 1D));
-        expectedInputs.add(new ProcessItem("wire connector", ItemType.PART, 3D));
-        expectedInputs.add(new ProcessItem("optical cable", ItemType.PART, 1D));
+        expectedInputs.add(createAmount("Polyester Resin", 0.5D));
+        expectedInputs.add(createAmount("styrene", 0.5D));
+        expectedInputs.add(createPart("fiberglass", 1D));
+        expectedInputs.add(createPart("aluminum sheet", 1D));
+        expectedInputs.add(createPart("electrical wire", 1D));
+        expectedInputs.add(createPart("wire connector", 3D));
+        expectedInputs.add(createPart("optical cable", 1D));
         assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(new ProcessItem("radio antenna", ItemType.PART, 5D));
+        expectedOutputs.add(createPart("radio antenna", 5D));
         assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
+    }
+
+    
+    public static ProcessItem createPart(String name, double amount) {
+        int id = ItemResourceUtil.findIDbyItemResourceName(name);
+        return new ProcessItem(id, name, ItemType.PART, amount);
+    }
+
+    public static ProcessItem createAmount(String name, double amount) {
+        int id = ResourceUtil.findIDbyAmountResourceName(name);
+        return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount);
     }
 }

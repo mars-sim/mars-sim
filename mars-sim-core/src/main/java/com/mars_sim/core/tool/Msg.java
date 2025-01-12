@@ -76,6 +76,18 @@ public class Msg {
 		}
 	}
 
+	/**
+	 * @param key {@link String} should comply with the format
+	 * <code>"ClassName.categoryIfAny.keyForThisText"</code>
+	 * @param fallback Fallback value if no key match
+	 */
+	public static String getString(String key, String fallback) {
+		try {
+			return RESOURCE_BUNDLE.getString(key);
+		} catch (MissingResourceException e) {
+			return fallback;
+		}
+	}
 
 	/**
 	 * replaces all occurrences of "{n}" (with n an integer)
@@ -156,7 +168,7 @@ public class Msg {
 	}
 
 	/** prints an error message to the console. */
-	public static final String handle(Exception e, String key) {
+	private static final String handle(Exception e, String key) {
 		// Note : StringBuffer is thread safe and synchronized whereas StringBuilder is not.
 		// StringBuilder is not synchronized and is faster than StringBuffer.
 		StringBuffer msg = new StringBuffer();

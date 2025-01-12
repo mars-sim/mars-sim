@@ -34,6 +34,7 @@ import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.AmountResourceBin;
@@ -53,6 +54,7 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
@@ -78,7 +80,6 @@ import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.structure.building.Building;
@@ -234,6 +235,7 @@ public class Settlement extends Unit implements Temporal,
 	private double outsideTemperature;
 	/** Total Crop area */
 	private double cropArea = -1;
+	private int timeOffset;
 
 	/** The settlement terrain profile. */
 	private double[] terrainProfile = new double[2];
@@ -272,6 +274,7 @@ public class Settlement extends Unit implements Temporal,
 	private ShiftManager shiftManager;
 	private SettlementTaskManager taskManager;
 	private ScheduledEventManager futureEvents;
+	private ManufacturingManager manuManager;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
@@ -342,7 +345,7 @@ public class Settlement extends Unit implements Temporal,
 
 		this.settlementCode = createCode(name);
 		this.location = location;
-
+		this.timeOffset = MarsSurface.getTimeOffset(location);
 		
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -355,9 +358,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-		// Create schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
-		// Create credit manager
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
@@ -392,6 +393,7 @@ public class Settlement extends Unit implements Temporal,
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
+		this.timeOffset = MarsSurface.getTimeOffset(location);
 
 		this.mapImageID = RandomUtil.getRandomInt(NUM_BACKGROUND_IMAGES - 1) + 1;
 				
@@ -490,28 +492,17 @@ public class Settlement extends Unit implements Temporal,
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
 
-
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
 
-		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
-		
-		// Initialize goods manager.
+		manuManager = new ManufacturingManager(this);
 		goodsManager = new GoodsManager(this);
-
-		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
-
-		// Initialize power grid
 		powerGrid = new PowerGrid(this);
-
-		// Initialize thermal control system
 		thermalSystem = new ThermalSystem(this);
-
-		// Initialize settlement task manager
 		taskManager = new SettlementTaskManager(this);
-
+		
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
 
@@ -694,18 +685,6 @@ public class Settlement extends Unit implements Temporal,
 		result = result + stations;
 
 		return result;
-	}
-
-	/**
-	 * Gets a collection of the number of robots of a particular type.
-	 *
-	 * @return Collection of robots
-	 */
-	public Collection<Robot> getRobots(RobotType type) {
-		// using java 8 stream
-		return getAllAssociatedRobots().stream()
-				.filter(r -> r.getRobotType() == type)
-				.collect(Collectors.toList());
 	}
 
 	/**
@@ -1146,6 +1125,13 @@ public class Settlement extends Unit implements Temporal,
 		for (Person p : people) {
 			p.getCircadianClock().inflateSleepHabit();
 		}
+	}
+
+	/**
+	 * Get the manager controllign Manufacturing in Workshops.
+	 */
+	public ManufacturingManager getManuManager() {
+		return manuManager;
 	}
 
 	/**
@@ -3212,6 +3198,13 @@ public class Settlement extends Unit implements Temporal,
 		return preferences;
 	}
 
+	/**
+	 * Get the time offset of day rise for this Settlement. This is based on it's location
+	 * around the planet.
+	 */
+	public int getTimeOffset() {
+		return timeOffset;
+	}
 
 	/** 
 	 * Gets the background map image id used by this settlement. 

@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.activities.GroupActivityMetaTask;
+import com.mars_sim.core.manufacture.task.ManufacturingMetaTask;
 import com.mars_sim.core.person.ai.task.meta.AnalyzeMapDataMeta;
 import com.mars_sim.core.person.ai.task.meta.ConnectOnlineMeta;
 import com.mars_sim.core.person.ai.task.meta.ConsolidateContainersMeta;
@@ -36,7 +37,6 @@ import com.mars_sim.core.person.ai.task.meta.ReportMissionControlMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewMissionPlanMeta;
 import com.mars_sim.core.person.ai.task.meta.SalvageBuildingMeta;
-import com.mars_sim.core.person.ai.task.meta.SalvageGoodMeta;
 import com.mars_sim.core.person.ai.task.meta.SleepMeta;
 import com.mars_sim.core.person.ai.task.meta.TeachMeta;
 import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
@@ -62,8 +62,6 @@ import com.mars_sim.core.science.task.ProposeScientificStudyMeta;
 import com.mars_sim.core.science.task.RespondToStudyInvitationMeta;
 import com.mars_sim.core.science.task.StudyFieldSamplesMeta;
 import com.mars_sim.core.structure.building.function.task.CookMealMeta;
-import com.mars_sim.core.structure.building.function.task.ManufactureConstructionMaterialsMeta;
-import com.mars_sim.core.structure.building.function.task.ManufactureGoodMeta;
 import com.mars_sim.core.structure.building.function.task.ObserveAstronomicalObjectsMeta;
 import com.mars_sim.core.structure.building.function.task.OptimizeSystemMeta;
 import com.mars_sim.core.structure.building.function.task.PrepareDessertMeta;
@@ -149,9 +147,8 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new LoadVehicleMeta());
 		allMetaTasks.add(new MaintainVehicleMeta());
 		allMetaTasks.add(new MaintainBuildingMeta());
-		allMetaTasks.add(new ManufactureConstructionMaterialsMeta());
 		
-		allMetaTasks.add(new ManufactureGoodMeta());
+		allMetaTasks.add(new ManufacturingMetaTask());
 		allMetaTasks.add(new MeetTogetherMeta());
 		allMetaTasks.add(new ObserveAstronomicalObjectsMeta());
 		allMetaTasks.add(new OptimizeSystemMeta());
@@ -182,7 +179,6 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ReviewMissionPlanMeta());
 		
 		allMetaTasks.add(new SalvageBuildingMeta());
-		allMetaTasks.add(new SalvageGoodMeta());
 		allMetaTasks.add(new SelfTreatHealthProblemMeta());
 		allMetaTasks.add(new SleepMeta()); 
 		allMetaTasks.add(new StudyFieldSamplesMeta());

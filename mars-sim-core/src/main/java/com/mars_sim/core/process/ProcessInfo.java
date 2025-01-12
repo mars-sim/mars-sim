@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.structure.Settlement;
+
 /**
  * Information about a type of manufacturing process.
  */
@@ -135,29 +138,52 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 					.filter(i -> i.getName().equalsIgnoreCase(name))
 					.toList();
 	}
-	
+
 	/**
-	 * Convenience method that gives back a list of
-	 * strings of the output items' names.
-	 * 
-	 * @return {@link List}<{@link String}>
+	 * Is the named resource one of the inputs.
+	 * @param name
+	 * @return
 	 */
-	public List<String> getOutputNames() {
-		return outputList.stream()
-					.map(ProcessItem::getName)
-					.toList();
+	public boolean isInput(String name) {
+		for(var o : inputList) {
+			if (o.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	/**
-	 * Convenience method that gives back a list of
-	 * strings of the input items' names.
-	 * 
-	 * @return {@link List}<{@link String}>
+	 * Is the named resource one of the outputs.
+	 * @param name
+	 * @return
 	 */
-	public List<String> getInputNames() {
-		return inputList.stream()
-					.map(ProcessItem::getName)
-					.toList();
+	public boolean isOutput(String name) {
+		for(var o : outputList) {
+			if (o.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Does a Settlement have the required input resources for this process.
+	 * @param source Source of the resources
+	 * @return
+	 */
+	public boolean isResourcesAvailable(Settlement source) {
+		for(ProcessItem item : inputList) {
+			if (((ItemType.AMOUNT_RESOURCE == item.getType()) 
+					&& (source.getAmountResourceStored(item.getId()) < item.getAmount()))
+				|| ((ItemType.PART == item.getType())
+					&& (source.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
+				return false;
+			}
+		}
+
+		// Checked everything
+		return true;
 	}
 
 	@Override

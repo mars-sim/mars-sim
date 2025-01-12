@@ -8,7 +8,6 @@
 package com.mars_sim.core.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,12 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
+import com.mars_sim.core.process.ProcessItem;
 
 public class ItemResourceUtil implements Serializable {
 
@@ -84,14 +85,10 @@ public class ItemResourceUtil implements Serializable {
 	 * Initializes the consumable parts for use during malfunction.
 	 */
 	public static void initConsumableParts() {
-		if (consumablePartIDs == null || consumablePartIDs.isEmpty()) {
-
-			List<String> parts = new ArrayList<>();
-			parts.add(EXTINGUISHER);
-			parts.add(PATCH);
-			parts.add(GLOVE);
-			
-			consumablePartIDs = convertNameListToResourceIDs(parts);
+		if (consumablePartIDs == null) {
+			consumablePartIDs = Set.of(findIDbyItemResourceName(EXTINGUISHER),
+										findIDbyItemResourceName(PATCH),
+										findIDbyItemResourceName(GLOVE));
 		}
 	}
 	
@@ -109,7 +106,7 @@ public class ItemResourceUtil implements Serializable {
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
 		        	manufactureProcessInfo = info;
-		        	evaSuitPartIDs = convertNameListToResourceIDs(manufactureProcessInfo.getInputNames());
+					evaSuitPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
 		        	break;
 				}
 			}
@@ -151,18 +148,6 @@ public class ItemResourceUtil implements Serializable {
 		printerID = findIDbyItemResourceName(SLS_3D_PRINTER);
 	}
 
-	
-	/**
-	 * Converts a list of string into their equivalent IDs.
-	 * 
-	 * @param string list
-	 * @return a set of ids
-	 */
-	public static Set<Integer> convertNameListToResourceIDs(List<String> strings) {
-		return convertNameArray2ResourceIDs(strings.stream()
-		        .toArray(String[]::new));
-	}
-	
 	/**
 	 * Converts a array of string names into their equivalent IDs.
 	 * Note: Currently, it will look for parts only.

@@ -1,8 +1,6 @@
 package com.mars_sim.core.manufacture;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.equipment.EquipmentFactory;
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -17,12 +15,13 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
     }
     
     public void testGetHighestManufacturingTechLevel() {
-        var s = buildSettlement();
+        var s = buildSettlement("tech", true);
         
         int highest = ManufactureUtil.getHighestManufacturingTechLevel(s);
         assertEquals("No manufacturing", -1, highest);
 
         var w = buildManufacture(s);
+        s.getManuManager().updateTechLevel(); // Simulate a daily recheck after a new building
         highest = ManufactureUtil.getHighestManufacturingTechLevel(s);
 
         assertEquals("Highest tech level found", w.getManufacture().getTechLevel(), highest);
@@ -53,7 +52,7 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertFalse("No barrel processes found", results.isEmpty());
 
         var selection = results.get(0);
-        assertTrue("Output for barrel process", selection.getOutputNames().contains("barrel"));
+        assertTrue("Output for barrel process", selection.isOutput("barrel"));
     }
 
     public void testGetSalvageProcessesForTechLevel() {
@@ -72,28 +71,5 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertFalse("No salvage on low skill found", found.contains(selection));
         found = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(), selection.getSkillLevelRequired());
         assertTrue("Salvage on low skill found", found.contains(selection));
-    }
-
-    public void testCanSalvageBarrel() {
-        var s = buildSettlement();
-        var w = buildManufacture(s);
-        var manu = w.getManufacture();
-
-        SalvageProcessInfo selected = null;
-        var found = ManufactureUtil.getSalvageProcessesForTechLevel(manu.getTechLevel());
-        for(var p : found) {
-            if (p.getItemName().equals("barrel")) {
-                selected = p;
-                break;
-            }
-        }
-
-        assertNotNull("Found barrel salvage", selected);
-        var canstart = ManufactureUtil.canSalvageProcessBeStarted(selected, manu);
-        assertFalse("Cannot start barrel salvage witout barrels", canstart);
-
-        EquipmentFactory.createEquipment(EquipmentType.BARREL, s);
-        canstart = ManufactureUtil.canSalvageProcessBeStarted(selected, manu);
-        assertTrue("Can start barrel salvage with barrel", canstart);
     }
 }

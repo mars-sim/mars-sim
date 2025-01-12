@@ -11,12 +11,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.process.ProcessItem;
+import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
@@ -121,11 +123,7 @@ public class VehicleSpec implements Serializable {
 	
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
-	
-	// Note: ResourceUtil.methanolID and ResourceUtil.methaneID has not been initialized at this point of the startup process
-//	private int methanolID = ResourceUtil.methanolID;
-//	private int methaneID = ResourceUtil.methaneID;
-	
+
 	// Data members
 	private boolean hasLab = false;
 	private boolean hasPartAttachments = false;
@@ -379,9 +377,10 @@ public class VehicleSpec implements Serializable {
 											+ buildName);
 		}
 			
-		List<String> names = buildDetails.getInputNames();
-		partIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
-						
+		partIDs = buildDetails.getInputList().stream()
+					.filter(p -> p.getType() == ItemType.PART)
+					.map(ProcessItem::getId).collect(Collectors.toSet());
+				
 		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part
 		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
 	}
@@ -399,25 +398,25 @@ public class VehicleSpec implements Serializable {
     	
     	// Note: ResourceUtil.methanolID has not been initialized at this point of startup
     	
-    	if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {//getFuelType() == methanolID) {
+    	if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainFuelEfficiency;// + batteryCapacity;
+			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainFuelEfficiency;
     	}
     	
-    	else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {//getFuelType() == methaneID) {
+    	else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			fuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainFuelEfficiency;// + batteryCapacity;
+			fuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainFuelEfficiency;
 		}
 			
     	else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			fuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainFuelEfficiency;// + batteryCapacity;
+			fuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainFuelEfficiency;
 		}
 
 		// Define the estimated additional beginning mass for each type of vehicle

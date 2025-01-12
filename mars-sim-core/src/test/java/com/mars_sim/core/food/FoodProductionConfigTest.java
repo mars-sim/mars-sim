@@ -14,14 +14,16 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Maps;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.manufacture.ManufactureConfigTest;
 import com.mars_sim.core.process.ProcessItem;
-import com.mars_sim.core.resource.ItemType;
 
 class FoodProductionConfigTest {
 
     private static final String PACKAGE_FOOD = "Package Preserved Food";
     private static final int PACKAGE_INPUTS = 2;
-    private static final int PACKAGE_ALTERNATIVES = 4;
+    private static final String [] PACKAGE_ALTERNATIVES = {
+                    "Carrot", "Leaves", "Swiss Chard", "Potato"
+    };
 
 
     private FoodProductionConfig getFoodConfig() {
@@ -50,14 +52,14 @@ class FoodProductionConfigTest {
         Set<List<ProcessItem>> alternatives = new HashSet<>();
         alternatives.add(process.getInputList());
 
-        for(int i = 1; i <= PACKAGE_ALTERNATIVES; i++) {
-            var found = processByName.get(PACKAGE_FOOD + FoodProductionConfig.RECIPE_PREFIX + i);
-            assertNotNull(PACKAGE_FOOD + " alternative " + i, found);
-            assertEquals(PACKAGE_FOOD + " alternative " + i + "inputs", PACKAGE_INPUTS, found.getInputList().size());
+        for(var altName : PACKAGE_ALTERNATIVES) {
+            var found = processByName.get(PACKAGE_FOOD + FoodProductionConfig.RECIPE_PREFIX + altName);
+            assertNotNull(PACKAGE_FOOD + " alternative " + altName, found);
+            assertEquals(PACKAGE_FOOD + " alternative  inputs " + altName, PACKAGE_INPUTS, found.getInputList().size());
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", PACKAGE_ALTERNATIVES + 1, alternatives.size());
+        assertEquals("All alternatives have different inputs", PACKAGE_ALTERNATIVES.length + 1, alternatives.size());
     }
 
     @Test
@@ -70,17 +72,18 @@ class FoodProductionConfigTest {
         assertNotNull("Food processes defined", process);
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(new ProcessItem("Soybean", ItemType.AMOUNT_RESOURCE, 1D));
-        expectedInputs.add(new ProcessItem("Water", ItemType.AMOUNT_RESOURCE, 1D));
-        expectedInputs.add(new ProcessItem("oven", ItemType.PART, 1D));
+        expectedInputs.add(ManufactureConfigTest.createAmount("Soybean", 1D));
+        expectedInputs.add(ManufactureConfigTest.createAmount("Water", 1D));
+        expectedInputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
         assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(new ProcessItem("Soy Flour", ItemType.AMOUNT_RESOURCE, 1D));
-        expectedOutputs.add(new ProcessItem("oven", ItemType.PART, 1D));
+        expectedOutputs.add(ManufactureConfigTest.createAmount("Soy Flour", 1D));
+        expectedOutputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
         assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
 
     }
+
 }

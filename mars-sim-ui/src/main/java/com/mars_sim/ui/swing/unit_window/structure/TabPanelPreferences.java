@@ -24,6 +24,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterCategory.ParameterSpec;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -60,7 +61,8 @@ public class TabPanelPreferences extends TabPanelTable {
 
 	private static final String ICON = "favourite";
 
-	private static final ParameterCategory[] CATEGORIES = {MissionWeightParameters.INSTANCE,
+	private static final ParameterCategory[] CATEGORIES = {ManufacturingParameters.INSTANCE,
+															MissionWeightParameters.INSTANCE,
 															MissionLimitParameters.INSTANCE,
 															ProcessParameters.INSTANCE,
 															ScienceParameters.INSTANCE,

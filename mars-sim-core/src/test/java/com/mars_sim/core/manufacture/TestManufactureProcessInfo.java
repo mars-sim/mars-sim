@@ -34,7 +34,7 @@ public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
     
     public void testEVASuitParts() {
     	
-    	List<String> inputList = mInfo.getInputNames();
+    	var inputList = mInfo.getInputList();
 		
 		// [eva helmet, helmet visor, pressure suit, coveralls, Liquid Cooling Garment, 
 		// eva gloves, eva boots, eva pads, eva backpack, eva antenna, 

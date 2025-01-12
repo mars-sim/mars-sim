@@ -32,6 +32,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -73,21 +74,7 @@ abstract class TableTab extends MonitorTab {
 		this.table = new JTable(model) {
             @Override
             public String getToolTipText(MouseEvent e) {
-                java.awt.Point p = e.getPoint();
-
-				// Column accounts for reordering/hidden columns
-                int colIndex = columnAtPoint(p);
-				TableColumn col = table.getColumnModel().getColumn(colIndex);
-				colIndex = col.getModelIndex();
-
-				// Row accounts for sorting	
-				int rowIndex = rowAtPoint(p);
-				var sorter = getRowSorter();
-				if (sorter != null && rowIndex >= 0) {
-					rowIndex = sorter.convertRowIndexToModel(rowIndex);
-				}
-				MonitorModel model = (MonitorModel) getModel();
-				return model.getToolTipAt(rowIndex, colIndex);
+				return ToolTipTableModel.extractToolTip(e, this);
             }
 		};
 

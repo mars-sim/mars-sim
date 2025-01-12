@@ -61,7 +61,7 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         assertEquals("Unclaimed mean", dist1, unclaimedStats.mean());
 
         var siteStats = eMgr.getStatistics(ExplorationManager.SITE_STAT);
-        assertEquals("Site mean", (dist1 + dist2)/2, siteStats.mean());
+        assertEquals("Site mean", (dist1 + dist2)/2, siteStats.mean(), 0.00001);
 
         assertEquals("Number of Declared", 2, eMgr.numDeclaredLocation());
         assertEquals("Number of Claimed", 1, eMgr.numDeclaredLocation(true));

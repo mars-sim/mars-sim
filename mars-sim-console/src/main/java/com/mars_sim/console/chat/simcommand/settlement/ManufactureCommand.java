@@ -43,7 +43,6 @@ public class ManufactureCommand extends AbstractSettlementCommand {
 		for (Building building : workshops) {
 			Manufacture workshop = building.getManufacture();
 			response.appendHeading(building.getName());
-			response.appendLabelledDigit("Printers In Use", workshop.getNumPrintersInUse());
 			response.appendLabeledString("Processes Active", workshop.getCurrentTotalProcesses() + "/" + workshop.getMaxProcesses());
 			List<ManufactureProcess> processes = workshop.getProcesses();
 			if (!processes.isEmpty()) {
@@ -57,6 +56,15 @@ public class ManufactureCommand extends AbstractSettlementCommand {
 			response.appendBlankLine();
 		}
 		
+		// Display Queue
+		var mgr = settlement.getManuManager();
+		response.appendHeading("Queued");
+		response.appendTableHeading("Process", 42, "TechLevel", "Salvage");
+		for(var qp : mgr.getQueue()) {
+			response.appendTableRow(qp.getInfo().getName(), qp.getInfo().getTechLevelRequired(),
+									(qp.getTarget() != null ? qp.getTarget().getName() : ""));	
+		}
+
 		context.println(response.getOutput());
 		
 		return true;

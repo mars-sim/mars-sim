@@ -12,17 +12,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
 
 public class ManufactureConfig {
 
+	public static final String WITH_PREFIX = " with ";
 	// Element names	
 	private static final String PROCESS = "process";
 	private static final String NAME = "name";	
@@ -44,15 +47,9 @@ public class ManufactureConfig {
 	private static final String TYPE = "type";
 	private static final String PART_SALVAGE = "part-salvage";
 
-	public static final String ALT_PREFIX = " Alt #";
-	/**
-	 * A map of a list of manu processes at a tech level.
-	 */
-	private transient Map<Integer, List<ManufactureProcessInfo>> techLevelManuProcesses;
-	/**
-	 * A map of a list of salvage processes at a tech level.
-	 */
-	private transient Map<Integer, List<SalvageProcessInfo>> techLevelSalvageProcesses;
+	// Process broken down by techlevel; this are accumulative
+	private List<List<ManufactureProcessInfo>> manuByTechLevel;
+	private List<List<SalvageProcessInfo>> salvageByTechLevel;
 	
 	private List<ManufactureProcessInfo> manuProcessInfoList;
 	private List<SalvageProcessInfo> salvageInfoList;
@@ -65,9 +62,6 @@ public class ManufactureConfig {
 	 *                       configuration.
 	 */
 	public ManufactureConfig(Document manufactureDoc) {
-		
-		techLevelManuProcesses = new HashMap<>();
-		techLevelSalvageProcesses = new HashMap<>();
 		
 		loadManufactureProcessList(manufactureDoc);
 		loadSalvageList(manufactureDoc);
@@ -91,15 +85,11 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting processes.
 	 */
 	public List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
-		List<ManufactureProcessInfo> list = new ArrayList<>();
-		
-		for (int i = 0; i <= techLevel; i++) {
-			if (techLevelManuProcesses.containsKey(i)) {
-				list.addAll(techLevelManuProcesses.get(i));
-			}
+		if (techLevel < 0) {
+			return Collections.emptyList();
 		}
-		
-		return list;
+		techLevel = Math.min(techLevel, manuByTechLevel.size()-1);
+		return manuByTechLevel.get(techLevel);
 	}
 	
 	/**
@@ -161,60 +151,59 @@ public class ManufactureConfig {
 						inputList, outputList, effort);
 			
 			newList.add(process);
-			
-			// Add the process to a list and a map
-			addToManuTechLevelProcesses(process, techLevel);
 		
 			if (!alternateResourceMap.isEmpty()) {
 				// Create a list for the original resources from alternateResourceMap
 				String processName = process.getName();
-				int i = 1;
-				for(var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList)) {
+				for(var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList).entrySet()) {
 					
-					// Write the modified input resource list onto the new list
-					String altProcessName = processName + ALT_PREFIX + i++;
-
+					// Write the modified input resource list into a new process with the replacement name
+					String altProcessName = processName + WITH_PREFIX + newInputItems.getKey();
 					ManufactureProcessInfo process1 = new ManufactureProcessInfo(altProcessName, process.getDescription(),
 							process.getTechLevelRequired(), process.getSkillLevelRequired(),
 							process.getWorkTimeRequired(), process.getProcessTimeRequired(),
-							process.getPowerRequired(), newInputItems,
+							process.getPowerRequired(), newInputItems.getValue(),
 							process.getOutputList(), process.getEffortLevel());
 					
 					// Add process to newList.
 					newList.add(process1);
-		
-					// Add the process to a list and a map
-					addToManuTechLevelProcesses(process1, techLevel);
 				}
 			}
 		}
 		
-		// Assign the newList now built
+		// Assign the newList now built amd create the map by tech level
 		manuProcessInfoList = Collections.unmodifiableList(newList);
-	}
-
-	/**
-	 * Adds a process to a list and then the process map.
-	 * 
-	 * @param process
-	 * @param techLevel
-	 */
-	private void addToManuTechLevelProcesses(ManufactureProcessInfo process, int techLevel) {
-		List<ManufactureProcessInfo> existingProcesses = null;
-		
-		if (techLevelManuProcesses.containsKey(techLevel)) {
-			existingProcesses = techLevelManuProcesses.get(techLevel);
-		}
-		
-		else {
-			existingProcesses = new ArrayList<>();
-		}
-		
-		existingProcesses.add(process);
-		
-		techLevelManuProcesses.put(techLevel, existingProcesses);
+		manuByTechLevel = createListByTech(manuProcessInfoList);
 	}
 	
+	/**
+	 * Create a list of supported Processes according to the techlevel starting at zero.
+	 * This is an accumulation, e.g. level 2 contains level 1 etc etc
+	 * @param <T> The type of the process info.
+	 * @param process
+	 * @return
+	 */
+	public static <T extends ProcessInfo> List<List<T>> createListByTech(List<T> process) {
+		var splitByLevel = process.stream()
+				.collect(Collectors.groupingBy(m -> m.getTechLevelRequired()));
+		var highestLevel = splitByLevel.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1);
+		
+		// Build the final set so it is an accumulation
+		List<List<T>> result = new ArrayList<>();
+		List<T> previous = Collections.emptyList();
+		for(int i = 0; i <= highestLevel; i++) {
+			var thisLevel = splitByLevel.getOrDefault(i, Collections.emptyList());
+
+			List<T> newList = new ArrayList<>(thisLevel);
+			newList.addAll(previous);  // Add in the previous list as well
+			result.addLast(newList);
+
+			previous = newList;
+		}
+
+		return result;
+	}
+
 	/**
 	 * Gets salvage processes within (at or below) the capability of a tech level.
 	 *
@@ -223,15 +212,12 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting processes.
 	 */
 	public List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		List<SalvageProcessInfo> list = new ArrayList<>();
-		
-		for (int i = 0; i <= techLevel; i++) {
-			if (techLevelSalvageProcesses.containsKey(i)) {
-				list.addAll(techLevelSalvageProcesses.get(i));
-			}
+		if (techLevel < 0) {
+			return Collections.emptyList();
 		}
-		
-		return list;
+		techLevel = Math.min(techLevel, salvageByTechLevel.size()-1);
+
+		return salvageByTechLevel.get(techLevel);
 	}
 
 	/**
@@ -275,34 +261,10 @@ public class ManufactureConfig {
 
 			SalvageProcessInfo process = new SalvageProcessInfo(salvaged, null, techLevel, skill, workTime, outputs);
 			newList.add(process);
-			
-			// Add the process to a list and a map
-			addToSalvageTechLevelProcesses(process, techLevel);
 		}
 
 		// Assign the newList now built
 		salvageInfoList = Collections.unmodifiableList(newList);
-	}
-	
-	/**
-	 * Adds a process to a list and then the process map.
-	 * 
-	 * @param process
-	 * @param techLevel
-	 */
-	private void addToSalvageTechLevelProcesses(SalvageProcessInfo process, int techLevel) {
-		List<SalvageProcessInfo> existingProcesses = null;
-		
-		if (techLevelSalvageProcesses.containsKey(techLevel)) {
-			existingProcesses = techLevelSalvageProcesses.get(techLevel);
-		}
-		
-		else {
-			existingProcesses = new ArrayList<>();
-		}
-		
-		existingProcesses.add(process);
-		
-		techLevelSalvageProcesses.put(techLevel, existingProcesses);
+		salvageByTechLevel = createListByTech(salvageInfoList);
 	}
 }

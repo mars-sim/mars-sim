@@ -174,11 +174,11 @@ public class HelpContext {
 		if (resourceUses == null) {
 			resourceUses = new HashMap<>();
 			for (var m: config.getManufactureConfiguration().getManufactureProcessList()) {
-				for (var r: m.getInputNames()) {
-					resourceUses.computeIfAbsent(r.toLowerCase(), k-> buildEmptyResourceUse()).asInput().add(m);
+				for (var r: m.getInputList()) {
+					resourceUses.computeIfAbsent(r.getName().toLowerCase(), k-> buildEmptyResourceUse()).asInput().add(m);
 				}
-				for (var r: m.getOutputNames()) {
-					resourceUses.computeIfAbsent(r.toLowerCase(), k-> buildEmptyResourceUse()).asOutput().add(m);
+				for (var r: m.getOutputList()) {
+					resourceUses.computeIfAbsent(r.getName().toLowerCase(), k-> buildEmptyResourceUse()).asOutput().add(m);
 				}
 			}
 		}

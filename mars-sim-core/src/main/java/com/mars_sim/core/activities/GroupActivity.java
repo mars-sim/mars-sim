@@ -7,7 +7,6 @@
 package com.mars_sim.core.activities;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -84,11 +83,9 @@ public class GroupActivity implements ScheduledEventHandler {
      */
     private void attachToSettlement(MarsTime now, EventSchedule calendar) {    
         // Calculate the duration to the next scheduled start of this activity
-        // But adjust to the local time zone
-        int offset = MarsSurface.getTimeOffset(owner.getCoordinates());
-        
+        // But adjust to the local time zone        
         state = ActivityState.SCHEDULED;
-        startTime = calendar.getFirstEvent(now, offset);
+        startTime = calendar.getFirstEvent(now, owner.getTimeOffset());
         owner.getFutureManager().addEvent(startTime, this);
     }
 
