@@ -169,7 +169,12 @@ public enum UnitEventType {
 	// For settlement sensor detection grid
 	BASELINE_EVENT					("baseline radiation event"),
 	SEP_EVENT						("SEP event"),	
-	GCR_EVENT						("GCR event")
+	GCR_EVENT						("GCR event"),
+
+	// Event for Manufacturing
+	MANU_QUEUE_ADD			("add to manufacturing queue"),
+	MANU_QUEUE_REMOVE		("remove from manufacturing queue"),
+	MANE_QUEUE_REFRESH		("refresh manufacturing queue")
 	;
 	
 	private String name;

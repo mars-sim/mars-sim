@@ -9,7 +9,6 @@ package com.mars_sim.core.structure.building.function.farming;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Level;
 
 import com.mars_sim.core.data.SolMetricDataLogger;
@@ -103,9 +102,7 @@ public class Fishery extends Function {
 	private int maxFish;
 	/** Optimal number of fish.*/
 	private int idealFish;
-	
-	/** The initial ratio of fish and water [in kg/L] . */	
-	private final double fishToWaterMassRatio;
+
 	/** Current overall health of this fishery environment (from 0 to 1). */	
 	private double health = 1;
 	/** The cumulative time spent in this greenhouse [in sols]. */
@@ -155,9 +152,6 @@ public class Fishery extends Function {
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
 		
 		idealFish = (int)(maxFish * IDEAL_FRACTION);
-		
-		// For now, fishToWaterMassRatio is 0.0146
-		fishToWaterMassRatio = 1.0 * idealFish / tankSize; 
 
 	    int numFish = (int)RandomUtil.getRandomDouble(idealFish * 0.5, idealFish);
 
@@ -287,7 +281,17 @@ public class Fishery extends Function {
 		return age / num;
 	}
 	   
-	   
+	private static void simulateOrganisms(List<? extends Organism> organisms, double time) {
+		var it = organisms.listIterator();
+		while(it.hasNext()) {
+		   var f = it.next();
+		   f.growPerFrame(time);
+		   if (!f.isAlive()) {
+				it.remove();
+		   }
+		}
+	}
+
 	/**
 	* Simulates life in the pond.
 	* 
@@ -297,24 +301,10 @@ public class Fishery extends Function {
 	   double time = pulse.getElapsed();
 	
 	   // Simulate the fish's growing cycle
-	   ListIterator<Fish> it = fish.listIterator();
-	   while(it.hasNext()) {
-		  Fish f = it.next();
-	      f.growPerFrame(time);
-	      // If a fish has no food to eat within a period of time, it will die
-	      if (!f.isAlive())
-	         it.remove();
-	   }
+	   simulateOrganisms(fish, time);
 	
 	   // Simulate the weed's natural growth cycle
-	   ListIterator<Plant> ii = weeds.listIterator();
-	   while(ii.hasNext()) {
-		  Plant p = ii.next();
-	      p.growPerFrame(time);
-	      // If a weed has been eaten to the point it was shrunk to size 0, it will die
-	      if (!p.isAlive())
-	         it.remove();
-	   }
+	   simulateOrganisms(weeds, time);
 	   
 	   int numFish = fish.size();
 	   int numWeeds = weeds.size();
@@ -331,7 +321,6 @@ public class Fishery extends Function {
 		   feedIterations = Math.min(feedIterations, numFish * 2);
 		   feedIterations = Math.max(feedIterations, numFish * 6);
 		   feedIterations = Math.min(feedIterations, numWeeds);
-//		   logger.info(building, 60_000, "nibbleIterationCache: " + Math.round(nibbleIterationCache * 10.0)/10.0  + "  feedIterations: " + feedIterations + ".");
 		   nibbleIterationCache = nibbleIterationCache - feedIterations;
 		   if (nibbleIterationCache < 0)
 			   nibbleIterationCache = 0;
@@ -524,9 +513,6 @@ public class Fishery extends Function {
 		if (tendertime < 0) {
 			surplus = Math.abs(tendertime);
 			tendertime = RandomUtil.getRandomDouble(.75, 1.25) * Math.min(TIME_PER_WEED, numFish / 10.0);
-			logger.log(building, Level.INFO, 5_000, 
-					"Tended weeds for the fish (" 
-						+ Math.round(tendertime * 10.0)/10.0 + " millisols).");
 			weedAge = 0;
 		}
 		
@@ -628,20 +614,6 @@ public class Fishery extends Function {
 	 */
 	public double computeDailyAverage(int id) {
 		return resourceLog.getDailyAverage(id);
-	}
-	
-	/**
-	 * Retrieves water from the Settlement and record the usage in the Farm.
-	 * 
-	 * @param amount Amount being retrieved
-	 * @param id Resource id
-	 */
-	private void retrieveWater(double amount, int id) {
-		if (amount > 0) {
-			retrieve(amount, WATER_ID, true);
-			// Record the amount of water consumed
-			addResourceLog(amount, id);		
-		}
 	}
 	
 	/**

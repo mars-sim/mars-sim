@@ -236,8 +236,10 @@ public class TabPanelCredit extends TabPanelTable {
 	 */
 	@Override
 	public void destroy() {
-		super.destroy();
+		if (creditTableModel != null) {
+			creditTableModel.destroy();
+		}
 
-		creditTableModel.destroy();
+		super.destroy();
 	}
 }

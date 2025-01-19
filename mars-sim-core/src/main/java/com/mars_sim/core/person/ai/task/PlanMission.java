@@ -144,33 +144,28 @@ public class PlanMission extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double selectingPhase(double time) {
-		double remainingTime = 0;
 		
 		boolean canDo = person.getMind().canStartNewMission();
 		if (!canDo) {
 			logger.log(worker, Level.INFO, 10_000, "Not ready to start a new mission.");
 			endTask();
+			return 0;
 		}
-		else {
-			Mission mission = person.getMind().getMission();
-			if (mission == null) {	
-				if (is70Completed()) {
-					// Simulate to have at least 70% of the time spent in selecting a mission plan to submit
-					
-					// Start a new mission
-					mission = person.getMind().startNewMission();
-					if (mission == null) {
-						// No mission found so stop planning for now
-						logger.log(worker, Level.INFO, 30_000, "No mission selected.");
-					}
-					else {	
-						setPhase(SUBMITTING);
-					}
+	
+		double remainingTime = 0;
+		Mission mission = person.getMind().getMission();
+		if (mission == null) {	
+			if (is70Completed()) {
+				// Simulate to have at least 70% of the time spent in selecting a mission plan to submit
+				mission = person.getMind().startNewMission();
+				if (mission != null) {
+					setPhase(SUBMITTING);
 				}
-				else {
-					
-					// Prior to 70% completion,
-					
+			}
+			else {
+				
+				// Prior to 70% completion,
+				
 //					1. PlanMission should record use of the task time spent in the selecting 
 //					   phase for that person. 
 //					2. May be one can draw from someone else's research to boost the success of planning a mission.
@@ -179,19 +174,18 @@ public class PlanMission extends Task {
 //					3. Document all mission planning efforts such as consulting with leadership, 
 //					   meeting with experts, looking up map data to determine mission 
 //					   feasibility, etc.
-				}
 			}
-			else {
-				// if a person already have an active mission, such as by 
-				// being recruited into a mission started by someone else
-				
-				// Note: should still save his research here for expediting future endeavor in 
-				//       starting a new mission. 
-				logger.log(worker, Level.WARNING, 10_000, "Already have '" + mission.getName() + "' as an active mission.");
-				
-				endTask();
-				return 0;
-			}
+		}
+		else {
+			// if a person already have an active mission, such as by 
+			// being recruited into a mission started by someone else
+			
+			// Note: should still save his research here for expediting future endeavor in 
+			//       starting a new mission. 
+			logger.log(worker, Level.WARNING, 10_000, "Already have '" + mission.getName() + "' as an active mission.");
+			
+			endTask();
+			return 0;
 		}
 		
         return remainingTime;

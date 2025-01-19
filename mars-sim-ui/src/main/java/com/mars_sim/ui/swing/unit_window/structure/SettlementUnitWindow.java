@@ -279,5 +279,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		templateLabel = null;
 		statusPanel = null;		
 		settlement = null;
+
+		super.destroy();
 	}
 }
