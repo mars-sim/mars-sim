@@ -25,7 +25,7 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 
-	private static final Map<Integer,DecimalFormat> FORMATS = new HashMap<>();
+	private static final Map<String,DecimalFormat> FORMATS = new HashMap<>();
 	
 	private String base = "#,###,##0";
 	
@@ -58,9 +58,10 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 	public NumberCellRenderer(int digits, String preSymbol) {
 		// Use DefaultTableCellRenderer constructor
 		super();
-		formatter = FORMATS.get(digits);
+
+		String key = (preSymbol != null ? preSymbol : "") + digits;
+		formatter = FORMATS.get(key);
 		if (formatter == null) {
-			
 			if (preSymbol != null) {
 				base = preSymbol + base;
 			}
@@ -73,7 +74,7 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 				}
 			}
 			formatter = new DecimalFormat(format.toString());
-			FORMATS.put(digits, formatter);
+			FORMATS.put(key, formatter);
 		}
 
 		// Set the horizontal alignment to right.

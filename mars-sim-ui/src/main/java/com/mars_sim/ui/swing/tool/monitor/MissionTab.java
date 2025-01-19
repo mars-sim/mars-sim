@@ -15,7 +15,6 @@ import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 /**
  * This class represents a mission table displayed within the Monitor Window.
  */
-@SuppressWarnings("serial")
 public class MissionTab extends TableTab {
 
 	/**
@@ -26,9 +25,7 @@ public class MissionTab extends TableTab {
 	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
 		super(window, new MissionTableModel(window.getDesktop().getSimulation()), true, true, MissionWindow.ICON);
-		
-		adjustColumnWidth(table);
-		
+				
 		setEntityDriven(true);
 		setNavigatable(true);
 	}

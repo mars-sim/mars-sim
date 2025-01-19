@@ -87,6 +87,19 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	}
 
 	/**
+	 * Get any defined style for this value.
+	 * @param columnIndex the index of the column.
+	 * @return see ColumnSpec for the style.
+	 */
+	@Override
+    public int getColumnStyle(int columnIndex) {
+		if ((columnIndex >= 0) && (columnIndex < columns.length)) {
+			return columns[columnIndex].style();
+		}
+		return ColumnSpec.STYLE_DEFAULT;
+	}
+
+	/**
 	 * Gets the name of the model.
 	 *
 	 * @return model name.

@@ -51,11 +51,11 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 
 		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class);
-		COLUMNS[MASS_COL] = new ColumnSpec("kg Mass", Double.class);
+		COLUMNS[MASS_COL] = new ColumnSpec("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Double.class);
 		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Double.class);
-		COLUMNS[COST_COL] = new ColumnSpec("$ Cost", Double.class);
-		COLUMNS[PRICE_COL] = new ColumnSpec("$ Price", Double.class);
+		COLUMNS[COST_COL] = new ColumnSpec("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
+		COLUMNS[PRICE_COL] = new ColumnSpec("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}
 
 	/**
