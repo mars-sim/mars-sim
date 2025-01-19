@@ -20,6 +20,7 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -27,13 +28,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.UnitEvent;
+import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
+import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.SalvageProcess;
@@ -44,8 +50,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
@@ -58,10 +64,9 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * A tab panel displaying settlement manufacturing information.
  */
 @SuppressWarnings("serial")
-public class TabPanelManufacture extends TabPanel {
+public class TabPanelManufacture extends TabPanel implements UnitListener {
 	
 	private static final String MANU_ICON ="manufacture";
-	private static final String BUTTON_TEXT = Msg.getString("TabPanelManufacture.button.createNewProcess"); // -NLS-1$
 	private static final String SALVAGE = "Salvage";
 
 	/** The Settlement instance. */
@@ -72,9 +77,13 @@ public class TabPanelManufacture extends TabPanel {
 	private JScrollPane manufactureScrollPane;
 
 	/** Process selector. */
-	private JComboBoxMW<ManufactureProcessInfo> processSelection;	
-	private JComboBoxMW<String> outputSelection;	
+	private JComboBox<ProcessInfo> processSelection;	
+	private JComboBox<String> outputSelection;
 
+	// Selected item
+	private JSpinner userBonusSpinner;
+	private JButton deleteButton;
+	private QueuedProcess selection;
 
 	/**
 	 * Constructor.
@@ -95,7 +104,6 @@ public class TabPanelManufacture extends TabPanel {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked" })
 	protected void buildUI(JPanel content) {
 		// Create scroll panel for manufacture list pane.
 		manufactureScrollPane = new JScrollPane();
@@ -131,7 +139,7 @@ public class TabPanelManufacture extends TabPanel {
 		queuePanel.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create output selection
-		outputSelection = new JComboBoxMW<>();
+		outputSelection = new JComboBox<>();
 		interactionPanel.add(outputSelection);
 		var outputs = target.getManuManager().getPossibleOutputs();
 		outputSelection.addItem(SALVAGE);
@@ -139,17 +147,20 @@ public class TabPanelManufacture extends TabPanel {
 		outputSelection.addActionListener(e -> changeProcessOptions());
 
 		// Create new manufacture process selection.
-		processSelection = new JComboBoxMW<>();
-		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("Select a Process"));
+		var addPanel = new JPanel(new BorderLayout());
+		interactionPanel.add(addPanel);
+
+		processSelection = new JComboBox<>();
+		processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
 		processSelection.addActionListener(this::processSelectionChanged);
-		interactionPanel.add(processSelection);
+		addPanel.add(processSelection, BorderLayout.CENTER);
 
 		// Create new process button.
-		var newProcessButton = new JButton(BUTTON_TEXT); //-NLS-1$
+		var newProcessButton = new JButton(ImageLoader.getIconByName("action/add"));
 		newProcessButton.setEnabled(false);
-		newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process"); //-NLS-1$
+		newProcessButton.setToolTipText("Add a the Process to the queue"); //-NLS-1$
 		newProcessButton.addActionListener(event -> createNewProcess());
-		interactionPanel.add(newProcessButton);
+		addPanel.add(newProcessButton, BorderLayout.EAST);
 
 		// Link the enabled button to the process selection
 		processSelection.addItemListener(event -> newProcessButton.setEnabled(event.getStateChange() == ItemEvent.SELECTED));
@@ -157,37 +168,112 @@ public class TabPanelManufacture extends TabPanel {
 		// Create parameter controls
 		var pMgr = target.getPreferences();
 		var parameterPanel = new AttributePanel();
+		parameterPanel.setBorder(StyleManager.createLabelBorder("Controls"));
 		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_VALUE, 500);
 		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_LIMIT, 10);
 		addParameter(parameterPanel, pMgr, ManufacturingParameters.MAX_QUEUE_SIZE, 20);
 		interactionPanel.add(parameterPanel);
 
-		// Create 
+		// Row selection items
+		var selectionPanel = new  JPanel(new BorderLayout());
+		interactionPanel.add(selectionPanel);
+
+		// Create user bonus spinner
+		var spinLabel = new JLabel("User Bonus % :");
+		spinLabel.setFont(StyleManager.getLabelFont());
+		selectionPanel.add(spinLabel, BorderLayout.WEST);
+		userBonusSpinner = new JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
+		userBonusSpinner.setEnabled(false);
+		userBonusSpinner.addChangeListener(e -> {
+			var value = (Integer)userBonusSpinner.getValue();
+			queueModel.updateUserBonus(selection, value);
+		});
+		selectionPanel.add(userBonusSpinner, BorderLayout.CENTER);
+		deleteButton = new JButton(ImageLoader.getIconByName("action/delete"));
+		deleteButton.setEnabled(false);
+		deleteButton.setToolTipText("Delete Process from the queue");
+		deleteButton.addActionListener(event -> queueSelectionDeleted());
+		selectionPanel.add(deleteButton, BorderLayout.EAST);
+
+		// Create Table
 		var scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		queuePanel.add(scrollPane,BorderLayout.CENTER);
 		
 		// Prepare table model.
-		queueModel = new ProcessQueueModel();
-		queueModel.update(target);
+		queueModel = new ProcessQueueModel(target);
 		
 		// Prepare table.
-		JTable table = new JTable(queueModel) {
+		var queueTable = new JTable(queueModel) {
 			@Override
 			public String getToolTipText(MouseEvent e) {
 				return ToolTipTableModel.extractToolTip(e, this);
 			}
 		};
-		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		queueTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		queueTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		queueTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		queueTable.getSelectionModel().addListSelectionListener(this::queueSelectionChanged);
 
-		// Add sorting
-		table.setAutoCreateRowSorter(true);
-
-		scrollPane.setViewportView(table);
+		queueTable.setAutoCreateRowSorter(true);
+		scrollPane.setViewportView(queueTable);
 
 		changeProcessOptions(); // Trigger to populate 2nd drop down
+
+		// Listener for changes
+		target.addUnitListener(this);
+	}
+
+	/**
+	 * Queued process has been selected
+	 * @param e List selection event
+	 */
+	private void queueSelectionChanged(ListSelectionEvent e) {
+		ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+		selection = null;
+
+		if (!lsm.isSelectionEmpty()) {
+			int index = lsm.getMinSelectionIndex();
+			selection = queueModel.queue.get(index);
+		}
+
+		deleteButton.setEnabled(selection != null);
+		userBonusSpinner.setEnabled(selection != null);
+
+		if (selection != null) {
+			double bonus = selection.getValue().getModifiers().get(ManufacturingManager.USER_BONUS);
+			userBonusSpinner.setValue((int)((bonus - 1) * 100D));
+		}
+	}
+
+	/**
+	 * Selected process deleted
+	 */
+	private void queueSelectionDeleted() {
+		if (selection != null) {
+			target.getManuManager().removeProcessFromQueue(selection);
+		}
+	}	
+
+	/**
+	 * Something changed on the Settlement and process any events for the manufacturing
+	 * @param e
+	 */
+	@Override
+	public void unitUpdate(UnitEvent e) {
+		switch(e.getType()) {
+			case MANU_QUEUE_ADD -> queueModel.addItem((QueuedProcess) e.getTarget());
+			case MANU_QUEUE_REMOVE -> queueModel.removeItem((QueuedProcess) e.getTarget());
+			case MANE_QUEUE_REFRESH -> queueModel.refresh();
+			default -> { /* Ignore */ }
+		}
+	}
+
+	@Override
+	public void destroy() {
+		target.removeUnitListener(this);
+		super.destroy();
 	}
 
 	private void addParameter(AttributePanel panel, ParameterManager pMgr, String parmId, int maxValue) {
@@ -229,8 +315,6 @@ public class TabPanelManufacture extends TabPanel {
 		Object selectedItem = processSelection.getSelectedItem();
 		if (selectedItem instanceof ProcessInfo selectedProcess) {
 			target.getManuManager().addProcessToQueue(selectedProcess);
-
-			update();
 		}
 		processSelection.setSelectedIndex(-1);
 	}
@@ -242,8 +326,6 @@ public class TabPanelManufacture extends TabPanel {
 		// Update processes if necessary.
 		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
 		manufactureScrollPane.validate();
-
-		queueModel.update(target);
 	}
 
 	/**
@@ -296,9 +378,32 @@ public class TabPanelManufacture extends TabPanel {
 
 		private static final int NAME_COL = 0;
 		private static final int VALUE_COL = 1;
-		private static final int AVAILABLE_COL = 2;
-		private static final int SALVAGE_COL = 3;
+		private static final int AVAILABLE_COL = 3;
+		private static final int BONUS_COL = 2;
 		private List<QueuedProcess> queue = Collections.emptyList();
+
+		private ProcessQueueModel(Settlement s) {
+			queue = new ArrayList<>(s.getManuManager().getQueue());
+		}
+
+		private void addItem(QueuedProcess item) {
+			queue.add(item);
+			int idx = queue.size() - 1;
+			fireTableRowsInserted(idx, idx);
+		}
+
+		private void removeItem(QueuedProcess item) {
+			int idx = queue.indexOf(item);
+			if (idx >= 0) {
+				queue.remove(idx);
+				fireTableRowsDeleted(idx, idx);
+			}
+		}
+
+		private void refresh() {
+			// Just update the cell values
+			fireTableRowsUpdated(0, queue.size() - 1);
+		}
 
 		@Override
 		public int getRowCount() {
@@ -315,13 +420,23 @@ public class TabPanelManufacture extends TabPanel {
 			var item = queue.get(rowIndex);
 			switch(columnIndex) {
 				case NAME_COL: return item.getInfo().getName();
-				case SALVAGE_COL:
-					var target = item.getTarget();
-					return (target != null ? target.getName() : null);
+				case BONUS_COL:
+					return (int)((item.getValue().getModifiers().get(ManufacturingManager.USER_BONUS) - 1) * 100D);
 				case VALUE_COL: return item.getValue().getScore();
 				case AVAILABLE_COL: return item.isResourcesAvailable();
 				default: return null;
 			}
+		}
+
+		/**
+		 * Update the user bonus value. Needs converting back to a ratio
+		 */
+		public void updateUserBonus(QueuedProcess item, int value) {
+				var rowIndex = queue.indexOf(item);
+				if (rowIndex < 0) return;
+				item.getValue().addModifier(ManufacturingManager.USER_BONUS, 1D +
+											(value/100D));
+				fireTableRowsUpdated(rowIndex, rowIndex);  // Refresh the full row
 		}
 
 		/**
@@ -342,19 +457,18 @@ public class TabPanelManufacture extends TabPanel {
 	
 				result = builder.toString();
 			}
+			else if (columnIndex == NAME_COL) {
+				var item = queue.get(rowIndex);
+				result = item.getInfo().getName();
+			}
 			return result;
-		}
-
-		private void update(Settlement s) {
-			queue = new ArrayList<>(s.getManuManager().getQueue());
-			fireTableDataChanged();
 		}
 
 		@Override
 		public String getColumnName(int column) {
 			return switch(column) {
 				case NAME_COL -> "Process";
-				case SALVAGE_COL -> "Target";
+				case BONUS_COL -> "% Bonus";
 				case VALUE_COL -> "Value";
 				case AVAILABLE_COL -> "Resources";
 				default -> null;
@@ -364,8 +478,9 @@ public class TabPanelManufacture extends TabPanel {
 		@Override
 		public Class<?> getColumnClass(int column) {
 			return switch(column) {
-				case NAME_COL, SALVAGE_COL -> String.class;
+				case NAME_COL -> String.class;
 				case VALUE_COL -> Double.class;
+				case BONUS_COL -> Integer.class;
 				case AVAILABLE_COL -> Boolean.class;
 				default -> null;
 			};
@@ -378,14 +493,6 @@ public class TabPanelManufacture extends TabPanel {
 	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 
 		private static final int PROCESS_NAME_LENGTH = 70;
-		private String prompt;
-
-		/*
-		 * Set the text to display when no item has been selected.
-		 */
-		public ManufactureSelectionListCellRenderer(String prompt) {
-			this.prompt = prompt;
-		}
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -395,13 +502,9 @@ public class TabPanelManufacture extends TabPanel {
 				var pinfo = (ProcessInfo) value;
 				String processName = pinfo.getName();
 				if (processName.length() > PROCESS_NAME_LENGTH)
-					processName = processName.substring(0, PROCESS_NAME_LENGTH)
-							+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
+					processName = processName.substring(0, PROCESS_NAME_LENGTH) + "...";
 
 				result.setText(processName);
-			}
-			else {
-				setText(prompt);
 			}
 			return result;
 		}

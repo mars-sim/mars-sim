@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -29,7 +30,7 @@ public class ManufacturingManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public class QueuedProcess implements Serializable {
+    public static class QueuedProcess implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private ProcessInfo info;
@@ -42,6 +43,7 @@ public class ManufacturingManager implements Serializable {
             this.info = info;
             this.target = target;
             this.value = value;
+            this.value.addModifier(USER_BONUS, 1D); // Add the default bonus
             this.resourcesAvailable = resourcesAvailable;
         }
 
@@ -100,7 +102,7 @@ public class ManufacturingManager implements Serializable {
     private static final Integer DEFAULT_VALUE = 100;
     private static final Integer DEFAULT_ADD = 1;
     private static final Integer DEFAULT_QUEUE_SIZE = 10;
-    private static final String USER_BONUS = "user-bonus";
+    public static final String USER_BONUS = "user-bonus";
 
     private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
 
@@ -169,9 +171,17 @@ public class ManufacturingManager implements Serializable {
 
         // Select top value item
         var selected = startableByPri.get(0);
-        queue.remove(selected);
-
+        removeProcessFromQueue(selected);
         return selected;
+    }
+
+    /**
+     * Remove the process from the queue
+     * @param selected Process to remove
+     */
+    public void removeProcessFromQueue(QueuedProcess selected) {
+        queue.remove(selected);
+        owner.fireUnitUpdate(UnitEventType.MANU_QUEUE_REMOVE, selected);
     }
 
     /**
@@ -208,7 +218,7 @@ public class ManufacturingManager implements Serializable {
         synchronized(queue) {
             queue.add(newItem);
         }   
-        logger.info(owner, "Added new Process to queue " + newItem.getInfo().getName());
+        owner.fireUnitUpdate(UnitEventType.MANU_QUEUE_ADD, newItem);
     }
 
     /**
@@ -225,7 +235,11 @@ public class ManufacturingManager implements Serializable {
             var bonus = q.getValue().getModifiers().getOrDefault(USER_BONUS, 1D);
             newValue.addModifier(USER_BONUS, bonus);
             q.setValue(newValue);
-        }   
+        }  
+
+        if (!queue.isEmpty()) {
+            owner.fireUnitUpdate(UnitEventType.MANE_QUEUE_REFRESH);
+        }
     }
 
     /**
@@ -337,20 +351,24 @@ public class ManufacturingManager implements Serializable {
             RatingScore value = getProcessValue(p);
             
             if (value.getScore() > scoreThreshold) {
-                // Add
                 candidates.add(new ProcessValue(p, value));
             }
-            logger.info("Potential score " + p.getName() + " = " + value.getScore() + " (threshold " + scoreThreshold);
         }
 
         // Take the top N of what is left
         Collections.sort(candidates, Comparator.comparingDouble(ProcessValue::value));
         int added = Math.min(candidates.size(), maxProcesses);
         for(int i = 0; i < added; i++) {
-            addProcessToQueue(candidates.get(i).info());
+            var choosen = candidates.get(i);
+
+            // This info has resources otherwise would not be here
+            var newItem = new QueuedProcess(choosen.info, null, choosen.score, true);
+            addToQueue(newItem);
         }
 
-        logger.info(owner, "Automatically added " + name + ": added " + added + "/" + candidates.size());
+        if (added > 0) {
+            logger.info(owner, "Automatically added " + name + ": added " + added + "/" + candidates.size());
+        }
 
         return added;
     }

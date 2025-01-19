@@ -78,9 +78,6 @@ public class TabPanelOrganization extends TabPanel {
 
 	private DefaultTreeModel defaultTreeModel;
 
-//	private TreeTableModel treeTableModel; 
-//	private JTreeTable treeTable;
-
 	private DefaultMutableTreeNode crewNode;
 	private DefaultMutableTreeNode crewEngineerNode;
 	private DefaultMutableTreeNode crewScientistNode;
@@ -170,13 +167,13 @@ public class TabPanelOrganization extends TabPanel {
 
 		root = new DefaultMutableTreeNode("  " + settlement.getName() + "  -  " + settlement.getUnitType().getName() + "  ");
 
-		// Will figure out how to change font in ((DefaultMutableTreeNode) root.getParent()).getUserObject().setFont(labelFont);
+		// Will figure out how to change font in ((DefaultMutableTreeNode) root.getParent()).getUserObject().setFont(labelFont)
 		
 		defaultTreeModel = new DefaultTreeModel(root);
-		// Note : will allow changing role name in future : defaultTreeModel.addTreeModelListener(new MyTreeModelListener());
+		// Note : will allow changing role name in future : defaultTreeModel.addTreeModelListener(new MyTreeModelListener())
 		
 		tree = new JTree(defaultTreeModel);
-		// Note : will allow changing role name in future : tree.setEditable(true);
+		// Note : will allow changing role name in future : tree.setEditable(true)
 		
 		tree.getSelectionModel().setSelectionMode
 		        (TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -190,14 +187,6 @@ public class TabPanelOrganization extends TabPanel {
 		buildTreeNodes();
 
 		initNodes();
-		
-//		treeTableModel = OrganizationTreeTableModel.createModel(settlement); 
-//		
-//		treeTable = new JTreeTable(treeTableModel);
-//		
-//		JScrollPane scrollTreePane = new JScrollPane();
-//		scrollTreePane.setViewportView(treeTable);
-//		content.add(scrollTreePane, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -571,8 +560,8 @@ public class TabPanelOrganization extends TabPanel {
 	public void editIcons(JTree tree) {
 
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
-			private Icon personIcon = UIManager.getIcon("RadioButton.icon"); // OptionPane.errorIcon");
-			private Icon roleIcon = UIManager.getIcon("FileChooser.detailsViewIcon");// OptionPane.informationIcon");
+			private Icon personIcon = UIManager.getIcon("RadioButton.icon");
+			private Icon roleIcon = UIManager.getIcon("FileChooser.detailsViewIcon");
 			private Icon homeIcon = UIManager.getIcon("FileChooser.homeFolderIcon");
 
 			@Override
@@ -729,50 +718,10 @@ public class TabPanelOrganization extends TabPanel {
 	 * Prepares objects for garbage collection.
 	 */
 	@Override
-	public void destroy() {
-		super.destroy();
-		
+	public void destroy() {		
 		UnitManager unitManager = getSimulation().getUnitManager();
 		unitManager.removeUnitManagerListener(UnitType.PERSON, unitManagerListener);
-		
-		// take care to avoid null exceptions
-		settlement = null;
-		tree = null;
-		root = null;
-		roles = null;
-		nodes = null;
-		listeners = null;
-		unitManagerListener = null;
-		
-		defaultTreeModel = null;
-		commanderStaffNode = null;
-		commanderNode = null;
-		subCommanderNode = null;
-		divisionNode = null;
-		mayorNode = null;
-		agricultureNode = null;
-		agricultureSpecialistNode = null;
-		agricultureChiefNode = null;
-		computingNode = null;
-		computingSpecialistNode = null;
-		computingChiefNode = null;
-		engineeringNode = null;
-		engineeringSpecialistNode = null;
-		engineeringChiefNode = null;
-		logisticNode = null;
-		logisticSpecialistNode = null;
-		logisticChiefNode = null;
-		missionNode = null;
-		missionSpecialistNode = null;
-		missionChiefNode = null;
-		safetyNode = null;
-		safetySpecialistNode = null;
-		safetyChiefNode = null;
-		scienceNode = null;
-		scienceSpecialistNode = null;
-		scienceChiefNode = null;
-		supplyNode = null;
-		supplySpecialistNode = null;
-		supplyChiefNode = null;
+
+		super.destroy();
 	}
 }

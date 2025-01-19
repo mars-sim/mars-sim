@@ -123,13 +123,16 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
      * @param value
      */
     public void addModifier(String name, double value) {
+        modifiers.put(name, value);
+
         if (modifiers.containsKey(name)) {
+            // Recalculate the score
             calculateScore();
         }
         else {
+            // New modifier so just apply multipler
             score *= value;
         }
-        modifiers.put(name, value);
     }
     
     /**
