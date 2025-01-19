@@ -263,10 +263,10 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	@Override
 	public void unitUpdate(UnitEvent e) {
 		switch(e.getType()) {
-			case MANU_QUEUE_ADD: queueModel.addItem((QueuedProcess) e.getTarget()); break;
-			case MANU_QUEUE_REMOVE: queueModel.removeItem((QueuedProcess) e.getTarget()); break;
-			case MANE_QUEUE_REFRESH: queueModel.refresh(); break;
-			default:
+			case MANU_QUEUE_ADD -> queueModel.addItem((QueuedProcess) e.getTarget());
+			case MANU_QUEUE_REMOVE -> queueModel.removeItem((QueuedProcess) e.getTarget());
+			case MANE_QUEUE_REFRESH -> queueModel.refresh();
+			default -> { /* Ignore */ }
 		}
 	}
 
