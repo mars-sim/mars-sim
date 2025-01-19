@@ -28,8 +28,6 @@ extends TableTab {
 		// Use TableTab constructor
 		super(window, model, mandatory, false, icon);
 
-		adjustColumnWidth(table);
-
 		setEntityDriven(true);
 		setNavigatable(true);
 	}

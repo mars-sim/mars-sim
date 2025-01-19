@@ -31,27 +31,30 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.tool.NumberRenderer;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
- * displays the contents of a UnitTableModel in a WebTable window. It supports
+ * displays the contents of a MonutorTableModel in a Table window. It supports
  * the selection and deletion of rows.
  */
-@SuppressWarnings("serial")
-abstract class TableTab extends MonitorTab {
+public class TableTab extends MonitorTab {
 
-	protected static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0, true);
-	protected static final NumberCellRenderer DIGIT1_RENDERER = new NumberCellRenderer(1, true);
-	protected static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2, true);
-	protected static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3, true);
-	protected static final MarsTimeCellRenderer TIME_RENDERER = new MarsTimeCellRenderer();
+	// Common shared renderers
+	private static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0, true);
+	private static final NumberCellRenderer DIGIT1_RENDERER = new NumberCellRenderer(1, true);
+	private static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2, true);
+	private static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3, true);
+	private static final MarsTimeCellRenderer TIME_RENDERER = new MarsTimeCellRenderer();
+	private static final NumberCellRenderer CURRENCY_RENDERER = new NumberCellRenderer(2, "$");
 
 	private TableProperties propsWindow;
 
 	/** Table component. */
-	protected JTable table;
+	private JTable table;
 	private boolean widthAdjusted = false;
 	private int settlementColumnId;
 	private TableColumn savedSettlementColumn;
@@ -70,7 +73,6 @@ abstract class TableTab extends MonitorTab {
 
 		settlementColumnId = model.getSettlementColumn();
 		
-		// Simple WebTable
 		this.table = new JTable(model) {
             @Override
             public String getToolTipText(MouseEvent e) {
@@ -83,6 +85,26 @@ abstract class TableTab extends MonitorTab {
 		this.table.setDefaultRenderer(Double.class, DIGIT1_RENDERER);
 		this.table.setDefaultRenderer(Number.class, DIGIT2_RENDERER);
 		this.table.setDefaultRenderer(MarsTime.class, TIME_RENDERER);
+
+		// Check for special styles
+		var colModel = table.getColumnModel();
+		for(int colId = 0; colId < model.getColumnCount(); colId++) {
+			var col = colModel.getColumn(colId);
+
+			// Use the model index to handle the table hiding or reordering columns
+			var style = model.getColumnStyle(col.getModelIndex());
+
+			TableCellRenderer renderer = switch(style) {
+				case ColumnSpec.STYLE_CURRENCY -> CURRENCY_RENDERER;
+				case ColumnSpec.STYLE_INTEGER -> NumberRenderer.getIntegerRenderer();
+				case ColumnSpec.STYLE_DIGIT1 -> DIGIT1_RENDERER;
+				case ColumnSpec.STYLE_DIGIT2 -> DIGIT2_RENDERER;
+				case ColumnSpec.STYLE_DIGIT3 -> DIGIT3_RENDERER;
+				default -> null;
+			};
+			if (renderer != null)
+				col.setCellRenderer(renderer);
+		}
 
 		// call it a click to display details button when user double clicks the table
 		table.addMouseListener(new MouseAdapter() {
@@ -120,7 +142,7 @@ abstract class TableTab extends MonitorTab {
 		return table;
 	}
 
-	public static void adjustColumnWidth(JTable table) {
+	private static void adjustColumnWidth(JTable table) {
 		// Gets max width for cells in column as the preferred width
 		TableColumnModel columnModel = table.getColumnModel();
 		for (int col = 0; col < table.getColumnCount(); col++) {
@@ -204,15 +226,6 @@ abstract class TableTab extends MonitorTab {
 		}
 
 		return selectedRows;
-	}
-
-	/**
-	 * Removes this tab.
-	 */
-	@Override
-	public void removeTab() {
-		super.removeTab();
-		table = null;
 	}
 
 	protected void setSettlementColumnIndex(int idx) {

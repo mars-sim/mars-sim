@@ -69,4 +69,11 @@ interface MonitorModel extends ToolTipTableModel {
 	 */
 	public void destroy();
 
+	/**
+	 * Get any defined style for this value.
+	 * @param modelIndex the index of the column.
+	 * @return see ColumnSpec for the style.
+	 */
+    public int getColumnStyle(int modelIndex);
+
 }

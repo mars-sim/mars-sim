@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,7 +62,7 @@ import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
  */
 @SuppressWarnings("serial")
 public class MonitorWindow extends ToolWindow
-			implements ConfigurableWindow, TableModelListener, ActionListener{
+			implements ConfigurableWindow, TableModelListener{
 
 	private static class SelectionComparator implements Comparator<Entity> {
 
@@ -97,9 +95,11 @@ public class MonitorWindow extends ToolWindow
 	private static final String BOT_ICON = "robot";
 	private static final String VEHICLE_ICON = "vehicle";
 	private static final String CROP_ICON = "crop";
+	private static final String FOOD_ICON = "food";
+	private static final String TRADE_ICON = "trade";
 	private static final String PEOPLE_ICON = "people";
 	private static final String BUILDING_ICON = "building"; 
-
+	private static final String TASK_ICON = "task";
 	private static final String TRASH_ICON = "action/trash";
 	private static final String LOCATE_ICON = "action/locate";
 	private static final String DETAILS_ICON = "details";
@@ -122,8 +122,7 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonMap;
 	private JButton buttonDetails;
 	private JButton buttonFilter;
-	private JButton buttonProps;
-	
+		
 	private JCheckBox deceasedBox;
 	/** Selection Combo box */
 	private JComboBox<Entity> selectionCombo;
@@ -136,7 +135,7 @@ public class MonitorWindow extends ToolWindow
 
 	private UnitManagerListener umListener;
 
-	private MonitorTab previousTab;
+	private MonitorTab activeTab;
 
 	private Map<Authority,Set<Settlement>> authorities;
 
@@ -245,10 +244,12 @@ public class MonitorWindow extends ToolWindow
 		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
 		newTabs.add(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
 		
-		newTabs.add(new FoodInventoryTab(this));
-		newTabs.add(new BacklogTab(this));
+		newTabs.add(new TableTab(this, new FoodInventoryTableModel(), true, false, FOOD_ICON));
+
+		newTabs.add(new TableTab(this, new BacklogTableModel(), true, false, TASK_ICON));
 		
-		newTabs.add(new TradeTab(this));
+		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
+
 		
 		eventsTab = new EventTab(this, desktop);
 		newTabs.add(eventsTab);
@@ -268,6 +269,7 @@ public class MonitorWindow extends ToolWindow
 	 * Adds the bottom bar.
 	 */
 	private void addBottomBar() {
+  JButton buttonProps;
 		// Prepare row count label
 		rowCount = new JLabel("  ");
 		rowCount.setPreferredSize(new Dimension(120, STATUS_HEIGHT));
@@ -278,38 +280,38 @@ public class MonitorWindow extends ToolWindow
 		// Create graph button
 		buttonPie = new JButton(ImageLoader.getIconByName(PieChartTab.ICON));
 		buttonPie.setToolTipText(Msg.getString("MonitorWindow.tooltip.singleColumnPieChart")); //$NON-NLS-1$
-		buttonPie.addActionListener(this);
+		buttonPie.addActionListener(e -> createPieChart());
 		statusPanel.add(buttonPie);
 
 		buttonBar = new JButton(ImageLoader.getIconByName(BarChartTab.ICON));
 		buttonBar.setToolTipText(Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart")); //$NON-NLS-1$
-		buttonBar.addActionListener(this);
+		buttonBar.addActionListener(e ->createBarChart());
 		statusPanel.add(buttonBar);
 
 		buttonRemoveTab = new JButton(ImageLoader.getIconByName(TRASH_ICON)); // $NON-NLS-1$
 		buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
-		buttonRemoveTab.addActionListener(this);
+		buttonRemoveTab.addActionListener(e -> removeSelectedTab());
 		statusPanel.add(buttonRemoveTab);
 
 		// Create buttons based on selection
 		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
 		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
-		buttonMap.addActionListener(this);
+		buttonMap.addActionListener(e -> centerMap());
 		statusPanel.add(buttonMap);
 
 		buttonDetails = new JButton(ImageLoader.getIconByName(DETAILS_ICON)); // $NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
-		buttonDetails.addActionListener(this);
+		buttonDetails.addActionListener(e -> displayDetails());
 		statusPanel.add(buttonDetails);
 
 		buttonProps = new JButton(ImageLoader.getIconByName(COLUMN_ICON)); // $NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
-		buttonProps.addActionListener(this);
+		buttonProps.addActionListener(e -> displayProps());
 		statusPanel.add(buttonProps);
 
 		buttonFilter = new JButton(ImageLoader.getIconByName(FILTER_ICON));
 		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
-		buttonFilter.addActionListener(this);
+		buttonFilter.addActionListener(e -> filterCategories());
 		statusPanel.add(buttonFilter);
 
 		statusPanel.add(new JSeparator(SwingConstants.VERTICAL));
@@ -318,7 +320,7 @@ public class MonitorWindow extends ToolWindow
 		deceasedBox = new JCheckBox("Show Deceased", true);
 		deceasedBox.setBorder(BorderFactory.createLoweredBevelBorder());
 		deceasedBox.setToolTipText("Display or hide the deceased personnel in the settlement"); //$NON-NLS-1$
-		deceasedBox.addActionListener(this);
+		deceasedBox.addActionListener(e -> displayDeceased());
 		statusPanel.add(deceasedBox);
 	}
 
@@ -564,11 +566,11 @@ public class MonitorWindow extends ToolWindow
 
 		// Configure the listeners
 		boolean activiateListeners = true;
-		if (previousTab != null) {
-			MonitorModel previousModel = previousTab.getModel();
+		if (activeTab != null) {
+			MonitorModel previousModel = activeTab.getModel();
 
 			// If a different tab then activate listeners
-			activiateListeners = !(previousTab.equals(selectedTab));
+			activiateListeners = !(activeTab.equals(selectedTab));
 			if (activiateListeners) {
 				previousModel.setMonitorEntites(false);
 			}
@@ -582,7 +584,7 @@ public class MonitorWindow extends ToolWindow
 
 		// Listener for row changes
 		tabTableModel.addTableModelListener(this);
-		previousTab = selectedTab;
+		activeTab = selectedTab;
 
 		// Update the row count label with new numbers
 		rowCount.setText(selectedTab.getCountString());
@@ -618,22 +620,14 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * Retires a tab from Monitor Tool.
-	 *
-	 * @param tab
-	 */
-	private void retireTab(MonitorTab tab) {
-		tabsSection.remove(tab);
-		tab.removeTab();
-	}
-
-	/**
 	 * Removes a tab from Monitor Tool.
 	 *
 	 * @param oldTab
 	 */
 	private void removeTab(MonitorTab oldTab) {
-		retireTab(oldTab);
+		tabsSection.remove(oldTab);
+		oldTab.removeTab();
+
 		if (getSelectedTab() == oldTab) {
 			tabsSection.setSelectedIndex(0);
 			// Update the row count label
@@ -676,46 +670,27 @@ public class MonitorWindow extends ToolWindow
 		}
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if (source == this.buttonPie) {
-			createPieChart();
-		} else if (source == this.buttonBar) {
-			createBarChart();
-		} else if (source == this.buttonRemoveTab) {
-			MonitorTab selected = getSelectedTab();
-			if (selected != null && !selected.isMandatory()) {
-				removeTab(getSelectedTab());
-			}
-		} else if (source == this.buttonDetails) {
-			displayDetails();
-		} else if (source == this.buttonMap) {
-			centerMap();
-		} else if (source == this.buttonProps) {
-			displayProps();
-		} else if (source == this.buttonFilter) {
-			filterCategories();
-		} else if (source == this.deceasedBox) {
-			displayDeceased(e);
+	/**
+	 * Remove selected tab
+	 */
+	private void removeSelectedTab() {
+		MonitorTab selected = getSelectedTab();
+		if (selected != null && !selected.isMandatory()) {
+			removeTab(getSelectedTab());
 		}
 	}
 
 	/**
 	 * Displays or hides the deceased personnel.
-	 * 
-	 * @param e
 	 */
-	private void displayDeceased(ActionEvent e) {
-		if (e.getID() == ActionEvent.ACTION_PERFORMED) {
-			boolean isCheck = deceasedBox.isSelected();
-			MonitorTab selectedTab = getSelectedTab();
-			MonitorModel tabTableModel = selectedTab.getModel();
-			if (tabTableModel instanceof PersonTableModel model) {
-				model.modifyPersonnel(isCheck);
-				// refresh the tab
-				selectNewTab(selectedTab);
-			}
+	private void displayDeceased() {
+		boolean isCheck = deceasedBox.isSelected();
+		MonitorTab selectedTab = getSelectedTab();
+		MonitorModel tabTableModel = selectedTab.getModel();
+		if (tabTableModel instanceof PersonTableModel model) {
+			model.modifyPersonnel(isCheck);
+			// refresh the tab
+			selectNewTab(selectedTab);
 		}
 	}
 		
@@ -729,10 +704,6 @@ public class MonitorWindow extends ToolWindow
 		result.setProperty(SETTLEMENT_PROP, e.getName());
 		result.setProperty(TAB_PROP, getSelectedTab().getName());
 		return result;
-	}
-
-	public boolean isDeceasedCheck() {
-		return deceasedBox.isSelected();
 	}
 	
 	private class SelectionComboRenderer extends JLabel implements

@@ -59,7 +59,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", Integer.class);
 		COLUMNS[EVA_COL]  = new ColumnSpec("EVA", String.class);
 		COLUMNS[SCOPE_COL]  = new ColumnSpec("Scope", String.class);
-		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class);
+		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class, ColumnSpec.STYLE_DIGIT1);
 	}
 
 	private Set<Settlement> selectedSettlements = Collections.emptySet();
