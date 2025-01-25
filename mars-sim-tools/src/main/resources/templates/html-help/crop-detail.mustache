@@ -22,13 +22,13 @@
           <th>Growing %</th>
           </tr>
         </thead>
-      {{#crop.phases}}
+      {{#crop.cropCategory.phases}}
         <tr>
           <td>{{phaseType.getName}}</td>
           <td>{{workRequired}}</td>
           <td>{{percentGrowth}}</td>
         </tr>
-      {{/crop.phases}}
+      {{/crop.cropCategory.phases}}
       </table>
     </div>
     </br>

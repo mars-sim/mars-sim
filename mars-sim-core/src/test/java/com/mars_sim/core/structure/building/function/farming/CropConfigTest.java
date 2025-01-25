@@ -12,6 +12,44 @@ public class CropConfigTest extends AbstractMarsSimUnitTest {
 
     }
 
+    public void testFungi() {
+        testCropCategory("Fungi",7,  false);
+    }
+
+    public void testBulbs() {
+        testCropCategory("Bulbs",9,  true);
+    }
+
+    private void testCropCategory(String name, int numPhases, boolean needsLight) {
+                        
+        var config = getConfig().getCropConfiguration();
+        var cat = config.getCropCategories().stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
+
+        assertNotNull(name + " found", cat);
+        assertEquals("Name", name, cat.getName());
+        assertEquals(name + " needs light", needsLight, cat.needsLight());
+        assertEquals(name + " phsaes", numPhases, cat.getPhases().size());
+
+        double total = 0;
+        var phases = cat.getPhases();
+        for(int i = 0; i < phases.size(); i++) {
+            var phase = phases.get(i);
+            total += phase.getPercentGrowth();
+            assertEquals(phase.getPhaseType() + " cummulatiive growth", total,
+                    phase.getCumulativePercentGrowth(), 0.0001);
+
+            var nextPhase = cat.getNextPhase(phase);
+            if (i == (phases.size() - 1)) {
+                // Last phase so next phase should be null
+                assertNull("Next phase at last phase", nextPhase);
+            }
+            else {
+                assertEquals("Next phase", phases.get(i+1), nextPhase);
+            }
+
+        }
+    }
+
     public void testGetCropTypes() {
         var config = getConfig().getCropConfiguration();
 
@@ -19,25 +57,23 @@ public class CropConfigTest extends AbstractMarsSimUnitTest {
     }
 
     public void testGarlic() {
-        testCropSpec("Garlic", CropCategory.BULBS, 9, 85);
+        testCropSpec("Garlic", "Bulbs", 85);
     }
 
     public void testRice() {
-        testCropSpec("Rice", CropCategory.GRAINS, 11, 100);
+        testCropSpec("Rice", "Grains", 100);
     }
 
 
-    private void testCropSpec(String name, CropCategory category, int numPhases, int growingSols) {
+    private void testCropSpec(String name, String category, int growingSols) {
                         
         var config = getConfig().getCropConfiguration();
+        var cat = config.getCropCategories().stream().filter(v -> v.getName().equals(category)).findFirst().orElse(null);
 
         var spec = config.getCropTypeByName(name);
         assertNotNull(name + " found", spec);
         assertEquals("Name", name, spec.getName());
-        assertEquals(name + " category", category, spec.getCropCategory());
+        assertEquals(name + " category", cat, spec.getCropCategory());
         assertEquals(name + " growing sols", growingSols, spec.getGrowingSols());
-        assertEquals(name + " phases", numPhases, spec.getPhases().size());
-
-
     }
 }

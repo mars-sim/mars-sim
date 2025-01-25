@@ -604,16 +604,23 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 		private Farming farm;
 		private List<Crop> crops;	
-		private Icon redHalfDot;
-		private Icon redOneQuarterDot;
-		private Icon yellowHalfDot;
-		private Icon greenDot;
-		private Icon greenThreeQuarterDot;
-		private Icon greenHalfDot;
+		private static Icon redHalfDot;
+		private static Icon redOneQuarterDot;
+		private static Icon yellowHalfDot;
+		private static Icon greenDot;
+		private static Icon greenThreeQuarterDot;
+		private static Icon greenHalfDot;
 
 		private CropTableModel(Farming farm) {
 			this.farm = farm;
 			crops = farm.getCrops();
+			loadIcons();
+		}
+
+		private static void loadIcons() {
+			if (redHalfDot != null)
+				return;
+				
 			redHalfDot = ImageLoader.getIconByName("dot/red_half");
 			redOneQuarterDot = ImageLoader.getIconByName("dot/red_one_quarter");
 			yellowHalfDot = ImageLoader.getIconByName("dot/yellow_half");

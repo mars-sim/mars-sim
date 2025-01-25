@@ -281,7 +281,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			else {
 				phaseType = PhaseType.INCUBATION;
-				currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired() * (100D - tissuePercent) / 100D;
+				currentPhaseWorkCompleted = 1000D * cropSpec.getCropCategory().getPhase(phaseType).getWorkRequired() * (100D - tissuePercent) / 100D;
 				logger.info(this, "A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
 								+ " sols is needed to clone enough tissues before planting.");
@@ -296,12 +296,18 @@ public class Crop implements Comparable<Crop>, Entity {
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 
 			// Fast track through the phases
-			phaseType = PhaseType.INCUBATION;
-			while (percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
-				phaseType = cropSpec.getNextPhaseType(phaseType);
+			var category = cropSpec.getCropCategory();
+			var phases = category.getPhases();
+			Phase startingPhase = null;
+			for(Phase phase : phases) {
+				if (phase.getCumulativePercentGrowth() > percentageGrowth) {
+					startingPhase = phase;
+					break;
+				}
 			}
 
-			currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired();
+			phaseType = startingPhase.getPhaseType();
+			currentPhaseWorkCompleted = 1000D * startingPhase.getWorkRequired();
 					
 			// Future: how to allow crops such as cilantro to be harvested early to collect leaves, 
 			// instead of waiting for seeds (coriander) to be matured ?
@@ -321,7 +327,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param phaseType
 	 */
 	private void updatePhase(PhaseType phaseType) {
-		currentPhase = cropSpec.getPhase(phaseType);
+		currentPhase = cropSpec.getCropCategory().getPhase(phaseType);
 	}
 
 	/**
@@ -467,11 +473,10 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @return condition as value from 0 (poor) to 1 (healthy)
 	 */
 	private double trackHealth() {
-		double health = 0D;
+		double health;
 
 		switch(currentPhase.getPhaseType()) {
-		case INCUBATION:
-		case PLANTING:
+		case INCUBATION, PLANTING:
 			health = 1D;
 			break;
 
@@ -544,14 +549,11 @@ public class Crop implements Comparable<Crop>, Entity {
 		double health = 0;
 		double total = 0;
 		int size = environmentalFactor.length;
+		boolean needsLight = cropSpec.needsLight();
 		for (int i=0; i< size; i++) {
-			if (cropSpec.getCropCategory() == CropCategory.FUNGI) {
-				if (i == LIGHT_FACTOR)
-					total = total + 1;
-				else
-					total = total + environmentalFactor[i];
+			if (!needsLight && (i == LIGHT_FACTOR)) {
+					total = total + 1;  // Ignore environmental factor
 			}
-
 			else {
 				total = total + environmentalFactor[i];
 			}
@@ -611,8 +613,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		// Only do phases that need manual work
 		PhaseType phaseType = currentPhase.getPhaseType();
 		switch (phaseType) {
-		case INCUBATION:
-		case PLANTING:
+		case INCUBATION, PLANTING:
 			// At a particular growing phase (NOT including the harvesting phase)
 			currentPhaseWorkCompleted += modTime;
 			
@@ -625,8 +626,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			}
 			break;
 
-		case MATURATION:
-		case HARVESTING:
+		case MATURATION, HARVESTING:
 			// at the maturation or harvesting phase
 			currentPhaseWorkCompleted += modTime;
 			// Set the harvest multiplier
@@ -709,7 +709,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * Advances the crop to the next phase of growth.
 	 */
 	private void advancePhase() {
-		currentPhase = cropSpec.getNextPhase(currentPhase);
+		currentPhase = cropSpec.getCropCategory().getNextPhase(currentPhase);
 		currentPhaseWorkCompleted = 0;
 	}
 	
@@ -749,7 +749,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			store(cropWaste, CROP_WASTE_ID);
 		}
 
-		if (cropSpec.getCropCategory() == CropCategory.LEAVES) {
+		if (cropSpec.getCropCategory().getName().equalsIgnoreCase("Leaves")) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
 				store(leaves, ResourceUtil.leavesID);
@@ -772,8 +772,7 @@ public class Crop implements Comparable<Crop>, Entity {
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
 
-		PhaseType phaseType = currentPhase.getPhaseType();
-		if (phaseType == PhaseType.FINISHED) {
+		if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
 			return false;
 		}
 
@@ -799,7 +798,8 @@ public class Crop implements Comparable<Crop>, Entity {
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 			
 			// Right before the harvesting phase
-			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
+			if (currentPhase.getPhaseType() != PhaseType.HARVESTING
+					&& percentageGrowth > currentPhase.getCumulativePercentGrowth()) {
 				// Advance onto the next phase
 				advancePhase();
 			}
@@ -847,7 +847,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param pulse
 	 * @return
 	 */
-	public boolean resetEndOfSol(ClockPulse pulse) {
+	private boolean resetEndOfSol(ClockPulse pulse) {
 		if (pulse.isNewSol()) {
 
 			// Note: is it better off doing the actualHarvest computation once a day or

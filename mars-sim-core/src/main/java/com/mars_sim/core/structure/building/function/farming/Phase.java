@@ -21,11 +21,14 @@ public class Phase implements Serializable {
 	 /** The work needed [in sols] at this phase. */
 	private double workRequired;
 	private double percentGrowth;
+	private double totalGrowth;
 
-	public Phase(PhaseType phaseType, double workRequired, double percentGrowth) {
+
+	public Phase(PhaseType phaseType, double workRequired, double percentGrowth, double totalGrowth) {
 		this.phaseType = phaseType;
 		this.workRequired = workRequired;
 		this.percentGrowth = percentGrowth;
+		this.totalGrowth = totalGrowth;
 	}
 
 	public double getWorkRequired() {
@@ -35,6 +38,10 @@ public class Phase implements Serializable {
 	public double getPercentGrowth() {
 		return percentGrowth;
 	}
+
+	public double getCumulativePercentGrowth() {
+		return totalGrowth;
+	}	
 
 	public PhaseType getPhaseType() {
 		return phaseType;

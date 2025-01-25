@@ -7,7 +7,6 @@
 package com.mars_sim.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -22,8 +21,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	// Data members
 	/** Is this a seed only? */
 	private boolean seedOnly;
-	/** The number of phases. */	
-	private int numPhases;
 	/** The crop id. */
 	private int cropID;
 	/** The seed id. */
@@ -44,9 +41,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 								// between 400 to 700 nm
 
 	private String name;
-	
-	/** The phenological phases of this crop. */
-	private List<Phase> phases = null;
+
 	/** The category of this crop. */
 	private CropCategory cropCategory;
 
@@ -60,13 +55,12 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @param edibleWaterContent
 	 * @param inedibleBiomass
 	 * @param dailyPAR
-	 * @param phases a list of phases
 	 * @param seedName
 	 * @param seedOnly
 	 */
 	CropSpec(String name, int growingSols, CropCategory cropCategory, 
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
-			List<Phase> phases, String seedName, boolean seedOnly) {
+			String seedName, boolean seedOnly) {
 
 		this.name = name;
 		this.growingSols = growingSols;
@@ -75,8 +69,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		this.edibleWaterContent = edibleWaterContent;
 		this.inedibleBiomass = inedibleBiomass;
 		this.dailyPAR = dailyPAR;
-		this.phases = phases;
-		this.numPhases = phases.size();
 		this.cropID = ResourceUtil.findIDbyAmountResourceName(name);
 		if (seedName != null) {
 			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);
@@ -101,13 +93,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	public int getCropID() {
 		return cropID;
 	}
-
-	/** 
-	 * Get the growing phases
-	 */
-	public List<Phase> getPhases() {
-		return phases;
-	}	
 
 	/**
 	 * Gets the Resource ID assigned to the seed of the crop.
@@ -179,76 +164,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	public double getDailyPAR() {
 		return dailyPAR;
 	}
-
-	/**
-	 * Gets the next phase in the growing sequence.
-	 * 
-	 * @param phaseType
-	 * @return
-	 */
-	public Phase getNextPhase(Phase currentPhase) {
-		int nextId = 1;
-
-		PhaseType target = currentPhase.getPhaseType();
-		for (Phase entry : phases) {
-			if (entry.getPhaseType() == target) {
-				return phases.get(nextId);
-			}
-			if (nextId < numPhases)
-				nextId++;
-		}
-		return null;
-	}
 	
-	/**
-	 * Gets the next phase in the growing sequence.
-	 * 
-	 * @param phaseType
-	 * @return
-	 */
-	public PhaseType getNextPhaseType(PhaseType phaseType) {
-		int nextId = 1;
-
-		for (Phase entry : phases) {
-			if (entry.getPhaseType() == phaseType) {
-				return phases.get(nextId).getPhaseType();
-			}
-			if (nextId < numPhases)
-				nextId++;
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the Phase for a specific PhaseType.
-	 * 
-	 * @param phaseType
-	 * @return
-	 */
-	public Phase getPhase(PhaseType phaseType) {
-		for (Phase entry : phases) {
-			if (entry.getPhaseType() == phaseType) {
-				return entry;
-			}
-		}
-		throw new IllegalArgumentException("Phase type " + phaseType.getName() + " is not support in " + name);
-	}
-
-	/**
-	 * Gets the starting percentage of the specified phase.
-	 * 
-	 * @param phaseType
-	 * @return
-	 */
-	public double getNextPhasePercentage(PhaseType phaseType) {
-		double result = 0;
-		for (Phase p : phases) {
-			result += p.getPercentGrowth();
-			if (p.getPhaseType() == phaseType)
-				return result;
-		}
-		return result;
-	}
+	
 
 	/**
 	 * Does this crop need light ?
@@ -256,7 +173,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @return
 	 */
 	public boolean needsLight() {
-		return (cropCategory != CropCategory.FUNGI);
+		return cropCategory.needsLight();
 	}
 
 	/**

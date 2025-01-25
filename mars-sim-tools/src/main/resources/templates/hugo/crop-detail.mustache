@@ -20,8 +20,8 @@ hide_summary: true
 
 | Phase           | Work (milliSols) | Growing % |
 |-----------|------:|--------:|
-{{#crop.phases}}
+{{#crop.cropCategory.phases}}
 |{{phaseType.getName}}|{{workRequired}}|{{percentGrowth}}|
-{{/crop.phases}}
+{{/crop.cropCategory.phases}}
 
 {{>footer}}

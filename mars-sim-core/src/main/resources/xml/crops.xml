@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE crop-configuration [
-	<!ELEMENT crop-configuration (carbon-dioxide-consumption-rate, oxygen-consumption-rate, water-consumption-rate, watt-to-photon-conversion-ratio, crop-list)>
+	<!ELEMENT crop-configuration (carbon-dioxide-consumption-rate, oxygen-consumption-rate, water-consumption-rate, watt-to-photon-conversion-ratio, category-list, crop-list)>
 	<!ELEMENT carbon-dioxide-consumption-rate EMPTY>
 	<!ATTLIST carbon-dioxide-consumption-rate value CDATA #REQUIRED>
 	<!ELEMENT oxygen-consumption-rate EMPTY>
@@ -9,6 +9,18 @@
 	<!ATTLIST water-consumption-rate value CDATA #REQUIRED>
 	<!ELEMENT watt-to-photon-conversion-ratio EMPTY>
 	<!ATTLIST watt-to-photon-conversion-ratio value CDATA #REQUIRED>
+
+	<!ELEMENT category-list (crop*)>
+	<!ELEMENT category (phase*)>
+	<!ATTLIST category name CDATA #REQUIRED>
+	<!ATTLIST category description CDATA #REQUIRED>
+	<!ATTLIST category needs-light CDATA #IMPLIED>
+
+	<!ELEMENT phase EMPTY>
+	<!ATTLIST phase name CDATA #REQUIRED>
+	<!ATTLIST phase work-required CDATA #REQUIRED>
+	<!ATTLIST phase growth-perc CDATA #REQUIRED>
+
 	<!ELEMENT crop-list (crop*)>
 	<!ELEMENT crop EMPTY>
 	<!ATTLIST crop name CDATA #REQUIRED>
@@ -73,6 +85,159 @@
     <!-- Default: 4.568 on Mar [in u mol / m2 /s / (W m^2)] (vs. 4.609 on Earth-->
 	<watt-to-photon-conversion-ratio value="4.568" />
 
+	<category-list>
+		<category name="Roots" description="Roots are the underground part of a plant that absorbs water and minerals from the soil.">	
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="SPROUTING" work-required="1" growth-perc="5" />
+			<phase name="LEAF_DEVELOPMENT" work-required="1" growth-perc="39" />
+			<phase name="ROOT_DEVELOPMENT" work-required="1" growth-perc="40" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Grasses" description="Grasses are monocotyledonous, usually herbaceous plants with narrow leaves growing from the base.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="TILLERING" work-required="1" growth-perc="39" />
+			<phase name="GRAND_GROWTH" work-required="1" growth-perc="40" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Grains" description="Grains are small, hard, dry seeds, with or without attached hulls or fruit layers, harvested for human or animal consumption.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="9" />
+			<phase name="TILLERING" work-required="1" growth-perc="20" />
+			<phase name="STEM_ELONGATION" work-required="1" growth-perc="15" />
+			<phase name="FLOWERING" work-required="1" growth-perc="20" />
+			<phase name="MILK_DEVELOPMENT" work-required="1" growth-perc="10" />
+			<phase name="DOUGH_DEVELOPING" work-required="1" growth-perc="10" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Bulbs" description="Bulbs are a short stem with fleshy leaves or leaf bases that function as food storage organs during dormancy.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="SPROUTING" work-required="1" growth-perc="5" />
+			<phase name="POST_EMERGENCE" work-required="1" growth-perc="15" />
+			<phase name="LEAFING" work-required="1" growth-perc="29" />
+			<phase name="BULB_INITIATION" work-required="1" growth-perc="35" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Corms" description="Corms are a short, vertical, swollen underground plant stem that serves as a storage organ used by some plants to survive winter or other adverse conditions.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="SPROUTING" work-required="1" growth-perc="20" />
+			<phase name="VEGETATIVE_DEVELOPMENT" work-required="1" growth-perc="20" />
+			<phase name="FLOWERING" work-required="1" growth-perc="15" />
+			<phase name="REPLACEMENT_CORMS_DEVELOPMENT" work-required="1" growth-perc="30" />
+			<phase name="ANTHESIS" work-required="1" growth-perc="9" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Fruits" description="Fruits are the mature ovary of a flowering plant, usually containing seeds.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="VEGETATIVE_DEVELOPMENT" work-required="1" growth-perc="30" />
+			<phase name="FLOWERING" work-required="1" growth-perc="25" />
+			<phase name="FRUITING" work-required="1" growth-perc="24" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Herbs" description="Herbs are plants with savory or aromatic properties that are used for flavoring and garnishing food, medicinal purposes, or for fragrances.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="9" />
+			<phase name="FOLIAGE" work-required="1" growth-perc="50" />
+			<phase name="FLOWERING" work-required="1" growth-perc="20" />
+			<phase name="SEED_FILL" work-required="1" growth-perc="5" />
+			<phase name="POD_MATURING" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Leaves" description="Leaves are the main organs of photosynthesis and transpiration in higher plants.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="POST_EMERGENCE" work-required="1" growth-perc="5" />
+			<phase name="HEAD_DEVELOPMENT" work-required="1" growth-perc="39" />
+			<phase name="FIFTY_PERCENT_HEAD_SIZE_REACHED" work-required="1" growth-perc="35" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Legumes" description="Legumes are plants that bear fruit in the form of pods enclosing the seeds.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="LEAFING" work-required="1" growth-perc="30" />
+			<phase name="FLOWERING" work-required="1" growth-perc="25" />
+			<phase name="SEED_FILL" work-required="1" growth-perc="20" />
+			<phase name="POD_MATURING" work-required="1" growth-perc="14" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Stems" description="Stems are the main body or stalk of a plant or shrub, typically rising above ground but occasionally subterranean.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="EARLY_VEGETATIVE" work-required="1" growth-perc="15" />
+			<phase name="MID_VEGETATIVE" work-required="1" growth-perc="15" />
+			<phase name="STEM_ELONGATION" work-required="1" growth-perc="34" />
+			<phase name="EARLY_BULKING_UP" work-required="1" growth-perc="10" />
+			<phase name="MID_BULKING_UP" work-required="1" growth-perc="10" />
+			<phase name="LATE_BULKING_UP" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Tubers" description="Tubers are the thickened part of an underground stem or rhizome that stores nutrients.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="SPROUTING" work-required="1" growth-perc="10" />
+			<phase name="LEAF_DEVELOPMENT" work-required="1" growth-perc="15" />
+			<phase name="TUBER_INITIATION" work-required="1" growth-perc="20" />
+			<phase name="TUBER_FILLING" work-required="1" growth-perc="35" />
+			<phase name="MATURATION" work-required="1" growth-perc="14" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Flowers" description="Flowers are the seed-bearing part of a plant, consisting of reproductive organs that are typically surrounded by brightly colored petals and a green calyx.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="GROWING" work-required="1" growth-perc="79" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Fungi" description="Fungi are a group of spore-producing organisms that feed on organic matter."
+				needs-light="false">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="GROWING" work-required="1" growth-perc="79" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+		<category name="Seeds" description="Seeds are the part of a flowering plant that typically contains an embryo and is capable of developing into a new plant.">
+			<phase name="INCUBATION" work-required="10" growth-perc="0" />
+			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
+			<phase name="GERMINATION" work-required="1" growth-perc="5" />
+			<phase name="GROWING" work-required="1" growth-perc="79" />
+			<phase name="MATURATION" work-required="1" growth-perc="10" />
+			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
+			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+		</category>
+	</category-list>
+
 	<crop-list>
 
 <!--	Note : see Reference 7
@@ -102,8 +267,6 @@
 	    	6k - 8k per acre or ~10-14k per hectare
 	    	The irrigated planting on good blueberry soil reaches a peak
 			production of 8,000 pounds per acre
-
-	    	TODO: multi-year plant
 
 	    	http://www.offthegridnews.com/survival-gardening-2/4-perennial-berries-you-can-plant-once-and-enjoy-for-a-lifetime/
 
@@ -239,7 +402,6 @@
 	    	http://www.tis-gdv.de/tis_e/ware/gewuerze/ingwerfr/ingwerfr.htm
 	   		1. Average yields in central Jamaica are 13-18 tonnes/ hectare
 	    	2. Harvesting is done from the 6th month onwards.
-	    	3.  TODO: making ginger Tea
 
 			It is a flowering edible herb that typically grows as an annual/perennial, which is defined as a plant
 			that can matures and completes its lifecycle over the course of one year or more.
@@ -250,7 +412,6 @@
 	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
 	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
 	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
-	    	3. TODO:
 	    	 -->
 
 
@@ -430,7 +591,6 @@
 	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
 	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
 	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
-	    	3. TODO:
 
 	    	https://www.groworganic.com/pv-org-quinoa.html
 	    	Life Cycle	Annual
@@ -511,7 +671,6 @@
 	    	
 	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
 	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
-	    	TODO:
 
 	    	Annual/perennial :
 
@@ -697,7 +856,7 @@
 	    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
 
 			 Beetroot conservative: 14; likely: 18 target yield: 25
-			 	TODO: multi-year plants -->
+			  -->
 
 	</crop-list>
 

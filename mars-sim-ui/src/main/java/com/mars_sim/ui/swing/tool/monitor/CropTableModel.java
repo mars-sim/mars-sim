@@ -6,11 +6,11 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
@@ -20,6 +20,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropCategory;
+import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.building.function.farming.Farming;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
@@ -34,43 +35,35 @@ public class CropTableModel extends UnitTableModel<Building> {
 	private static final int GREENHOUSE_NAME = 0;
 	private static final int SETTLEMENT_NAME = 1;
 	private static final int INITIAL_COLS = 2;
-
 	private static final int FIRST_CROP_CAT = INITIAL_COLS + 1;
 	
-	/** The total number of available crop category. */
-	private static int numCropCat = CropCategory.values().length;
-	
-	/** The number of Columns. */
-	private static int columnCount = numCropCat + FIRST_CROP_CAT;
-
 	/** Names of Columns. */
-	private static final ColumnSpec[] COLUMNS;
+	private static ColumnSpec[] columns;
+	private static List<CropCategory> cropCats;
 
-	static {
-		COLUMNS = new ColumnSpec[columnCount];
-		COLUMNS[GREENHOUSE_NAME] = new ColumnSpec("Greenhouse", String.class);
-		COLUMNS[SETTLEMENT_NAME] = new ColumnSpec("Settlement", String.class);
-		COLUMNS[INITIAL_COLS] = new ColumnSpec("# Crops", Integer.class);
+	private static ColumnSpec[] getColumns(CropConfig config) {
+		if (columns == null) {
+			cropCats = config.getCropCategories();
+			columns = new ColumnSpec[FIRST_CROP_CAT + cropCats.size()];
+			columns[GREENHOUSE_NAME] = new ColumnSpec("Greenhouse", String.class);
+			columns[SETTLEMENT_NAME] = new ColumnSpec("Settlement", String.class);
+			columns[INITIAL_COLS] = new ColumnSpec("# Crops", Integer.class);
 
-		for (CropCategory cat : CropCategory.values()) {
-			int idx = FIRST_CROP_CAT + cat.ordinal();
-			COLUMNS[idx] = new ColumnSpec(cat.getName(), Integer.class);
+			int idx = FIRST_CROP_CAT;
+			for (CropCategory cat : cropCats) {
+				columns[idx] = new ColumnSpec(cat.getName(), Integer.class);
+				idx++;
+			}
 		}
+		return columns;
 	}
 
-	// Data members
-	/**
-	 * A list of crop categories.
-	 */
-	private List<CropCategory> cropCategoryList;
-
-	public CropTableModel() {
+	public CropTableModel(SimulationConfig config) {
 		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
-				"CropTableModel.countingCrops", COLUMNS);
-		cropCategoryList = new ArrayList<>(List.of(CropCategory.values()));
+				"CropTableModel.countingCrops", getColumns(config.getCropConfiguration()));
 
 		// Cache all crop categories
-		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + CropCategory.values().length);
+		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + cropCats.size());
 		setSettlementColumn(SETTLEMENT_NAME);
 	}
 
@@ -89,11 +82,11 @@ public class CropTableModel extends UnitTableModel<Building> {
 	/**
 	 * Gives the position number for a particular crop group.
 	 *
-	 * @param String cropCat
+	 * @param cropCat Crop category to search
 	 * @return a position number
 	 */
-	private int getCategoryNum(String cat) {
-		return CropCategory.valueOf(cat.toUpperCase()).ordinal();
+	private int getCategoryNum(CropCategory cat) {
+		return cropCats.indexOf(cat);
 	}
 
 	/**
@@ -102,20 +95,12 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 * @param return a number
 	 */
 	private Object getValueAtCropCat(Building greenhouse, int cropColumn) {
-		CropCategory cropCat = cropCategoryList.get(cropColumn - FIRST_CROP_CAT);
+		CropCategory cropCat = cropCats.get(cropColumn - FIRST_CROP_CAT);
 
-		int num = 0;
-		for (Crop k : greenhouse.getFarming().getCrops()) {
-			CropCategory cat = k.getCropSpec().getCropCategory();
-			if (cat.equals(cropCat)) {
-				num++;
-			}
-		}
-		
-		if (num == 0)
-			return null;
-		
-		return num;	
+		return(int) greenhouse.getFarming().getCrops()
+				.stream()
+				.filter(c -> c.getCropSpec().getCropCategory().equals(cropCat))
+				.count();
 	}
 
 	/**
@@ -179,7 +164,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 		else if (eventType == UnitEventType.CROP_EVENT) {
 			Crop crop = (Crop) target;
 			CropCategory cat = crop.getCropSpec().getCropCategory();
-			columnNum = getCategoryNum(cat.getName());
+			columnNum = getCategoryNum(cat);
 		}
 		if (columnNum > -1) {
 			entityValueUpdated((Building) unit, columnNum, columnNum);

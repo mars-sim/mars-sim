@@ -334,7 +334,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public static void assertGreaterThan(String message, double minValue, double actual) {
 		if (actual <= minValue) {
 			fail(message + " ==> " +
-					"Expected: a value greater than <" + minValue + ">\n" +
+					"Expected: a value greater than <" + minValue + "> " +
 					"Actual was <" + actual + ">");
 		}
 	}
@@ -342,7 +342,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public static void assertLessThan(String message, double maxValue, double actual) {
 		if (actual >= maxValue) {
 			fail(message + " ==> " +
-					"Expected: a value less than <" + maxValue + ">\n" +
+					"Expected: a value less than <" + maxValue + "> " +
 					"Actual was <" + actual + ">");
 		}
 	}
