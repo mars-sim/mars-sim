@@ -19,23 +19,17 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final int PERENNIAL = 0;
-	private static final int ANNUAL = 1;
-	private static final int BIENNIAL = 2;
-
 	// Data members
 	/** Is this a seed only? */
 	private boolean seedOnly;
 	/** The number of phases. */	
 	private int numPhases;
-	/** The crop spec id. */
-	private int id;
 	/** The crop id. */
 	private int cropID;
 	/** The seed id. */
 	private int seedID = -1;
 	/** The length of the growing phase. */
-	private double growingTime;
+	private int growingSols;
 	/** The fresh basis edible biomass productivity [in gram per sq m per day]. */
 	private double edibleBiomass;
 	/** The percentage of watet content. */
@@ -49,10 +43,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	private double dailyPAR; // Note: not umol / m^2 / s // PAR is the instantaneous light with a wavelength
 								// between 400 to 700 nm
 
-	/** TODO The name of the crop spec should be internationalizable. */
 	private String name;
-	/** The life cycle type of this crop. */
-	private String lifeCycle;
 	
 	/** The phenological phases of this crop. */
 	private List<Phase> phases = null;
@@ -62,11 +53,9 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	/**
 	 * Constructor.
 	 *
-	 * @param id               id of the crop.
 	 * @param name             Name of the crop.
-	 * @param growingTime        Length of growing phase for crop in millisols.
+	 * @param growingSol        Length of growing phase for crop in sols.
 	 * @param cropCategory  The category of crop.
-	 * @param lifeCycle
 	 * @param edibleBiomass
 	 * @param edibleWaterContent
 	 * @param inedibleBiomass
@@ -75,15 +64,13 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @param seedName
 	 * @param seedOnly
 	 */
-	CropSpec(int id, String name, double growingTime, CropCategory cropCategory, String lifeCycle,
+	CropSpec(String name, int growingSols, CropCategory cropCategory, 
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
 			List<Phase> phases, String seedName, boolean seedOnly) {
 
-		this.id = id;
 		this.name = name;
-		this.growingTime = growingTime;
+		this.growingSols = growingSols;
 		this.cropCategory = cropCategory;
-		this.lifeCycle = lifeCycle;
 		this.edibleBiomass = edibleBiomass;
 		this.edibleWaterContent = edibleWaterContent;
 		this.inedibleBiomass = inedibleBiomass;
@@ -115,6 +102,13 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		return cropID;
 	}
 
+	/** 
+	 * Get the growing phases
+	 */
+	public List<Phase> getPhases() {
+		return phases;
+	}	
+
 	/**
 	 * Gets the Resource ID assigned to the seed of the crop.
 	 * 
@@ -132,28 +126,12 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Gets the crop type's life cycle type.
-	 *
-	 * @return type of life cycle
-	 */
-	public int getLifeCycleType() {
-		int type = -1;
-		if (lifeCycle.equalsIgnoreCase("Annual"))
-			type = ANNUAL;
-		else if (lifeCycle.equalsIgnoreCase("Biennial"))
-			type = BIENNIAL;
-		else if (lifeCycle.equalsIgnoreCase("Perennial"))
-			type = PERENNIAL;
-		return type;
-	}
-
-	/**
 	 * Gets the length of the crop type's growing phase.
 	 *
-	 * @return crop type's growing time in millisols.
+	 * @return crop type's growing time in sols.
 	 */
-	public double getGrowingTime() {
-		return growingTime;
+	public int getGrowingSols() {
+		return growingSols;
 	}
 
 	/**
@@ -200,10 +178,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 */
 	public double getDailyPAR() {
 		return dailyPAR;
-	}
-
-	public int getID() {
-		return id;
 	}
 
 	/**
@@ -307,7 +281,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	@Override
 	public int hashCode() {
-		return id % 32;
+		return name.hashCode();
 	}
 
 	@Override
@@ -316,6 +290,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		CropSpec c = (CropSpec) obj;
-		return this.id == c.id;
+		return this.name.equals(c.name);
 	}
 }

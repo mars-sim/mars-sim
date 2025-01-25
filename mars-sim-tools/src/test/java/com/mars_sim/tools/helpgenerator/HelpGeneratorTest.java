@@ -75,6 +75,19 @@ public class HelpGeneratorTest {
     }
 
     @Test
+    public void testCropHelp() throws IOException {
+        var context = createGenerator();
+        var manConfig = context.getConfig().getCropConfiguration();
+
+        var spec = (new ArrayList<>(manConfig.getCropTypes())).get(0);
+        var vg = new CropGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "characteristics");
+    }
+
+
+    @Test
     public void testComplaintHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getMedicalConfiguration();

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.tools.helpgenerator.HelpContext.ResourceUse;
@@ -73,7 +74,14 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
             foodUse = EMPTY_USE;
         }
         scope.put("foodInput", foodUse.asInput());
-        scope.put("foodOutput", foodUse.asOutput());        
+        scope.put("foodOutput", foodUse.asOutput());   
+        
+        if (r.getGoodType() == GoodType.CROP) {
+            var cropSpec = getParent().getConfig().getCropConfiguration().getCropTypeByName(r.getName());
+            if (cropSpec != null) {
+                scope.put("cropspec", cropSpec.getName());
+            }
+        }
     }
 
     /**

@@ -234,8 +234,9 @@ public class Farming extends Function {
 	private CropSpec pickACrop(Map<CropSpec, Integer> cropsPlanted) {
 		CropSpec ct = null;
 		boolean cropAlreadyPlanted = true;
+
 		// TODO: at the start of the sim, choose only from a list of staple food crop
-		int totalCropTypes = cropConfig.getNumCropTypes();
+		int totalCropTypes = cropConfig.getCropTypes().size();
 
 		// Attempt to find a unique crop but limit the number of attempts
 		int attempts = 0;

@@ -40,7 +40,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -164,9 +163,11 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
+
+		var sim = desktop.getSimulation();
+		cropConfig = desktop.getSimulation().getConfig().getCropConfiguration();
 	
-		surfaceFeatures = getSimulation().getSurfaceFeatures();
+		surfaceFeatures = sim.getSurfaceFeatures();
 	}
 	
 	/**
@@ -305,7 +306,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		// Create a popup menu for the crop table
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem harvestItem = new JMenuItem("Early Harvest");
-//      harvestItem.addActionListener(e -> JOptionPane.showMessageDialog(center, "Do you want to fast-track this crop for an early harvest right now ? "));
         harvestItem.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -313,8 +313,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
             	if (item == harvestItem) {
             		SwingUtilities.invokeLater(() -> {
                             int rowAtPoint = rowCache; 
-                            // Not working : cropTable.getSelectedRow();
-                            // Not working : cropTable.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), cropTable));
                             if (rowAtPoint > -1) {
                             	cropTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
                             	Crop crop = cropCache;
@@ -348,8 +346,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(20);
 		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(new NumberCellRenderer());
 
-		// Note: Use of setAutoCreateRowSorter causes array error 
-		// whenever old crop is removed and new crop is added: cropTable.setAutoCreateRowSorter(true);
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		
 		tableScrollPanel.setViewportView(cropTable);
@@ -529,7 +525,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		result.append(HTML)
 			.append(CROP_NAME).append(cs.getName())
 			.append(CATEGORY).append(cs.getCropCategory().getName())
-			.append(GROWING_DAYS).append(cs.getGrowingTime() /1000)
+			.append(GROWING_DAYS).append(cs.getGrowingSols())
 			.append(EDIBLE_MASS).append(cs.getEdibleBiomass()).append(G_M2_DAY)
 			.append(INEDIBLE_MASS).append(cs.getInedibleBiomass()).append(G_M2_DAY)
 			.append(WATER_CONTENT).append(100 * cs.getEdibleWaterContent()).append(PERCENT)

@@ -12,7 +12,7 @@
 	<!ELEMENT crop-list (crop*)>
 	<!ELEMENT crop EMPTY>
 	<!ATTLIST crop name CDATA #REQUIRED>
-	<!ATTLIST crop growing-time CDATA #REQUIRED>
+	<!ATTLIST crop growing-sols CDATA #REQUIRED>
 	<!ATTLIST crop crop-category CDATA #REQUIRED>
 	<!ATTLIST crop life-cycle CDATA #IMPLIED>
 	<!ATTLIST crop edible-biomass CDATA #REQUIRED>
@@ -77,7 +77,7 @@
 
 <!--	Note : see Reference 7
 
-			growing-time : # of sols
+			growing-sols : # of sols
 			crop-category : the type of crop
 			edible-biomass : [ gram / m^2 / day ]
 			edible-water-content : in proportion of 1 (1 is 100%)
@@ -89,7 +89,7 @@
 
 
 
-	   	<crop name="Blueberry" growing-time="200" crop-category="fruits" life-cycle="perennial"
+	   	<crop name="Blueberry" growing-sols="200" crop-category="fruits" life-cycle="perennial"
 	    	edible-biomass="14" edible-water-content=".87" inedible-biomass="200" daily-PAR="25.92" />
 	    	
 	    <!-- 
@@ -113,7 +113,7 @@
 	    -->
 
 
-		<crop name="Cabbage" growing-time="85.0" crop-category="leaves"  life-cycle="annual"
+		<crop name="Cabbage" growing-sols="85" crop-category="leaves"  life-cycle="annual"
 	    	edible-biomass="75.78" edible-water-content=".92" inedible-biomass="6.74" daily-PAR="17.28" />
 		<!--
 		http://www.ehow.com/facts_7732455_life-cycle-cabbage-plant.html
@@ -124,7 +124,7 @@
 		low in nitrogen;
 		-->
 
-		<crop name="Carrot"	growing-time="74.83" crop-category="roots" life-cycle="biennial"
+		<crop name="Carrot"	growing-sols="75" crop-category="roots" life-cycle="biennial"
 	    	edible-biomass="40"	edible-water-content=".88" inedible-biomass="59.87" daily-PAR="32.4"
 	    	/>
 
@@ -137,18 +137,18 @@
 
 		-->
 
-		<crop name="Celery" growing-time="75.0" crop-category="stems" life-cycle="biennial"
+		<crop name="Celery" growing-sols="75" crop-category="stems" life-cycle="biennial"
 	    	edible-biomass="103.27" edible-water-content=".90" inedible-biomass="11.47" daily-PAR="17.28" />
 
 	    <!-- Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf -->
 
-		<crop name="Cilantro" growing-time="30.0" crop-category="herbs" life-cycle="annual"
+		<crop name="Cilantro" growing-sols="30" crop-category="herbs" life-cycle="annual"
 	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="1.0" daily-PAR="34.56" 
 	    	seed-name="Coriander" />
 	    <!-- https://rennieorchards.com/is-cilantro-perennial/
 		-->
 
-		<crop name="Corn" growing-time="65" crop-category="grains" life-cycle="annual"
+		<crop name="Corn" growing-sols="65" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
 
 		<!--
@@ -185,7 +185,7 @@
 
  		-->
 
-	   	<crop name="Cranberry" growing-time="150" crop-category="fruits" life-cycle="perennial"
+	   	<crop name="Cranberry" growing-sols="150" crop-category="fruits" life-cycle="perennial"
 	    	edible-biomass="11" edible-water-content=".87" inedible-biomass="100" daily-PAR="25.92" />
 	    	<!-- 
 	    	Assume this cranberry variant takes half the time (300 days -> 150 days)
@@ -200,7 +200,7 @@
 	    	They survive through the cold winters, sweltering summers, and cool springs and falls.
 	    	-->
 
-	   	<crop name="Cucumber" growing-time="60" crop-category="fruits" life-cycle="perennial"
+	   	<crop name="Cucumber" growing-sols="60" crop-category="fruits" life-cycle="perennial"
 	    	edible-biomass="40"	edible-water-content=".90" inedible-biomass="10" daily-PAR="25.92" />
 	    	<!--
 	    	http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
@@ -210,7 +210,7 @@
 	    	-->
 
 
-	    <crop name="Garlic" growing-time="85" crop-category="bulbs" life-cycle="annual"
+	    <crop name="Garlic" growing-sols="85" crop-category="bulbs" life-cycle="annual"
 	    	edible-biomass="9.41" edible-water-content=".59" inedible-biomass="0.5" daily-PAR="17.28" />
 
 	    	<!--
@@ -228,7 +228,7 @@
 	    		-->
 
 
-	     <crop name="Ginger" growing-time="90" crop-category="roots" life-cycle="annual"
+	     <crop name="Ginger" growing-sols="90" crop-category="roots" life-cycle="annual"
 	    	edible-biomass="18" edible-water-content=".12" inedible-biomass="2" daily-PAR="17.28" />
 	   
 	    <!--     	
@@ -254,7 +254,7 @@
 	    	 -->
 
 
-		<crop name="Green Bell Pepper" growing-time= "40" crop-category="fruits" life-cycle="annual"
+		<crop name="Green Bell Pepper" growing-sols= "40" crop-category="fruits" life-cycle="annual"
 			edible-biomass= "50" edible-water-content= ".45" inedible-biomass="20" daily-PAR="25.92" />
 
 			<!-- Bell peppers, a tropical or sub-tropical vegetable, can easily be grown in warm-weather
@@ -269,7 +269,7 @@
 		 	-->
 
 
-	    <crop name="Spring Onion" growing-time="70.0" crop-category="bulbs" life-cycle="perennial"
+	    <crop name="Spring Onion" growing-sols="70" crop-category="bulbs" life-cycle="perennial"
 	    	edible-biomass="81.82" edible-water-content=".89" inedible-biomass="10.0" daily-PAR="17.28" />
 
 	   		<!-- 1. Harvest between 70-90 days
@@ -283,7 +283,7 @@
 	   		-->
 
 
-	    <crop name="Kidney bean" growing-time="43.0" crop-category="legumes" life-cycle="annual"
+	    <crop name="Kidney bean" growing-sols="43" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="11.11" edible-water-content=".10" inedible-biomass="150.0" daily-PAR="25.92" />
 
 		<!--
@@ -296,7 +296,7 @@
 			The fruit is located inside flat and fleshy double ending pods, where seeds are found in rows,
 			featuring a pine nut shape and is consumed dry as well as tender. -->
 
-	    <crop name="Lettuce" growing-time="28.0" crop-category="leaves" life-cycle="annual"
+	    <crop name="Lettuce" growing-sols="28" crop-category="leaves" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".95" inedible-biomass="5" daily-PAR="17.28" />
 	    	
 	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
@@ -307,7 +307,7 @@
 	    	-->
 
 
-		<crop name="Morel Mushroom" growing-time="15.0" crop-category="fungi" life-cycle="annual"
+		<crop name="Morel Mushroom" growing-sols="15" crop-category="fungi" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".35" inedible-biomass="2" daily-PAR="5" />
 	    	
 	    	<!-- Mushrooms provide essential nutrients, including vitamin D and vitamin B-6.
@@ -320,7 +320,7 @@
 	    	https://www.youtube.com/watch?v=z41Wy5ZF4O8
 	      	-->
 
-	  <crop name="White Mustard" growing-time="41" crop-category="leaves" life-cycle="annual"
+	  <crop name="White Mustard" growing-sols="41" crop-category="leaves" life-cycle="annual"
 	    	edible-biomass="66.67" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56"
 	    	seed-name="Mustard Seed" />
 
@@ -367,7 +367,7 @@
 
 		 -->
 
-	    <crop name="Peanut" growing-time="52.0" crop-category="legumes" life-cycle="annual"
+	    <crop name="Peanut" growing-sols="52" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="6" edible-water-content=".056" inedible-biomass="18" daily-PAR="32.4" 
 	    	seed-name="Peanut" seed-plant="true" />
 
@@ -394,11 +394,11 @@
 			are ready to harvest.
 	    	-->
 
-	    <crop name="Peas" growing-time="75.0" crop-category="legumes" life-cycle="annual"
+	    <crop name="Peas" growing-sols="75" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="12.20" edible-water-content=".79" inedible-biomass="161.00" daily-PAR="25.92" />
 			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
 
-	    <crop name="Potato" growing-time="75.0" crop-category="tubers" life-cycle="annual"
+	    <crop name="Potato" growing-sols="75" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".79" inedible-biomass="15" daily-PAR="34.56" />
 
 	    	<!-- 
@@ -422,7 +422,7 @@
 
 	    	-->
 
-	     <crop name="Quinoa" growing-time="90.0" crop-category="grains" life-cycle="annual"
+	     <crop name="Quinoa" growing-sols="90" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="5" edible-water-content=".12" inedible-biomass="38" daily-PAR="69.12" />
 	    	
 	    	<!-- http://en.wiki2.org/wiki/Quinoa
@@ -447,10 +447,10 @@
 	    	-->
 
 
-		<crop name="Radish" growing-time="25.0" crop-category="roots" life-cycle="annual"
+		<crop name="Radish" growing-sols="25" crop-category="roots" life-cycle="annual"
 	    	edible-biomass="10" edible-water-content=".35" inedible-biomass="7" daily-PAR="15" />
 
-	  	<crop name="Red Beet" growing-time="42" crop-category="roots" life-cycle="annual"
+	  	<crop name="Red Beet" growing-sols="42" crop-category="roots" life-cycle="annual"
 	    	edible-biomass="7.98" edible-water-content=".75" inedible-biomass="3" daily-PAR="34.56" />
 
 		<!-- 15.7-22.4 T/ha from http://anrcatalog.ucanr.edu/pdf/8096.pdf
@@ -464,7 +464,7 @@
 		 -->
 
 
-	    <crop name="Rice" growing-time="100.0" crop-category="grains" life-cycle="annual"
+	    <crop name="Rice" growing-sols="100" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="10.3" edible-water-content=".12" inedible-biomass="38" daily-PAR="34.56" />
 		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf
 
@@ -472,7 +472,7 @@
 
 		-->
 
-	    <crop name="Sesame" growing-time="50" crop-category="flowers" life-cycle="annual"
+	    <crop name="Sesame" growing-sols="50" crop-category="flowers" life-cycle="annual"
 	    	edible-biomass="7.2" edible-water-content=".4" inedible-biomass="15.0" daily-PAR="17.28"
 	    	seed-name="Sesame Seed" seed-plant="true"/>
 	    	<!--
@@ -498,7 +498,7 @@
 	    	-->
 
 
-	    <crop name="Soybean" growing-time="47" crop-category="legumes" life-cycle="annual"
+	    <crop name="Soybean" growing-sols="47" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="10" edible-water-content=".10" inedible-biomass="13" daily-PAR="34.56" />
 
 	    	<!--
@@ -506,7 +506,7 @@
 	    	-->
 
 
-	   	<crop name="Strawberry" growing-time="45" crop-category="fruits" life-cycle="annual"
+	   	<crop name="Strawberry" growing-sols="45" crop-category="fruits" life-cycle="annual"
 	    	edible-biomass="60" edible-water-content=".92" inedible-biomass="20" daily-PAR="25.92" />
 	    	
 	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
@@ -531,7 +531,7 @@
 	    	produce few to no runners.)
 	    	 -->
 
-	   <crop name="Sugarcane" growing-time="180" crop-category="grasses" life-cycle="perennial"
+	   <crop name="Sugarcane" growing-sols="180" crop-category="grasses" life-cycle="perennial"
 	    	edible-biomass="73.67" edible-water-content=".75" inedible-biomass="20" daily-PAR="34.56" />
 	    	
 	    	<!-- CANE, SUGAR AND THE ENVIRONMENT from http://www.fao.org/docrep/005/x4988e/x4988e01.htm
@@ -562,7 +562,7 @@
 	    	-->
 
 
-	    <crop name="Sweet Potato" growing-time="90" crop-category="tubers" life-cycle="annual"
+	    <crop name="Sweet Potato" growing-sols="90" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="25" edible-water-content=".79" inedible-biomass="10" daily-PAR="34.56" />
 
 		<!-- 
@@ -591,7 +591,7 @@
 
 		-->
 
-		<crop name="Swiss Chard" growing-time="65.0" crop-category="leaves" life-cycle="biennial"
+		<crop name="Swiss Chard" growing-sols="65" crop-category="leaves" life-cycle="biennial"
 	    	edible-biomass="71.06" edible-water-content=".92" inedible-biomass="37.69" daily-PAR="17.28" />
 
 		<!-- "Swiss Chard is a beet grown for its edible leaves" from http://anrcatalog.ucanr.edu/pdf/8096.pdf
@@ -608,7 +608,7 @@
 
 		-->
 
-	    <crop name="Taro" growing-time="100" crop-category="corms" life-cycle="perennial"
+	    <crop name="Taro" growing-sols="100" crop-category="corms" life-cycle="perennial"
 	    	edible-biomass="4.7" edible-water-content=".706" inedible-biomass=".05" daily-PAR="34.56" />
 
 		<!--  
@@ -643,7 +643,7 @@
 			2. http://revistas.inia.es/index.php/sjar/article/view/7340/2514
 		-->
 
-	    <crop name="Tomato" growing-time="80" crop-category="fruits" life-cycle="perennial"
+	    <crop name="Tomato" growing-sols="80" crop-category="fruits" life-cycle="perennial"
 	    	edible-biomass="17" edible-water-content=".948" inedible-biomass="20" daily-PAR="32.4" />
 	    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
 	    	 484 MT/ha for earth greenhouse
@@ -652,12 +652,12 @@
 	    	 It is a perennial in its native habitat, although often grown outdoors in temperate climates as an annual.
 	    	-->
 
-		<crop name="Wheat" growing-time="80" crop-category="grains" life-cycle="annual"
+		<crop name="Wheat" growing-sols="80" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="13" edible-water-content=".12" inedible-biomass="26" daily-PAR="69.12" />
 			<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 
-	    <crop name="White Onion" growing-time="75" crop-category="bulbs" life-cycle="biennial"
+	    <crop name="White Onion" growing-sols="75" crop-category="bulbs" life-cycle="biennial"
 	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28" />
 	    	
 	    	<!-- 
@@ -674,7 +674,7 @@
 			 	25-30 T/ha, 2750/150 g/m2/day = 18.33. see https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
 			-->
 
-	    <crop name="Yam" growing-time="100.0" crop-category="tubers" life-cycle="annual"
+	    <crop name="Yam" growing-sols="100" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="12.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
 
 			<!-- 
@@ -742,7 +742,7 @@
 7. 	01ICES-307 Design Parameters for Mars Deployable Greenhouses
 	http://www.marshome.org/files2/Bucklin1.pdf
 
-	growing-time : # of sols
+	growing-sols : # of sols
 	crop-category : the type of crop
 	edible-biomass : [ gram / m^2 / day ]
 	edible-water-content : in proportion of 1 (1 is 100%)

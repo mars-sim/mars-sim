@@ -239,10 +239,8 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		building = farm.getBuilding();
 
-		// Note : growingTime is in millisols
-		double growingTime = cropType.getGrowingTime();
-		// Note : growingDay in sols
-		double growingDay = growingTime / 1000D;
+		double growingDay = cropType.getGrowingSols();
+		double growingTime = growingDay * 1000D;
 
 		maxHarvest = dailyMaxHarvest * growingDay;
 		// Set to zero initially
@@ -797,7 +795,8 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			growingTimeCompleted += time;
 			
-			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
+			double growingTime = cropSpec.getGrowingSols() * 1000D;
+			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 			
 			// Right before the harvesting phase
 			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
@@ -806,7 +805,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			}
 
 			// max possible harvest within this period of time
-			double maxPeriodHarvest = maxHarvest * (time / cropSpec.getGrowingTime());
+			double maxPeriodHarvest = maxHarvest * (time / growingTime);
 			// Compute each harvestModifiers and sum them up below
 			// Note: computeHarvest takes up 40% of all cpu utilization
 			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
@@ -1249,10 +1248,6 @@ public class Crop implements Comparable<Crop>, Entity {
 		return percentageGrowth;
 	}
 
-//	public void setPercentGrowth(double percent) {
-//		percentageGrowth = percent;
-//	}
-			
 	public int getIdentifier() {
 		return identifier;
 	}

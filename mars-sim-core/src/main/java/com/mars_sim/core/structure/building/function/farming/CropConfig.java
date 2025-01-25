@@ -37,9 +37,8 @@ public class CropConfig {
 	private static final String CROP_LIST = "crop-list";
 	private static final String CROP = "crop";
 	private static final String NAME = "name";
-	private static final String GROWING_TIME = "growing-time";
+	private static final String GROWING_SOLS = "growing-sols";
 	private static final String CROP_CATEGORY = "crop-category";
-	private static final String LIFE_CYCLE = "life-cycle";
 	private static final String EDIBLE_BIOMASS = "edible-biomass";
 	private static final String EDIBLE_WATER_CONTENT = "edible-water-content";
 	private static final String INEDIBLE_BIOMASS = "inedible-biomass";
@@ -47,8 +46,6 @@ public class CropConfig {
 	private static final String SEED_NAME = "seed-name";
 	private static final String SEED_PLANT = "seed-plant";
 
-	/** The next crop ID. */
-	private int cropID = 0;
 	/** The conversion rate. */
 	private double conversionRate = 0;
 	/** The average crop growing time. */
@@ -59,17 +56,15 @@ public class CropConfig {
 	/** The consumption rates for co2, o2, water. **/
 	private double[] consumptionRates = new double[] { 0, 0, 0 };
 
-	/** A list of crop names. */
-	private List<String> cropNames;
 	/** A list of crop specs. */
 	private List<CropSpec> cropSpecs;
 	/** The lookup table for crop specs. */
 	private Map<String, CropSpec> lookUpCropSpecMap = new HashMap<>();
 
 	/** Lookup of crop phases **/
-	private transient Map <CropCategory, List<Phase>> lookupPhases = new EnumMap<>(CropCategory.class);
+	private Map <CropCategory, List<Phase>> lookupPhases = new EnumMap<>(CropCategory.class);
 
-	private transient PersonConfig personConfig;
+	private PersonConfig personConfig;
 	
 	/**
 	 * Constructor.
@@ -89,7 +84,6 @@ public class CropConfig {
 
 		// Call to create lists and map
 		parseCropTypes(cropDoc);
-		getCropTypeNames();
 	}
 
 	/**
@@ -120,38 +114,16 @@ public class CropConfig {
 		List<Element> crops = cropElement.getChildren(CROP);
 
 		for (Element crop : crops) {
-			String name = "";
-			// Get name.
-			name = crop.getAttributeValue(NAME);
+			String name = crop.getAttributeValue(NAME);
+			int growingTime = ConfigHelper.getAttributeInt(crop, GROWING_SOLS);
+			double edibleBiomass = ConfigHelper.getAttributeDouble(crop, EDIBLE_BIOMASS);
+			double edibleWaterContent = ConfigHelper.getAttributeDouble(crop, EDIBLE_WATER_CONTENT);
+			double inedibleBiomass = ConfigHelper.getAttributeDouble(crop, INEDIBLE_BIOMASS);
+			double dailyPAR = ConfigHelper.getAttributeDouble(crop, DAILY_PAR);
 
-			// Get growing time.
-			String growingTimeStr = crop.getAttributeValue(GROWING_TIME);
-			double growingTime = Double.parseDouble(growingTimeStr);
-
-			// Get crop category
 			String cropCategory = crop.getAttributeValue(CROP_CATEGORY);
+			CropCategory cat = ConfigHelper.getEnum(CropCategory.class, cropCategory);
 
-			// Get crop category
-			String lifeCycle = crop.getAttributeValue(LIFE_CYCLE);
-
-			// Add checking against the crop category enum
-			CropCategory cat = CropCategory.valueOf(ConfigHelper.convertToEnumName(cropCategory));
-
-			// Get edibleBiomass
-			String edibleBiomassStr = crop.getAttributeValue(EDIBLE_BIOMASS);
-			double edibleBiomass = Double.parseDouble(edibleBiomassStr);
-
-			// Get edible biomass water content [ from 0 to 1 ]
-			String edibleWaterContentStr = crop.getAttributeValue(EDIBLE_WATER_CONTENT);
-			double edibleWaterContent = Double.parseDouble(edibleWaterContentStr);
-
-			// Get inedibleBiomass
-			String inedibleBiomassStr = crop.getAttributeValue(INEDIBLE_BIOMASS);
-			double inedibleBiomass = Double.parseDouble(inedibleBiomassStr);
-
-			// Get daily PAR
-			String dailyPARStr = crop.getAttributeValue(DAILY_PAR);
-			double dailyPAR = Double.parseDouble(dailyPARStr);
 
 			// Get Seed values
 			boolean seedPlant = false;
@@ -164,8 +136,8 @@ public class CropConfig {
 			// Set up the default growth phases of a crop
 			List<Phase> phases = lookupPhases.get(cat);
 			
-			CropSpec spec = new CropSpec(cropID++, name, growingTime * 1000D,
-									cat, lifeCycle, edibleBiomass,
+			CropSpec spec = new CropSpec(name, growingTime,
+									cat, edibleBiomass,
 									edibleWaterContent, inedibleBiomass,
 									dailyPAR, phases, seedName, seedPlant);
 
@@ -322,17 +294,6 @@ public class CropConfig {
 				phases.add(new Phase(PhaseType.HARVESTING, 0.5, 5D));
 				phases.add(new Phase(PhaseType.FINISHED, 0.5, 0));
 				break;
-
-//			case SPICES:
-//				// spices e.g. green onion 
-//				phases.add(new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
-//				phases.add(new Phase(PhaseType.PLANTING, 0.5, 1D));
-//				phases.add(new Phase(PhaseType.GERMINATION, 1D, 10D));
-//				phases.add(new Phase(PhaseType.LEAFING, 1D, 55D));
-//				phases.add(new Phase(PhaseType.MATURATION, 1D, 33D));
-//				phases.add(new Phase(PhaseType.HARVESTING, 0.5, 1D));
-//				phases.add(new Phase(PhaseType.FINISHED, 0.5, 0));
-//				break;
 				
 			default:
 				phases.add(new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
@@ -396,20 +357,11 @@ public class CropConfig {
 	 * @param an element
 	 * @return a double
 	 */
-	private double getValueAsDouble(Document cropDoc, String child) {
+	private static double getValueAsDouble(Document cropDoc, String child) {
 		Element root = cropDoc.getRootElement();
 		Element element = root.getChild(child);
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
-	}
-
-	/**
-	 * Gets the total number of crop types
-	 * 
-	 * @return
-	 */
-	public int getNumCropTypes() {
-		return cropSpecs.size();
 	}
 
 	/**
@@ -420,23 +372,6 @@ public class CropConfig {
 	 */
 	public CropSpec getCropTypeByName(String name) {
 		return lookUpCropSpecMap.get(name.toLowerCase());
-	}
-	
-	/**
-	 * Gets a list of crop type names
-	 * 
-	 * @return
-	 */
-	public List<String> getCropTypeNames() {
-		if  (cropNames == null) {
-			cropNames = new ArrayList<>();
-			for (CropSpec ct : cropSpecs) {
-				cropNames.add(ct.getName());
-			}
-			
-			Collections.sort(cropNames);
-		}
-		return cropNames;
 	}
 	
 	/**
@@ -457,9 +392,9 @@ public class CropConfig {
 		if (averageCropGrowingTime == -1) {
 			double totalGrowingTime = 0D;
 			for (CropSpec ct : cropSpecs) {
-				totalGrowingTime += ct.getGrowingTime(); 
+				totalGrowingTime += ct.getGrowingSols(); 
 			}
-			averageCropGrowingTime = totalGrowingTime / cropSpecs.size();
+			averageCropGrowingTime = (totalGrowingTime * 1000D) / cropSpecs.size();
 		}
 		return averageCropGrowingTime;
 	}
@@ -476,7 +411,6 @@ public class CropConfig {
 			double neededFoodPerSol = personConfig.getFoodConsumptionRate();
 	
 			// Determine average amount (kg) of food produced per farm area (m^2).
-			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			double totalFoodPerSolPerArea = 0D;
 			for (CropSpec c : cropSpecs)
 				// Crop type average edible biomass (kg) per Sol.

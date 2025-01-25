@@ -1,0 +1,37 @@
+{{<help-layout}}
+  {{$body}}
+      <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Category:</td><td>{{crop.cropCategory.getName}}</td></tr>
+        <tr><td>Produce:</td><td><a href="{{resourcefolder}}{{#filename}}{{crop.name}}{{/filename}}">{{crop.name}}</a></td></tr>
+        <tr><td>Growing Time:</td><td>{{crop.growingSols}} sols</td></tr>
+        <tr><td>Edible Biomass:</td><td>{{crop.edibleBiomass}} g per m2</td></tr>
+        <tr><td>Inedible Biomass:</td><td>{{crop.inedibleBiomass}} g per m2</td></tr>
+        <tr><td>Light Demands:</td><td>{{crop.dailyPAR}} PAR per sol</td></tr>
+      </table>
+    </div>
+
+    <div id="phases">
+      <h3>Phases</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Phase</th>
+          <th>Work (milliSols)</th>
+          <th>Growing %</th>
+          </tr>
+        </thead>
+      {{#crop.phases}}
+        <tr>
+          <td>{{phaseType.getName}}</td>
+          <td>{{workRequired}}</td>
+          <td>{{percentGrowth}}</td>
+        </tr>
+      {{/crop.phases}}
+      </table>
+    </div>
+    </br>
+    <a class="backlink" href="index.html">Back to Crop list</a>
+  {{/body}}
+{{/help-layout}}
