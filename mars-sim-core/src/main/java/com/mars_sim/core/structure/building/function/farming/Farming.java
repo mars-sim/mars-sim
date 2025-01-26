@@ -712,7 +712,7 @@ public class Farming extends Function {
 		// Check if Crops are in harvest first
 		var harvestable = cropList.stream()
 			.filter(c -> c.getPhase().getPhaseType() == PhaseType.HARVESTING)
-			.filter(c -> c.getDailyHarvestRemaining() > 0D)
+			.filter(c -> c.getDailyHarvest().remaining() > 0D)
 			.toList();
 		if (!harvestable.isEmpty()) {
 			return RandomUtil.getRandomElement(harvestable);

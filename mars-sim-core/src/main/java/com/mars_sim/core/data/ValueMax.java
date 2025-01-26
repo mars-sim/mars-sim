@@ -11,6 +11,10 @@ package com.mars_sim.core.data;
  */
 public record ValueMax(double value, double max) {
 
+    public double remaining() {
+        return max - value;
+    }
+    
     @Override
     public String toString() {
         return value + "/" + max;

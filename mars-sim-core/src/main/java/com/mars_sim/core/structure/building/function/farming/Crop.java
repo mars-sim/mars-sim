@@ -411,8 +411,13 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 	}
 	
-	public double getDailyHarvestRemaining() {
-		return dailyHarvestQuota - dailyHarvest;
+	/**
+	 * Gets the details of the daily harvest
+	 *
+	 * @return harvested and the estimated maximum
+	 */
+	public ValueMax getDailyHarvest() {
+		return new ValueMax(dailyHarvest, dailyHarvestQuota);
 	}
 
 	/**
@@ -620,7 +625,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			currentPhaseWorkRequired -= workTime;
 
 			// Set the harvest multiplier; not as effecient during maturation
-			double phaseModifier = (phaseType == PhaseType.HARVESTING ? 1D : 0.5D);
+			double phaseModifier = (phaseType == PhaseType.HARVESTING ? 10D : 2D);
 			double modifiedHarvest = phaseModifier * dailyHarvestQuota * (workTime / 1000D);
 
 			// Store the crop harvest
