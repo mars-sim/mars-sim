@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.building.function.farming;
 import java.util.Arrays;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.data.ValueMax;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -62,8 +63,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	private static final int WATER_FACTOR = 3;
 	private static final int O2_FACTOR = 4;
 	private static final int CO2_FACTOR = 5;
-	/** How often to calculate the crop health */
-	private static final int CHECK_HEALTH_FREQUENCY = 8;
+
+	private static final double CHECK_PERIOD = 50D; // Check advancement 10 times per day
 	
 	/** The modifier for the work time on a crop. */
 	private static final double WORK_TIME_FACTOR = 4000.0;
@@ -80,13 +81,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	public static final double POSITIVE_ENTROPY = 0;
 	
 	// Future: Move params into crops.xml and load from CropConfig
-	/** How often are the crops checked in mSols */
-	private static final double CHECK_CROP_PERIOD = 4;
-
 	private static final double TUNING_FACTOR = 3.5;
-	
 	private static final double GAS_MODIFIER = 1.5;
-	
 	private static final double WATER_MODIFIER = 1.1;
 
 	private static final int PETRI_DISH_ID = ItemResourceUtil.findIDbyItemResourceName("petri dish");
@@ -151,9 +147,6 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The string reference for mushroom */
 	private static final String MUSHROOM = "mushroom";
 
-	// Data members
-	/** True if this crop is generated at the start of the sim . */
-	private boolean isStartup;
 	/** The crop identifier (unique only within a greenhouse). */
 	private int identifier;
 	/** The total amount of light received by this crop. */
@@ -162,14 +155,15 @@ public class Crop implements Comparable<Crop>, Entity {
 	private double massRatio;
 	/** The maximum possible harvest for this crop [in kg]. */
 	private double maxHarvest;
-	/** The remaining possible harvest for this crop [in kg]. */
-	private double remainingHarvest;
-	/** The completed work time in current phase [in millisols]. */
-	private double currentPhaseWorkCompleted = 0;
+	/** The required work time in current phase [in millisols]. */
+	private double currentPhaseWorkRequired = 0;
 	/** The current work time required [in millisols]. */
-	private double currentWorkRequired = RandomUtil.getRandomDouble(0, 10);
+	private boolean isTenderRequired = false;
+	private double currentTenderWorkRequired = RandomUtil.getRandomDouble(0, 10);
 	/** The daily harvest for crop [in kg/per sol]. */
+	private double dailyHarvestQuota;
 	private double dailyHarvest;
+	private double maxDailyHarvest;
 	/** The total amount harvested [in kg]. */
 	private double totalHarvest;
 	/** The growing phase time completed thus far [in millisols]. */
@@ -200,8 +194,6 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The cache values of the past environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR + 1];
 
-	private String name;
-
 	private CropSpec cropSpec;
 
 	/** Current phase of crop. */
@@ -216,48 +208,52 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param identifier      the identifier of this crop.
 	 * @param cropType        the type of crop.
 	 * @param growingArea     the area occupied by the crop [m^2]
-	 * @param dailyMaxHarvest - Maximum possible food harvest for crop. (kg/sol)
 	 * @param farm            - Farm crop being grown in.
 	 * @param isStartup       - true if this crop is generated at the start of the
 	 *                        sim)
 	 * @param tissuePercent   the percentage of ticarbonDioxideIDure available based
 	 *                        on the requested amount
 	 */
-	public Crop(int identifier, CropSpec cropType, double growingArea, double dailyMaxHarvest, Farming farm,
+	public Crop(int identifier, CropSpec cropType, double growingArea, Farming farm,
 			boolean isStartup, double tissuePercent) {
 
 		this.identifier = identifier;
 		this.cropSpec = cropType;
 		this.growingArea = growingArea;
 		this.farm = farm;
-		this.isStartup = isStartup;
 		this.gasThreshold = growingArea/10.0;
-		this.name = cropSpec.getName();
 		
 		// Set up env factor to be balanced
 		Arrays.fill(environmentalFactor, 1D);
 
 		building = farm.getBuilding();
 
-		double growingDay = cropType.getGrowingSols();
-		double growingTime = growingDay * 1000D;
+		int totalSols = cropSpec.getGrowingSols(); 
+		double growingDays = cropSpec.getInGroundSols();
+		var category = cropSpec.getCropCategory();
 
-		maxHarvest = dailyMaxHarvest * growingDay;
-		// Set to zero initially
-		remainingHarvest = 0;
+		// Note edible-biomass is [ gram / m^2 / day ]
+		double edibleBiomassKG = cropSpec.getEdibleBiomass()/1000D;
+		double dailyMassIncrease = edibleBiomassKG * growingArea;
+		maxHarvest = dailyMassIncrease * growingDays;
+
+		// Daily harvest quota is based on maturation & harvest phases
+		var harvestDays = (category.getPhase(PhaseType.HARVESTING).getPercentGrowth()
+				* totalSols) / 100D;
+		maxDailyHarvest = maxHarvest / harvestDays;
+		dailyHarvestQuota = maxDailyHarvest;
 
 		if (cropSpec.getSeedID() > 0) {
 			massRatio = 1;
 		}
-		
-		PhaseType phaseType;
+
+		Phase startingPhase = null;
 		if (!isStartup) {
 			// if this is not a grown crop at the start of the sim, start from the beginning
-
+			startingPhase = category.getPhases().get(0);
+			currentPhaseWorkRequired = startingPhase.getWorkRequired() * 1000D;
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
-				phaseType = PhaseType.INCUBATION;
-				currentPhaseWorkCompleted = 0;
 				// Need a petri dish
 				if (building.getSettlement().hasItemResource(PETRI_DISH_ID)) {
 					building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
@@ -269,56 +265,51 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
-				phaseType = PhaseType.PLANTING;
-				currentPhaseWorkCompleted = 0;
+				startingPhase = category.getPhase(PhaseType.PLANTING);
 				logger.info(this, "Done growing its tissue-culture. Transferring plantflets to the field.");
 
 				// if it's growing mushroom
-				if (name.toLowerCase().contains(MUSHROOM)) {
+				if (getName().toLowerCase().contains(MUSHROOM)) {
 					setupMushroom();
 				}
 			}
 
 			else {
-				phaseType = PhaseType.INCUBATION;
-				currentPhaseWorkCompleted = 1000D * cropSpec.getCropCategory().getPhase(phaseType).getWorkRequired() * (100D - tissuePercent) / 100D;
+				currentPhaseWorkRequired = 1000D * startingPhase.getWorkRequired() * (100D - tissuePercent) / 100D;
 				logger.info(this, "A work period of "
-								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
-								+ " sols is needed to clone enough tissues before planting.");
+								+ Math.round(currentPhaseWorkRequired * 10D) / 10D
+								+ " is needed to clone enough tissues before planting.");
 			}
 		}
 
 		else {
 			// This is a grown crop at the start of the sim,
 			// Set the percentage of growth randomly
-			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .99);
-
-			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
+			percentageGrowth = RandomUtil.getRandomDouble(99D);
+			growingTimeCompleted = (totalSols * percentageGrowth * 1000D)/100D;
 
 			// Fast track through the phases
-			var category = cropSpec.getCropCategory();
 			var phases = category.getPhases();
-			Phase startingPhase = null;
+			startingPhase = null;
 			for(Phase phase : phases) {
 				if (phase.getCumulativePercentGrowth() > percentageGrowth) {
 					startingPhase = phase;
 					break;
 				}
+
+				if (phase.getPhaseType() == PhaseType.PLANTING) {
+					isTenderRequired = true;
+				}
 			}
 
-			phaseType = startingPhase.getPhaseType();
-			currentPhaseWorkCompleted = 1000D * startingPhase.getWorkRequired();
+			currentPhaseWorkRequired = 1000D * startingPhase.getWorkRequired();
 					
 			// Future: how to allow crops such as cilantro to be harvested early to collect leaves, 
 			// instead of waiting for seeds (coriander) to be matured ?
-			
-			// Set the daily harvest
-			dailyHarvest = dailyMaxHarvest;
-			// Set the remaining harvest based on percentageGrowth
-			remainingHarvest = (maxHarvest * percentageGrowth)/100D;
+
 		}
 
-		updatePhase(phaseType);
+		updatePhase(startingPhase);
 	}
 
 	/**
@@ -326,8 +317,38 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * 
 	 * @param phaseType
 	 */
-	private void updatePhase(PhaseType phaseType) {
-		currentPhase = cropSpec.getCropCategory().getPhase(phaseType);
+	private void updatePhase(Phase newPhase) {
+		// Tendering is needed after PLANTING and up to HARVEST
+		if ((currentPhase != null) && currentPhase.getPhaseType() == PhaseType.PLANTING) {
+			isTenderRequired = true;
+		}
+		if (newPhase.getPhaseType() == PhaseType.HARVESTING) {
+			isTenderRequired = false;
+		}
+
+		currentPhase = newPhase;
+		currentPhaseWorkRequired = currentPhase.getWorkRequired() * 1000D;
+
+		logger.fine(this, "Entered a new phase " + currentPhase.getName());
+	}
+
+	/**
+	 * Mark the crop as finished growing
+	 * @param isWaste The crop is waste
+	 */
+	private void finishCrop(boolean isWaste) {
+		if (isWaste) {
+			// Add Crop Waste
+			double amt = percentageGrowth * maxHarvest / 100D;
+			if (amt > 0) {
+				store(amt, CROP_WASTE_ID);
+				logger.warning(this, 10_000, 
+						Math.round(amt * 10D)/10D  + " kg crop waste generated.");
+			}
+		}
+
+		var finishedPhase = cropSpec.getCropCategory().getPhase(PhaseType.FINISHED);
+		updatePhase(finishedPhase);
 	}
 
 	/**
@@ -347,7 +368,7 @@ public class Crop implements Comparable<Crop>, Entity {
 					"No petri dish left for isolating its tissues.");
 		// Require some dead matter for fungi to decompose
 		if (growingArea * .2 > MIN)
-			retrieve(growingArea * .2, CROP_WASTE_ID, true);
+			retrieve(growingArea * .2, CROP_WASTE_ID);
 	}
 
 	public double getLightingPower() {
@@ -368,21 +389,12 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 
 	/**
-	 * Gets the crop name.
+	 * Gets the phase of the crop.
 	 *
-	 * @return crop name
+	 * @return phase
 	 */
-	public String getCropName() {
-		return name;
-	}
-
-	/**
-	 * Gets the phase type of the crop.
-	 *
-	 * @return phaseType
-	 */
-	public PhaseType getPhaseType() {
-		return currentPhase.getPhaseType();
+	public Phase getPhase() {
+		return currentPhase;
 	}
 
 	/**
@@ -399,13 +411,17 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 	}
 	
+	public double getDailyHarvestRemaining() {
+		return dailyHarvestQuota - dailyHarvest;
+	}
+
 	/**
-	 * Gets the maximum possible food harvest for crop.
+	 * Gets the details of the harvest
 	 *
-	 * @return food harvest (kg.)
+	 * @return harvested and the estimated maximum
 	 */
-	public double getMaxHarvest() {
-		return maxHarvest;
+	public ValueMax getHarvest() {
+		return new ValueMax(totalHarvest, maxHarvest);
 	}
 
 	/**
@@ -418,21 +434,12 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 
 	/**
-	 * Gets the amount of growing time completed.
-	 *
-	 * @return growing time (millisols)
-	 */
-	public double getCurrentPhaseWorkCompleted() {
-		return currentPhaseWorkCompleted;
-	}
-	
-	/**
 	 * Gets the current work required.
 	 * 
 	 * @return
 	 */
 	public double getCurrentWorkRequired() {
-		return currentWorkRequired;
+		return Math.max(currentTenderWorkRequired, currentPhaseWorkRequired);
 	}
 	
 	/**
@@ -448,7 +455,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				)
 			return true;
 		
-		return currentWorkRequired > POSITIVE_ENTROPY ;
+		return currentTenderWorkRequired > POSITIVE_ENTROPY ;
 	}
 
 	/**
@@ -456,8 +463,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	 */
 	public double getTendingScore() {
 		double score = 0;
-		if (currentWorkRequired > POSITIVE_ENTROPY) {
-			score = (int)Math.floor(currentWorkRequired / 15); 
+		if (currentTenderWorkRequired > POSITIVE_ENTROPY) {
+			score = (int)Math.floor(currentTenderWorkRequired / 15); 
 		}
 		return switch(currentPhase.getPhaseType()) {
 			case HARVESTING -> score * 3;
@@ -506,14 +513,8 @@ public class Crop implements Comparable<Crop>, Entity {
 				logger.warning(this, 10_000, 
 						"At " + Math.round(percentageGrowth * 10D)/10D 
 						+ " percent of growth, it died of very poor health (" + Math.round(health * 100D) / 1D + " %).");
-				// Add Crop Waste
-				double amt = percentageGrowth * remainingHarvest / 100D;
-				if (amt > 0) {
-					store(amt, CROP_WASTE_ID);
-					logger.warning(this, 10_000, 
-							Math.round(amt * 10D)/10D  + " kg crop waste generated.");
-				}
-				updatePhase(PhaseType.FINISHED);
+
+				finishCrop(true);
 			}
 		}
 
@@ -525,14 +526,8 @@ public class Crop implements Comparable<Crop>, Entity {
 						+ Math.round(percentageGrowth * 10D)/10D 
 						+ " % growth unable to survive due to very poor health ("
 						+ Math.round(health * 100D) / 1D + " %).");
-				// Add Crop Waste
-				double amt = percentageGrowth * remainingHarvest / 100;
-				if (amt > 0) {
-					store(amt, CROP_WASTE_ID);
-					logger.warning(this, 10_000, 
-							Math.round(amt * 100D) / 100D  + " kg crop waste generated.");
-				}
-				updatePhase(PhaseType.FINISHED);
+
+				finishCrop(true);
 			}
 		}
 
@@ -560,15 +555,14 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 		
 		// Future: will need to model diseaseIndex
-		
 		double workTimeFactor = 0;
-		if (currentWorkRequired < 10)
+		if (currentTenderWorkRequired < 10)
 			// Within 100 is still considered well taken care of
-			workTimeFactor = (10 - currentWorkRequired) / WORK_TIME_FACTOR;
+			workTimeFactor = (10 - currentTenderWorkRequired) / WORK_TIME_FACTOR;
 		else
 			// Beyond 100 will incur penalty
 			// The negative sign creates penalty to crop health
-			workTimeFactor = - (currentWorkRequired - 1000) / WORK_TIME_FACTOR;
+			workTimeFactor = - (currentTenderWorkRequired - 1000) / WORK_TIME_FACTOR;
 		
 		health = (1 - diseaseIndex) * total / size + workTimeFactor;
 
@@ -593,8 +587,12 @@ public class Crop implements Comparable<Crop>, Entity {
 		double remainingTime = 0;
 		// Record the work time in Farming
 		farm.addCumulativeWorkTime(workTime);
+
 		// Reduce the work required
-		currentWorkRequired -= modTime;
+		if (isTenderRequired) {
+			currentTenderWorkRequired -= modTime;
+		}
+
 		// Note: Allow the plant to be over-tended (thus currentWorkRequired becomes negative) 
 		// so that it won't need to be taken care of for a while
 		
@@ -603,80 +601,49 @@ public class Crop implements Comparable<Crop>, Entity {
 		if (healthCondition > 1)
 			healthCondition = 1;
 
-		double phaseWorkReqMillisols = currentPhase.getWorkRequired() * 1000D;
+		// For phases that have no time aspect; they are advanced via Work only
+		if (currentPhase.getPercentGrowth() == 0) {
+			// At a particular growing phase (NOT including the harvesting phase)
+			currentPhaseWorkRequired -= workTime;
 
-		if (dailyHarvest < 0D) {
-			dailyHarvest = 0;
-			growingTimeCompleted = 0;
+			if (currentPhaseWorkRequired <= 0) {
+				advancePhase();
+			}
+			return 0D;
 		}
 
 		// Only do phases that need manual work
 		PhaseType phaseType = currentPhase.getPhaseType();
 		switch (phaseType) {
-		case INCUBATION, PLANTING:
-			// At a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += modTime;
-			
-			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
-				currentPhaseWorkCompleted = 0;
-				advancePhase();
-				logger.fine(this, "Entered a new phase " + currentPhase.getPhaseType()
-						+ "   Phase Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
-						+ "   Phase Work Required : " + Math.round(phaseWorkReqMillisols * 10D) / 10D);
-			}
-			break;
-
 		case MATURATION, HARVESTING:
 			// at the maturation or harvesting phase
-			currentPhaseWorkCompleted += modTime;
-			// Set the harvest multiplier
-			int multiplier = 5;
+			currentPhaseWorkRequired -= workTime;
 
-			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
-				// Modify parameter list to include crop name
-				double lastHarvest = multiplier * dailyHarvest * modTime/ phaseWorkReqMillisols;
+			// Set the harvest multiplier; not as effecient during maturation
+			double phaseModifier = (phaseType == PhaseType.HARVESTING ? 1D : 0.5D);
+			double modifiedHarvest = phaseModifier * dailyHarvestQuota * (workTime / 1000D);
 
-				if (remainingHarvest > 0) {
-					collectProduce(lastHarvest);
-
-					remainingHarvest -= lastHarvest;
-					totalHarvest += lastHarvest;
-
-					// Don't end until there is nothing left ?
-					if (remainingHarvest <= 0) {
-						String phaseDescription = "";
-						if (phaseType == PhaseType.MATURATION)
-							phaseDescription = " during the initial harvest.";
-						else if (phaseType == PhaseType.HARVESTING)
-							phaseDescription = " during the final harvest.";
-
-						logger.info(this, 4_000, 
-								"Harvested a total of "
-									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg."
-									+ phaseDescription);
-
-						// Reset the totalHarvest back to zero.
-						totalHarvest = 0;
-						// Sets the phase to FINISHED
-						updatePhase(PhaseType.FINISHED);
-
-						//  Check to see if a botany lab is available
-						if (worker instanceof Person && !farm.checkBotanyLab())
-							logger.warning(worker,
-									"Can't find an available lab bench to work on its tissue culture.");
-					}
-				}
+			// Store the crop harvest
+			if (modifiedHarvest > 0) {
+				collectProduce(modifiedHarvest);
 			}
-			else {
-				if (dailyHarvest > 0.00001) {
-					// Continue the harvesting process
-					double modifiedHarvest = multiplier * dailyHarvest * modTime / phaseWorkReqMillisols;
-					// Store the crop harvest
-					if (modifiedHarvest > 0 && remainingHarvest > 0) {
-						collectProduce(modifiedHarvest);
-						remainingHarvest -= modifiedHarvest;
-						totalHarvest += modifiedHarvest;
-					}
+
+			// End of harvest effort
+			if (currentPhaseWorkRequired <= 0) {
+				// Don't end until there is nothing left ?
+				if (totalHarvest >= maxHarvest) {
+					logger.info(this, 4_000, 
+							"Harvested a total of "
+								+ Math.round(totalHarvest * 100.0) / 100.0 + " kg. during "
+								+ phaseType);
+
+					// Sets the phase to FINISHED
+					finishCrop(false);
+
+					//  Check to see if a botany lab is available
+					if (worker instanceof Person && !farm.checkBotanyLab())
+						logger.warning(worker,
+								"Can't find an available lab bench to work on its tissue culture.");
 				}
 			}
 			break;
@@ -687,10 +654,10 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		default:
 			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += modTime;
+			currentPhaseWorkRequired -= modTime;
 
-			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
-				currentPhaseWorkCompleted = 0D;
+			if (currentPhaseWorkRequired < 0) {
+				currentPhaseWorkRequired = 0D;
 			}
 			break;
 		}
@@ -699,7 +666,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		if ((currentPhase.getPhaseType() == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
 			logger.fine(this, "At " + percentageGrowth
 					   + "% of growth, setting the phase to FINISHED.");
-			updatePhase(PhaseType.FINISHED);
+			finishCrop(false);
 		}
 
 		return remainingTime;
@@ -709,10 +676,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * Advances the crop to the next phase of growth.
 	 */
 	private void advancePhase() {
-		currentPhase = cropSpec.getCropCategory().getNextPhase(currentPhase);
-		currentPhaseWorkCompleted = 0;
+		updatePhase(cropSpec.getCropCategory().getNextPhase(currentPhase));
 	}
-	
 	
 	/**
 	 * Collects the produce during harvest.
@@ -720,21 +685,18 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param harvestMass
 	 */
 	private void collectProduce(double harvestMass) {
-		boolean isSeedPlant = cropSpec.isSeedPlant();
 		int seedID = cropSpec.getSeedID();
 		int cropID = cropSpec.getCropID();
-		
-		if (isSeedPlant) {
-			// Extract Sesame Seed.
-			// Note the purpose for this plant is primarily the seeds
-			// Future: how best to handle Peanut ?
-			// Is peanut considered a seed plant ?			
-			store(harvestMass, seedID);
-		}
-		else if ((seedID > 0) && harvestMass * massRatio > 0) {
-			// Cilantro & White Mustard has leaves as food. 
-			// White Mustard makes mustard seed
-			// Cilantro makes coriander seed
+
+		// Check not over collecting. What is the max remaining
+		double remaining = Math.min((maxHarvest - totalHarvest),
+									(dailyHarvestQuota - dailyHarvest));
+		harvestMass = Math.min(harvestMass, remaining);
+		totalHarvest += harvestMass;
+		dailyHarvest += harvestMass;
+
+		// Deposit main outputs
+		if ((seedID > 0) && harvestMass * massRatio > 0) {
 			store(harvestMass * massRatio, seedID);
 			store(harvestMass, cropID);
 		}
@@ -771,8 +733,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	public boolean timePassing(ClockPulse pulse, double productionLevel,
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
-
-		if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
+		// Check if the crop is finished growing or it i a phase not time dependent
+		if ((currentPhase.getPhaseType() == PhaseType.FINISHED) 
+				|| (currentPhase.getPercentGrowth() == 0D)) {
 			return false;
 		}
 
@@ -780,63 +743,42 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		// Future: currentWorkRequired should be modified by the crop category. 
 		// Some category of crop doesn't need much care while some need more attention
-		currentWorkRequired += elapsed * growingArea / WORK_FACTOR;
-
+		if (isTenderRequired) {
+			currentTenderWorkRequired += elapsed * growingArea / WORK_FACTOR;
+		}
 		accumulatedTime += elapsed;
-
-		double newCheckPeriod = CHECK_CROP_PERIOD * elapsed;
 		
-		if (accumulatedTime >= newCheckPeriod) {
+		if (accumulatedTime >= CHECK_PERIOD) {
+			// Take a slice
+			accumulatedTime -= CHECK_PERIOD;
+			double productiveTime = CHECK_PERIOD * productionLevel;
 
-			accumulatedTime -= newCheckPeriod;
-
-			double time = accumulatedTime * productionLevel;
-
-			growingTimeCompleted += time;
+			growingTimeCompleted += productiveTime;
 			
 			double growingTime = cropSpec.getGrowingSols() * 1000D;
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 			
-			// Right before the harvesting phase
-			if (currentPhase.getPhaseType() != PhaseType.HARVESTING
-					&& percentageGrowth > currentPhase.getCumulativePercentGrowth()) {
+			// Move crop forard if the phase has a time aspect
+			if (percentageGrowth > currentPhase.getCumulativePercentGrowth()) {
 				// Advance onto the next phase
 				advancePhase();
 			}
 
-			// max possible harvest within this period of time
-			double maxPeriodHarvest = maxHarvest * (time / growingTime);
 			// Compute each harvestModifiers and sum them up below
 			// Note: computeHarvest takes up 40% of all cpu utilization
-			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
+			double harvestModifier = computeHarvest(pulse, productiveTime,
 													solarIrradiance,
 													greyFilterRate,
 													temperatureModifier);
 			// Add to the daily harvest.
-			dailyHarvest += maxPeriodHarvest * harvestModifier;
-			// Add to the cumulative harvest.
-			remainingHarvest += maxPeriodHarvest * harvestModifier;
+			dailyHarvestQuota = maxDailyHarvest * harvestModifier;
 
-			if ((dailyHarvest < 0) || (percentageGrowth > 110D)) {
-				updatePhase(PhaseType.FINISHED);
-			}
-
-			if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
-				dailyHarvest = 0;
-				totalHarvest = 0;
-			}
-		}
-
-		// Resets thing at the end of a sol.
-		if (resetEndOfSol(pulse)) {
-			// Add tasks
-		}
-		
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewHalfMillisol() || (pulse.isNewIntMillisol() && msol % CHECK_HEALTH_FREQUENCY == 0)) {
 			// Checks on crop health
 			trackHealth();
 		}
+
+		// Resets thing at the end of a sol.
+		resetEndOfSol(pulse);
 		
 		return true;
 	}
@@ -854,12 +796,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// every time
 			// Reset the daily work counter currentPhaseWorkCompleted back to zero
 			cumulativeDailyPAR = 0;
-			
-			if (dailyHarvest < 0) {
-				updatePhase(PhaseType.FINISHED);
-				dailyHarvest = 0;
-				return true;
-			}
+			dailyHarvest = 0D;
 		}
 
 		return false;
@@ -975,7 +912,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		lightModifier = cumulativeDailyPAR / (dailyPARRequired + .0001) * 1000D / ( time  + .0001);
 		// Future: If too much light, the crop's health may suffer unless a person comes
 		// to intervene
-		if (isStartup && newSol == 1) {
+		if (newSol == 1) {
 			// if this crop is generated at the start of the sim,
 			// lightModifier should start from 1, rather than 0
 			lightModifier = 1;
@@ -994,9 +931,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	 */
 	private void retrieveWater(double amount, int id) {
 		if (amount > 0) {
-			retrieve(amount, id, true);
+			retrieve(amount, id);
 			// Record the amount of water or grey water taken up by the crop
-			farm.addCropUsage(name, amount, id);		
+			farm.addCropUsage(getName(), amount, id);		
 		}
 	}
 	
@@ -1067,7 +1004,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			}
 
 			if (fertilizerUsed > 0) {
-				retrieve(fertilizerUsed, FERTILIZER_ID, true);
+				retrieve(fertilizerUsed, FERTILIZER_ID);
 			}
 
 			adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_FACTOR);
@@ -1168,7 +1105,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param a   period of time in millisols
 	 * @return the harvest modifier
 	 */
-	private double computeHarvest(double maxPeriodHarvest, ClockPulse pulse,
+	private double computeHarvest(ClockPulse pulse,
 						double time, double solarIrradiance, double greyFilterRate,
 						double temperatureModifier) {
 
@@ -1264,13 +1201,13 @@ public class Crop implements Comparable<Crop>, Entity {
 	private double retrieveGas(double amount, double gasCache, int gasId) {
 		if (amount > 0) {
 			if (gasCache - amount < -gasThreshold) {
-				retrieve(gasCache, gasId, true);
+				retrieve(gasCache, gasId);
 				gasCache = -amount;
 			}
 			else {
 				gasCache -= amount;
 			}
-			farm.addCropUsage(name, amount, gasId);
+			farm.addCropUsage(getName(), amount, gasId);
 		}
 		return gasCache;
 	}
@@ -1280,10 +1217,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	 *
 	 * @param amount
 	 * @param resource
-	 * @param value
 	 * @return
 	 */
-	private boolean retrieve(double amount, int resource, boolean value) {
+	private boolean retrieve(double amount, int resource) {
 		return (building.getSettlement().retrieveAmountResource(resource, amount) == 0);
 	}
 
@@ -1302,7 +1238,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			else {
 				gasCache -= amount;
 			}
-			farm.addCropUsage(name, -amount, gasId);
+			farm.addCropUsage(getName(), -amount, gasId);
 		}
 		return gasCache;
 	}
@@ -1362,7 +1298,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 	@Override
 	public String toString() {
-		return "Crop [name=" + name + " @ " + building + "]";
+		return "Crop [name=" + getName() + " @ " + building + "]";
 	}
 
 	@Override
@@ -1372,7 +1308,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 	@Override
 	public String getName() {
-		return getCropName();
+		return cropSpec.getName();
 	}
 
 	/**
@@ -1383,13 +1319,4 @@ public class Crop implements Comparable<Crop>, Entity {
 		return building.getContext();
 	}
 
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		cropSpec = null;
-		currentPhase = null;
-		farm = null;
-		building = null;
-	}
 }

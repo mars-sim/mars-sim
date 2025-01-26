@@ -56,10 +56,10 @@ public class CropCommand extends AbstractSettlementCommand {
 									"Phase", CROP_PHASE_WIDTH, "Grown %", "Harvest");
 			List<Crop> crops = farm.getCrops().stream().sorted().collect(Collectors.toList());
 			for (Crop crop : crops) {
-				response.appendTableRow(crop.getCropName(), crop.getCropSpec().getCropCategory().getName(),
+				response.appendTableRow(crop.getName(), crop.getCropSpec().getCropCategory().getName(),
 										crop.getHealthCondition()*100D,
-										crop.getPhaseType().getName(), crop.getPercentGrowth(),
-										crop.getMaxHarvest());
+										crop.getPhase().getName(), crop.getPercentGrowth(),
+										crop.getHarvest());
 				
 			}
 			response.appendBlankLine();

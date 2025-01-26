@@ -8,6 +8,7 @@ package com.mars_sim.core.structure.building.function.farming;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -67,7 +68,7 @@ public class Farming extends Function {
 	/** The amount of crop tissue culture needed for each square meter of growing area. */
 	private static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
-	private static final double MIN  = .00001D;// 0.0000000001;
+	private static final double MIN  = .00001D;
 	
 	private static final String CROPS = "crops";
 	private static final String POWER_GROWING_CROP = "power-growing-crop";
@@ -81,15 +82,12 @@ public class Farming extends Function {
 													  "Containment System", 
 													  "Contamination Control",
 													  "Foundation",	
-//													  "Structural Element", 
-//													  "Thermal Budget",
 													  "Irrigation"};
 	private static final String [] CLEANING_LIST = {"Floor", "Curtains", 
 													"Canopy", "Pipings", 
 													"Trays", "Valves"};
 
-	/** The mission sol. */
-//	private int currentSol = 1;
+
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -191,7 +189,7 @@ public class Farming extends Function {
 	 * Initializes the attribute scores.
 	 */
 	private void initAttributeScores() {
-		attributes = new HashMap<>(); 
+		attributes = new EnumMap<>(Aspect.class); 
 		attributes.put(Aspect.ATTRACTIVENESS, .5);
 		attributes.put(Aspect.CLEANINESS, .5);
 		attributes.put(Aspect.MANAGEMENT, .5);
@@ -235,7 +233,6 @@ public class Farming extends Function {
 		CropSpec ct = null;
 		boolean cropAlreadyPlanted = true;
 
-		// TODO: at the start of the sim, choose only from a list of staple food crop
 		int totalCropTypes = cropConfig.getCropTypes().size();
 
 		// Attempt to find a unique crop but limit the number of attempts
@@ -268,16 +265,15 @@ public class Farming extends Function {
 		for (CropSpec c: list) {
 			String cropName = c.getName();
 			String tissueName = cropName + Farming.TISSUE;
-			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);	
-			double amountTissue = building.getSettlement().getAmountResourceStored(tissue.getID());
-			if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
-				tissues.add(tissue);
+			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);
+			if (tissue != null) {	
+				double amountTissue = building.getSettlement().getAmountResourceStored(tissue.getID());
+				if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
+					tissues.add(tissue);
+			}
 		}
-	
-//		logger.log(getBuilding(), Level.INFO, 0, "tissues: " + tissues);
-		
+			
 		String cropName = null;
-
 		for (AmountResource ar: tissues) {
 			if (cropName == null) {
 				String tissueName = ar.getName();
@@ -468,10 +464,6 @@ public class Farming extends Function {
 	 * @return Crop
 	 */
 	private Crop plantACrop(CropSpec cropSpec, boolean isStartup, double designatedArea) {
-		// Implement new way of calculating amount of food in kg,
-		// accounting for the Edible Biomass of a crop
-		// edibleBiomass is in [ gram / m^2 / day ]
-		double edibleBiomass = cropSpec.getEdibleBiomass();
 		double cropArea = 0;
 		
 		if (remainingArea == 0)
@@ -494,9 +486,6 @@ public class Farming extends Function {
 		if (remainingArea < 0)
 			remainingArea = 0;
 
-		// Note edible-biomass is [ gram / m^2 / day ]
-		double dailyMaxHarvest = edibleBiomass / 1000D * cropArea;
-
 		double percentAvailable = 0;
 
 		if (!isStartup) {
@@ -509,7 +498,7 @@ public class Farming extends Function {
 
 		}
 
-		return new Crop(identifer++, cropSpec, cropArea, dailyMaxHarvest,
+		return new Crop(identifer++, cropSpec, cropArea,
 				this, isStartup, percentAvailable);
 	}
 
@@ -713,14 +702,6 @@ public class Farming extends Function {
 		return needyCrop.addWork(worker, workTime);
 	}
 	
-	public boolean requiresWork(Crop needyCrop) {
-		return needyCrop.requiresWork();
-	}
-
-	public Crop getNeedyCropCache() {
-		return needyCropCache;
-	}
-	
 	/**
 	 * Gets a crop that needs work time.
 	 *
@@ -728,9 +709,17 @@ public class Farming extends Function {
 	 * @return crop or null if none found.
 	 */
 	public Crop getNeedyCrop() {
+		// Check if Crops are in harvest first
+		var harvestable = cropList.stream()
+			.filter(c -> c.getPhase().getPhaseType() == PhaseType.HARVESTING)
+			.filter(c -> c.getDailyHarvestRemaining() > 0D)
+			.toList();
+		if (!harvestable.isEmpty()) {
+			return RandomUtil.getRandomElement(harvestable);
+		}
+
 		Crop currentCrop = needyCropCache;
-		
-		if (cropList == null || cropList.isEmpty())
+		if (cropList.isEmpty())
 			return null;
 
 		int rand = RandomUtil.getRandomInt(3);
@@ -757,8 +746,6 @@ public class Farming extends Function {
 		}
 		
 		else {
-			Crop nextCrop = null;
-			
 			// Pick another crop that requires work
 			List<Crop> needyCrops = new ArrayList<>();
 			for (Crop c : cropList) {
@@ -767,13 +754,8 @@ public class Farming extends Function {
 				}
 			}
 	
-			if (!needyCrops.isEmpty()) {
-				nextCrop = needyCrops.get(RandomUtil.getRandomInt(0,
-									needyCrops.size() - 1));
-			}
-	
-			needyCropCache = nextCrop;
-			return nextCrop;
+			needyCropCache = RandomUtil.getRandomElement(needyCrops);
+			return needyCropCache;
 		}
 	}
 
@@ -830,9 +812,7 @@ public class Farming extends Function {
 			// Determine the production level.
 			double productionLevel = 0D;
 			PowerMode powerMode = building.getPowerMode();
-			
-//			logger.info(building, "powerMode: " + powerMode);
-			
+						
 			if (powerMode == PowerMode.FULL_POWER)
 				productionLevel = 1D;
 			else if (powerMode == PowerMode.LOW_POWER)
@@ -859,11 +839,11 @@ public class Farming extends Function {
 									 greyFilterRate, temperatureModifier);
 
 				} catch (Exception e) {
-					logger.severe(building, crop.getCropName() + " ran into issues ", e);
+					logger.severe(building, crop.getName() + " ran into issues ", e);
 				}
 
 				// Remove old crops.
-				if (crop.getPhaseType() == PhaseType.FINISHED) {
+				if (crop.getPhase().getPhaseType() == PhaseType.FINISHED) {
 					// Take back the growing area
 					remainingArea = remainingArea + crop.getGrowingArea();
 					
@@ -917,10 +897,10 @@ public class Farming extends Function {
 		Crop crop = plantACrop(ct, false, designatedCropArea);
 		if (crop != null) {
 			cropList.add(crop);
-			cropHistory.put(crop.getIdentifier(), crop.getCropName());
+			cropHistory.put(crop.getIdentifier(), crop.getName());
 			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 	
-			logger.info(worker, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
+			logger.info(worker, 3_000, "Planted a new crop of " + crop.getName() + ".");
 			numCrops2Plant--;
 		}
 	}
@@ -936,21 +916,16 @@ public class Farming extends Function {
 		double powerRequired = 0D;
 
 		for (Crop crop : cropList) {
+			var phaseType = crop.getPhase().getPhaseType();
+			
 			// Tailor the lighting according to the phase type the crop is at
-			if (crop.getPhaseType() == PhaseType.PLANTING 
-					|| crop.getPhaseType() == PhaseType.INCUBATION)
+			powerRequired += switch (phaseType) {
 				// More power is needed for illumination and crop monitoring
-				powerRequired += powerGrowingCrop / 2D; 
-			else if (crop.getPhaseType() == PhaseType.GERMINATION)
-				powerRequired += powerGrowingCrop / 10D;
-			else if (crop.getPhaseType() == PhaseType.HARVESTING 
-					|| crop.getPhaseType() == PhaseType.FINISHED)
-				// Winding down the growth
-				powerRequired += powerGrowingCrop / 5D;
-			else if (crop.getPhaseType() == PhaseType.FINISHED)
-				;// do nothing
-			else
-				powerRequired += crop.getLightingPower();
+				case PLANTING, INCUBATION -> powerGrowingCrop/2D;
+				case GERMINATION -> powerGrowingCrop/10D;
+				case HARVESTING, FINISHED -> powerGrowingCrop/5D;
+				default -> crop.getLightingPower();
+			};
 		}
 
 		// The normal lighting power during growing phase
@@ -1145,7 +1120,7 @@ public class Farming extends Function {
 		double sum = 0;
 
 		for (Crop c : cropList) {
-			sum += computeUsage(type, c.getCropName());
+			sum += computeUsage(type, c.getName());
 		}
 		
 		return Math.round(sum * 100.0) / 100.0;

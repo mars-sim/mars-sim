@@ -43,7 +43,6 @@ public class CropConfig {
 	private static final String INEDIBLE_BIOMASS = "inedible-biomass";
 	private static final String DAILY_PAR = "daily-PAR";
 	private static final String SEED_NAME = "seed-name";
-	private static final String SEED_PLANT = "seed-plant";
 	private static final String CATEGORY_LIST = "category-list";
 	private static final String CATEGORY = "category";
 	private static final String DESCRIPTION = "description";
@@ -126,13 +125,12 @@ public class CropConfig {
 			double cummulativeGrowth = 0;
 			for(var p : phaseNodes) {
 				String phaseName = p.getAttributeValue(NAME);
-				var phase = PhaseType.valueOf(phaseName.toUpperCase());
 				double phaseDuration = ConfigHelper.getAttributeDouble(p, WORK_REQUIRED);
 				double growthPerc = ConfigHelper.getAttributeDouble(p, GROWTH_PERC);
 				cummulativeGrowth += growthPerc;
-				phases.add(new Phase(phase, phaseDuration, growthPerc, cummulativeGrowth));
+				phases.add(new Phase(phaseName, phaseDuration, growthPerc, cummulativeGrowth));
 			}
-
+ 
 			catByName.put(name.toLowerCase(), new CropCategory(name, description, needsLight, phases));
 		}
 		return catByName;
@@ -162,17 +160,12 @@ public class CropConfig {
 			CropCategory cat = cats.get(cropCategory.toLowerCase());
 
 			// Get Seed values
-			boolean seedPlant = false;
 			String seedName = crop.getAttributeValue(SEED_NAME);
-			String seedPlantPAR = crop.getAttributeValue(SEED_PLANT);
-			if (seedPlantPAR != null) {
-				seedPlant = Boolean.valueOf(seedPlantPAR);
-			}
-			
+	
 			CropSpec spec = new CropSpec(name, growingTime,
 									cat, edibleBiomass,
 									edibleWaterContent, inedibleBiomass,
-									dailyPAR, seedName, seedPlant);
+									dailyPAR, seedName);
 
 			lookUpCropSpecMap.put(name.toLowerCase(), spec);
 		}

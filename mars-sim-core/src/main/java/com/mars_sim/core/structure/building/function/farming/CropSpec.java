@@ -19,8 +19,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	/** Is this a seed only? */
-	private boolean seedOnly;
 	/** The crop id. */
 	private int cropID;
 	/** The seed id. */
@@ -56,11 +54,10 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @param inedibleBiomass
 	 * @param dailyPAR
 	 * @param seedName
-	 * @param seedOnly
 	 */
 	CropSpec(String name, int growingSols, CropCategory cropCategory, 
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
-			String seedName, boolean seedOnly) {
+			String seedName) {
 
 		this.name = name;
 		this.growingSols = growingSols;
@@ -72,7 +69,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		this.cropID = ResourceUtil.findIDbyAmountResourceName(name);
 		if (seedName != null) {
 			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);
-			this.seedOnly = seedOnly;
 		}
 	}
 
@@ -104,19 +100,21 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Does this crop only produce a the seed ?
-	 */
-	public boolean isSeedPlant() {
-		return seedOnly;
-	}
-
-	/**
 	 * Gets the length of the crop type's growing phase.
 	 *
 	 * @return crop type's growing time in sols.
 	 */
 	public int getGrowingSols() {
 		return growingSols;
+	}
+
+	/**
+	 * Gets the length the crop is in the ground and growing in mass
+	 * @return
+	 */
+	public double getInGroundSols() {
+		return (growingSols * cropCategory.getInGroundPercentage())/100D;
+
 	}
 
 	/**

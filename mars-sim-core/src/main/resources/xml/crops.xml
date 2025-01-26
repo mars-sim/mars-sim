@@ -32,8 +32,6 @@
 	<!ATTLIST crop inedible-biomass CDATA #REQUIRED>
 	<!ATTLIST crop daily-PAR CDATA #REQUIRED>
 	<!ATTLIST crop seed-name CDATA #IMPLIED>
-	<!ATTLIST crop seed-plant (true|false) #IMPLIED>
-
 ]>
 
 <!-- 
@@ -87,154 +85,154 @@
 
 	<category-list>
 		<category name="Roots" description="Roots are the underground part of a plant that absorbs water and minerals from the soil.">	
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="SPROUTING" work-required="1" growth-perc="5" />
-			<phase name="LEAF_DEVELOPMENT" work-required="1" growth-perc="39" />
-			<phase name="ROOT_DEVELOPMENT" work-required="1" growth-perc="40" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Sprouting" work-required="1" growth-perc="5" />
+			<phase name="Leaf Development" work-required="1" growth-perc="39" />
+			<phase name="Root Development" work-required="1" growth-perc="40" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Grasses" description="Grasses are monocotyledonous, usually herbaceous plants with narrow leaves growing from the base.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="TILLERING" work-required="1" growth-perc="39" />
-			<phase name="GRAND_GROWTH" work-required="1" growth-perc="40" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Tillering" work-required="1" growth-perc="39" />
+			<phase name="Grand Growth" work-required="1" growth-perc="40" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Grains" description="Grains are small, hard, dry seeds, with or without attached hulls or fruit layers, harvested for human or animal consumption.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="9" />
-			<phase name="TILLERING" work-required="1" growth-perc="20" />
-			<phase name="STEM_ELONGATION" work-required="1" growth-perc="15" />
-			<phase name="FLOWERING" work-required="1" growth-perc="20" />
-			<phase name="MILK_DEVELOPMENT" work-required="1" growth-perc="10" />
-			<phase name="DOUGH_DEVELOPING" work-required="1" growth-perc="10" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="9" />
+			<phase name="Tillering" work-required="1" growth-perc="20" />
+			<phase name="Stem Elongation" work-required="1" growth-perc="15" />
+			<phase name="Flowering" work-required="1" growth-perc="20" />
+			<phase name="Milk Development" work-required="1" growth-perc="10" />
+			<phase name="Dough Development" work-required="1" growth-perc="10" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Bulbs" description="Bulbs are a short stem with fleshy leaves or leaf bases that function as food storage organs during dormancy.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="SPROUTING" work-required="1" growth-perc="5" />
-			<phase name="POST_EMERGENCE" work-required="1" growth-perc="15" />
-			<phase name="LEAFING" work-required="1" growth-perc="29" />
-			<phase name="BULB_INITIATION" work-required="1" growth-perc="35" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Sprouting" work-required="1" growth-perc="5" />
+			<phase name="Post Emergence" work-required="1" growth-perc="15" />
+			<phase name="Leafing" work-required="1" growth-perc="29" />
+			<phase name="Bulb Initiation" work-required="1" growth-perc="35" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Corms" description="Corms are a short, vertical, swollen underground plant stem that serves as a storage organ used by some plants to survive winter or other adverse conditions.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="SPROUTING" work-required="1" growth-perc="20" />
-			<phase name="VEGETATIVE_DEVELOPMENT" work-required="1" growth-perc="20" />
-			<phase name="FLOWERING" work-required="1" growth-perc="15" />
-			<phase name="REPLACEMENT_CORMS_DEVELOPMENT" work-required="1" growth-perc="30" />
-			<phase name="ANTHESIS" work-required="1" growth-perc="9" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Sprouting" work-required="1" growth-perc="20" />
+			<phase name="Vegetative Development" work-required="1" growth-perc="20" />
+			<phase name="Flowering" work-required="1" growth-perc="15" />
+			<phase name="Replacement Corms Development" work-required="1" growth-perc="30" />
+			<phase name="Anthesis" work-required="1" growth-perc="9" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Fruits" description="Fruits are the mature ovary of a flowering plant, usually containing seeds.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="VEGETATIVE_DEVELOPMENT" work-required="1" growth-perc="30" />
-			<phase name="FLOWERING" work-required="1" growth-perc="25" />
-			<phase name="FRUITING" work-required="1" growth-perc="24" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Vegetative Development" work-required="1" growth-perc="30" />
+			<phase name="Flowering" work-required="1" growth-perc="25" />
+			<phase name="Fruiting" work-required="1" growth-perc="24" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Herbs" description="Herbs are plants with savory or aromatic properties that are used for flavoring and garnishing food, medicinal purposes, or for fragrances.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="9" />
-			<phase name="FOLIAGE" work-required="1" growth-perc="50" />
-			<phase name="FLOWERING" work-required="1" growth-perc="20" />
-			<phase name="SEED_FILL" work-required="1" growth-perc="5" />
-			<phase name="POD_MATURING" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="9" />
+			<phase name="Foilage" work-required="1" growth-perc="50" />
+			<phase name="Flowering" work-required="1" growth-perc="20" />
+			<phase name="Seed Fill" work-required="1" growth-perc="5" />
+			<phase name="Pod Maturing" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Leaves" description="Leaves are the main organs of photosynthesis and transpiration in higher plants.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="POST_EMERGENCE" work-required="1" growth-perc="5" />
-			<phase name="HEAD_DEVELOPMENT" work-required="1" growth-perc="39" />
-			<phase name="FIFTY_PERCENT_HEAD_SIZE_REACHED" work-required="1" growth-perc="35" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Post Emergence" work-required="1" growth-perc="5" />
+			<phase name="Head Development" work-required="1" growth-perc="39" />
+			<phase name="50% Head Size Reached" work-required="1" growth-perc="35" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Legumes" description="Legumes are plants that bear fruit in the form of pods enclosing the seeds.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="LEAFING" work-required="1" growth-perc="30" />
-			<phase name="FLOWERING" work-required="1" growth-perc="25" />
-			<phase name="SEED_FILL" work-required="1" growth-perc="20" />
-			<phase name="POD_MATURING" work-required="1" growth-perc="14" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Leafing" work-required="1" growth-perc="30" />
+			<phase name="Flowering" work-required="1" growth-perc="25" />
+			<phase name="Seed Fill" work-required="1" growth-perc="20" />
+			<phase name="Pod Maturing" work-required="1" growth-perc="14" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Stems" description="Stems are the main body or stalk of a plant or shrub, typically rising above ground but occasionally subterranean.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="EARLY_VEGETATIVE" work-required="1" growth-perc="15" />
-			<phase name="MID_VEGETATIVE" work-required="1" growth-perc="15" />
-			<phase name="STEM_ELONGATION" work-required="1" growth-perc="34" />
-			<phase name="EARLY_BULKING_UP" work-required="1" growth-perc="10" />
-			<phase name="MID_BULKING_UP" work-required="1" growth-perc="10" />
-			<phase name="LATE_BULKING_UP" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Early Vegetative" work-required="1" growth-perc="15" />
+			<phase name="Mid Vegetative" work-required="1" growth-perc="15" />
+			<phase name="Stem Elongation" work-required="1" growth-perc="34" />
+			<phase name="Early Bulking Up" work-required="1" growth-perc="10" />
+			<phase name="Mid Bulking Up" work-required="1" growth-perc="10" />
+			<phase name="Late Bulking Up" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Tubers" description="Tubers are the thickened part of an underground stem or rhizome that stores nutrients.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="SPROUTING" work-required="1" growth-perc="10" />
-			<phase name="LEAF_DEVELOPMENT" work-required="1" growth-perc="15" />
-			<phase name="TUBER_INITIATION" work-required="1" growth-perc="20" />
-			<phase name="TUBER_FILLING" work-required="1" growth-perc="35" />
-			<phase name="MATURATION" work-required="1" growth-perc="14" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Sprouting" work-required="1" growth-perc="10" />
+			<phase name="Leaf Development" work-required="1" growth-perc="15" />
+			<phase name="Tuber Initiation" work-required="1" growth-perc="20" />
+			<phase name="Tuber Filling" work-required="1" growth-perc="35" />
+			<phase name="Maturation" work-required="1" growth-perc="14" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Flowers" description="Flowers are the seed-bearing part of a plant, consisting of reproductive organs that are typically surrounded by brightly colored petals and a green calyx.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="GROWING" work-required="1" growth-perc="79" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Growing" work-required="1" growth-perc="79" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Fungi" description="Fungi are a group of spore-producing organisms that feed on organic matter."
 				needs-light="false">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="GROWING" work-required="1" growth-perc="79" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Growing" work-required="1" growth-perc="79" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 		<category name="Seeds" description="Seeds are the part of a flowering plant that typically contains an embryo and is capable of developing into a new plant.">
-			<phase name="INCUBATION" work-required="10" growth-perc="0" />
-			<phase name="PLANTING" work-required="0.5" growth-perc="1" />
-			<phase name="GERMINATION" work-required="1" growth-perc="5" />
-			<phase name="GROWING" work-required="1" growth-perc="79" />
-			<phase name="MATURATION" work-required="1" growth-perc="10" />
-			<phase name="HARVESTING" work-required="0.5" growth-perc="5" />
-			<phase name="FINISHED" work-required="0.5" growth-perc="0" />
+			<phase name="Incubation" work-required="1" growth-perc="0" />
+			<phase name="Planting" work-required="0.5" growth-perc="1" />
+			<phase name="Germination" work-required="1" growth-perc="5" />
+			<phase name="Growing" work-required="1" growth-perc="79" />
+			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
+			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
 	</category-list>
 
@@ -529,8 +527,7 @@
 		 -->
 
 	    <crop name="Peanut" growing-sols="52" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="6" edible-water-content=".056" inedible-biomass="18" daily-PAR="32.4" 
-	    	seed-name="Peanut" seed-plant="true" />
+	    	edible-biomass="6" edible-water-content=".056" inedible-biomass="18" daily-PAR="32.4" />
 
 	    	<!--
 	    	Assume this peanut variant takes half the time (104 days -> 52 days)
@@ -634,7 +631,7 @@
 
 	    <crop name="Sesame" growing-sols="50" crop-category="flowers" life-cycle="annual"
 	    	edible-biomass="7.2" edible-water-content=".4" inedible-biomass="15.0" daily-PAR="17.28"
-	    	seed-name="Sesame Seed" seed-plant="true"/>
+			seed-name="Sesame Seed"/>
 	    	<!--
 	    	
 	    	Assume this sesame variant takes half the time (100 days -> 50 days)

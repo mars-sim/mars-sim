@@ -19,6 +19,7 @@ import com.mars_sim.core.structure.building.function.Research;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.farming.Farming;
+import com.mars_sim.core.structure.building.function.farming.PhaseType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -192,8 +193,11 @@ public class TendGreenhouse extends TendHousekeeping {
 				endTask();
 				return 0;
 			}
-			setDescription(TEND + " " + needyCrop.getName());
-			previousCropName = needyCrop.getCropName();
+
+
+			setDescription((needyCrop.getPhase().getPhaseType() == PhaseType.HARVESTING ?
+							"Harvesting" : TEND) + " " + needyCrop.getName());
+			previousCropName = needyCrop.getName();
 		}
 		
 		
@@ -243,7 +247,7 @@ public class TendGreenhouse extends TendHousekeeping {
 		// Check for accident in greenhouse.
 		checkForAccident(greenhouse.getBuilding(), time, 0.005);
 
-		if (!greenhouse.requiresWork(needyCrop))
+		if (!needyCrop.requiresWork())
 			needyCrop = null;
 		
 		return remain;

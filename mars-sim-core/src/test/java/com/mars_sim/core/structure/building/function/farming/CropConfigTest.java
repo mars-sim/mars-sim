@@ -4,6 +4,17 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 
 public class CropConfigTest extends AbstractMarsSimUnitTest {
 
+    public void testPhaseType() {
+        // Check all the special preconfigured PhaseTypes can be resolved
+        assertEquals("Germination", PhaseType.GERMINATION, Phase.getAssociatedPhaseType("Germination"));
+        assertEquals("Planting", PhaseType.PLANTING, Phase.getAssociatedPhaseType("Planting"));
+        assertEquals("Harvest", PhaseType.HARVESTING, Phase.getAssociatedPhaseType("Harvesting"));
+        assertEquals("Finished", PhaseType.FINISHED, Phase.getAssociatedPhaseType("Finished"));
+
+        assertEquals("Other 1", PhaseType.OTHER, Phase.getAssociatedPhaseType("Sprouting"));
+        assertEquals("Other 2", PhaseType.OTHER, Phase.getAssociatedPhaseType("Leafing"));
+    }
+
     public void testGetStats() {
         var config = getConfig().getCropConfiguration();
 
@@ -29,6 +40,8 @@ public class CropConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Name", name, cat.getName());
         assertEquals(name + " needs light", needsLight, cat.needsLight());
         assertEquals(name + " phsaes", numPhases, cat.getPhases().size());
+        var inGround = cat.getInGroundPercentage();
+        assertTrue(name + " inground %age", (1D < inGround) && (inGround <= 95D));
 
         double total = 0;
         var phases = cat.getPhases();
