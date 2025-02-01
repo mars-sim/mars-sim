@@ -54,7 +54,8 @@ public class HelpContext {
 	private static final String PROPS_FILE = "template.properties";
 
 	// All generators are declared here
-	static final String[] GENERATORS = {BuildingGenerator.TYPE_NAME,
+	static final String[] GENERATORS = {AuthorityGenerator.TYPE_NAME,
+										BuildingGenerator.TYPE_NAME,
 										ComplaintGenerator.TYPE_NAME,
 										ConstructionGenerator.TYPE_NAME,
 										CrewGenerator.TYPE_NAME,
@@ -285,6 +286,7 @@ public class HelpContext {
 	 */
 	TypeGenerator<? extends Object> getGenerator(String name) {
 		return switch(name.toLowerCase()) {
+			case AuthorityGenerator.TYPE_NAME -> new AuthorityGenerator(this);
 			case BuildingGenerator.TYPE_NAME -> new BuildingGenerator(this);
 			case ComplaintGenerator.TYPE_NAME -> new ComplaintGenerator(this);
 			case ConstructionGenerator.TYPE_NAME -> new ConstructionGenerator(this);

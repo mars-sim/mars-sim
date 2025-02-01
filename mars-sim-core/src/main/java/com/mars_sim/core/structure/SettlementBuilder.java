@@ -218,13 +218,16 @@ public final class SettlementBuilder {
 	 * @return
 	 */
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
+		Authority ra;
 		String sponsor = spec.getSponsor();
 		// If the sponsor has not be defined; then use the template
 		if (sponsor == null) {
-			sponsor = template.getSponsor();
+			ra = template.getSponsor();
 		}
-		Authority ra = raFactory.getItem(sponsor);
-
+		else {
+			ra = raFactory.getItem(sponsor);
+		}
+		
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {

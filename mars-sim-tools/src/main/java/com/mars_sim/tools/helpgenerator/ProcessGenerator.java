@@ -20,7 +20,7 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
 
     ProcessGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Manufacturing Process",
-                        "Manufacturing Processes that consume resoruce to create new resources.",
+                        "Manufacturing Processes that consume resources to create new resources.",
                         "manufacturing");
 
         // Groups according to first letter of name

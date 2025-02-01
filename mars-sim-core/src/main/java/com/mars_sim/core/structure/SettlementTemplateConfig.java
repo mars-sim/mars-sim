@@ -1,5 +1,7 @@
 package com.mars_sim.core.structure;
 
+import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
@@ -70,7 +72,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private final PartPackageConfig partPackageConfig;
     private final BuildingPackageConfig buildingPackageConfig;
     private final ResupplyConfig resupplyConfig;
-
+    private final AuthorityFactory authorityConfig;
     private final SettlementConfig settlementConfig;
 
     /**
@@ -83,12 +85,14 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     public SettlementTemplateConfig(Document settlementDoc,
                                     PartPackageConfig partPackageConfig,
                                     BuildingPackageConfig buildingPackageConfig,
-                                    ResupplyConfig resupplyConfig, SettlementConfig settlementConfig) {
+                                    ResupplyConfig resupplyConfig, SettlementConfig settlementConfig,
+                                    AuthorityFactory authorityConfig) {
         super("settlement");
         this.partPackageConfig = partPackageConfig;
         this.buildingPackageConfig = buildingPackageConfig;
         this.resupplyConfig = resupplyConfig;
         this.settlementConfig = settlementConfig;
+        this.authorityConfig = authorityConfig;
         setXSDName("settlement.xsd");
 
         loadDefaults(loadSettlementTemplates(settlementDoc));
@@ -239,7 +243,13 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         String settlementTemplateName = templateElement.getAttributeValue(NAME);
         String description = templateElement.getAttributeValue(DESCRIPTION);
-        String sponsor = templateElement.getAttributeValue(SPONSOR);
+        String sponsorName = templateElement.getAttributeValue(SPONSOR);
+        Authority sponsor = authorityConfig.getItem(sponsorName);
+        if (sponsor == null) {
+            throw new IllegalArgumentException("Unknown sponsor:" + sponsorName
+                                + " in Settlement " + settlementTemplateName);
+        }
+
 
         // Obtains the default population
         int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));

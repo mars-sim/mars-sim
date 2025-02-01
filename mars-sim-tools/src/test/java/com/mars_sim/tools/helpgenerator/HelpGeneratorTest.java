@@ -86,6 +86,20 @@ public class HelpGeneratorTest {
         assertContent(content, "characteristics");
     }
 
+    @Test
+    public void testAuthorityHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getReportingAuthorityFactory();
+
+        var name = config.getItemNames().get(0);
+        var spec = config.getItem(name);
+        var vg = new AuthorityGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "agenda");
+        assertContent(content, "countries");
+
+    }
 
     @Test
     public void testComplaintHelp() throws IOException {

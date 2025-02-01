@@ -1,0 +1,32 @@
+{{<help-layout}}
+  {{$body}}
+    <h3>Full Name</h3>
+    <p>{{authority.fullName}}</p>
+
+    <div id="agenda">
+      <h3>Agenda</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Attribute</th>
+          <th>Value</th>
+          </tr>
+        </thead>
+        <tr><td>Purpose:</td><td>{{authority.missionAgenda.name}}</td></tr>
+        <tr><td>Objective:</td><td>{{authority.missionAgenda.objectiveName}}</td></tr>
+        <tr><td>Findings:</td><td>{{authority.missionAgenda.findings}}</td></tr>
+      </table>
+    </div>
+
+    <div id="countries">
+      <h3>Countries</h3>
+      <ul>
+      {{#authority.countries}}
+        <li>{{.}}</li>
+{{/authority.countries}}
+      </ul>
+    </div>
+    </br>
+    <a class="backlink" href="index.html">Back to Crew list</a>
+  {{/body}}
+{{/help-layout}}

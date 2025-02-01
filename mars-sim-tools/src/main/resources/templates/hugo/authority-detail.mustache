@@ -1,0 +1,33 @@
+---
+title: {{title}}
+linkTitle: {{authority.name}}
+toc_hide: true
+hide_summary: true
+---
+
+## Name
+{{authority.description}}
+
+## Agenda
+
+| Attribute      | Value |
+|--------:|:------|
+|Purpose:|{{authority.missionAgenda.name}}|
+|Objective:|{{authority.missionAgenda.objectiveName}}|
+|Findings:|{{authority.missionAgenda.reports}}|
+
+## Targets
+
+{{authority.missionAgenda.data}}
+
+{{#authority.missionAgenda.capabilities}}
+* {{description}}
+{{/authority.missionAgenda.capabilities}}
+
+## Countries
+
+{{#authority.countries}}
+* {{.}}
+{{/authority.countries}}
+
+{{>footer}}
