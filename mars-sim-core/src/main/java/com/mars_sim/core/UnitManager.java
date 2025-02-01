@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +25,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
@@ -66,7 +64,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	// Data members
 	/** Flag true if the class has just been loaded. */
-	public boolean justLoaded = true;
+	private boolean justLoaded = true;
 	/** Counter of unit identifiers. */
 	private int uniqueId = 0;
 	/** The commander's unique id . */
@@ -78,8 +76,6 @@ public class UnitManager implements Serializable, Temporal {
 	private transient Map<UnitType, Set<UnitManagerListener>> listeners;
 
 	private transient ExecutorService executor;
-
-	private transient Set<Authority> sponsorSet = new HashSet<>();
 
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
@@ -291,16 +287,8 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupRobot.get(id);
 	}
 
-	public Equipment getEquipmentByID(Integer id) {
-		return lookupEquipment.get(id);
-	}
-
 	public Building getBuildingByID(Integer id) {
 		return lookupBuilding.get(id);
-	}
-
-	public Vehicle getVehicleByID(Integer id) {
-		return lookupVehicle.get(id);
 	}
 
 	/**
@@ -325,6 +313,9 @@ public class UnitManager implements Serializable, Temporal {
 			default -> throw new IllegalArgumentException(
 					"Cannot store unit type:" + unit.getUnitType());
 		}
+
+		// Notify listeners
+		fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 	}
 
 	/**
@@ -395,7 +386,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void setupExecutor() {
 		if (executor == null) {
-			int size = (int)(getSettlementNum()/2D);
+			int size = (int)(lookupSettlement.size()/2D);
 			int num = Math.min(size, SimulationRuntime.NUM_CORES - simulationConfig.getUnusedCores());
 			if (num <= 0) num = 1;
 			logger.config("Setting up " + num + " thread(s) for running the settlement update.");
@@ -492,36 +483,6 @@ public class UnitManager implements Serializable, Temporal {
 		if (executor != null)
 			executor.shutdownNow();
 	}
-
-	/**
-	 * Gets number of settlements.
-	 *
-	 * @return the number of settlements
-	 */
-	public int getSettlementNum() {
-		return lookupSettlement.size();
-	}
-
-	/**
-	 * Gets a collection of sponsors.
-	 *
-	 * @return Collection of sponsors
-	 */
-	public Collection<Authority> getSponsorSet() {
-		if (sponsorSet.isEmpty()) {
-			Set<Authority> sponsors = new HashSet<>();
-
-			for (Settlement s: getSettlements()) {
-				Authority ra = s.getReportingAuthority();
-				if (!sponsors.contains(ra))
-					sponsors.add(ra);
-			}
-
-			sponsorSet = sponsors;
-		}
-		return sponsorSet;
-	}
-
 
 	/**
 	 * Gets a collection of settlements.
@@ -702,15 +663,9 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public void reinit() {
 
-		for (Person p: lookupPerson.values()) {
-			p.reinit();
-		}
-		for (Robot r: lookupRobot.values()) {
-			r.reinit();
-		}
-		for (Settlement s: lookupSettlement.values()) {
-			s.reinit();
-		}
+		lookupPerson.values().forEach(Person::reinit);
+		lookupRobot.values().forEach(Robot::reinit);
+		lookupSettlement.values().forEach(Settlement::reinit);
 
 		// Sets up the executor
 		setupExecutor();
@@ -724,34 +679,13 @@ public class UnitManager implements Serializable, Temporal {
 	public void destroy() {
 		activeSettlement.remove();
 
-		Iterator<Settlement> i1 = lookupSettlement.values().iterator();
-		while (i1.hasNext()) {
-			i1.next().destroy();
-		}
-		Iterator<ConstructionSite> i0 = lookupSite.values().iterator();
-		while (i0.hasNext()) {
-			i0.next().destroy();
-		}
-		Iterator<Vehicle> i2 = lookupVehicle.values().iterator();
-		while (i2.hasNext()) {
-			i2.next().destroy();
-		}
-		Iterator<Building> i3 = lookupBuilding.values().iterator();
-		while (i3.hasNext()) {
-			i3.next().destroy();
-		}
-		Iterator<Person> i4 = lookupPerson.values().iterator();
-		while (i4.hasNext()) {
-			i4.next().destroy();
-		}
-		Iterator<Robot> i5 = lookupRobot.values().iterator();
-		while (i5.hasNext()) {
-			i5.next().destroy();
-		}
-		Iterator<Equipment> i6 = lookupEquipment.values().iterator();
-		while (i6.hasNext()) {
-			i6.next().destroy();
-		}
+		lookupSettlement.values().forEach(Settlement::destroy);
+		lookupSite.values().forEach(ConstructionSite::destroy);
+		lookupVehicle.values().forEach(Vehicle::destroy);
+		lookupBuilding.values().forEach(Building::destroy);
+		lookupPerson.values().forEach(Person::destroy);
+		lookupRobot.values().forEach(Robot::destroy);
+		lookupEquipment.values().forEach(Equipment::destroy);
 
 		lookupSite.clear();
 		lookupSettlement.clear();
@@ -760,14 +694,6 @@ public class UnitManager implements Serializable, Temporal {
 		lookupPerson.clear();
 		lookupRobot.clear();
 		lookupEquipment.clear();
-
-		lookupSite = null;
-		lookupSettlement = null;
-		lookupVehicle = null;
-		lookupBuilding = null;
-		lookupPerson = null;
-		lookupRobot = null;
-		lookupEquipment = null;
 
 		marsSurface = null;
 
