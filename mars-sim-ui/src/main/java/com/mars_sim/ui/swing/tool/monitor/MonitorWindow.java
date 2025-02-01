@@ -242,7 +242,7 @@ public class MonitorWindow extends ToolWindow
 		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
 		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
 		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
-		newTabs.add(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
+		newTabs.add(new UnitTab(this, new CropTableModel(getDesktop().getSimulation().getConfig()), true, CROP_ICON));
 		
 		newTabs.add(new TableTab(this, new FoodInventoryTableModel(), true, false, FOOD_ICON));
 

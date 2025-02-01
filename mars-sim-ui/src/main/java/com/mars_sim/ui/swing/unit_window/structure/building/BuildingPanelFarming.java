@@ -40,7 +40,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -49,7 +48,6 @@ import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.farming.Farming;
-import com.mars_sim.core.structure.building.function.farming.PhaseType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -59,6 +57,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.VerticalLabelUI;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 
 /**
@@ -164,9 +163,11 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
+
+		var sim = desktop.getSimulation();
+		cropConfig = desktop.getSimulation().getConfig().getCropConfiguration();
 	
-		surfaceFeatures = getSimulation().getSurfaceFeatures();
+		surfaceFeatures = sim.getSurfaceFeatures();
 	}
 	
 	/**
@@ -247,34 +248,11 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 		// Prepare crop table
 		JTable cropTable = new JTable(cropTableModel) {
-			// Implement Table Cell ToolTip for crops
 			@Override
             public String getToolTipText(MouseEvent e) {
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-				RowSorter<? extends TableModel> sorter = getRowSorter();
-				if (sorter != null) {
-					rowIndex = sorter.convertRowIndexToModel(rowIndex);
-				}	
-
-				CropTableModel model = (CropTableModel) getModel();
-				if ((rowIndex < 0) || (rowIndex >= model.getRowCount())) {
-					return "";
-				}
-
-				Crop crop = model.getCrop(rowIndex);
-                int colIndex = columnAtPoint(p);
-                if (colIndex == 0) {
-					return Math.round(crop.getHealthCondition() * 1000.0)/10.0 + " %";
-				}
-                else if (colIndex == 1) {
-					return generateCropSpecTip(crop.getCropSpec());
-				}
-				
-				double sols = Math.round(crop.getGrowingTimeCompleted()/1_000.0 *10.0)/10.0;
-				return "# of sols since planted: " + sols;
+				return ToolTipTableModel.extractToolTip(e, this);
             }
-        }; // end of WebTable
+        };
         
 		cropTable.setAutoCreateRowSorter(true);
 		
@@ -305,7 +283,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		// Create a popup menu for the crop table
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem harvestItem = new JMenuItem("Early Harvest");
-//      harvestItem.addActionListener(e -> JOptionPane.showMessageDialog(center, "Do you want to fast-track this crop for an early harvest right now ? "));
         harvestItem.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -313,19 +290,17 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
             	if (item == harvestItem) {
             		SwingUtilities.invokeLater(() -> {
                             int rowAtPoint = rowCache; 
-                            // Not working : cropTable.getSelectedRow();
-                            // Not working : cropTable.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), cropTable));
                             if (rowAtPoint > -1) {
                             	cropTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
                             	Crop crop = cropCache;
                             	int reply = JOptionPane.showConfirmDialog(center, "Would you like to fast-track '" 
-                            			+ crop.getCropName() + "' for an early harvest right now ? ", "Early Harvest", JOptionPane.YES_NO_OPTION);
+                            			+ crop.getName() + "' for an early harvest right now ? ", "Early Harvest", JOptionPane.YES_NO_OPTION);
                 		        if (reply == JOptionPane.YES_OPTION) {
-                		        	logger.info(building, 0, "Hand picked " + crop.getCropName() + " for an early harvest.");
+                		        	logger.info(building, 0, "Hand picked " + crop.getName() + " for an early harvest.");
                 		        	crop.setToHarvest();
                 		        }
                 		        else {
-                		        	logger.info(building, 0, "Not choosing " + crop.getCropName() + " for an early harvest.");
+                		        	logger.info(building, 0, "Not choosing " + crop.getName() + " for an early harvest.");
                 		        }
                         }
                     });
@@ -344,12 +319,10 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageCellRenderer(true));
 		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(20);
 		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(new NumberCellRenderer());
-		cropColumns.getColumn(CropTableModel.CAT).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(30);
 		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(20);
 		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(new NumberCellRenderer());
 
-		// Note: Use of setAutoCreateRowSorter causes array error 
-		// whenever old crop is removed and new crop is added: cropTable.setAutoCreateRowSorter(true);
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		
 		tableScrollPanel.setViewportView(cropTable);
@@ -529,7 +502,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		result.append(HTML)
 			.append(CROP_NAME).append(cs.getName())
 			.append(CATEGORY).append(cs.getCropCategory().getName())
-			.append(GROWING_DAYS).append(cs.getGrowingTime() /1000)
+			.append(GROWING_DAYS).append(cs.getGrowingSols())
 			.append(EDIBLE_MASS).append(cs.getEdibleBiomass()).append(G_M2_DAY)
 			.append(INEDIBLE_MASS).append(cs.getInedibleBiomass()).append(G_M2_DAY)
 			.append(WATER_CONTENT).append(100 * cs.getEdibleWaterContent()).append(PERCENT)
@@ -596,28 +569,37 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	/**
 	 * Internal class used as model for the crop table.
 	 */
-	private static class CropTableModel extends AbstractTableModel {
+	private static class CropTableModel extends AbstractTableModel
+				implements ToolTipTableModel {
 
 		private static final int HEALTH = 0;
 		private static final int NAME = 1;
 		private static final int PHASE = 2;
-		private static final int CAT = 3;
-		private static final int AREA = 4;
-		private static final int GROWTH = 5;
-		private static final int WORK = 6;
+		private static final int AREA = 3;
+		private static final int GROWTH = 4;
+		private static final int WORK = 5;
+		private static final int HARVEST = 6;
+
 
 		private Farming farm;
 		private List<Crop> crops;	
-		private Icon redHalfDot;
-		private Icon redOneQuarterDot;
-		private Icon yellowHalfDot;
-		private Icon greenDot;
-		private Icon greenThreeQuarterDot;
-		private Icon greenHalfDot;
+		private static Icon redHalfDot;
+		private static Icon redOneQuarterDot;
+		private static Icon yellowHalfDot;
+		private static Icon greenDot;
+		private static Icon greenThreeQuarterDot;
+		private static Icon greenHalfDot;
 
 		private CropTableModel(Farming farm) {
 			this.farm = farm;
 			crops = farm.getCrops();
+			loadIcons();
+		}
+
+		private static void loadIcons() {
+			if (redHalfDot != null)
+				return;
+				
 			redHalfDot = ImageLoader.getIconByName("dot/red_half");
 			redOneQuarterDot = ImageLoader.getIconByName("dot/red_one_quarter");
 			yellowHalfDot = ImageLoader.getIconByName("dot/yellow_half");
@@ -630,19 +612,21 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			return crops.get(rowIndex);
 		}
 
+		@Override
 		public int getRowCount() {
 			return crops.size();
 		}
 
+		@Override
 		public int getColumnCount() {
-			return WORK + 1;
+			return HARVEST + 1;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			return switch(columnIndex) {
 				case HEALTH -> Icon.class;
-				case NAME, PHASE, CAT -> String.class;
+				case NAME, PHASE, HARVEST -> String.class;
 				case AREA, GROWTH, WORK -> Double.class;
 				default -> null;
 			};
@@ -656,17 +640,18 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				case PHASE -> "Phase";
 				case GROWTH -> "Growth";
 				case AREA -> "Area";
-				case CAT -> "Category";
-				case WORK -> "Due";
+				case WORK -> "Score";
+				case HARVEST -> "Harvest";
+
 				default -> null;
 			};
 		}
 		
+		@Override
 		public Object getValueAt(int row, int column) {
 
 			Crop crop = crops.get(row);
-			PhaseType currentPhase = crop.getPhaseType();
-			String category = crop.getCropSpec().getCropCategory().getName();
+			var currentPhase = crop.getPhase();
 
 			switch(column) {
 				case HEALTH:
@@ -685,10 +670,11 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 					return Math.round(crop.getPercentGrowth() * 100.0)/100.0;
 				case AREA: 
 					return Math.round(crop.getGrowingArea() * 10.0)/10.0;
-				case CAT:
-					return category;
 				case WORK:
 					return Math.round(crop.getTendingScore() * 10.0)/10.0;
+				case HARVEST:
+					var harvest = crop.getHarvest();
+					return String.format("%.1f/%.0f", harvest.value(), harvest.max());
 				default:
 					return null;
 				}
@@ -698,6 +684,21 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			if (!crops.equals(farm.getCrops()))
 				crops = farm.getCrops();
 			fireTableDataChanged();
+		}
+
+		@Override
+		public String getToolTipAt(int row, int col) {
+			Crop crop = crops.get(row);
+			
+			if (col == 0) {
+				return Math.round(crop.getHealthCondition() * 1000.0)/10.0 + " %";
+			}
+			else if (col == 1) {
+				return generateCropSpecTip(crop.getCropSpec());
+			}
+			
+			double sols = Math.round(crop.getGrowingTimeCompleted()/1_000.0 *10.0)/10.0;
+			return "# of sols since planted: " + sols;
 		}
 	}
 

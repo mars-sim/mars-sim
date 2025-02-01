@@ -17,6 +17,9 @@ hide_summary: true
 |Edible:|{{resource.isEdible}}|
 |Type:|{{resource.goodType.getName}}|
 |Form:|{{resource.phase.getName}}|
+{{#cropspec}}
+|Crop Spec:|[{{cropspec}}]({{cropfolder}}{{#filename}}{{cropspec}}{{/filename}})|
+{{/cropspec}}
  
 {{>process-flow}}
 

@@ -323,9 +323,36 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
      * @return
      */
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
+		return createPulse(marsTime, 1D, newSol, newHalfSol);
+	}
+
+	/**
+     * Creates a Clock pulse that advanced the current clock a duration
+     * 
+     * @param elapsed
+     * @param newSol Is it a new sol ?
+     * @param newHalfSol Has half a sol just passed ? 
+     * @return
+     */
+	public ClockPulse createPulse(double elapsed) {
+		var currentTime = sim.getMasterClock().getMarsTime();
+		var newTime = currentTime.addTime(elapsed);
+		var newSol = !currentTime.getDate().equals(newTime.getDate());
+		return createPulse(newTime, elapsed, newSol, false);
+	}
+
+	/**
+     * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * 
+     * @param marsTime
+     * @param newSol Is it a new sol ?
+     * @param newHalfSol Has half a sol just passed ? 
+     * @return
+     */
+	private ClockPulse createPulse(MarsTime marsTime, double elapsed, boolean newSol, boolean newHalfSol) {
 		var master = sim.getMasterClock();
 		master.setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true, false);
+        return new ClockPulse(pulseID++, elapsed, marsTime, master, newSol, newHalfSol, true, false);
     }
 
 	/**
@@ -334,7 +361,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public static void assertGreaterThan(String message, double minValue, double actual) {
 		if (actual <= minValue) {
 			fail(message + " ==> " +
-					"Expected: a value greater than <" + minValue + ">\n" +
+					"Expected: a value greater than <" + minValue + "> " +
 					"Actual was <" + actual + ">");
 		}
 	}
@@ -342,7 +369,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public static void assertLessThan(String message, double maxValue, double actual) {
 		if (actual >= maxValue) {
 			fail(message + " ==> " +
-					"Expected: a value less than <" + maxValue + ">\n" +
+					"Expected: a value less than <" + maxValue + "> " +
 					"Actual was <" + actual + ">");
 		}
 	}

@@ -9,6 +9,9 @@
     <table class="characteristics">
     <tr><td>Edible:</td><td>{{resource.isEdible}}</td></tr>
     <tr><td>Type:</td><td>{{resource.goodType.getName}}</td></tr>
+    {{#cropspec}}
+    <tr><td>Crop Spec:</td><td><a href="{{cropfolder}}{{#filename}}{{cropspec}}{{/filename}}">{{cropspec}}</a></td></tr>
+    {{/cropspec}}
     <tr><td>Form:</td><td>{{resource.phase.getName}}</td></tr>
     </table>
     </div>

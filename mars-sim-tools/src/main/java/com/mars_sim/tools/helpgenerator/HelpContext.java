@@ -58,6 +58,7 @@ public class HelpContext {
 										ComplaintGenerator.TYPE_NAME,
 										ConstructionGenerator.TYPE_NAME,
 										CrewGenerator.TYPE_NAME,
+										CropGenerator.TYPE_NAME,
 										FoodGenerator.TYPE_NAME,
 										PartGenerator.TYPE_NAME,
 										ProcessGenerator.TYPE_NAME,
@@ -288,6 +289,7 @@ public class HelpContext {
 			case ComplaintGenerator.TYPE_NAME -> new ComplaintGenerator(this);
 			case ConstructionGenerator.TYPE_NAME -> new ConstructionGenerator(this);
 			case CrewGenerator.TYPE_NAME -> new CrewGenerator(this);
+			case CropGenerator.TYPE_NAME -> new CropGenerator(this);
 			case FoodGenerator.TYPE_NAME -> new FoodGenerator(this);
 			case PartGenerator.TYPE_NAME -> new PartGenerator(this);
 			case ProcessGenerator.TYPE_NAME -> new ProcessGenerator(this);

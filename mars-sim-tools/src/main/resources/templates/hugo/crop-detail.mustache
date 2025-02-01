@@ -1,0 +1,27 @@
+---
+title: {{title}}
+linkTitle: {{crop.name}}
+toc_hide: true
+hide_summary: true
+---
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Category:|{{crop.cropCategory.getName}}|
+|Produce:|[{{crop.name}}]({{resourcefolder}}{{#filename}}{{crop.name}}{{/filename}})|
+|Growing Time:|{{crop.growingSols}} sols|
+|Edible Biomass:|{{crop.edibleBiomass}} g per m2|
+|Inedible Biomass:|{{crop.inedibleBiomass}} g per m2|
+|Light Demands:|{{crop.dailyPAR}} PAR per sol|
+
+## Phases
+
+| Phase           | Work (milliSols) | Growing % |
+|-----------|------:|--------:|
+{{#crop.cropCategory.phases}}
+|{{name}}|{{workRequired}}|{{percentGrowth}}|
+{{/crop.cropCategory.phases}}
+
+{{>footer}}
