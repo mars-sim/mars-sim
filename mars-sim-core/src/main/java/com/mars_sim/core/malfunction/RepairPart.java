@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * Private inner class for repair part information.
  */
-class RepairPart implements Serializable {
+public class RepairPart implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -37,19 +37,19 @@ class RepairPart implements Serializable {
 		this.repairProbability = repairProbability;
 	}
 
-	protected String getName() {
+	public String getName() {
 		return name;
 	}
 
-	protected int getPartID() {
+	public int getPartID() {
 		return partID;
 	}
 
-	protected int getNumber() {
+	public int getNumber() {
 		return number;
 	}
 
-	protected double getRepairProbability() {
+	public double getRepairProbability() {
 		return repairProbability;
 	}
 	

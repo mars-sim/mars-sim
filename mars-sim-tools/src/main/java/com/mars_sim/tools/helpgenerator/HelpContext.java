@@ -64,6 +64,7 @@ public class HelpContext {
 										PartGenerator.TYPE_NAME,
 										ProcessGenerator.TYPE_NAME,
 										ResourceGenerator.TYPE_NAME,
+										MalfunctionGenerator.TYPE_NAME,
 										ManifestGenerator.TYPE_NAME,
 										ScenarioGenerator.TYPE_NAME,
 										SettlementGenerator.TYPE_NAME,
@@ -297,6 +298,7 @@ public class HelpContext {
 			case ProcessGenerator.TYPE_NAME -> new ProcessGenerator(this);
 			case ResourceGenerator.TYPE_NAME -> new ResourceGenerator(this);
 			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
+			case MalfunctionGenerator.TYPE_NAME -> new MalfunctionGenerator(this);
 			case ScenarioGenerator.TYPE_NAME -> new ScenarioGenerator(this);
 			case SettlementGenerator.TYPE_NAME -> new SettlementGenerator(this);
 			case TreatmentGenerator.TYPE_NAME -> new TreatmentGenerator(this);

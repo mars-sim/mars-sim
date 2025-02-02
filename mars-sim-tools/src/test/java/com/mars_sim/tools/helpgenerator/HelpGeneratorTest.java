@@ -102,6 +102,20 @@ public class HelpGeneratorTest {
     }
 
     @Test
+    public void testMalfunctionHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getMalfunctionConfiguration();
+
+        var spec = config.getMalfunctionList().get(0);
+        var vg = new MalfunctionGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "characteristics");
+        assertContent(content, "systems");
+
+    }
+
+    @Test
     public void testComplaintHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getMedicalConfiguration();
