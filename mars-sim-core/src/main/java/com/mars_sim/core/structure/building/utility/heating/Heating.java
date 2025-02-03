@@ -371,13 +371,6 @@ public class Heating implements Serializable {
 		// The outside temperature in deg celsius
 		double outTCelsius = building.getSettlement().getOutsideTemperature();
 
-		error = checkError("outTCelsius", +Math.round(outTCelsius * 10.0) / 10.0, 100) || error;
-
-		if (error || outTCelsius < -100) {
-			logger.warning(building, 20_000, "outTCelsius: " + Math.round(outTCelsius * 10.0) / 10.0 + "  inTCelsius: "
-					+ Math.round(inTCelsius * 10.0) / 10.0);
-		}
-
 		// Find the temperature difference between outside and inside
 		double deltaTinTout = inTCelsius - outTCelsius; // 1.8 = 9D / 5D;
 

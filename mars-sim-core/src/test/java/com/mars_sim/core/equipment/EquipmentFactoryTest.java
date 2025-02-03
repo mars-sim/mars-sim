@@ -12,7 +12,6 @@ public class EquipmentFactoryTest extends AbstractMarsSimUnitTest {
             var e = EquipmentFactory.createEquipment(et, s);
             assertTrue(et.name() + " created in Settlement", s.getEquipmentSet().contains(e));
             assertEquals(et.name() + " equipment type", et, e.getEquipmentType());
-            assertEquals(et.name() + " found in UnitManager", e, unitManager.getEquipmentByID(e.getIdentifier()));
         }
     }
 

@@ -1672,7 +1672,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		List<Building> evas = settlement.getBuildingManager()
 				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA);
 		int numGarages = settlement.getBuildingManager().getGarages().size();
-		int total = (int)(evas.size() + numGarages * weight - 1);
+		int total = (evas.size() + numGarages * weight - 1);
 		if (total < 0)
 			total = 0;
 		int rand = RandomUtil.getRandomInt(total);
@@ -1749,13 +1749,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		if (foundGoodLocation) {
 			setParkedLocation(newLoc, newFacing);
-			logger.info(this, "Moved to new parking loc at (" 
-					+ Math.round(newLoc.getX() * 10.0)/10.0 
-					+ ", " + Math.round(newLoc.getY() * 10.0)/10.0 
-					+ "). Count: " + count + ".");
-		}
-		else {
-			logger.info(this, "Parking loc not found. Count: " + count + ".");
 		}
 	}
 
