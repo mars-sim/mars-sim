@@ -1,0 +1,60 @@
+{{<help-layout}}
+  {{$body}}
+      <h3>Description</h3>
+      <p>{{robot.description}}</p>
+
+      <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Type:</td><td>{{robot.robotType.getName}}</td></tr>
+        <tr><td>Model:</td><td>{{robot.makeModel}}</td></tr>
+        <tr><td>Carry Capacity:</td><td>{{robot.maxCapacity}} kg</td></tr>
+        <tr><td>Mass:</td><td>{{robot.mass}} kg</td></tr>
+        <tr><td>Height:</td><td>{{robot.height}} cm</td></tr>
+        <tr><td>Power Consumption:</td><td>{{robot.consumptionRate}} kWH</td></tr>
+        <tr><td>Power Consumption (standby):</td><td>{{robot.standbyPowerConsumption}} kWH</td></tr>
+        <tr><td>Low Power Threshold:</td><td>{{robot.lowPowerModePercent}} %</td></tr>
+      </table>
+    </div>
+
+
+    <div id="skills">
+      <h3>Skills</h3>
+      <table class="skills">
+        <thead>
+          <tr>
+          <th>Skill</th>
+          <th>Rating</th>
+          </tr>
+        </thead>
+      {{#skills}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{value}}</td>
+        </tr>
+      {{/skills}}
+      </table>
+    </div>
+
+    <div id="attributes">
+      <h3>Attributes</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Attribute</th>
+          <th>Rating</th>
+          </tr>
+        </thead>
+      {{#attributes}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{value}}</td>
+        </tr>
+      {{/attributes}}
+      </table>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Crop list</a>
+  {{/body}}
+{{/help-layout}}

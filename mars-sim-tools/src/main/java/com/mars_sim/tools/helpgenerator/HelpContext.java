@@ -66,6 +66,7 @@ public class HelpContext {
 										ResourceGenerator.TYPE_NAME,
 										MalfunctionGenerator.TYPE_NAME,
 										ManifestGenerator.TYPE_NAME,
+										RobotGenerator.TYPE_NAME,
 										ScenarioGenerator.TYPE_NAME,
 										SettlementGenerator.TYPE_NAME,
 										TreatmentGenerator.TYPE_NAME,
@@ -294,11 +295,12 @@ public class HelpContext {
 			case CrewGenerator.TYPE_NAME -> new CrewGenerator(this);
 			case CropGenerator.TYPE_NAME -> new CropGenerator(this);
 			case FoodGenerator.TYPE_NAME -> new FoodGenerator(this);
+			case MalfunctionGenerator.TYPE_NAME -> new MalfunctionGenerator(this);
+			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
 			case PartGenerator.TYPE_NAME -> new PartGenerator(this);
 			case ProcessGenerator.TYPE_NAME -> new ProcessGenerator(this);
 			case ResourceGenerator.TYPE_NAME -> new ResourceGenerator(this);
-			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
-			case MalfunctionGenerator.TYPE_NAME -> new MalfunctionGenerator(this);
+			case RobotGenerator.TYPE_NAME -> new RobotGenerator(this);
 			case ScenarioGenerator.TYPE_NAME -> new ScenarioGenerator(this);
 			case SettlementGenerator.TYPE_NAME -> new SettlementGenerator(this);
 			case TreatmentGenerator.TYPE_NAME -> new TreatmentGenerator(this);

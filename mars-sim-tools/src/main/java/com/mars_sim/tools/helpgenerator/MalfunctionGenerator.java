@@ -20,11 +20,12 @@ public class MalfunctionGenerator extends TypeGenerator<MalfunctionMeta> {
 
     public static final String TYPE_NAME = "malfunction";
 
-    private static final record PartDocument(String name, int number, double value) {}
+    // Handy POJO to collapse complex object
+    private static final record NamedValues(String name, int number, double value) {}
 
     protected MalfunctionGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Malfunction",
-        "Resources that can be stored and used for manufacturing and cooking.",
+        "Various defined Malfunctions that can occur.",
         "malfunctions");
 
         // Groups according to Severity
@@ -42,32 +43,32 @@ public class MalfunctionGenerator extends TypeGenerator<MalfunctionMeta> {
 
         // Build a better versino of repair parts
         var parts = m.getParts().stream()
-                    .map(p -> new PartDocument(ItemResourceUtil.findItemResourceName(p.getPartID()),
+                    .map(p -> new NamedValues(ItemResourceUtil.findItemResourceName(p.getPartID()),
                                         p.getNumber(), p.getRepairProbability()))
-                    .sorted(Comparator.comparing(PartDocument::name))
+                    .sorted(Comparator.comparing(NamedValues::name))
                     .toList();
         scope.put("parts", parts);
 
 
         var efforts = m.getRepairEffort().entrySet().stream()
-                    .map(p -> new PartDocument(p.getKey().getName(),
+                    .map(p -> new NamedValues(p.getKey().getName(),
                         p.getValue().getDesiredWorkers(), p.getValue().getWorkTime()))
-                    .sorted(Comparator.comparing(PartDocument::name))
+                    .sorted(Comparator.comparing(NamedValues::name))
                     .toList();
         scope.put("efforts", efforts);
 
         var complaints = m.getMedicalComplaints().entrySet().stream()
-                .map(p -> new PartDocument(p.getKey().getName(),
+                .map(p -> new NamedValues(p.getKey().getName(),
                     1, p.getValue()))
-                .sorted(Comparator.comparing(PartDocument::name))
+                .sorted(Comparator.comparing(NamedValues::name))
                 .toList();
         scope.put("complaints", complaints);
 
         
         var lifesupport = m.getLifeSupportEffects().entrySet().stream()
-                .map(p -> new PartDocument(p.getKey(),
+                .map(p -> new NamedValues(p.getKey(),
                     1, p.getValue()))
-                .sorted(Comparator.comparing(PartDocument::name))
+                .sorted(Comparator.comparing(NamedValues::name))
                 .toList();
         scope.put("lifesupport", lifesupport);
     }

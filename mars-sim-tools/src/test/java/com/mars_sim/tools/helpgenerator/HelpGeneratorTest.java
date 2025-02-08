@@ -21,6 +21,7 @@ import org.junit.Test;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.robot.RobotType;
 
 public class HelpGeneratorTest {
 
@@ -61,6 +62,20 @@ public class HelpGeneratorTest {
         assertTitledTable(content, "resources", "Resources", true);
         assertTitledTable(content, "equipment", "Equipment", true);
 
+    }
+
+    @Test
+    public void testRobotHelp() throws IOException {
+        var context = createGenerator();
+        var vehicleConfig = context.getConfig().getRobotConfiguration();
+
+        var spec = vehicleConfig.getRobotSpec(RobotType.REPAIRBOT, "Standard");
+        var vg = new RobotGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "skills", "Skills", true);
+        assertTitledTable(content, "attributes", "Attributes", true);
     }
 
     @Test
