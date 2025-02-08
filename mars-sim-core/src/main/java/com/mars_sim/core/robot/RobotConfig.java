@@ -7,7 +7,8 @@
 package com.mars_sim.core.robot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class RobotConfig {
 	private static final String ROBOT_MAKE = "make";
 	private static final String ROBOT_TYPE = "type";
 	
+	private static final String CONFIG = "global-config";
 	private static final String STANDBY_POWER_CONSUMPTION = "standby-power-consumption";
 	private static final String CONSUMPTION_RATE = "consumption-rate";
 	private static final String LOW_POWER_MODE = "low-power-mode";
@@ -61,7 +63,7 @@ public class RobotConfig {
 	// freezing-time
 	private double ft;
 	/** A map of various robot specs. */
-	private transient List<RobotSpec> specs;
+	private List<RobotSpec> specs;
 
 	/**
 	 * Constructor
@@ -88,17 +90,12 @@ public class RobotConfig {
 		
 		Element root = robotDoc.getRootElement();
 		
-		Element minapElement = root.getChild(MIN_AIR_PRESSURE);
-		minap = Double.parseDouble(minapElement.getAttributeValue(VALUE));
+		var globalRoot = root.getChild(CONFIG);
+		minap = ConfigHelper.getAttributeDouble(globalRoot, MIN_AIR_PRESSURE);
+		minT = ConfigHelper.getAttributeDouble(globalRoot, MIN_TEMPERATURE);
+		maxT = ConfigHelper.getAttributeDouble(globalRoot, MAX_TEMPERATURE);
+		ft = ConfigHelper.getAttributeDouble(globalRoot, FREEZING_TIME);
 		
-		Element minTElement = root.getChild(MIN_TEMPERATURE);
-		minT = Double.parseDouble(minTElement.getAttributeValue(VALUE));
-		
-		Element maxTElement = root.getChild(MAX_TEMPERATURE);
-		maxT = Double.parseDouble(maxTElement.getAttributeValue(VALUE));
-		
-		Element ftElement = root.getChild(FREEZING_TIME);
-		ft = Double.parseDouble(ftElement.getAttributeValue(VALUE));
 		
 		Element rlElement = root.getChild(ROBOT_LIST);
 		List<Element> listNodes = rlElement.getChildren(ROBOT);
@@ -122,28 +119,26 @@ public class RobotConfig {
 			
 			// Attributes
 			Element attributeListElement = listElement.getChild(ROBOTIC_ATTRIBUTE_LIST);
-			Map<NaturalAttributeType, Integer> attributeMap = new HashMap<>();
+			Map<NaturalAttributeType, Integer> attributeMap = new EnumMap<>(NaturalAttributeType.class);
 			if (attributeListElement != null) {
 				List<Element> attributesElement = attributeListElement.getChildren(ROBOTIC_ATTRIBUTE);
 				for (Element attributeElement : attributesElement) {
-					String attributeName = attributeElement.getAttributeValue(NAME);
-					NaturalAttributeType aType = NaturalAttributeType.valueOf(ConfigHelper.convertToEnumName(attributeName));
-
-					Integer value = Integer.parseInt(attributeElement.getAttributeValue(VALUE));
+					NaturalAttributeType aType  = ConfigHelper.getEnum(NaturalAttributeType.class,
+											attributeElement.getAttributeValue(NAME));
+					Integer value = ConfigHelper.getAttributeInt(attributeElement, VALUE);
 					attributeMap.put(aType, value);
 				}
 			}
 
 			// Skills
 			Element skillListElement = listElement.getChild(SKILL_LIST);
-			Map<SkillType, Integer> skillMap = new HashMap<>();
+			Map<SkillType, Integer> skillMap = new EnumMap<>(SkillType.class);
 			if (skillListElement != null) {
 				List<Element> skillsElement = skillListElement.getChildren(SKILL);
 				for (Element skillElement : skillsElement) {
-					String skillName = skillElement.getAttributeValue(NAME);
-					SkillType sType = SkillType.valueOf(ConfigHelper.convertToEnumName(skillName));
-
-					Integer level = Integer.parseInt(skillElement.getAttributeValue(LEVEL));
+					SkillType sType = ConfigHelper.getEnum(SkillType.class,
+														skillElement.getAttributeValue(NAME));
+					Integer level = ConfigHelper.getAttributeInt(skillElement, LEVEL);
 					skillMap.put(sType, level);
 				}
 			}
@@ -223,4 +218,12 @@ public class RobotConfig {
 	public double getFreezingTime() {
 		return ft;
 	}
+
+	/**
+	 * The known RobotSpecs.
+	 * @return
+	 */
+    public Collection<RobotSpec> getRobotSpecs() {
+        return specs;
+    }
 }

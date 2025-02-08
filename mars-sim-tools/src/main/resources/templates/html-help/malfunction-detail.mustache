@@ -1,0 +1,23 @@
+{{<help-layout}}
+  {{$body}}
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Default Probability:</td><td>{{malfunction.probability}}</td></tr>
+        <tr><td>Severity:</td><td>{{malfunction.severity}}</td></tr>
+      </table>
+    </div>
+
+    <div id="systems">
+      <h3>Systems Affected</h3>
+      <ul>
+      {{#malfunction.systems}}
+        <li>{{.}}</li>
+      {{/malfunction.systems}}
+      </ul>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Malfunction list</a>
+  {{/body}}
+{{/help-layout}}

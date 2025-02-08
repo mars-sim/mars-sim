@@ -1,9 +1,5 @@
----
-title: {{title}}
-linkTitle: {{vehicle.name}}
-toc_hide: true
-hide_summary: true
----
+{{>detail-head}}
+
 ## Description
 {{vehicle.description}}
 
@@ -11,6 +7,8 @@ hide_summary: true
 
 | Attribute      | Value |
 |--------:|:------|
+|Type:|{{vehicle.type.name}}|
+|Model:|{{vehicle.modelName}}|
 |Base Speed:|{{vehicle.baseSpeed}} kmph|
 |Crew Size:|{{vehicle.crewSize}}|
 |Empty Mass:|{{vehicle.emptymass}} kg|

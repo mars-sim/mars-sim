@@ -54,7 +54,8 @@ public class HelpContext {
 	private static final String PROPS_FILE = "template.properties";
 
 	// All generators are declared here
-	static final String[] GENERATORS = {BuildingGenerator.TYPE_NAME,
+	static final String[] GENERATORS = {AuthorityGenerator.TYPE_NAME,
+										BuildingGenerator.TYPE_NAME,
 										ComplaintGenerator.TYPE_NAME,
 										ConstructionGenerator.TYPE_NAME,
 										CrewGenerator.TYPE_NAME,
@@ -63,7 +64,10 @@ public class HelpContext {
 										PartGenerator.TYPE_NAME,
 										ProcessGenerator.TYPE_NAME,
 										ResourceGenerator.TYPE_NAME,
+										MalfunctionGenerator.TYPE_NAME,
+										MealGenerator.TYPE_NAME,
 										ManifestGenerator.TYPE_NAME,
+										RobotGenerator.TYPE_NAME,
 										ScenarioGenerator.TYPE_NAME,
 										SettlementGenerator.TYPE_NAME,
 										TreatmentGenerator.TYPE_NAME,
@@ -285,16 +289,20 @@ public class HelpContext {
 	 */
 	TypeGenerator<? extends Object> getGenerator(String name) {
 		return switch(name.toLowerCase()) {
+			case AuthorityGenerator.TYPE_NAME -> new AuthorityGenerator(this);
 			case BuildingGenerator.TYPE_NAME -> new BuildingGenerator(this);
 			case ComplaintGenerator.TYPE_NAME -> new ComplaintGenerator(this);
 			case ConstructionGenerator.TYPE_NAME -> new ConstructionGenerator(this);
 			case CrewGenerator.TYPE_NAME -> new CrewGenerator(this);
 			case CropGenerator.TYPE_NAME -> new CropGenerator(this);
 			case FoodGenerator.TYPE_NAME -> new FoodGenerator(this);
+			case MalfunctionGenerator.TYPE_NAME -> new MalfunctionGenerator(this);
+			case MealGenerator.TYPE_NAME -> new MealGenerator(this);
+			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
 			case PartGenerator.TYPE_NAME -> new PartGenerator(this);
 			case ProcessGenerator.TYPE_NAME -> new ProcessGenerator(this);
 			case ResourceGenerator.TYPE_NAME -> new ResourceGenerator(this);
-			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
+			case RobotGenerator.TYPE_NAME -> new RobotGenerator(this);
 			case ScenarioGenerator.TYPE_NAME -> new ScenarioGenerator(this);
 			case SettlementGenerator.TYPE_NAME -> new SettlementGenerator(this);
 			case TreatmentGenerator.TYPE_NAME -> new TreatmentGenerator(this);

@@ -3,6 +3,7 @@ package com.mars_sim.tools.helpgenerator;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,11 +15,13 @@ import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.junit.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.robot.RobotType;
 
 public class HelpGeneratorTest {
 
@@ -54,11 +57,25 @@ public class HelpGeneratorTest {
         var vg = new ManifestGenerator(context);
         var content = createDoc(vg, config);
 
-        assertContent(content, "characteristics");
-        assertContent(content, "vehicles");
-        assertContent(content, "resources");
-        assertContent(content, "equipment");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "vehicles", "Vehicles", true);
+        assertTitledTable(content, "resources", "Resources", true);
+        assertTitledTable(content, "equipment", "Equipment", true);
 
+    }
+
+    @Test
+    public void testRobotHelp() throws IOException {
+        var context = createGenerator();
+        var vehicleConfig = context.getConfig().getRobotConfiguration();
+
+        var spec = vehicleConfig.getRobotSpec(RobotType.REPAIRBOT, "Standard");
+        var vg = new RobotGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "skills", "Skills", true);
+        assertTitledTable(content, "attributes", "Attributes", true);
     }
 
     @Test
@@ -70,8 +87,8 @@ public class HelpGeneratorTest {
         var vg = new VehicleGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
-        assertContent(content, "cargo");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertDIV(content, "cargo");
     }
 
     @Test
@@ -83,9 +100,49 @@ public class HelpGeneratorTest {
         var vg = new CropGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
     }
 
+    @Test
+    public void testMealHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getMealConfiguration();
+
+        var spec = config.getDishList().get(0);
+        var vg = new MealGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "ingredients", "Ingredients", true);
+    }
+
+    @Test
+    public void testAuthorityHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getReportingAuthorityFactory();
+
+        var name = config.getItemNames().get(0);
+        var spec = config.getItem(name);
+        var vg = new AuthorityGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertDIV(content, "agenda");
+        assertDIV(content, "countries");
+    }
+
+    @Test
+    public void testMalfunctionHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getMalfunctionConfiguration();
+
+        var spec = config.getMalfunctionList().get(0);
+        var vg = new MalfunctionGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertDIV(content, "systems");
+
+    }
 
     @Test
     public void testComplaintHelp() throws IOException {
@@ -96,7 +153,7 @@ public class HelpGeneratorTest {
         var vg = new ComplaintGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
     }
 
     @Test
@@ -108,7 +165,7 @@ public class HelpGeneratorTest {
         var vg = new TreatmentGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
     }
 
 
@@ -121,9 +178,9 @@ public class HelpGeneratorTest {
         var vg = new ProcessGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
-        assertContent(content, "inputs");
-        assertContent(content, "outputs");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "inputs", "Inputs", false);
+        assertTitledTable(content, "outputs", "Products", false);
     }
 
     @Test
@@ -135,9 +192,9 @@ public class HelpGeneratorTest {
         var vg = new FoodGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
-        assertContent(content, "inputs");
-        assertContent(content, "outputs");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "inputs", "Ingredients", false);
+        assertTitledTable(content, "outputs", "Outcomes", false);
     }
 
     @Test
@@ -150,8 +207,8 @@ public class HelpGeneratorTest {
         var vg = new ScenarioGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "settlements");
-        assertContent(content, "arriving");
+        assertTitledTable(content, "settlements", "Settlements", true);
+        assertTitledTable(content, "arriving", "New Settlements", true);
     }
 
     
@@ -165,9 +222,9 @@ public class HelpGeneratorTest {
         var vg = new ResourceGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "consumers");
-        assertContent(content, "creators");
-        assertContent(content, "characteristics");
+        assertDIV(content, "consumers");
+        assertDIV(content, "creators");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
     }
 
     @Test
@@ -180,12 +237,12 @@ public class HelpGeneratorTest {
         var vg = new SettlementGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertContent(content, "characteristics");
-        assertContent(content, "equipment");
-        assertContent(content, "resources");
-        assertContent(content, "missions");
-        assertContent(content, "buildings");
-        assertContent(content, "vehicles");
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertDIV(content, "equipment");
+        assertDIV(content, "resources");
+        assertDIV(content, "missions");
+        assertDIV(content, "buildings");
+        assertDIV(content, "vehicles");
     }
 
     /**
@@ -194,11 +251,63 @@ public class HelpGeneratorTest {
      * @param doc
      * @param id
      */
-    private void assertContent(Document doc, String id) {
+    private Element assertDIV(Document doc, String id) {
         var node = doc.getElementById(id);
         assertNotNull("'" + id + "' section", node);
         assertTrue("'" + id + "' has content", node.childNodeSize() > 0);
         assertEquals("'" + id + "' has a <div>", "div", node.tagName());
+        return node;
+    }
+
+    /**
+     * Search for a tag with an id. The tag should be present and have a heading and table.
+     * The tag should be a <div>. The table should be fully populated wth a heading
+     * @param doc
+     * @param id
+     */
+    private void assertTitledTable(Document doc, String id, String title, boolean hasHeading) {
+        var div = assertDIV(doc, id);
+        var elems = div.children();
+        assertEquals("SubElement count", 2, elems.size());
+
+        // First should be a title
+        var titleElem = elems.get(-0);
+        assertEquals("Title heading", 'h', titleElem.tagName().charAt(0));
+        assertEquals("Heading Text", title, titleElem.text());
+
+        // Next is table
+        var tableElem = elems.get(1);
+        assertEquals("<table>", "table", tableElem.tagName());
+        var tableChildren = tableElem.children();
+
+        // Check heading
+        int bodyIdx = 0;
+        if (hasHeading) {
+            // Check THead
+            checkTableRow("th", tableChildren.get(0).firstElementChild(), 0);
+            bodyIdx++;
+        }
+
+        // Parse TBody element
+        int rowIdx = 0;
+        for(var row : tableChildren.get(bodyIdx).children()) {
+            checkTableRow("td", row, rowIdx++);
+        }
+    }
+
+    /**
+     * Check a table row is fully populated
+     * @param cellTag
+     * @param element
+     */
+    private void checkTableRow(String cellTag, Element rowElement, int rowId) {
+        int i = 0;
+        for(var cell : rowElement.children()) {
+            var id = rowId + "," + i++;
+            assertEquals("Cell tag #" + id, cellTag, cell.tagName());
+            if (!cell.className().equals("optional"))
+                assertFalse("Cell contents #" + id, cell.text().isEmpty());
+        }
     }
 
     @Test

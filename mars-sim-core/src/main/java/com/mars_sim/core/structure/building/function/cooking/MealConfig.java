@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure.building.function.cooking;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,52 +15,68 @@ import java.util.stream.Stream;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.building.function.farming.CropConfig;
 
 /**
  * Provides configuration information about meal. Uses a DOM document to get the
  * information.
  */
+public class MealConfig {
 
-public class MealConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	public static final String SIDE_DISH = "Side Dish";
+	public static final String MAIN_DISH = "Main Dish";
 
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
-	private static final String VALUE = "value";
+	private static final String NUMBER_OF_MEAL_PER_SOL = "meals-per-sol";
+
 
 	// Element names
-	private static final String MEAL_LIST = "meal-list";
-	private static final String MAIN_DISH = "main-dish";
-	private static final String SIDE_DISH = "side-dish";
+	private static final String DISH = "dish";
+	private static final String MAIN_LIST = "main-list";
+	private static final String SIDE_LIST = "side-list";
 	private static final String INGREDIENT = "ingredient";
 	private static final String NAME = "name";
-	private static final String ID = "id";
-	private static final String MEAL_CATEGORY = "category";
-	private static final String INGREDIENT_ID = "id";
 	private static final String PROPORTION = "proportion";
 	private static final String OIL = "oil";
 	private static final String SALT = "salt";
 
-	// water consumption rate, cleaning agent per sol
-	private double[] values = new double[] { 0, 0 };
+	private double cleaningAgentPerSol;
+	private double waterConsumptionRate;
+	private double dryMassPerServing;
 
-	private static List<HotMeal> mainDishList;
-	private static List<HotMeal> sideDishList;
+	private List<HotMeal> mainDishList;
+	private List<HotMeal> sideDishList;
 	
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param mealDoc the meal DOM document.
 	 */
-	public MealConfig(Document mealDoc) {
+	public MealConfig(Document mealDoc, CropConfig cropConfig, PersonConfig personConfig) {
+		var root = mealDoc.getRootElement();
+
+		var globals = root.getChild("global-settings");
+		waterConsumptionRate = ConfigHelper.getAttributeDouble(globals, WATER_CONSUMPTION_RATE);
+		cleaningAgentPerSol = ConfigHelper.getAttributeDouble(globals, CLEANING_AGENT_PER_SOL);
+		var mealsPerSol = ConfigHelper.getAttributeInt(globals, NUMBER_OF_MEAL_PER_SOL);
+		dryMassPerServing = personConfig.getFoodConsumptionRate() / mealsPerSol;
+
 		// Generate meal list
-		createMealList(mealDoc);
-		
-		values[0] = getValueAsDouble(mealDoc, WATER_CONSUMPTION_RATE);
-		values[1] = getValueAsDouble(mealDoc, CLEANING_AGENT_PER_SOL);
+		mainDishList = parseMealList(root.getChild(MAIN_LIST), MAIN_DISH, cropConfig);
+		sideDishList = parseMealList(root.getChild(SIDE_LIST), SIDE_DISH, cropConfig);
+	}
+
+	/**
+	 * Gets the dryMass per serving
+	 * 
+	 */
+	public double getDryMassPerServing() {
+		return dryMassPerServing;
 	}
 
 	/**
@@ -71,7 +86,7 @@ public class MealConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getWaterConsumptionRate() {
-		return values[0];
+		return waterConsumptionRate;
 	}
 
 	/**
@@ -81,20 +96,7 @@ public class MealConfig implements Serializable {
 	 * @throws Exception if rate could not be found.
 	 */
 	public double getCleaningAgentPerSol() {
-		return values[1];
-	}
-
-	/*
-	 * Gets the value of an element as a double.
-	 * 
-	 * @param mealDoc
-	 * @param child an element string
-	 * @return a double
-	 */
-	private double getValueAsDouble(Document mealDoc, String child) {
-		Element element = mealDoc.getRootElement().getChild(child);
-		String str = element.getAttributeValue(VALUE);
-		return Double.parseDouble(str);
+		return cleaningAgentPerSol;
 	}
 
 	/**
@@ -102,7 +104,7 @@ public class MealConfig implements Serializable {
 	 * 
 	 * @return a list of all dishes 
 	 */
-	public static List<HotMeal> getDishList() {
+	public List<HotMeal> getDishList() {
 		return Stream.of(sideDishList, mainDishList)
 				.flatMap(List<HotMeal>::stream)
 				.collect(Collectors.toList());
@@ -113,7 +115,7 @@ public class MealConfig implements Serializable {
 	 * 
 	 * @return a list of main dish meals
 	 */
-	public static List<HotMeal> getMainDishList() {
+	public List<HotMeal> getMainDishList() {
 		return mainDishList;
 	}
 	
@@ -122,7 +124,7 @@ public class MealConfig implements Serializable {
 	 * 
 	 * @return a list of side dish meals
 	 */
-	public static List<HotMeal> getSideDishList() {
+	public List<HotMeal> getSideDishList() {
 		return sideDishList;
 	}
 	
@@ -130,146 +132,82 @@ public class MealConfig implements Serializable {
 	 * Creates a list of meal.
 	 * 
 	 * @return list of meal
-	 * @throws Exception when meal could not be parsed.
 	 */
-	private synchronized void createMealList(Document mealDoc) {
-		if (mainDishList != null) {
-			// just in case if another thread is being created
-			return;
-		}	
-		if (sideDishList != null) {
-			// just in case if another thread is being created
-			return;
-		}
-
-		Element root = mealDoc.getRootElement();
-		Element mealListElement = root.getChild(MEAL_LIST);
+	private List<HotMeal> parseMealList(Element dishList, String cat, CropConfig crops) {
 		
 		// Main Dishes
 		List<HotMeal> mainDishMeals = new ArrayList<>();
-		List<Element> mainDishes = mealListElement.getChildren(MAIN_DISH);
 
-		for (Element mainDish : mainDishes) {
-
-			// Get meal id.
-			String sid = mainDish.getAttributeValue(ID);
-			int id = Integer.parseInt(sid);
-
-			// Get name.
-			String name = "";
-			name = mainDish.getAttributeValue(NAME);
-
-			// Get oil
-			String oilStr = mainDish.getAttributeValue(OIL).toLowerCase();
-			double oil = Double.parseDouble(oilStr);
-
-			// Get salt
-			String saltStr = mainDish.getAttributeValue(SALT).toLowerCase();
-			double salt = Double.parseDouble(saltStr);
-
-			// Get meal category
-			String mealCategory = "";
-			mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
-
-			// Create meal
-			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory);
-
-			// Modify to ingredients = meal.getChildren(INGREDIENT);
-			List<Element> ingredients = mainDish.getChildren(INGREDIENT);
-
-			for (Element ingredient : ingredients) {
-
-				// Get id.
-				String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
-				int ingredientId = Integer.parseInt(ingredientIdStr);
-
-				// Get name.
-				String ingredientName = "";
-				ingredientName = ingredient.getAttributeValue(NAME).toLowerCase();
-				int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
-				// Get proportion
-				String proportionStr = ingredient.getAttributeValue(PROPORTION);
-				double proportion = Double.parseDouble(proportionStr);
-
-				aMeal.addIngredient(ingredientId, ingredientID, proportion);// , isItAvailable);
-
-			}
-
-			mainDishMeals.add(aMeal);
+		for (Element mainDish : dishList.getChildren(DISH)) {
+			var meal = parseHotMeal(mainDish, cat, crops);
+			mainDishMeals.add(meal);
 		}
 
-		mainDishList = Collections.unmodifiableList(mainDishMeals);
+		return Collections.unmodifiableList(mainDishMeals);
+	}
+
+	private HotMeal parseHotMeal(Element mealNode, String category, CropConfig crops) {
 		
-		// Side Dishes
-		List<HotMeal> sideDishMeals = new ArrayList<>();
-		List<Element> sideDishes = mealListElement.getChildren(SIDE_DISH);
+		String name = mealNode.getAttributeValue(NAME);
+		double oil = ConfigHelper.getAttributeDouble(mealNode, OIL);
+		double salt = ConfigHelper.getAttributeDouble(mealNode, SALT);
 
-		for (Element sideDish : sideDishes) {
-
-			// Get meal id.
-			String sid = sideDish.getAttributeValue(ID);
-			int id = Integer.parseInt(sid);
+		List<Ingredient> ingredients = new ArrayList<>();
+		for (Element ingredient : mealNode.getChildren(INGREDIENT)) {
 
 			// Get name.
-			String name = "";
-			name = sideDish.getAttributeValue(NAME);
+			String ingredientName = ingredient.getAttributeValue(NAME).toLowerCase();
+			int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
+			double proportion = ConfigHelper.getAttributeDouble(ingredient, PROPORTION);
 
-			// Get oil
-			String oilStr = sideDish.getAttributeValue(OIL).toLowerCase();
-			double oil = Double.parseDouble(oilStr);
+			ingredients.add(new Ingredient(ingredients.size(), ingredientID, proportion));
 
-			// Get salt
-			String saltStr = sideDish.getAttributeValue(SALT).toLowerCase();
-			double salt = Double.parseDouble(saltStr);
-
-			// Get meal category
-			String mealCategory = "";
-			mealCategory = sideDish.getAttributeValue(MEAL_CATEGORY);
-
-			// Create meal
-
-			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); 
-
-			// Modify to ingredients = meal.getChildren(INGREDIENT);
-			List<Element> ingredients = sideDish.getChildren(INGREDIENT);
-
-			for (Element ingredient : ingredients) {
-
-				// Get id.
-				String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
-				int ingredientId = Integer.parseInt(ingredientIdStr);
-
-				// Get name.
-				String ingredientName = "";
-				ingredientName = ingredient.getAttributeValue(NAME).toLowerCase();
-				int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
-				// Get proportion
-				String proportionStr = ingredient.getAttributeValue(PROPORTION);
-				double proportion = Double.parseDouble(proportionStr);
-
-				aMeal.addIngredient(ingredientId, ingredientID, proportion);
-
-			}
-
-			sideDishMeals.add(aMeal);
 		}
-		
-		sideDishList = Collections.unmodifiableList(sideDishMeals);
+
+		computeDryMass(ingredients, crops);
+		return new HotMeal(name, oil, salt, ingredients, category);
 	}
 
 	/**
-	 * Gets an instance of the hot meal in main dish list.
-	 * 
-	 * @param dishList
-	 * @param dish
-	 * @return
+	 * Computes the dry mass of all ingredients
 	 */
-	public static HotMeal getMainDishHotMeal(String dish) {
-		for(HotMeal hm : mainDishList) {
-			if (hm.getMealName().equalsIgnoreCase(dish))
-				return hm;
+	private void computeDryMass(List<Ingredient> ingredients, CropConfig crops) {
+
+		List<Double> proportionList = new ArrayList<>(); 
+		List<Double> waterContentList = new ArrayList<>(); 
+
+		for(Ingredient oneIngredient : ingredients) {
+			String ingredientName = oneIngredient.getName();
+			double proportion = oneIngredient.getProportion();
+			proportionList.add(proportion);
+
+			// get totalDryMass
+			double waterContent = 0;
+			var c = crops.getCropTypeByName(ingredientName);
+			if (c != null)
+				waterContent = c.getEdibleWaterContent();
+			waterContentList.add(waterContent);
 		}
-		return null;
+
+		// get total dry weight (sum of each ingredient's dry weight) for a meal
+		double totalDryMass = 0;
+		int k;
+		for (k = 1; k < waterContentList.size(); k++)
+			totalDryMass += waterContentList.get(k) + proportionList.get(k);
+
+		// get this fractional number
+		double fraction = 0;
+		if (totalDryMass > 0) {
+			fraction = dryMassPerServing / totalDryMass;
+		}
+
+		// get ingredientDryMass for each ingredient
+		double ingredientDryMass = 0;
+		int l;
+		for (l = 0; l < proportionList.size(); l++) {
+			ingredientDryMass = fraction * waterContentList.get(l) + proportionList.get(l);
+			ingredients.get(l).setDrymass(ingredientDryMass);
+		}
 	}
 	
 	/**
@@ -279,23 +217,11 @@ public class MealConfig implements Serializable {
 	 * @param dish
 	 * @return
 	 */
-	public static HotMeal getHotMeal(String dish) {
+	public HotMeal getHotMeal(String dish) {
 		for (HotMeal hm : getDishList()) {
 			if (hm.getMealName().equalsIgnoreCase(dish))
 				return hm;
 		}
 		return null;
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		if (mainDishList != null) {
-			mainDishList = null;
-		}
-		if (sideDishList != null) {
-			sideDishList = null;
-		}
 	}
 }

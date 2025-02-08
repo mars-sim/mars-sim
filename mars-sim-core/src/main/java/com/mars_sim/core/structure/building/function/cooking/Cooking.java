@@ -31,7 +31,6 @@ import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Storage;
-import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -56,11 +55,6 @@ public class Cooking extends Function {
 
 	public static final int MAX_NUM_SOLS = 14;
 	public static final int RECHECKING_FREQ = 250; // in millisols
-	public static final int NUMBER_OF_MEAL_PER_SOL = 4;
-//	/** The average amount of cleaning agent (kg) used per sol for clean-up. */
-//	public static final double CLEANING_AGENT_PER_SOL = 0.1D;
-//	/** The average amount of water in kg per cooked meal during meal preparation and clean-up. */
-//	public static final double WATER_USAGE_PER_MEAL = 0.8D;
 	public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
 	public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
 	/**  The base amount of work time (cooking skill 0) to produce one single cooked meal.*/
@@ -69,11 +63,11 @@ public class Cooking extends Function {
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
 
-	public static double UP = 0.01;
-	public static double DOWN = 0.007;
+	private static final double UP = 0.01;
+	private static final double DOWN = 0.007;
 
 	private boolean cookNoMore = false;
-	private boolean no_oil_last_time = false;
+	private boolean noOilLastTime = false;
 
 	/** The cache for msols */
 	private int cookCapacity;
@@ -81,9 +75,7 @@ public class Cooking extends Function {
 	private boolean hasCookableMeal = false;
 
 	// Dynamically adjusted the rate of generating meals
-	// public double mealsReplenishmentRate;
 	private double cleaningAgentPerSol;
-	private double waterUsagePerMeal;
 	/** Cleanliness score between -1 and 1. */
 	private double cleanliness;
 	private double cookingWorkTime;
@@ -103,6 +95,7 @@ public class Cooking extends Function {
 	private Multimap<String, MarsTime> timeMap;
 
 	private static List<Integer> oilMenu;
+	private static MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
 
 
 	/**
@@ -111,7 +104,6 @@ public class Cooking extends Function {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
-	// TODO: create a CookingManager so that many parameters don't have to load
 	// multiple times
 	public Cooking(Building building, FunctionSpec spec) {
 		// Use Function constructor.
@@ -125,75 +117,11 @@ public class Cooking extends Function {
 		this.cookCapacity = spec.getCapacity();
 
 		// need this to pass maven test
-		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
-
 		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
-		waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
+		dryMassPerServing = mealConfig.getDryMassPerServing();
 
 		qualityMap = ArrayListMultimap.create();
 		timeMap = ArrayListMultimap.create();
-
-		dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
-
-		computeDryMass();
-	}
-
-	/**
-	 * Computes the dry mass of all ingredients
-	 */
-	// Note : called out once only in Cooking's constructor
-	private void computeDryMass() {
-
-		for (HotMeal aMeal : MealConfig.getDishList()) {
-			List<Double> proportionList = new ArrayList<>(); 
-			List<Double> waterContentList = new ArrayList<>(); 
-
-			for(Ingredient oneIngredient : aMeal.getIngredientList()) {
-				String ingredientName = oneIngredient.getName();
-				double proportion = oneIngredient.getProportion();
-				proportionList.add(proportion);
-
-				// get totalDryMass
-				double waterContent = getCropWaterContent(ingredientName);
-				waterContentList.add(waterContent);
-			}
-
-			// get total dry weight (sum of each ingredient's dry weight) for a meal
-			double totalDryMass = 0;
-			int k;
-			for (k = 1; k < waterContentList.size(); k++)
-				totalDryMass += waterContentList.get(k) + proportionList.get(k);
-
-			// get this fractional number
-			double fraction = 0;
-			if (totalDryMass > 0) {
-				fraction = dryMassPerServing / totalDryMass;
-			}
-
-			// get ingredientDryMass for each ingredient
-			double ingredientDryMass = 0;
-			int l;
-			for (l = 0; l < proportionList.size(); l++) {
-				ingredientDryMass = fraction * waterContentList.get(l) + proportionList.get(l);
-				//ingredientDryMass = Math.round(ingredientDryMass * 1_000_000.0) / 1_000_000.0; // round up to 1 mg
-				aMeal.setIngredientDryMass(l, ingredientDryMass);
-			}
-
-		} // end of while (i.hasNext())
-	}
-
-	/**
-	 * Gets the water content for a crop.
-	 *
-	 * @return water content ( 1 is equal to 100% )
-	 */
-	private double getCropWaterContent(String name) {
-		CropSpec c = SimulationConfig.instance().getCropConfiguration().getCropTypeByName(name);
-
-		if (c == null)
-			return 0;
-		else
-			return c.getEdibleWaterContent();
 	}
 
 	public Multimap<String, Double> getQualityMap() {
@@ -377,7 +305,6 @@ public class Cooking extends Function {
 		// quality among the current servings ?
 		Iterator<CookedMeal> i = cookedMeals.iterator();
 		while (i.hasNext()) {
-			// CookedMeal meal = i.next();
 			double q = i.next().getQuality();
 			if (q > bestQuality)
 				bestQuality = q;
@@ -483,8 +410,9 @@ public class Cooking extends Function {
 	 * @return a hot meal or null if none available.
 	 */
 	public HotMeal getACookableMeal() {
-		return MealConfig.getDishList().stream().filter(meal ->
-			areAllIngredientsAvailable(meal) == true).findAny().orElse(null);
+		return mealConfig.getDishList().stream()
+						.filter(this::areAllIngredientsAvailable)
+						.findAny().orElse(null);
 	}
 
 	/**
@@ -495,13 +423,11 @@ public class Cooking extends Function {
 	public boolean canCookMeal() {
 
         // Check if there are enough ingredients to cook a meal.
-        if (!hasCookableMeal) {
-        	// Need to reset numGoodRecipes periodically since it's a cache value
-        	// and won't get updated unless a meal is cooked.
-        	// Note: it's reset at least once a day at the end of a sol
-        	if (RandomUtil.getRandomInt(5) == 0) {
-        		resetCookableMeals();
-        	}
+		// Need to reset numGoodRecipes periodically since it's a cache value
+		// and won't get updated unless a meal is cooked.
+		// Note: it's reset at least once a day at the end of a sol
+        if (!hasCookableMeal && (RandomUtil.getRandomInt(5) == 0)) {
+        	resetCookableMeals();
         }
 
         return hasCookableMeal;
@@ -512,7 +438,8 @@ public class Cooking extends Function {
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
-		Optional<HotMeal> found = MealConfig.getDishList().stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
+		Optional<HotMeal> found = mealConfig.getDishList().stream()
+				.filter(this::areAllIngredientsAvailable)
 				.findFirst();
 
 		hasCookableMeal = found.isPresent();
@@ -551,7 +478,6 @@ public class Cooking extends Function {
 
 		List<Ingredient> ingredientList = hotMeal.getIngredientList();
 		for (Ingredient oneIngredient : ingredientList) {
-			// String ingredientName = oneIngredient.getName();
 			int ingredientID = oneIngredient.getAmountResourceID();
 
 			int id = oneIngredient.getID();
@@ -583,7 +509,6 @@ public class Cooking extends Function {
 
 		}
 
-		// TODO: quality also dependent upon the hygiene of a person
 		double culinarySkillPerf = 0;
 		// Add influence of a person/robot's performance on meal quality
 
@@ -591,17 +516,17 @@ public class Cooking extends Function {
 					* theCook.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
 		// consume oil
-		boolean has_oil = true;
+		boolean hasOil = true;
 
-		if (!no_oil_last_time) {
+		if (!noOilLastTime) {
 			// see reseting no_oil_last_time in timePassing once in a while
 			// This reduce having to call consumeOil() all the time
-			has_oil = consumeOil(hotMeal.getOil());
-			no_oil_last_time = !has_oil;
+			hasOil = consumeOil(hotMeal.getOil());
+			noOilLastTime = !hasOil;
 		}
 
 		// Add how kitchen cleanliness affect meal quality
-		if (has_oil)
+		if (hasOil)
 			mealQuality = mealQuality + .2;
 
 		mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness) * 10D) / 15D;
@@ -645,10 +570,7 @@ public class Cooking extends Function {
 	private boolean retrieveAnIngredientFromMap(double amount, Integer resource, boolean isRetrieving) {
 		boolean result = true;
 		// 1. check local map cache
-		// Object value = resourceMap.get(name);
 		if (ingredientMap.containsKey(resource)) {
-			// if (value != null) {
-			// double cacheAmount = (double) value;
 			double cacheAmount = ingredientMap.get(resource);
 			// 2. if found, retrieve the resource locally
 			// 2a. check if cacheAmount > dryMass
@@ -680,7 +602,6 @@ public class Cooking extends Function {
 	 */
 	private boolean replenishIngredientMap(double cacheAmount, double amount, Integer resource, boolean isRetrieving) {
 		boolean result = true;
-		// if (cacheAmount < amount)
 		// 2b. if not, retrieve whatever amount from inv
 		// Note: retrieve twice the amount to REDUCE frequent calling of
 		// retrieveAnResource()
@@ -707,10 +628,9 @@ public class Cooking extends Function {
 	 * Consumes a certain amount of water for each meal.
 	 */
 	private void consumeWater() {
-		// TODO: need to move the hardcoded amount to a xml file
 		int sign = RandomUtil.getRandomInt(0, 1);
 		double rand = RandomUtil.getRandomDouble(0.2);
-		double usage = waterUsagePerMeal;
+		double usage;
 		if (sign == 0)
 			usage = 1 + rand;
 		else
@@ -738,8 +658,6 @@ public class Cooking extends Function {
 	private boolean consumeOil(double oilRequired) {
 		Integer oil = pickOneOil(oilRequired);
 		if (oil != -1) {
-//			building.getSettlement().addAmountDemand(oil, oilRequired);
-			// may use the default amount of AMOUNT_OF_OIL_PER_MEAL;
 			retrieveAnIngredientFromMap(oilRequired, oil, true);
 			return true;
 		}
@@ -781,7 +699,7 @@ public class Cooking extends Function {
 			int msol = pulse.getMarsTime().getMillisolInt();
 			if (pulse.isNewIntMillisol() && msol % RECHECKING_FREQ == 0) {
 				// reset
-				no_oil_last_time = false;
+				noOilLastTime = false;
 			}
 
 			if (hasCookedMeal()) {
@@ -908,7 +826,7 @@ public class Cooking extends Function {
 	 */
 	public void preserveFood() {
 		// Note: turn this into a task
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true); // TABLE_SALT, true);//
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true);
 		if (dryMassPerServing > 0)
 			store(dryMassPerServing, ResourceUtil.foodID, "Cooking::preserveFood");
 	}
@@ -950,21 +868,15 @@ public class Cooking extends Function {
 	}
 
 	public boolean isFull() {
-		if (getNumCooks() < getCookCapacity()) {
-			return false;
-		}
-		return true;
+		return (getNumCooks() >= getCookCapacity());
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
-		oilMenu = null;
 		cookedMeals = null;
 		qualityMap = null;
 		timeMap = null;
 		ingredientMap = null;
 	}
-
-
 }

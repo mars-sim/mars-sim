@@ -35,7 +35,7 @@ public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
 
         assertEquals("Supply mission", 1, hubBase.getResupplyMissionTemplates().size());
 
-        assertEquals("Sponsor", "MS", hubBase.getSponsor());
+        assertEquals("Sponsor", "MS", hubBase.getSponsor().getName());
 
     }
 }

@@ -36,7 +36,7 @@ public class RobotSpec implements Serializable {
 	
 	private String description;
 
-	public RobotSpec(RobotType robotType, String makeModel, String description,
+	RobotSpec(RobotType robotType, String makeModel, String description,
 			double standbyPower, double rate, double lowPowerMode, double maxCapacity,
 			int height, int mass,
 			Map<NaturalAttributeType, Integer> attributeMap, Map<SkillType, Integer> skillMap) {
@@ -58,7 +58,7 @@ public class RobotSpec implements Serializable {
 	 * 
 	 * @return
 	 */
-	public final RobotType getRobotType() {
+	public RobotType getRobotType() {
 		return robotType;
 	}
 	
@@ -67,7 +67,7 @@ public class RobotSpec implements Serializable {
 	 * 
 	 * @return
 	 */
-	public final String getMakeModel() {
+	public String getMakeModel() {
 		return makeModel;
 	}
 	
@@ -76,7 +76,7 @@ public class RobotSpec implements Serializable {
 	 * 
 	 * @return
 	 */
-	public final String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 	
@@ -136,5 +136,13 @@ public class RobotSpec implements Serializable {
 
     public int getHeight() {
         return height;
+    }
+
+	/**
+	 * Get the unit name
+	 * @return
+	 */
+    public String getName() {
+		return robotType.getName() + " " + makeModel;
     }
 }

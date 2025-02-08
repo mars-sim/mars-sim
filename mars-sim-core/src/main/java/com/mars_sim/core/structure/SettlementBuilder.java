@@ -41,6 +41,7 @@ import com.mars_sim.core.person.NationSpec;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.Favorite;
+import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -218,13 +219,16 @@ public final class SettlementBuilder {
 	 * @return
 	 */
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
+		Authority ra;
 		String sponsor = spec.getSponsor();
 		// If the sponsor has not be defined; then use the template
 		if (sponsor == null) {
-			sponsor = template.getSponsor();
+			ra = template.getSponsor();
 		}
-		Authority ra = raFactory.getItem(sponsor);
-
+		else {
+			ra = raFactory.getItem(sponsor);
+		}
+		
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
@@ -569,31 +573,9 @@ public final class SettlementBuilder {
 					}
 				}
 
-				// Add Favorite class
-				String mainDish = m.getMainDish();
-				String sideDish = m.getSideDish();
-				String dessert = m.getDessert();
-				String activity = m.getActivity();
-
-				// Add Favorite class
-				Favorite f = person.getFavorite();
-
-				if (mainDish != null) {
-					f.setFavoriteMainDish(mainDish);
-				}
-
-				if (sideDish != null) {
-					f.setFavoriteSideDish(sideDish);
-				}
-
-				if (dessert != null) {
-					f.setFavoriteDessert(dessert);
-				}
-
-				if (activity != null) {
-					f.setFavoriteActivity(activity);
-				}
-
+				// Set Favourites
+				setFavorites(person, m);
+								
 				// Initialize Preference
 				person.getPreference().initializePreference();
 			}
@@ -602,6 +584,35 @@ public final class SettlementBuilder {
 		createConfiguredRelationships(addedCrew);
 	}
 
+
+	private void setFavorites(Person person, Member m) {
+		
+		// Add Favorite class
+		String mainDish = m.getMainDish();
+		String sideDish = m.getSideDish();
+		String dessert = m.getDessert();
+		String activity = m.getActivity();
+
+		// Add Favorite class
+		Favorite f = person.getFavorite();
+
+		if (mainDish != null) {
+			f.setFavoriteMainDish(mainDish);
+		}
+
+		if (sideDish != null) {
+			f.setFavoriteSideDish(sideDish);
+		}
+
+		if (dessert != null) {
+			f.setFavoriteDessert(dessert);
+		}
+
+		if (activity != null) {
+			var favoriteType = FavoriteType.fromString(activity);
+			f.setFavoriteActivityType(favoriteType);
+		}
+	}
 
 	/**
 	 * Creates all configured pre-configured crew relationships.

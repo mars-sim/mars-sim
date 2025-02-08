@@ -81,7 +81,6 @@ public class SimulationConfig {
 	private static final String FOODPRODUCTION_FILE = "food_production";
 	private static final String MEAL_FILE = "meals";
 	private static final String ROBOT_FILE = "robots";
-//	private static final String QUOTATION_FILE = "quotations";
 	private static final String VALUE = "value";
 
 	// Simulation element names.
@@ -131,7 +130,6 @@ public class SimulationConfig {
 
 	// Subset configuration classes
 	private PartConfig partConfig;
-//	private PartPackageConfig partPackageConfig;
 	private AmountResourceConfig resourceConfig;
 	private PersonConfig personConfig;
 	private MedicalConfig medicalConfig;
@@ -144,13 +142,11 @@ public class SimulationConfig {
 	private SettlementConfig settlementConfig;
 	private SettlementTemplateConfig settlementTemplateConfig;
 	private ManufactureConfig manufactureConfig;
-//	private ResupplyConfig resupplyConfig;
 	private ConstructionConfig constructionConfig;
 
 	private FoodProductionConfig foodProductionConfig;
 	private MealConfig mealConfig;
 	private RobotConfig robotConfig;
-//	private QuotationConfig quotationConfig;
 	private ScienceConfig scienceConfig;
 
 	private AuthorityFactory raFactory;
@@ -683,16 +679,15 @@ public class SimulationConfig {
 		ResupplyConfig resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true));
 		settlementTemplateConfig = new SettlementTemplateConfig(parseXMLFileAsJDOMDocument(
-				SETTLEMENT_TEMPLATE_FILE, true), partPackageConfig, buildingPackageConfig, resupplyConfig, settlementConfig);
+				SETTLEMENT_TEMPLATE_FILE, true), partPackageConfig, buildingPackageConfig,
+				resupplyConfig, settlementConfig, raFactory);
 
 
 		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 		foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
-		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
+		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true),
+						cropConfig, personConfig);
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
-		// Note: Do NOT delete QuotationConfig. 
-		//       Will reinstate quoatation config after deciding how to best make use of the quotes
-//		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
 		scienceConfig = new ScienceConfig();
 
 		logger.config("Done loading all xml config files.");

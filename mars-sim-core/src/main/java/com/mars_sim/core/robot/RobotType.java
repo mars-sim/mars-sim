@@ -37,15 +37,6 @@ public enum RobotType {
 	}
 
 	/**
-	 * Returns the display name.
-	 *
-	 * @return {@link String}
-	 */
-	public String getDisplayName() {
-		return this.name;
-	}
-
-	/**
 	 * Convert an robot type to the associated resourceID.
 	 * Note : Needs revisiting. Equipment should be referenced by the RobotType enum.
 	 * 

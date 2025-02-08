@@ -1,0 +1,34 @@
+{{>detail-head}}
+
+## Description
+
+{{robot.description}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Type:|{{robot.robotType.getName}}|
+|Model:|{{robot.makeModel}}|
+|Carry Capacity:|{{robot.maxCapacity}} kg|
+|Mass:|{{robot.mass}} kg|
+|Height:|{{robot.height}} cm|
+|Power Consumption:|{{robot.consumptionRate}} kWH|
+|Power Consumption (standby):|{{robot.standbyPowerConsumption}} kWH|
+|Low Power Threshold:|{{robot.LowPowerModePercent}} %|
+
+## Skills
+|Skill:|Rating|
+|-------|-------|
+{{#skills}}
+|{{name}}|{{value}}|
+{{/skills}}
+
+## Attributes
+|Attribute:|Rating|
+|-------|-------|
+{{#attributes}}
+|{{name}}|{{value}}|
+{{/attributes}}
+
+{{>footer}}

@@ -1,15 +1,11 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE robot-configuration [
-	<!ELEMENT robot-configuration (min-air-pressure, 
-	min-temperature, max-temperature, freezing-time, robot-list)>
-	<!ELEMENT min-air-pressure EMPTY>
-	<!ATTLIST min-air-pressure value CDATA #REQUIRED>
-	<!ELEMENT min-temperature EMPTY>
-	<!ATTLIST min-temperature value CDATA #REQUIRED>
-	<!ELEMENT max-temperature EMPTY>
-	<!ATTLIST max-temperature value CDATA #REQUIRED>
-	<!ELEMENT freezing-time EMPTY>
-	<!ATTLIST freezing-time value CDATA #REQUIRED>
+	<!ELEMENT robot-configuration (global-config, robot-list)>
+	<!ELEMENT global-config EMPTY>
+	<!ATTLIST global-config min-air-pressure CDATA #REQUIRED>
+	<!ATTLIST global-config min-temperature CDATA #REQUIRED>
+	<!ATTLIST global-config max-temperature CDATA #REQUIRED>
+	<!ATTLIST global-config freezing-time CDATA #REQUIRED>
 	<!ELEMENT robot-list (robot*)>
 	<!ELEMENT robot (description, robotic-attribute-list?, skill-list?)>
 	<!ATTLIST robot type CDATA #REQUIRED>
@@ -34,18 +30,11 @@
 
 <robot-configuration>
 	
-	<!-- Minimum air pressure (Pa) a robot can withstand without harm -->
-	<min-air-pressure value="500" />
-
-	<!-- Minimum temperature (degree Celsius) a robot can withstand without harm -->
-	<min-temperature value="-30.0" />
-
-	<!-- Maximum temperature (degree Celsius) a robot can withstand without harm -->
-	<max-temperature value="78.0" />
-
-	<!-- Number of millisols a robot can survive below minimum temperature -->
-	<!-- Note: 1 millisol = 88.77 seconds -->
-	<freezing-time value="500.0" />
+	<global-config
+		min-air-pressure="500"
+		min-temperature="-30.0"
+		max-temperature="78.0"
+		freezing-time="500.0"/>
 
 	<!-- List of robot type -->
 	<robot-list>

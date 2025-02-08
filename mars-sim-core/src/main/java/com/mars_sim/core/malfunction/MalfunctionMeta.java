@@ -21,7 +21,7 @@ import com.mars_sim.core.person.health.ComplaintType;
  */
 public class MalfunctionMeta implements Serializable {
 
-	public final static class EffortSpec implements Serializable {
+	public static final class EffortSpec implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private double workTime;
@@ -67,7 +67,7 @@ public class MalfunctionMeta implements Serializable {
 	 *
 	 * @param name name of the malfunction
 	 */
-	public MalfunctionMeta(String name, int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
+	MalfunctionMeta(String name, int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
 			Set<String> entities, Map<Integer, Double> resourceEffects,
 			Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints,
 			List<RepairPart> parts) {
@@ -127,6 +127,14 @@ public class MalfunctionMeta implements Serializable {
 	 */
 	public Map<MalfunctionRepairWork, EffortSpec> getRepairEffort() {
 		return repairEffort;
+	}
+
+	/**
+	 * Get the Systems affected by this malfunction
+	 * @return
+	 */
+	public Set<String> getSystems() {
+		return systems;
 	}
 
 	/**

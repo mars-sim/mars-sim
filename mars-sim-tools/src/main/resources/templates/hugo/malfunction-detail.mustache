@@ -1,0 +1,47 @@
+{{>detail-head}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Default Probability:|{{malfunction.probability}}|
+|Severity:|{{malfunction.severity}}|
+
+## Systems Affected 
+{{#malfunction.systems}}
+- {{.}}
+{{/malfunction.systems}}
+
+## Repair
+
+### Effort
+|Repair Type|Workers|Total Effort (sols)|
+|---|---|---|
+{{#efforts}}
+|{{name}}|{{number}}|{{value}}|
+{{/efforts}}
+
+### Parts
+|Part|Number|Default Probability|
+|---|---|---|
+{{#parts}}
+|[{{name}}]({{partfolder}}{{#filename}}{{name}}{{/filename}})|{{number}}|{{value}}|
+{{/parts}}
+
+## Impacts
+
+### Medical Complaints
+|Complaint|Default Probability|
+|---|---|
+{{#complaints}}
+|{{name}}|{{value}}|
+{{/complaints}}
+
+### Life Support
+|Resource|Impact|
+|---|---|
+{{#lifesupport}}
+|{{name}}|{{value}}|
+{{/lifesupport}}
+
+{{>footer}}

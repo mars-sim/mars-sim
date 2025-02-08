@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
@@ -30,7 +31,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	private int defaultNumOfRobots;
 	
 	private String name;
-	private String sponsor;
+	private Authority sponsor;
 	
 	private List<ResupplySchedule> resupplies = new ArrayList<>();
 	
@@ -57,7 +58,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * @param defaultNumOfRobots
 	 */
 	public SettlementTemplate(String name, String desription, boolean bundled,
-								String sponsor, ShiftPattern shiftDefn,
+								Authority sponsor, ShiftPattern shiftDefn,
 								GroupActivitySchedule activitySchedule,
 								int defaultPopulation, int defaultNumOfRobots,
 								SettlementSupplies supplies) {
@@ -168,7 +169,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * 
 	 * @return
 	 */
-	public String getSponsor() {
+	public Authority getSponsor() {
 		return sponsor;
 	}
 	

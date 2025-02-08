@@ -277,10 +277,6 @@ public class SimulationBuilder {
 		SimulationConfig simConfig = SimulationConfig.instance();
 		simConfig.loadConfig();
 		
-		// Initialize storage manager
-//		simConfig.createStorageManager();
-//		simConfig.createStorageManager().start();
-		
 		Simulation sim = Simulation.instance();
 			
 		boolean loaded = false;
@@ -397,7 +393,6 @@ public class SimulationBuilder {
 	 * @return InitialSettlement
 	 */
 	private InitialSettlement loadSettlementTemplate(SimulationConfig simulationConfig) {
-//		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 		SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 			
 		// Find the template
@@ -405,8 +400,7 @@ public class SimulationBuilder {
 		Authority authority;
 		if (authorityName == null) {
 			// Use the default on the template
-			String sponsorCode = settlementTemplate.getSponsor();
-			authority = simulationConfig.getReportingAuthorityFactory().getItem(sponsorCode);
+			authority = settlementTemplate.getSponsor();
 		}
 		else {
 			authority = simulationConfig.getReportingAuthorityFactory().getItem(authorityName);
