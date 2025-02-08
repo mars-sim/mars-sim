@@ -8,16 +8,11 @@ package com.mars_sim.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HotMeal implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private boolean isAvailable;
-
-	private int mealID;
 
 	private double oil;
 	private double salt;
@@ -25,79 +20,28 @@ public class HotMeal implements Serializable {
 	private String mealName;
 	private String mealCategory;
 
-	private List<Ingredient> ingredientList = new CopyOnWriteArrayList<>();
+	private List<Ingredient> ingredientList;
 
-	public HotMeal(int mealID, String nameOfMeal, double oil, double salt, String mealCategory) {
+	HotMeal(String nameOfMeal, double oil, double salt, List<Ingredient> ingredients, String category) {
 
-		this.mealID = mealID;
 		this.mealName = nameOfMeal;
 		this.oil = oil;
 		this.salt = salt;
-		this.mealCategory = mealCategory;
+		this.ingredientList = ingredients;
+		this.mealCategory = category;
 	}
-
-
-	/**
-	 * Adds an ingredient.
-	 * 
-	 * @param ingredientID
-	 * @param resource
-	 * @param proportion
-	 */
-	public void addIngredient(int ingredientID, int resource, double proportion) {
-		ingredientList.add(new Ingredient(ingredientID, resource, proportion));
-	}
-
-	public void setIngredient(List<Ingredient> ingredientList, Ingredient ingredient) {
-	    int ingredientIndex = ingredientList.indexOf(ingredient);
-	    if (ingredientIndex != -1) {
-	        ingredientList.set(ingredientIndex, ingredient);
-	    }
-	}
-
-	public void addMealName(String nameOfMeal) {
-		this.mealName = nameOfMeal;
-	}
-
-	public void addMeal(int mealID, String nameOfMeal, double oil, double salt,
-			String mealCategory, boolean isAvailable) {
-
-		this.mealID = mealID;
-		this.mealName = nameOfMeal;
-		this.oil = oil;
-		this.salt = salt;
-		this.mealCategory = mealCategory;
-		this.isAvailable = isAvailable;
-	}
-
-    public boolean isAvailable() {
-    	return isAvailable;
-    }
-
-	public void setIngredientDryMass(int id, double ingredientDryMass) {
-		Ingredient ingredient = ingredientList.get(id);
-		ingredient.setDryMass(ingredientDryMass);
-		ingredientList.set(id, ingredient);
-	}
-
-    public void setAvailable(boolean value) {
-    	isAvailable = value;
-    }
 
 	public String getMealName() {
 		return mealName;
 	}
 
+	public String getCategory() {
+		return mealCategory;
+	}
+
+	@Override
 	public String toString() {
 		return mealName;
-	}
-
-	public int getMealID() {
-		return mealID;
-	}
-
-	public void setMealID(int id) {
-		mealID = id;
 	}
 
 	public List<Ingredient> getIngredientList() {
@@ -111,10 +55,4 @@ public class HotMeal implements Serializable {
 	public double getSalt() {
 		return salt;
 	}
-
-    public void destroy() {
-    	ingredientList.clear();
-        ingredientList = null;
-    }
-
 }

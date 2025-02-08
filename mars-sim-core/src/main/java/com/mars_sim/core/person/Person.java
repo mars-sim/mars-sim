@@ -237,7 +237,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 
 		// Create favorites
-		favorite = new Favorite(this);
+		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
+
 		// Create preferences
 		preference = new Preference(this);
 		// Set up genetic make-up. Notes it requires attributes.

@@ -1,0 +1,33 @@
+{{<help-layout}}
+  {{$body}}
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Category:</td><td>{{meal.category}}</td></tr>
+        <tr><td>Oil:</td><td>{{meal.oil}} kg</td></tr>
+        <tr><td>Salt:</td><td>{{meal.salt}} kg</td></tr>
+      </table>
+    </div>
+
+    <div id="ingredients">
+      <h3>Ingredients</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Name</th>
+          <th>Proportion</th>
+          </tr>
+        </thead>
+{{#meal.ingredientList}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{proportion}}</td>
+        </tr>
+{{/meal.ingredientList}}
+      </table>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Meal list</a>
+  {{/body}}
+{{/help-layout}}

@@ -104,6 +104,19 @@ public class HelpGeneratorTest {
     }
 
     @Test
+    public void testMealHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getMealConfiguration();
+
+        var spec = config.getDishList().get(0);
+        var vg = new MealGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "ingredients", "Ingredients", true);
+    }
+
+    @Test
     public void testAuthorityHelp() throws IOException {
         var context = createGenerator();
         var config = context.getConfig().getReportingAuthorityFactory();
@@ -115,7 +128,6 @@ public class HelpGeneratorTest {
 
         assertDIV(content, "agenda");
         assertDIV(content, "countries");
-
     }
 
     @Test

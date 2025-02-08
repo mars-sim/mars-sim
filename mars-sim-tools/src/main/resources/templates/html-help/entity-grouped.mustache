@@ -11,7 +11,7 @@
       <h3 id="{{id}}">{{name}}</h3>
       <ul>
       {{#items}}
-        <li><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+        <li><a href="{{typefolder}}{{#filename}}{{.}}{{/filename}}">{{.}}</a></li>
       {{/items}}
       </ul>
       <a class="backlink" href="#top">Back to the top</a>

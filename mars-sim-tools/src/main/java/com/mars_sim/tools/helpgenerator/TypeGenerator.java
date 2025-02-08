@@ -141,7 +141,11 @@ public abstract class TypeGenerator<T> {
 
         if (grouper != null) {
             List<NamedGroup<T>> groups = GenericsGrouper.getGroups(entities, grouper);
-            scope.put("groups", groups);
+            List<NamedGroup<String>> groupsByName = groups.stream()
+                                .map(g -> new NamedGroup<String>(g.id(), g.name(),
+                                        toNames(g.items())))
+                                .toList();
+            scope.put("groups", groupsByName);
             scope.put("groupname", groupName);
     
             // Load the template
@@ -151,7 +155,7 @@ public abstract class TypeGenerator<T> {
             template = groupedTemplate;
         }
         else {
-            scope.put("entities", entities);
+            scope.put("entities", toNames(entities));
 
             // Load the template
             if (indexTemplate == null) {
@@ -165,6 +169,19 @@ public abstract class TypeGenerator<T> {
         try (FileOutputStream dest = new FileOutputStream(indexFile)) {
             getParent().generateContent(template, scope, dest);
         }
+    }
+
+    /**
+     * Convert a list of T to their names
+     * @param <T>
+     * @param entities
+     * @param generator
+     * @return
+     */
+    private List<String> toNames(List<T> entities) {
+        return entities.stream()
+                    .map(e -> getEntityName(e))
+                    .toList();
     }
 
     /**

@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
@@ -35,7 +36,6 @@ import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
 import com.mars_sim.core.structure.building.function.cooking.HotMeal;
 import com.mars_sim.core.structure.building.function.cooking.Ingredient;
-import com.mars_sim.core.structure.building.function.cooking.MealConfig;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.Farming;
@@ -992,15 +992,15 @@ class AmountResourceGood extends Good {
 			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();
 			double cookedMealDemand = numPeople * cookedMealDemandOrbit;
-			int numMeals = MealConfig.getDishList().size();
+			var meals = SimulationConfig.instance().getMealConfiguration().getDishList();
+			int numMeals = meals.size();
 			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
-//			logger.info(getAmountResource() + "   factor: " + factor);
 			
 			// Determine demand for the resource as an ingredient for each cooked meal
 			// recipe.
 
 			
-			for (HotMeal meal : MealConfig.getDishList()) {
+			for (HotMeal meal : meals) {
 				for (Ingredient ingredient : meal.getIngredientList()) {
 					if (id == ingredient.getAmountResourceID()) {
 						demand += ingredient.getProportion() * factor;

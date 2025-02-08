@@ -685,7 +685,8 @@ public class SimulationConfig {
 
 		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 		foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
-		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
+		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true),
+						cropConfig, personConfig);
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 		scienceConfig = new ScienceConfig();
 

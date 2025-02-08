@@ -3,7 +3,7 @@
     <p>{{description}}</p>
     <ul>
     {{#entities}}
-      <li><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+      <li><a href="{{typefolder}}{{#filename}}{{.}}{{/filename}}">{{.}}</a></li>
     {{/entities}}
     </ul>
     </br>

@@ -1,0 +1,20 @@
+{{>detail-head}}
+
+
+## Characteristics
+
+| Attribute   | Value |
+|--------:|:------|
+|Category:|{{meal.category}}|
+|Oil:|{{meal.oil}} kg|
+|Salt:|{{meal.salt}} kg|
+
+## Ingredients
+
+|Name|Proportion|
+|----|------:|---:|
+{{#meal.ingredientList}}
+|{{name}}|{{proportion}}|
+{{/meal.ingredientList}}
+
+{{>footer}}

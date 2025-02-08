@@ -10,7 +10,6 @@ package com.mars_sim.core.person.ai.fav;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.building.function.cooking.HotMeal;
 import com.mars_sim.core.structure.building.function.cooking.MealConfig;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
@@ -33,16 +32,13 @@ public class Favorite implements Serializable {
 	private transient HotMeal mainMeal;
 	private transient HotMeal sideMeal;
 	
-	private Person person;
-	
-	public Favorite(Person person) {
-		this.person = person;
+	public Favorite(MealConfig meals) {
 		
         availableDesserts = PreparingDessert.getArrayOfDesserts();
         
     	favoriteType = determineRandomFavoriteType();
-        favoriteMainDish = determineRandomMainDish();
-    	favoriteSideDish = determineRandomSideDish();
+        favoriteMainDish = RandomUtil.getRandomElement(meals.getMainDishList()).getMealName();
+    	favoriteSideDish = RandomUtil.getRandomElement(meals.getSideDishList()).getMealName();
     	favoriteDessert = determineRandomDessert();
 	}
 
@@ -53,37 +49,13 @@ public class Favorite implements Serializable {
 	public HotMeal getSideDishHotMeal() {
 		return sideMeal;
 	}
-	
-
-	/**
-	 * Determines a main dish randomly.
-	 * 
-	 * @return
-	 */
-	public String determineRandomMainDish() {
-    	int num = RandomUtil.getRandomInt(MealConfig.getMainDishList().size()-1);
-    	mainMeal = MealConfig.getMainDishList().get(num);
-		return mainMeal.getMealName();
-	}
-	
-	/**
-	 * Determines a side dish randomly.
-	 * 
-	 * @return
-	 */
-	public String determineRandomSideDish() {
-    	int num = RandomUtil.getRandomInt(MealConfig.getSideDishList().size()-1);
-    	sideMeal = MealConfig.getSideDishList().get(num);
-		return sideMeal.getMealName();
-	}
-
 
 	/**
 	 * Determines a dessert randomly.
 	 * 
 	 * @return
 	 */
-	public String determineRandomDessert() {
+	private String determineRandomDessert() {
 		String result = "";
     	int rand = RandomUtil.getRandomInt(availableDesserts.length - 1);
     	result = availableDesserts[rand];
@@ -98,30 +70,6 @@ public class Favorite implements Serializable {
 	public FavoriteType determineRandomFavoriteType() {
     	int num = RandomUtil.getRandomInt(FavoriteType.availableFavoriteTypes.length - 1);
 		return FavoriteType.availableFavoriteTypes[num];
-	}
-
-	public boolean isMainDish(String name) {
-		if (name != null) {
-	    	for (HotMeal hm : MealConfig.getMainDishList()) {
-	    		if (name.equalsIgnoreCase(hm.getMealName())) {
-	    			return true;
-	    		}
-	    	}
-		}
-		
-		return false;
-	}
-	
-	public boolean isSideDish(String name) {
-		if (name != null) {
-	    	for (HotMeal hm : MealConfig.getSideDishList()) {
-	    		if (name.equalsIgnoreCase(hm.getMealName())) {
-	    			return true;
-	    		}
-	    	}
-		}
-		
-		return false;
 	}
 	
 	public boolean isDessert(String name) {
@@ -165,17 +113,11 @@ public class Favorite implements Serializable {
 	}
 
 	public void setFavoriteMainDish(String name) {
-		if (isMainDish(name))
-			favoriteMainDish = name;
-		else
-			logger.severe("The main dish '" + name + "' does not exist in mars-sim !"); 
+		favoriteMainDish = name;
 	}
 
 	public void setFavoriteSideDish(String name) {
-		if (isSideDish(name))
-			favoriteSideDish = name;
-		else
-			logger.severe("The side dish '" + name + "' does not exist in mars-sim !"); 
+		favoriteSideDish = name;
 	}
 
 	public void setFavoriteDessert(String name) {
@@ -185,20 +127,7 @@ public class Favorite implements Serializable {
 			logger.severe("The dessert '" + name + "' does not exist in mars-sim !"); 
 	}
 
-	public void setFavoriteActivity(String type) {
-		favoriteType = FavoriteType.fromString(type);
-		if (favoriteType == null)
-			logger.severe("The activity '" + type + "' does not exist in mars-sim !"); 
-	}
-	
 	public void setFavoriteActivityType(FavoriteType type) {
 		favoriteType = type;
-	}
-	
-	public void destroy() {
-		favoriteType = null;
-		person.destroy();
-		person = null;
-		availableDesserts = null;
 	}
 }
