@@ -235,9 +235,10 @@ public abstract class TypeGenerator<T> {
     public void generateEntity(T e, OutputStream output) throws IOException
     {
         // Add base properties
-        var vScope = parent.createScopeMap(title + " - " + getEntityName(e));
+        var pageName = getEntityName(e);
+        var vScope = parent.createScopeMap(title + " - " + pageName);
         vScope.put(typeName, e);
-        vScope.put("type.title", title);
+        vScope.put("shorttitle", pageName);
 
         // Add any customer properties
         addEntityProperties(e, vScope);
