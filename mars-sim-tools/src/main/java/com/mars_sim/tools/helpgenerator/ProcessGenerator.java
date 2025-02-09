@@ -8,13 +8,15 @@ package com.mars_sim.tools.helpgenerator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
+import com.mars_sim.core.process.ProcessInfo;
 
 /**
  * Help file generator for manufacturing processes.
  */
-class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
+class ProcessGenerator extends TypeGenerator<ProcessInfo> {
 
     public static final String TYPE_NAME = "process";
 
@@ -34,23 +36,27 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
      * @param output Destination for content
      */
     @Override
-    protected void addEntityProperties(ManufactureProcessInfo p, Map<String,Object> scope) {
+    protected void addEntityProperties(ProcessInfo p, Map<String,Object> scope) {
 		addProcessInputOutput(scope, "Inputs", toQuantityItems(p.getInputList()),
 									"Products", toQuantityItems(p.getOutputList()));
+
+        scope.put("process-type", (p instanceof ManufactureProcessInfo ? "Manufacture" : "Salvage"));
     }
 
     /**
      * Get all the configured manufacturing processes.
      */
     @Override
-    protected List<ManufactureProcessInfo> getEntities() {
-		return getParent().getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
-		 							.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
-									 .toList();
+    protected List<ProcessInfo> getEntities() {
+		var manuConfig = getParent().getConfig().getManufactureConfiguration();
+        return Stream.concat(manuConfig.getManufactureProcessList().stream(),
+                                manuConfig.getSalvageInfoList().stream())
+		 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
+							.toList();
     }
 
     @Override
-    protected String getEntityName(ManufactureProcessInfo v) {
+    protected String getEntityName(ProcessInfo v) {
         return v.getName();
     }
 }
