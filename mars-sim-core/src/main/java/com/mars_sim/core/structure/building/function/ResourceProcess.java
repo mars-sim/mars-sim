@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -17,14 +18,13 @@ import com.mars_sim.core.structure.building.ResourceProcessEngine;
 import com.mars_sim.core.structure.building.ResourceProcessSpec;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
  * resources to another. This represent the actual process instant attached to a Building.
  */
-public class ResourceProcess implements Serializable {
+public class ResourceProcess implements ScheduledEventHandler, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -49,9 +49,7 @@ public class ResourceProcess implements Serializable {
 	
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
-
 	private double currentProductionLevel;
-
 	private double toggleRunningWorkTime;
 
 	/** The total score for this process. */
@@ -61,26 +59,41 @@ public class ResourceProcess implements Serializable {
 	/** The output score for this process. */	
 	private double outputScore;
 
-	private int[] timeLimit = new int[] {1, 0};
+	private boolean canToggle = false;
+	private MarsTime toggleDue = null; 
 
 	private ResourceProcessEngine engine;
 	private ResourceProcessSpec processSpec;
-
-	private static MasterClock clock;
+	private Settlement host;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param engine The processing engine that this Process manages
 	 */
-	public ResourceProcess(ResourceProcessEngine engine) {
+	public ResourceProcess(ResourceProcessEngine engine, Settlement host) {
 		this.processSpec = engine.getProcessSpec();
 		runningProcess = processSpec.getDefaultOn();
 		currentProductionLevel = 1D;
+		this.canToggle = false;
 		this.engine = engine;
+		this.host = host;
 
 		// Add some randomness, today is sol 1
-		resetToggleTime(1, 100 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
+		resetToggleWait(100 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
+	}
+
+	
+	@Override
+	public int execute(MarsTime currentTime) {
+		canToggle = true;
+		return 0;
+	}
+
+
+	@Override
+	public String getEventDescription() {
+		return "Toggle " + (runningProcess ? "Off" : "On") + " for " + processSpec.getName();
 	}
 
 	/**
@@ -117,6 +130,18 @@ public class ResourceProcess implements Serializable {
 	 */
 	public void setProcessRunning(boolean runningProcess) {
 		this.runningProcess = runningProcess;
+
+		int delay = processSpec.getProcessTime();
+		if (!runningProcess) {
+			// Not runnign so half the time before it can be restarted
+			delay /= 2;
+		}
+		resetToggleWait(delay);
+	}
+
+	private void resetToggleWait(int delay) {
+		var event = host.getFutureManager().addEvent(delay, this);
+		toggleDue = event.getWhen();
 	}
 
 	/**
@@ -147,12 +172,9 @@ public class ResourceProcess implements Serializable {
 		toggleRunningWorkTime += time;
 		if (toggleRunningWorkTime >= processSpec.getWorkTime()) {
 			toggleRunningWorkTime = 0D;
+			canToggle = false;
 			
-			runningProcess = !runningProcess;
-
-			// Reset for next toggle
-			MarsTime now = clock.getMarsTime();
-			resetToggleTime(now.getMissionSol(), now.getMillisolInt());
+			setProcessRunning(!runningProcess);
 			
 			return true;
 		}
@@ -298,17 +320,16 @@ public class ResourceProcess implements Serializable {
 	 *
 	 * @param pulse
 	 * @param productionLevel proportion of max process rate (0.0D - 1.0D)
-	 * @param inventory       the inventory pool to use for processes.
 	 * @throws Exception if error processing resources.
 	 */
-	public void processResources(ClockPulse pulse, double productionLevel, Settlement settlement) {
+	public void processResources(ClockPulse pulse, double productionLevel) {
 		double time = pulse.getElapsed();
-		double level = productionLevel;
 
-		if ((level < 0D) || (level > 1D) || (time < SMALL_AMOUNT))
+		if ((productionLevel < 0D) || (productionLevel > 1D) || (time < SMALL_AMOUNT))
 			return;
 
 		if (runningProcess) {
+			double newProdLevel = productionLevel;
 
 			accumulatedTime += time;
 
@@ -317,9 +338,6 @@ public class ResourceProcess implements Serializable {
 			if (accumulatedTime >= newCheckPeriod) {
 				// Compute the remaining accumulatedTime
 				accumulatedTime -= newCheckPeriod;
-//				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
-//						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
-//						+ "  processInterval: " + processInterval);
 	
 				double bottleneck = 1D;
 
@@ -327,9 +345,9 @@ public class ResourceProcess implements Serializable {
 				for (Integer resource : processSpec.getInputResources()) {
 					if (!processSpec.isAmbientInputResource(resource)) {
 						double fullRate = getBaseFullInputRate(resource);
-						double resourceRate = fullRate * level;
+						double resourceRate = fullRate * newProdLevel;
 						double required = resourceRate * accumulatedTime;
-						double stored = settlement.getAmountResourceStored(resource);
+						double stored = host.getAmountResourceStored(resource);
 						
 						// Get resource bottleneck
 						double desiredResourceAmount = fullRate * time;
@@ -342,21 +360,21 @@ public class ResourceProcess implements Serializable {
 						// Retrieve the right amount
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
-								logger.fine(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
+								logger.fine(host, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
 									+ "' input to start '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 									+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 								required = stored;
-								settlement.retrieveAmountResource(resource, required);
+								host.retrieveAmountResource(resource, required);
 								setProcessRunning(false);
 								break;
 								// Note: turn on a yellow flag and indicate which the input resource is missing
 							}
 							else
-								settlement.retrieveAmountResource(resource, required);
+								host.retrieveAmountResource(resource, required);
 							
 						}
 						else {
-							logger.fine(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
+							logger.fine(host, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
 								+ "' input to start '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 							setProcessRunning(false);
@@ -366,48 +384,45 @@ public class ResourceProcess implements Serializable {
 				}
 
 				// Set level
-				if (level > bottleneck)
-					level = bottleneck;
+				newProdLevel = Math.min(newProdLevel, bottleneck);
 				
 				// Output resources to inventory.
 				for (Integer resource : processSpec.getOutputResources()) {
-//					if (!processSpec.isWasteOutputResource(resource)) {
 						double maxRate = getBaseFullOutputRate(resource);
-						double resourceRate = maxRate * level;
+						double resourceRate = maxRate * newProdLevel;
 						double required = resourceRate * accumulatedTime;
-						double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
+						double remainingCap = host.getAmountResourceRemainingCapacity(resource);
 						
 						// Store the right amount
 						if (remainingCap > SMALL_AMOUNT) {
 							if (required > remainingCap) {
-								logger.fine(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
+								logger.fine(host, 30_000, "Case C. Used up all remaining space for storing '" 
 										+ ResourceUtil.findAmountResourceName(resource)
 										+ "' output in '" + processSpec.getName() + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
 										+ " kg of storage. Remaining cap: 0 kg.");
 								required = remainingCap;
-								settlement.storeAmountResource(resource, required);
+								host.storeAmountResource(resource, required);
 								setProcessRunning(false);						
 								break;
 								// Note: turn on a yellow flag and indicate which the output resource is missing
 							}
 							else
-								settlement.storeAmountResource(resource, required);
+								host.storeAmountResource(resource, required);
 							
 						}
 						else {
-							logger.fine(settlement, 30_000, "Case D. Not enough space for storing '" 
+							logger.fine(host, 30_000, "Case D. Not enough space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
 									+ "' output to continue '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 
 									+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
 							setProcessRunning(false);
 							break;
 						}
-//					}
 				}
 			}
 
 			// Set the current production level.
-			currentProductionLevel = level;
+			currentProductionLevel = newProdLevel;
 		}
 	}
 
@@ -436,46 +451,16 @@ public class ResourceProcess implements Serializable {
 	 * @return
 	 */
 	public boolean canToggle() {
-		MarsTime now = clock.getMarsTime();
-		int sol = now.getMissionSol();
-		int millisol = now.getMillisolInt();
-		if (sol == timeLimit[0]) {
-            return millisol > timeLimit[1];
-		}
-		else {
-			// Toggling has rolled over the day
-            return sol > timeLimit[0];
-		}
+		return canToggle;
 	}
-
 
 	/**
 	 * Gets the time permissions for the next toggle.
 	 * 
-	 * @return
+	 * @return Maybe null if no toggle scheduled
 	 */
-	public int[] getTimeLimit() {
-		return timeLimit;
-	}
-
-
-	/**
-	 * Resets the toggle time from the current baseline time.
-	 * 
-	 * @param sol Baseline mission sol
-	 * @param millisols
-	 */
-	private void resetToggleTime(int sol, int millisols) {
-		// Compute the time limit
-		millisols += processSpec.getProcessTime();
-		if (millisols >= 1000) {
-			millisols = millisols - 1000;
-			sol = sol + 1;
-		}
-
-		// Tag this particular process for toggling
-		timeLimit[0] = sol;
-		timeLimit[1] = millisols;
+	public MarsTime getToggleDue() {
+		return toggleDue;
 	}
 
 	/**
@@ -485,14 +470,6 @@ public class ResourceProcess implements Serializable {
 	 */
 	public double[] getToggleSwitchDuration() {
 		return new double[] {toggleRunningWorkTime, processSpec.getWorkTime()};
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
-	}
-
-	public int getLevel() {
-		return level;
 	}
 
 	/**
@@ -510,8 +487,6 @@ public class ResourceProcess implements Serializable {
 			else {
 				// Note: the ambient resource is always available
 				return true;
-				// Gets the exact input rate for ambient resource
-//				stored += processSpec.getBaseSingleInputRate(resource);
 			}
 		}
 		if (stored < SMALL_AMOUNT) {
@@ -633,15 +608,5 @@ public class ResourceProcess implements Serializable {
 		}
 
 		return score;
-	}
-	
-
-	/**
-	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param masterClock
-	 */
-	public static void initializeInstances(MasterClock masterClock) {
-		clock = masterClock;
 	}
 }

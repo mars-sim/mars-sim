@@ -49,9 +49,7 @@ public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
         assertEquals("Single available task", 1, results.size());
 
         // Start the process
-        p.addToggleWorkTime(p.getRemainingToggleWorkTime() + 1);
-        p.setProcessRunning(true);
-        
+        p.addToggleWorkTime(p.getRemainingToggleWorkTime() + 1);        
         results = mt.getSettlementTasks(s);
         assertTrue("No tasks as not running long enough", results.isEmpty());
 
@@ -63,8 +61,8 @@ public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
 
     private void moveToToggle(ResourceProcess p) {
         var clock = getSim().getMasterClock();
-        var times = p.getTimeLimit();
-        var newTime = clock.getMarsTime().addTime(times[1] + 1);
+        var newTime = p.getToggleDue().addTime(1);
         clock.setMarsTime(newTime);
+        p.execute(newTime);
     }
 }

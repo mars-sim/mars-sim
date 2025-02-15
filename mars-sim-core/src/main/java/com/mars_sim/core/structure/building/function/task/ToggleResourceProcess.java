@@ -49,8 +49,6 @@ public class ToggleResourceProcess extends Task {
 	private static final String ON = "on";
 
 	// Data members
-	/** True if process is to be turned on, false if turned off. */
-	private boolean toBeToggledOn;
 	/** True if the finished phase of the process has been completed. */
 	private boolean isFinished = false;
 
@@ -91,10 +89,7 @@ public class ToggleResourceProcess extends Task {
 	 * Sets up the resource process.
 	 */
 	private void setupResourceProcess() {
-		// Copy the current state of this process
-		toBeToggledOn = !process.isProcessRunning();
-
-		if (!toBeToggledOn) {
+		if (process.isProcessRunning()) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
 			logger.fine(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it off.");
@@ -190,15 +185,9 @@ public class ToggleResourceProcess extends Task {
 	 */
 	protected double finishedPhase(double time) {
 
-		if (!isFinished) {
-			String toggle = OFF;
-			if (toBeToggledOn) {
-				toggle = ON;
-				process.setProcessRunning(true);
-			} else {
-				process.setProcessRunning(false);
-			}
-
+		if (!isFinished) {			
+			// COmplete toggling with stop the process automatically
+			String toggle = (process.isProcessRunning() ? ON : OFF);
 			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
 				logger.fine(resourceProcessBuilding, process + " : " + worker
 						+ " just toggled it " + toggle + " manually.");

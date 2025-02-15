@@ -87,9 +87,6 @@ public class CommandHelper {
 	public static final String DEG_FORMAT = "%.2f\u00B0";
 	public static final String KPA_FORMAT = "%.2f kPa";
 	public static final String CELSIUS_FORMAT = "%.2f C\u00B0";
-
-	private static final String DUE_FORMAT = "%d:%03d";
-
 	
 	private CommandHelper() {
 		// Do nothing
@@ -375,20 +372,24 @@ public class CommandHelper {
 			// Vehicle mission has a loading
 			Vehicle v = tm.getVehicle();
 			if (v != null) {
-				LoadingController lp = v.getLoadingPlan();
-				if ((lp != null) && !lp.isCompleted()) {
-					response.appendText("Loading from " + lp.getSettlement().getName() + " :");
-					outputAmounts("Amount Resources", response, lp.getAmountManifest(true));	
-					outputAmounts("Optional Amounts", response, lp.getAmountManifest(false));
-					outputItems("Items", response, lp.getItemManifest(true));	
-					outputItems("Optional Items", response, lp.getItemManifest(false));	
-					outputEquipment("Equipment", response, lp.getEquipmentManifest(true));	
-					outputEquipment("Optional Equipment", response, lp.getEquipmentManifest(false));	
-				}
+				outputLoadingPlan(v, response);
 			}
 		}
 	}
 	
+	private static void outputLoadingPlan(Vehicle v, StructuredResponse response) {
+		var lp = v.getLoadingPlan();
+		if ((lp != null) && !lp.isCompleted()) {
+			response.appendText("Loading from " + lp.getSettlement().getName() + " :");
+			outputAmounts("Amount Resources", response, lp.getAmountManifest(true));	
+			outputAmounts("Optional Amounts", response, lp.getAmountManifest(false));
+			outputItems("Items", response, lp.getItemManifest(true));	
+			outputItems("Optional Items", response, lp.getItemManifest(false));	
+			outputEquipment("Equipment", response, lp.getEquipmentManifest(true));	
+			outputEquipment("Optional Equipment", response, lp.getEquipmentManifest(false));
+		}
+	}
+
 	/**
 	 * Outputs the equipment in use.
 	 * 
@@ -603,8 +604,7 @@ public class CommandHelper {
 				}
 			}
 			else {
-				int[] remainingTime = p.getTimeLimit();
-				nextToggle = "Due @ " + String.format(DUE_FORMAT, remainingTime[0], remainingTime[1]);
+				nextToggle = "Due @ " + p.getToggleDue().getTruncatedDateTimeStamp();
 			}
 
 			response.appendTableRow(p.getProcessName(), p.isProcessRunning(),
