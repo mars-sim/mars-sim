@@ -7,7 +7,6 @@
 package com.mars_sim.core.structure.building;
 
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * This class represents an instance of a ResourceProcessing engine that hosts a Resource process and has
@@ -27,58 +26,22 @@ public class ResourceProcessEngine implements Serializable {
         this.processSpec = processSpec;
     }
 
-    public boolean getDefaultOn() {
-        return processSpec.getDefaultOn();
+    /**
+     * What process does this engine support
+     * @return
+     */
+    public ResourceProcessSpec getProcessSpec() {
+        return processSpec;
     }
 
-    public String getName() {
-        return processSpec.getName();
-    }
-
-    public Set<Integer> getInputResources() {
-        return processSpec.getInputResources();
-    }
-
-    public double getBaseSingleInputRate(Integer resource) {
-        return processSpec.getBaseInputRate(resource);
-    }
-    
     public double getBaseFullInputRate(Integer resource) {
         return processSpec.getBaseInputRate(resource) * modules;
-    }
-
-    public boolean isAmbientInputResource(Integer resource) {
-        return processSpec.isAmbientInputResource(resource);
-    }
-
-    public Set<Integer> getOutputResources() {
-        return processSpec.getOutputResources();
-    }
-
-    public double getBaseSingleOutputRate(Integer resource) {
-        return processSpec.getBaseOutputRate(resource);
     }
 
     public double getBaseFullOutputRate(Integer resource) {
         return processSpec.getBaseOutputRate(resource) * modules;
     }
     
-    public boolean isWasteOutputResource(Integer resource) {
-        return processSpec.isWasteOutputResource(resource);
-    }
-
-    public double getPowerRequired() {
-        return processSpec.getPowerRequired() * modules;
-    }
-
-    public int getProcessTime() {
-        return processSpec.getProcessTime();
-    }
-
-    public int getWorkTime() {
-        return processSpec.getWorkTime();
-    }
-
     /**
      * How many modules does this resource process engine have ?
      */

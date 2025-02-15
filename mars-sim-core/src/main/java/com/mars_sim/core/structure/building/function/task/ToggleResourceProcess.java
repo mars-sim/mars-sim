@@ -67,7 +67,7 @@ public class ToggleResourceProcess extends Task {
 	public ToggleResourceProcess(Worker worker, Building processBuilding, ResourceProcess process) {
 		super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 
-		if (process.isFlagged()) {
+		if (process.isWorkerAssigned()) {
 			clearTask("Process toggle already active with someone else.");
 			return;
 		}
@@ -113,7 +113,7 @@ public class ToggleResourceProcess extends Task {
 		addPhase(FINISHED);
 
 		setPhase(TOGGLING);
-		process.setFlag(true);
+		process.setWorkerAssigned(true);
 	}
 
 	@Override
@@ -259,7 +259,7 @@ public class ToggleResourceProcess extends Task {
 	@Override
 	protected void clearDown() {
 		if (process != null) {
-			process.setFlag(false);
+			process.setWorkerAssigned(false);
 		}
 		super.clearDown();
 	}

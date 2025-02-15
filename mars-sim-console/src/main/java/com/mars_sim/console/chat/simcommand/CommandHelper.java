@@ -598,7 +598,7 @@ public class CommandHelper {
 				}
 				
 				// Flag if it is being currently toggled by someone
-				if (p.isFlagged()) {
+				if (p.isWorkerAssigned()) {
 					nextToggle = "Active " + nextToggle;
 				}
 			}

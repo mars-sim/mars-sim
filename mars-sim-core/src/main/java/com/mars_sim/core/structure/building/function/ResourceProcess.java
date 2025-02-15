@@ -14,6 +14,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.ResourceProcessEngine;
+import com.mars_sim.core.structure.building.ResourceProcessSpec;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -39,7 +40,7 @@ public class ResourceProcess implements Serializable {
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
 	/** Flag for active change. */
-	private boolean flag = false;
+	private boolean workerAssigned = false;
 	/** is this process running ? */
 	private boolean runningProcess;
 	
@@ -59,12 +60,11 @@ public class ResourceProcess implements Serializable {
 	private double inputScore;
 	/** The output score for this process. */	
 	private double outputScore;
-	
-	private String name;
 
 	private int[] timeLimit = new int[] {1, 0};
 
 	private ResourceProcessEngine engine;
+	private ResourceProcessSpec processSpec;
 
 	private static MasterClock clock;
 
@@ -74,13 +74,13 @@ public class ResourceProcess implements Serializable {
 	 * @param engine The processing engine that this Process manages
 	 */
 	public ResourceProcess(ResourceProcessEngine engine) {
-		this.name = engine.getName();
-		runningProcess = engine.getDefaultOn();
+		this.processSpec = engine.getProcessSpec();
+		runningProcess = processSpec.getDefaultOn();
 		currentProductionLevel = 1D;
 		this.engine = engine;
 
 		// Add some randomness, today is sol 1
-		resetToggleTime(1, 100 + RandomUtil.getRandomInt(engine.getProcessTime()));
+		resetToggleTime(1, 100 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class ResourceProcess implements Serializable {
 	 * @return process name as string.
 	 */
 	public String getProcessName() {
-		return name;
+		return processSpec.getName();
 	}
 
 	/**
@@ -124,8 +124,8 @@ public class ResourceProcess implements Serializable {
 	 *
 	 * @return true if the process has been flagged for change.
 	 */
-	public boolean isFlagged() {
-		return flag;
+	public boolean isWorkerAssigned() {
+		return workerAssigned;
 	}
 
 	/**
@@ -133,8 +133,8 @@ public class ResourceProcess implements Serializable {
 	 *
 	 * @param value true if the flag is true.
 	 */
-	public void setFlag(boolean value) {
-		flag = value;
+	public void setWorkerAssigned(boolean value) {
+		workerAssigned = value;
 	}
 	
 	/**
@@ -145,7 +145,7 @@ public class ResourceProcess implements Serializable {
 	 */
 	public boolean addToggleWorkTime(double time) {
 		toggleRunningWorkTime += time;
-		if (toggleRunningWorkTime >= engine.getWorkTime()) {
+		if (toggleRunningWorkTime >= processSpec.getWorkTime()) {
 			toggleRunningWorkTime = 0D;
 			
 			runningProcess = !runningProcess;
@@ -161,7 +161,7 @@ public class ResourceProcess implements Serializable {
 	}
 
 	public double getRemainingToggleWorkTime() {
-		double time = engine.getWorkTime() - toggleRunningWorkTime;
+		double time = processSpec.getWorkTime() - toggleRunningWorkTime;
 		if (time > 0)
 			return time;
 		else
@@ -198,7 +198,7 @@ public class ResourceProcess implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<Integer> getInputResources() {
-		return engine.getInputResources();
+		return processSpec.getInputResources();
 	}
 
 	public int getNumModules() {
@@ -211,7 +211,7 @@ public class ResourceProcess implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getBaseSingleInputRate(Integer resource) {
-		return engine.getBaseSingleInputRate(resource);
+		return processSpec.getBaseInputRate(resource);
 	}
 
 	/**
@@ -221,6 +221,7 @@ public class ResourceProcess implements Serializable {
 	 */
 	public double getBaseFullInputRate(Integer resource) {
 		return engine.getBaseFullInputRate(resource);
+
 	}
 	
 	/**
@@ -230,7 +231,7 @@ public class ResourceProcess implements Serializable {
 	 * @return true if ambient resource.
 	 */
 	public boolean isAmbientInputResource(Integer resource) {
-		return engine.isAmbientInputResource(resource);
+		return processSpec.isAmbientInputResource(resource);
 	}
 
 	/**
@@ -239,7 +240,7 @@ public class ResourceProcess implements Serializable {
 	 * @param resource
 	 * @return
 	 */
-	public boolean isInSitu(int resource) {
+	private boolean isInSitu(int resource) {
 		return ResourceUtil.isInSitu(resource);
 	}
 	
@@ -249,7 +250,7 @@ public class ResourceProcess implements Serializable {
 	 * @param resource
 	 * @return
 	 */
-	public boolean isRawMaterial(int resource) {
+	private boolean isRawMaterial(int resource) {
 		return ResourceUtil.isRawMaterial(resource);
 	}
 	
@@ -261,7 +262,7 @@ public class ResourceProcess implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<Integer> getOutputResources() {
-		return engine.getOutputResources();
+		return processSpec.getOutputResources();
 	}
 
 	/**
@@ -270,7 +271,7 @@ public class ResourceProcess implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getBaseSingleOutputRate(Integer resource) {
-		return engine.getBaseSingleOutputRate(resource);
+		return processSpec.getBaseOutputRate(resource);
 	}
 
 	/**
@@ -289,7 +290,7 @@ public class ResourceProcess implements Serializable {
 	 * @return true if waste output.
 	 */
 	public boolean isWasteOutputResource(Integer resource) {
-		return engine.isWasteOutputResource(resource);
+		return processSpec.isWasteOutputResource(resource);
 	}
 
 	/**
@@ -323,9 +324,9 @@ public class ResourceProcess implements Serializable {
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				for (Integer resource : engine.getInputResources()) {
-					if (!engine.isAmbientInputResource(resource)) {
-						double fullRate = engine.getBaseFullInputRate(resource);
+				for (Integer resource : processSpec.getInputResources()) {
+					if (!processSpec.isAmbientInputResource(resource)) {
+						double fullRate = getBaseFullInputRate(resource);
 						double resourceRate = fullRate * level;
 						double required = resourceRate * accumulatedTime;
 						double stored = settlement.getAmountResourceStored(resource);
@@ -342,7 +343,7 @@ public class ResourceProcess implements Serializable {
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
 								logger.fine(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
-									+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
+									+ "' input to start '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 									+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 								required = stored;
 								settlement.retrieveAmountResource(resource, required);
@@ -356,7 +357,7 @@ public class ResourceProcess implements Serializable {
 						}
 						else {
 							logger.fine(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
-								+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
+								+ "' input to start '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 							setProcessRunning(false);
 							break;
@@ -369,9 +370,9 @@ public class ResourceProcess implements Serializable {
 					level = bottleneck;
 				
 				// Output resources to inventory.
-				for (Integer resource : engine.getOutputResources()) {
-//					if (!engine.isWasteOutputResource(resource)) {
-						double maxRate = engine.getBaseFullOutputRate(resource);
+				for (Integer resource : processSpec.getOutputResources()) {
+//					if (!processSpec.isWasteOutputResource(resource)) {
+						double maxRate = getBaseFullOutputRate(resource);
 						double resourceRate = maxRate * level;
 						double required = resourceRate * accumulatedTime;
 						double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
@@ -381,7 +382,7 @@ public class ResourceProcess implements Serializable {
 							if (required > remainingCap) {
 								logger.fine(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
 										+ ResourceUtil.findAmountResourceName(resource)
-										+ "' output in '" + name + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
+										+ "' output in '" + processSpec.getName() + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
 										+ " kg of storage. Remaining cap: 0 kg.");
 								required = remainingCap;
 								settlement.storeAmountResource(resource, required);
@@ -396,7 +397,7 @@ public class ResourceProcess implements Serializable {
 						else {
 							logger.fine(settlement, 30_000, "Case D. Not enough space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output to continue '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 
+									+ "' output to continue '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 
 									+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
 							setProcessRunning(false);
 							break;
@@ -417,7 +418,7 @@ public class ResourceProcess implements Serializable {
 	 * @return string
 	 */
 	public String toString() {
-		return name;
+		return getProcessName();
 	}
 
 	/**
@@ -426,7 +427,7 @@ public class ResourceProcess implements Serializable {
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
-		return engine.getPowerRequired();
+		return processSpec.getPowerRequired();
 	}
 
 	/**
@@ -466,7 +467,7 @@ public class ResourceProcess implements Serializable {
 	 */
 	private void resetToggleTime(int sol, int millisols) {
 		// Compute the time limit
-		millisols += engine.getProcessTime();
+		millisols += processSpec.getProcessTime();
 		if (millisols >= 1000) {
 			millisols = millisols - 1000;
 			sol = sol + 1;
@@ -483,7 +484,7 @@ public class ResourceProcess implements Serializable {
 	 * @return
 	 */
 	public double[] getToggleSwitchDuration() {
-		return new double[] {toggleRunningWorkTime, engine.getWorkTime()};
+		return new double[] {toggleRunningWorkTime, processSpec.getWorkTime()};
 	}
 
 	public void setLevel(int level) {
@@ -510,7 +511,7 @@ public class ResourceProcess implements Serializable {
 				// Note: the ambient resource is always available
 				return true;
 				// Gets the exact input rate for ambient resource
-//				stored += engine.getBaseSingleInputRate(resource);
+//				stored += processSpec.getBaseSingleInputRate(resource);
 			}
 		}
 		if (stored < SMALL_AMOUNT) {
@@ -525,7 +526,7 @@ public class ResourceProcess implements Serializable {
 	 * Checks if a resource process has no output resources.
 	 *
 	 * @param settlement the settlement the resource is at.
-	 * @return true if any output resources are empty.
+	 * @return true if any output resources are emptywast
 	 */
 	public boolean isOutputsEmpty(Settlement settlement) {
 		double stored = 0;
@@ -548,7 +549,6 @@ public class ResourceProcess implements Serializable {
 	 */
 	public double computeResourcesValue(Settlement settlement, boolean input) {
 		double score = 0;
-//		double baseMassRate = 0;
 
 		Set<Integer> set = null;
 		if (input)
@@ -643,9 +643,5 @@ public class ResourceProcess implements Serializable {
 	 */
 	public static void initializeInstances(MasterClock masterClock) {
 		clock = masterClock;
-	}
-	
-	public void destroy() {
-		engine = null;
 	}
 }

@@ -64,8 +64,9 @@ public abstract class ResourceProcessor extends Function {
 		double result = 0D;
 		for (ResourceProcessEngine process : processSpecs) {
 			double processValue = 0D;
-			for (Integer outResource : process.getOutputResources()) {
-				if (!process.isWasteOutputResource(outResource)) {
+			var spec = process.getProcessSpec();
+			for (Integer outResource : spec.getOutputResources()) {
+				if (!spec.isWasteOutputResource(outResource)) {
 					double fullRate = process.getBaseFullOutputRate(outResource);
 					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * fullRate;
 				}
@@ -73,8 +74,8 @@ public abstract class ResourceProcessor extends Function {
 
 			double inputInventoryLimit = 1D;
 			// May try List.copyOf(process.getInputResources())
-			for (int inResource : process.getInputResources()) {
-				if (!process.isAmbientInputResource(inResource)) {
+			for (int inResource : spec.getInputResources()) {
+				if (!spec.isAmbientInputResource(inResource)) {
 					double fullRate = process.getBaseFullInputRate(inResource);
 					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * fullRate;
 
@@ -90,7 +91,7 @@ public abstract class ResourceProcessor extends Function {
 			}
 
 			// Subtract value of require power.
-			double powerHrsRequiredPerSol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL * 1000D;
+			double powerHrsRequiredPerSol = spec.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL * 1000D;
 			double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
 
