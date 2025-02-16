@@ -9,7 +9,6 @@ package com.mars_sim.core.resourceprocess;
 import java.util.Set;
 
 import com.mars_sim.core.events.ScheduledEventHandler;
-import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -28,10 +27,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
-	private static final double RATE_FACTOR = 10;
-	private static final double INPUT_BIAS = 0.9;
-	private static final double MATERIAL_BIAS = 3;
-	
 	private static final double SMALL_AMOUNT = 0.000001;
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
@@ -45,22 +40,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 	private boolean workerAssigned = false;
 	private boolean runningProcess;
-	private boolean inputsAvailable = false;
-	
-	/** The level of effort for this resource process. */	
-	private int level = 2;
 	
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 
-	/** The total score for this process. */
-	private double score;
-	/** The input score for this process. */	
-	private double inputScore;
-	/** The output score for this process. */	
-	private double outputScore;
+	private ResourceProcessAssessment assessment;
 
 	private boolean canToggle = false;
 	private MarsTime toggleDue = null; 
@@ -69,6 +55,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private ResourceProcessSpec processSpec;
 	private Settlement host;
 
+	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
+	
 	/**
 	 * Constructor.
 	 *
@@ -81,6 +69,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.canToggle = false;
 		this.engine = engine;
 		this.host = host;
+		this.assessment = DEFAULT_ASSESSMENT;
 
 		// Add some randomness, today is sol 1
 		resetToggleWait(100 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
@@ -136,7 +125,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		if (runningProcess) {
 			return ProcessState.RUNNING;
 		}
-		else if (inputsAvailable) {
+		else if (assessment.inputsAvailable()) {
 			return ProcessState.IDLE;
 		}
 		else {
@@ -212,29 +201,29 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 		
 	public double getOverallScore() {
-		return score;
-	}
-	
-	public void setOverallScore(double score) {
-		this.score = score;
+		return assessment.overallScore();
 	}
 	
 	public double getInputScore() {
-		return inputScore;
-	}
-	
-	public void setInputScore(double inputScore) {
-		this.inputScore = inputScore;
+		return assessment.inputScore();
 	}
 	
 	public double getOutputScore() {
-		return outputScore;
+		return assessment.outputScore();
 	}
 	
-	public void setOutputScore(double outputScore) {
-		this.outputScore = outputScore;
+	public void setAssessment(ResourceProcessAssessment assessment) {
+		this.assessment = assessment;
 	}
-	
+
+	/**
+	 * Get the specification of this process
+	 * @return
+	 */
+	public ResourceProcessSpec getSpec() {
+		return processSpec;
+	}
+
 	/**
 	 * What is the minumum processing time for this process
 	 * @return Value in mSol
@@ -283,29 +272,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public boolean isAmbientInputResource(Integer resource) {
 		return processSpec.isAmbientInputResource(resource);
-	}
-
-	/**
-	 * Is this an in-situ resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	private boolean isInSitu(int resource) {
-		return ResourceUtil.isInSitu(resource);
-	}
-	
-	/**
-	 * Is this a raw material resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	private boolean isRawMaterial(int resource) {
-		return ResourceUtil.isRawMaterial(resource);
-	}
-	
-	
+	}	
 	
 	/**
 	 * Gets the set of output resources.
@@ -389,7 +356,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 						// Retrieve the right amount
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
-								inputExhausted(resource, required, stored);
+								resourceProblem(resource, false, required, stored);
 
 								required = stored;
 								host.retrieveAmountResource(resource, required);
@@ -399,7 +366,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 								host.retrieveAmountResource(resource, required);
 						}
 						else {
-							inputExhausted(resource, required, stored);
+							resourceProblem(resource, false, required, stored);
 							break;
 						}
 					}
@@ -418,26 +385,19 @@ public class ResourceProcess implements ScheduledEventHandler {
 						// Store the right amount
 						if (remainingCap > SMALL_AMOUNT) {
 							if (required > remainingCap) {
-								logger.fine(host, 30_000, "Case C. Used up all remaining space for storing '" 
-										+ ResourceUtil.findAmountResourceName(resource)
-										+ "' output in '" + processSpec.getName() + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
-										+ " kg of storage. Remaining cap: 0 kg.");
+								resourceProblem(resource, true, required, remainingCap);
+
 								required = remainingCap;
 								host.storeAmountResource(resource, required);
-								setProcessRunning(false);						
+
 								break;
-								// Note: turn on a yellow flag and indicate which the output resource is missing
 							}
 							else
 								host.storeAmountResource(resource, required);
 							
 						}
 						else {
-							logger.fine(host, 30_000, "Case D. Not enough space for storing '" 
-									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output to continue '" + processSpec.getName() + "'. Required: " + Math.round(required * 1000.0)/1000.0 
-									+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
-							setProcessRunning(false);
+							resourceProblem(resource, true, required, remainingCap);
 							break;
 						}
 				}
@@ -448,14 +408,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 		}
 	}
 
-	private void inputExhausted(int resource, double required, double available) {
-		logger.fine(host, 30_000, "Not enough '"
+	private void resourceProblem(int resource, boolean capacity, double required, double available) {
+		logger.fine(host, 30_000,
+					(capacity ? "No capacity '" : "Not enough '")
 					+ ResourceUtil.findAmountResourceName(resource)
 					+ "' for '" + processSpec.getName() + "'. Required: "
 					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
 					+ Math.round(available * 1000.0)/1000.0 + " kg.");
 		setProcessRunning(false);
-		inputsAvailable = false;
 	}
 
 	/**
@@ -501,133 +461,5 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public double[] getToggleSwitchDuration() {
 		return new double[] {toggleRunningWorkTime, processSpec.getWorkTime()};
-	}
-
-	/**
-	 * Checks if a resource process has all input resources.
-	 *
-	 * @param settlement the settlement the resource is at.
-	 * @return false if any input resources are empty.
-	 */
-	public boolean isInputsPresent(Settlement settlement) {
-		for (var amount : processSpec.getMinimumInputs().entrySet()) {
-			if (amount.getValue() > settlement.getAmountResourceStored(amount.getKey())) {
-				inputsAvailable = false;
-				return false;
-			}
-		}
-
-		inputsAvailable = true;
-		return true;
-	}
-
-
-	/**
-	 * Checks if a resource process has no output resources.
-	 *
-	 * @param settlement the settlement the resource is at.
-	 * @return true if any output resources are emptywast
-	 */
-	public boolean isOutputsEmpty(Settlement settlement) {
-		double stored = 0;
-		for (int resource : getOutputResources()) {
-			stored += settlement.getAmountResourceStored(resource);
-		}
-		if (stored < SMALL_AMOUNT) {
-			return true;
-		}
-		return false;
-	}
-
-	
-	/**
-	 * Gets the total value of a resource process's input or output.
-	 *
-	 * @param settlement the settlement for the resource process.
-	 * @param input      is the resource value for the input?
-	 * @return the total value for the input or output.
-	 */
-	public double computeResourcesValue(Settlement settlement, boolean input) {
-		double score = 0;
-
-		Set<Integer> set = null;
-		if (input)
-			set = getInputResources();
-		else
-			set = getOutputResources();
-
-		GoodsManager gm = settlement.getGoodsManager();
-		for (int resource : set) {
-			// Gets the vp for this resource
-			// Add 1 to avoid being less than 1
-			double vp = gm.getGoodValuePoint(resource);
-
-			// Gets the supply of this resource
-			// Note: use supply instead of stored amount.
-			// Stored amount is slower and more time consuming
-			double supply = gm.getSupplyValue(resource);
-
-			if (input) {
-				// For inputs: 
-				// Note: mass rate is kg/sol
-				double rate = getBaseSingleInputRate(resource) * RATE_FACTOR;
-				
-				// Multiply by bias so as to favor/discourage the production of output resources
-
-				// Calculate the modified mass rate
-				double mrate = rate * vp * INPUT_BIAS;
-				
-				// Note: mass rate * VP -> demand
-				
-				// if this resource is ambient
-				// that the settlement doesn't need to supply (e.g. carbon dioxide),
-				// then it won't need to check how much it has in stock
-				// and it will not be affected by its vp and supply
-				if (isAmbientInputResource(resource)) {
-					// e.g. For CO2, limit the score
-					score += mrate;
-				} else if (isInSitu(resource) || isRawMaterial(resource)) {
-					// If in-situ, reduce the input score 
-					score += mrate / MATERIAL_BIAS * Math.max(60, supply);
-				} else {
-					score += mrate * supply;
-				}
-			}
-
-			else {
-				// For outputs: 
-				// Gets the remaining amount of this resource
-				double remain = settlement.getAmountResourceRemainingCapacity(resource);
-
-				if (remain == 0.0)
-					return 0;
-
-				double rate = getBaseSingleOutputRate(resource) * RATE_FACTOR;
-
-				// For output value
-				if (rate > remain) {
-					// This limits the rate to match the remaining space 
-					// that can accommodate this output resource
-					rate = remain;
-				}
-
-				// Calculate the modified mass rate
-				double mrate = rate * vp * (.1 + level/1.5);
-				
-				// if this resource is ambient or a waste product
-				// that the settlement won't keep (e.g. carbon dioxide),
-				// then it won't need to check how much it has in stock
-				// and it will not be affected by its vp and supply
-				if (isWasteOutputResource(resource)) {
-					score += mrate;
-				} else if (isInSitu(resource) || isRawMaterial(resource)) {
-					// If in-situ, increase the output score 
-					score += mrate * supply * MATERIAL_BIAS;
-				} else
-					score += mrate * supply;
-			}
-		}
-
-		return score;
 	}
 }

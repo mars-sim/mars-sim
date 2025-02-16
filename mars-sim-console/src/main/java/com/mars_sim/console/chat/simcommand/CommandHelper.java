@@ -590,12 +590,7 @@ public class CommandHelper {
 			if (p.canToggle()) {
 				// Toggling is available
 				double[] toggleTime = p.getToggleSwitchDuration();
-				if (toggleTime[0] == 0D) {
-					nextToggle = "Available ";
-				}
-				else {
-					nextToggle = String.format(PERC_FORMAT, (100D * toggleTime[0])/toggleTime[1]);
-				}
+				nextToggle = String.format(PERC_FORMAT, (100D * toggleTime[0])/toggleTime[1]);
 				
 				// Flag if it is being currently toggled by someone
 				if (p.isWorkerAssigned()) {
