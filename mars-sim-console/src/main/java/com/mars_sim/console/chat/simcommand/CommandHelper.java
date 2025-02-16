@@ -35,13 +35,12 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Airlock;
-import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessor;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.LoadingController;
 
 /**
  * Helper class with common formatting methods.

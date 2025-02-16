@@ -4,7 +4,7 @@
  * @date 2022-09-12
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.building.function.task;
+package com.mars_sim.core.resourceprocess.task;
 
 import java.util.Set;
 
@@ -15,9 +15,9 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

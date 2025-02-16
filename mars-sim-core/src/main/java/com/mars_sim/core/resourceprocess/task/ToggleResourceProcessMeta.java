@@ -4,7 +4,7 @@
  * @date 2024-06-08
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.building.function.task;
+package com.mars_sim.core.resourceprocess.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +18,13 @@ import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
+import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -41,9 +41,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
 		private ResourceProcess process;
 		
-        public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process,
+        public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding,
+						ResourceProcess process,
 						RatingScore score) {
-			super(mt, "Toggle " + process.getProcessName(), processBuilding, score);
+			super(mt, "Toggle " + (process.isProcessRunning() ? "Off " : "On ")
+								+ process.getProcessName(), processBuilding, score);
 			this.process = process;
         }
 
@@ -83,12 +85,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final double RESOURCE_RATE_0 = 50;
-	private static final double RESOURCE_RATE_1 = 500;
-	private static final double WASTE_RATE_0 = 20;
-	private static final double WASTE_RATE_1 = 200;
 	private static final double MAX_SCORE = 500;
-	
+	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
+
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TINKERING);
@@ -124,7 +123,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// In this building, select the best resource to compete
 				selectToggableProcesses(building, 
 								building.getResourceProcessing().getProcesses(), 
-								false, RESOURCE_RATE_0, RESOURCE_RATE_1, tasks);
+								false, tasks);
 			}
 		}
 
@@ -134,7 +133,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// In this building, select the best resource to compete
 				selectToggableProcesses(building, 
 								building.getWasteProcessing().getProcesses(), 
-								true, WASTE_RATE_0, WASTE_RATE_1, tasks);
+								true, tasks);
 			}
 		}
 		
@@ -152,8 +151,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param results Holds the list of Task created
 	 */
 	private void selectToggableProcesses(Building building, 
-			List<ResourceProcess> processes, boolean isWaste, 
-			double rate0, double rate1, List<SettlementTask> results) {
+			List<ResourceProcess> processes, boolean isWaste, List<SettlementTask> results) {
 
 		Settlement settlement = building.getSettlement();		
 		for (ResourceProcess process : processes) {
@@ -162,7 +160,15 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				RatingScore score = RatingScore.ZERO_RATING;
 
 				// Is either running or not with with input available
-				if (process.isInputsPresent(settlement)) {
+				if (process.isProcessRunning()) {
+					score = new RatingScore(MAX_SCORE/2);
+
+					var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
+
+					// If overdue by more that 250 msols then score gets increased
+					score.addModifier("toggleTime", 0.75 + (elapsed/500D));
+				}
+				else if (process.isInputsPresent(settlement)) {
 					// Score each process
 					if (isWaste)  {
 						score = computeInputScore(settlement, process);
@@ -177,18 +183,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					int modules = process.getNumModules();
 
 					// Moderate the score with # of modules
-					score.addModifier("modules", (1D/(modules * 2D)));
+					score.addModifier("modules", 1D + (modules/4D));
 					score.applyRange(0, MAX_SCORE);		
 				}
-				else if (process.isProcessRunning()) {
-					score = new RatingScore(process.getOverallScore());
-
-					// TODO this should be based on overdue toggle
-					score.addModifier("toggleTime", 0.9D);
-				}
 				
-				// Has a score so queue it
-				if ((score.getScore() > 0) ) { 
+				// Has a score so queue it; avoid very small benefits
+				if ((score.getScore() > 1) ) { 
 					results.add(new ToggleProcessJob(this, building, process, score));
 				}
 			}
@@ -208,16 +208,16 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		// Is tere enugh for a sol'sworth of processing
 		for(int id : process.getInputResources()) {
-			double percAvailable = 0D;
+			double percAvailable;
 			if (process.isAmbientInputResource(id)) {
 				// Ambient is always avaialble
 				percAvailable = 1D;
 			}
 			else {
 				double available = settlement.getAmountResourceStored(id);
-				double rate = process.getBaseFullInputRate(id);
-				double solConsumption = (rate * 1000D); 
-				percAvailable = Math.min(1D, (solConsumption/available));
+				double rate = process.getBaseFullInputRate(id); // per sol
+				double perSol = process.getProcessTime() / 1000D;
+				percAvailable = Math.min(1D, ((rate * perSol)/available));
 			}
 
 			// Update the lowest
@@ -229,13 +229,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			}
 		}
 
-		if (lowestPercentage < 0) {
-			return null;
+		// Put a min threshold on the available waste
+		double rawScore = 0;
+		if (lowestPercentage > WASTE_THRESHOLD) {
+			rawScore = lowestPercentage * MAX_SCORE;
 		}
 
-		double rawScore = lowestPercentage * MAX_SCORE;
 		process.setInputScore(rawScore);
-		return new RatingScore("inputs available", rawScore);
+		return new RatingScore("Waste available", rawScore);
 	}
 
 	/**
@@ -249,11 +250,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 */
 	private static RatingScore computeFullScore(Settlement settlement, ResourceProcess process) {
 		// Compute the input score
-		double inputValue = process.computeResourcesValue(settlement, true);
+		double inputValue = process.computeResourcesValue(settlement, true) * 10;
 		// Save the input score
 		process.setInputScore(inputValue);
 		// Compute the output score		
-		double outputValue = process.computeResourcesValue(settlement, false);
+		double outputValue = process.computeResourcesValue(settlement, false) * 10;
 		// Save the output score
 		process.setOutputScore(outputValue);
 		// Compute the difference

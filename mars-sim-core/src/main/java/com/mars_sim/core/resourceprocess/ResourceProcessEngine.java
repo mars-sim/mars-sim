@@ -4,7 +4,7 @@
  * @date 2022-10-23
  * @author Barry Evans
  */
-package com.mars_sim.core.structure.building;
+package com.mars_sim.core.resourceprocess;
 
 import java.io.Serializable;
 
@@ -21,7 +21,7 @@ public class ResourceProcessEngine implements Serializable {
     private int modules;
     private ResourceProcessSpec processSpec;
 
-    ResourceProcessEngine(ResourceProcessSpec processSpec, int modules) {
+    public ResourceProcessEngine(ResourceProcessSpec processSpec, int modules) {
         this.modules = modules;
         this.processSpec = processSpec;
     }
