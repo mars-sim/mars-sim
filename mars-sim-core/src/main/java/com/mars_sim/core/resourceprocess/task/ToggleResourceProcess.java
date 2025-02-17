@@ -107,7 +107,7 @@ public class ToggleResourceProcess extends Task {
 			ResourceProcessSpec processSpec) {
 		for(var p : processor.getProcesses()) {
 			if (p.getSpec().equals(processSpec) && p.canToggle()
-				&& !p.isProcessRunning()) {
+				&& !p.isWorkerAssigned() && !p.isProcessRunning()) {
 				return new PotentialProcess(processor.getBuilding(), p);
 			}
 		}
@@ -335,5 +335,13 @@ public class ToggleResourceProcess extends Task {
 		walkToTaskSpecificActivitySpotInBuilding(building,
 				FunctionType.MANAGEMENT,
 				false);
+	}
+
+	ResourceProcess getResourceProcess() {
+		return process;
+	}
+
+	Building getBuilding() {
+		return resourceProcessBuilding;
 	}
 }

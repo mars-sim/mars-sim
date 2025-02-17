@@ -1,10 +1,10 @@
-package com.mars_sim.core.structure.building.function.task;
+package com.mars_sim.core.resourceprocess.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
-import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
+import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -12,18 +12,26 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
 
-    private Building buildProcessing(BuildingManager buildingManager, LocalPosition pos, double facing) {
+    static Building buildProcessing(MarsSimContext context, BuildingManager buildingManager, LocalPosition pos, double facing) {
         // ERV-1 only has 2 processes so simpler
-		return buildFunction(buildingManager, "ERV-I", BuildingCategory.PROCESSING,
+		return context.buildFunction(buildingManager, "ERV-I", BuildingCategory.PROCESSING,
 							FunctionType.RESOURCE_PROCESSING,  pos, facing, true);
 	}
 
+    static void moveToToggle(MarsSimContext context, ResourceProcess p) {
+        var clock = context.getSim().getMasterClock();
+        var newTime = p.getToggleDue().addTime(1);
+        clock.setMarsTime(newTime);
+        p.execute(newTime);
+    }
 
     public void testGetResourceProcessingTasks() {
         var s = buildSettlement("Resource", true);
-        var b = buildProcessing(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        var b = buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
-    
+
+        // CReate a second processor to test multiple
+        buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
     
         var mt = new ToggleResourceProcessMeta();
 
@@ -45,7 +53,7 @@ public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
         assertTrue("No tasks without toggle", results.isEmpty());
 
         // Reset toggle for now
-        moveToToggle(p);
+        moveToToggle(this, p);
         results = mt.getSettlementTasks(s);
         assertEquals("Single available task", 1, results.size());
 
@@ -55,15 +63,8 @@ public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
         assertTrue("No tasks as not running long enough", results.isEmpty());
 
         // Run the process to the next toggle phase
-        moveToToggle(p);
+        moveToToggle(this, p);
         results = mt.getSettlementTasks(s);
         assertEquals("Single runing task", 1, results.size());
-    }
-
-    private void moveToToggle(ResourceProcess p) {
-        var clock = getSim().getMasterClock();
-        var newTime = p.getToggleDue().addTime(1);
-        clock.setMarsTime(newTime);
-        p.execute(newTime);
     }
 }

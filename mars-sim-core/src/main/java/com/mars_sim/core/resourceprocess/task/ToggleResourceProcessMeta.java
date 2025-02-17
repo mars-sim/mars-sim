@@ -161,14 +161,16 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	@Override
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
-		
+
+		Map<ResourceProcessSpec,ResourceProcessAssessment> assessed = new HashMap<>();
+
 		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {			
 			// Get the most suitable process per Building; not each process as too many will be created
 			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING)) {
 				// In this building, select the best resource to compete
 				selectToggableProcesses(building, 
 								building.getResourceProcessing().getProcesses(), 
-								false, tasks);
+								false, tasks, assessed);
 			}
 		}
 
@@ -178,7 +180,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// In this building, select the best resource to compete
 				selectToggableProcesses(building, 
 								building.getWasteProcessing().getProcesses(), 
-								true, tasks);
+								true, tasks, assessed);
 			}
 		}
 		
@@ -194,12 +196,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param rate0
 	 * @param rate1
 	 * @param results Holds the list of Task created
+	 * @param assessed 
 	 */
 	private void selectToggableProcesses(Building building, 
-			List<ResourceProcess> processes, boolean isWaste, List<SettlementTask> results) {
+			List<ResourceProcess> processes, boolean isWaste, List<SettlementTask> results,
+			Map<ResourceProcessSpec,ResourceProcessAssessment> assessed) {
 
-		Map<ResourceProcessSpec,ResourceProcessAssessment> assessed = new HashMap<>();
-		
 		Settlement settlement = building.getSettlement();		
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
