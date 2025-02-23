@@ -19,7 +19,6 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
-import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 
 /**
  * Tab panel showing the process history of a settlement
@@ -89,7 +88,7 @@ public class TabPanelProcessHistory extends TabPanel {
 		@Override
 		protected Object getValueFrom(CompletedProcess value, int columnIndex) {
             switch(columnIndex) {
-                case 0: return value.process().getName();
+                case 0: return value.process();
                 case 1: return value.type();
                 case 2: return value.buildingName();
                 default: return null;
@@ -107,7 +106,7 @@ public class TabPanelProcessHistory extends TabPanel {
 			if (value == null) {
 				return null;
 			}
-			return ProcessInfoRenderer.getToolTipString(value.process());
+			return value.process();
 		}
 	}
 }
