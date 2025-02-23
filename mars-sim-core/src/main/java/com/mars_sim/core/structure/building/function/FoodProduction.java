@@ -153,15 +153,11 @@ public class FoodProduction extends Function {
 
 		double result = 0D;
 
-		Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getProcessesForTechSkillLevel(techLevel).iterator();
-		while (i.hasNext()) {
-			FoodProductionProcessInfo process = i.next();
-//			if (process.getTechLevelRequired() <= techLevel) {
-				double value = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
-				if (value > result) {
-					result = value;
-				}
-//			}
+		for(FoodProductionProcessInfo process : FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)) {
+			double value = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
+			if (value > result) {
+				result = value;
+			}
 		}
 
 		return result;
@@ -379,8 +375,7 @@ public class FoodProduction extends Function {
 						}
 					} break;
 
-					case BIN:
-					case VEHICLE: {
+					case BIN, VEHICLE: {
 						throw new IllegalArgumentException("Cannot create " + item.getType()
 										+ " from Food Process");
 					}
@@ -389,7 +384,7 @@ public class FoodProduction extends Function {
 		}
 
 		// Record process finish
-		settlement.recordProcess(process.getInfo(), "Food", building);
+		settlement.recordProcess(process.getInfo().getName(), "Food", building);
 	}
 
 	/**

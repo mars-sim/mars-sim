@@ -11,7 +11,7 @@ import java.util.Set;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -53,7 +53,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 	private ResourceProcessEngine engine;
 	private ResourceProcessSpec processSpec;
-	private Settlement host;
+	private Building building;
 
 	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
 	
@@ -62,13 +62,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 *
 	 * @param engine The processing engine that this Process manages
 	 */
-	public ResourceProcess(ResourceProcessEngine engine, Settlement host) {
+	public ResourceProcess(ResourceProcessEngine engine, Building building) {
 		this.processSpec = engine.getProcessSpec();
 		runningProcess = processSpec.getDefaultOn();
 		currentProductionLevel = 1D;
 		this.canToggle = false;
 		this.engine = engine;
-		this.host = host;
+		this.building = building;
 		this.assessment = DEFAULT_ASSESSMENT;
 
 		// Add some randomness, today is sol 1
@@ -136,21 +136,27 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/**
 	 * Sets if the process is running or not.
 	 *
-	 * @param runningProcess true if process is running.
+	 * @param newRunning true if process is running.
 	 */
-	public void setProcessRunning(boolean runningProcess) {
-		this.runningProcess = runningProcess;
+	public void setProcessRunning(boolean newRunning) {
+		// Record completion
+		if (runningProcess && !newRunning) {
+			// Record the completion
+			building.getAssociatedSettlement().recordProcess(processSpec.getName(), "Resource", building);
+		}
+
+		this.runningProcess = newRunning;
 
 		int delay = processSpec.getProcessTime();
 		if (!runningProcess) {
-			// Not runnign so half the time before it can be restarted
+			// Not running so half the time before it can be restarted
 			delay /= 2;
 		}
 		resetToggleWait(delay);
 	}
 
 	private void resetToggleWait(int delay) {
-		var event = host.getFutureManager().addEvent(delay, this);
+		var event = building.getAssociatedSettlement().getFutureManager().addEvent(delay, this);
 		toggleDue = event.getWhen();
 	}
 
@@ -325,6 +331,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			return;
 
 		if (runningProcess) {
+			var host = building.getAssociatedSettlement();
 			double newProdLevel = productionLevel;
 
 			accumulatedTime += time;
@@ -409,7 +416,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	private void resourceProblem(int resource, boolean capacity, double required, double available) {
-		logger.fine(host, 30_000,
+		logger.fine(building, 30_000,
 					(capacity ? "No capacity '" : "Not enough '")
 					+ ResourceUtil.findAmountResourceName(resource)
 					+ "' for '" + processSpec.getName() + "'. Required: "

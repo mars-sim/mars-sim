@@ -45,11 +45,10 @@ public abstract class ResourceProcessor extends Function {
 		// Use Function constructor
 		super(type, spec, building);
 
-		var s = building.getAssociatedSettlement();
 		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		processes = new ArrayList<>();
 		for (ResourceProcessEngine wspec : processSpecs) {
-			processes.add(new ResourceProcess(wspec, s));
+			processes.add(new ResourceProcess(wspec, building));
 		}
 	}
 

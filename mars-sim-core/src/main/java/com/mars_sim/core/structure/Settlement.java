@@ -76,7 +76,6 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
-import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
@@ -2581,7 +2580,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @param type Type of process
 	 * @param locn On what building it was completed
 	 */
-    public void recordProcess(ProcessInfo process, String type, Building locn) {
+    public void recordProcess(String process, String type, Building locn) {
         var ph = new CompletedProcess(process, type, locn.getName());
 		processHistory.add(ph);
     }

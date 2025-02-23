@@ -506,7 +506,7 @@ public class Manufacture extends Function {
 		}
 
 		// Record process finish
-		settlement.recordProcess(process.getInfo(), "Manufacture", building);
+		settlement.recordProcess(process.getInfo().getName(), "Manufacture", building);
 	}
 
 	/**
@@ -673,7 +673,7 @@ public class Manufacture extends Function {
 				}
 			}
 
-			settlement.recordProcess(process.getInfo(), "Salvage", building);
+			settlement.recordProcess(process.getInfo().getName(), "Salvage", building);
 			
 			// Log salvage process ending.
 			logger.log(getBuilding(), Level.INFO, 10_000,
