@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.resourceprocess;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  */
 public class ResourceProcessConfig {
 	
-    private static final String DEFAULT = "defaultOn";
+	private static final String DEFAULT = "defaultOn";
 	private static final String NAME = "name";
 	private static final String POWER_REQUIRED = "power-required";
 	private static final String PROCESS = "process";
@@ -63,12 +64,12 @@ public class ResourceProcessConfig {
 	private ResourceProcessSpec parseProcessSpec(Element processElement) {
 
 		String name = processElement.getAttributeValue(NAME);
-        double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
+		double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
 		int processTime = ConfigHelper.getOptionalAttributeInt(processElement, PROCESS_TIME, 200);
 		int workTime = ConfigHelper.getOptionalAttributeInt(processElement, WORK_TIME, 10);
-        boolean defaultOn = ConfigHelper.getOptionalAttributeBool(processElement, DEFAULT, false);
-    
-        ResourceProcessSpec process =  new ResourceProcessSpec(name, powerRequired, processTime, workTime, defaultOn);
+		boolean defaultOn = ConfigHelper.getOptionalAttributeBool(processElement, DEFAULT, false);
+	
+		ResourceProcessSpec process =  new ResourceProcessSpec(name, powerRequired, processTime, workTime, defaultOn);
 
 		// Get input resources.
 		List<Element> inputNodes = processElement.getChildren(INPUT);
@@ -109,5 +110,13 @@ public class ResourceProcessConfig {
 			throw new IllegalArgumentException("Process Spec not known :" + processName);
 		}
 		return result;
+	}
+
+	/**
+	 * Get all the configured Resource process specifications.
+	 * @return
+	 */
+	public Collection<ResourceProcessSpec> getProcessSpecs() {
+		return processSpecMap.values();
 	}
 }

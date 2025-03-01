@@ -1,0 +1,59 @@
+{{<help-layout}}
+  {{$body}}
+
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Process Time:</td><td>{{resprocess.processTime}} millisols</td></tr>
+        <tr><td>Work Time:</td><td>{{resprocess.workTime}} millisols</td></tr>
+        <tr><td>Power Required:</td><td>{{resprocess.powerRequired}} kW/hr</td></tr>
+        <tr><td>Start On:</td><td>{{resprocess.defaultOn}}</td></tr>
+      </table>
+    </div>
+
+    <div id="inputs">
+      <h3>Inputs</h3>
+      <table class="inputs">
+        <thead>
+          <tr>
+          <th>Name</th>
+          <th>Input Rate (kg/sol) </th>
+          <th>Minimum kg </th>
+          <th>Ambient</th>
+          </tr>
+        </thead>
+      {{#inputs}}
+        <tr>
+          <td><a href="{{resourcefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+          <td>{{rate}}</td>
+          <td>{{min}}</td>
+          <td>{{flag}}</td>
+        </tr>
+      {{/inputs}}
+      </table>
+    </div>
+
+    <div id="outputs">
+      <h3>Outputs</h3>
+      <table class="outputs">
+        <thead>
+          <tr>
+          <th>Name</th>
+          <th>Output Rate (kg/sol) </th>
+          <th>Waste</th>
+          </tr>
+        </thead>
+      {{#outputs}}
+        <tr>
+          <td><a href="{{resourcefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+          <td>{{rate}}</td>
+          <td>{{flag}}</td>
+        </tr>
+      {{/outputs}}
+      </table>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Crew list</a>
+  {{/body}}
+{{/help-layout}}

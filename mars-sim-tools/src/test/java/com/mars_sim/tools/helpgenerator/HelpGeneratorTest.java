@@ -92,6 +92,21 @@ public class HelpGeneratorTest {
     }
 
     @Test
+    public void testResProcessHelp() throws IOException {
+        var context = createGenerator();
+        var config = context.getConfig().getResourceProcessConfiguration();
+
+        var spec = config.getProcessSpec("Atmospheric Processing");
+        var vg = new ResourceProcessGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertTitledTable(content, "inputs", "Inputs", true);
+        assertTitledTable(content, "outputs", "Outputs", true);
+    }
+
+
+    @Test
     public void testCropHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getCropConfiguration();
