@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.math3.util.Precision;
+
 /**
  * The ResourceProcessSpec class represents the specification of a process of converting one set of
  * resources to another. This object is shared amongst ResourceProcess of the same type.
@@ -76,6 +78,7 @@ public class ResourceProcessSpec implements Serializable{
 		}
 		else {
 			double minAmount = rate * (processTime/1000D) * MIN_PERC;
+			minAmount = Precision.round(minAmount, 3);
 			minimumInputs.put(resource, minAmount);
 		}
 

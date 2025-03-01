@@ -1,0 +1,31 @@
+{{>detail-head}}
+
+## Characteristics
+
+| Attribute      | Value |
+|--------:|:------|
+|Process Time:|{{resprocess.processTime}} millisols|
+|Work Time:|{{resprocess.workTime}} millisols|
+|Power Required:|{{resprocess.powerRequired}} kW/hr|
+|Start On:|{{resprocess.defaultOn}}|
+
+## Inputs
+| Name      | Input Rate (kg/sol) | Minimum kg | Ambient |
+|--------:|:------|-----:|:----|
+{{#inputs}}
+|[{{name}}]({{resourcefolder}}{{#filename}}{{name}}{{/filename}})|{{rate}}|{{min}}|{{flag}}|
+{{/inputs}}
+
+Ambient inputs are consumed from the environment.
+
+## Outputs
+| Name      | Output Rate (kg/sol) | Waste Output |
+|--------:|:------|-----:|:----|
+{{#outputs}}
+|[{{name}}]({{resourcefolder}}{{#filename}}{{name}}{{/filename}})|{{rate}}|{{flag}}|
+{{/outputs}}
+
+Waste outputs are released into the environment and do not need to be stored.
+
+{{>footer}}
+

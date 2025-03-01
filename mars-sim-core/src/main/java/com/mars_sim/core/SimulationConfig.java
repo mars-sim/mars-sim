@@ -143,7 +143,7 @@ public class SimulationConfig {
 	private SettlementTemplateConfig settlementTemplateConfig;
 	private ManufactureConfig manufactureConfig;
 	private ConstructionConfig constructionConfig;
-
+	private ResourceProcessConfig resourceProcessConfig;
 	private FoodProductionConfig foodProductionConfig;
 	private MealConfig mealConfig;
 	private RobotConfig robotConfig;
@@ -451,6 +451,15 @@ public class SimulationConfig {
 	}
 
 	/**
+	 * Gets the Resource process config subset.
+	 *
+	 * @return part config
+	 */
+	public ResourceProcessConfig getResourceProcessConfiguration() {
+		return resourceProcessConfig;
+	}
+
+	/**
 	 * Gets the resource config subset.
 	 *
 	 * @return resource config
@@ -674,7 +683,7 @@ public class SimulationConfig {
 		malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
 		cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true), personConfig);
 		vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true), manufactureConfig);
-		ResourceProcessConfig resourceProcessConfig = new ResourceProcessConfig(parseXMLFileAsJDOMDocument(RESPROCESS_FILE, true));
+		resourceProcessConfig = new ResourceProcessConfig(parseXMLFileAsJDOMDocument(RESPROCESS_FILE, true));
 		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true), resourceProcessConfig);
 		ResupplyConfig resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true));
