@@ -90,7 +90,7 @@
 		<repository>
 			<id>jogamp-remote</id>
 			<name>jogamp mirror</name>
-			<url>https://www.jogamp.org/deployment/maven/</url>
+			<url>https://jogamp.org/deployment/maven/</url>
 		</repository>
 	</repositories>
    <build>
