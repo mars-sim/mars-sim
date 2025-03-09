@@ -30,8 +30,6 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import org.httprpc.sierra.DatePicker;
-
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
@@ -84,7 +82,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JLabel marsTime;
 
 	private JPanel calendarPane;
-	private DatePicker datePicker;
 	private MasterClock masterClock;
 
 	/**
@@ -147,16 +144,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		earthDate = createTextLabel("Greenwich Mean Time (GMT) for Earth");
 		add(earthDate);
 			
-//		datePicker = new DatePicker();		
-//      var earthTime = masterClock.getEarthTime();
-////    var now = LocalDate.now();
-//      var now = LocalDate.of(earthTime.getYear(), earthTime.getMonth(), earthTime.getDayOfMonth());
-//      datePicker.setDate(now);
-//      datePicker.setMinimumDate(now.minusMonths(3));
-//      datePicker.setMaximumDate(now.plusMonths(3));
-//      datePicker.setPopupVerticalAlignment(VerticalAlignment.TOP);
-//      datePicker.addActionListener(event -> showSelection(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))); //datePicker.getDate()));	
-		
 		addSeparator();
 		missionSol = createTextLabel("Simulation Sol Count");
 		add(missionSol);
@@ -176,16 +163,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "View mars-sim wiki", GuideWindow.wikiIcon);
 	}
-
-//    private void showSelection(DateTimeFormatter formatter) {//, TemporalAccessor value) {
-////        var message = String.format("You selected %s.", formatter.format(value));
-//        var earthTime = masterClock.getEarthTime();
-////      var now = LocalDate.now();
-//        var now = LocalDate.of(earthTime.getYear(), earthTime.getMonth(), earthTime.getDayOfMonth());
-//        datePicker.setDate(now);
-////        earthDate.setText(masterClock.getEarthTime().format(SHORT_TIMESTAMP_FORMATTER));
-//        earthDate.setText(String.format(formatter.format(now)));
-//    }
     
 	/**
 	 * Adds a tool bar button.

@@ -45,11 +45,6 @@
 			<version>${jfreechart.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.httprpc</groupId>
-		    <artifactId>sierra</artifactId>
-		    <version>2.3.1</version>
-		</dependency>
-		<dependency>
 		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
 		    <artifactId>SteelSeries</artifactId>
 		    <version>3.9.31.2</version>
