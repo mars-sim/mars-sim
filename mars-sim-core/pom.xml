@@ -12,22 +12,24 @@
 	<name>mars-sim-core</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<twelvemonkeys.version>3.11.0</twelvemonkeys.version>
+		<jogamp.version>2.5.0</jogamp.version>
 	</properties>
 	<dependencies>
 		<dependency>
 		    <groupId>com.twelvemonkeys.imageio</groupId>
 		    <artifactId>imageio-core</artifactId>
-		    <version>3.11.0</version>
+	        <version>${twelvemonkeys.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.twelvemonkeys.imageio</groupId>
 		    <artifactId>imageio-metadata</artifactId>
-		    <version>3.11.0</version>
+	        <version>${twelvemonkeys.version}</version>
 		</dependency>
 	    <dependency>
 	        <groupId>com.twelvemonkeys.imageio</groupId>
 	        <artifactId>imageio-jpeg</artifactId>
-	        <version>3.11.0</version>
+	        <version>${twelvemonkeys.version}</version>
 	    </dependency>
 		<dependency>
 		    <groupId>commons-cli</groupId>
@@ -77,12 +79,12 @@
 		<dependency>
 			<groupId>org.jogamp.gluegen</groupId>
 			<artifactId>gluegen-rt-main</artifactId>
-			<version>2.5.0</version>
+			<version>${jogamp.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jogamp.jocl</groupId>
 			<artifactId>jocl-main</artifactId>
-			<version>2.5.0</version>
+			<version>${jogamp.version}</version>
 		</dependency>
 	</dependencies>
 	<!-- See versions in https://jogamp.org/deployment/maven/org/jogamp/jocl/jocl-main/ -->
