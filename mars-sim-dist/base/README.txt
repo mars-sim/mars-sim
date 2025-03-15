@@ -9,8 +9,9 @@ Start commands are:
 * bin/mars-sim-console 		- Linux start script for the Console headless variant
 * bin/mars-sim-console.cmd 	- Window start script for the Console headless variant
 
-The mars-sim application requires Java 17 or higher to be installed. 
-See https://jdk.java.net/java-se-ri/17
+The mars-sim application requires Java 21 or higher to be installed. There are numerous implementations of Java. 2 commonly used examples are:
+- [Oracle](https://www.oracle.com/uk/java/technologies/downloads)
+- [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html)
 
 Common command line arguments are:
  -baseurl <URL to remote content>    URL to the remote content repository
