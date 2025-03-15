@@ -3,7 +3,7 @@
 simulates mission operations and activities of initial settlers on Mars with a higher fidelity of 
 modeling and simulation details than most classic simulation games.
 
-This project required Java 17 as a minimum.
+This project required Java 21 as a minimum.
 
 ## Release
 This release contains a ZIP file that contains a pre-built versions of the mars-sim application:

@@ -5,235 +5,248 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
+
+## Version 3.9.0 (March 2025)
+
+### A. CORE ENGINE IMPROVEMENTS :
+
+- Help generator expanded to be more flexible.
+- Salvage processes & Manufacturing processes consoliddated into single logic.
+- Settlements have a single queue to cover all Manufacturing.
+- Vehicle Unloading uses a new Status to remove dependency on Vehicle Mission.
+- Unit Hierarchy restructured to introduce MobileUnit & FixedUnits.
+
+    
+### B. UI IMPROVEMENT :
+
+- Help library expanded to cover all configuration entities.
+- New Manufacturing Settlement screen.
+- Maps are downloaded asynchronously.
+- Reworking of Map Layer logic to increase reuse and reduce computation costs.
+  
+  
+### C. FIXES :
+
+- Resource Process: fix problematic toggle logic.
+- Monitor Tool: Displays newly arrived Settlements in Monitor Tool.
+
+
+------------------------------------------|---------------------
 ## Version 3.8.1 (Tue xx xxx 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Battery: rework ingredients for making vehicle's battery modules and EVA battery.</LI>
-  <LI>Fertilizer: rework resources for making fertilizers.</LI>
-  <LI>Loading: rework loading/unloading resources independent from vehicle mission.</LI>
-  <LI>Java: update from Java 19 to Java 21.</LI>
-  <LI>Rating: unify how rating score for both mission and task is computed.</LI>
-  <LI>Resource: correct potassium production and related manu processes.</LI>
-</OL>
+- Battery: rework ingredients for making vehicle's battery modules and EVA battery.
+- Fertilizer: rework resources for making fertilizers.
+- Loading: rework loading/unloading resources independent from vehicle mission.
+- Java: update from Java 19 to Java 21.
+- Rating: unify how rating score for both mission and task is computed.
+- Resource: correct potassium production and related manu processes.
   
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>OpenCL: add a button to turn on/off GPU map loading.</LI>
-  <LI>Surface Map: add rendering shade relief gray maps.</LI>
-</OL>  
+
+- OpenCL: add a button to turn on/off GPU map loading.
+- Surface Map: add rendering shade relief gray maps.
+  
 
 ### C. FIXES :
-<OL>
-  <LI>Manufacturing: fix settlement-driven manufacturing and food production.</LI>
-  <LI>Map Zoom: correct seamless zoom level transition when changing from one map to another.</LI>
-  <LI>Salvage: fix salvaging vehicles and equipment.</LI>
-</OL>
 
-
+- Manufacturing: fix settlement-driven manufacturing and food production.
+- Map Zoom: correct seamless zoom level transition when changing from one map to another.
+- Salvage: fix salvaging vehicles and equipment.
 
 ------------------------------------------|---------------------
 ## Version 3.8.0 (Tue 27 Aug 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Agency: add "International Space Research Alliance" (ISRA), a Chinese-led 
-  	  multi-national alliance and Taiwan nation state.</LI>
-  <LI>Computing: schedule resources of a task from multiple nodes.</LI> 
-  <LI>Country: incorporate Taiwan as nation state.</LI>  
-  <LI>Drone: add modeling thrust and potential energy.</LI>  
-  <LI>Fishery: refine feeding, growing and harvesting fish and weed.</LI> 
-  <LI>Goods Manager: rework relationship with objectives.</LI>
-  <LI>Group Activity: add group activities for a settlement. e.g. birthday parties, 
-  	  council announcements, team meetings etc.</LI>
-  <LI>Health: streamline MedicalConfig, health problem and complaints.</LI>
-  <LI>Heating: revamp heat sink & ventilation.</LI>  
-  <LI>Medical: rework prescribing medication, examining bodies, and recovery tasks.</LI>
-  <LI>Preferences: manage settlement preferences in various categories of mission, 
-      science and task.</LI>
-  <LI>Process Definitions: standardize approach in defining processes such as salvage, 
-      food production and manufacturing.</LI>  
-  <LI>Releases: integrate Gitflow and GitHub Action for building binary releases.</LI>
-  <LI>Resource Process: respond better to toggling resources on-demand.</LI> 
-  <LI>Settlement Tasks: tasks can be selected by On duty & Off duty persons.</LI>
-  <LI>Settlement Template: may define default objective optionally.</LI>
-</OL>
+
+- Agency: add "International Space Research Alliance" (ISRA), a Chinese-led multi-national alliance and Taiwan nation state.
+- Computing: schedule resources of a task from multiple nodes. 
+- Country: incorporate Taiwan as nation state.  
+- Drone: add modeling thrust and potential energy.  
+- Fishery: refine feeding, growing and harvesting fish and weed. 
+- Goods Manager: rework relationship with objectives.
+- Group Activity: add group activities for a settlement. e.g. birthday parties, council announcements, team meetings etc.
+- Health: streamline MedicalConfig, health problem and complaints.
+- Heating: revamp heat sink & ventilation.  
+- Medical: rework prescribing medication, examining bodies, and recovery tasks.
+- Preferences: manage settlement preferences in various categories of mission, science and task.
+- Process Definitions: standardize approach in defining processes such as salvage, food production and manufacturing.  
+- Releases: integrate Gitflow and GitHub Action for building binary releases.
+- Resource Process: respond better to toggling resources on-demand. 
+- Settlement Tasks: tasks can be selected by On duty & Off duty persons.
+- Settlement Template: may define default objective optionally.
+
   
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>Backlog: add a column showing the task's work scope.</LI>
-  <LI>Building Tab: add tracking heating system parameters.</LI>
-  <LI>Computing: shows heat dissipation, power for load/non-load & cooling demand.</LI>  
-  <LI>Exploration: show types of rocks collected when exploring sites.</LI>	
-  <LI>Health Log: show a person's health history log with complaint types, date started and date cured.</LI>
-  <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>
-  <LI>Preference: show # active Missions controlled by Preference panel.</LI>
-  <LI>Settlement: add new Process History tab showing all completed Processes.</LI>
-  <LI>Status Bar: correctly show phi and theta of the mouse cursor.</LI>
-  <LI>Vehicle: shows highlighted vehicle box border in settlement map.</LI>
-</OL>  
+
+- Backlog: add a column showing the task's work scope.
+- Building Tab: add tracking heating system parameters.
+- Computing: shows heat dissipation, power for load/non-load & cooling demand.  
+- Exploration: show types of rocks collected when exploring sites.	
+- Health Log: show a person's health history log with complaint types, date started and date cured.
+- Monitor Tool: support and filter authorities and settlements in one single combobox.
+- Preference: show # active Missions controlled by Preference panel.
+- Settlement: add new Process History tab showing all completed Processes.
+- Status Bar: correctly show phi and theta of the mouse cursor.
+- Vehicle: shows highlighted vehicle box border in settlement map.
+  
 
 ### C. FIXES :
-<OL>
-  <LI>Airlock: correctly looks for airlock with least number of occupants.</LI>	
-  <LI>Heating: manage temperature instability via entropy change to 
-  	  relate temperature change and heat transfer.</LI> 
-  <LI>Launch Date: correct the launch day calculation when it's before 01-Adir-01.</LI>
-  <LI>Navigation: rework vehicle movement to consume fuel and battery power correctly.</LI>	
-  <LI>Parking: set limits in looking for vehicle parking locations recursively.</LI>
-  <LI>Power Generation: correct how power grid turns on/off buildings during 
-  	  power surplus/deficit.</LI>  
-  <LI>Resource: correct budgeting essential resource on-demand.</LI> 
-  <LI>Resource: resolve dwindling amount of methane and hydrogen.</LI>
-  <LI>Robot Charging: avoid robot battery depletion. Ensure wireless charging 
-  	  always possible.</LI> 
-  <LI>Salvage Process: Correct problem when scoring the salvage of a vehicle. </LI>
-</OL>
 
+- Airlock: correctly looks for airlock with least number of occupants.	
+- Heating: manage temperature instability via entropy change to relate temperature change and heat transfer. 
+- Launch Date: correct the launch day calculation when it's before 01-Adir-01.
+- Navigation: rework vehicle movement to consume fuel and battery power correctly.	
+- Parking: set limits in looking for vehicle parking locations recursively.
+- Power Generation: correct how power grid turns on/off buildings during power surplus/deficit.  
+- Resource: correct budgeting essential resource on-demand. 
+- Resource: resolve dwindling amount of methane and hydrogen.
+- Robot Charging: avoid robot battery depletion. Ensure wireless charging always possible. 
+- Salvage Process: Correct problem when scoring the salvage of a vehicle. 
 
 ------------------------------------------|---------------------
 
 ## Version 3.7.2 (Sun 18 Feb 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Amount Resource: rework fertilizer composition to make use of bacteria.</LI>
-  <LI>Construction: revise frame and foundation template.</LI>
-  <LI>Dust Storm: refines log and show occurrences in settlement banner.</LI>
-  <LI>Part: rework use of aerogel tiles for construction mission.</LI>
-  <LI>Resource: remove mortar in ResourceUtil.</LI>
-</OL>
+
+- Amount Resource: rework fertilizer composition to make use of bacteria.
+- Construction: revise frame and foundation template.
+- Dust Storm: refines log and show occurrences in settlement banner.
+- Part: rework use of aerogel tiles for construction mission.
+- Resource: remove mortar in ResourceUtil.
+
   
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>Construction: add new col "Available Material" during construction mission.</LI>
-  <LI>Settlement: correct building overlapping in Hub Base template.</LI>
-</OL>  
+
+- Construction: add new col "Available Material" during construction mission.
+- Settlement: correct building overlapping in Hub Base template.
+  
 
 ### C. FIXES :
-<OL>
-  <LI>Airlock: add missing airlock to trading outpost and mining outpost template.</LI>
-  <LI>Building: add checking for building collision at startup.</LI>
-  <LI>Greenhouse: correct experience point calculation when tending crops.</LI>
-  <LI>Heating: revise air and water heat sink buffer.</LI>
-  <LI>Power: add missing power set in settlement templates.</LI>
-</OL>
+
+- Airlock: add missing airlock to trading outpost and mining outpost template.
+- Building: add checking for building collision at startup.
+- Greenhouse: correct experience point calculation when tending crops.
+- Heating: revise air and water heat sink buffer.
+- Power: add missing power set in settlement templates.
+
 
 ------------------------------------------|---------------------
 
 ## Version 3.7.1 (Wed 17 Jan 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Building Alignment: add north-south alignment attribute to each building.</LI> 
-  <LI>Building Package: add standalone building sets for faster settlement template creation.</LI>  
-  <LI>Building: add new Syngas Plant building for synthesizing methanol for vehicles.</LI>
-  <LI>Task: add checking for water level change and resource demand in Budget Resource Task.</LI>
-  <LI>Threading: quit clock thread while loop when paused to save CPU cycles.</LI>      
-  <LI>Walking: simplify colision-related methods.</LI>    
-  <LI>Weather: rework refresh timing with 5 weather params.</LI> 
-</OL>
+
+- Building Alignment: add north-south alignment attribute to each building. 
+- Building Package: add standalone building sets for faster settlement template creation.  
+- Building: add new Syngas Plant building for synthesizing methanol for vehicles.
+- Task: add checking for water level change and resource demand in Budget Resource Task.
+- Threading: quit clock thread while loop when paused to save CPU cycles.      
+- Walking: simplify colision-related methods.    
+- Weather: rework refresh timing with 5 weather params. 
+
   
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>Airlock: fix failing to ingress.</LI>
-  <LI>Dust Storm: show dust storm status in settlement map banner.</LI>
-  <LI>ERVs: relocate ERV closer to (0,0) and align next to habs.</LI>  
-  <LI>Layout: rework activity spots and add a lab room in Medical Hab.</LI>
-  <LI>Location Tab: show settlement or vehicle vicinity.</LI>
-</OL>  
+
+- Airlock: fix failing to ingress.
+- Dust Storm: show dust storm status in settlement map banner.
+- ERVs: relocate ERV closer to (0,0) and align next to habs.  
+- Layout: rework activity spots and add a lab room in Medical Hab.
+- Location Tab: show settlement or vehicle vicinity.
+  
 
 ### C. FIXES :
-<OL>
-  <LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
-  <LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
-  <LI>Heating: prevent temperature instability and correct air heat ink.</LI>
-  <LI>Heat/Power Generation: correct calculation with methane fuel spent and its power output.</LI>
-  <LI>Maintenance: correct computing maintenance meta tasks and work time.</LI>
-  <LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
-  <LI>Time: limit to certain iterations in A* pathfinding algorithm when walking outside.</LI>
-<OL>
+
+- Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.
+- Goods: ensure no same goods be selected in the buying and selling list.
+- Heating: prevent temperature instability and correct air heat ink.
+- Heat/Power Generation: correct calculation with methane fuel spent and its power output.
+- Maintenance: correct computing maintenance meta tasks and work time.
+- Sleep: ensure settler can get some sleep in astronomy observatory.
+- Time: limit to certain iterations in A* pathfinding algorithm when walking outside.
+
 
 ------------------------------------------|---------------------
 
 ## Version 3.7.0 (Thu 28 Dec 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Activity Spot: spots represent names & reservable spot where Tasks can be completed.</LI>
-  <LI>Algae Pond: add building, function, tasks for growing spirulina. </LI>
-  <LI>Corporation: add Blue Origin as the 3rd corporation. </LI>
-  <LI>Country: add UAE and Saudi Arabia. </LI>  
-  <LI>Economy: add GDP and PPP to xml for each country. </LI>
-  <LI>Group id: rename to com.mars-sim and com.mars_sim in package name. </LI>
-  <LI>Macro Simulation: simulate lunar colonies with influx of researchers and engineers. </LI>
-  <LI>Maven: change all maven package names to start with `com.mars-sim`. </LI>
-  <LI>Person: add average weight & height characteristics per country. </LI>  
-  <LI>Rating: implement rating score for Settlement, Person & Robot Tasks and hold the composite parts of the overall score. </LI>
-  <LI>Sponsor: add sponsor mode for players to choose in console menu. </LI>
-  <LI>UnitTests: add more Unit Tests. </LI>
-</OL>
+
+- Activity Spot: spots represent names & reservable spot where Tasks can be completed.
+- Algae Pond: add building, function, tasks for growing spirulina. 
+- Corporation: add Blue Origin as the 3rd corporation. 
+- Country: add UAE and Saudi Arabia.   
+- Economy: add GDP and PPP to xml for each country. 
+- Group id: rename to com.mars-sim and com.mars_sim in package name. 
+- Macro Simulation: simulate lunar colonies with influx of researchers and engineers. 
+- Maven: change all maven package names to start with `com.mars-sim`. 
+- Person: add average weight & height characteristics per country.   
+- Rating: implement rating score for Settlement, Person & Robot Tasks and hold the composite parts of the overall score. 
+- Sponsor: add sponsor mode for players to choose in console menu. 
+- UnitTests: add more Unit Tests. 
+
   
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>Monitor Tool: optimize Monitor Model.</LI>
-  <LI>Diplomatic: add diplomatic channel in Command Dashboard for viewing live statistics in Lunar Colonies.</LI> 
-  <LI>Orbit Viewer: zoom in between Mars and Earth's orbit.</LI>
-  <LI>Settlement Map: Reworking fo the map layer logic. Activity Spots are now visible on the map.</LI>
-  <LI>Person Monitor Tool: add tooltip to Task column showing Score breakdown. On Duty indicator on Shift column.</LI>
-  <LI>Robot/Person Activity Panel: redesigned to show the stack of Tasks and alternative Tasks not choosen. Tooltip shows Rating breakdown.</LI>
-</OL>  
+
+- Monitor Tool: optimize Monitor Model.
+- Diplomatic: add diplomatic channel in Command Dashboard for viewing live statistics in Lunar Colonies. 
+- Orbit Viewer: zoom in between Mars and Earth's orbit.
+- Settlement Map: Reworking fo the map layer logic. Activity Spots are now visible on the map.
+- Person Monitor Tool: add tooltip to Task column showing Score breakdown. On Duty indicator on Shift column.
+- Robot/Person Activity Panel: redesigned to show the stack of Tasks and alternative Tasks not choosen. Tooltip shows Rating breakdown.
+  
 
 ### C. FIXES :
-<OL>
-	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
-	<LI>Conversation: allow settlers to chat with others as a subtask.</LI>
-	<LI>Mars Navigator: ensure each map type remember its previous choice of resolution.</LI>
-	<LI>Mission Table: fix problem with invalid column. </LI>
-	<LI>Sleep: ensure correct building when assigning a bed.</LI>
-<OL>
+
+	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.
+	<LI>Conversation: allow settlers to chat with others as a subtask.
+	<LI>Mars Navigator: ensure each map type remember its previous choice of resolution.
+	<LI>Mission Table: fix problem with invalid column. 
+	<LI>Sleep: ensure correct building when assigning a bed.
+
 
 ------------------------------------------|---------------------
 
 ## 3.6.2 (Mon, 18 Sep 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Crop: allow changing growing area per crop in Farming.</LI>
-  <LI>Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.</LI>
-  <LI>Pending Task: optimize the use of pending task vs. assigning/replacing task directly.</LI> 
-  <LI>Time Ratio: optimize how time ratio increase/decrease can dynamically affect pulse width and TPS in MasterClock.</LI> 
-<OL>
+
+- Crop: allow changing growing area per crop in Farming.
+- Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.
+- Pending Task: optimize the use of pending task vs. assigning/replacing task directly. 
+- Time Ratio: optimize how time ratio increase/decrease can dynamically affect pulse width and TPS in MasterClock. 
+
 
 
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>Crop: use spinner to change growing area for each farm in Agriculture tab in Dashboard.</LI>
-  <LI>Task: display subTask2 and subTaskPhase2 in Activity Tab.</LI>
-</OL> 
+
+- Crop: use spinner to change growing area for each farm in Agriculture tab in Dashboard.
+- Task: display subTask2 and subTaskPhase2 in Activity Tab.
+ 
 
 ### C. FIXES :
-<OL>
-  <LI>Computing: rework work time related to consuming computing resources when analyzing map data.</LI>
-  <LI>Digging Local: correct not being able to start digging ice and regolith on its own.</LI>
-  <LI>Disembarking: optimize and correct how a crew member disembarks vehicle from garage.</LI> 
-  <LI>Equipment: correct transferring container back to settlement after digging regolith/ice.</LI> 
-  <LI>Exploration: end EVA if site is not determined.</LI>  
-  <LI>Food Production: correct potato typo.</LI>
-  <LI>Map: correct magnification and zooming issues.</LI>
-  <LI>Settlement: select correctly whether settlers and vehicles are in settlement or its vicinity in Settlement Map.</LI>  
-  <LI>Weather: Correct weather param concurrency during reload.</LI>
-<OL>
+
+- Computing: rework work time related to consuming computing resources when analyzing map data.
+- Digging Local: correct not being able to start digging ice and regolith on its own.
+- Disembarking: optimize and correct how a crew member disembarks vehicle from garage. 
+- Equipment: correct transferring container back to settlement after digging regolith/ice. 
+- Exploration: end EVA if site is not determined.  
+- Food Production: correct potato typo.
+- Map: correct magnification and zooming issues.
+- Settlement: select correctly whether settlers and vehicles are in settlement or its vicinity in Settlement Map.  
+- Weather: Correct weather param concurrency during reload.
+
 
 ------------------------------------------|---------------------
 
 ## 3.6.1 build 0ac7103 (25 Aug 2023)
 
 ### A. FIXES :
-<OL>
-  <LI>Mineral Map: Avoid NPE after a reload by serializing a list of mineral types 
-    - <a href="https://github.com/mars-sim/mars-sim/issues/1005">#1005</a>.</LI>
-<OL>
+
+- Mineral Map: Avoid NPE after a reload by serializing a list of mineral types 
+    - <a href="https://github.com/mars-sim/mars-sim/issues/1005">#1005</a>.
+
 
 ------------------------------------------|---------------------
 
@@ -241,86 +254,86 @@ GitHub: https://github.com/mars-sim/mars-sim
 ## 3.6.0 build 8557 (24 Aug 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
-<OL>
-  <LI>Building    : Add 2 new buildings, namely, Server Farm and Central Hub A. </LI>
-  <LI>Computing   : Track entropy in each computing node. </LI>
-  <LI>Country     : Allow each country's names to be loaded on demand. </LI>
-  <LI>Crop        : Add a new category of herbs. </LI>
-  <LI>Earth Time  : Model using the standard Java LocalDateTime class.</LI>
-  <LI>Elevation   : Adopt higher resolution height data.</LI>  
-  <LI>EVA Suit    : Refine the modeling of resources needed to produce the suit parts.</LI>
-  <LI>EVA Time    : Add scheduling EVA time to start right after sunrise.</LI>
-  <LI>Fuel        : Enable the use of methanol as fuel for vehicles.</LI>
-  <LI>History     : Add History class to tally time-dependent events.</LI>
-  <LI>Mars Time   : Model using the standard Java LocalDateTime class.</LI>
-  <LI>Mission     : Retains reference to Vehicle after Mission completed.</LI>  
-  <LI>Power       : Model nuclear reactors with more parameters.</LI>
-  <LI>Reliability : Tweak malfunction probability and rework how various factors relate to one another.</LI>	
-  <LI>Resupply    : Define resupply missions with a repeating schedule.</LI>
-  <LI>Resources   : Allow alternate resources for manufacturing and food production.</LI>
-  <LI>Settlement  : Keep track of settlement preference task/mission/science modifiers. </LI>
-  <LI>Sites       : Discover & estimate mineral concentration of potential sites.</LI>
-  <LI>Training    : Replace hard-coded training-history-to-role mapping with external xml configuration.</LI>
-  <LI>Vehicle     : Enable regen braking and encapsulate propulsion calculations in motor controller class.</LI>
 
-</OL>
+- Building    : Add 2 new buildings, namely, Server Farm and Central Hub A. 
+- Computing   : Track entropy in each computing node. 
+- Country     : Allow each country's names to be loaded on demand. 
+- Crop        : Add a new category of herbs. 
+- Earth Time  : Model using the standard Java LocalDateTime class.
+- Elevation   : Adopt higher resolution height data.  
+- EVA Suit    : Refine the modeling of resources needed to produce the suit parts.
+- EVA Time    : Add scheduling EVA time to start right after sunrise.
+- Fuel        : Enable the use of methanol as fuel for vehicles.
+- History     : Add History class to tally time-dependent events.
+- Mars Time   : Model using the standard Java LocalDateTime class.
+- Mission     : Retains reference to Vehicle after Mission completed.  
+- Power       : Model nuclear reactors with more parameters.
+- Reliability : Tweak malfunction probability and rework how various factors relate to one another.	
+- Resupply    : Define resupply missions with a repeating schedule.
+- Resources   : Allow alternate resources for manufacturing and food production.
+- Settlement  : Keep track of settlement preference task/mission/science modifiers. 
+- Sites       : Discover & estimate mineral concentration of potential sites.
+- Training    : Replace hard-coded training-history-to-role mapping with external xml configuration.
+- Vehicle     : Enable regen braking and encapsulate propulsion calculations in motor controller class.
+
+
   
 ### B. UI IMPROVEMENT :
-<OL>
-  <LI>Connection : Simplify building connection definition with hatch-facing attribute.</LI>
-  <LI>Events     : Events in the Monitor Window are clickable to drill down into the details of the entity.</LI>
-  <LI>Mars Map   : Add zooming capability, add more map types, and allow maps to load various levels of resolutions.</LI>
-  <LI>Mineral    : Optimize mineral layer loading speed in Mars globe Navigator.</LI>
-  <LI>Resupply   : Showcase resupply missions by settlements under a tree.</LI>
-  <LI>Role       : Restore previous role if change is not confirmed.</LI>
-  <LI>Scenario   : Scale up default scenario to including 12 settlements.</LI>
-  <LI>Search     : Add search term history and add equipment list in Search Tool.</LI>
-  <LI>Settlement : Display settlement preference task/mission/science modifiers and allow players to edit scores. </LI>
-  <LI>Splash     : Add 3 more splash pictures.</LI>
-  <LI>Template   : Add Hub Base settlement template that features a Central Hub at the center of the base. </LI>
-  <LI>Vehicle    : Retain vehicle reference to completed missions.</LI>
-  <LI>Weather    : Correct weather icon switching in Settlement Map.</LI>
-</OL>  
+
+- Connection : Simplify building connection definition with hatch-facing attribute.
+- Events     : Events in the Monitor Window are clickable to drill down into the details of the entity.
+- Mars Map   : Add zooming capability, add more map types, and allow maps to load various levels of resolutions.
+- Mineral    : Optimize mineral layer loading speed in Mars globe Navigator.
+- Resupply   : Showcase resupply missions by settlements under a tree.
+- Role       : Restore previous role if change is not confirmed.
+- Scenario   : Scale up default scenario to including 12 settlements.
+- Search     : Add search term history and add equipment list in Search Tool.
+- Settlement : Display settlement preference task/mission/science modifiers and allow players to edit scores. 
+- Splash     : Add 3 more splash pictures.
+- Template   : Add Hub Base settlement template that features a Central Hub at the center of the base. 
+- Vehicle    : Retain vehicle reference to completed missions.
+- Weather    : Correct weather icon switching in Settlement Map.
+  
 
 ### C. FIXES :
-<OL>
-	<LI>EVA Suits  : Ensure EVA suits retain in vehicle during mission.</LI>
-	<LI>Meteorites : Rework what reasonable malfunctions an meteorite impact would trigger.</LI>	
-	<LI>Social     : Avoid concurrency issue by making relationship score updating in one direction.</LI>
-	<LI>Resources  : Correct displaying amount resources stored in Inventory Tab.</LI>
-<OL>
+
+	<LI>EVA Suits  : Ensure EVA suits retain in vehicle during mission.
+	<LI>Meteorites : Rework what reasonable malfunctions an meteorite impact would trigger.	
+	<LI>Social     : Avoid concurrency issue by making relationship score updating in one direction.
+	<LI>Resources  : Correct displaying amount resources stored in Inventory Tab.
+
 
 ------------------------------------------|---------------------
 
 ## 3.5.0 (build 7907) - 5 Apr 2023
 
 ### CORE ENGINE IMPROVEMENTS :
-  <LI>   Battery : Standardize battery capacity. </LI>
-  <LI>    Events : Supports future scheduled events to better handle periodic actions on the entities. </LI>    
-  <LI>   Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing. </LI> 
-  <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>  
-  <LI>     Robot : Define specifications using RobotSpec class. </LI>  
-  <LI>     Shift : Add shift manager to handle work shift change and add on leave status. </LI> 
-  <LI> Stock Cap : Increase general/cargo capacities and specific resource storage capacity. </LI>
-  <LI>   Storage : Allow selection of storage bin in DigLocal task based on building resource capacity. </LI>
-  <LI>      Task : Define SettlementMetaTask and track a pool of shared tasks. </LI>  
+-    Battery : Standardize battery capacity. 
+-     Events : Supports future scheduled events to better handle periodic actions on the entities.     
+-    Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing.  
+-      Parts : Add silica aerogel as transparent rooftop tiles.   
+-      Robot : Define specifications using RobotSpec class.   
+-      Shift : Add shift manager to handle work shift change and add on leave status.  
+-  Stock Cap : Increase general/cargo capacities and specific resource storage capacity. 
+-    Storage : Allow selection of storage bin in DigLocal task based on building resource capacity. 
+-       Task : Define SettlementMetaTask and track a pool of shared tasks.   
       
 ### UI IMPROVEMENT :
-  <LI>  Desktop : Remember tools' position and contents. </LI>
-  <LI>      L&F : Look and Feel can be changed via Settings menu item. </LI>
-  <LI>  Mission : Organize missions under a tree structure for each settlement. </LI>  
-  <LI>   Panels : Separate tables for Maintenance, Waste and Resource processing. </LI>
-  <LI>  Styling : Single styling via look and feel applied to all components. </LI>
-  <LI>      Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. </LI>
+-   Desktop : Remember tools' position and contents. 
+-       L&F : Look and Feel can be changed via Settings menu item. 
+-   Mission : Organize missions under a tree structure for each settlement.   
+-    Panels : Separate tables for Maintenance, Waste and Resource processing. 
+-   Styling : Single styling via look and feel applied to all components. 
+-       Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. 
 
 ### RUNTIME ENVIRONMENT :
-  <LI>Java : Require Java 17 or above. </LI> 
+- Java : Require Java 17 or above.  
  
 ### FIXES :
- <LI> EVA Suit : Allow suit repair in a vehicle using repair task. </LI>
- <LI> Jar file : Make settlement template name readable by using lowercase letters. </LI>
- <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
- <LI>  Vehicle : Correct fuel consumption calculation. </LI>
+ <LI> EVA Suit : Allow suit repair in a vehicle using repair task. 
+ <LI> Jar file : Make settlement template name readable by using lowercase letters. 
+ <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. 
+ <LI>  Vehicle : Correct fuel consumption calculation. 
  
 
 ------------------------------------------|---------------------
@@ -329,7 +342,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ### ISSUES ADDRESSED :
  
- <LI> Fix #783 that relates to a failure of starting from the JAR file. </LI>
+ <LI> Fix #783 that relates to a failure of starting from the JAR file. 
  
 ------------------------------------------|--------------------- 
  
@@ -339,46 +352,46 @@ GitHub: https://github.com/mars-sim/mars-sim
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
-  <LI>  Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
-  <LI>   Building : Add building general info such as dimensions and mass. </LI>
-  <LI>  Computing : Add computing function and skill. Track computing resource usage. </LI>
-  <LI>     Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
-  <LI>  Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
-  <LI>Malfunction : Tidy up malfunction and maintenance logic on vehicles, buildings and equipment.</LI>
-  <LI>    Mission : Restructure and simplify handling of Mission.</LI>
-  <LI>      Parts : Add garment and thermal bottle. </LI>
-  <LI>     Person : Track exercise. Make a person's carrying capacity to be age-dependent.</LI>
-  <LI >Processing : Unify resource and waste processes, food production and manufacturing under common super class.</LI>  
-  <LI>      Robot : Track battery capacity and charging.</LI>
-  <LI>    Trading : Compute and relate the cost, profit, and price of trade goods.</LI>
-  <LI>   Scenario : Configure arriving future Settlements from a scenario. Scenarios can be exported and shared. </LI>
-  <LI>       Site : Explore, claim and track mining sites.</LI>
-  <LI>     Social : Remove global relationship graph and simplify codes.</LI>
-  <LI>   Sunlight : Predict sunrise and sunset at each settlement. Track actual sunrise and sunset time.</LI>
-  <LI>  Meta Task : Implement TaskJob approach and remove duplicate computation of outstanding tasks.</LI>
-  <LI>    Vehicle : Rework vehicle specifications. Refine fuel economy calculation.</LI>
+-   Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. 
+-    Building : Add building general info such as dimensions and mass. 
+-   Computing : Add computing function and skill. Track computing resource usage. 
+-      Filter : New Settlement filter and Building tab to the Monitor Tool. 
+-   Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.
+- Malfunction : Tidy up malfunction and maintenance logic on vehicles, buildings and equipment.
+-     Mission : Restructure and simplify handling of Mission.
+-       Parts : Add garment and thermal bottle. 
+-      Person : Track exercise. Make a person's carrying capacity to be age-dependent.
+  <LI >Processing : Unify resource and waste processes, food production and manufacturing under common super class.  
+-       Robot : Track battery capacity and charging.
+-     Trading : Compute and relate the cost, profit, and price of trade goods.
+-    Scenario : Configure arriving future Settlements from a scenario. Scenarios can be exported and shared. 
+-        Site : Explore, claim and track mining sites.
+-      Social : Remove global relationship graph and simplify codes.
+-    Sunlight : Predict sunrise and sunset at each settlement. Track actual sunrise and sunset time.
+-   Meta Task : Implement TaskJob approach and remove duplicate computation of outstanding tasks.
+-     Vehicle : Rework vehicle specifications. Refine fuel economy calculation.
 
   
 ### UI IMPROVEMENT :
-  <LI>  Authority : Add editor that customize sponsors/authorities.</LI> 
-  <LI>      Chart : Auto select bar and pie chart.</LI>  
-  <LI>   Economic : Display the cost/profit/price of a good in each settlement for comparison.</LI>
-  <LI>      Icons : Replace word title of each tab with an icon in all Unit Windows.</LI>
-  <LI>   Location : Show areocentric longitude of Mars in Time Tool. </LI>  
-  <LI>      Power : Display generated/load power & stored energy for settlements in Monitor Tool.</LI>
-  <LI>   Scenario : Edit and load basic scenarios.</LI>
-  <LI>     Window : Add new Building Window with tab, replacing old Building tab.</LI>
+-   Authority : Add editor that customize sponsors/authorities. 
+-       Chart : Auto select bar and pie chart.  
+-    Economic : Display the cost/profit/price of a good in each settlement for comparison.
+-       Icons : Replace word title of each tab with an icon in all Unit Windows.
+-    Location : Show areocentric longitude of Mars in Time Tool.   
+-       Power : Display generated/load power & stored energy for settlements in Monitor Tool.
+-    Scenario : Edit and load basic scenarios.
+-      Window : Add new Building Window with tab, replacing old Building tab.
   
 ### FIXES :
-  <LI>    Airlock : Fix bugs during EVA egress and ingress. </LI>
-  <LI>   Delivery : Resolve stalled negotiation. </LI>
-  <LI>Exploration : Revisit existing sites until they reach an evaluation ready for Mining. </LI>
-  <LI>Maintenance :	Ground vehicle maintenance no longer stalls when EVA is aborted. </LI>
-  <LI>    Mission : Fix the mission selection. Correct Navigation tab.</LI>
-  <LI> Settlement : Correct settlement selection in Monitor Tool. </LI>
-  <LI>    Trading : Consider loading/unloading edge cases for Trading/Delivery. </LI>
-  <LI>  Transport : Correct handling of arriving settlement by transport manager.</LI>
-  <LI>    Vehicle : Correct vehicle fuel calculation.</LI>
+-     Airlock : Fix bugs during EVA egress and ingress. 
+-    Delivery : Resolve stalled negotiation. 
+- Exploration : Revisit existing sites until they reach an evaluation ready for Mining. 
+- Maintenance :	Ground vehicle maintenance no longer stalls when EVA is aborted. 
+-     Mission : Fix the mission selection. Correct Navigation tab.
+-  Settlement : Correct settlement selection in Monitor Tool. 
+-     Trading : Consider loading/unloading edge cases for Trading/Delivery. 
+-   Transport : Correct handling of arriving settlement by transport manager.
+-     Vehicle : Correct vehicle fuel calculation.
 
 
 ------------------------------------------|---------------------
