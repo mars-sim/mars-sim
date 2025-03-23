@@ -12,9 +12,9 @@ import java.awt.geom.AffineTransform;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;

@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.structure.construction;
+package com.mars_sim.core.building.construction;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
@@ -29,8 +29,6 @@ public class ConstructionManagerTest extends TestCase {
         SimulationConfig.instance().loadConfig();
         Simulation.instance().testRun();
         
-//      UnitManager unitManager = Simulation.instance().getUnitManager();
-//		Iterator<Settlement> i = unitManager.getSettlements().iterator();
         Settlement settlement = new MockSettlement();
         manager = new ConstructionManager(settlement);
     }

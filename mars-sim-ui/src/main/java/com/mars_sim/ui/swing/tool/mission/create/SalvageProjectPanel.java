@@ -28,14 +28,14 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
+import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
-import com.mars_sim.core.structure.construction.ConstructionUtil;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 @SuppressWarnings("serial")

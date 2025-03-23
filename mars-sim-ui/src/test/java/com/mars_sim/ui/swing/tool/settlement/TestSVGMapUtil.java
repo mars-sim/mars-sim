@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.apache.batik.gvt.GraphicsNode;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.building.construction.ConstructionConfig;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.construction.ConstructionConfig;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.vehicle.VehicleSpec;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;

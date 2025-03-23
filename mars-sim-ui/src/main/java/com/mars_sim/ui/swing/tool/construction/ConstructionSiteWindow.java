@@ -7,7 +7,7 @@
 
 package com.mars_sim.ui.swing.tool.construction;
 
-import com.mars_sim.core.structure.construction.ConstructionSite;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 

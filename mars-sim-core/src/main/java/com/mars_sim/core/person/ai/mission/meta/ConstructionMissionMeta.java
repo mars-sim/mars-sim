@@ -10,6 +10,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Collection;
 import java.util.Set;
 
+import com.mars_sim.core.building.construction.ConstructionValues;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -22,7 +23,6 @@ import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionValues;
 
 
 /**

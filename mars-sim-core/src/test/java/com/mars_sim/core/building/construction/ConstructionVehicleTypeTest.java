@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.structure.construction;
+package com.mars_sim.core.building.construction;
 
 import java.util.ArrayList;
 import java.util.List;

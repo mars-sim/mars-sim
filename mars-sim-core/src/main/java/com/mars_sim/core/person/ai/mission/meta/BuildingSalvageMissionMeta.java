@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.mars_sim.core.building.construction.SalvageValues;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -20,7 +21,6 @@ import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.SalvageValues;
 
 /**
  * A meta mission for the BuildingSalvageMission mission.

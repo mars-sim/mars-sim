@@ -15,6 +15,8 @@ import java.util.Map;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
@@ -39,8 +41,6 @@ import com.mars_sim.core.person.ai.mission.TravelToSettlement;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
