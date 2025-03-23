@@ -4,6 +4,13 @@ import java.util.Iterator;
 
 import org.junit.Before;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.MockBuilding;
+import com.mars_sim.core.building.function.Function;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -20,13 +27,6 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.MockBuilding;
-import com.mars_sim.core.structure.building.function.Function;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Rover;

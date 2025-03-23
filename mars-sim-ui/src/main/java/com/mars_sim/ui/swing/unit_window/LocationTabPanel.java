@@ -20,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
@@ -27,7 +28,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;

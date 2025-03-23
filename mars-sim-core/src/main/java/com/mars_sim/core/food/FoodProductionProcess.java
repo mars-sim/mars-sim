@@ -9,7 +9,7 @@ package com.mars_sim.core.food;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.structure.building.function.FoodProduction;
+import com.mars_sim.core.building.function.FoodProduction;
 
 /**
  * A food production process.

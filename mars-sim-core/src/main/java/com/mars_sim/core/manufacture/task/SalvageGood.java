@@ -8,6 +8,9 @@ package com.mars_sim.core.manufacture.task;
 
 import java.util.Iterator;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.manufacture.SalvageProcess;
@@ -16,9 +19,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

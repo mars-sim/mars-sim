@@ -16,8 +16,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.LifeSupport;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

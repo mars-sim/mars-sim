@@ -20,13 +20,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
+import com.mars_sim.core.building.construction.ConstructionManager;
+import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.building.construction.ConstructionStage;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
+import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.construction.ConstructionManager;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionStage;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
-import com.mars_sim.core.structure.construction.ConstructionVehicleType;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;

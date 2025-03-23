@@ -16,8 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.data.History.HistoryItem;
-import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.ui.swing.StyleManager;
 
 @SuppressWarnings("serial")

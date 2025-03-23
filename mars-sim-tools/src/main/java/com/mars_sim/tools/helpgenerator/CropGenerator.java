@@ -8,7 +8,7 @@ package com.mars_sim.tools.helpgenerator;
 
 import java.util.List;
 
-import com.mars_sim.core.structure.building.function.farming.CropSpec;
+import com.mars_sim.core.building.function.farming.CropSpec;
 
 /**
  * The CropGenerator class is a type of generator for crops.

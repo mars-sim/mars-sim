@@ -2,6 +2,8 @@ package com.mars_sim.core.person.health.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.BodyRegionType;
@@ -9,8 +11,6 @@ import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.RadiationType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
     private Person createRadiationPatient(Settlement s, Building sb) {

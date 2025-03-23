@@ -2,8 +2,8 @@ package com.mars_sim.core.vehicle;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.utility.power.PowerSourceType;
 
 public class VehicleConfigTest extends AbstractMarsSimUnitTest {
     public void testGetVehicleSpec() {

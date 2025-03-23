@@ -2,10 +2,10 @@ package com.mars_sim.core.person.health.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class RestingMedicalRecoveryTest extends AbstractMarsSimUnitTest {
   public void testCreateSettlementTask() {

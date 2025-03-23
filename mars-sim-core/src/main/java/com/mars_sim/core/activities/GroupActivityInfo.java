@@ -8,11 +8,11 @@ package com.mars_sim.core.activities;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
-import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.EventSchedule;
 
 /**

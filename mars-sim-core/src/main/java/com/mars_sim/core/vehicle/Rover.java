@@ -18,6 +18,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.air.AirComposition;
+import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -36,7 +37,6 @@ import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementConfig;
-import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 

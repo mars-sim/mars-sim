@@ -9,8 +9,8 @@ package com.mars_sim.console.chat.simcommand.person;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
+import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
 
 /** 
  * 

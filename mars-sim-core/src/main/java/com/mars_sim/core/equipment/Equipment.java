@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.Salvagable;
@@ -20,8 +22,6 @@ import com.mars_sim.core.person.ai.task.Repair;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.unit.UnitHolder;

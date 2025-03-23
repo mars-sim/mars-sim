@@ -14,6 +14,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
+import com.mars_sim.core.building.construction.ConstructionUtil;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.manufacture.ManufactureProcess;
@@ -27,11 +32,6 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.farming.CropConfig;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
-import com.mars_sim.core.structure.construction.ConstructionUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleConfig;
 

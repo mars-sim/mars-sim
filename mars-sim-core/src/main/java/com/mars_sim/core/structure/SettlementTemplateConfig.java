@@ -2,6 +2,8 @@ package com.mars_sim.core.structure;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
+import com.mars_sim.core.building.BuildingPackageConfig;
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
@@ -13,8 +15,7 @@ import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.resource.*;
 import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
-import com.mars_sim.core.structure.building.BuildingPackageConfig;
-import com.mars_sim.core.structure.building.BuildingTemplate;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 

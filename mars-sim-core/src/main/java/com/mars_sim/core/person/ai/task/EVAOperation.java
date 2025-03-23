@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
@@ -39,8 +41,6 @@ import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Airlockable;

@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;

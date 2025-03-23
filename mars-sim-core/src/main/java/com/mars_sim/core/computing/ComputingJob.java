@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.Computation;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.Computation;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**

@@ -8,6 +8,11 @@ package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.List;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.cooking.Cooking;
+import com.mars_sim.core.building.function.cooking.PreparingDessert;
+import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
@@ -18,11 +23,6 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.cooking.Cooking;
-import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
-import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 

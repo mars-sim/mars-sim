@@ -19,12 +19,12 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;

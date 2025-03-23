@@ -12,7 +12,7 @@ import java.util.Collection;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.structure.building.function.VehicleMaintenance;
+import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.Vehicle;

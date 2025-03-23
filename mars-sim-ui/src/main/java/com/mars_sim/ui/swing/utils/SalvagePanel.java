@@ -6,9 +6,9 @@
  */
 package com.mars_sim.ui.swing.utils;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 

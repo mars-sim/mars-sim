@@ -7,8 +7,8 @@
 
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.Function;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.Function;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;

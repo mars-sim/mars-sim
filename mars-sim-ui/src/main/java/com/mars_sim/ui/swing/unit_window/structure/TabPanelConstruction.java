@@ -14,9 +14,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

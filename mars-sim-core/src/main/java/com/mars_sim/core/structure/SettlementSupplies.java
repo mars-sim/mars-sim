@@ -10,9 +10,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.building.BuildingTemplate;
 
 /**
  * Represents a set of Supplies provided to a Settlement.

@@ -8,7 +8,7 @@ package com.mars_sim.tools.helpgenerator;
 
 import java.util.List;
 
-import com.mars_sim.core.structure.building.function.cooking.HotMeal;
+import com.mars_sim.core.building.function.cooking.HotMeal;
 
 /**
  * Generates help content for HotMeal

@@ -9,6 +9,8 @@ package com.mars_sim.core.manufacture.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
@@ -25,8 +27,6 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 /**
  * This create SettlementTasks that manage any Manufacturing Tasks that can be worked on at

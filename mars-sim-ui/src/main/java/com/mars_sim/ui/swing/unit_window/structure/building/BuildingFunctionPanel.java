@@ -8,7 +8,7 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import javax.swing.Icon;
 
-import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 

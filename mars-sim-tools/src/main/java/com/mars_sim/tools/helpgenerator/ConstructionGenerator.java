@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.tools.helpgenerator.HelpContext.ItemQuantity;
 
 public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> {

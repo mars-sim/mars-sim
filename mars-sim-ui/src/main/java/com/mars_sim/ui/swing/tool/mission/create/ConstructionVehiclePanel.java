@@ -27,9 +27,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;

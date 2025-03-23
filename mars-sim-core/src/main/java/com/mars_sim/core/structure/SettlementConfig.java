@@ -17,6 +17,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.activities.GroupActivityInfo;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
@@ -24,7 +25,6 @@ import com.mars_sim.core.person.ai.shift.ShiftSpec;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.BuildingCategory;
 
 /**
  * Provides configuration information about settlements templates. Uses a DOM document to

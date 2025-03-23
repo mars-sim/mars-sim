@@ -7,12 +7,12 @@
 
 package com.mars_sim.core.robot.ai.job;
 
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class Repairbot extends RobotJob  {
 

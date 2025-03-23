@@ -10,6 +10,8 @@ package com.mars_sim.core.person.ai.task;
 import java.util.List;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -18,8 +20,6 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;

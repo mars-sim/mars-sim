@@ -15,12 +15,12 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 

@@ -6,6 +6,9 @@
  */
 package com.mars_sim.core.manufacture.task;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
@@ -17,9 +20,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

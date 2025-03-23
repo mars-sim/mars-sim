@@ -14,6 +14,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingException;
+import com.mars_sim.core.building.function.FoodProduction;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -28,10 +32,6 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingException;
-import com.mars_sim.core.structure.building.function.FoodProduction;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
 
 /**

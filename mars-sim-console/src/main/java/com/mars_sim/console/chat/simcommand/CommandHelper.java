@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.building.function.ResourceProcessor;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.Malfunction.Repairer;
@@ -39,7 +40,6 @@ import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Airlock;
-import com.mars_sim.core.structure.building.function.ResourceProcessor;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**

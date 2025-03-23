@@ -9,6 +9,8 @@ package com.mars_sim.core.person.health.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -22,8 +24,6 @@ import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Msg;
 
 /**

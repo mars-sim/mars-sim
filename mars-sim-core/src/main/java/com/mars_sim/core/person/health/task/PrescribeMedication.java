@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -24,7 +25,6 @@ import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

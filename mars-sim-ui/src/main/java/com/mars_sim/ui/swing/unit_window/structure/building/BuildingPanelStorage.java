@@ -17,9 +17,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.function.Storage;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

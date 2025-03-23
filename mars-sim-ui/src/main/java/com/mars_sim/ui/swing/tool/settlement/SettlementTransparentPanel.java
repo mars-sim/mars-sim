@@ -52,6 +52,8 @@ import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
+import com.mars_sim.core.building.BuildingConfig;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
@@ -66,8 +68,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.BuildingConfig;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
