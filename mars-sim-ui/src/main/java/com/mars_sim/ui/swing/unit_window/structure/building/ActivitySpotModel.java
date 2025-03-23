@@ -14,7 +14,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
+import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**

@@ -40,14 +40,14 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.building.function.farming.Crop;
+import com.mars_sim.core.building.function.farming.CropConfig;
+import com.mars_sim.core.building.function.farming.CropSpec;
+import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.function.farming.Crop;
-import com.mars_sim.core.structure.building.function.farming.CropConfig;
-import com.mars_sim.core.structure.building.function.farming.CropSpec;
-import com.mars_sim.core.structure.building.function.farming.Farming;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

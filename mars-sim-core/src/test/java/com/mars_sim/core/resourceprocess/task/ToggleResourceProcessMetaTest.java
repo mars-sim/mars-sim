@@ -2,13 +2,13 @@ package com.mars_sim.core.resourceprocess.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.science.task.MarsSimContext;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
 

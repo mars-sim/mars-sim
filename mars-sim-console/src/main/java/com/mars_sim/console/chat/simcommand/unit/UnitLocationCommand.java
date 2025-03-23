@@ -9,8 +9,8 @@ package com.mars_sim.console.chat.simcommand.unit;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;

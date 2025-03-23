@@ -12,8 +12,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.person.health.HealthProblem;
-import com.mars_sim.core.structure.building.function.MedicalCare;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

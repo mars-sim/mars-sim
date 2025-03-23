@@ -8,6 +8,13 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.ActivitySpot;
+import com.mars_sim.core.building.function.Function;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LivingAccommodation;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.CircadianClock;
@@ -18,15 +25,8 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
-import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.structure.building.function.Function;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.vehicle.Rover;
 
 /**

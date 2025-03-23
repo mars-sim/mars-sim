@@ -7,10 +7,10 @@
 package com.mars_sim.ui.swing.unit_window;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.equipment.EquipmentUnitWindow;

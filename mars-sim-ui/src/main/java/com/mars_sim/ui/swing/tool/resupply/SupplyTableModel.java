@@ -17,15 +17,15 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.building.BuildingConfig;
+import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.BuildingConfig;
-import com.mars_sim.core.structure.building.BuildingSpec;
-import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.vehicle.VehicleConfig;
 
 @SuppressWarnings("serial")

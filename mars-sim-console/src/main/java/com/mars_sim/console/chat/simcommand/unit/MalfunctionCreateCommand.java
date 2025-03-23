@@ -16,13 +16,13 @@ import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.malfunction.MalfunctionConfig;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.MalfunctionMeta;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 
 /**
  * Command to create a malfunction in a Malfunctionable.

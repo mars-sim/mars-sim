@@ -8,6 +8,10 @@ package com.mars_sim.core.person.ai.job;
 
 import java.util.Iterator;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.AstronomicalObservation;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -16,10 +20,6 @@ import com.mars_sim.core.person.ai.job.util.Job;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.AstronomicalObservation;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 /**
  * The Astronomer class represents a job for an astronomer.

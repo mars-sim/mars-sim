@@ -9,13 +9,13 @@ package com.mars_sim.core.vehicle.task;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.function.Computation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;

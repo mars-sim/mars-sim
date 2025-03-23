@@ -54,6 +54,7 @@ import javax.swing.text.JTextComponent;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.logging.SimLogger;
@@ -63,7 +64,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;

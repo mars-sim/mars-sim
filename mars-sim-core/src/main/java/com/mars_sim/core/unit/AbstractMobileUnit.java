@@ -8,6 +8,7 @@ package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
@@ -18,7 +19,6 @@ import com.mars_sim.core.mission.Construction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**

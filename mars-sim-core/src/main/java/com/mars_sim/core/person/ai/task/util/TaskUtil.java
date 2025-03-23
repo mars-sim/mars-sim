@@ -8,6 +8,11 @@ package com.mars_sim.core.person.ai.task.util;
 
 import java.util.Iterator;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LifeSupport;
+import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -24,11 +29,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.core.structure.building.function.RoboticStation;
 
 /**
  * Utility class for task related function.

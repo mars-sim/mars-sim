@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -28,7 +29,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;

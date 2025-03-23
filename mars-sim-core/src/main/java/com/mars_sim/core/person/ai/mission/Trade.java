@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.CommerceUtil;
@@ -31,7 +32,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;

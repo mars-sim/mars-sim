@@ -15,9 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.SalvageProcess;
-import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

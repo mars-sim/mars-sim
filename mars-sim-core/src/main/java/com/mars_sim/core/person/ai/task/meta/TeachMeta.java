@@ -9,6 +9,8 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.Collection;
 import java.util.List;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Teach;
@@ -18,8 +20,6 @@ import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.tool.Msg;
 
 /**

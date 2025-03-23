@@ -14,10 +14,10 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodation;
 
 /**
  * Command to display bed allocation in a Settlement

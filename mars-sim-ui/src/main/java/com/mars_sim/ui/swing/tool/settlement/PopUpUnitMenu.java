@@ -31,8 +31,8 @@ import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.tool.Conversion;

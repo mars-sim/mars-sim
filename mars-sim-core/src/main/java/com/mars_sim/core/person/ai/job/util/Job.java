@@ -12,6 +12,9 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -20,9 +23,6 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.Research;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 

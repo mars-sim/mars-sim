@@ -9,6 +9,11 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.Administration;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
@@ -28,11 +33,6 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.ObjectiveUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.Administration;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.Management;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

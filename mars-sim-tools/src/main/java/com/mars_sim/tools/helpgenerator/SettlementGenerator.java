@@ -13,10 +13,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.structure.SettlementTemplate;
-import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.tools.helpgenerator.HelpContext.ItemQuantity;
 
 public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {

@@ -12,11 +12,11 @@ import java.util.List;
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.cooking.CookedMeal;
+import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.cooking.CookedMeal;
-import com.mars_sim.core.structure.building.function.cooking.Cooking;
 
 /**
  * Command to display cooked meals in a Settlement

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -22,7 +23,6 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.structure.building.utility.power.PowerSourceType;
 import com.mars_sim.core.tool.Conversion;
 
 /** 

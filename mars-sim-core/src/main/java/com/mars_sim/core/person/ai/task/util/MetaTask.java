@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
@@ -23,7 +24,6 @@ import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;

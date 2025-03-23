@@ -12,19 +12,19 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LifeSupport;
+import com.mars_sim.core.building.function.LivingAccommodation;
+import com.mars_sim.core.building.function.RoboticStation;
+import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.ai.task.BotTaskManager;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.core.structure.building.function.LivingAccommodation;
-import com.mars_sim.core.structure.building.function.RoboticStation;
-import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 

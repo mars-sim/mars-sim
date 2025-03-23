@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -25,8 +27,6 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;

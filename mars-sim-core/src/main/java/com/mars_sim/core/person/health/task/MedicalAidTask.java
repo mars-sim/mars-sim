@@ -6,14 +6,14 @@
  */
 package com.mars_sim.core.person.health.task;
 
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.MedicalCare;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.SickBay;
 import com.mars_sim.core.vehicle.Vehicle;

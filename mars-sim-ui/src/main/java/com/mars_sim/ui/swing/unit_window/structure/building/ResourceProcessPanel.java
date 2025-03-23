@@ -26,10 +26,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcess.ProcessState;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;

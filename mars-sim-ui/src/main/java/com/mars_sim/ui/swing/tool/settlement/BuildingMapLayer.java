@@ -19,14 +19,14 @@ import java.util.Set;
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.connection.BuildingConnector;
+import com.mars_sim.core.building.connection.Hatch;
+import com.mars_sim.core.building.function.ActivitySpot;
+import com.mars_sim.core.building.function.Function;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.connection.BuildingConnector;
-import com.mars_sim.core.structure.building.connection.Hatch;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
-import com.mars_sim.core.structure.building.function.Function;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 

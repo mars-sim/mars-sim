@@ -1,10 +1,10 @@
 package com.mars_sim.core.unit;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**

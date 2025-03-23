@@ -8,6 +8,8 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.ClassicAirlock;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -21,8 +23,6 @@ import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.structure.AirlockType;
 import com.mars_sim.core.structure.AirlockZone;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.ClassicAirlock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;

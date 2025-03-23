@@ -16,15 +16,15 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.ResourceProcessing;
+import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.WaterUseType;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.ResourceProcessing;
-import com.mars_sim.core.structure.building.function.farming.Farming;
 
 public class ResourceCommand extends AbstractSettlementCommand {
 	private static final String PROJECTED_DAILY_CONSUMED = "Projected daily consumed";

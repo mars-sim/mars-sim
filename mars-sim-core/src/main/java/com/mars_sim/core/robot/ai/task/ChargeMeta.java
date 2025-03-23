@@ -6,11 +6,11 @@
  */
 package com.mars_sim.core.robot.ai.task;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

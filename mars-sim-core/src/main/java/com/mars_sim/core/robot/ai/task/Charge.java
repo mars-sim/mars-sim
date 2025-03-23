@@ -9,14 +9,14 @@ package com.mars_sim.core.robot.ai.task;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;

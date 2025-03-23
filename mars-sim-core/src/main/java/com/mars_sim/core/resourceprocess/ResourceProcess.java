@@ -8,10 +8,10 @@ package com.mars_sim.core.resourceprocess;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;

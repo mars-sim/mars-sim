@@ -30,6 +30,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.mars_sim.core.building.function.FoodProduction;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
@@ -38,7 +39,6 @@ import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.function.FoodProduction;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

@@ -11,13 +11,13 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitIdentifer;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.function.ActivitySpot;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
-import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.unit.MobileUnit;
 
 public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, MobileUnit {

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -21,7 +22,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;

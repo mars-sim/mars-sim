@@ -14,9 +14,9 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

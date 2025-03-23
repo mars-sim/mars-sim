@@ -2,16 +2,16 @@ package com.mars_sim.core.structure.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class DigLocalTest extends AbstractMarsSimUnitTest {
     public void testCreateRegolithTask() {

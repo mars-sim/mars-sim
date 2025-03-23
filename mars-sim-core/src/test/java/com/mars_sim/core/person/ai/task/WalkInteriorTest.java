@@ -8,13 +8,13 @@
 package com.mars_sim.core.person.ai.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.connection.BuildingConnector;
+import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.connection.BuildingConnector;
-import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 
 /**
  * A unit test suite for the WalkInterior task class.

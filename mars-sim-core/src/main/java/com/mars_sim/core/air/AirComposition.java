@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 
 /**

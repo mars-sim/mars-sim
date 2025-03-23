@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -19,7 +20,6 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
 
 /**

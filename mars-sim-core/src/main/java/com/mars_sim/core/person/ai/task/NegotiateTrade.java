@@ -9,6 +9,8 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Map;
 
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.logging.SimLogger;
@@ -22,8 +24,6 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 

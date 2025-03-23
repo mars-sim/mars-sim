@@ -10,9 +10,9 @@ package com.mars_sim.core.person.ai.fav;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import com.mars_sim.core.structure.building.function.cooking.HotMeal;
-import com.mars_sim.core.structure.building.function.cooking.MealConfig;
-import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
+import com.mars_sim.core.building.function.cooking.HotMeal;
+import com.mars_sim.core.building.function.cooking.MealConfig;
+import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class Favorite implements Serializable {

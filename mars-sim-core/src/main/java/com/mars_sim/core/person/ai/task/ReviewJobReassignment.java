@@ -10,6 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.Administration;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -22,10 +26,6 @@ import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.Administration;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

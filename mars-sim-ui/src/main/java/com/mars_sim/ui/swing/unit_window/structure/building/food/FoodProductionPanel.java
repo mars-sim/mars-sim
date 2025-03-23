@@ -20,11 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 

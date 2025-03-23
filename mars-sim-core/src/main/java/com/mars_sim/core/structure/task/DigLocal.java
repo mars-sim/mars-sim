@@ -14,6 +14,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -32,9 +35,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 

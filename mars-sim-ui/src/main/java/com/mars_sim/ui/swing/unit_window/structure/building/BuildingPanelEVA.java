@@ -20,10 +20,10 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.mars_sim.core.building.function.ClassicAirlock;
+import com.mars_sim.core.building.function.EVA;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
-import com.mars_sim.core.structure.building.function.ClassicAirlock;
-import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;

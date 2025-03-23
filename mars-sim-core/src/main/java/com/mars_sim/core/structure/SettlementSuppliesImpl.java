@@ -9,9 +9,9 @@ package com.mars_sim.core.structure;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.building.BuildingTemplate;
 
 /**
  * Immutable implementation of a Settlemetn Supplies

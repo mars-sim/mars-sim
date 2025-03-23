@@ -1,13 +1,13 @@
 package com.mars_sim.core.science.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class RespondToStudyInvitationTest extends AbstractMarsSimUnitTest {
 

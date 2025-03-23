@@ -8,6 +8,8 @@ package com.mars_sim.core.science.task;
 
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -19,8 +21,6 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;

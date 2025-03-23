@@ -9,7 +9,7 @@ package com.mars_sim.core.manufacture;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.structure.building.function.Manufacture;
+import com.mars_sim.core.building.function.Manufacture;
 
 /**
  * A manufacturing process.

@@ -2,6 +2,9 @@ package com.mars_sim.core.person.ai.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.EVA;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -13,9 +16,6 @@ import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.task.MarsSimContext;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.EVA;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
 
 public class EVAOperationTest extends AbstractMarsSimUnitTest{

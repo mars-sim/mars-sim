@@ -8,10 +8,10 @@
 package com.mars_sim.core.equipment;
 
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
