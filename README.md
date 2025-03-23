@@ -1,14 +1,13 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.8.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.8.0)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/latest?style=flat-square
+)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
-[![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/latest/total?style=flat-square&label=Latest%20Downloads&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.mars-sim%3Amars-sim&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.mars-sim%3Amars-sim)
-[![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
-[![SF Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg?label=sf%20download&style=flat-square)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 
 
 # mars-sim 
