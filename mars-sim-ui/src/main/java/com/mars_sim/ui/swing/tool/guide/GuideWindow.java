@@ -64,7 +64,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/** The view port for the text pane. */
 	private JViewport viewPort;
 	
-	private Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
+	private static Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
 
 	
 	private JButton homeButton = new JButton(homeIcon);
@@ -169,7 +169,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
         urlLabel = new JLabel();
         urlLabel.setFont(new Font("Times New Roman", Font.ITALIC, 10));
-//        urlLabel.setForeground(Color.DARK_GRAY);
 		statusBar.addCenterComponent(urlLabel, false);
 
         return statusBar;
