@@ -122,7 +122,6 @@ public class MarsProject {
 		logger.config("List of input args : " + s);
 		
 		SimulationBuilder builder = new SimulationBuilder();
-		builder.printJavaVersion();
 		
 		checkOptions(builder, args);
 

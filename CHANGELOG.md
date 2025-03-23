@@ -6,6 +6,19 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
+## Version 3.10.0 (Q3 2025)
+
+### A. CORE ENGINE IMPROVEMENTS :
+-
+
+### B. UI IMPROVEMENT :
+-
+
+### C. FIXES :
+-
+
+------------------------------------------|---------------------
+
 ## Version 3.9.0 (March 2025)
 
 ### A. CORE ENGINE IMPROVEMENTS :

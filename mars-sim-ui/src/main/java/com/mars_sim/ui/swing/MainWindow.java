@@ -759,6 +759,14 @@ public class MainWindow
 	 * @param helpPage
 	 */
 	public HelpLibrary getHelp() {
+		if (helpLibrary == null) {
+			try {
+				helpLibrary = HelpLibrary.createDefault(sim.getConfig());
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, "Problem loading help library", e);
+			}
+		}
+
 		return helpLibrary;
 	}
 
@@ -768,11 +776,9 @@ public class MainWindow
 	 */
 	public void showHelp(String helpPage) {
 		try {
-			if (helpLibrary == null) {
-				helpLibrary = HelpLibrary.createDefault(sim.getConfig());
-			}
+			var library = getHelp();
 
-			var  helpURI = helpLibrary.getPage(helpPage);	
+			var  helpURI = library.getPage(helpPage);	
 			if (useExternalBrowser) {
 				Desktop.getDesktop().browse(helpURI);
 			}
