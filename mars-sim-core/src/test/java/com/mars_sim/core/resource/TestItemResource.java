@@ -26,7 +26,6 @@ public class TestItemResource extends TestCase {
         SimulationConfig.instance().loadConfig();
 
         // initialize
-       	ResourceUtil.getInstance();
         resources = ItemResourceUtil.getItemResources();
         GoodType type = GoodType.TOOL;
         

@@ -78,7 +78,6 @@ public class ParameterCategoryTest extends TestCase {
                                     ScienceParameters.INSTANCE.getRange().size());
 
         SimulationConfig.instance().loadConfig();
-        ResourceUtil.getInstance();
         MetaTaskUtil.initializeMetaTasks();
         assertEquals("Science values", MetaTaskUtil.getAllMetaTasks().size(),
                                     TaskParameters.INSTANCE.getRange().size());

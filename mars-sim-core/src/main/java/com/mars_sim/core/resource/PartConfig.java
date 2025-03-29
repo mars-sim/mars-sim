@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.resource;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,35 +32,28 @@ import com.mars_sim.core.vehicle.VehicleType;
  * Provides configuration information about parts. Uses a DOM document to get
  * the information.
  */
-public final class PartConfig implements Serializable {
+public final class PartConfig  {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	// May add back private static SimLogger logger = SimLogger.getLogger(PartConfig.class.getName())
-	
 	// Element names
-	public static final String PART = "part";
-	public static final String DESCRIPTION = "description";
-	public static final String NAME = "name";
-	public static final String TYPE = "type";
-	public static final String MASS = "mass";
-	public static final String STORABLE = "storable";
-	public static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
-	public static final String ENTITY = "entity";
-	public static final String PROBABILITY = "probability";
-	public static final String MAX_NUMBER = "max-number";
+	private static final String PART = "part";
+	private static final String DESCRIPTION = "description";
+	private static final String NAME = "name";
+	private static final String TYPE = "type";
+	private static final String MASS = "mass";
+	private static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
+	private static final String ENTITY = "entity";
+	private static final String PROBABILITY = "probability";
+	private static final String MAX_NUMBER = "max-number";
 
 	/** The next global part ID. */
 	private int nextID;
 	
 	/** The set of parts. */
-	private transient Set<Part> partSet;
+	private Set<Part> partSet;
 	/** The map of maintenance scopes. */
-	private transient Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
+	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
 	/** The collection of standard scopes. */
-	private transient Set<String> STANDARD_SCOPES = new TreeSet<>();
+	private Set<String> standarsScopes = new TreeSet<>();
 	
 	/**
 	 * Constructor.
@@ -74,13 +66,15 @@ public final class PartConfig implements Serializable {
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
 		loadItemResources(itemResourceDoc);
+
+		ItemResourceUtil.registerParts(partSet);
 	}
 
 	/**
 	 * The collection of standard scopes.
 	 */
 	public Set<String> getScopes() {
-		return STANDARD_SCOPES;	 
+		return standarsScopes;	 
 	}
 	
 	
@@ -89,37 +83,37 @@ public final class PartConfig implements Serializable {
 	 */
 	private void createStandardScope() {
 		for (VehicleType type: VehicleType.values()) {
-			if (!STANDARD_SCOPES.contains(type.getName()))
-				STANDARD_SCOPES.add(type.getName());
+			if (!standarsScopes.contains(type.getName()))
+				standarsScopes.add(type.getName());
 		}
 		
 		for (SystemType type: SystemType.values()) {
-			if (!STANDARD_SCOPES.contains(type.getName()))
-				STANDARD_SCOPES.add(type.getName());
+			if (!standarsScopes.contains(type.getName()))
+				standarsScopes.add(type.getName());
 		}
 		
 		for (FunctionType type: FunctionType.values()) {
-			if (!STANDARD_SCOPES.contains(type.getName()))
-				STANDARD_SCOPES.add(type.getName());
+			if (!standarsScopes.contains(type.getName()))
+				standarsScopes.add(type.getName());
 		}
 		
 		for (PowerSourceType type: PowerSourceType.values()) {
-			if (!STANDARD_SCOPES.contains(type.getName()))
-				STANDARD_SCOPES.add(type.getName());
+			if (!standarsScopes.contains(type.getName()))
+				standarsScopes.add(type.getName());
 		}
 		
 		for (HeatSourceType type: HeatSourceType.values()) {
-			if (!STANDARD_SCOPES.contains(type.getName()))
-				STANDARD_SCOPES.add(type.getName());
+			if (!standarsScopes.contains(type.getName()))
+				standarsScopes.add(type.getName());
 		}
 	}
 	
 	public void addScopes(Set<String> newScopes) {
-		STANDARD_SCOPES.addAll(newScopes);
+		standarsScopes.addAll(newScopes);
 	}
 	
 	public void addScopes(String newScope) {
-		STANDARD_SCOPES.add(newScope);
+		standarsScopes.add(newScope);
 	}
 	
 	/**
@@ -172,18 +166,7 @@ public final class PartConfig implements Serializable {
 						"PartConfig detected invalid type in parts.xml : " + type);
 
 			// Get storable
-			
-//			String storableString = partElement.getAttributeValue(STORABLE);
-//			boolean isStorable = Boolean.parseBoolean(storableString);
-			
-			Part p = null;
-			
-//			if (isStorable) {
-//				p = new StorableItem(name, nextID, description, goodType, mass, 1);
-//			}
-//			else {
-				p = new Part(name, nextID, description, goodType, mass, 1);
-//			}
+			Part p = new Part(name, nextID, description, goodType, mass, 1);
 
 			for (Part pp: newPartSet) {
 				if (pp.getName().equalsIgnoreCase(name))
@@ -198,7 +181,7 @@ public final class PartConfig implements Serializable {
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
 					boolean validName = false;
-					for (String s: STANDARD_SCOPES) {
+					for (String s: standarsScopes) {
 						if (s.equalsIgnoreCase(entityName) ) {
 							validName = true;
 							double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
@@ -210,7 +193,6 @@ public final class PartConfig implements Serializable {
 					}
 					
 					if (!validName) {
-//						logger.severe(entityName + " is not being clear defined in mars-sim.");
 						throw new IllegalArgumentException(entityName + " is not being clearly defined in mars-sim.");
 					}	
 				}
@@ -218,14 +200,11 @@ public final class PartConfig implements Serializable {
 			
 
 			// Add part to newPartSet.
-			newPartSet.add(p);
-//			partSet.add(p);
-			
+			newPartSet.add(p);			
 		}
 		
 		// Assign the partSet now built
-		partSet = Collections.unmodifiableSet(newPartSet);
-		
+		partSet = Collections.unmodifiableSet(newPartSet);	
 	}
 
 	/**
@@ -278,4 +257,14 @@ public final class PartConfig implements Serializable {
 	public Set<Part> getPartSet() {
 		return partSet;
 	}
+
+	/**
+	 * Find a part by name
+	 * @param name
+	 * @return
+	 */
+    public Part getPartByName(String name) {
+		return partSet.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst()
+		.orElse(null);
+    }
 }

@@ -27,7 +27,6 @@ public class TestGoods extends TestCase {
     protected void setUp() throws Exception {
         SimulationConfig config = SimulationConfig.instance();
         config.loadConfig();
-        ResourceUtil.getInstance();   
         
         // Don't need a full GoodsManager initialisation
         GoodsManager.initializeInstances(config, null, null);

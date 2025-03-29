@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.resource;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,15 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.logging.SimLogger;
 
-public class ResourceUtil implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class ResourceUtil {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
@@ -264,32 +259,22 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource rockSamplesAR;
 	public static AmountResource sandAR;
 
-	//private static AmountResource[] ARs = new AmountResource[33];
-
-	/**
-	 * Creates the singleton instance.
-	 */
-	private static ResourceUtil INSTANCE = new ResourceUtil();
-
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @param instance the singleton instance.
-	 */
-	public static ResourceUtil getInstance() {
-		return INSTANCE;
-	}
-
 	/**
 	 * Default Constructor for ResoureUtil.
 	 */
 	private ResourceUtil() {
-		resources = SimulationConfig.instance().getResourceConfiguration().getAmountResources();
-		createItemResourceUtil();
+	}
+
+	/**
+	 * Register the known Amunt Resources in the helper
+	 * @param defined
+	 */
+	public static void registerResources(Set<AmountResource> defined) {
+		resources = defined;
+		mapInstances();
 		createLifeSupportResources();
 		createEssentialResources();
 	}
-
 
 	/**
 	 * Creates a set of life support resources.
@@ -360,35 +345,9 @@ public class ResourceUtil implements Serializable {
 	}
 	
 	/**
-	 * Starts ItemResourceUtil.
-	 */
-	public void createItemResourceUtil() {
-		new ItemResourceUtil();
-	}
-
-	/**
-	 * Sets the singleton instance.
-	 *
-	 * @param instance the singleton instance.
-	 */
-	public static void setInstance(ResourceUtil instance) {
-		ResourceUtil.INSTANCE = instance;
-	}
-
-	/**
-	 * Recreates the Amount Resource instances in all map.
-	 */
-	public void initializeInstances() {
-		// Create maps
-		createMaps();
-		// Map the static instances
-		mapInstances();
-	}
-
-	/**
 	 * Creates maps of amount resources.
 	 */
-	public static synchronized void createMaps() {
+	private static synchronized void createMaps() {
 		if (amountResourceMap == null) {
 			sortedResources = new ArrayList<>(resources);
 			Collections.sort(sortedResources);

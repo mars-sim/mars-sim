@@ -73,7 +73,6 @@ import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.person.health.MedicalManager;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.science.ScientificStudyUtil;
@@ -85,6 +84,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.SystemDateTime;
 import com.mars_sim.core.tool.CheckSerializedSize;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.Rover;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
@@ -303,9 +303,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initializes instance for the maven test.
 	 */
 	public void testRun() {
-		
-		ResourceUtil.getInstance().initializeInstances();
-		
+				
 		simulationConfig = SimulationConfig.instance();
 		
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
@@ -369,7 +367,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 
-
+		//Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
@@ -399,8 +397,6 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private void initializeIntransientData(int timeRatio) {
 
-		// Initialize resources
-		ResourceUtil.getInstance().initializeInstances();
 
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
@@ -466,6 +462,7 @@ public class Simulation implements ClockListener, Serializable {
 		lunarColonyManager.addInitColonies();
 		
 		// Initialize Unit
+		//Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
@@ -551,8 +548,6 @@ public class Simulation implements ClockListener, Serializable {
 	 *  Recreates a few instances after loading from a saved sim.
 	 */
 	public void recreateSomeInstances(int userTimeRatio) {
-		// Initialize resources
-		ResourceUtil.getInstance().initializeInstances();
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		// Clock is always first
@@ -570,9 +565,6 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation sim = instance();
 		
 		simulationConfig = SimulationConfig.instance();
-	
-		// Re-initialize the resources for the saved sim
-		ResourceUtil.getInstance().initializeInstances();
 
 		// Gets config file instances
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
@@ -596,6 +588,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		
 		// Re-initialize units prior to starting the unit manager
+		//Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
@@ -1085,7 +1078,6 @@ public class Simulation implements ClockListener, Serializable {
       	StringBuilder sb = new StringBuilder();
 
 		List<Serializable> list = Arrays.asList(
-				ResourceUtil.getInstance(),
 				malfunctionFactory,
 				orbitInfo,
 				weather,

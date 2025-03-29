@@ -36,8 +36,8 @@ public class AmountResourceConfig {
 	private static int nextID = ResourceUtil.FIRST_AMOUNT_RESOURCE_ID;
 
 	// Data members.
-	private transient Set<AmountResource> resourceSet = new TreeSet<>();
-	private transient Set<Integer> tissueCultureSet = new TreeSet<>();
+	private Set<AmountResource> resourceSet = new TreeSet<>();
+	private Set<Integer> tissueCultureSet = new TreeSet<>();
 
 	/**
 	 * Constructor
@@ -47,6 +47,7 @@ public class AmountResourceConfig {
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
 		loadAmountResources(amountResourceDoc);
+		ResourceUtil.registerResources(resourceSet);
 	}
 
 	/**
@@ -83,7 +84,7 @@ public class AmountResourceConfig {
 			double demand = 0;
 			String demandString = resourceElement.getAttributeValue(DEMAND);
 			if (demandString != null)
-			demand = Double.parseDouble(demandString);
+				demand = Double.parseDouble(demandString);
 			
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
@@ -136,9 +137,5 @@ public class AmountResourceConfig {
 
 	public Set<Integer> getTissueCultures() {
 		return tissueCultureSet;
-	}
-
-	public int getNextID() {
-		return nextID;
 	}
 }
