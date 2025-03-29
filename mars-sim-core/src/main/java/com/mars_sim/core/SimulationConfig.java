@@ -13,8 +13,6 @@ import java.time.format.DateTimeFormatter;
 
 import javax.xml.XMLConstants;
 
-import com.mars_sim.core.structure.SettlementTemplateConfig;
-import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -43,6 +41,7 @@ import com.mars_sim.core.resourceprocess.ResourceProcessConfig;
 import com.mars_sim.core.robot.RobotConfig;
 import com.mars_sim.core.science.ScienceConfig;
 import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.ResourceCache;
 import com.mars_sim.core.vehicle.VehicleConfig;
@@ -104,8 +103,7 @@ public class SimulationConfig {
 	private static final String EVA_LIGHT = "min-eva-light";
 	private static final String CONTENT_URL = "content-url";
 
-	private static final String OLD_BACKUP = "backup";
-
+	private static SimulationConfig instance = null;
 
 	private String marsStartDate = null;
 	private String earthStartDate = null;
@@ -120,7 +118,6 @@ public class SimulationConfig {
 	private int numberOfAutoSaves = 0;
 	private int averageTransitTime = 0;
 	private int unusedCores = 0;	
-	private boolean loaded = false;
 	
 	/*
 	 * -----------------------------------------------------------------------------
@@ -163,28 +160,33 @@ public class SimulationConfig {
 
 	/** hidden constructor. */
 	private SimulationConfig(String xmlLoc) {
+		logger.info("Loading simulation configuration from " + xmlLoc);
 		cachedResources = new ResourceCache(new File(xmlLoc), true);
+
+		readConfig();
 	}
 
 	/**
-	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
-	 * Note: as soon as the instance() method is called the first time, the class is
-	 * loaded into memory and an instance gets created. Advantage: it supports
-	 * multiple threads calling instance() simultaneously with no synchronized
-	 * keyword needed (which slows down the VM)
+	 * Load a new instance of the simulation configuration for the default XML files.
+	 * @return
 	 */
-	private static class SingletonHelper {
-		private static final SimulationConfig INSTANCE = new SimulationConfig(SimulationRuntime.getXMLDir());
+	public static SimulationConfig loadConfig() {
+		if (instance == null) {
+			instance = new SimulationConfig(SimulationRuntime.getXMLDir());
+		}
+		return instance;
 	}
 
 	/**
-	 * Gets a Bill Pugh Singleton instance of the SimulationConfig.
+	 * Gets the previously loaded config
 	 *
 	 * @return SimulationConfig instance
 	 */
 	public static SimulationConfig instance() {
-		// NOTE: SimulationConfig.instance() is accessible on any threads or by any threads
-		return SingletonHelper.INSTANCE;
+		if (instance == null) {
+			throw new IllegalStateException("SimulationConfig has not been loaded.");
+		}
+		return instance;
 	}
 
 	/**
@@ -192,19 +194,9 @@ public class SimulationConfig {
 	 *
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
-	public void loadConfig() {
-		if (loaded) {
-			return;
-		}
-		
-		try {
-			// Remove legacy backupDIR
-			var backupDir = new File(SimulationRuntime.getDataDir(), OLD_BACKUP);
-			if (backupDir.exists()) {
-				logger.info("Deleting legacy backup directory");
-				FileUtils.deleteDirectory(backupDir); 
-			}
+	private void readConfig() {
 
+		try {
 			// Load simulation document
 			Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 
@@ -236,22 +228,10 @@ public class SimulationConfig {
 
 			loadDefaultConfiguration();
 
-			loaded = true;
-
 		} catch (RuntimeException | JDOMException | IOException rte) {
           	logger.severe("Cannot load default config : " + rte.getMessage(), rte);
 			throw new IllegalStateException("Cannot load the configurations", rte);
 		}
-	}
-
-	/**
-	 * Reloads the configurations from the XML files including
-	 * re-checking the XML versions.
-	 * Should need to be used if the files have changed as Config
-	 * objects should be immutable.
-	 */
-	public void reloadConfig() {
-		loadConfig();
 	}
 
 	/**
@@ -660,21 +640,20 @@ public class SimulationConfig {
 		}
 	}
 
-
 	/**
 	 * load the default config files
 	 * @throws IOException
 	 * @throws JDOMException
 	 */
 	private void loadDefaultConfiguration() throws JDOMException, IOException {
-  BuildingPackageConfig buildingPackageConfig;
 
 		// Load subset configuration classes.
 		raFactory = new AuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
-		PartPackageConfig partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
-		buildingPackageConfig = new BuildingPackageConfig(parseXMLFileAsJDOMDocument(BUILDING_PACKAGE_FILE, true));
+		PartPackageConfig partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true),
+																	partConfig);
+		BuildingPackageConfig buildingPackageConfig = new BuildingPackageConfig(parseXMLFileAsJDOMDocument(BUILDING_PACKAGE_FILE, true));
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
 		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
 		landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
@@ -689,7 +668,7 @@ public class SimulationConfig {
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true));
 		settlementTemplateConfig = new SettlementTemplateConfig(parseXMLFileAsJDOMDocument(
 				SETTLEMENT_TEMPLATE_FILE, true), partPackageConfig, buildingPackageConfig,
-				resupplyConfig, settlementConfig, raFactory);
+				resupplyConfig, this);
 
 
 		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
@@ -698,7 +677,5 @@ public class SimulationConfig {
 						cropConfig, personConfig);
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 		scienceConfig = new ScienceConfig();
-
-		logger.config("Done loading all xml config files.");
 	}
 }

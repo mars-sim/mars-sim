@@ -27,7 +27,7 @@ public class TreatmentGenerator extends TypeGenerator<Treatment> {
      */
     @Override
     protected List<Treatment> getEntities() {
-        return getParent().getConfig().getMedicalConfiguration().getTreatmentsByLevel(20)
+        return getConfig().getMedicalConfiguration().getTreatmentsByLevel(20)
                     .stream()
 		 			.sorted(Comparator.comparing(Treatment::getName))
 					.toList();

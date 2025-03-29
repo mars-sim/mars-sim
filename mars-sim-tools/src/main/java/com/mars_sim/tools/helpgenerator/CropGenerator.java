@@ -30,7 +30,7 @@ public class CropGenerator extends TypeGenerator<CropSpec> {
      * @return sorted list of crops
      */
     protected List<CropSpec> getEntities() {
-        return getParent().getConfig().getCropConfiguration().getCropTypes()
+        return getConfig().getCropConfiguration().getCropTypes()
                             .stream()
                             .sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
                             .toList();

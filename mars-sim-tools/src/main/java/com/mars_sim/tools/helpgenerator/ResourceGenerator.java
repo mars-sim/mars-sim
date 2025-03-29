@@ -41,7 +41,7 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
 	private ResourceUse getFoodUsageByName(String name) {
 		if (foodProductionUse == null) {
 			foodProductionUse = new HashMap<>();
-			for (var m: getParent().getConfig().getFoodProductionConfiguration().getProcessList()) {
+			for (var m: getConfig().getFoodProductionConfiguration().getProcessList()) {
 				for (var r: m.getInputList()) {
 					foodProductionUse.computeIfAbsent(r.getName().toLowerCase(),
                                 k -> HelpContext.buildEmptyResourceUse()).asInput().add(m);
@@ -77,7 +77,7 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
         scope.put("foodOutput", foodUse.asOutput());   
         
         if (r.getGoodType() == GoodType.CROP) {
-            var cropSpec = getParent().getConfig().getCropConfiguration().getCropTypeByName(r.getName());
+            var cropSpec = getConfig().getCropConfiguration().getCropTypeByName(r.getName());
             if (cropSpec != null) {
                 scope.put("cropspec", cropSpec.getName());
             }

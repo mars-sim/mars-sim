@@ -24,11 +24,10 @@ public class TestGoods extends TestCase {
 		super();
 	}
 
+	@Override
     protected void setUp() throws Exception {
-        SimulationConfig config = SimulationConfig.instance();
-        config.loadConfig();
-        ResourceUtil.getInstance();   
-        
+        SimulationConfig config = SimulationConfig.loadConfig();
+  
         // Don't need a full GoodsManager initialisation
         GoodsManager.initializeInstances(config, null, null);
 

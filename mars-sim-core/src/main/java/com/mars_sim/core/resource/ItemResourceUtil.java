@@ -7,27 +7,20 @@
 
 package com.mars_sim.core.resource;
 
-import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 
-public class ItemResourceUtil implements Serializable {
+public class ItemResourceUtil {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ItemResourceUtil.class.getName());
@@ -62,10 +55,6 @@ public class ItemResourceUtil implements Serializable {
 	private static Map<String, Part> itemResourceMap;
 	private static Map<Integer, Part> itemResourceIDMap;
 	private static Set<Part> partSet;
-	private static List<Part> sortedParts;
-
-	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
-	private static ManufactureConfig manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 	
 	public static Set<Integer> evaSuitPartIDs;
 
@@ -75,8 +64,15 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * Constructor.
 	 */
-	public ItemResourceUtil() {
-		partSet = getItemResources();
+	private ItemResourceUtil() {
+	}
+
+	/**
+	 * Register the parts of the simulation.
+	 * @param parts
+	 */
+	public static void registerParts(Set<Part> parts) {
+		partSet = parts;
 		createMaps();
 		createIDs();
 	}
@@ -100,8 +96,7 @@ public class ItemResourceUtil implements Serializable {
 
 			ManufactureProcessInfo manufactureProcessInfo = null;
 			
-			if (manufactureConfig == null)
-				manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
+			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
@@ -136,7 +131,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * Prepares the id's of a few item resources.
 	 */
-	public static void createIDs() {
+	private static void createIDs() {
 
 		// Create item ids reference
 		garmentID = findIDbyItemResourceName(GARMENT);
@@ -179,15 +174,13 @@ public class ItemResourceUtil implements Serializable {
 	 */
 	private static void createMaps() {
 		itemResourceMap = new HashMap<>();
-		sortedParts = new CopyOnWriteArrayList<>(partSet);
-		Collections.sort(sortedParts);
 
-		for (Part p : sortedParts) {
+		for (Part p : partSet) {
 			itemResourceMap.put(p.getName().toLowerCase(), p);
 		}
 
 		itemResourceIDMap = new HashMap<>();
-		for (Part p : sortedParts) {
+		for (Part p : partSet) {
 			itemResourceIDMap.put(p.getID(), p);
 		}
 	}
@@ -237,22 +230,7 @@ public class ItemResourceUtil implements Serializable {
 	 * @return
 	 */
 	public static Set<Part> getItemResources() {
-		if (partConfig == null)
-			partConfig = SimulationConfig.instance().getPartConfiguration();
-		if (partSet == null)
-			partSet = Collections.unmodifiableSet(partConfig.getPartSet());
 		return partSet;
-	}
-
-	/**
-	 * Gets a list of sorted parts.
-	 *
-	 * @return
-	 */
-	public static List<Part> getSortedParts() {
-		sortedParts = new CopyOnWriteArrayList<>(partSet);
-		Collections.sort(sortedParts);
-		return sortedParts;
 	}
 
 	/**

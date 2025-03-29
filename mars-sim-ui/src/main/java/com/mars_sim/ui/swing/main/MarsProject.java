@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -77,8 +76,6 @@ public class MarsProject {
 
 	private Simulation sim;
 
-	private SimulationConfig simulationConfig = SimulationConfig.instance();
-
 	private String simFile;
 
 	/**
@@ -144,7 +141,7 @@ public class MarsProject {
 			}
 
 			// Preload the Config
-			simulationConfig.loadConfig();
+			SimulationConfig.loadConfig();
 			
 			if (useSiteEditor) {
 				logger.config("Start the Scenario Editor...");
@@ -183,9 +180,6 @@ public class MarsProject {
 						
 						builder.startSocietySim();
 
-						// Start the wait layer
-//						InteractiveTerm.startLayer();
-
 						// Start beryx console
 						startConsoleThread();
 						
@@ -200,9 +194,6 @@ public class MarsProject {
 
 			// Build and run the simulator
 			sim = builder.start();
-
-			// Start the wait layer
-//			InteractiveTerm.startLayer();
 
 			// Start beryx console
 			startConsoleThread();
@@ -252,15 +243,7 @@ public class MarsProject {
 		
 		DefaultParser commandline = new DefaultParser();
 		try {
-			Properties defaults = new Properties();
-			File defaultFile = new File(SimulationRuntime.getDataDir(), "default.props");
-			if (defaultFile.exists()) {
-				try (InputStream defaultInput = new FileInputStream(defaultFile)) {
-					defaults.load(defaultInput);
-				} catch (IOException e) {
-					logger.warning("Problem reading default.props " + e.getMessage());
-				}
-			}
+			Properties defaults = readDefaults();
 			CommandLine line = commandline.parse(options, args, defaults);
 
 			builder.parseCommandLine(line);
@@ -272,15 +255,10 @@ public class MarsProject {
 			if (line.hasOption(DISPLAY_HELP)) {
 				usage("See available options below", options);
 			}
-			if (line.hasOption(NOGUI)) {
-				useGUI = false;
-			}
-			if (line.hasOption(NEW)) {
-				useNew = true;
-			}
-			if (line.hasOption(CLEANUI)) {
-				useCleanUI = true;
-			}
+			useGUI = !line.hasOption(NOGUI);
+			useNew = line.hasOption(NEW);
+			useCleanUI = line.hasOption(CLEANUI);
+			
 			if (line.hasOption(LOAD_ARG)) {
 				simFile = line.getOptionValue(LOAD_ARG);
 				if (simFile == null) {
@@ -290,19 +268,30 @@ public class MarsProject {
 					simFile = Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION;
 				}
 			}
-			if (line.hasOption(SITE_EDITOR)) {
-				useSiteEditor = true;
-			}
-			if (line.hasOption(PROFILE)) {
-				useProfile = true;
-			}
-			if (line.hasOption(SANDBOX)) {
-				isSandbox = true;
-			}
+			
+			useSiteEditor = line.hasOption(SITE_EDITOR);
+			useProfile = line.hasOption(PROFILE);
+			isSandbox = line.hasOption(SANDBOX);
 		}
 		catch (ParseException e) {
 			usage("Problem with arguments: " + e.getMessage(), options);
 		}
+	}
+
+	/**
+	 * Reads the default properties file.
+	 */
+	private Properties readDefaults() {
+		var props = new Properties();
+		File defaultFile = new File(SimulationRuntime.getDataDir(), "default.props");
+		if (defaultFile.exists()) {
+			try (InputStream defaultInput = new FileInputStream(defaultFile)) {
+				props.load(defaultInput);
+			} catch (IOException e) {
+				logger.warning("Problem reading default.props " + e.getMessage());
+			}
+		}
+		return props;
 	}
 
 	/**
@@ -325,7 +314,7 @@ public class MarsProject {
 
 		Scenario scenario = editor.getScenario();
 		if (scenario != null) {
-			builder.setScenario(scenario);
+			builder.setScenarioName(scenario.getName());
 		}
 	}
 
@@ -440,7 +429,7 @@ public class MarsProject {
 	 *
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+	public static void main(String[] args) throws IOException {
 		// Note: Read the logging configuration from the classloader to make it webstart compatible
 		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
 

@@ -12,11 +12,11 @@ public class TestAmountResourceTypeStorage extends TestCase {
     private static final String OXYGEN = ResourceUtil.OXYGEN;
 
     @Override
-    public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+    public void setUp() {
+        SimulationConfig.loadConfig();
     }
 
-    public void testInventoryAmountResourceTypeCapacityGood() throws Exception {
+    public void testInventoryAmountResourceTypeCapacityGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -24,14 +24,14 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount resource type capacity set correctly.", 100D, amountCO2, 0D);
     }
 
-    public void testInventoryAmountResourceTypeCapacityNotSet() throws Exception {
+    public void testInventoryAmountResourceTypeCapacityNotSet() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         double amountCO2 = storage.getAmountResourceTypeCapacity(carbonDioxide);
         assertEquals("Amount resource type capacity set correctly.", 0D, amountCO2, 0D);
     }
 
-    public void testInventoryAmountResourceTypeCapacityNegativeCapacity() throws Exception {
+    public void testInventoryAmountResourceTypeCapacityNegativeCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         try {
@@ -74,7 +74,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals(0D, amountCarbonDioxide4);
     }
 
-    public void testInventoryAmountResourceTypeStoreGood() throws Exception {
+    public void testInventoryAmountResourceTypeStoreGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -83,7 +83,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount resource type stored is correct.", 100D, amountTypeStored, 0D);
     }
 
-    public void testInventoryAmountResourceTypeStoreOverload() throws Exception {
+    public void testInventoryAmountResourceTypeStoreOverload() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -94,7 +94,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
-    public void testInventoryAmountResourceTypeStoreNegativeAmount() throws Exception {
+    public void testInventoryAmountResourceTypeStoreNegativeAmount() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -105,7 +105,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
-    public void testInventoryAmountResourceTypeStoreNoCapacity() throws Exception {
+    public void testInventoryAmountResourceTypeStoreNoCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         try {
@@ -115,7 +115,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
-    public void testInventoryAmountResourceTypeRemainingCapacityGood() throws Exception {
+    public void testInventoryAmountResourceTypeRemainingCapacityGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -124,14 +124,14 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
     }
 
-    public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() throws Exception {
+    public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
         assertEquals("Amount type capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
     }
 
-    public void testInventoryAmountResourceTypeRetrieveGood() throws Exception {
+    public void testInventoryAmountResourceTypeRetrieveGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -141,7 +141,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
     }
 
-    public void testInventoryAmountResourceTypeRetrieveTooMuch() throws Exception {
+    public void testInventoryAmountResourceTypeRetrieveTooMuch() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
             AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
@@ -153,7 +153,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
-    public void testInventoryAmountResourceTypeRetrieveNegative() throws Exception {
+    public void testInventoryAmountResourceTypeRetrieveNegative() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
             AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
@@ -165,7 +165,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
-    public void testInventoryAmountResourceTypeRetrieveNoCapacity() throws Exception {
+    public void testInventoryAmountResourceTypeRetrieveNoCapacity() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
             AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
@@ -175,7 +175,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
-    public void testInventoryAmountResourceTypeTotalAmount() throws Exception {
+    public void testInventoryAmountResourceTypeTotalAmount() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         AmountResource oxygen = ResourceUtil.findAmountResource(OXYGEN);
@@ -187,7 +187,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
     }
 
-    public void testInventoryAmountResourceTypeAllStored() throws Exception {
+    public void testInventoryAmountResourceTypeAllStored() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         AmountResource oxygen = ResourceUtil.findAmountResource(OXYGEN);

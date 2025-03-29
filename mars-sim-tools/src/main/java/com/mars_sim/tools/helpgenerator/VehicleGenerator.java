@@ -29,7 +29,7 @@ public class VehicleGenerator extends TypeGenerator<VehicleSpec> {
      * Get a list of all the vehicle specifications configured.
      */
     protected List<VehicleSpec> getEntities() {
-        return getParent().getConfig().getVehicleConfiguration().getVehicleSpecs().stream()
+        return getConfig().getVehicleConfiguration().getVehicleSpecs().stream()
 		 							.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 									 .toList();
     }

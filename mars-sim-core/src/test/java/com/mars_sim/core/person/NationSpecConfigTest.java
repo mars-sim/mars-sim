@@ -3,6 +3,7 @@ package com.mars_sim.core.person;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.tool.RandomUtil;
 
 import junit.framework.TestCase;
@@ -13,7 +14,8 @@ public class NationSpecConfigTest extends TestCase {
     
     @Override
     public void setUp() {
-        config = new NationSpecConfig();
+        var simConfig = SimulationConfig.loadConfig();
+        config = new NationSpecConfig(simConfig);
     }
 
     public void testGenerateName() {

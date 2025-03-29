@@ -48,7 +48,7 @@ class ProcessGenerator extends TypeGenerator<ProcessInfo> {
      */
     @Override
     protected List<ProcessInfo> getEntities() {
-		var manuConfig = getParent().getConfig().getManufactureConfiguration();
+		var manuConfig = getConfig().getManufactureConfiguration();
         return Stream.concat(manuConfig.getManufactureProcessList().stream(),
                                 manuConfig.getSalvageInfoList().stream())
 		 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))

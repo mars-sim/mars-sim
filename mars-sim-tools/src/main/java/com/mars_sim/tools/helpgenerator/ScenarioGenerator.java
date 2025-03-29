@@ -25,7 +25,7 @@ public class ScenarioGenerator extends TypeGenerator<Scenario> {
      * Get a list of all the predefined Crew configured.
      */
     protected List<Scenario> getEntities() {
-        var config = new ScenarioConfig();
+        var config = new ScenarioConfig(getConfig());
         return config.getKnownItems()
                             .stream()
                             .filter(Scenario::isBundled)

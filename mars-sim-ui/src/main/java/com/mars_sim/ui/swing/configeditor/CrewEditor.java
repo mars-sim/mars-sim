@@ -38,13 +38,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Member;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.tool.Conversion;
@@ -76,7 +76,7 @@ public class CrewEditor implements ActionListener {
 		 * 
 		 * @return
 		 */
-		MemberPanel(int i, CrewEditor parent) {
+		MemberPanel(int i) {
 			displayPanel = Box.createVerticalBox();
 
 			// Name 
@@ -190,8 +190,6 @@ public class CrewEditor implements ActionListener {
 								"Invalid Name Format",
 								JOptionPane.ERROR_MESSAGE);
 				
-				// Disable Start;
-				// event.consume();
 				nametf.requestFocus();
 				return false;
 			}
@@ -341,7 +339,7 @@ public class CrewEditor implements ActionListener {
 	private static final String FEMALE = "Female";
 		
 	private static final int PANEL_WIDTH = 180;
-	private static final int WIDTH = (int)(PANEL_WIDTH * 4);
+	private static final int WIDTH = (PANEL_WIDTH * 4);
 	private static final int HEIGHT = 512;
 
 	private static final String[] QUADRANT_A = {"<html><b>E</b>xtravert",
@@ -375,8 +373,7 @@ public class CrewEditor implements ActionListener {
 	 */
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor,
 					  UserConfigurableConfig<Crew> config,
-					  AuthorityFactory raFactory,
-					  PersonConfig pc) {
+					  AuthorityFactory raFactory) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 		this.raFactory = raFactory;
@@ -397,7 +394,7 @@ public class CrewEditor implements ActionListener {
 			mp = crewPanels.get(i);
 		}
 		else {
-			mp = new MemberPanel(i, this);
+			mp = new MemberPanel(i);
 			crewPanels.add(mp);
 			scrollPane.add(mp.displayPanel);
 		}
@@ -415,11 +412,12 @@ public class CrewEditor implements ActionListener {
 	 */
 	private void createGUI(UserConfigurableConfig<Crew> crewConfig) {
 	
-		f = new JDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
+		f = new JDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true);
 		f.setIconImage(MainWindow.getIconImage());
 		f.setResizable(true);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		f.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent ev) {
 				simulationConfigEditor.setCrewEditorOpen(false);
 				f.dispose();
@@ -481,11 +479,11 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent evt) {
 
-		String cmd = (String) evt.getActionCommand();
+		String cmd = evt.getActionCommand();
 		switch (cmd) {
 		
 		case ADD_MEMBER:
-			MemberPanel newPanel = new MemberPanel(crewPanels.size(), this);
+			MemberPanel newPanel = new MemberPanel(crewPanels.size());
 			crewPanels.add(newPanel);
 			scrollPane.add(newPanel.displayPanel);
 			break;
@@ -584,8 +582,9 @@ public class CrewEditor implements ActionListener {
 			return "J";
 		case 7:	
 			return "P";
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -609,7 +608,7 @@ public class CrewEditor implements ActionListener {
 	 */
 	private static DefaultComboBoxModel<String> setUpJobCBModel() {
 
-		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
 		for (JobType jt : JobType.values()) {
 			if (jt != JobType.POLITICIAN) {
 				m.addElement(jt.getName());
@@ -656,7 +655,7 @@ public class CrewEditor implements ActionListener {
 
 		if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
 			// Load all known countries
-			NationSpecConfig nameConfig = new NationSpecConfig();
+			NationSpecConfig nameConfig = new NationSpecConfig(SimulationConfig.instance());
 			model.addAll(nameConfig.getItemNames());			
 		}
 		else {

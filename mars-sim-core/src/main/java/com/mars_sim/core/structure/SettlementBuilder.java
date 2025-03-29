@@ -85,7 +85,7 @@ public final class SettlementBuilder {
 		this.settlementTemplateConfig = simConfig.getSettlementTemplateConfiguration();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
-		this.namingSpecs = new NationSpecConfig();
+		this.namingSpecs = new NationSpecConfig(simConfig);
 	}
 
 	/**

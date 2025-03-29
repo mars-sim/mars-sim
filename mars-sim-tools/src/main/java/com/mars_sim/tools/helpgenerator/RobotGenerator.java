@@ -57,7 +57,7 @@ public class RobotGenerator extends TypeGenerator<RobotSpec> {
      */
     @Override
     protected List<RobotSpec> getEntities() {
-        return getParent().getConfig().getRobotConfiguration().getRobotSpecs()
+        return getConfig().getRobotConfiguration().getRobotSpecs()
                     .stream()
                     .sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
                     .toList();

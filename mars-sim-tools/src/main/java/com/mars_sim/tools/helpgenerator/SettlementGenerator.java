@@ -36,7 +36,7 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
      */
     protected List<SettlementTemplate> getEntities() {
 
-        return getParent().getConfig().getSettlementTemplateConfiguration().getKnownItems()
+        return getConfig().getSettlementTemplateConfiguration().getKnownItems()
                             .stream()
                             .filter(SettlementTemplate::isBundled)
 		 					.sorted(Comparator.comparing(SettlementTemplate::getName))

@@ -80,7 +80,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	terminal = term.getTerminal();
 
     	// Get Country list from known PersonConfig
-        NationSpecConfig nameConfig = new NationSpecConfig();
+        NationSpecConfig nameConfig = new NationSpecConfig(config);
     	countryList = new ArrayList<>(nameConfig.getItemNames());
     	Collections.sort(countryList);
 

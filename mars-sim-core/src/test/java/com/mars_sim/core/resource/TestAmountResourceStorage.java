@@ -20,7 +20,7 @@ public class TestAmountResourceStorage extends TestCase {
 	
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+        SimulationConfig.loadConfig();
         Simulation.instance().testRun();
         settlement = new MockSettlement();
     }

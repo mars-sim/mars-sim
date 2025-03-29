@@ -29,10 +29,9 @@ extends TestCase {
 	private Settlement settlement;
 	
 	@Override
-    public void setUp() throws Exception {
+    public void setUp() {
 		// Create new simulation instance.
-        SimulationConfig simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+        SimulationConfig.loadConfig();
         
         Simulation sim = Simulation.instance();
         sim.testRun();
@@ -47,7 +46,7 @@ extends TestCase {
 	/*
 	 * Tests container associated settlement assignment.
 	 */
-	public void testAssociatedSettlement() throws Exception {
+	public void testAssociatedSettlement() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 	
 		Settlement as = c.getAssociatedSettlement();
@@ -57,7 +56,7 @@ extends TestCase {
 	/*
 	 * Tests container with a single resource.
 	 */
-	public void testSingleResource() throws Exception {
+	public void testSingleResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.rockSamplesID;
@@ -82,7 +81,7 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
-	public void testTwoResource() throws Exception {
+	public void testTwoResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.rockSamplesID;
@@ -104,7 +103,7 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
-	public void testEmptying() throws Exception {
+	public void testEmptying() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.rockSamplesID;
@@ -132,7 +131,7 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
-	public void testNoneReusable() throws Exception {
+	public void testNoneReusable() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int secondResource = ResourceUtil.iceID;
@@ -150,7 +149,7 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
-	public void testReusable() throws Exception {
+	public void testReusable() {
 		GenericContainer c = new GenericContainer("Specimen", EquipmentType.SPECIMEN_BOX, true, settlement);
 		
 		int secondResource = ResourceUtil.iceID;
@@ -169,7 +168,7 @@ extends TestCase {
 	/*
 	 * Tests container with Liquids & Solids.
 	 */
-	public void testBarrelLiquid() throws Exception {
+	public void testBarrelLiquid() {
 		EquipmentType cType = EquipmentType.BARREL;
 		GenericContainer c = new GenericContainer(cType.getName(), cType, true, settlement);
 
@@ -195,22 +194,22 @@ extends TestCase {
 	/*
 	 * Test container with Gas.
 	 */
-	public void testCanisterGas() throws Exception {
+	public void testCanisterGas() {
 		assertPhaseSupported(EquipmentType.GAS_CANISTER, PhaseType.GAS);
 	}
 	
 	/*
 	 * Test container with Solids.
 	 */
-	public void testLargeBagSolid() throws Exception {
+	public void testLargeBagSolid() {
 		assertPhaseSupported(EquipmentType.LARGE_BAG, PhaseType.SOLID);
 	}
 	
-	public void testBoxSolid() throws Exception {
+	public void testBoxSolid() {
 		assertPhaseSupported(EquipmentType.SPECIMEN_BOX, PhaseType.SOLID);
 	}
 	
-	public void testBagSolid() throws Exception {
+	public void testBagSolid() {
 		assertPhaseSupported(EquipmentType.BAG, PhaseType.SOLID);
 	}
 	

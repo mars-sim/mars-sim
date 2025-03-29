@@ -23,9 +23,8 @@ public class TestSVGMapUtil extends TestCase {
     private SimulationConfig config;
 
     @Override
-    public void setUp() throws Exception {
-    	config = SimulationConfig.instance();
-        config.loadConfig();
+    public void setUp() {
+    	config = SimulationConfig.loadConfig();
     }
 
     /**

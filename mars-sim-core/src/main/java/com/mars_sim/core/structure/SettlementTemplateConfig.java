@@ -1,5 +1,6 @@
 package com.mars_sim.core.structure;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.building.BuildingPackageConfig;
@@ -80,21 +81,21 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
      * Constructor.
      *
      * @param settlementDoc     DOM document with settlement configuration.
-     * @param partPackageConfig the part package configuration.
-     * @param settlementConfig
+     * @param resupplyConfig 
+     * @param buildingPackageConfig 
+     * @param partPackageConfig
+     * @param config          simulation configuration.
      */
-    public SettlementTemplateConfig(Document settlementDoc,
-                                    PartPackageConfig partPackageConfig,
-                                    BuildingPackageConfig buildingPackageConfig,
-                                    ResupplyConfig resupplyConfig, SettlementConfig settlementConfig,
-                                    AuthorityFactory authorityConfig) {
+    public SettlementTemplateConfig(Document settlementDoc, PartPackageConfig partPackageConfig,
+                                            BuildingPackageConfig buildingPackageConfig,
+                                            ResupplyConfig resupplyConfig, SimulationConfig config) {
         super("settlement");
         this.partPackageConfig = partPackageConfig;
         this.buildingPackageConfig = buildingPackageConfig;
         this.resupplyConfig = resupplyConfig;
-        this.settlementConfig = settlementConfig;
-        this.authorityConfig = authorityConfig;
-        setXSDName("settlement.xsd");
+        this.settlementConfig = config.getSettlementConfiguration();
+        this.authorityConfig = config.getReportingAuthorityFactory();
+        setXSDName("settlement.xsd", config);
 
         loadDefaults(loadSettlementTemplates(settlementDoc));
 

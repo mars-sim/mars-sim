@@ -23,7 +23,7 @@ public class AuthorityGenerator extends TypeGenerator<Authority> {
 
     @Override
     protected List<Authority> getEntities() {
-        var factory = getParent().getConfig().getReportingAuthorityFactory();
+        var factory = getConfig().getReportingAuthorityFactory();
 
         return factory.getKnownItems().stream()
                     .filter(a -> a.isBundled())

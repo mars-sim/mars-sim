@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import com.github.mustachejava.Mustache;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.tools.helpgenerator.GenericsGrouper.NamedGroup;
@@ -116,6 +117,10 @@ public abstract class TypeGenerator<T> {
         return parent;
     }
 
+    protected SimulationConfig getConfig() {
+        return parent.getConfig();
+    }
+    
     /**
 	 * Creates an index page for a set of named entities.
 	 * 

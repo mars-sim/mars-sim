@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.LifeSupportInterface;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
@@ -27,13 +28,13 @@ public class CircadianClock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Sleep Habit Map resolution. */
-	private static double SLEEP_INFLATION = 1.15;
+	private static final double SLEEP_INFLATION = 1.15;
 
 	/** Sleep Habit Map resolution. */
-	private static int SLEEP_MAP_RESOLUTION = 20;
+	private static final int SLEEP_MAP_RESOLUTION = 20;
 
 	/** Sleep Habit maximum value. */
-	private static int SLEEP_MAX_FACTOR = 100;
+	private static final int SLEEP_MAX_FACTOR = 100;
 
 	private boolean awake = true;
 
@@ -157,8 +158,13 @@ public class CircadianClock implements Serializable {
 	 * @param person
 	 */
 	private void modifyThresholds(Person person) {
+		var pc = SimulationConfig.instance().getPersonConfig();
+
+		var averageHeight = pc.getDefaultPhysicalChars().getAverageHeight();
+		var averageWeight = pc.getDefaultPhysicalChars().getAverageWeight();
+
 		double dev = Math.sqrt(
-				person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
+				person.getBaseMass() / averageWeight * person.getHeight() / averageHeight); 
 
 		// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
 		// and higher when you're fat.
@@ -166,19 +172,11 @@ public class CircadianClock implements Serializable {
 
 		// But many obese people have built up a resistance to the appetite-suppressing
 		// effects of leptin.
-		// TODO: how to code this resistance ?
 
 		// Ghrelin levels have been found to increase in children with anorexia nervosa
 		// and decrease in children who are obese.
 		if (person.getAge() <= 21)
 			ghrelinThreshold /= dev;
-
-		// LogConsolidated.log(logger, Level.INFO, 2000, sourceName, person
-		// + " LL " + Math.round(leptin_level*10.0)/10.0
-		// + " GL " + Math.round(ghrelin_level*10.0)/10.0
-		// + " LT " + Math.round(leptin_threshold*10.0)/10.0
-		// + " GT " + Math.round(ghrelin_threshold*10.0)/10.0
-		// , null);
 	}
 	
 
@@ -386,13 +384,6 @@ public class CircadianClock implements Serializable {
 			ghrelinLevel = ghrelinThreshold;
 		else
 			ghrelinLevel += time * ghrelinThreshold / 500.0;
-	}
-	
-	private void increaseLeptinBounded(double time) {
-		if (leptinThreshold + .01 * time >= 1000D)
-			leptinThreshold = 1000D;
-		else
-			leptinThreshold += .01 * time;
 	}
 	
 	private void decreaseLeptinBounded(double time) {
@@ -631,15 +622,4 @@ public class CircadianClock implements Serializable {
 		}
 		return time;
 	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		// condition = null;
-		sleepCycleMap.clear();
-		sleepCycleMap = null;
-
-	}
-
 }

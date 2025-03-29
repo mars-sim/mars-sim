@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Maps;
@@ -24,17 +25,17 @@ class FoodProductionConfigTest {
     private static final String [] PACKAGE_ALTERNATIVES = {
                     "Carrot", "Leaves", "Swiss Chard", "Potato"
     };
+    private FoodProductionConfig foodConfig;
 
-
-    private FoodProductionConfig getFoodConfig() {
-        var config = SimulationConfig.instance();
-        config.reloadConfig();
-        return config.getFoodProductionConfiguration();
+    @BeforeEach
+    void setUp() {
+        var config = SimulationConfig.loadConfig();
+        foodConfig = config.getFoodProductionConfiguration();
     }
 
     @Test
     void testProcessesLoaded() {
-        var manuProcesses = getFoodConfig().getProcessList();
+        var manuProcesses = foodConfig.getProcessList();
         assertTrue("Food processes defined", !manuProcesses.isEmpty());
     }
 
@@ -42,7 +43,7 @@ class FoodProductionConfigTest {
     void testPackageFood() {
         // Build mapped key on process name
         var processByName =
-                    Maps.uniqueIndex(getFoodConfig().getProcessList(),
+                    Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get(PACKAGE_FOOD);
         assertNotNull("Food processes defined", process);
@@ -66,7 +67,7 @@ class FoodProductionConfigTest {
     void testMakeSoybean() {
         // Build mapped key on process name
         var processByName =
-                    Maps.uniqueIndex(getFoodConfig().getProcessList(),
+                    Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get("Process Soybean into Soy Flour");
         assertNotNull("Food processes defined", process);

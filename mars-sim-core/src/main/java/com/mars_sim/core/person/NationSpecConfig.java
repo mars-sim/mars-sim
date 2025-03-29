@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
@@ -21,27 +23,27 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
  */
 public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
 
-	private static final String COUNTRY_XSD = "country.xsd";
-	
-	private static final String COUNTRY = "country";
+    private static final String COUNTRY_XSD = "country.xsd";
+    
+    private static final String COUNTRY = "country";
 
-	private static final String ECONOMICS_DATA = "economics-data";
+    private static final String ECONOMICS_DATA = "economics-data";
 
-	private static final String LAST_NAME_LIST = "last-name-list";
-	private static final String FIRST_NAME_LIST = "first-name-list";	
-	private static final String MALE = "male";
-	private static final String FEMALE = "female";
-	private static final String LAST_NAME = "last-name";
-	private static final String FIRST_NAME = "first-name";
-	private static final String GENDER = "gender";
+    private static final String LAST_NAME_LIST = "last-name-list";
+    private static final String FIRST_NAME_LIST = "first-name-list";	
+    private static final String MALE = "male";
+    private static final String FEMALE = "female";
+    private static final String LAST_NAME = "last-name";
+    private static final String FIRST_NAME = "first-name";
+    private static final String GENDER = "gender";
     private static final String NAME = "name";
     private static final String VALUE = "value";
     private static final String POPULATION_CHARS = "characteristics";
 
     // Note: each of the predefined country below has a xml file
     private static final String[] COUNTRIES = {
-    					"Austria",  "Belgium", "Brazil", 
-    					"Canada", "China", "Czech Republic",
+                        "Austria",  "Belgium", "Brazil", 
+                        "Canada", "China", "Czech Republic",
                         "Denmark", "Estonia", "Finland", "France", 
                         "Germany", "Greece",
                         "Hungary", "India", "Ireland", "Italy", 
@@ -55,12 +57,12 @@ public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
                         "United Kingdom", "United States"};
 
 
-	private static List<Nation> nations = new ArrayList<>();
-	
-    public NationSpecConfig() {
+    private static List<Nation> nations = new ArrayList<>();
+    
+    public NationSpecConfig(SimulationConfig config) {
         super(COUNTRY);
 
-        setXSDName(COUNTRY_XSD);
+        setXSDName(COUNTRY_XSD, config);
 
         for (String name: COUNTRIES) {
         	Nation nation = new Nation(name);

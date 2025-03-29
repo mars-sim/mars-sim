@@ -25,11 +25,12 @@ import com.mars_sim.core.robot.RobotType;
 
 public class HelpGeneratorTest {
 
+    private SimulationConfig simconfig;
+    
     private HelpContext createGenerator() {
-        var config = SimulationConfig.instance();
-        config.loadConfig();
+        simconfig = SimulationConfig.loadConfig();
 
-        return new HelpContext(config, HelpContext.HTML_STYLE);
+        return new HelpContext(simconfig, HelpContext.HTML_STYLE);
     }
 
     private <T> Document createDoc(TypeGenerator<T> gen, T entity) throws IOException {
@@ -217,7 +218,7 @@ public class HelpGeneratorTest {
         var context = createGenerator();
         
         // Has both inputs and outputs
-        var spec = (new ScenarioConfig()).getItem("Default");
+        var spec = (new ScenarioConfig(simconfig)).getItem("Default");
 
         var vg = new ScenarioGenerator(context);
         var content = createDoc(vg, spec);

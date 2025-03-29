@@ -34,7 +34,7 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
      */
     @Override
     protected void addEntityProperties(BuildingSpec r, Map<String,Object> scope) {
-        var stage = getParent().getConfig().getConstructionConfiguration()
+        var stage = getConfig().getConstructionConfiguration()
                         .getConstructionStageInfoByName(r.getName());
         if (stage != null) {
             scope.put("construction", stage);
@@ -45,7 +45,7 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
      * Gets a list of all the building specifications configured.
      */
     protected List<BuildingSpec> getEntities() {
-        return getParent().getConfig().getBuildingConfiguration().getBuildingTypes()
+        return getConfig().getBuildingConfiguration().getBuildingTypes()
                             .stream()
 		 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 							.toList();

@@ -11,24 +11,24 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 	private static final String WATER = ResourceUtil.WATER;
 	
     @Override
-    public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+    public void setUp() {
+        SimulationConfig.loadConfig();
     }
 	
-	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
+	public void testInventoryAmountResourcePhaseCapacityGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		double amountGas = storage.getAmountResourcePhaseCapacity(PhaseType.GAS);
 		assertEquals("Amount resource phase capacity set correctly.", 100D, amountGas, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseCapacityNotSet() throws Exception {
+	public void testInventoryAmountResourcePhaseCapacityNotSet() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		double amountGas = storage.getAmountResourcePhaseCapacity(PhaseType.GAS);
 		assertEquals("Amount resource phase capacity set correctly.", 0D, amountGas, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
+	public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		try {
 			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
@@ -37,7 +37,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
+	public void testInventoryAmountResourcePhaseStoreGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
@@ -46,7 +46,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
+	public void testInventoryAmountResourcePhaseStoreOverload() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
@@ -57,7 +57,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseStoreNegativeAmount() throws Exception {
+	public void testInventoryAmountResourcePhaseStoreNegativeAmount() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
@@ -68,7 +68,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseStoreNoCapacity() throws Exception {
+	public void testInventoryAmountResourcePhaseStoreNoCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
 		try {
@@ -78,7 +78,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseTypeGood() throws Exception {
+	public void testInventoryAmountResourcePhaseTypeGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
@@ -87,14 +87,14 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount phase stored is of correct type.", hydrogen, resource);
 	}
 	
-	public void testInventoryAmountResourcePhaseTypeNoResource() throws Exception {
+	public void testInventoryAmountResourcePhaseTypeNoResource() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource resource = storage.getAmountResourcePhaseType(PhaseType.GAS);
 		assertNull("Amount phase type stored is null.", resource);
 	}
 	
-	public void testInventoryAmountResourcePhaseRemainingCapacityGood() throws Exception {
+	public void testInventoryAmountResourcePhaseRemainingCapacityGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
@@ -103,13 +103,13 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount phase capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseRemainingCapacityNoCapacity() throws Exception {
+	public void testInventoryAmountResourcePhaseRemainingCapacityNoCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		double remainingCapacity = storage.getAmountResourcePhaseRemainingCapacity(PhaseType.GAS);
 		assertEquals("Amount phase capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseRetrieveGood() throws Exception {
+	public void testInventoryAmountResourcePhaseRetrieveGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
@@ -119,7 +119,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount phase capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseRetrieveTooMuch() throws Exception {
+	public void testInventoryAmountResourcePhaseRetrieveTooMuch() {
 		try {
 			AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
@@ -131,7 +131,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseRetrieveNegative() throws Exception {
+	public void testInventoryAmountResourcePhaseRetrieveNegative() {
 		try {
 			AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
@@ -143,7 +143,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseRetrieveNoCapacity() throws Exception {
+	public void testInventoryAmountResourcePhaseRetrieveNoCapacity() {
 		try {
 			AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 			storage.retrieveAmountResourcePhase(PhaseType.GAS, 100D);
@@ -152,7 +152,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testInventoryAmountResourcePhaseTotalAmount() throws Exception {
+	public void testInventoryAmountResourcePhaseTotalAmount() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		storage.addAmountResourcePhaseCapacity(PhaseType.LIQUID, 100D);

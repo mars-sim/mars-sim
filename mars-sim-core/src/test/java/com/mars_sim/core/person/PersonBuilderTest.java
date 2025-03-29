@@ -29,7 +29,7 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
 
     public void testOptional() {
         var home = buildSettlement();
-        NationSpecConfig nsc = new NationSpecConfig();
+        NationSpecConfig nsc = new NationSpecConfig(getConfig());
         var country = nsc.getItem(TEST_COUNTRY);
 
         AuthorityFactory af = simConfig.getReportingAuthorityFactory();

@@ -17,7 +17,6 @@ import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
@@ -343,7 +342,7 @@ public class VehicleSpec implements Serializable {
 		this.crewSize = crewSize;
 	
 		// Get estimated total crew weight
-		this.estimatedTotalCrewWeight = crewSize * Person.getAverageWeight();
+		this.estimatedTotalCrewWeight = crewSize * 68.5D;
 	}
 	
 	/**

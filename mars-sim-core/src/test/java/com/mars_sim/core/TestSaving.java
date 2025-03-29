@@ -31,8 +31,7 @@ public class TestSaving extends TestCase implements SimulationListener {
     @Override
     public void setUp() throws Exception {
 		// Create new simulation instance.
-        simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+        simConfig = SimulationConfig.loadConfig();
     }
 
     public void testSaving() throws IOException {
@@ -42,7 +41,7 @@ public class TestSaving extends TestCase implements SimulationListener {
 
         // Build a realistic simulation with entities to save
         SettlementBuilder builder = new SettlementBuilder(sim, simConfig);
-        ScenarioConfig config = new ScenarioConfig();
+        ScenarioConfig config = new ScenarioConfig(simConfig);
         Scenario bootstrap = config.getItem("Single Settlement");
         builder.createInitialSettlements(bootstrap);
         
