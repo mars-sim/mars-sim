@@ -81,9 +81,9 @@ public class Rover extends GroundVehicle implements Crewable,
 	private static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/** The ratio of the amount of oxygen inhaled to the amount of carbon dioxide expelled. */
-	private static final double GAS_RATIO;
+	private static double gasRatio;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi) */
-	private static final double MIN_O2_PRESSURE;
+	private static double minO2Pressure;
 
 	private static Range tempRange;
 	
@@ -129,13 +129,19 @@ public class Rover extends GroundVehicle implements Crewable,
 	/** The light utility vehicle currently docked at the rover. */
 	private LightUtilityVehicle luv;
 
-	static {
+	/**
+	 * Setup the various internal flags
+	 * @param simulationConfig
+	 */
+	public static void initializeInstances(SimulationConfig simulationConfig) {
 		double o2Consumed = simulationConfig.getPersonConfig().getHighO2ConsumptionRate();
 		double cO2Expelled = simulationConfig.getPersonConfig().getCO2ExpelledRate();
-		GAS_RATIO = cO2Expelled/o2Consumed;
+		gasRatio = cO2Expelled/o2Consumed;
 		
-		MIN_O2_PRESSURE = simulationConfig.getPersonConfig().getMinSuitO2Pressure();
+		minO2Pressure = simulationConfig.getPersonConfig().getMinSuitO2Pressure();
 		tempRange = simulationConfig.getSettlementConfiguration().getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
+	
+		Vehicle.initializeInstances(simulationConfig);
 	}
 	
 	/**
@@ -161,8 +167,8 @@ public class Rover extends GroundVehicle implements Crewable,
 		oxygenCapacity = spec.getCargoCapacity(ResourceUtil.oxygenID);
 
 		fullO2PartialPressure = Math.round(AirComposition.getOxygenPressure(oxygenCapacity, cabinAirVolume)*1_000.0)/1_000.0;
-		massO2MinimumLimit = Math.round(MIN_O2_PRESSURE / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
-		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * massO2MinimumLimit*10_000.0)/10_000.0;
+		massO2MinimumLimit = Math.round(minO2Pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
+		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / minO2Pressure * massO2MinimumLimit*10_000.0)/10_000.0;
 		
 		// Construct sick bay.
 		if (spec.hasSickbay()) {
@@ -466,7 +472,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 
 		double p = getAirPressure();
-		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
+		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minO2Pressure) {
 			logger.log(this, Level.WARNING, 60_000,
 					"Out-of-range O2 pressure at " + Math.round(p * 100.0D) / 100.0D
 					+ " kPa detected.");
@@ -532,19 +538,19 @@ public class Rover extends GroundVehicle implements Crewable,
 				v = getTowingVehicle();
 
 				lacking = v.retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-				v.storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
+				v.storeAmountResource(CO2_ID, gasRatio * (oxygenTaken - lacking));
 			}
 
 			else if (isInSettlement()) {
 				lacking = getSettlement().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-				getSettlement().storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
+				getSettlement().storeAmountResource(CO2_ID, gasRatio * (oxygenTaken - lacking));
 			}
 		}
 
 		else {
 
 			lacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-			storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
+			storeAmountResource(CO2_ID, gasRatio * (oxygenTaken - lacking));
 		}
 
 		return oxygenTaken - lacking;

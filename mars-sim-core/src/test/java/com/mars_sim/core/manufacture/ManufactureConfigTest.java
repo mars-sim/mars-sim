@@ -39,7 +39,7 @@ public class ManufactureConfigTest {
 
     private ManufactureConfig getManufactureConfig() {
         var config = SimulationConfig.instance();
-        config.reloadConfig();
+        config.loadConfig();
         return config.getManufactureConfiguration();
     }
 

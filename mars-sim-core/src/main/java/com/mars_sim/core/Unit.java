@@ -51,8 +51,6 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
 
-	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
-
 	protected static MasterClock masterClock;
 
 	protected static UnitManager unitManager;

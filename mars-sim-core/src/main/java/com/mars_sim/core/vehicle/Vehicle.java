@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -193,7 +194,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 	private LoadingController loadingController;
 	
-	static {
+	/**
+	 * Set up the internal flags for the vehicle.
+	 */
+	public static void initializeInstances(SimulationConfig simulationConfig) {
 		lifeSupportRangeErrorMargin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
 		fuelRangeErrorMargin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];

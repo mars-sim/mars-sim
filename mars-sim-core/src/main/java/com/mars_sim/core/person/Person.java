@@ -107,15 +107,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 	private static final String EARTHLING = "Earthling";
 
-	private static double averageWeight;
-	private static double averageHeight;
-
-	static {
-		var pc = SimulationConfig.instance().getPersonConfig();
-
-		averageHeight = pc.getDefaultPhysicalChars().getAverageHeight();
-		averageWeight = pc.getDefaultPhysicalChars().getAverageWeight();
-	}
 
 	// Transient data members
 	/** The extrovert score of a person. */
@@ -1966,13 +1957,4 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		skillManager.destroy();
 		skillManager = null;
 	}
-
-	public static double getAverageWeight() {
-		return averageWeight;
-	}
-
-    public static double getAverageHeight() {
-        return averageHeight;
-    }
-
 }

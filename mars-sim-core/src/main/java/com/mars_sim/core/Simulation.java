@@ -367,7 +367,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 
-		//Rover.initializeInstances(simulationConfig);
+		Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
@@ -462,7 +462,7 @@ public class Simulation implements ClockListener, Serializable {
 		lunarColonyManager.addInitColonies();
 		
 		// Initialize Unit
-		//Rover.initializeInstances(simulationConfig);
+		Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
@@ -588,7 +588,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		
 		// Re-initialize units prior to starting the unit manager
-		//Rover.initializeInstances(simulationConfig);
+		Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
