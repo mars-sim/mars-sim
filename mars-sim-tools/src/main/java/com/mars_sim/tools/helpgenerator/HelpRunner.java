@@ -40,8 +40,7 @@ public class HelpRunner {
      */
     public static void main(String[] args) {
         // Load config files
-        var config = SimulationConfig.instance();
-        config.loadConfig();
+        var config = SimulationConfig.loadConfig();
 
         // Setup commands
         Options options = new Options();

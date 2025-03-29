@@ -244,9 +244,7 @@ public class SimulationBuilder {
 		
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory
-		SimulationConfig simConfig = SimulationConfig.instance();
-		simConfig.loadConfig();
-		
+		SimulationConfig simConfig = SimulationConfig.loadConfig();
 		Simulation sim = Simulation.instance();
 			
 		boolean loaded = false;

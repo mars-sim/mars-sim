@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Maps;
@@ -35,17 +36,18 @@ public class ManufactureConfigTest {
         "Nitrospira SPP","Rhizobia","iron powder","copper","hydrogen"
     };
     private static final int FERTILIZER_INPUTS = 10;
+    private ManufactureConfig manuConfig;
 
 
-    private ManufactureConfig getManufactureConfig() {
-        var config = SimulationConfig.instance();
-        config.loadConfig();
-        return config.getManufactureConfiguration();
+    @BeforeEach
+    void setup() {
+        var config = SimulationConfig.loadConfig();
+        manuConfig = config.getManufactureConfiguration();
     }
 
     @Test
     void testProcessesLoaded() {
-        var conf = getManufactureConfig();
+        var conf = manuConfig;
         var manuProcesses = conf.getManufactureProcessList();
         assertTrue("Manufacturing processes defined", !manuProcesses.isEmpty());
 
@@ -70,7 +72,7 @@ public class ManufactureConfigTest {
     void testPlasticBottle() {
         // Build mapped key on process name
         var processByName =
-                    Maps.uniqueIndex(getManufactureConfig().getManufactureProcessList(),
+                    Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
         var fertilizerP = processByName.get(MAKE_FERTILIZERS);
         assertNotNull("Manufacturng processes defined", fertilizerP);
@@ -94,7 +96,7 @@ public class ManufactureConfigTest {
     void testMakeRadioAntenna() {
         // Build mapped key on process name
         var processByName =
-                    Maps.uniqueIndex(getManufactureConfig().getManufactureProcessList(),
+                    Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
         var process = processByName.get(MAKE_RADIO_ANTENNA);
         assertNotNull("Manufacturng processes defined", process);

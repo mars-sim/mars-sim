@@ -70,8 +70,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      * This tets is very tied to the building spec of LANDER_HAB
      */
     public void testInflatableGreenhouse() {
-	    var simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Inflatable Greenhouse");

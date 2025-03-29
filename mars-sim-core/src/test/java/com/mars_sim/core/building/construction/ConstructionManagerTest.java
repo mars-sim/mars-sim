@@ -26,7 +26,7 @@ public class ConstructionManagerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        SimulationConfig.instance().loadConfig();
+        SimulationConfig.loadConfig();
         Simulation.instance().testRun();
         
         Settlement settlement = new MockSettlement();

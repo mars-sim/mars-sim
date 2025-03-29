@@ -27,7 +27,7 @@ extends TestCase {
 	
 	@Override
     public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+        SimulationConfig.loadConfig();
         Simulation.instance().testRun();
         
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -35,14 +35,13 @@ extends TestCase {
 		// Create test settlement.
 		settlement = new MockSettlement();	
 		unitManager.addUnit(settlement);
-
     }
 
 
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoading() throws Exception {
+	public void testLoading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.co2ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
@@ -62,7 +61,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testOverloading() throws Exception {
+	public void testOverloading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.co2ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
@@ -77,7 +76,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testUnsupported() throws Exception {
+	public void testUnsupported() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.co2ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
@@ -96,7 +95,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testUnloading() throws Exception {
+	public void testUnloading()  {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.co2ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
@@ -119,7 +118,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testMultiples() throws Exception {
+	public void testMultiples()  {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.co2ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);

@@ -12,7 +12,6 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.ProcessParameters;
@@ -25,7 +24,6 @@ public class ParameterCategoryTest extends TestCase {
     private static final String DISPLAY_PREFIX = "Display_";
     private static final String ID_PREFIX = "key_";
 
-    @SuppressWarnings("serial")
 	class TestCategory extends ParameterCategory {
 
         public TestCategory() {
@@ -77,7 +75,7 @@ public class ParameterCategoryTest extends TestCase {
         assertEquals("Science values", ScienceType.values().length,
                                     ScienceParameters.INSTANCE.getRange().size());
 
-        SimulationConfig.instance().loadConfig();
+        SimulationConfig.loadConfig();
         MetaTaskUtil.initializeMetaTasks();
         assertEquals("Science values", MetaTaskUtil.getAllMetaTasks().size(),
                                     TaskParameters.INSTANCE.getRange().size());

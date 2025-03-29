@@ -55,8 +55,7 @@ extends TestCase {
 	@Override
     public void setUp() {
 
-        SimulationConfig config = SimulationConfig.instance();
-		config.loadConfig();
+        SimulationConfig config = SimulationConfig.loadConfig();
         Simulation.instance().testRun();
 
         unitManager = Simulation.instance().getUnitManager();

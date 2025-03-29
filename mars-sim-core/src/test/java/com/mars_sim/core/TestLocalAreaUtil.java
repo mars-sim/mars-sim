@@ -142,7 +142,7 @@ public class TestLocalAreaUtil extends TestCase {
 //     */
 //    public void testGetObjectRelativeLocation() {
 //        // Create new simulation instance.
-//        SimulationConfig.instance().loadConfig();
+//        SimulationConfig.loadConfig();
 //        Simulation.instance().testRun();
 //        
 //        // Clear out existing settlements in simulation.
@@ -212,8 +212,7 @@ public class TestLocalAreaUtil extends TestCase {
 	@Before
 	public void setUp() {
 	    // Create new simulation instance.
-        SimulationConfig simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+        SimulationConfig simConfig = SimulationConfig.loadConfig();
         
         Simulation sim = Simulation.instance();
         sim.testRun();

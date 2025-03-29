@@ -36,7 +36,7 @@ public class ConstructionStageTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        SimulationConfig.instance().loadConfig();
+        SimulationConfig.loadConfig();
         Simulation.instance().testRun();
 
         Part smallHammer = (Part) ItemResourceUtil.findItemResource(SMALL_HAMMER);

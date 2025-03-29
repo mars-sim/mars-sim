@@ -59,8 +59,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	@Before
 	public void setUp() {
 	    // Create new simulation instance.
-	    simConfig = SimulationConfig.instance();
-	    simConfig.loadConfig();
+	    simConfig = SimulationConfig.loadConfig();
 	    
 	    sim = Simulation.instance();
 	    sim.testRun();

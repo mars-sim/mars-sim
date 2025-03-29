@@ -22,8 +22,8 @@ public class TestItemResource extends TestCase {
     }
 
     @Override
-    public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+    public void setUp() {
+        SimulationConfig.loadConfig();
 
         // initialize
         resources = ItemResourceUtil.getItemResources();

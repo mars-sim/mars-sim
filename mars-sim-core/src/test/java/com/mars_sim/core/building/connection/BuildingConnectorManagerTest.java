@@ -27,8 +27,7 @@ public class BuildingConnectorManagerTest extends TestCase {
 	@Before
 	public void setUp() {
 	    // Create new simulation instance.
-        SimulationConfig simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+        SimulationConfig simConfig = SimulationConfig.loadConfig();
         
         Simulation sim = Simulation.instance();
         sim.testRun();

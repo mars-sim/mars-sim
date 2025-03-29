@@ -13,7 +13,7 @@
 //public class TestMalfunctionManager extends TestCase {
 //    @Override
 //    public void setUp() throws Exception {
-//        SimulationConfig.instance().loadConfig();
+//        SimulationConfig.loadConfig();
 //        Simulation.instance().testRun();
 //    }
 //

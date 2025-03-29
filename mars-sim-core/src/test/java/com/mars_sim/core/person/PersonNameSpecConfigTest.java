@@ -21,8 +21,7 @@ public class PersonNameSpecConfigTest extends TestCase {
     
     @Override
     public void setUp() {
-        var simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+        var simConfig = SimulationConfig.loadConfig();
         config = new NationSpecConfig(simConfig);
     }
 

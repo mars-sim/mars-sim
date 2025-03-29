@@ -18,8 +18,7 @@ class HelpLibraryTest {
     @Test
     void testCreateLibrary() throws IOException {
 		// Load config files
-		var config = SimulationConfig.instance();
-		config.loadConfig();
+		var config = SimulationConfig.loadConfig();
 
         File output = Files.createTempDirectory("generator").toFile();
         try {
@@ -40,8 +39,7 @@ class HelpLibraryTest {
     @Test
     void testChangedVersion() throws IOException {
 		// Load config files
-		var config = SimulationConfig.instance();
-		config.loadConfig();
+		var config = SimulationConfig.loadConfig();
 
         File output = Files.createTempDirectory("generator").toFile();
         try {

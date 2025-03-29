@@ -18,8 +18,7 @@ public class PersonConfigTest extends TestCase {
     private PersonConfig pc;
 
     public void setUp() {
-        SimulationConfig config = SimulationConfig.instance();
-        config.loadConfig();
+        SimulationConfig config = SimulationConfig.loadConfig();
         pc = config.getPersonConfig();
     }
     

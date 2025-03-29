@@ -31,8 +31,7 @@ public class TestSaving extends TestCase implements SimulationListener {
     @Override
     public void setUp() throws Exception {
 		// Create new simulation instance.
-        simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
+        simConfig = SimulationConfig.loadConfig();
     }
 
     public void testSaving() throws IOException {
