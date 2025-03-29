@@ -35,6 +35,7 @@ import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
+import com.mars_sim.core.building.function.cooking.MealSchedule;
 import com.mars_sim.core.building.utility.heating.ThermalSystem;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.data.History;
@@ -235,6 +236,7 @@ public class Settlement extends Unit implements Temporal,
 	/** Total Crop area */
 	private double cropArea = -1;
 	private int timeOffset;
+	private MealSchedule meals;
 
 	/** The settlement terrain profile. */
 	private double[] terrainProfile = new double[2];
@@ -345,7 +347,8 @@ public class Settlement extends Unit implements Temporal,
 		this.settlementCode = createCode(name);
 		this.location = location;
 		this.timeOffset = MarsSurface.getTimeOffset(location);
-		
+		this.meals = new MealSchedule(timeOffset);
+
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
@@ -393,7 +396,7 @@ public class Settlement extends Unit implements Temporal,
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
 		this.timeOffset = MarsSurface.getTimeOffset(location);
-
+		this.meals = new MealSchedule(timeOffset);
 		this.mapImageID = RandomUtil.getRandomInt(NUM_BACKGROUND_IMAGES - 1) + 1;
 				
 		citizens = new UnitSet<>();
@@ -3237,6 +3240,13 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
+	 * The meal time structure supported at this Settlement
+	 */
+	public MealSchedule getMealTimes() {
+		return meals;
+	}
+
+	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */
 	public void reinit() {
@@ -3316,4 +3326,5 @@ public class Settlement extends Unit implements Temporal,
 		
 		scientificAchievement = null;
 	}
+
 }

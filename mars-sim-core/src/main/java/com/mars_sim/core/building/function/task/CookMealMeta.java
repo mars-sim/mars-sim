@@ -62,7 +62,7 @@ public class CookMealMeta extends FactoryMetaTask {
     	if (person.isOutside()
                 || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
                 || !person.isInSettlement()
-                || !CookMeal.isMealTime(person, CookMeal.PREP_TIME)) {
+                || !CookMeal.isMealTime(person.getAssociatedSettlement(), CookMeal.PREP_TIME)) {
     		return EMPTY_TASKLIST;
         }
 
@@ -108,7 +108,7 @@ public class CookMealMeta extends FactoryMetaTask {
 
         double result = 0D;
 
-        if (CookMeal.isMealTime(robot, CookMeal.PREP_TIME)) {
+        if (CookMeal.isMealTime(robot.getAssociatedSettlement(), CookMeal.PREP_TIME)) {
             // See if there is an available kitchen.
             Building kitchenBuilding = BuildingManager.getAvailableKitchen(robot, FunctionType.COOKING);
 

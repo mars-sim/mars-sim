@@ -30,8 +30,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.PreparingDessert;
-import com.mars_sim.core.building.function.task.CookMeal;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
@@ -52,9 +50,6 @@ import com.google.common.collect.Multiset;
 @SuppressWarnings("serial")
 public class TabPanelCooking extends TabPanel {
 
-	/** default logger. */
-	// private static final Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
-
 	private static final String COOKING_ICON = "cooking";
 	private static final FunctionType COOKING = FunctionType.COOKING;
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
@@ -65,7 +60,6 @@ public class TabPanelCooking extends TabPanel {
 	private Set<String> nameSet;
 	private List<String> nameList;
 
-	private JTable table;
 	private CookingTableModel cookingTableModel;
 
 	/** The number of available meals. */
@@ -121,21 +115,15 @@ public class TabPanelCooking extends TabPanel {
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 			
+		var meals = settlement.getMealTimes();
+
 		AttributePanel topPanel = new AttributePanel(3, 2);
 		northPanel.add(topPanel, BorderLayout.NORTH);
 
-		Coordinates location = settlement.getCoordinates();
-		topPanel.addTextField(Msg.getString("TabPanelCooking.breakfastTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(location, 0), null);
-		
-		topPanel.addTextField(Msg.getString("TabPanelCooking.lunchTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(location, 1), null);
-		
-		topPanel.addTextField(Msg.getString("TabPanelCooking.dinnerTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(location, 2), null);
-		
-		topPanel.addTextField(Msg.getString("TabPanelCooking.midnightTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(location, 3), null);
+		for(var m : meals.getMeals()) {
+			var msg = m.period().start() + " - " + m.period().end();
+			topPanel.addTextField(m.name(), msg, null);
+		}
 		
 		// Prepare cook number label
 		numCooksLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.numberOfCooks"),
@@ -181,29 +169,7 @@ public class TabPanelCooking extends TabPanel {
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		table = new JTable(cookingTableModel) {
-
-			public String getToolTipText(java.awt.event.MouseEvent e) {
-				String personName = null;
-				MarsTime time = null;
-
-				StringBuilder result = new StringBuilder("<html>");
-
-				try {
-
-					result.append("&emsp;&nbsp;Eaten by :&emsp;");
-					result.append(personName);
-					result.append("&emsp;&nbsp;Time :&emsp;");
-					result.append(time);
-
-				} catch (RuntimeException e1) {
-					// catch null pointer exception if mouse is over an empty line
-				}
-				result.append("</html>");
-				return result.toString();
-			}
-
-		};
+		var table = new JTable(cookingTableModel);
 
 		scrollPane.setViewportView(table);
 		table.setRowSelectionAllowed(true);
@@ -360,30 +326,19 @@ public class TabPanelCooking extends TabPanel {
 			return 4;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
+			Class<?> dataType;
 			if (columnIndex == 0)
 				dataType = String.class;
-			else if (columnIndex == 1)
-				dataType = Double.class;
-			else if (columnIndex == 2)
-				dataType = Double.class;
-			else if (columnIndex == 3)
+			else 
 				dataType = Double.class;
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return columnNames[0];
-			if (columnIndex == 1)
-				return columnNames[1];
-			if (columnIndex == 2)
-				return columnNames[2];
-			if (columnIndex == 3)
-				return columnNames[3];
-
-			return null;
+			return columnNames[columnIndex];
 		}
 
 		/***
@@ -417,6 +372,7 @@ public class TabPanelCooking extends TabPanel {
 			return grade;
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (nameList.isEmpty())
 				return null;
@@ -425,16 +381,19 @@ public class TabPanelCooking extends TabPanel {
 			
 			String name = nameList.get(row);
 
-			if (column == 0)
+			switch(column) {
+			case 0:
 				result = name;
+				break;
 
-			else if (column == 1) {
+			case 1:
 				// Use Multimap.get(key) returns a view of the values 
 				// associated with the specified key
 				int numServings = allServingsSet.count(name);
 				result = numServings;
-				// allServingsSet.clear();
-			} else if (column == 2) {
+				break;
+
+			case 2:
 				double best = 0;
 				double value = 0;
 				for (Map.Entry<String, Double> entry : allQualityMapE) {
@@ -445,29 +404,28 @@ public class TabPanelCooking extends TabPanel {
 							best = value;
 					}
 					result = computeGrade(best);
-					// allQualityMap.clear();
 				}
-			} else if (column == 3) {
+				break;
+			case 3:
 				double worst = 10;
-				double value = 0;
+				double v = 0;
 				for (Map.Entry<String, Double> entry : allQualityMapE) {
 					String key = entry.getKey();
 					if (name.equals(key)) {
-						value = entry.getValue();
+						v = entry.getValue();
 
-						if (value < worst)
-							worst = value;
+						if (v < worst)
+							worst = v;
 					}
 					result = computeGrade(worst);
-					// allTimeMap.clear();
 				}
-			} else
-				result = null;
+				break;
+			default:
+				break;
+			}
 			return result;
 		}
 
-		// TODO: decide in what situation it needs update and at what time ?
-		// update every second or after each meal or once a day ?
 		public void update() {
 			cleanUpTable();
 			getMultimap();
