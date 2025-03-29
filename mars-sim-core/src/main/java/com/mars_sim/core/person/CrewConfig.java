@@ -17,6 +17,7 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.person.ai.SkillType;
@@ -67,11 +68,12 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	
 	/**
 	 * Constructor.
+	 * @param config 
 	 */
-	public CrewConfig() {
+	public CrewConfig(SimulationConfig config) {
 		super(CREW_PREFIX);
 		
-		setXSDName(CREW_XSD);
+		setXSDName(CREW_XSD, config);
 		
 		loadDefaults(PREDEFINED_CREWS);
 		loadUserDefined();

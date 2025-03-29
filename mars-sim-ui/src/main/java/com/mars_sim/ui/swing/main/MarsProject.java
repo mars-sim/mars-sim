@@ -325,7 +325,7 @@ public class MarsProject {
 
 		Scenario scenario = editor.getScenario();
 		if (scenario != null) {
-			builder.setScenario(scenario);
+			builder.setScenarioName(scenario.getName());
 		}
 	}
 

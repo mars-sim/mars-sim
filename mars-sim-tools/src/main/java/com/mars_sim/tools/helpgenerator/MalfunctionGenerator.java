@@ -78,7 +78,7 @@ public class MalfunctionGenerator extends TypeGenerator<MalfunctionMeta> {
      */
     @Override
     protected List<MalfunctionMeta> getEntities() {
-        return getParent().getConfig().getMalfunctionConfiguration().getMalfunctionList()
+        return getConfig().getMalfunctionConfiguration().getMalfunctionList()
                     .stream()
                     .sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
                     .toList();

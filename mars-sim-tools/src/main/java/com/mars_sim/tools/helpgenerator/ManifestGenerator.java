@@ -26,7 +26,7 @@ public class ManifestGenerator extends TypeGenerator<ResupplyManifest> {
 
     @Override
     protected List<ResupplyManifest> getEntities() {
-        return getParent().getConfig().getSettlementTemplateConfiguration().getSupplyManifests();
+        return getConfig().getSettlementTemplateConfiguration().getSupplyManifests();
 
     }
 	/**

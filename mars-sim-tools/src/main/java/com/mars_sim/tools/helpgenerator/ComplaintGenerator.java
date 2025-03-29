@@ -33,7 +33,7 @@ public class ComplaintGenerator extends TypeGenerator<Complaint> {
      */
     @Override
     protected List<Complaint> getEntities() {
-        return getParent().getConfig().getMedicalConfiguration().getComplaintList()
+        return getConfig().getMedicalConfiguration().getComplaintList()
                     .stream()
 		 			.sorted(Comparator.comparing(Complaint::getName))
 					.toList();

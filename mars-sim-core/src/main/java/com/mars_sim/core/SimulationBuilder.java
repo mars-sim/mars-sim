@@ -20,7 +20,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
 import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.logging.DiagnosticsManager;
@@ -46,7 +45,6 @@ public class SimulationBuilder {
 	private static final String CREW_ARG = "crew";
 	private static final String DIAGNOSTICS_ARG = "diags";
 	private static final String SCENARIO_ARG = "scenario";
-	private static final String WHITESPACES = "---------------------------------------------------";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 	
@@ -59,7 +57,7 @@ public class SimulationBuilder {
 	private String longitude = null;
 	private boolean useCrews = true;
 	private UserConfigurableConfig<Crew> crewConfig;
-	private Scenario bootstrap;
+	private String scenarioName;
 
 	public SimulationBuilder() {
 		super();
@@ -151,15 +149,6 @@ public class SimulationBuilder {
 	public void setCrewConfig(UserConfigurableConfig<Crew> crewConfig) {
 		this.crewConfig  = crewConfig;
 	}
-
-	/**
-	 * Sets the scenario for a new simulation.
-	 * 
-	 * @param scenario
-	 */
-	public void setScenario(Scenario scenario) {
-		this.bootstrap = scenario;
-	}
 	
 	/**
 	 * Gets the list of core command line options that are supported by this builder.
@@ -242,13 +231,8 @@ public class SimulationBuilder {
 	 * 
 	 * @param name
 	 */
-	private void setScenarioName(String name) {
-		ScenarioConfig config = new ScenarioConfig();
-		Scenario found = config.getItem(name);
-		if (found == null) {
-			throw new IllegalArgumentException("No scenario named '" + name + "'");
-		}
-		setScenario(found);
+	public void setScenarioName(String name) {
+		scenarioName = name;
 	}
 	
 	/**
@@ -282,7 +266,7 @@ public class SimulationBuilder {
 			SettlementBuilder builder = new SettlementBuilder(sim,
 					simConfig);
 			if (useCrews && crewConfig == null) {
-				crewConfig = new CrewConfig();
+				crewConfig = new CrewConfig(simConfig);
 			}
 			builder.setCrew(crewConfig);
 			
@@ -291,11 +275,9 @@ public class SimulationBuilder {
 				builder.createFullSettlement(spec);
 			}
 			else {
-				if (bootstrap == null) {
-					String defaultName = ScenarioConfig.PREDEFINED_SCENARIOS[0];
-					ScenarioConfig config = new ScenarioConfig();
-					bootstrap = config.getItem(defaultName);
-				}
+				String defaultName = (scenarioName != null) ? scenarioName : ScenarioConfig.PREDEFINED_SCENARIOS[0];
+				ScenarioConfig config = new ScenarioConfig(simConfig);
+				var bootstrap = config.getItem(defaultName);
 				builder.createInitialSettlements(bootstrap);
 				sim.getTransportManager().loadArrivingSettments(bootstrap,
 																simConfig.getSettlementTemplateConfiguration(),
@@ -414,6 +396,6 @@ public class SimulationBuilder {
 	 */
 	public boolean isFullyDefined() {
 		return (template != null) || (simFile != null)
-				|| (bootstrap != null);
+				|| (scenarioName != null);
 	}
 }

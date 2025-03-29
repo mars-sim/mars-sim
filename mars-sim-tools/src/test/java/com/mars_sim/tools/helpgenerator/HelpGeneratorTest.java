@@ -25,8 +25,10 @@ import com.mars_sim.core.robot.RobotType;
 
 public class HelpGeneratorTest {
 
+    private SimulationConfig config;
+    
     private HelpContext createGenerator() {
-        var config = SimulationConfig.instance();
+        config = SimulationConfig.instance();
         config.loadConfig();
 
         return new HelpContext(config, HelpContext.HTML_STYLE);
@@ -217,7 +219,7 @@ public class HelpGeneratorTest {
         var context = createGenerator();
         
         // Has both inputs and outputs
-        var spec = (new ScenarioConfig()).getItem("Default");
+        var spec = (new ScenarioConfig(config)).getItem("Default");
 
         var vg = new ScenarioGenerator(context);
         var content = createDoc(vg, spec);

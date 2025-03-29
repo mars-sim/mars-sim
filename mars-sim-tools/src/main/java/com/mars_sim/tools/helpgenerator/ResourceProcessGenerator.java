@@ -60,7 +60,7 @@ class ResourceProcessGenerator extends TypeGenerator<ResourceProcessSpec> {
      */
     @Override
     protected List<ResourceProcessSpec> getEntities() {
-		var config = getParent().getConfig().getResourceProcessConfiguration();
+		var config = getConfig().getResourceProcessConfiguration();
         return config.getProcessSpecs().stream()
 		 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 							.toList();

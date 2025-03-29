@@ -42,7 +42,7 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
      */
     @Override
     protected List<FoodProductionProcessInfo> getEntities() {
-		return getParent().getConfig().getFoodProductionConfiguration()
+		return getConfig().getFoodProductionConfiguration()
                         .getProcessList().stream()
 		 							.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 									.toList();

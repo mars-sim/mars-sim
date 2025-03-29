@@ -673,7 +673,7 @@ public class SimulationConfig {
 		raFactory = new AuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
-		PartPackageConfig partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
+		PartPackageConfig partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true), partConfig);
 		buildingPackageConfig = new BuildingPackageConfig(parseXMLFileAsJDOMDocument(BUILDING_PACKAGE_FILE, true));
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
 		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
@@ -689,7 +689,7 @@ public class SimulationConfig {
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true));
 		settlementTemplateConfig = new SettlementTemplateConfig(parseXMLFileAsJDOMDocument(
 				SETTLEMENT_TEMPLATE_FILE, true), partPackageConfig, buildingPackageConfig,
-				resupplyConfig, settlementConfig, raFactory);
+				resupplyConfig, this);
 
 
 		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));

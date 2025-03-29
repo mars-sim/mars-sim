@@ -26,7 +26,7 @@ public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> 
         // Groups according to stage
         setGrouper("Stage", r-> r.getType().name());
 
-        dependentsBySource = getParent().getConfig().getConstructionConfiguration().getAllConstructionStageInfoList()
+        dependentsBySource = getConfig().getConstructionConfiguration().getAllConstructionStageInfoList()
                 .stream()
                 .filter(v -> v.getPrerequisiteStage() != null)
                 .collect(Collectors.groupingBy(ConstructionStageInfo::getPrerequisiteStage));
@@ -68,7 +68,7 @@ public class ConstructionGenerator extends TypeGenerator<ConstructionStageInfo> 
 
     @Override
     protected List<ConstructionStageInfo> getEntities() {
-        return getParent().getConfig().getConstructionConfiguration().getAllConstructionStageInfoList();
+        return getConfig().getConstructionConfiguration().getAllConstructionStageInfoList();
     }
 
     @Override

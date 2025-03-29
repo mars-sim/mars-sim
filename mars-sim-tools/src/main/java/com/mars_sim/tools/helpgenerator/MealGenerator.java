@@ -30,7 +30,7 @@ class MealGenerator extends TypeGenerator<HotMeal> {
      */
     @Override
     protected List<HotMeal> getEntities() {
-		return getParent().getConfig().getMealConfiguration().getDishList().stream()
+		return getConfig().getMealConfiguration().getDishList().stream()
 		 							.sorted((o1, o2)->o1.getMealName().compareTo(o2.getMealName()))
 									.toList();
 	

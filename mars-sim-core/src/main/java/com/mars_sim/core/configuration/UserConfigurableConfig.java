@@ -88,11 +88,11 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		this.itemPrefix = itemPrefix;
 	}
 
-	protected void setXSDName(String xsd) {
+	protected void setXSDName(String xsd, SimulationConfig config) {
 		this.xsdName = xsd;
 
 		// Have to pull it out of bundle
-		SimulationConfig.instance().getBundledXML(itemPrefix + "/" + xsdName);
+		config.getBundledXML(itemPrefix + "/" + xsdName);
 	}
 
 	/**

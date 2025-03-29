@@ -22,6 +22,7 @@ import java.util.zip.ZipOutputStream;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
@@ -37,9 +38,6 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
-	/** default logger. */
-	// may add back SimLogger logger = SimLogger.getLogger(ScenarioConfig.class.getName());
-
 	
 	private static final String PREFIX = "scenario";
 	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
@@ -62,10 +60,10 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	// Default scenario
 	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};	
 	
-	public ScenarioConfig() {
+	public ScenarioConfig(SimulationConfig config) {
 		super(PREFIX);
 
-		setXSDName("scenario.xsd");
+		setXSDName("scenario.xsd", config);
 		
 		loadDefaults(PREDEFINED_SCENARIOS);
 		loadUserDefined();

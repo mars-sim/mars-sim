@@ -25,7 +25,7 @@ public class CrewGenerator extends TypeGenerator<Crew> {
      * Get a list of all the predefined Crew configured.
      */
     protected List<Crew> getEntities() {
-        var config = new CrewConfig();
+        var config = new CrewConfig(getConfig());
         return config.getKnownItems()
                             .stream()
                             .filter(Crew::isBundled)

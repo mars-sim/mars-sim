@@ -23,19 +23,16 @@ import org.jdom2.Element;
  * Provides configuration information about part packages. Uses a JDOM document
  * to get the information.
  */
-public class PartPackageConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class PartPackageConfig  {
 
 	private static final Logger logger = Logger.getLogger(PartPackageConfig.class.getName());
 
 	// Element names
-	private final String PART_PACKAGE = "part-package";
-	private final String PART = "part";
-	private final String NAME = "name";
-	private final String TYPE = "type";
-	private final String NUMBER = "number";
+	private static final String PART_PACKAGE = "part-package";
+	private static final String PART = "part";
+	private static final String NAME = "name";
+	private static final String TYPE = "type";
+	private static final String NUMBER = "number";
 
 	// Data members
 	private Collection<PartPackage> partPackages;
@@ -46,8 +43,8 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document
 	 */
-	public PartPackageConfig(Document partPackageDoc) {
-		loadPartPackages(partPackageDoc);
+	public PartPackageConfig(Document partPackageDoc, PartConfig partsConfig) {
+		loadPartPackages(partPackageDoc, partsConfig);
 	}
 
 	/**
@@ -56,7 +53,7 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document.
 	 */
-	private synchronized void loadPartPackages(Document partPackageDoc) {
+	private synchronized void loadPartPackages(Document partPackageDoc, PartConfig partsConfig) {
 		if (partPackages != null) {
 			// just in case if another thread is being created
 			return;
@@ -74,7 +71,7 @@ public class PartPackageConfig implements Serializable {
 			List<Element> partNodes = partPackageElement.getChildren(PART);
 			for (Element partElement : partNodes) {
 				String partType = partElement.getAttributeValue(TYPE);
-				Part part = (Part) ItemResourceUtil.findItemResource(partType);
+				Part part = partsConfig.getPartByName(partType);
 				if (part == null)
 					logger.severe(partType + " shows up in part_packages.xml but doesn't exist in parts.xml.");
 				else {

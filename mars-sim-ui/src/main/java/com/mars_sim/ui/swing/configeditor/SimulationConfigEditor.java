@@ -45,8 +45,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
@@ -147,7 +145,7 @@ public class SimulationConfigEditor {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(SimulationConfigEditor.class.getName());
 
-	private final int HORIZONTAL_SIZE = 1024;
+	private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
 	private boolean hasError;
@@ -194,8 +192,8 @@ public class SimulationConfigEditor {
 		raFactory = config.getReportingAuthorityFactory();
 		settlementTemplateConfig = config.getSettlementTemplateConfiguration();
 		personConfig = config.getPersonConfig();
-		crewConfig = new CrewConfig();
-		scenarioConfig = new ScenarioConfig();
+		crewConfig = new CrewConfig(config);
+		scenarioConfig = new ScenarioConfig(config);
 
 		// Preload the config to set up the preferred LAF
 		UIConfig configs = new UIConfig();
@@ -270,13 +268,13 @@ public class SimulationConfigEditor {
 
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
+		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));
 		tabPanel.add("Initial Settlement", settlementScrollPane);
 		createSettlementTable(settlementScrollPane);
 
 		// Second tab
 		JScrollPane arrivalScrolPane = new JScrollPane();
-		arrivalScrolPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
+		arrivalScrolPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));
 		tabPanel.add("Arriving Settlements", arrivalScrolPane);
 		createArrivalTable(arrivalScrolPane);
 
@@ -310,18 +308,8 @@ public class SimulationConfigEditor {
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 
 		// Monitor table models for errors
-		settlementTableModel.addTableModelListener(new TableModelListener() {
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				checkModelErrors();
-			}
-		});
-		arrivalTableModel.addTableModelListener(new TableModelListener() {
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				checkModelErrors();
-			}
-		});
+		settlementTableModel.addTableModelListener(e -> checkModelErrors());
+		arrivalTableModel.addTableModelListener(e -> checkModelErrors());
 
 		// Create the config control
 		configControl = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
@@ -404,8 +392,6 @@ public class SimulationConfigEditor {
         });
 
 		bottomButtonPanel.add(cb);
-		//bottomButtonPanel.add(authorityButton);
-		//bottomButtonPanel.add(crewButton);
 
 		configurationButtonInnerTopPanel.add(authorityButton);
 		configurationButtonInnerTopPanel.add(crewButton);
@@ -420,6 +406,7 @@ public class SimulationConfigEditor {
 
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		f.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent ev) {
 				if (isCrewEditorOpen) {
 					crewEditor.getJFrame().dispose();
@@ -674,7 +661,7 @@ public class SimulationConfigEditor {
 	 */
 	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
-			crewEditor = new CrewEditor(this, crewConfig, raFactory, personConfig);
+			crewEditor = new CrewEditor(this, crewConfig, raFactory);
 		}
 		else {
 			crewEditor.getJFrame().setVisible(true);
@@ -753,7 +740,6 @@ public class SimulationConfigEditor {
 	public synchronized void waitForCompletion() {
         while (!completed ) {
             try {
-//            	logger.config("Waiting for player.");
                 wait();
             } catch (InterruptedException e)  {
                 Thread.currentThread().interrupt();
