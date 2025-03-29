@@ -284,7 +284,7 @@ public class EatDrink extends Task {
 
 		if (person.isInSettlement()) {
 
-			if (CookMeal.isMealTime(person, 0)) {
+			if (CookMeal.isMealTime(person.getAssociatedSettlement(), 0)) {
 				
 				if (meals > 0) {				
 					goDining();

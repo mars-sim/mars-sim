@@ -79,7 +79,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		double mFactor = 1;
 		double dFactor = 1;
 
-		if (CookMeal.isMealTime(person, 0)) {
+		if (CookMeal.isMealTime(person.getAssociatedSettlement(), 0)) {
 			// Check if a cooked meal is available in a kitchen building at the settlement.
 			Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 			if (kitchen0 != null) {

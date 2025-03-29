@@ -420,13 +420,13 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': too dark already.");
+			logger.info(worker, 10_000L, getName() + "': too dark already.");
 			return true;
 		}
 
 		// Check for any EVA problems.
 		if (hasEVAProblem(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': EVA problems.");
+			logger.info(worker, 10_000L, getName() + "': EVA problems.");
 			return true;
 		}
 
@@ -604,7 +604,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person, int prepTime) {
-        return CookMeal.isMealTime(person, prepTime) 
+        return CookMeal.isMealTime(person.getAssociatedSettlement(), prepTime) 
         		&& person.getPhysicalCondition().isDoubleHungry();
     }
 

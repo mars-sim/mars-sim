@@ -91,7 +91,7 @@ public class PrepareDessertMeta extends FactoryMetaTask {
         score = assessPersonSuitability(score, person);
 
         // If it's meal time, decrease probability
-        if (CookMeal.isMealTime(person, PrepareDessert.PREP_TIME)) {
+        if (CookMeal.isMealTime(person.getAssociatedSettlement(), PrepareDessert.PREP_TIME)) {
             score.addModifier("eatdrink.dessert", MOD);
         }
         return createTaskJobs(score);
@@ -103,7 +103,7 @@ public class PrepareDessertMeta extends FactoryMetaTask {
 
        double result = 0D;
 
-       if (CookMeal.isMealTime(robot, PrepareDessert.PREP_TIME)) { 
+       if (CookMeal.isMealTime(robot.getAssociatedSettlement(), PrepareDessert.PREP_TIME)) { 
            // See if there is an available kitchen.
            Building kitchenBuilding =  BuildingManager.getAvailableKitchen(robot, FunctionType.PREPARING_DESSERT);
 
@@ -126,7 +126,7 @@ public class PrepareDessertMeta extends FactoryMetaTask {
                result *= robot.getPerformanceRating();
    
                // If it's meal time, increase probability
-               if (CookMeal.isMealTime(robot, 0)) {
+               if (CookMeal.isMealTime(robot.getAssociatedSettlement(), 0)) {
             	   result *= MOD;
                }
            }

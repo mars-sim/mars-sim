@@ -749,7 +749,7 @@ public class Cooking extends Function {
 			}
 
 			// Check if not meal time, clean up.
-			if (!CookMeal.isLocalMealTime(building.getSettlement().getCoordinates(), 0)) {
+			if (!CookMeal.isMealTime(building.getSettlement(), 0)) {
 				finishUp();
 			}
 
