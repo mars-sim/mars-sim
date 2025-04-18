@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ManufacturePanel.java
+ * WorkshopProcessPanel.java
  * @date 2021-09-20
  * @author Scott Davis
  */
@@ -17,18 +17,19 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.manufacture.ManufactureProcess;
+import org.apache.commons.lang3.StringUtils;
+
+import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 /**
- * A panel showing information about a manufacturing process.
+ * A panel showing information about a Workshop process.
  */
-@SuppressWarnings("serial")
-class ManufacturePanel extends JPanel {
+class WorkshopProcessPanel extends JPanel {
 
 	// Data members
-	private ManufactureProcess process;
+	private WorkshopProcess process;
 	private BoundedRangeModel workBarModel;
 	private BoundedRangeModel timeBarModel;
 
@@ -38,16 +39,20 @@ class ManufacturePanel extends JPanel {
 	 * @param showBuilding is the building name shown?
 	 * @param processStringWidth the max string width to display for the process name.
 	 */
-	public ManufacturePanel(ManufactureProcess process, boolean showBuilding, int processStringWidth) {
+	public WorkshopProcessPanel(WorkshopProcess process, boolean showBuilding, int processStringWidth) {
 		// Call JPanel constructor
 		super();
 
 		// Initialize data members.
 		this.process = process;
 
-        // Set layout
-		if (showBuilding) setLayout(new GridLayout(4, 1, 0, 0));
-		else setLayout(new GridLayout(3, 1, 0, 0));
+        boolean showProcessTime = process.getInfo().getProcessTimeRequired() > 0;
+
+        int numRows = 2;
+        if (showBuilding) numRows++;
+        if (showProcessTime) numRows++;
+
+        setLayout(new GridLayout(numRows, 1, 0, 0));
 
         // Set border
         setBorder(new MarsPanelBorder());
@@ -60,18 +65,12 @@ class ManufacturePanel extends JPanel {
         JButton cancelButton = new JButton(ImageLoader.getIconByName("action/cancel"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.addActionListener(event ->
-                    getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess(), true));
-        cancelButton.setToolTipText("Cancel manufacturing process");
+                    getProcess().stopProcess(true));
+        cancelButton.setToolTipText("Cancel process");
         namePane.add(cancelButton);
 
         // Prepare name label.
-        String name = process.getInfo().getName();
-        if (name.length() > 0) {
-        	String firstLetter = name.substring(0, 1).toUpperCase();
-        	name = " " + firstLetter + name.substring(1);
-        }
-        if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
-		// Capitalize process names
+        String name = StringUtils.abbreviate(process.getInfo().getName(), processStringWidth);
         JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         namePane.add(nameLabel);
 
@@ -97,18 +96,20 @@ class ManufacturePanel extends JPanel {
         workPane.add(workBar);
 
         // Prepare time panel.
-        JPanel timePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        add(timePane);
+        if (showProcessTime) {
+            JPanel timePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            add(timePane);
 
-        // Prepare time label.
-        JLabel timeLabel = new JLabel("Time: ", SwingConstants.LEFT);
-        timePane.add(timeLabel);
+            // Prepare time label.
+            JLabel timeLabel = new JLabel("Time: ", SwingConstants.LEFT);
+            timePane.add(timeLabel);
 
-        // Prepare time progress bar.
-        JProgressBar timeBar = new JProgressBar();
-        timeBarModel = timeBar.getModel();
-        timeBar.setStringPainted(true);
-        timePane.add(timeBar);
+            // Prepare time progress bar.
+            JProgressBar timeBar = new JProgressBar();
+            timeBarModel = timeBar.getModel();
+            timeBar.setStringPainted(true);
+            timePane.add(timeBar);
+        }
 
         // Update progress bars.
         update();
@@ -129,11 +130,13 @@ class ManufacturePanel extends JPanel {
         workBarModel.setValue(workProgress);
 
         // Update time progress bar.
-        double timeRequired = process.getInfo().getProcessTimeRequired();
-        double timeRemaining = process.getProcessTimeRemaining();
-        int timeProgress = 100;
-        if (timeRequired > 0D) timeProgress = (int) (100D * (timeRequired - timeRemaining) / timeRequired);
-        timeBarModel.setValue(timeProgress);
+        if (timeBarModel != null) {
+            double timeRequired = process.getInfo().getProcessTimeRequired();
+            double timeRemaining = process.getProcessTimeRemaining();
+            int timeProgress = 100;
+            if (timeRequired > 0D) timeProgress = (int) (100D * (timeRequired - timeRemaining) / timeRequired);
+            timeBarModel.setValue(timeProgress);
+        }
     }
 
     /**
@@ -141,7 +144,7 @@ class ManufacturePanel extends JPanel {
      * 
      * @return process
      */
-    public ManufactureProcess getManufactureProcess() {
+    public WorkshopProcess getProcess() {
     	return process;
     }
 

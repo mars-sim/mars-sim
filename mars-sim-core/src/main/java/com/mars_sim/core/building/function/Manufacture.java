@@ -30,6 +30,7 @@ import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.manufacture.SalvageProcess;
+import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.resource.AmountResource;
@@ -313,7 +314,7 @@ public class Manufacture extends Function {
 
 
 		// Set the salvage process info for the salvaged unit.
-		salvagedUnit.startSalvage(process.getInfo(), settlement.getIdentifier());
+		salvagedUnit.startSalvage((SalvageProcessInfo) process.getInfo(), settlement.getIdentifier());
 
 		// Log salvage process starting.
 		logger.info(getBuilding(), 0, "Starting salvage process: " + process.getInfo().getName());
@@ -492,7 +493,7 @@ public class Manufacture extends Function {
 
 				// Output settlement
 				if (outputId >= 0) {
-					settlement.addOutput(outputId, outputAmount, process.getTotalWorkTime());
+					settlement.addOutput(outputId, outputAmount, process.getInfo().getWorkTimeRequired());
 				}
 
 				Good good = GoodsUtil.getGood(item.getName());

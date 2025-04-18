@@ -142,7 +142,7 @@ public class ManufactureGood extends Task {
 
 		// Apply work time to manufacturing processes.
 		while ((workTime > 0D) && !isDone()) {
-			workTime = manufacture(workTime);
+			workTime = manufacture(workTime, skill);
 		}
 
 		// Add experience
@@ -159,7 +159,7 @@ public class ManufactureGood extends Task {
 	 * 
 	 * @param workTime
 	 */
-	private double manufacture(double workTime) {
+	private double manufacture(double workTime, int skill) {
 		ManufactureProcess process = getRunningManufactureProcess();
 		if (process == null) {
 			process = createNewManufactureProcess();
@@ -175,7 +175,7 @@ public class ManufactureGood extends Task {
 		if (providedWorkTime > remainingWorkTime) {
 			providedWorkTime = remainingWorkTime;
 		}
-		process.addWorkTime(providedWorkTime);
+		process.addWorkTime(providedWorkTime, skill);
 		workTime -= providedWorkTime;
 
 		if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {

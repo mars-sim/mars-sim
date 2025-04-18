@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.SalvageProcess;
+import com.mars_sim.core.manufacture.WorkshopProcess;
 
 /**
  * This is a panel that renders a list of workshop processes that are active
@@ -45,11 +46,8 @@ public class ProcessListPanel extends JPanel {
                                 
         // Update actual panels
         for(var p : getComponents()) {
-            if (p instanceof ManufacturePanel mp) {
+            if (p instanceof WorkshopProcessPanel mp) {
                 mp.update();
-            }
-            else if (p instanceof SalvagePanel sp) {
-                sp.update();
             }
         }
     }
@@ -59,13 +57,13 @@ public class ProcessListPanel extends JPanel {
             // Add salvage panels for new salvage processes.
             for(var salvage : salvages) {
                 if (!salvageCache.contains(salvage))
-                    add(new SalvagePanel(salvage, showBuilding, WORD_WIDTH));
+                    add(new WorkshopProcessPanel(salvage, showBuilding, WORD_WIDTH));
             }
 
             // Remove salvage panels for old salvages.
             for(var salvage : salvageCache) {
                 if (!salvages.contains(salvage)) {
-                    var panel = getSalvagePanel(salvage);
+                    var panel = getProcessPanel(salvage);
                     if (panel != null)
                         remove(panel);
                 }
@@ -81,13 +79,13 @@ public class ProcessListPanel extends JPanel {
             // Add manu panels for new processes.
             for(var process : processes) {
                 if (!processCache.contains(process))
-                    add(new ManufacturePanel(process, showBuilding, WORD_WIDTH));
+                    add(new WorkshopProcessPanel(process, showBuilding, WORD_WIDTH));
             }
 
             // Remove  panels for old processes.
             for(var process : processCache) {
                 if (!processes.contains(process)) {
-                    var panel = getManufacturePanel(process);
+                    var panel = getProcessPanel(process);
                     if (panel != null)
                         remove(panel);
                 }
@@ -99,38 +97,19 @@ public class ProcessListPanel extends JPanel {
     }           
         
     /**
-	 * Gets the panel for a manufacture process.
+	 * Gets the panel for a  process.
 	 * 
-	 * @param process the manufacture process.
-	 * @return manufacture panel or null if none.
+	 * @param process the  process.
+	 * @return  panel or null if none.
 	 */
-	private ManufacturePanel getManufacturePanel(ManufactureProcess process) {
-		ManufacturePanel result = null;
+	private WorkshopProcessPanel getProcessPanel(WorkshopProcess process) {
 		for (int x = 0; x < getComponentCount(); x++) {
 			Component component = getComponent(x);
-			if ((component instanceof ManufacturePanel panel)
-				&& panel.getManufactureProcess().equals(process)) {
-					result = panel;
+			if ((component instanceof WorkshopProcessPanel panel)
+				&& panel.getProcess().equals(process)) {
+					return panel;
 			}
 		}
-		return result;
-	}
-
-	/**
-	 * Gets the panel for a salvage process.
-	 * 
-	 * @param process the salvage process.
-	 * @return the salvage panel or null if none.
-	 */
-	private SalvagePanel getSalvagePanel(SalvageProcess process) {
-		SalvagePanel result = null;
-		for (int x = 0; x < getComponentCount(); x++) {
-			Component component = getComponent(x);
-			if ((component instanceof SalvagePanel panel)
-                && panel.getSalvageProcess().equals(process)) {
-					result = panel;
-			}
-		}
-		return result;
+		return null;
 	}
 }

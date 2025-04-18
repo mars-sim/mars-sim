@@ -39,12 +39,10 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.ManufactureProcess;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.SalvageProcess;
-import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
@@ -57,7 +55,6 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
-import com.mars_sim.ui.swing.utils.SalvagePanel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
@@ -360,12 +357,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	private void processSelectionChanged(ActionEvent e) {
 		ProcessInfo value =  (ProcessInfo)processSelection.getSelectedItem();
 
-		String tip = null;
-		if (value instanceof ManufactureProcessInfo info) {
-			tip = ProcessInfoRenderer.getToolTipString(info);
-		} else if (value instanceof SalvageProcessInfo info) {
-			tip = SalvagePanel.getToolTipString(null, info, null);
-		}
+		String tip = ProcessInfoRenderer.getToolTipString(value);
 
 		processSelection.setToolTipText(tip);
 	}
