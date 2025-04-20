@@ -14,7 +14,6 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 
@@ -24,7 +23,7 @@ import com.mars_sim.core.manufacture.WorkshopProcess;
 public class ProcessListPanel extends JPanel {
 	private static final int WORD_WIDTH = 70;
 
-    private List<ManufactureProcess> processCache = Collections.emptyList();
+    private List<WorkshopProcess> processCache = Collections.emptyList();
 	private List<SalvageProcess> salvageCache = Collections.emptyList();
     
     private boolean showBuilding;
@@ -39,7 +38,7 @@ public class ProcessListPanel extends JPanel {
      * @param processes
      * @param salvages
      */
-    public void update(List<ManufactureProcess> processes, List<SalvageProcess> salvages) {
+    public void update(List<WorkshopProcess> processes, List<SalvageProcess> salvages) {
         // Update existing list contents
         updateManuProcess(processes);
         updateSalvageProcesses(salvages);
@@ -74,7 +73,7 @@ public class ProcessListPanel extends JPanel {
         }
     }
                 
-    private void updateManuProcess(List<ManufactureProcess> processes) {
+    private void updateManuProcess(List<WorkshopProcess> processes) {
         if (!processCache.equals(processes)) {
             // Add manu panels for new processes.
             for(var process : processes) {

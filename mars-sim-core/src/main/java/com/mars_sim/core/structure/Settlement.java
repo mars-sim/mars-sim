@@ -278,7 +278,7 @@ public class Settlement extends Unit implements Temporal,
 	private ManufacturingManager manuManager;
 	
 	/** The settlement objective type instance. */
-	private ObjectiveType objectiveType;
+	private ObjectiveType objectiveType = ObjectiveType.BUILDERS_HAVEN;
 
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private SolMetricDataLogger<WaterUseType> waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);

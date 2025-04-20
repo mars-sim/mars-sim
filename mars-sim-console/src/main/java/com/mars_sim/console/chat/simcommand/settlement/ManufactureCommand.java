@@ -15,7 +15,6 @@ import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Manufacture;
-import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.structure.Settlement;
 
 /**m
@@ -44,10 +43,10 @@ public class ManufactureCommand extends AbstractSettlementCommand {
 			Manufacture workshop = building.getManufacture();
 			response.appendHeading(building.getName());
 			response.appendLabeledString("Processes Active", workshop.getCurrentTotalProcesses() + "/" + workshop.getMaxProcesses());
-			List<ManufactureProcess> processes = workshop.getProcesses();
+			var processes = workshop.getProcesses();
 			if (!processes.isEmpty()) {
 				response.appendTableHeading("Process", 42, "Work Left", "Process Left");
-				for (ManufactureProcess m : processes) {
+				for (var m : processes) {
 					response.appendTableRow(m.getInfo().getName(),
 										m.getProcessTimeRemaining(),
 										m.getWorkTimeRemaining());

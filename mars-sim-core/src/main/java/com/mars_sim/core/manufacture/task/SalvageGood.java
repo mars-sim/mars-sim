@@ -123,14 +123,7 @@ public class SalvageGood extends Task {
 		}
 
 		// Apply work time to salvage process.
-		double remainingWorkTime = process.getWorkTimeRemaining();
-		double providedWorkTime = workTime;
-		if (providedWorkTime > remainingWorkTime) {
-			providedWorkTime = remainingWorkTime;
-		}
-		process.addWorkTime(providedWorkTime, skill);
-		if (process.getWorkTimeRemaining() <= 0D) {
-			workshop.endSalvageProcess(process, false);
+		if (!process.addWorkTime(workTime, skill)) {
 			endTask();
 		}
 
@@ -176,21 +169,17 @@ public class SalvageGood extends Task {
 	 * @return process or null if none.
 	 */
 	private SalvageProcess getRunningSalvageProcess() {
-		SalvageProcess result = null;
 
 		int skillLevel = getEffectiveSkillLevel();
 
-		Iterator<SalvageProcess> i = workshop.getSalvageProcesses().iterator();
-		while (i.hasNext() && (result == null)) {
-			SalvageProcess p = i.next();
+		for(var p : workshop.getSalvageProcesses()) {
 			if ((p.getInfo().getSkillLevelRequired() <= skillLevel) &&
 					(p.getWorkTimeRemaining() > 0D)) {
-				result = p;
-				break;
+				return p;
 			}
 		}
 		
-		return result;
+		return null;
 	}
 
 	/**
@@ -221,7 +210,7 @@ public class SalvageGood extends Task {
 				}
 				
 				result = new SalvageProcess(spi, workshop, salvagedUnit);
-				workshop.addSalvageProcess(result);
+				result.startProcess();
 			}
 		}
 

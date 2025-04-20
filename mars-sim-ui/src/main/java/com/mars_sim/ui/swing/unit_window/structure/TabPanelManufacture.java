@@ -38,11 +38,11 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.SalvageProcess;
+import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
@@ -330,7 +330,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	 * 
 	 * @return list of manufacture processes.
 	 */
-	private List<ManufactureProcess> getActiveManufacturing() {
+	private List<WorkshopProcess> getActiveManufacturing() {
 		return target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).stream()
 								.map(b -> b.getManufacture().getProcesses())
 								.flatMap(Collection::stream)
@@ -356,7 +356,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	 */
 	private void processSelectionChanged(ActionEvent e) {
 		ProcessInfo value =  (ProcessInfo)processSelection.getSelectedItem();
-
+		if (value == null) return;
 		String tip = ProcessInfoRenderer.getToolTipString(value);
 
 		processSelection.setToolTipText(tip);

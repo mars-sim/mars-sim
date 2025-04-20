@@ -13,6 +13,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager;
+import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
@@ -160,7 +161,7 @@ public class ManufactureGood extends Task {
 	 * @param workTime
 	 */
 	private double manufacture(double workTime, int skill) {
-		ManufactureProcess process = getRunningManufactureProcess();
+		var process = getRunningManufactureProcess();
 		if (process == null) {
 			process = createNewManufactureProcess();
 			
@@ -168,22 +169,12 @@ public class ManufactureGood extends Task {
 				endTask();
 				return 0;
 			}
+			setDescription(process.getName());
 		}
 
-		double remainingWorkTime = process.getWorkTimeRemaining();
-		double providedWorkTime = workTime;
-		if (providedWorkTime > remainingWorkTime) {
-			providedWorkTime = remainingWorkTime;
-		}
-		process.addWorkTime(providedWorkTime, skill);
-		workTime -= providedWorkTime;
-
-		if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
-			workshop.endManufacturingProcess(process, false);
-		}
+		process.addWorkTime(workTime, skill);
 	
 		// Prints description
-		setDescription(process.getInfo().getName());
 		return workTime;
 	}
 	
@@ -192,11 +183,12 @@ public class ManufactureGood extends Task {
 	 * 
 	 * @return process or null if none.
 	 */
-	private ManufactureProcess getRunningManufactureProcess() {
+	private WorkshopProcess getRunningManufactureProcess() {
 		int skillLevel = getEffectiveSkillLevel();
-		for(ManufactureProcess process : workshop.getProcesses()) {
+		for(var process : workshop.getProcesses()) {
 			if ((process.getInfo().getSkillLevelRequired() <= skillLevel)
 							&& (process.getWorkTimeRemaining() > 0D)) {
+				setDescription(process.getName());
 				return process;
 			}
 		}
@@ -222,7 +214,7 @@ public class ManufactureGood extends Task {
 			// Create chosen manufacturing process.
 			if (queued != null) {
 				result = new ManufactureProcess((ManufactureProcessInfo) queued.getInfo(), workshop);
-				workshop.addProcess(result);
+				result.startProcess();
 			}
 		}
 

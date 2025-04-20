@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -16,8 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.mars_sim.core.building.function.Manufacture;
-import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.SalvageProcess;
+import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -103,12 +102,8 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 * 
 	 * @return list of manufacture processes.
 	 */
-	private List<ManufactureProcess> getManufactureProcesses() {
-		List<ManufactureProcess> result = new ArrayList<>();
-
-		result.addAll(workshop.getProcesses());
-
-		return result;
+	private List<WorkshopProcess> getManufactureProcesses() {
+		return workshop.getProcesses();
 	}
 
 	/**
@@ -125,7 +120,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		if (!uiDone)
 			initializeUI();
 
-		List<ManufactureProcess> processes = getManufactureProcesses();
+		var processes = getManufactureProcesses();
 		List<SalvageProcess> salvages = getSalvageProcesses();
 		
 		processListPane.update(processes, salvages);

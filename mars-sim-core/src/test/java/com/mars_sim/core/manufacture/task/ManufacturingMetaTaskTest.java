@@ -82,7 +82,7 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
 
         // Add processes to the workshop
         var p = RandomUtil.getRandomElement(processes);
-        m.addProcess(new ManufactureProcess(p, m));
+        (new ManufactureProcess(p, m)).startProcess();
 
         var tasks = mt.getSettlementTasks(s);
         assertEquals("Tasks for running Processes", 1, tasks.size());
@@ -105,8 +105,8 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
 
         // Add processes to the workshop
         var p = RandomUtil.getRandomElement(processes);
-        m.addProcess(new ManufactureProcess(p, m));
-        m.addProcess(new ManufactureProcess(p, m));
+        (new ManufactureProcess(p, m)).startProcess();
+        (new ManufactureProcess(p, m)).startProcess();
 
         var tasks = mt.getSettlementTasks(s);
         assertEquals("Tasks for running Processes", 1, tasks.size());
