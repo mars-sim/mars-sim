@@ -59,8 +59,7 @@ public class ProcessItem implements Serializable {
      */
     public boolean equals(Object object) {
         boolean result = false;
-        if (object instanceof ProcessItem) {
-            ProcessItem item = (ProcessItem) object;
+        if (object instanceof ProcessItem item) {
             result = ((id == item.getId())
                     && type.equals(item.getType())
                     && (amount == item.getAmount()));

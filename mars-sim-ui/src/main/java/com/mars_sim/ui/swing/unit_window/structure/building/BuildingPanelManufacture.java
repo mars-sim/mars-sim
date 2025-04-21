@@ -8,16 +8,12 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.mars_sim.core.building.function.Manufacture;
-import com.mars_sim.core.manufacture.ManufactureProcess;
-import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -95,40 +91,17 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		// Create process list panel
 		processListPane = new ProcessListPanel(false);
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
-		processListPane.update(workshop.getProcesses(), workshop.getSalvageProcesses());
+		processListPane.update(workshop.getProcesses());
 	}
 
-	/**
-	 * Gets all the manufacture processes at the settlement.
-	 * 
-	 * @return list of manufacture processes.
-	 */
-	private List<ManufactureProcess> getManufactureProcesses() {
-		List<ManufactureProcess> result = new ArrayList<>();
-
-		result.addAll(workshop.getProcesses());
-
-		return result;
-	}
-
-	/**
-	 * Gets all the salvage processes at the settlement.
-	 * 
-	 * @return list of salvage processes.
-	 */
-	private List<SalvageProcess> getSalvageProcesses() {
-		return workshop.getSalvageProcesses();
-	}
-	
 	@Override
 	public void update() {	
 		if (!uiDone)
 			initializeUI();
 
-		List<ManufactureProcess> processes = getManufactureProcesses();
-		List<SalvageProcess> salvages = getSalvageProcesses();
+		var processes = workshop.getProcesses();
 		
-		processListPane.update(processes, salvages);
+		processListPane.update(processes);
 		printersUsed.setText(Integer.toString(workshop.getNumPrintersInUse()));
 	}
 

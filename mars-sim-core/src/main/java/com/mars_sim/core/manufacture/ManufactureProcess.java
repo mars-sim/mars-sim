@@ -7,25 +7,18 @@
 
 package com.mars_sim.core.manufacture;
 
-import java.io.Serializable;
+import java.util.logging.Level;
 
 import com.mars_sim.core.building.function.Manufacture;
+import com.mars_sim.core.logging.SimLogger;
 
 /**
  * A manufacturing process.
  */
-public class ManufactureProcess implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	// Data members.
-	private double totalWorkTimeReq;
-	private double workTimeRemaining;
-	private double processTimeRemaining;
+public class ManufactureProcess extends WorkshopProcess {
 	
-	private Manufacture workshop;
-	private ManufactureProcessInfo info;
-	
+	private static final SimLogger logger = SimLogger.getLogger(ManufactureProcess.class.getName());
+
 	/**
 	 * Constructor.
 	 * 
@@ -33,101 +26,67 @@ public class ManufactureProcess implements Serializable {
 	 * @param workshop the manufacturing workshop where the process is taking place.
 	 */
 	public ManufactureProcess(ManufactureProcessInfo info, Manufacture workshop) {
-		this.info = info;
-		this.workshop = workshop;
-		workTimeRemaining = info.getWorkTimeRequired();
-		processTimeRemaining = info.getProcessTimeRequired();
-		
-		totalWorkTimeReq = workTimeRemaining;
-	}
-
-	/**
-	 * Gets the information about the process.
-	 * 
-	 * @return process information
-	 */
-	public ManufactureProcessInfo getInfo() {
-		return info;
-	}
-
-	/**
-	 * Gets the remaining work time.
-	 * 
-	 * @return work time (millisols)
-	 */
-	public double getWorkTimeRemaining() {
-		return workTimeRemaining;
-	}
-
-	/**
-	 * Adds work time to the process.
-	 * 
-	 * @param workTime work time (millisols)
-	 */
-	public void addWorkTime(double workTime) {
-		workTimeRemaining -= workTime;
-		if (workTimeRemaining < 0D)
-			workTimeRemaining = 0D;
-	}
-
-	/**
-	 * Gets the remaining process time.
-	 * 
-	 * @return process time (millisols)
-	 */
-	public double getProcessTimeRemaining() {
-		return processTimeRemaining;
-	}
-
-	/**
-	 * Adds process time to the process.
-	 * 
-	 * @param processTime process time (millisols)
-	 */
-	public void addProcessTime(double processTime) {
-		processTimeRemaining -= processTime;
-		if (processTimeRemaining < 0D)
-			processTimeRemaining = 0D;
+		super(info.getName(), workshop, info);
 	}
 	
+	/**
+	 * Start the process by adding to the Workshop active list and claim input resources
+	 * @return Was the process started
+	 */
 	@Override
-	public String toString() {
-		return info.getName();
+	public boolean startProcess() {
+		if (!getWorkshop().addManuProcess(this)) {
+			return false;
+		}
+		var settlement = getBuilding().getSettlement();
+
+		// Consume inputs.
+		for (var item : getInfo().getInputList()) {
+			switch(item.getType()) {
+				case AMOUNT_RESOURCE:
+					settlement.retrieveAmountResource(item.getId(), item.getAmount());
+					break;
+				case PART:
+					settlement.retrieveItemResource(item.getId(), (int) item.getAmount());
+					break;
+				default:
+					logger.log(getBuilding(), Level.SEVERE, 20_000,
+							"Manufacture process input: " + item.getType() + " not a valid type.");
+					return false;
+			}
+		}
+
+		// Log manufacturing process starting.
+		logger.log(getBuilding(), Level.FINEST, 20_000,
+						"Starting manufacturing process: " + getName());
+		
+		return true;
 	}
 
-	/**
-	 * Gets the manufacture building function.
-	 * 
-	 * @return manufacture building function.
-	 */
-	public Manufacture getWorkshop() {
-		return workshop;
-	}
+    /**
+     * Stop this salvage process.
+     * @param premature is the process being stopped prematurely?
+     */
+    @Override
+    public void stopProcess(boolean premature) {	
+		
+		var b = getBuilding();	
+		if (!premature) {
+			depositOutputs();
+			// Log process ending.
+			logger.log(b, Level.INFO, 10_000,
+					"Finished the manu process '" + getName() + "'.");
+		}
+		else {
+			returnInputs();
+			// Log process ending.
+			logger.log(b, Level.INFO, 10_000,
+					"Unable to finish the manu process '" + getName() + "'.");
+		}
 
-	/**
-	 * Gets the total work time required.
-	 * 
-	 * @return
-	 */
-	public double getTotalWorkTime() {
-		return totalWorkTimeReq;
-	}
-	
-	/**
-	 * Compares this object with the specified object for order.
-	 * 
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	public int compareTo(ManufactureProcess p) {
-		return info.getName().compareToIgnoreCase(p.info.getName());
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		workshop = null;
-	}
+		super.stopProcess(premature);
+		
+		// Record process finish
+		b.getAssociatedSettlement().recordProcess(getInfo().getName(), "Manufacture", b);
+    }
 }

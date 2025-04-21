@@ -21,7 +21,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
-import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
@@ -42,9 +41,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
-//	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
-//	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
+
 	static final int HIGHEST_PROJECTED_VALUE = 20_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
@@ -411,7 +408,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
 			// Go through each ongoing active manufacturing process.
-			for(ManufactureProcess process : b.getManufacture().getProcesses()) {
+			for(var process : b.getManufacture().getProcesses()) {
 				for(var item : process.getInfo().getOutputItemsByName(name)) {
 					result += item.getAmount();
 				}

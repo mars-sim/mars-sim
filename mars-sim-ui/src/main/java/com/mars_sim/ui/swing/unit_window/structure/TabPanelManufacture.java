@@ -38,13 +38,10 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.manufacture.ManufactureProcess;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
-import com.mars_sim.core.manufacture.SalvageProcess;
-import com.mars_sim.core.manufacture.SalvageProcessInfo;
+import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
@@ -57,7 +54,6 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
-import com.mars_sim.ui.swing.utils.SalvagePanel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
@@ -121,7 +117,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 		manufactureOuterListPane.add(manufactureListPane, BorderLayout.NORTH);
 
 		// Create the process panels.
-		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
+		manufactureListPane.update(getActiveManufacturing());
 		
 		// CReate tabbed pane and add Active
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -324,7 +320,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	public void update() {
 
 		// Update processes if necessary.
-		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
+		manufactureListPane.update(getActiveManufacturing());
 		manufactureScrollPane.validate();
 	}
 
@@ -333,21 +329,9 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	 * 
 	 * @return list of manufacture processes.
 	 */
-	private List<ManufactureProcess> getActiveManufacturing() {
+	private List<WorkshopProcess> getActiveManufacturing() {
 		return target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).stream()
 								.map(b -> b.getManufacture().getProcesses())
-								.flatMap(Collection::stream)
-								.toList();
-	}
-
-	/**
-	 * Gets all the salvage processes at the settlement.
-	 * 
-	 * @return list of salvage processes.
-	 */
-	private List<SalvageProcess> getActiveSalvaging() {
-		return target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).stream()
-								.map(b -> b.getManufacture().getSalvageProcesses())
 								.flatMap(Collection::stream)
 								.toList();
 	}
@@ -359,13 +343,9 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	 */
 	private void processSelectionChanged(ActionEvent e) {
 		ProcessInfo value =  (ProcessInfo)processSelection.getSelectedItem();
-
-		String tip = null;
-		if (value instanceof ManufactureProcessInfo info) {
-			tip = ProcessInfoRenderer.getToolTipString(info);
-		} else if (value instanceof SalvageProcessInfo info) {
-			tip = SalvagePanel.getToolTipString(null, info, null);
-		}
+		if (value == null)
+			return;
+		String tip = ProcessInfoRenderer.getToolTipString(value);
 
 		processSelection.setToolTipText(tip);
 	}

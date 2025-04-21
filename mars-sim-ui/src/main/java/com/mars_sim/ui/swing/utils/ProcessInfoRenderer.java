@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils;
 
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
@@ -46,6 +47,10 @@ public final class ProcessInfoRenderer {
                                         info.getOutputList().stream()
                                                     .map(i -> getItemAmountString(i) + " " + i.getName())
                                                     .collect(Collectors.joining("<br>"))));
+        if (info instanceof SalvageProcessInfo salvageInfo) {
+            result.append("Salvaged Item Type: ").append(salvageInfo.getItemName()).append("<br>");
+        }
+        
         result.append("</table>");
     
     	result.append("</html>");

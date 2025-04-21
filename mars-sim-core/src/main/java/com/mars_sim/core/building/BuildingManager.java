@@ -147,7 +147,11 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
-		this(settlement);
+		this.settlement = settlement;
+		this.settlementID = settlement.getIdentifier();
+
+		// Construct all buildings in the settlement.
+		buildings = new UnitSet<>();
 		
 		if (buildingTemplates != null) {
 			for(var template : buildingTemplates) {
@@ -166,22 +170,6 @@ public class BuildingManager implements Serializable {
 		
 		meteorite = new MeteoriteImpactProperty();
 	}
-
-	/**
-	 * Constructor 2 : Called by MockSettlement for maven test.
-	 *
-	 * @param settlement        the manager's settlement
-	 * @param buildingTemplates the settlement's building templates.
-	 * @throws Exception if buildings cannot be constructed.
-	 */
-	public BuildingManager(Settlement settlement) {
-		this.settlement = settlement;
-		this.settlementID = settlement.getIdentifier();
-
-		// Construct all buildings in the settlement.
-		buildings = new UnitSet<>();
-	}
-
 
 	/**
 	 * Sets up the map for the building functions.
@@ -373,7 +361,7 @@ public class BuildingManager implements Serializable {
 	 * @return collection of alphanumerically sorted buildings
 	 */
 	public List<Building> getSortedBuildings() {
-		return buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+		return buildings.stream().sorted(new AlphanumComparator()).toList();
 	}
 
 	/**
@@ -397,7 +385,7 @@ public class BuildingManager implements Serializable {
 		return getBuildings(functionType).stream().filter(b ->
 				b.getCategory() != BuildingCategory.CONNECTION
 				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-				).collect(Collectors.toList());
+				).toList();
 	}
 
 	/**
@@ -663,7 +651,7 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsNoF1F2(FunctionType f1, FunctionType f2) {
 		return buildings.stream()
 				.filter(b -> !b.hasFunction(f1) && !b.hasFunction(f2))
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	/**
@@ -675,7 +663,7 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsF1NoF2F3(FunctionType f1, FunctionType f2, FunctionType f3) {
 		return buildings.stream()
 				.filter(b -> b.hasFunction(f1) && !b.hasFunction(f2) && !b.hasFunction(f3))
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	
@@ -691,7 +679,7 @@ public class BuildingManager implements Serializable {
 		// for putting new building next to the same building "type".
 		return buildings.stream()
 				.filter(b -> b.getCategory() == category)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -706,7 +694,7 @@ public class BuildingManager implements Serializable {
 		return buildings.stream()
 				.filter(b -> b.getCategory() == category
 						&& b.getZone() == 0)
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	/**
@@ -720,7 +708,7 @@ public class BuildingManager implements Serializable {
 		// for putting new building next to the same building "type".
 		return buildings.stream()
 				.filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**

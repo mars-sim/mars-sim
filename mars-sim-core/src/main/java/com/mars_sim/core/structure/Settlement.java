@@ -31,6 +31,7 @@ import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.function.FunctionType;
@@ -250,17 +251,17 @@ public class Settlement extends Unit implements Temporal,
 	/** The settlement's ReportingAuthority instance. */
 	private Authority sponsor;
 	/** The settlement's building manager. */
-	protected BuildingManager buildingManager;
+	private BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
-	protected BuildingConnectorManager buildingConnectorManager;
+	private BuildingConnectorManager buildingConnectorManager;
 	/** The settlement's goods manager. */
-	protected GoodsManager goodsManager;
+	private GoodsManager goodsManager;
 	/** The settlement's construction manager. */
-	protected ConstructionManager constructionManager;
+	private ConstructionManager constructionManager;
 	/** The settlement's building power grid. */
-	protected PowerGrid powerGrid;
+	private PowerGrid powerGrid;
 	/** The settlement's heating system. */
-	protected ThermalSystem thermalSystem;
+	private ThermalSystem thermalSystem;
 	/** The settlement's chain of command. */
 	private ChainOfCommand chainOfCommand;
 	/** The settlement's location. */
@@ -278,7 +279,7 @@ public class Settlement extends Unit implements Temporal,
 	private ManufacturingManager manuManager;
 	
 	/** The settlement objective type instance. */
-	private ObjectiveType objectiveType;
+	private ObjectiveType objectiveType = ObjectiveType.BUILDERS_HAVEN;
 
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private SolMetricDataLogger<WaterUseType> waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
@@ -452,6 +453,26 @@ public class Settlement extends Unit implements Temporal,
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 	}
 	
+	protected void initialiseEssentials(boolean needGoods, List<BuildingTemplate> list) {
+		// Initialize building manager
+		buildingManager = new BuildingManager(this, list);
+
+		// Initialize building connector manager.
+		buildingConnectorManager = new BuildingConnectorManager(this, list);
+
+		// Initialize construction manager.
+		constructionManager = new ConstructionManager(this);
+
+		// Initialize power grid
+		powerGrid = new PowerGrid(this);
+		thermalSystem = new ThermalSystem(this);
+
+		if (needGoods) {
+			goodsManager = new GoodsManager(this);
+			manuManager = new ManufacturingManager(this);
+		}
+	}
+
 	/**
 	 * Initializes field data, class and maps.
 	 */
@@ -483,14 +504,10 @@ public class Settlement extends Unit implements Temporal,
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
 		SettlementSupplies supplies = sTemplate.getSupplies();
 
-		// Initialize building manager
-		buildingManager = new BuildingManager(this, supplies.getBuildings());
+		initialiseEssentials(true, supplies.getBuildings());
 		
 		buildingManager.initializeFunctionsNMeteorite();
-		
-		// Initialize building connector manager.
-		buildingConnectorManager = new BuildingConnectorManager(this, supplies.getBuildings());
-
+	
 		// Create adjacent building map
 		buildingManager.createAdjacentBuildingMap();
 	
@@ -499,11 +516,7 @@ public class Settlement extends Unit implements Temporal,
 										 masterClock.getMarsTime().getMillisolInt());
 
 		creditManager = new CreditManager(this);
-		manuManager = new ManufacturingManager(this);
-		goodsManager = new GoodsManager(this);
-		constructionManager = new ConstructionManager(this);
-		powerGrid = new PowerGrid(this);
-		thermalSystem = new ThermalSystem(this);
+
 		taskManager = new SettlementTaskManager(this);
 		
 		// Initialize scientific achievement.
@@ -669,7 +682,7 @@ public class Settlement extends Unit implements Temporal,
 				.filter(p -> !p.isDeclaredDead()
 						&& (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -1573,7 +1586,7 @@ public class Settlement extends Unit implements Temporal,
 		// using java 8 stream
 		return unitManager.getPeople().stream()
 				.filter(p -> p.getBuriedSettlement() == this)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -1586,7 +1599,7 @@ public class Settlement extends Unit implements Temporal,
 		// using java 8 stream
 		return unitManager.getPeople().stream()
 				.filter(p -> (p.getAssociatedSettlement() == this && p.isDeclaredDead()) || p.getBuriedSettlement() == this)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 
@@ -2018,7 +2031,7 @@ public class Settlement extends Unit implements Temporal,
 		return ownedVehicles.stream()
 				.filter(v -> v.getMission() != null
 					&& (v.getMission().getStage() == Stage.ACTIVE))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
