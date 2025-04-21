@@ -51,7 +51,6 @@ public class Manufacture extends Function {
 	private final int numMaxConcurrentProcesses;
 	
 	private List<WorkshopProcess> ongoingProcesses;
-	private List<SalvageProcess> ongoingSalvages;
 		
 	// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 
@@ -71,7 +70,6 @@ public class Manufacture extends Function {
 		numPrintersInUse = numMaxConcurrentProcesses;
 
 		ongoingProcesses = new CopyOnWriteArrayList<>();
-		ongoingSalvages = new CopyOnWriteArrayList<>();
 	}
 
 	/**
@@ -187,7 +185,7 @@ public class Manufacture extends Function {
 	 * @return current total.
 	 */
 	public int getCurrentTotalProcesses() {
-		return ongoingProcesses.size() + ongoingSalvages.size();
+		return ongoingProcesses.size();
 	}
 
 	/**
@@ -222,15 +220,6 @@ public class Manufacture extends Function {
 		
 		return true;
 	}
-
-	/**
-	 * Gets a list of the current salvage processes.
-	 *
-	 * @return unmodifiable list of salvage processes.
-	 */
-	public List<SalvageProcess> getSalvageProcesses() {
-		return Collections.unmodifiableList(ongoingSalvages);
-	}
 	
 	/**
 	 * Adds a new salvage process to the building.
@@ -246,7 +235,7 @@ public class Manufacture extends Function {
 			return false;
 		}
 
-		ongoingSalvages.add(process);
+		ongoingProcesses.add(process);
 		return true;
 	}
 
@@ -294,31 +283,11 @@ public class Manufacture extends Function {
 	}
 
 	/**
-	 * Checks if manufacturing function currently requires salvaging work.
-	 *
-	 * @param skill the person's materials science skill level.
-	 * @return true if manufacturing work.
-	 */
-	public boolean requiresSalvagingWork(int skill) {
-
-		for(SalvageProcess process : ongoingSalvages) {
-			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
-			// Allow a low material science skill person to have access to do the next level skill process
-			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill + 1);
-			if (workRequired && skillRequired)
-				return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Remove the process from the ongoing processes list.
 	 * @param process
 	 */
 	public void removeProcess(WorkshopProcess process) {
 		ongoingProcesses.remove(process);
-		ongoingSalvages.remove(process);
 	}
 
 
@@ -383,6 +352,5 @@ public class Manufacture extends Function {
 		super.destroy();
 
 		ongoingProcesses.forEach(p -> p.destroy());
-        ongoingSalvages.forEach(s -> s.destroy());
 	}
 }

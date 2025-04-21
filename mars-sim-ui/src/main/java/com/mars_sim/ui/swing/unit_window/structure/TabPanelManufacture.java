@@ -41,7 +41,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
-import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
@@ -118,7 +117,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 		manufactureOuterListPane.add(manufactureListPane, BorderLayout.NORTH);
 
 		// Create the process panels.
-		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
+		manufactureListPane.update(getActiveManufacturing());
 		
 		// CReate tabbed pane and add Active
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -321,7 +320,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	public void update() {
 
 		// Update processes if necessary.
-		manufactureListPane.update(getActiveManufacturing(), getActiveSalvaging());
+		manufactureListPane.update(getActiveManufacturing());
 		manufactureScrollPane.validate();
 	}
 
@@ -338,25 +337,14 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	}
 
 	/**
-	 * Gets all the salvage processes at the settlement.
-	 * 
-	 * @return list of salvage processes.
-	 */
-	private List<SalvageProcess> getActiveSalvaging() {
-		return target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).stream()
-								.map(b -> b.getManufacture().getSalvageProcesses())
-								.flatMap(Collection::stream)
-								.toList();
-	}
-
-	/**
 	 * The process selection has changed so update values
 	 * @param e
 	 * @return
 	 */
 	private void processSelectionChanged(ActionEvent e) {
 		ProcessInfo value =  (ProcessInfo)processSelection.getSelectedItem();
-		if (value == null) return;
+		if (value == null)
+			return;
 		String tip = ProcessInfoRenderer.getToolTipString(value);
 
 		processSelection.setToolTipText(tip);

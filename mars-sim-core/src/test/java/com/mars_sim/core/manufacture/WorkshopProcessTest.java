@@ -78,7 +78,7 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
         var p = new SalvageProcess(processInfo, w, canister);
         p.startProcess();
         assertTrue("Salvage process started", p.isActive());
-        assertTrue("Workshop has process", w.getSalvageProcesses().contains(p));
+        assertTrue("Workshop has process", w.getProcesses().contains(p));
         assertFalse("Canister not registered", s.getEquipmentSet().contains(canister));
 
         assertFalse("Process active after Work", p.addWorkTime(processInfo.getWorkTimeRequired(), 1));

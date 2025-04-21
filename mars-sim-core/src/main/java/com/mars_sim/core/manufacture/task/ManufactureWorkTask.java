@@ -10,8 +10,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.manufacture.ManufactureProcess;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.person.Person;
@@ -27,13 +25,13 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * A task for working on a manufacturing process.
  */
-public class ManufactureGood extends Task {
+public class ManufactureWorkTask extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ManufactureGood.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ManufactureWorkTask.class.getName());
 
 	
 	/** Task name */
@@ -55,7 +53,7 @@ public class ManufactureGood extends Task {
 	 * 
 	 * @param person the person to perform the task
 	 */
-	public ManufactureGood(Person person, Building building) {
+	public ManufactureWorkTask(Person person, Building building) {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D, 25);
 
 		setupWorkshop(building);
@@ -67,7 +65,7 @@ public class ManufactureGood extends Task {
 	 * @param robot the robot to perform the task
 	 * @param building Where the manufacturing is done
 	 */
-	public ManufactureGood(Robot robot, Building building) {
+	public ManufactureWorkTask(Robot robot, Building building) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D,
 				10D + RandomUtil.getRandomDouble(50D));
 
@@ -87,8 +85,6 @@ public class ManufactureGood extends Task {
 	 * Sets up the workshop to start helping process.
 	 */
 	private void setupWorkshop(Building manufactureBuilding) {
-		setDescription(Msg.getString("Task.description.manufactureGood.building",
-					manufactureBuilding.getName())); //$NON-NLS-1$
 		workshop = manufactureBuilding.getManufacture();
 
 		// Walk to manufacturing building.
@@ -143,7 +139,7 @@ public class ManufactureGood extends Task {
 
 		// Apply work time to manufacturing processes.
 		while ((workTime > 0D) && !isDone()) {
-			workTime = manufacture(workTime, skill);
+			workTime = workInWorkshop(workTime, skill);
 		}
 
 		// Add experience
@@ -160,10 +156,10 @@ public class ManufactureGood extends Task {
 	 * 
 	 * @param workTime
 	 */
-	private double manufacture(double workTime, int skill) {
-		var process = getRunningManufactureProcess();
+	private double workInWorkshop(double workTime, int skill) {
+		var process = getRunningProcess();
 		if (process == null) {
-			process = createNewManufactureProcess();
+			process = createNewProcess();
 			
 			if (process == null) {
 				endTask();
@@ -172,10 +168,10 @@ public class ManufactureGood extends Task {
 			setDescription(process.getName());
 		}
 
-		process.addWorkTime(workTime, skill);
-	
-		// Prints description
-		return workTime;
+		double required = Math.min(process.getWorkTimeRemaining(), workTime);
+		process.addWorkTime(required, skill);
+
+		return workTime - required;
 	}
 	
 	/**
@@ -183,7 +179,7 @@ public class ManufactureGood extends Task {
 	 * 
 	 * @return process or null if none.
 	 */
-	private WorkshopProcess getRunningManufactureProcess() {
+	private WorkshopProcess getRunningProcess() {
 		int skillLevel = getEffectiveSkillLevel();
 		for(var process : workshop.getProcesses()) {
 			if ((process.getInfo().getSkillLevelRequired() <= skillLevel)
@@ -197,27 +193,27 @@ public class ManufactureGood extends Task {
 	}
 
 	/**
-	 * Creates a new manufacturing process if possible.
+	 * Creates a new workshop process if possible.
 	 * 
-	 * @return the new manufacturing process or null if none.
+	 * @return the new  process or null if none.
 	 */
-	private ManufactureProcess createNewManufactureProcess() {
-		ManufactureProcess result = null;
+	private WorkshopProcess createNewProcess() {
 
 		if (!workshop.isFull()) {
 			int skill = getWorkerSkill(worker);
 
 			// Get something off the queue
 			ManufacturingManager mgr = workshop.getBuilding().getAssociatedSettlement().getManuManager();
-			var queued = mgr.claimNextProcess(workshop.getTechLevel(), skill, true);
+			var queued = mgr.claimNextProcess(workshop.getTechLevel(), skill);
 
 			// Create chosen manufacturing process.
 			if (queued != null) {
-				result = new ManufactureProcess((ManufactureProcessInfo) queued.getInfo(), workshop);
+				var result = queued.createProcess(workshop);
 				result.startProcess();
+				return result;
 			}
 		}
 
-		return result;
+		return null;
 	}
 }

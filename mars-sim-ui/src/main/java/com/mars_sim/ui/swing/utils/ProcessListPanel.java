@@ -14,7 +14,6 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 
 /**
@@ -24,7 +23,6 @@ public class ProcessListPanel extends JPanel {
 	private static final int WORD_WIDTH = 70;
 
     private List<WorkshopProcess> processCache = Collections.emptyList();
-	private List<SalvageProcess> salvageCache = Collections.emptyList();
     
     private boolean showBuilding;
     
@@ -38,10 +36,9 @@ public class ProcessListPanel extends JPanel {
      * @param processes
      * @param salvages
      */
-    public void update(List<WorkshopProcess> processes, List<SalvageProcess> salvages) {
+    public void update(List<WorkshopProcess> processes) {
         // Update existing list contents
-        updateManuProcess(processes);
-        updateSalvageProcesses(salvages);
+        updateProcesses(processes);
                                 
         // Update actual panels
         for(var p : getComponents()) {
@@ -50,30 +47,8 @@ public class ProcessListPanel extends JPanel {
             }
         }
     }
-        
-    private void updateSalvageProcesses(List<SalvageProcess> salvages) {
-        if (!salvageCache.equals(salvages)) {
-            // Add salvage panels for new salvage processes.
-            for(var salvage : salvages) {
-                if (!salvageCache.contains(salvage))
-                    add(new WorkshopProcessPanel(salvage, showBuilding, WORD_WIDTH));
-            }
-
-            // Remove salvage panels for old salvages.
-            for(var salvage : salvageCache) {
-                if (!salvages.contains(salvage)) {
-                    var panel = getProcessPanel(salvage);
-                    if (panel != null)
-                        remove(panel);
-                }
-            }
-
-            // Update salvageCache
-            salvageCache = new ArrayList<>(salvages);
-        }
-    }
                 
-    private void updateManuProcess(List<WorkshopProcess> processes) {
+    private void updateProcesses(List<WorkshopProcess> processes) {
         if (!processCache.equals(processes)) {
             // Add manu panels for new processes.
             for(var process : processes) {

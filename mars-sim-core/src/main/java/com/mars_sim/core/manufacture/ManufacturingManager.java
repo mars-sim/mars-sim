@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -73,6 +74,25 @@ public class ManufacturingManager implements Serializable {
 
         public boolean isResourcesAvailable() {
             return resourcesAvailable;
+        }
+
+        /**
+         * Create a workshop process to handle this item at a specific Workshop
+         * @param workshop
+         * @return
+         */
+        public WorkshopProcess createProcess(Manufacture workshop) {
+            switch (info) {
+              case ManufactureProcessInfo mp:
+                    return  new ManufactureProcess(mp, workshop);
+              case SalvageProcessInfo sp: {
+                    if (target == null) {
+                        target = ManufactureUtil.findUnitForSalvage(sp, workshop.getBuilding().getSettlement());
+                    }
+                    return new SalvageProcess(sp, workshop, target);
+              }
+              default: throw new IllegalArgumentException("Unknown process type: " + info.getClass().getName());
+            }
         }
     }
 
@@ -144,10 +164,9 @@ public class ManufacturingManager implements Serializable {
      * Claim the next process on the queue that matches a tech level.
      * @param techLevel Maximum tech level of process
      * @param skillLevel Maximum skill level of worker
-     * @param manuFilter Filter to just Manufacturing or Salvage
      * @return
      */
-    public QueuedProcess claimNextProcess(int techLevel, int skillLevel, boolean manuFilter) {     
+    public QueuedProcess claimNextProcess(int techLevel, int skillLevel) {     
         // Update the available resource status of everything queued
         updateQueueItems();
 
@@ -159,8 +178,6 @@ public class ManufacturingManager implements Serializable {
         var startableByPri = queue.stream()
                         .filter(q -> (q.info.getTechLevelRequired() <= techLevel)
                                         && (q.info.getSkillLevelRequired() <= skillLevel)
-                                        && ((manuFilter && q.info instanceof ManufactureProcessInfo)
-                                            || (!manuFilter && q.info instanceof SalvageProcessInfo))
                                         && q.isResourcesAvailable())
                         .sorted(Comparator.comparing(QueuedProcess::getValue).reversed())
                         .toList();
@@ -202,7 +219,10 @@ public class ManufacturingManager implements Serializable {
      * @param newProcess Process definition to add
      * @param target Item to salvage in this process
      */
-    public void addSalvage(SalvageProcessInfo newProcess, Salvagable target) {
+    public void addSalvageToQueue(SalvageProcessInfo newProcess, Salvagable target) {
+        if (target == null) {
+            throw new IllegalArgumentException("Target cannot be null for salvage process");
+        }
         var available = newProcess.isResourcesAvailable(owner);
         var value = getProcessValue(newProcess);
         var newItem = new QueuedProcess(newProcess, target, value, available);
