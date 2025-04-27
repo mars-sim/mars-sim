@@ -86,4 +86,12 @@ public class ManufactureProcessInfo extends ProcessInfo {
 		
 		return 1;
 	}
+
+	/**
+	 * What tool is used for this process?
+	 * @return
+	 */
+    public String getProcessTool() {
+        return "3D printer";
+    }
 }

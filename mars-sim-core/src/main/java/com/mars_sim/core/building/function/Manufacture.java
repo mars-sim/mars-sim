@@ -6,22 +6,24 @@
  */
 package com.mars_sim.core.building.function;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
-import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.MathUtils;
@@ -34,12 +36,47 @@ public class Manufacture extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static class ToolCapacity implements Serializable {
+		int used = 0;
+		int capacity;
+
+		ToolCapacity(int cap) {
+			this.capacity = cap;
+		}
+
+		private boolean claimTool() {
+			if (used < capacity) {
+				used++;
+				return true;
+			}
+			return false;
+		}
+
+		private void releaseTool() {
+			if (used > 0) {
+				used--;
+			}
+		}
+
+		private boolean hasCapacity() {
+			return (used < capacity);
+		}
+
+		public int getInUse() {
+			return used;
+		}
+
+        public int getCapacity() {
+            return capacity;
+        }
+	}
+
+	private static final ToolCapacity NO_TOOL = new ToolCapacity(0);
+
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Manufacture.class.getName());
 	
 	private static final int SKILL_GAP = 1;
-
-	private static final int PRINTER_ID = ItemResourceUtil.printerID;
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
@@ -47,8 +84,8 @@ public class Manufacture extends Function {
 
 	// Data members.
 	private int techLevel;
-	private int numPrintersInUse;
-	private final int numMaxConcurrentProcesses;
+	private int numMaxConcurrentProcesses;
+	private Map<String, ToolCapacity> availableTools;
 	
 	private List<WorkshopProcess> ongoingProcesses;
 		
@@ -67,7 +104,9 @@ public class Manufacture extends Function {
 
 		techLevel = spec.getTechLevel();
 		numMaxConcurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);
-		numPrintersInUse = numMaxConcurrentProcesses;
+
+		availableTools = new HashMap<>();
+		availableTools.put("3D printer", new ToolCapacity(2));
 
 		ongoingProcesses = new CopyOnWriteArrayList<>();
 	}
@@ -102,7 +141,7 @@ public class Manufacture extends Function {
 			} else {
 				Manufacture manFunction = building.getManufacture();
 				int tech = manFunction.techLevel;
-				double processes = manFunction.getNumPrintersInUse();
+				double processes = manFunction.getCurrentTotalProcesses();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += (tech * tech) * processes * wearModifier;
 
@@ -197,45 +236,30 @@ public class Manufacture extends Function {
 		return Collections.unmodifiableList(ongoingProcesses);
 	}
 
-	
-	public boolean isFull() {
-		return getCurrentTotalProcesses() >= numPrintersInUse;
+	/**
+	 * What spare capacity for new processes does this facility have
+	 * @return
+	 */
+	public int getCapacity() {
+		return numMaxConcurrentProcesses - getCurrentTotalProcesses();
 	}
 	
 	/**
-	 * Adds a new manufacturing process to the building.
+	 * Adds a new  process to the building.
 	 *
 	 * @param process the new manufacturing process.
 	 * @throws BuildingException if error adding process.
 	 */
-	public boolean addManuProcess(ManufactureProcess process) {
+	public boolean addProcess(WorkshopProcess process) {
 
-		if (getCurrentTotalProcesses() >= numPrintersInUse) {
-			logger.warning(getBuilding(), "No capacity adding ManuProcess " + process.getInfo().getName());
+		var tool = process.getProcessTool();
+		if ((tool != null) && !availableTools.getOrDefault(tool, NO_TOOL).claimTool()) {
+			logger.warning(getBuilding(), tool + ": no capacity adding ManuProcess " + process.getName());
 			return false;
 		}
 
 		ongoingProcesses.add(process);
 
-		
-		return true;
-	}
-	
-	/**
-	 * Adds a new salvage process to the building.
-	 *
-	 * @param process the new salvage process.
-	 */
-	public boolean addSalvProcess(SalvageProcess process) {
-
-		if (getCurrentTotalProcesses() >= numPrintersInUse) {
-			// BUT Salvage does not use printers ??
-			logger.warning(getBuilding(), "No capacity to start process '" + process.getInfo().getName() + "'.");
-			
-			return false;
-		}
-
-		ongoingProcesses.add(process);
 		return true;
 	}
 
@@ -256,9 +280,6 @@ public class Manufacture extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			// Check once a sol only
-			checkPrinters(pulse);
-
 			ongoingProcesses.forEach(p -> p.addProcessTime(pulse.getElapsed()));
 		}
 		return valid;
@@ -287,6 +308,10 @@ public class Manufacture extends Function {
 	 * @param process
 	 */
 	public void removeProcess(WorkshopProcess process) {
+		var tool = process.getProcessTool();
+		if (tool != null) {
+			availableTools.get(tool).releaseTool();
+		}
 		ongoingProcesses.remove(process);
 	}
 
@@ -297,53 +322,30 @@ public class Manufacture extends Function {
 		// Add maintenance for tech level.
 		result *= techLevel * .5;
 		// Add maintenance for num of printers in use.
-		result *= numPrintersInUse * .5;
+		var numTools = availableTools.values().stream()
+				.mapToInt(t -> t.used)
+				.sum();
+		result *= numTools * .5;
 		return result;
 	}
 
 	/**
-	 * Checks if enough 3D printer(s) are supporting the manufacturing.
-	 * 
-	 * processes
-	 * @param pulse
+	 * What tools are available at thois station
+	 * @return
 	 */
-	private void checkPrinters(ClockPulse pulse) {
-		// Check only once a day for # of processes that are needed.
-		if (pulse.isNewSol()) {
-			// Gets the available number of printers in storage
-			int numAvailable = building.getSettlement().getItemResourceStored(PRINTER_ID);
-
-			// NOTE: it's reasonable to create a settler's task to install a 3-D printer manually over a period of time
-			if (numPrintersInUse < numMaxConcurrentProcesses) {
-				int deficit = numMaxConcurrentProcesses - numPrintersInUse;
-				logger.info(getBuilding(), 20_000,
-						numPrintersInUse
-						+ " 3D-printer(s) in use out of " + numAvailable);
-
-				if (deficit > 0 && numAvailable > 0) {
-					int size = Math.min(numAvailable, deficit);
-					for (int i=0; i<size; i++) {
-						numPrintersInUse++;
-						numAvailable--;
-						int lacking = building.getSettlement().retrieveItemResource(PRINTER_ID, 1);
-						if (lacking > 0) {
-							logger.info(getBuilding(), 20_000,
-									"No 3D-printer available.");
-						}
-					}
-
-					logger.info(getBuilding(), 20_000,
-							size + " 3D-printer(s) just installed.");
-				}
-			}
-
-            // NOTE: if not having enough printers,
-			// determine how to use GoodsManager to push for making new 3D printers
-		}
+	public Set<String> getAvailableTools() {
+		return availableTools.entrySet().stream()
+				.filter(t -> t.getValue().hasCapacity())
+				.map(t -> t.getKey())
+				.collect(Collectors.toSet());
 	}
 
-	public int getNumPrintersInUse() {
-		return numPrintersInUse;
+	/**
+	 * Get the detaisl of all tools at the station
+	 * @return
+	 */
+	public Map<String,ToolCapacity> getToolDetails() {
+		return availableTools;
 	}
 
 

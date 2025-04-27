@@ -32,6 +32,7 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
         p.stopProcess(true);
 
+        assertEquals("Tools at end", 0, w.getToolDetails().get(p.getProcessTool()).getInUse());
         assertFalse("Manufacture process stopped", p.isActive());
         assertFalse("Workshop has no process", w.getProcesses().contains(p));
 
@@ -48,16 +49,23 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
         var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
         var w = b.getManufacture();
 
+
         var p = new ManufactureProcess(processInfo, w);
+        var tool = w.getToolDetails().get(p.getProcessTool());
+        assertEquals("Tools before start", 0, tool.getInUse());
+
         p.startProcess();
         assertTrue("Manufacture process started", p.isActive());
         assertTrue("Workshop has process", w.getProcesses().contains(p));
+        assertEquals("Tools after start", 1, tool.getInUse());
 
         assertTrue("Process active after Process", p.addProcessTime(processInfo.getProcessTimeRequired()));
         assertFalse("Process active after Work", p.addWorkTime(processInfo.getWorkTimeRequired(), 1));
 
         assertFalse("Manufacture process stopped", p.isActive());
         assertFalse("Workshop has no process", w.getProcesses().contains(p));
+        assertEquals("Tools at end", 0, tool.getInUse());
+
 
         assertResources(s, processInfo.getOutputList());
     }

@@ -166,7 +166,7 @@ public class ManufacturingManager implements Serializable {
      * @param skillLevel Maximum skill level of worker
      * @return
      */
-    public QueuedProcess claimNextProcess(int techLevel, int skillLevel) {     
+    public QueuedProcess claimNextProcess(int techLevel, int skillLevel, Set<String> tools) {     
         // Update the available resource status of everything queued
         updateQueueItems();
 
@@ -178,7 +178,8 @@ public class ManufacturingManager implements Serializable {
         var startableByPri = queue.stream()
                         .filter(q -> (q.info.getTechLevelRequired() <= techLevel)
                                         && (q.info.getSkillLevelRequired() <= skillLevel)
-                                        && q.isResourcesAvailable())
+                                        && q.isResourcesAvailable()
+                                        && hasTools(q, tools))
                         .sorted(Comparator.comparing(QueuedProcess::getValue).reversed())
                         .toList();
 
@@ -190,6 +191,14 @@ public class ManufacturingManager implements Serializable {
         var selected = startableByPri.get(0);
         removeProcessFromQueue(selected);
         return selected;
+    }
+
+    private static boolean hasTools(QueuedProcess q, Set<String> tools) {
+        var pi = q.getInfo();
+        if (pi instanceof ManufactureProcessInfo mpi) {
+            return tools.contains(mpi.getProcessTool());
+        }
+        return true;
     }
 
     /**
