@@ -47,8 +47,11 @@ public abstract class TypeGenerator<T> {
     private boolean changedViaEditor;
     private Mustache detailsTemplate;
 
-    // Used to group entities for grouped index
-    private Function<T,String> grouper;
+    /**
+     * Describes a grouping of entities
+     */
+    protected record GroupKey(String name, String description) {}
+    private Function<T,GroupKey> grouper;
     private String groupName;
 
     /**
@@ -105,10 +108,18 @@ public abstract class TypeGenerator<T> {
     }
 
     /**
-     * Define an grouper to create a groupe index page.
+     * Define an grouper to create a groupe index page. This provides no description
      * @param grouper Function to return a String category for a T
      */
     protected void setGrouper(String name, Function<T,String> grouper) {
+        setGrouperByKey(name, k -> new GroupKey(grouper.apply(k), null));
+    }
+
+    /**
+     * Define an grouper to create a groupe index page with a full key
+     * @param grouper Function to return a String category for a T
+     */
+    protected void setGrouperByKey(String name, Function<T,GroupKey> grouper) {
         this.groupName = name;
         this.grouper = grouper;
     }
@@ -147,7 +158,7 @@ public abstract class TypeGenerator<T> {
         if (grouper != null) {
             List<NamedGroup<T>> groups = GenericsGrouper.getGroups(entities, grouper);
             List<NamedGroup<String>> groupsByName = groups.stream()
-                                .map(g -> new NamedGroup<String>(g.id(), g.name(),
+                                .map(g -> new NamedGroup<String>(g.id(), g.name(), g.description(),
                                         toNames(g.items())))
                                 .toList();
             scope.put("groups", groupsByName);

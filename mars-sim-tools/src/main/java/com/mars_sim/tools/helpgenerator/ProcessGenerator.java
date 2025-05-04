@@ -11,22 +11,26 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.process.ProcessInfo;
+import com.mars_sim.core.manufacture.WorkshopProcessInfo;
 
 /**
  * Help file generator for manufacturing processes.
  */
-class ProcessGenerator extends TypeGenerator<ProcessInfo> {
+class ProcessGenerator extends TypeGenerator<WorkshopProcessInfo> {
 
     public static final String TYPE_NAME = "process";
+    private static final GroupKey NO_TOOLING = new GroupKey("None", "No extra tooling required");
 
     ProcessGenerator(HelpContext parent) {
         super(parent, TYPE_NAME, "Manufacturing Process",
                         "Manufacturing Processes that consume resources to create new resources.",
                         "manufacturing");
 
-        // Groups according to first letter of name
-        setGrouper("Name", r-> r.getName().substring(0, 1).toUpperCase());
+        // Groups according to the type of tooling
+        setGrouperByKey("Tooling", r-> {var t = r.getTooling();
+                                            if (t == null) return NO_TOOLING;
+                                            return new GroupKey(t.name(), t.description());
+                                        });
     }
 
     /**
@@ -36,7 +40,7 @@ class ProcessGenerator extends TypeGenerator<ProcessInfo> {
      * @param output Destination for content
      */
     @Override
-    protected void addEntityProperties(ProcessInfo p, Map<String,Object> scope) {
+    protected void addEntityProperties(WorkshopProcessInfo p, Map<String,Object> scope) {
 		addProcessInputOutput(scope, "Inputs", toQuantityItems(p.getInputList()),
 									"Products", toQuantityItems(p.getOutputList()));
 
@@ -47,7 +51,7 @@ class ProcessGenerator extends TypeGenerator<ProcessInfo> {
      * Get all the configured manufacturing processes.
      */
     @Override
-    protected List<ProcessInfo> getEntities() {
+    protected List<WorkshopProcessInfo> getEntities() {
 		var manuConfig = getConfig().getManufactureConfiguration();
         return Stream.concat(manuConfig.getManufactureProcessList().stream(),
                                 manuConfig.getSalvageInfoList().stream())
@@ -56,7 +60,7 @@ class ProcessGenerator extends TypeGenerator<ProcessInfo> {
     }
 
     @Override
-    protected String getEntityName(ProcessInfo v) {
+    protected String getEntityName(WorkshopProcessInfo v) {
         return v.getName();
     }
 }

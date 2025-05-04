@@ -9,6 +9,9 @@
     </div>
     {{#groups}}
       <h3 id="{{id}}">{{name}}</h3>
+      {{#description}}
+        <p>{{description}}</p>
+      {{/description}}
       <ul>
       {{#items}}
         <li><a href="{{typefolder}}{{#filename}}{{.}}{{/filename}}">{{.}}</a></li>
