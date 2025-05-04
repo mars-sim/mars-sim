@@ -23,9 +23,7 @@ public class ManufactureProcessInfo extends WorkshopProcessInfo {
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private int effortLevel = 2;
-	private Tooling tooling;
-	
+	private int effortLevel = 2;	
 	
 	ManufactureProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,
 			double workTimeRequired, double processTimeRequired, double powerRequired, Tooling tool,
@@ -38,7 +36,7 @@ public class ManufactureProcessInfo extends WorkshopProcessInfo {
 	ManufactureProcessInfo(String altName, ManufactureProcessInfo source, List<ProcessItem> altInputs) {
 		this(altName, source.getDescription(), source.getTechLevelRequired(),
 				source.getSkillLevelRequired(), source.getWorkTimeRequired(), source.getProcessTimeRequired(),
-				source.getPowerRequired(), source.tooling, altInputs, source.getOutputList(),
+				source.getPowerRequired(), source.getTooling(), altInputs, source.getOutputList(),
 				source.effortLevel);
 	}
 
