@@ -196,7 +196,7 @@ public class ManufacturingManager implements Serializable {
     private static boolean hasTools(QueuedProcess q, Set<String> tools) {
         var pi = q.getInfo();
         if (pi instanceof ManufactureProcessInfo mpi) {
-            return tools.contains(mpi.getProcessTool());
+            return tools.contains(mpi.getTooling());
         }
         return true;
     }

@@ -23,6 +23,7 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
 
+
 public class ManufactureConfig {
 
 	public static final String WITH_PREFIX = " with ";
@@ -34,6 +35,7 @@ public class ManufactureConfig {
 	private static final String WORK_TIME = "work-time";
 	private static final String PROCESS_TIME = "process-time";
 	private static final String POWER_REQUIRED = "power-required";
+	private static final String TOOL = "tooling";
 	private static final String DESCRIPTION = "description";
 	private static final String INPUTS = "inputs";
 	private static final String OUTPUTS = "outputs";
@@ -120,8 +122,15 @@ public class ManufactureConfig {
 			int techLevel = ConfigHelper.getAttributeInt(processElement, TECH);
 			int skillLevel = ConfigHelper.getAttributeInt(processElement, SKILL);
 			double workTime = ConfigHelper.getAttributeDouble(processElement, WORK_TIME);
-			double processTime = ConfigHelper.getAttributeDouble(processElement, PROCESS_TIME);
+			double processTime = ConfigHelper.getOptionalAttributeDouble(processElement, PROCESS_TIME, 0D);
 			double power = ConfigHelper.getAttributeDouble(processElement, POWER_REQUIRED);
+			String tool = processElement.getAttributeValue(TOOL);
+
+			// Backfill approach
+			if ((processTime > 0) && (tool == null)) {
+				tool = "3D printer";
+			}
+
 			int effort = 2;
 
 			Element descriptElem = processElement.getChild(DESCRIPTION);
@@ -147,7 +156,7 @@ public class ManufactureConfig {
 
 			// Add process to newList.
 			ManufactureProcessInfo process = new ManufactureProcessInfo(name, description,
-						techLevel, skillLevel, workTime, processTime, power,
+						techLevel, skillLevel, workTime, processTime, power, tool,
 						inputList, outputList, effort);
 			
 			newList.add(process);
@@ -159,11 +168,7 @@ public class ManufactureConfig {
 					
 					// Write the modified input resource list into a new process with the replacement name
 					String altProcessName = processName + WITH_PREFIX + newInputItems.getKey();
-					ManufactureProcessInfo process1 = new ManufactureProcessInfo(altProcessName, process.getDescription(),
-							process.getTechLevelRequired(), process.getSkillLevelRequired(),
-							process.getWorkTimeRequired(), process.getProcessTimeRequired(),
-							process.getPowerRequired(), newInputItems.getValue(),
-							process.getOutputList(), process.getEffortLevel());
+					ManufactureProcessInfo process1 = new ManufactureProcessInfo(altProcessName, process, newInputItems.getValue());
 					
 					// Add process to newList.
 					newList.add(process1);

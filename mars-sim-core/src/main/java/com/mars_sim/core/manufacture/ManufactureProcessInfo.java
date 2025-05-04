@@ -25,14 +25,23 @@ public class ManufactureProcessInfo extends ProcessInfo {
 	private static final long serialVersionUID = 1L;
 
 	private int effortLevel = 2;
+	private String tooling;
 	
 	
-	public ManufactureProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,
-			double workTimeRequired, double processTimeRequired, double powerRequired, List<ProcessItem> inputList,
-			List<ProcessItem> outputList, int effortLevel) {
+	ManufactureProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,
+			double workTimeRequired, double processTimeRequired, double powerRequired, String powerTool,
+			List<ProcessItem> inputList, List<ProcessItem> outputList, int effortLevel) {
 		super(name, description, techLevelRequired, skillLevelRequired, workTimeRequired, processTimeRequired,
 				powerRequired, inputList, outputList);
 		this.effortLevel = effortLevel;
+		this.tooling = powerTool;
+	}
+
+	ManufactureProcessInfo(String altName, ManufactureProcessInfo source, List<ProcessItem> altInputs) {
+		this(altName, source.getDescription(), source.getTechLevelRequired(),
+				source.getSkillLevelRequired(), source.getWorkTimeRequired(), source.getProcessTimeRequired(),
+				source.getPowerRequired(), source.tooling, altInputs, source.getOutputList(),
+				source.effortLevel);
 	}
 
 	/**
@@ -44,6 +53,13 @@ public class ManufactureProcessInfo extends ProcessInfo {
 		return effortLevel;
 	}
 	
+	/**
+	 * What tool is used for this process?
+	 * @return
+	 */
+    public String getTooling() {
+        return tooling;
+    }
 
 	/**
 	 * Calculates the total input mass.
@@ -86,12 +102,4 @@ public class ManufactureProcessInfo extends ProcessInfo {
 		
 		return 1;
 	}
-
-	/**
-	 * What tool is used for this process?
-	 * @return
-	 */
-    public String getProcessTool() {
-        return "3D printer";
-    }
 }

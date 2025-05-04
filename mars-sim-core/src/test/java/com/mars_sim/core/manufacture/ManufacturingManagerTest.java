@@ -82,7 +82,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         assertEquals("Queue at start", 2, mgr.getQueue().size());
 
         Set<String> tools = new HashSet<>();
-        tools.add(select1.getProcessTool());
+        tools.add(select1.getTooling());
 
         int skill = Math.min(select1.getSkillLevelRequired(), select2.getSkillLevelRequired());
         var claimed = mgr.claimNextProcess(0, 0, tools);

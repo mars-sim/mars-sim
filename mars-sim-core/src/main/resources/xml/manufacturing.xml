@@ -6,7 +6,8 @@
 	<!ATTLIST process tech CDATA #REQUIRED>
 	<!ATTLIST process skill CDATA #REQUIRED>
 	<!ATTLIST process work-time CDATA #REQUIRED>
-	<!ATTLIST process process-time CDATA #REQUIRED>
+	<!ATTLIST process process-time CDATA #IMPLIED>
+	<!ATTLIST process tooling CDATA #IMPLIED>
 	<!ATTLIST process power-required CDATA #REQUIRED>
 	<!ELEMENT description (#PCDATA)>
 	<!ELEMENT inputs (resource*, part*)>
@@ -363,7 +364,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5x 5kg iron ingots. -->
-	<process name="Cast iron ingot" tech="1" skill="2" work-time="25" process-time="75"
+	<process name="Cast iron ingot" tech="1" skill="2" work-time="25" process-time="75" tooling="furnace"
 			power-required=".2">
 		<inputs>
 			<resource name="iron powder" amount="35.0" />
@@ -401,7 +402,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Cast aluminum ingot"
 			tech="1" skill="1"
 			work-time="50"
-			process-time="50"
+			process-time="50" tooling="furnace"
 			power-required=".2">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO; 
 		1 mole - Al2CO3: 101.96g; 3C: 36g; 2Al: 54g; 3CO: 64g</description>
@@ -417,6 +418,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Produces 50x 1kg aluminum ingots. -->
 	<process name="Cast aluminum ingot (large batch)" tech="1" skill="1" work-time="250" process-time="250"
+			tooling="furnace"
 			power-required="1">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -1278,7 +1280,7 @@ Note: 1 kg of H2 is 14.13 liter
 		 
 		 Various other components are used to make up the electronic circuitry and suit controls.
 	-->
-	<process name="Assemble EVA suit" tech="2" skill="3" work-time="500" process-time="0"
+	<process name="Assemble EVA suit" tech="2" skill="3" work-time="500"
 			power-required="0.5">
 		<inputs>
 			<part name="EVA helmet" number="1" />
@@ -2225,7 +2227,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="Bake regolith brick" tech="0" skill="0" work-time="5" process-time="50"
+	<process name="Bake regolith brick" tech="0" skill="0" work-time="5" process-time="50" tooling="furnace"
 			power-required=".1">
 		<inputs>
 			<resource name="regolith" amount="30" />
@@ -2239,7 +2241,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="Bake sand brick" tech="0" skill="0" work-time="5" process-time="50"
+	<process name="Bake sand brick" tech="0" skill="0" work-time="5" process-time="50" tooling="furnace"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="30" />

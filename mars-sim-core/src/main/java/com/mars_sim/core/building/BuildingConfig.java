@@ -74,6 +74,7 @@ public class BuildingConfig {
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String TYPE = "type";
 	private static final String AMOUNT = "amount";
+	private static final String NUMBER = "number";
 	private static final String MODULES = "modules";
 	private static final String CONVERSION = "thermal-conversion";
 	private static final String PERCENT_LOADING = "percent-loading";
@@ -89,6 +90,8 @@ public class BuildingConfig {
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String BED_LOCATION = "bed-location";
+
+	private static final String TOOLING = "tooling";
 
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
@@ -186,7 +189,8 @@ public class BuildingConfig {
 				}
 			}
 			
-			FunctionSpec fspec = new FunctionSpec(function, props, spots);
+			// Parse extras
+			FunctionSpec fspec = createFunctionSpec(buildingTypeName + " - " + name, function, props, spots, element);
 
 			supportedFunctions.put(function, fspec);
 		}
@@ -275,7 +279,7 @@ public class BuildingConfig {
 		
 		return newSpec;
 	}
-	
+
 	/**
 	 * Gets the spot name that is best associated with a certain FunctionType.
 	 * 
@@ -326,6 +330,26 @@ public class BuildingConfig {
 	}
 
 	/**
+	 * Factory method to create FunctionSpecs
+	 * @param context Context for error messages
+	 * @param function Type of Function
+	 * @param props Coming standard props
+	 * @param spots Activity spots
+	 * @param element Source XML element
+	 * @return
+	 */
+	private FunctionSpec createFunctionSpec(String context, FunctionType function, Map<String,Object> props,
+											Set<NamedPosition> spots, Element element) {
+		// Check for extra function specifics	
+		if (function == FunctionType.MANUFACTURE) {
+			var tools = ConfigHelper.parseIntList(context, element.getChildren(TOOLING), NAME, s -> s, NUMBER);
+			props.put(TOOLING, tools);
+		}
+
+		return new FunctionSpec(function, props, spots);
+	}
+
+	/**
 	 * Parses the specific Resource processing process-engine nodes and create a list of ResourceProcessingEngine
 	 * 
 	 * @param resourceProcessingElement
@@ -345,7 +369,7 @@ public class BuildingConfig {
 
 		return resourceProcesses;
 	}
-	
+
 	/**
 	 * Parses a specific research details.
 	 * 

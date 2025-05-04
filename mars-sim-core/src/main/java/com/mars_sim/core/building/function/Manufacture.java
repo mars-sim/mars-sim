@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -36,6 +37,9 @@ public class Manufacture extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Records the available capacity of a tooling in a Manufacture function.
+	 */
 	public static class ToolCapacity implements Serializable {
 		int used = 0;
 		int capacity;
@@ -89,8 +93,6 @@ public class Manufacture extends Function {
 	
 	private List<WorkshopProcess> ongoingProcesses;
 		
-	// NOTE: create a map to show which process has a 3D printer in use and which doesn't
-
 	/**
 	 * Constructor.
 	 *
@@ -105,8 +107,12 @@ public class Manufacture extends Function {
 		techLevel = spec.getTechLevel();
 		numMaxConcurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 
+		@SuppressWarnings("unchecked")
+		Map<String,Integer> toolCapacity = (Map<String, Integer>) spec.getProperty("tooling");
 		availableTools = new HashMap<>();
-		availableTools.put("3D printer", new ToolCapacity(2));
+		toolCapacity.forEach((tool, cap) -> {
+			availableTools.put(tool, new ToolCapacity(cap));
+		});
 
 		ongoingProcesses = new CopyOnWriteArrayList<>();
 	}
@@ -336,7 +342,7 @@ public class Manufacture extends Function {
 	public Set<String> getAvailableTools() {
 		return availableTools.entrySet().stream()
 				.filter(t -> t.getValue().hasCapacity())
-				.map(t -> t.getKey())
+				.map(Entry::getKey)
 				.collect(Collectors.toSet());
 	}
 

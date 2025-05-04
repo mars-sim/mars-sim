@@ -26,7 +26,7 @@ public class ManufactureProcess extends WorkshopProcess {
 	 * @param workshop the manufacturing workshop where the process is taking place.
 	 */
 	public ManufactureProcess(ManufactureProcessInfo info, Manufacture workshop) {
-		super(info.getName(), workshop, info, info.getProcessTool());
+		super(info.getName(), workshop, info, info.getTooling());
 	}
 	
 	/**

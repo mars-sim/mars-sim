@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils;
 
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
@@ -37,6 +38,10 @@ public final class ProcessInfoRenderer {
         result.append(String.format(TOOLTIP_ROW, "Labor Req", info.getWorkTimeRequired() + "millisols"));
         result.append(String.format(TOOLTIP_ROW, "Time Req", info.getProcessTimeRequired() + "millisols"));
         result.append(String.format(TOOLTIP_ROW, "Power Req", info.getPowerRequired() + " Kw"));
+        if (info instanceof ManufactureProcessInfo mpi) {
+            result.append(String.format(TOOLTIP_ROW, "Tool Req", mpi.getTooling()));
+        }
+
         result.append(String.format(TOOLTIP_ROW, "Bldg Tech Req", info.getTechLevelRequired()));
         result.append(String.format(TOOLTIP_ROW, "Skill Req", info.getSkillLevelRequired()));
         result.append(String.format(TOOLTIP_ROW, "Inputs",

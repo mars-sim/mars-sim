@@ -105,8 +105,12 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
 
         // Add processes to the workshop
         var p = RandomUtil.getRandomElement(processes);
-        (new ManufactureProcess(p, m)).startProcess();
-        (new ManufactureProcess(p, m)).startProcess();
+        assertTrue("Start process #1", (new ManufactureProcess(p, m)).startProcess());
+        assertTrue("Start process #2", (new ManufactureProcess(p, m)).startProcess());
+
+        // Fail due to only 2 3D printers
+        assertFalse("Start process #3", (new ManufactureProcess(p, m)).startProcess());
+
 
         var tasks = mt.getSettlementTasks(s);
         assertEquals("Tasks for running Processes", 1, tasks.size());
