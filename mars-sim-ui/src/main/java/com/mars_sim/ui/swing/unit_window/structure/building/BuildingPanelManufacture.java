@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,14 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.building.function.Manufacture.ToolCapacity;
+import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * A building panel displaying the manufacture building function.
@@ -78,14 +81,19 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		labelPanel.addTextField("Process Capacity", Integer.toString(workshop.getMaxProcesses()), null);
 
 		JScrollPane tscrollPanel = new JScrollPane();
-		tscrollPanel.setPreferredSize(new Dimension(160, 80));
+		tscrollPanel.setPreferredSize(new Dimension(160, 130));
 
 		topPanel.add(tscrollPanel, BorderLayout.CENTER);
 		tscrollPanel.setBorder(StyleManager.createLabelBorder("Tools"));
 
 		tools = new ToolModel(workshop.getToolDetails());
 
-		var table = new JTable(tools);
+		var table = new JTable(tools) {
+            @Override          
+            public String getToolTipText(MouseEvent e) {
+                return ToolTipTableModel.extractToolTip(e, this);
+            }
+		};
 		table.setCellSelectionEnabled(false);
 		table.setRowSelectionAllowed(false);
 
@@ -130,26 +138,26 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		processListPane = null;
 	}
 
-	private class ToolModel extends AbstractTableModel {
+	private class ToolModel extends AbstractTableModel implements ToolTipTableModel {
 		private static final long serialVersionUID = 1L;
 
-		private List<String> names = new ArrayList<>();
+		private List<Tooling> tool = new ArrayList<>();
 		private List<Integer> inuse = new ArrayList<>();
 		private List<Integer> capacity = new ArrayList<>();
 
-		private ToolModel(Map<String, ToolCapacity> toolDetails) {
+		private ToolModel(Map<Tooling, ToolCapacity> toolDetails) {
 
 			toolDetails.forEach((name, details) -> {
-				names.add(name);
+				tool.add(name);
 				inuse.add(details.getInUse());
 				capacity.add(details.getCapacity());
 			});
 		}
 
-		private void update(Map<String, ToolCapacity> toolDetails) {
+		private void update(Map<Tooling, ToolCapacity> toolDetails) {
 
 			toolDetails.forEach((name, details) -> {
-				int idx = names.indexOf(name);
+				int idx = tool.indexOf(name);
 				var newInUse = details.getInUse();
 				if (inuse.get(idx) != newInUse) {
 					inuse.set(idx, newInUse);
@@ -160,7 +168,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		
 		@Override
 		public int getRowCount() {
-			return names.size();
+			return tool.size();
 		}
 
 		@Override
@@ -185,12 +193,20 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> names.get(rowIndex);
+				case 0 -> tool.get(rowIndex).name();
 				case 1 -> inuse.get(rowIndex);
 				case 2 -> capacity.get(rowIndex);
 
 				default -> null;
 			};
+		}
+
+		@Override
+		public String getToolTipAt(int row, int col) {
+			if (col == 0) {
+				return tool.get(row).description();
+			}
+			return null;
 		}
 	}
 }

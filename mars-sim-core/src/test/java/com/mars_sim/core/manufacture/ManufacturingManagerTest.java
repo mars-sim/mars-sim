@@ -27,7 +27,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
     }
 
     public static Building buildWorkshop(MarsSimContext context, BuildingManager buildingManager) {
-        return context.buildFunction(buildingManager, "Lander Hab", BuildingCategory.WORKSHOP,
+        return context.buildFunction(buildingManager, "Workshop", BuildingCategory.WORKSHOP,
                         FunctionType.MANUFACTURE,  LocalPosition.DEFAULT_POSITION, 1D, true);
     }
 
@@ -51,7 +51,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         var select1 = getSalvageAtTechLevel(1);
         mgr.addProcessToQueue(select1);
         assertEquals("Queue at start", 2, mgr.getQueue().size());
-        Set<String> tools = Collections.emptySet();
+        Set<Tooling> tools = Collections.emptySet();
 
         int skill = Math.min(select1.getSkillLevelRequired(), select2.getSkillLevelRequired());
         var claimed = mgr.claimNextProcess(0, 0, tools);
@@ -81,7 +81,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         mgr.addProcessToQueue(select1);
         assertEquals("Queue at start", 2, mgr.getQueue().size());
 
-        Set<String> tools = new HashSet<>();
+        Set<Tooling> tools = new HashSet<>();
         tools.add(select1.getTooling());
 
         int skill = Math.min(select1.getSkillLevelRequired(), select2.getSkillLevelRequired());

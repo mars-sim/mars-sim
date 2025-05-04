@@ -23,6 +23,7 @@ import org.jdom2.Element;
 
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcessConfig;
@@ -114,13 +115,13 @@ public class BuildingConfig {
 	 * @param buildingDoc DOM document with building configuration
 	 * @param resProcConfig 
 	 */
-	public BuildingConfig(Document buildingDoc, ResourceProcessConfig resProcConfig) {
+	public BuildingConfig(Document buildingDoc, ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 
 		List<Element> buildingNodes = buildingDoc.getRootElement().getChildren(BUILDING);
 		for (Element buildingElement : buildingNodes) {
 			String buildingType = buildingElement.getAttributeValue(BUILDING_TYPE);
 			String key = generateSpecKey(buildingType);
-			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement, resProcConfig));
+			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement, resProcConfig, manuConfig));
 		}
 	}
 
@@ -139,10 +140,13 @@ public class BuildingConfig {
 	 * @param buildingTypeName
 	 * @param buildingElement
 	 * @param resProcConfig 
+	 * @param manuConfig 
 	 * @return
 	 */
-	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement, ResourceProcessConfig resProcConfig) {
+	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
+								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 		Element descElement = buildingElement.getChild(DESCRIPTION);
+
 		String desc = descElement.getValue().trim();
 		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
 
@@ -190,7 +194,7 @@ public class BuildingConfig {
 			}
 			
 			// Parse extras
-			FunctionSpec fspec = createFunctionSpec(buildingTypeName + " - " + name, function, props, spots, element);
+			FunctionSpec fspec = createFunctionSpec(buildingTypeName + " - " + name, function, props, spots, element, manuConfig);
 
 			supportedFunctions.put(function, fspec);
 		}
@@ -336,13 +340,15 @@ public class BuildingConfig {
 	 * @param props Coming standard props
 	 * @param spots Activity spots
 	 * @param element Source XML element
+	 * @param manuConfig 
 	 * @return
 	 */
 	private FunctionSpec createFunctionSpec(String context, FunctionType function, Map<String,Object> props,
-											Set<NamedPosition> spots, Element element) {
+											Set<NamedPosition> spots, Element element, ManufactureConfig manuConfig) {
 		// Check for extra function specifics	
 		if (function == FunctionType.MANUFACTURE) {
-			var tools = ConfigHelper.parseIntList(context, element.getChildren(TOOLING), NAME, s -> s, NUMBER);
+			var tools = ConfigHelper.parseIntList(context, element.getChildren(TOOLING), NAME,
+											manuConfig::getTooling, NUMBER);
 			props.put(TOOLING, tools);
 		}
 

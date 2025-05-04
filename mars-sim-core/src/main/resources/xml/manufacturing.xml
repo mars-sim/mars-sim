@@ -51,6 +51,11 @@ http://canada.marssociety.org/winnipeg/soil.html
 
 <!-- List of all manufacturing processes. -->
 <manufacturing-processes>
+	<tooling>
+		<tool name="Furnace" description="Equipment used to bake or melt materials" />
+		<tool name="3D Printer" description="Generic 3D printer" />
+		<tool name="Lifting" description="Lifting equipment for working on large items" />
+	</tooling>
 
 <!-- 
  work-time means the amount of time it takes for settlers to examine, operate and direct this process.

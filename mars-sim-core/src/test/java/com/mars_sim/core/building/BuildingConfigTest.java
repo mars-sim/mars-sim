@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 
@@ -133,8 +134,10 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Cement capacity", 500D, storage.get(ResourceUtil.cementID));
 
         FunctionSpec manufacture = found.getFunctionSpec(FunctionType.MANUFACTURE);
-        Map<String, Integer> tools = (Map<String, Integer>) manufacture.getProperty("tooling");
-        assertEquals("Tools", 1, tools.size());
-        assertEquals("Furnaces", 1, tools.get("furnace").intValue());
+        Map<Tooling, Integer> tools = (Map<Tooling, Integer>) manufacture.getProperty("tooling");
+        assertEquals("Tools", 2, tools.size());
+
+        var furnace = simConfig.getManufactureConfiguration().getTooling("furnace");
+        assertEquals("Furnaces", 1, tools.get(furnace).intValue());
     }
 }

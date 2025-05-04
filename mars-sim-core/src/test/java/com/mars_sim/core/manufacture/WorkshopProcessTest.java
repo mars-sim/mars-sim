@@ -11,11 +11,11 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 
 public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
-    private static final String MAKE_NITRITES = "Make Nitrites";
+    private static final String FURNACE_PROCESS = "Cast aluminum ingot";
 
     public void testManuProcessFailed() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
-                            .filter(p -> p.getName().equals(MAKE_NITRITES))
+                            .filter(p -> p.getName().equals(FURNACE_PROCESS))
                             .findAny().get();
         assertTrue("Process has prcoess time", processInfo.getProcessTimeRequired() > 0);
         
@@ -32,7 +32,7 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
         p.stopProcess(true);
 
-        assertEquals("Tools at end", 0, w.getToolDetails().get(p.getProcessTool()).getInUse());
+        assertEquals("Tools at end", 0, w.getToolDetails().get(p.getTooling()).getInUse());
         assertFalse("Manufacture process stopped", p.isActive());
         assertFalse("Workshop has no process", w.getProcesses().contains(p));
 
@@ -41,7 +41,7 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
     public void testManuProcess() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
-                            .filter(p -> p.getName().equals(MAKE_NITRITES))
+                            .filter(p -> p.getName().equals(FURNACE_PROCESS))
                             .findAny().get();
         assertTrue("Process has prcoess time", processInfo.getProcessTimeRequired() > 0);
         
@@ -51,7 +51,7 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
 
         var p = new ManufactureProcess(processInfo, w);
-        var tool = w.getToolDetails().get(p.getProcessTool());
+        var tool = w.getToolDetails().get(p.getTooling());
         assertEquals("Tools before start", 0, tool.getInUse());
 
         p.startProcess();

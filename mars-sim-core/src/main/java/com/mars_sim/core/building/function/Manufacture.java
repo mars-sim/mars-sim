@@ -23,6 +23,7 @@ import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
+import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.structure.Settlement;
@@ -89,7 +90,7 @@ public class Manufacture extends Function {
 	// Data members.
 	private int techLevel;
 	private int numMaxConcurrentProcesses;
-	private Map<String, ToolCapacity> availableTools;
+	private Map<Tooling, ToolCapacity> availableTools;
 	
 	private List<WorkshopProcess> ongoingProcesses;
 		
@@ -108,7 +109,7 @@ public class Manufacture extends Function {
 		numMaxConcurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 
 		@SuppressWarnings("unchecked")
-		Map<String,Integer> toolCapacity = (Map<String, Integer>) spec.getProperty("tooling");
+		Map<Tooling,Integer> toolCapacity = (Map<Tooling, Integer>) spec.getProperty("tooling");
 		availableTools = new HashMap<>();
 		toolCapacity.forEach((tool, cap) -> {
 			availableTools.put(tool, new ToolCapacity(cap));
@@ -258,7 +259,7 @@ public class Manufacture extends Function {
 	 */
 	public boolean addProcess(WorkshopProcess process) {
 
-		var tool = process.getProcessTool();
+		var tool = process.getTooling();
 		if ((tool != null) && !availableTools.getOrDefault(tool, NO_TOOL).claimTool()) {
 			logger.warning(getBuilding(), tool + ": no capacity adding ManuProcess " + process.getName());
 			return false;
@@ -314,7 +315,7 @@ public class Manufacture extends Function {
 	 * @param process
 	 */
 	public void removeProcess(WorkshopProcess process) {
-		var tool = process.getProcessTool();
+		var tool = process.getTooling();
 		if (tool != null) {
 			availableTools.get(tool).releaseTool();
 		}
@@ -339,7 +340,7 @@ public class Manufacture extends Function {
 	 * What tools are available at thois station
 	 * @return
 	 */
-	public Set<String> getAvailableTools() {
+	public Set<Tooling> getAvailableTools() {
 		return availableTools.entrySet().stream()
 				.filter(t -> t.getValue().hasCapacity())
 				.map(Entry::getKey)
@@ -350,7 +351,7 @@ public class Manufacture extends Function {
 	 * Get the detaisl of all tools at the station
 	 * @return
 	 */
-	public Map<String,ToolCapacity> getToolDetails() {
+	public Map<Tooling,ToolCapacity> getToolDetails() {
 		return availableTools;
 	}
 

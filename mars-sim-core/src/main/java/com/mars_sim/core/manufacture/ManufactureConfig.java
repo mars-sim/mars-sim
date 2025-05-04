@@ -56,6 +56,7 @@ public class ManufactureConfig {
 	private List<ManufactureProcessInfo> manuProcessInfoList;
 	private List<SalvageProcessInfo> salvageInfoList;
 
+	private Map<String, Tooling> tools = new HashMap<>();
 	
 	/**
 	 * Constructor.
@@ -64,9 +65,11 @@ public class ManufactureConfig {
 	 *                       configuration.
 	 */
 	public ManufactureConfig(Document manufactureDoc) {
-		
-		loadManufactureProcessList(manufactureDoc);
-		loadSalvageList(manufactureDoc);
+		Element root = manufactureDoc.getRootElement();
+
+		loadTooling(root);
+		loadManufactureProcessList(root);
+		loadSalvageList(root);
 	}
 
 	/**
@@ -79,6 +82,29 @@ public class ManufactureConfig {
 		return manuProcessInfoList;
 	}
 	
+	private void loadTooling(Element root) {
+		var tooling = root.getChild(TOOL);
+		for(var elem : tooling.getChildren()) {
+			String name = elem.getAttributeValue(NAME);
+			String description = elem.getAttributeValue(DESCRIPTION);
+			Tooling tool = new Tooling(name, description);
+			tools.put(name.toLowerCase(), tool);
+		}
+	}
+
+	/**
+	 * Find a specified tooling by name.
+	 * @param name
+	 * @return
+	 */
+	public Tooling getTooling(String name) {
+		var result = tools.get(name.toLowerCase());
+		if (result == null) {
+			throw new IllegalArgumentException("Tooling not found: " + name);
+		}
+		return result;
+	}
+
 	/**
 	 * Gets manufacturing processes within (at or below) the capability of a tech level.
 	 *
@@ -97,11 +123,11 @@ public class ManufactureConfig {
 	/**
 	 * Gets a list of manufacturing process information.
 	 * 
-	 * @param manufactureDoc
+	 * @param root
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */
-	private synchronized void loadManufactureProcessList(Document manufactureDoc) {
+	private synchronized void loadManufactureProcessList(Element root) {
 		if (manuProcessInfoList != null) {
 			// just in case if another thread is being created
 			return;
@@ -110,7 +136,6 @@ public class ManufactureConfig {
 		// Build the global list in a temp to avoid access before it is built
 		List<ManufactureProcessInfo> newList = new ArrayList<>();
 		
-		Element root = manufactureDoc.getRootElement();
 		for (Element processElement : root.getChildren(PROCESS)) {
 
 			// Create a map that stores the resource to be swapped out with an alternate resource
@@ -124,11 +149,15 @@ public class ManufactureConfig {
 			double workTime = ConfigHelper.getAttributeDouble(processElement, WORK_TIME);
 			double processTime = ConfigHelper.getOptionalAttributeDouble(processElement, PROCESS_TIME, 0D);
 			double power = ConfigHelper.getAttributeDouble(processElement, POWER_REQUIRED);
-			String tool = processElement.getAttributeValue(TOOL);
+			String toolName = processElement.getAttributeValue(TOOL);
+			Tooling tool = null;
 
 			// Backfill approach
-			if ((processTime > 0) && (tool == null)) {
-				tool = "3D printer";
+			if ((processTime > 0) && (toolName == null)) {
+				toolName = "3D printer";
+			}
+			if (toolName != null) {
+				tool = getTooling(toolName);
 			}
 
 			int effort = 2;
@@ -241,13 +270,12 @@ public class ManufactureConfig {
 	 * @return list of salvage process information.
 	 * @throws Exception if error getting info.
 	 */
-	private synchronized void loadSalvageList(Document manufactureDoc) {
+	private synchronized void loadSalvageList(Element root) {
 		if (salvageInfoList != null) {
 			// just in case if another thread is being created
 			return;
 		}
 		
-		Element root = manufactureDoc.getRootElement();
 		List<Element> salvageNodes = root.getChildren(SALVAGE);
 		List<SalvageProcessInfo> newList = new ArrayList<>();
 		
@@ -264,7 +292,13 @@ public class ManufactureConfig {
 			List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
 			var outputs = ConfigHelper.parseProcessItems(ItemType.PART, partSalvageNodes);
 
-			SalvageProcessInfo process = new SalvageProcessInfo(salvaged, null, techLevel, skill, workTime, outputs);
+			Tooling tool = null;
+			if (itemT == ItemType.VEHICLE) {
+				tool = getTooling("Lifting");
+			}
+
+
+			SalvageProcessInfo process = new SalvageProcessInfo(salvaged, null, techLevel, skill, workTime, tool, outputs);
 			newList.add(process);
 		}
 

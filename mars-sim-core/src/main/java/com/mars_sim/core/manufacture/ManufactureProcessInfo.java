@@ -9,7 +9,6 @@ package com.mars_sim.core.manufacture;
 
 import java.util.List;
 
-import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResource;
@@ -19,22 +18,21 @@ import com.mars_sim.core.resource.ResourceUtil;
 /**
  * Information about a type of manufacturing process.
  */
-public class ManufactureProcessInfo extends ProcessInfo {
+public class ManufactureProcessInfo extends WorkshopProcessInfo {
 
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private int effortLevel = 2;
-	private String tooling;
+	private Tooling tooling;
 	
 	
 	ManufactureProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,
-			double workTimeRequired, double processTimeRequired, double powerRequired, String powerTool,
+			double workTimeRequired, double processTimeRequired, double powerRequired, Tooling tool,
 			List<ProcessItem> inputList, List<ProcessItem> outputList, int effortLevel) {
 		super(name, description, techLevelRequired, skillLevelRequired, workTimeRequired, processTimeRequired,
-				powerRequired, inputList, outputList);
+				powerRequired, tool, inputList, outputList);
 		this.effortLevel = effortLevel;
-		this.tooling = powerTool;
 	}
 
 	ManufactureProcessInfo(String altName, ManufactureProcessInfo source, List<ProcessItem> altInputs) {
@@ -53,13 +51,6 @@ public class ManufactureProcessInfo extends ProcessInfo {
 		return effortLevel;
 	}
 	
-	/**
-	 * What tool is used for this process?
-	 * @return
-	 */
-    public String getTooling() {
-        return tooling;
-    }
 
 	/**
 	 * Calculates the total input mass.

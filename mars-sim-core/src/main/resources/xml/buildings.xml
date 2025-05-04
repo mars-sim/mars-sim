@@ -2377,6 +2377,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc=".65" yloc=".4" />
 				</activity>
 				<tooling name="furnace" number="1"/>
+				<tooling name="lifting" number="1"/>
+				<tooling name="3D printer" number="2" />
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />

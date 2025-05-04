@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,12 +35,12 @@ public class ManufacturingManager implements Serializable {
     public static class QueuedProcess implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        private ProcessInfo info;
+        private WorkshopProcessInfo info;
         private Salvagable target;
         private RatingScore value;
         private boolean resourcesAvailable;
 
-        private QueuedProcess(ProcessInfo info, Salvagable target, RatingScore value,
+        private QueuedProcess(WorkshopProcessInfo info, Salvagable target, RatingScore value,
                             boolean resourcesAvailable) {
             this.info = info;
             this.target = target;
@@ -48,7 +49,7 @@ public class ManufacturingManager implements Serializable {
             this.resourcesAvailable = resourcesAvailable;
         }
 
-        public ProcessInfo getInfo() {
+        public WorkshopProcessInfo getInfo() {
             return info;
         }
 
@@ -129,6 +130,7 @@ public class ManufacturingManager implements Serializable {
     private List<QueuedProcess> queue;
     private Settlement owner;
     private int maxTechLevel = -2;
+    private Set<Tooling> allTools;
 
     public ManufacturingManager(Settlement owner) {
         this.owner = owner;
@@ -166,7 +168,7 @@ public class ManufacturingManager implements Serializable {
      * @param skillLevel Maximum skill level of worker
      * @return
      */
-    public QueuedProcess claimNextProcess(int techLevel, int skillLevel, Set<String> tools) {     
+    public QueuedProcess claimNextProcess(int techLevel, int skillLevel, Set<Tooling> tools) {     
         // Update the available resource status of everything queued
         updateQueueItems();
 
@@ -179,7 +181,7 @@ public class ManufacturingManager implements Serializable {
                         .filter(q -> (q.info.getTechLevelRequired() <= techLevel)
                                         && (q.info.getSkillLevelRequired() <= skillLevel)
                                         && q.isResourcesAvailable()
-                                        && hasTools(q, tools))
+                                        && q.info.isSupported(tools))
                         .sorted(Comparator.comparing(QueuedProcess::getValue).reversed())
                         .toList();
 
@@ -191,14 +193,6 @@ public class ManufacturingManager implements Serializable {
         var selected = startableByPri.get(0);
         removeProcessFromQueue(selected);
         return selected;
-    }
-
-    private static boolean hasTools(QueuedProcess q, Set<String> tools) {
-        var pi = q.getInfo();
-        if (pi instanceof ManufactureProcessInfo mpi) {
-            return tools.contains(mpi.getTooling());
-        }
-        return true;
     }
 
     /**
@@ -215,7 +209,7 @@ public class ManufacturingManager implements Serializable {
      * the end user
      * @param newProcess Process definition to add
      */
-    public void addProcessToQueue(ProcessInfo newProcess) {
+    public void addProcessToQueue(WorkshopProcessInfo newProcess) {
         var available = newProcess.isResourcesAvailable(owner);
         var value = getProcessValue(newProcess);
         var newItem = new QueuedProcess(newProcess, null, value, available);
@@ -282,14 +276,21 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Calculate the maximum tech level process this Settlement can run.
+     * Calculate the maximum tech level and available tooling this Settlement can run.
      * Scans the connected Workshops.
      */
     public void updateTechLevel() {
-        maxTechLevel = owner.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)
-                    .stream()
-                    .mapToInt(w -> w.getManufacture().getTechLevel())
-                    .max().orElse(-1);
+        maxTechLevel = -1;
+        allTools = new HashSet<>();
+        
+        for(var b : owner.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
+            var m = b.getManufacture();
+
+            allTools.addAll(m.getToolDetails().keySet());
+            if (m.getTechLevel() > maxTechLevel) {
+                maxTechLevel = m.getTechLevel();
+            }
+        }
     }
 
     /**
@@ -366,10 +367,10 @@ public class ManufacturingManager implements Serializable {
      * @param maxProcesses Max number of processes to add
      * @return Number added
      */
-    private int addTopValueProcesses(String name, List<? extends ProcessInfo> potential,
+    private int addTopValueProcesses(String name, List<? extends WorkshopProcessInfo> potential,
                                      int scoreThreshold, int maxProcesses) {
 
-        record ProcessValue(ProcessInfo info, RatingScore score) {
+        record ProcessValue(WorkshopProcessInfo info, RatingScore score) {
             double value() {return score.getScore();}
         }
             
@@ -440,7 +441,7 @@ public class ManufacturingManager implements Serializable {
      */
     private List<ManufactureProcessInfo> getSupportedManuProcesses() {
         return ManufactureUtil.getManufactureProcessesForTechSkillLevel(getMaxTechLevel(),
-                                                                        getHighestSkill());
+                                                                        getHighestSkill(), allTools);
     }
 
     
@@ -488,7 +489,7 @@ public class ManufacturingManager implements Serializable {
      * @return List of salvage processes.
      */
     public List<SalvageProcessInfo> getQueuableSalvageProcesses() {
-        return ManufactureUtil.getSalvageProcessesForTechSkillLevel(getMaxTechLevel(), getHighestSkill());
+        return ManufactureUtil.getSalvageProcessesForTechSkillLevel(getMaxTechLevel(), getHighestSkill(), allTools);
     }
 
     /**

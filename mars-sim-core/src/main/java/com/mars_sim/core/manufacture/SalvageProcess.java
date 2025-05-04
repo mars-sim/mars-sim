@@ -40,7 +40,7 @@ public class SalvageProcess extends WorkshopProcess {
      * @param workshop the manufacturing workshop where the salvage is taking place.
      */
     public SalvageProcess(SalvageProcessInfo info, Manufacture workshop, Salvagable salvagedUnit) {
-        super("Salvage " + salvagedUnit.getName(), workshop, info, null);
+        super("Salvage " + salvagedUnit.getName(), workshop, info);
         this.salvagedUnit = salvagedUnit;
     }
 
