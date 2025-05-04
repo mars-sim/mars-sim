@@ -19,6 +19,7 @@ import org.jdom2.Element;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.VehicleType;
 
 
@@ -41,6 +42,8 @@ public class ConstructionConfig {
     private static final String RESOURCE = "resource";
     private static final String VEHICLE = "vehicle";
     private static final String TYPE = "type";
+    private static final String NUMBER = "number";
+    private static final String AMOUNT = "amount";
     private static final String ATTACHMENT_PART = "attachment-part";
 
     // Data members
@@ -153,11 +156,14 @@ public class ConstructionConfig {
 
             String context = "Construction " + name;
             List<Element> partList = stageInfoElement.getChildren(PART);
-            Map<Integer, Integer> parts = ConfigHelper.parsePartListById(context, partList);
+            Map<Integer, Integer> parts = ConfigHelper.parseIntList(context, partList,
+            			TYPE, s -> ItemResourceUtil.findItemResource(s).getID(),
+            			NUMBER);
 
             List<Element> resourceList = stageInfoElement.getChildren(RESOURCE);
-            Map<Integer, Double> resources = ConfigHelper.parseResourceListById(context,
-                                        resourceList);
+			Map<Integer, Double> resources = ConfigHelper.parseDoubleList(context, resourceList, 
+							            TYPE, k -> ResourceUtil.findAmountResource(k).getID(),
+							            AMOUNT);
 
             List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
             List<ConstructionVehicleType> vehicles = new ArrayList<>(vehicleList.size());

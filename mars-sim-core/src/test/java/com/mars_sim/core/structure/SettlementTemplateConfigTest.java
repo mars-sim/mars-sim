@@ -2,6 +2,7 @@ package com.mars_sim.core.structure;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.resource.ItemResourceUtil;
 
 public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
     public void testGetAll() {
@@ -25,7 +26,14 @@ public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
     
         var supplies = hubBase.getSupplies();
         assertFalse("Equipment is empty", supplies.getEquipment().isEmpty());
+
         assertFalse("Parts is empty", supplies.getParts().isEmpty());
+        int num = supplies.getParts().get(
+                            ItemResourceUtil.findItemResource("biosensor"));
+        assertEquals("Biosensor", 1, num); // One added in the template
+        assertTrue("Has printers", supplies.getParts().get(
+                            ItemResourceUtil.findItemResource(ItemResourceUtil.printerID)) > 0);
+
         assertFalse("Bins is empty", supplies.getBins().isEmpty());
         assertFalse("Buildings is empty", supplies.getBuildings().isEmpty());
         assertFalse("Resources is empty", supplies.getResources().isEmpty());

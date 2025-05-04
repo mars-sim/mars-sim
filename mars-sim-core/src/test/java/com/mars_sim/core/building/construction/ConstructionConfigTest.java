@@ -3,6 +3,7 @@ package com.mars_sim.core.building.construction;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
 public class ConstructionConfigTest extends AbstractMarsSimUnitTest {
@@ -48,5 +49,9 @@ public class ConstructionConfigTest extends AbstractMarsSimUnitTest {
                     resources.get(ResourceUtil.findIDbyAmountResourceName("acetylene")));
         assertEquals("concrete", 25D,
                     resources.get(ResourceUtil.findIDbyAmountResourceName("concrete")));
+        
+        var parts = selected.getParts();
+        assertEquals("steel truss", 20,
+                    parts.get(ItemResourceUtil.findIDbyItemResourceName("steel truss")).intValue());
     }
 }

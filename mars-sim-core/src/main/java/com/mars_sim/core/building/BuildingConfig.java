@@ -24,6 +24,7 @@ import org.jdom2.Element;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcessConfig;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.science.ScienceType;
@@ -72,6 +73,7 @@ public class BuildingConfig {
 	private static final String RESOURCE_CAPACITY = "resource-capacity";
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String TYPE = "type";
+	private static final String AMOUNT = "amount";
 	private static final String MODULES = "modules";
 	private static final String CONVERSION = "thermal-conversion";
 	private static final String PERCENT_LOADING = "percent-loading";
@@ -398,14 +400,20 @@ public class BuildingConfig {
 	 */
 	private void parseStorage(BuildingSpec newSpec, Element storageElement) {
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_CAPACITY);
-		var storageMap = ConfigHelper.parseResourceListById("Storage capacity in building " + newSpec.getName(),
+		var storageMap = parseResourceList("Storage capacity in building " + newSpec.getName(),
 										resourceStorageNodes);
 		
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
-		var initialMap = ConfigHelper.parseResourceListById("Initial storage in building " + newSpec.getName(),
+		var initialMap = parseResourceList("Initial storage in building " + newSpec.getName(),
 										resourceInitialNodes);
 
 		newSpec.setStorage(storageMap, initialMap);
+	}
+
+	private static Map<Integer, Double> parseResourceList(String context, List<Element> resourceList) {
+		return ConfigHelper.parseDoubleList(context, resourceList, 
+							            TYPE, k -> ResourceUtil.findAmountResource(k).getID(),
+							            AMOUNT);
 	}
 
 	/**

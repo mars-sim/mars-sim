@@ -11,9 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import org.jdom2.Element;
 
@@ -27,11 +26,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.EventSchedule;
 
 /**
@@ -54,10 +49,6 @@ public class ConfigHelper {
 	private static final String ALTERNATIVE = "alternative";
 	private static final String MAX = "max";
 	private static final String MIN = "min";
-
-	private static final String PART_TYPE = "type";
-    private static final String RESOURCE_TYPE = "type";
-    private static final String RESOURCE_AMOUNT = "amount";
 
 	public static final String CALENDAR_START_TIME = "eventTime";
     public static final String CALENDAR_FREQUENCY = "frequency";
@@ -404,79 +395,69 @@ public class ConfigHelper {
 		return new Range(min, max);
 	}
 	
-	/**
-	 * Parse a collection of resources that are in a name and amount pair.
-	 * @param context Context of the parsing
-	 * @param resourceNodes Dom elements
-	 * @return
-	 */
-	public static Map<AmountResource, Double> parseResourceList(String context,
-                                                                List<Element> resourceNodes) {  
-        Map<AmountResource, Double> newResources = new HashMap<>();
-        for (Element resourceElement : resourceNodes) {
-            String resourceType = resourceElement.getAttributeValue(RESOURCE_TYPE);
-            AmountResource resource = ResourceUtil.findAmountResource(resourceType);
-            if (resource == null)
-                throw new IllegalArgumentException(resourceType + " shows up in "
-                        + context
-                        + " but doesn't exist");
-            
-            double resourceAmount = getAttributeDouble(resourceElement, RESOURCE_AMOUNT);
-            newResources.put(resource, resourceAmount);
-        }
-        return newResources;
-    }
+
 
 	/**
-	 * Parse a collection of resources that are in a name and amount pair. Returns is keyed on 
-	 * resource id.
-	 * @param context Context of the parsing
-	 * @param resourceNodes Dom elements
+	 * Parse a XML list of nodes that represents a list of name/value pairs. 
+	 * @param <T> Type of the name
+	 * @param <V> Type of the value
+	 * @param context Context messages for any error
+	 * @param nodes XML Nodes to parse
+	 * @param nameAttr Name of the Name atttribute
+	 * @param nameFunc Function to convert String value into a <T>
+	 * @param valAttr Name of the value attribute
+	 * @param valFunc Function to convert String value into a <V>
 	 * @return
 	 */
-	public static Map<Integer, Double> parseResourceListById(String context,
-                                                                List<Element> resourceNodes) {  
-		var map = parseResourceList(context, resourceNodes);
-
-		// Convert AmountResource key to identifer
-		return map.entrySet().stream()
-				.collect(Collectors.toMap(e -> e.getKey().getID(), Entry::getValue));
-	}
-
-	/**
-	 * Parse a collection of Parts that are in a name and number pair.
-	 * @param context Context of the parsing
-	 * @param partNodes Dom elements
-	 * @return
-	 */
-	public static Map<Part, Integer> parsePartList(String context, List<Element> partNodes) {
-		Map<Part, Integer> newParts = new HashMap<>();
-		for (Element partElement : partNodes) {
-            String partType = partElement.getAttributeValue(PART_TYPE);
-            Part part = (Part) ItemResourceUtil.findItemResource(partType);
-            if (part == null) {
-				throw new IllegalArgumentException(partType + " shows up in "
+	public static <T,V> Map<T, V> parseList(String context, List<Element> nodes,
+											String nameAttr, Function<String,T> nameFunc,
+											String valAttr, Function<String,V> valFunc) {
+		Map<T, V> newValues = new HashMap<>();
+		for (Element element : nodes) {
+			String keyString = element.getAttributeValue(nameAttr);
+			T key = nameFunc.apply(keyString);
+			if (key == null) {
+				throw new IllegalArgumentException(keyString + " shows up in "
 											+ context + " but doesn't exist");
 			}
-			int partNumber = getAttributeInt(partElement, NUMBER);
-			newParts.put(part, partNumber);
-        }
-		return newParts;
+			String valString = element.getAttributeValue(valAttr);
+			V value = valFunc.apply(valString);
+			newValues.put(key, value);
+		}
+		return newValues;
 	}
 
 	/**
-	 * Parse a collection of parts that are in a type and amount pair. Returns is keyed on 
-	 * resource id.
-	 * @param context Context of the parsing
-	 * @param partNodes Dom elements
+	 * Parse a collection of XML name/values pairs where the value is an Integer
+	 * @param <T> Type of the name
+	 * @param context Context messages for any error
+	 * @param nodes XML Nodes to parse
+	 * @param nameAttr Name of the Name atttribute
+	 * @param nameFunc Function to convert String value into a <T>
+	 * @param valAttr Name of the integer attribute
 	 * @return
 	 */
-	public static Map<Integer, Integer> parsePartListById(String context,
-                                                                List<Element> partNodes) {  
-		var map = parsePartList(context, partNodes);
+	public static <T> Map<T, Integer> parseIntList(String context, List<Element> nodes,
+						String nameAttr, Function<String,T> nameFunc, String valAttr) {
+		return parseList(context, nodes,
+						nameAttr, nameFunc,
+						valAttr, Integer::parseInt);
+	}
 
-		// Convert AmountResource key to identifer
-		return map.entrySet().stream()
-				.collect(Collectors.toMap(e -> e.getKey().getID(), Entry::getValue));
+		/**
+	 * Parse a collection of XML name/values pairs where the value is a Double
+	 * @param <T> Type of the name
+	 * @param context Context messages for any error
+	 * @param nodes XML Nodes to parse
+	 * @param nameAttr Name of the Name atttribute
+	 * @param nameFunc Function to convert String value into a <T>
+	 * @param valAttr Name of the double attribute
+	 * @return
+	 */
+	public static <T> Map<T, Double> parseDoubleList(String context, List<Element> nodes,
+						String nameAttr, Function<String,T> nameFunc, String valAttr) {
+		return parseList(context, nodes,
+						nameAttr, nameFunc,
+						valAttr, Double::parseDouble);
 	}
 }

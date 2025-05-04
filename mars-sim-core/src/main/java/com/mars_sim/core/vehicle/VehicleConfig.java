@@ -21,6 +21,7 @@ import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 
 /**
@@ -73,6 +74,7 @@ public class VehicleConfig {
 	
 	private static final String VALUE = "value";
 	private static final String NUMBER = "number";
+	private static final String AMOUNT = "amount";
 
 	private Map<String, VehicleSpec> vehicleSpecMap;
 	
@@ -168,8 +170,10 @@ public class VehicleConfig {
 		// cargo capacities
 		Element cargoElement = vehicleElement.getChild(CARGO);
 		if (cargoElement != null) {
-			Map<Integer, Double> cargoCapacityMap = ConfigHelper.parseResourceListById("Vehicle spec " + name,
-															cargoElement.getChildren(CAPACITY));
+			Map<Integer, Double> cargoCapacityMap = ConfigHelper.parseDoubleList("Vehicle spec " + name,
+															cargoElement.getChildren(CAPACITY),	
+															TYPE, k -> ResourceUtil.findAmountResource(k).getID(),
+							            					AMOUNT);
 
 			double totalCapacity = ConfigHelper.getAttributeDouble(cargoElement, TOTAL_CAPACITY);
 			vSpec.setCargoCapacity(totalCapacity, cargoCapacityMap);
@@ -232,8 +236,7 @@ public class VehicleConfig {
 			List<LocalPosition> sickBayActivitySpots = new ArrayList<>();
 			List<LocalPosition> labActivitySpots = new ArrayList<>();
 
-			for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
-				Element activitySpotElement = (Element) activitySpot;
+			for (var activitySpotElement : activityElement.getChildren(ACTIVITY_SPOT)) {
 				LocalPosition spot = ConfigHelper.parseLocalPosition(activitySpotElement);
 				String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
 				if (OPERATOR_TYPE.equals(activitySpotType)) {
