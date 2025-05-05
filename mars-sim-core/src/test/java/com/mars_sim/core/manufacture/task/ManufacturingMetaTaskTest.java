@@ -98,23 +98,32 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
         ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
         var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
         var m = b.getManufacture();
+
+        // Check how many printers are available
+        var manuConfig = getConfig().getManufactureConfiguration();
+        var printers = manuConfig.getTooling("3d printer");
+        var capacity = m.getToolDetails().get(printers).getCapacity();
+        assertTrue("Multiple 3D printers", capacity > 1);
+
         var processes = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(
                                     m.getTechLevel());
+        var p = processes.stream().filter(x -> x.getTooling().equals(printers)).findFirst().orElse(null);
+        assertNotNull("Failed to find 3D printer process", p);
 
         var mt = new ManufacturingMetaTask();
 
         // Add processes to the workshop
-        var p = RandomUtil.getRandomElement(processes);
-        assertTrue("Start process #1", (new ManufactureProcess(p, m)).startProcess());
-        assertTrue("Start process #2", (new ManufactureProcess(p, m)).startProcess());
+        for(int i = 0; i < capacity; i++) {
+            assertTrue("Start process #" + i, (new ManufactureProcess(p, m)).startProcess());
+        }
 
         // Fail due to only 2 3D printers
-        assertFalse("Start process #3", (new ManufactureProcess(p, m)).startProcess());
+        assertFalse("Start process without printers", (new ManufactureProcess(p, m)).startProcess());
 
 
         var tasks = mt.getSettlementTasks(s);
         assertEquals("Tasks for running Processes", 1, tasks.size());
-        assertEquals("Demand for task", 2, tasks.get(0).getDemand());
+        assertEquals("Demand for task", capacity, tasks.get(0).getDemand());
         assertEquals("Target for task", b, tasks.get(0).getFocus());
 
     }
