@@ -9,6 +9,7 @@ package com.mars_sim.core.manufacture;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -82,9 +83,11 @@ public final class ManufactureUtil {
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
-	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
+	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel,
+			Set<Tooling> tools) {
 		return getManufactureProcessesForTechLevel(techLevel).stream()
 				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
+				.filter(s -> (s.isSupported(tools)))
     	        .toList();
 	}
 
@@ -97,9 +100,11 @@ public final class ManufactureUtil {
 	 * @return list of salvage processes info.
 	 * @throws Exception if error getting salvage processes info.
 	 */
-	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
+	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel,
+											Set<Tooling> tools) {
 		return getSalvageProcessesForTechLevel(techLevel).stream()
 				.filter(s -> (s.getSkillLevelRequired() <= skillLevel))
+				.filter(s -> (s.isSupported(tools)))
     	        .toList();
 	}
 

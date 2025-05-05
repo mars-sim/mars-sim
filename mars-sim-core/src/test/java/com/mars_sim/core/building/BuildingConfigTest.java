@@ -2,12 +2,14 @@ package com.mars_sim.core.building;
 
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 
@@ -66,7 +68,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertTrue("Exercise spot called 'Running Machine'", names.contains("Running Machine"));
     }
 
-        /**
+    /**
      * This tets is very tied to the building spec of LANDER_HAB
      */
     public void testInflatableGreenhouse() {
@@ -101,5 +103,41 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         assertEquals("Science research", Set.of(ScienceType.BIOLOGY, ScienceType.BOTANY,
                                                 ScienceType.CHEMISTRY), new HashSet<>(found.getScienceType()));
+    }
+
+
+    /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    public void testWorkshop() {
+	    var simConfig = SimulationConfig.loadConfig();
+        var bc = simConfig.getBuildingConfiguration();
+
+        var found = bc.getBuildingSpec("Workshop");
+        
+        assertNotNull("Found", found);
+
+        assertEquals("width", 7D, found.getWidth());
+        assertEquals("length", 9D, found.getLength());
+        assertEquals("mass", 4000D, found.getBaseMass());
+
+        assertEquals("Construction", ConstructionType.PRE_FABRICATED, found.getConstruction());
+
+        assertEquals("Functions", Set.of(FunctionType.COMPUTATION, FunctionType.LIFE_SUPPORT,
+                                         FunctionType.MANUFACTURE, FunctionType.POWER_GENERATION,
+                                         FunctionType.POWER_STORAGE, FunctionType.ROBOTIC_STATION,
+                                         FunctionType.STORAGE, FunctionType.THERMAL_GENERATION),
+                                        found.getFunctionSupported());
+
+        
+        var storage = found.getStorage();
+        assertEquals("Cement capacity", 500D, storage.get(ResourceUtil.cementID));
+
+        FunctionSpec manufacture = found.getFunctionSpec(FunctionType.MANUFACTURE);
+        Map<Tooling, Integer> tools = (Map<Tooling, Integer>) manufacture.getProperty("tooling");
+        assertTrue("Multiple tools", tools.size() > 1); // 3D printers, furnace, and lifting
+
+        var furnace = simConfig.getManufactureConfiguration().getTooling("furnace");
+        assertEquals("Furnaces", 1, tools.get(furnace).intValue());
     }
 }

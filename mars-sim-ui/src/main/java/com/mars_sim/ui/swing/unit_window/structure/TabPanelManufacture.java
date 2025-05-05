@@ -42,6 +42,7 @@ import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.WorkshopProcess;
+import com.mars_sim.core.manufacture.WorkshopProcessInfo;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
@@ -309,7 +310,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	private void createNewProcess() {
 
 		Object selectedItem = processSelection.getSelectedItem();
-		if (selectedItem instanceof ProcessInfo selectedProcess) {
+		if (selectedItem instanceof WorkshopProcessInfo selectedProcess) {
 			target.getManuManager().addProcessToQueue(selectedProcess);
 		}
 		processSelection.setSelectedIndex(-1);

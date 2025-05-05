@@ -9,6 +9,9 @@ Grouped by {{groupname}}.
 
 {{#groups}}
 ### {{name}} {#{{id}}}
+{{#description}}
+{{description}}
+{{/description}}
 
 {{#items}}
 - [{{.}}]({{typefolder}}{{#filename}}{{.}}{{/filename}})

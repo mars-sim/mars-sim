@@ -37,7 +37,7 @@ public abstract class WorkshopProcess implements Serializable {
 	private double processTimeRemaining;
     private double averageSkillLevel = 0D;
 
-	private ProcessInfo info;
+	private WorkshopProcessInfo info;
 	private boolean active;
     private Manufacture workshop;
 
@@ -46,7 +46,7 @@ public abstract class WorkshopProcess implements Serializable {
 	 * @param workshop
 	 * @param info
 	 */
-    protected WorkshopProcess(String name, Manufacture workshop, ProcessInfo info) {
+    protected WorkshopProcess(String name, Manufacture workshop, WorkshopProcessInfo info) {
         this.workshop = workshop;
         this.workTimeRemaining = info.getWorkTimeRequired();
 		this.processTimeRemaining = info.getProcessTimeRequired();
@@ -99,6 +99,14 @@ public abstract class WorkshopProcess implements Serializable {
     public double getAverageSkillLevel() {
         return averageSkillLevel;
     }
+
+	/**
+	 * Does this process need a tool
+	 * @return
+	 */
+	public Tooling getTooling() {
+		return info.getTooling();
+	}
 
 	/**
 	 * Gets the remaining process time.

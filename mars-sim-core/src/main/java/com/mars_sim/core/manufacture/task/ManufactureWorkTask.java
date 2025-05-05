@@ -199,12 +199,12 @@ public class ManufactureWorkTask extends Task {
 	 */
 	private WorkshopProcess createNewProcess() {
 
-		if (!workshop.isFull()) {
+		if (workshop.getCapacity() > 0) {
 			int skill = getWorkerSkill(worker);
 
 			// Get something off the queue
 			ManufacturingManager mgr = workshop.getBuilding().getAssociatedSettlement().getManuManager();
-			var queued = mgr.claimNextProcess(workshop.getTechLevel(), skill);
+			var queued = mgr.claimNextProcess(workshop.getTechLevel(), skill, workshop.getAvailableTools());
 
 			// Create chosen manufacturing process.
 			if (queued != null) {

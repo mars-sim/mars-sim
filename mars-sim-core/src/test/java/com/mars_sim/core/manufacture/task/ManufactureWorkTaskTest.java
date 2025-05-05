@@ -41,7 +41,10 @@ public class ManufactureWorkTaskTest extends AbstractMarsSimUnitTest {
 
         // RUn for a single tick to trigger creation of process
         executeTask(p, task, 1);
-        var process = w.getProcesses().get(0);
+
+        var ps = w.getProcesses();
+        assertFalse("Active processes", ps.isEmpty());
+        var process = ps.get(0);
         assertEquals("Process name", processInfo, process.getInfo());
 
         executeTaskForDuration(p, task, processInfo.getWorkTimeRequired() * 1.1);

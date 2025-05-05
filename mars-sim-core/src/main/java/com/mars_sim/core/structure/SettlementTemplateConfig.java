@@ -49,6 +49,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String HATCH_FACE = "hatch-facing";
     private static final String ZONE = "zone";
     private static final String TYPE = "type";
+    private static final String AMOUNT = "amount";
     private static final String CONNECTION_LIST = "connection-list";
     private static final String CONNECTION = "connection";
     private static final String NUMBER = "number";
@@ -61,6 +62,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String PART = "part";
     private static final String PART_PACKAGE = "part-package";
     private static final String RESOURCE = "resource";
+
 
     private static final String SHIFT_PATTERN = "shift-pattern";
     private static final String MODEL = "model";
@@ -410,41 +412,28 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
                                             PartPackageConfig packageConfig) {
 
         // Load equipment
-        Map<String, Integer> newEquipment = new HashMap<>();
-        List<Element> equipmentNodes = supplyElement.getChildren(EQUIPMENT);
-        for (Element equipmentElement : equipmentNodes) {
-            String equipmentType = equipmentElement.getAttributeValue(TYPE);
-            int equipmentNumber = ConfigHelper.getAttributeInt(equipmentElement, NUMBER);
-            newEquipment.put(equipmentType, equipmentNumber);
-        }
+        Map<String, Integer> newEquipment = ConfigHelper.parseIntList(context, supplyElement.getChildren(EQUIPMENT),
+                            TYPE, s -> s, NUMBER);
 
         // Load bins
-        Map<String, Integer> newBins = new HashMap<>();
-        List<Element> binNodes = supplyElement.getChildren(BIN);
-        for (Element binElement : binNodes) {
-            String binType = binElement.getAttributeValue(TYPE);
-            int binNumber = ConfigHelper.getAttributeInt(binElement, NUMBER);
-            newBins.put(binType, binNumber);
-        }
+        Map<String, Integer> newBins = ConfigHelper.parseIntList(context, supplyElement.getChildren(BIN),
+                            TYPE, s -> s, NUMBER);
 
         // Load resources
-        List<Element> resourceNodes = supplyElement.getChildren(RESOURCE);
-        Map<AmountResource, Double> newResources = ConfigHelper.parseResourceList(context, resourceNodes);
+        Map<AmountResource, Double> newResources = ConfigHelper.parseDoubleList(context, supplyElement.getChildren(RESOURCE),
+                                    TYPE, ResourceUtil::findAmountResource,
+                                    AMOUNT);
 
         // Load vehicles
-        Map<String, Integer> newVehicles = new HashMap<>();
-        List<Element> vehicleNodes = supplyElement.getChildren(VEHICLE);
-        for (Element vehicleElement : vehicleNodes) {
-            String vehicleType = vehicleElement.getAttributeValue(TYPE);
-            int vehicleNumber = ConfigHelper.getAttributeInt(vehicleElement, NUMBER);
-            newVehicles.put(vehicleType, vehicleNumber);
-        }
+        Map<String, Integer> newVehicles = ConfigHelper.parseIntList(context, supplyElement.getChildren(VEHICLE),
+                                                    TYPE, s -> s, NUMBER);
 
         // Load parts
-        List<Element> partNodes = supplyElement.getChildren(PART);
-        Map<Part, Integer> newParts = ConfigHelper.parsePartList(context, partNodes);
-        
-        // Load part packages
+        Map<Part, Integer> newParts = ConfigHelper.parseIntList(context, supplyElement.getChildren(PART),
+                                            TYPE, s -> (Part) ItemResourceUtil.findItemResource(s),
+                                            NUMBER);
+
+        // Load part packages                      
         List<Element> partPackageNodes = supplyElement.getChildren(PART_PACKAGE);
         for (Element partPackageElement : partPackageNodes) {
             String packageName = partPackageElement.getAttributeValue(NAME);

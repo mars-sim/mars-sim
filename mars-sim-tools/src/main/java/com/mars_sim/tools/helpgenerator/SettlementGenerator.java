@@ -28,7 +28,8 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
                 "settlement_name");
         
         // Group by sponsor
-        setGrouper("Sponsor", t -> t.getSponsor().getName());
+        setGrouperByKey("Sponsor", r-> new GroupKey(r.getSponsor().getName(),
+                                        r.getSponsor().getDescription()));
     }
 
     /**

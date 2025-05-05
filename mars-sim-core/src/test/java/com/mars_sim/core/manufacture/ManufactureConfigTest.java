@@ -46,6 +46,14 @@ public class ManufactureConfigTest {
     }
 
     @Test
+    void testTooling() {
+        var f = manuConfig.getTooling("furnace");
+        assertNotNull("Furnace Tooling defined", f);
+        assertEquals("Has correct name", "Furnace", f.name());
+        assertNotNull("Furnace description", f.description());
+    }
+
+    @Test
     void testProcessesLoaded() {
         var conf = manuConfig;
         var manuProcesses = conf.getManufactureProcessList();
@@ -93,6 +101,30 @@ public class ManufactureConfigTest {
     }
 
     @Test
+    void testCastIron() {
+        // Build mapped key on process name
+        var processByName =
+                    Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
+                        ManufactureProcessInfo::getName);
+        var process = processByName.get("Cast iron ingot");
+        assertNotNull("Manufacturng processes defined", process);
+        assertEquals("Tool", "Furnace", process.getTooling().name());
+        assertEquals("Work time", 25D, process.getWorkTimeRequired(), 0D);
+        assertEquals("Process time", 75D, process.getProcessTimeRequired(), 0D);
+        assertEquals("Skill", 2, process.getSkillLevelRequired());
+        assertEquals("Tech", 1, process.getTechLevelRequired());
+
+
+        List<ProcessItem> expectedInputs = new ArrayList<>();
+        expectedInputs.add(createAmount("iron powder", 35D));
+        assertEquals("Iron ingot expected inputs", expectedInputs, process.getInputList());
+
+        List<ProcessItem> expectedOutputs = new ArrayList<>();
+        expectedOutputs.add(createPart("iron ingot", 5D));
+        assertEquals("Iron ingot expected outputs", expectedOutputs, process.getOutputList());
+    }
+
+    @Test
     void testMakeRadioAntenna() {
         // Build mapped key on process name
         var processByName =
@@ -100,6 +132,8 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get(MAKE_RADIO_ANTENNA);
         assertNotNull("Manufacturng processes defined", process);
+        assertEquals("Tool", "3D Printer", process.getTooling().name());
+
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
         expectedInputs.add(createAmount("Polyester Resin", 0.5D));

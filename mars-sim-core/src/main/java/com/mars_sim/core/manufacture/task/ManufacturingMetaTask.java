@@ -82,11 +82,11 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         List<SettlementTask> results = new ArrayList<>();
 
         ManufacturingManager mgr = settlement.getManuManager();
-
-        int lowestTechNeeded = mgr.getLowestOnQueue();
+        
+        int minRequired = mgr.getLowestOnQueue();
 
         for(var w : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
-            addManuProcesses(settlement, w, lowestTechNeeded, results);
+            addManuProcesses(settlement, w, minRequired, results);
         }
 
         return results;
@@ -109,8 +109,8 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         int lowestSkillNeeded = 0;
         
         // Add demands if spare capacity
-        if (!m.isFull() && m.getTechLevel() >= lowestTechNeeded) {
-            var capacity = m.getNumPrintersInUse() - m.getCurrentTotalProcesses();
+        if (m.getTechLevel() >= lowestTechNeeded) {
+            var capacity = m.getCapacity();
 
             // How many Manufacturing jobs ar on the queue
             var queueSize = (int)s.getManuManager().getQueue().stream()

@@ -10,22 +10,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+
+import com.mars_sim.core.configuration.ConfigHelper;
 
 /**
  * Provides configuration information about part packages. Uses a JDOM document
  * to get the information.
  */
 public class PartPackageConfig  {
-
-	private static final Logger logger = Logger.getLogger(PartPackageConfig.class.getName());
 
 	// Element names
 	private static final String PART_PACKAGE = "part-package";
@@ -64,23 +62,15 @@ public class PartPackageConfig  {
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
 		for (Element partPackageElement : partPackageNodes) {
-			PartPackage partPackage = new PartPackage();
 
-			partPackage.name = partPackageElement.getAttributeValue(NAME);
+			var name = partPackageElement.getAttributeValue(NAME);
 
 			List<Element> partNodes = partPackageElement.getChildren(PART);
-			for (Element partElement : partNodes) {
-				String partType = partElement.getAttributeValue(TYPE);
-				Part part = partsConfig.getPartByName(partType);
-				if (part == null)
-					logger.severe(partType + " shows up in part_packages.xml but doesn't exist in parts.xml.");
-				else {
-					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-					partPackage.parts.put(part, partNumber);
-				}
-			}
+			Map<Part,Integer> parts = ConfigHelper.parseIntList("Parts package " + name, partNodes,
+						TYPE, partsConfig::getPartByName, NUMBER);
+
 			// Add partPackage to newList.
-			newList.add(partPackage);
+			newList.add(new PartPackage(name, Collections.unmodifiableMap(parts)));
 		}
 		
 		// Assign the newList now built
@@ -106,7 +96,7 @@ public class PartPackageConfig  {
 		}
 
 		if (foundPartPackage != null)
-			result = new HashMap<>(foundPartPackage.parts);
+			result = foundPartPackage.parts;
 		else
 			throw new IllegalStateException("name: " + name + " does not match any part packages.");
 
@@ -127,17 +117,5 @@ public class PartPackageConfig  {
 	/**
 	 * Private inner class for storing part packages.
 	 */
-	private static class PartPackage implements Serializable {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private String name;
-		private Map<Part, Integer> parts;
-
-		private PartPackage() {
-			parts = new HashMap<>();
-		}
-	}
+	private static record PartPackage(String name, Map<Part,Integer> parts) implements Serializable {}
 }

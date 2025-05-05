@@ -8,14 +8,13 @@ package com.mars_sim.core.manufacture;
 
 import java.util.List;
 
-import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 
 /**
  * Information about a type of salvage.
  */
-public class SalvageProcessInfo extends ProcessInfo {
+public class SalvageProcessInfo extends WorkshopProcessInfo {
 	
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -25,9 +24,9 @@ public class SalvageProcessInfo extends ProcessInfo {
 	private ProcessItem salvaged;
 
 	public SalvageProcessInfo(ProcessItem salvaged, String description, int techLevelRequired, int skillLevelRequired,
-			double workTimeRequired, List<ProcessItem> outputList) {
+			double workTimeRequired, Tooling tooling, List<ProcessItem> outputList) {
 		super(NAME_PREFIX + salvaged.getName(), description, techLevelRequired, skillLevelRequired, workTimeRequired,
-		        0D, 0D,
+		        0D, 0D, tooling,
 		        List.of(salvaged), outputList);
 		this.salvaged = salvaged;
 	}

@@ -22,7 +22,9 @@ public class CropGenerator extends TypeGenerator<CropSpec> {
                 "crops");
 
         // Groups by category
-        setGrouper("Category", r-> r.getCropCategory().getName());
+        setGrouperByKey("Category", r-> new GroupKey(r.getCropCategory().getName(),
+                                                        r.getCropCategory().getDescription()));
+
     }
 
     /**

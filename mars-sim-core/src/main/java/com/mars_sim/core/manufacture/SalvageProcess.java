@@ -68,7 +68,7 @@ public class SalvageProcess extends WorkshopProcess {
 	 */
 	@Override
 	public boolean startProcess() {
-		if (!getWorkshop().addSalvProcess(this)) {
+		if (!getWorkshop().addProcess(this)) {
 			return false;
 		}
 		var settlement = getBuilding().getSettlement();
@@ -92,7 +92,6 @@ public class SalvageProcess extends WorkshopProcess {
 		salvagedUnit.startSalvage((SalvageProcessInfo)getInfo(), settlement.getIdentifier());
 
 		// Log salvage process starting.
-		logger.info(getBuilding(), 0, "Starting salvage process: " + getName());
 		return true;
 	}
 
@@ -158,10 +157,6 @@ public class SalvageProcess extends WorkshopProcess {
 			}
 
 			settlement.recordProcess(getName(), "Salvage", building);
-			
-			// Log salvage process ending.
-			logger.log(building, Level.INFO, 10_000,
-							"Finished the process '" + getName() + "'.");
 		}
 
 		// Finish the salvage.

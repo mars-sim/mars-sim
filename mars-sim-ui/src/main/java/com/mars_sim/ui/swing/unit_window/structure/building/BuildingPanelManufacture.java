@@ -8,17 +8,26 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.building.function.Manufacture;
+import com.mars_sim.core.building.function.Manufacture.ToolCapacity;
+import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * A building panel displaying the manufacture building function.
@@ -35,10 +44,8 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	private Manufacture workshop;
 	/** Panel for displaying process panels. */
 	private ProcessListPanel processListPane;
-	/** The scroll panel for the process list. */
-	private JScrollPane scrollPanel;
 
-	private JLabel printersUsed;
+	private ToolModel tools;
 
 	/**
 	 * Constructor.
@@ -64,23 +71,36 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
+		var topPanel = new JPanel(new BorderLayout(0, 0));
+		center.add(topPanel, BorderLayout.NORTH);
 
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(3);
-		center.add(labelPanel, BorderLayout.NORTH);
-
-		// Prepare tech level label
+		AttributePanel labelPanel = new AttributePanel(1, 2);
+		topPanel.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.addTextField("Tech Level", Integer.toString(workshop.getTechLevel()), null);
-
-		// Prepare processCapacity label
 		labelPanel.addTextField("Process Capacity", Integer.toString(workshop.getMaxProcesses()), null);
 
-		// Prepare processCapacity label
-		printersUsed = labelPanel.addTextField("# of Printers In Use",
-								Integer.toString(workshop.getNumPrintersInUse()), null);
-			
+		JScrollPane tscrollPanel = new JScrollPane();
+		tscrollPanel.setPreferredSize(new Dimension(160, 130));
+
+		topPanel.add(tscrollPanel, BorderLayout.CENTER);
+		tscrollPanel.setBorder(StyleManager.createLabelBorder("Tools"));
+
+		tools = new ToolModel(workshop.getToolDetails());
+
+		var table = new JTable(tools) {
+            @Override          
+            public String getToolTipText(MouseEvent e) {
+                return ToolTipTableModel.extractToolTip(e, this);
+            }
+		};
+		table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(false);
+
+		tscrollPanel.setViewportView(table);
+
 		// Create scroll pane for manufacturing processes
-		scrollPanel = new JScrollPane();
+		var scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.CENTER);
 
@@ -100,9 +120,10 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			initializeUI();
 
 		var processes = workshop.getProcesses();
-		
 		processListPane.update(processes);
-		printersUsed.setText(Integer.toString(workshop.getNumPrintersInUse()));
+
+		tools.update(workshop.getToolDetails());
+
 	}
 
 	/**
@@ -115,6 +136,77 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		// take care to avoid null exceptions
 		workshop = null;
 		processListPane = null;
-		scrollPanel = null;
+	}
+
+	private class ToolModel extends AbstractTableModel implements ToolTipTableModel {
+		private static final long serialVersionUID = 1L;
+
+		private List<Tooling> tool = new ArrayList<>();
+		private List<Integer> inuse = new ArrayList<>();
+		private List<Integer> capacity = new ArrayList<>();
+
+		private ToolModel(Map<Tooling, ToolCapacity> toolDetails) {
+
+			toolDetails.forEach((name, details) -> {
+				tool.add(name);
+				inuse.add(details.getInUse());
+				capacity.add(details.getCapacity());
+			});
+		}
+
+		private void update(Map<Tooling, ToolCapacity> toolDetails) {
+
+			toolDetails.forEach((name, details) -> {
+				int idx = tool.indexOf(name);
+				var newInUse = details.getInUse();
+				if (inuse.get(idx) != newInUse) {
+					inuse.set(idx, newInUse);
+					fireTableCellUpdated(idx, 1);
+				}
+			});
+		}
+		
+		@Override
+		public int getRowCount() {
+			return tool.size();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 3;
+		}
+
+		@Override
+		public String getColumnName(int columnIndex) {
+			switch(columnIndex) {
+				case 0:
+					return "Tool";
+				case 1:
+					return "In Use";
+				case 2:
+					return "Capacity";
+				default:
+					return null;
+			}
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			return switch (columnIndex) {
+				case 0 -> tool.get(rowIndex).name();
+				case 1 -> inuse.get(rowIndex);
+				case 2 -> capacity.get(rowIndex);
+
+				default -> null;
+			};
+		}
+
+		@Override
+		public String getToolTipAt(int row, int col) {
+			if (col == 0) {
+				return tool.get(row).description();
+			}
+			return null;
+		}
 	}
 }

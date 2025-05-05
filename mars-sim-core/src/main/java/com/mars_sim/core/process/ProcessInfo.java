@@ -7,7 +7,6 @@
 package com.mars_sim.core.process;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.resource.ItemType;
@@ -32,8 +31,8 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	private String name;
 	private String description;
 	
-	private List<ProcessItem> inputList = new ArrayList<>();
-	private List<ProcessItem> outputList = new ArrayList<>();
+	private List<ProcessItem> inputList;
+	private List<ProcessItem> outputList;
 	
 
 	protected ProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,

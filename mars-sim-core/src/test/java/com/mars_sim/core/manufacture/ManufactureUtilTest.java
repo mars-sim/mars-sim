@@ -1,5 +1,8 @@
 package com.mars_sim.core.manufacture;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
@@ -39,10 +42,17 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertTrue("Low are in high", highList.containsAll(lowList));
 
         var selection = highList.get(0);
-        var found = ManufactureUtil.getManufactureProcessesForTechSkillLevel(selection.getTechLevelRequired(), selection.getSkillLevelRequired()-1);
+        Set<Tooling> tools = Set.of(selection.getTooling());
+        var found = ManufactureUtil.getManufactureProcessesForTechSkillLevel(selection.getTechLevelRequired(),
+                                    selection.getSkillLevelRequired()-1, tools);
         assertFalse("No process on low skill found", found.contains(selection));
-        found = ManufactureUtil.getManufactureProcessesForTechSkillLevel(selection.getTechLevelRequired(), selection.getSkillLevelRequired());
-        assertTrue("Process on low skill found", found.contains(selection));
+        found = ManufactureUtil.getManufactureProcessesForTechSkillLevel(selection.getTechLevelRequired(),
+                                    selection.getSkillLevelRequired(), Collections.emptySet());
+        assertFalse("No process on High skill but no tools", found.contains(selection));
+        
+        found = ManufactureUtil.getManufactureProcessesForTechSkillLevel(selection.getTechLevelRequired(),
+                                    selection.getSkillLevelRequired(), tools);
+        assertTrue("Process on high skill found", found.contains(selection));
     }
 
     public void testGetManufactureProcessesWithGivenOutput() {
@@ -67,9 +77,17 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertTrue("Low are in high", highList.containsAll(lowList));
     
         var selection = highList.get(0);
-        var found = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(), selection.getSkillLevelRequired()-1);
+        var found = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(),
+                                selection.getSkillLevelRequired()-1, Collections.emptySet());
         assertFalse("No salvage on low skill found", found.contains(selection));
-        found = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(), selection.getSkillLevelRequired());
+        found = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(),
+                                selection.getSkillLevelRequired(), Collections.emptySet());
         assertTrue("Salvage on low skill found", found.contains(selection));
+
+        // Add Lifting to increase potential
+        Set<Tooling> withLifting = Set.of(getConfig().getManufactureConfiguration().getTooling("Lifting"));
+        var fullFound = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(),
+                    selection.getSkillLevelRequired(), withLifting);
+        assertTrue("More Salvage with lifting", fullFound.size() > found.size());
     }
 }

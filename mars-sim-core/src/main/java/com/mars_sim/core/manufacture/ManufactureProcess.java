@@ -35,7 +35,7 @@ public class ManufactureProcess extends WorkshopProcess {
 	 */
 	@Override
 	public boolean startProcess() {
-		if (!getWorkshop().addManuProcess(this)) {
+		if (!getWorkshop().addProcess(this)) {
 			return false;
 		}
 		var settlement = getBuilding().getSettlement();
@@ -56,10 +56,6 @@ public class ManufactureProcess extends WorkshopProcess {
 			}
 		}
 
-		// Log manufacturing process starting.
-		logger.log(getBuilding(), Level.FINEST, 20_000,
-						"Starting manufacturing process: " + getName());
-		
 		return true;
 	}
 
@@ -73,15 +69,9 @@ public class ManufactureProcess extends WorkshopProcess {
 		var b = getBuilding();	
 		if (!premature) {
 			depositOutputs();
-			// Log process ending.
-			logger.log(b, Level.INFO, 10_000,
-					"Finished the manu process '" + getName() + "'.");
 		}
 		else {
 			returnInputs();
-			// Log process ending.
-			logger.log(b, Level.INFO, 10_000,
-					"Unable to finish the manu process '" + getName() + "'.");
 		}
 
 		super.stopProcess(premature);
