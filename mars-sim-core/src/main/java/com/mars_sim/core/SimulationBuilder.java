@@ -35,6 +35,8 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class SimulationBuilder {
 	private static final String NEW_ARG = "new";
+	private static final String LOG_ARG = "log";
+	private static final String CONFIG_ARG = "configdir";
 	private static final String TIMERATIO_ARG = "timeratio";
 	private static final String TEMPLATE_ARG = "template";
 	private static final String DATADIR_ARG = "datadir";  
@@ -158,6 +160,10 @@ public class SimulationBuilder {
 	public List<Option> getCmdLineOptions() {
 		List<Option> options = new ArrayList<>();
 
+		options.add(Option.builder(CONFIG_ARG).argName("directory").hasArg()
+						.desc("Directory for configurations").build());
+		options.add(Option.builder(LOG_ARG)
+					.desc("Enable file logging").build());
 		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
 								.desc("Define the time ratio of the simulation").build());
 		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg()
@@ -190,7 +196,13 @@ public class SimulationBuilder {
 	 * @param line
 	 */
 	public void parseCommandLine(CommandLine line) {	
-
+		// Config arg MUST be first follwoed by the logging arg
+		if (line.hasOption(CONFIG_ARG)) {
+			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
+		}
+		if (line.hasOption(LOG_ARG)) {
+			SimulationRuntime.enableFileLogging();
+		}
 		if (line.hasOption(TIMERATIO_ARG)) {
 			setTimeRatio(Integer.parseInt(line.getOptionValue(TIMERATIO_ARG)));
 		}
