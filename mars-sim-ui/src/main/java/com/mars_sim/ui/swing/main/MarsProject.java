@@ -10,11 +10,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
@@ -49,7 +47,6 @@ public class MarsProject {
 	/** initialized logger for this class. */
 	private static final Logger logger = Logger.getLogger(MarsProject.class.getName());
 
-	private static final String LOGGING_PROPERTIES = "/logging.properties";
 	private static final String NOAUDIO = "noaudio";
 	private static final String NOGUI = "nogui";
 	private static final String DISPLAY_HELP = "help";
@@ -114,10 +111,7 @@ public class MarsProject {
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
-		String s = Arrays.toString(args);
-		
-		logger.config("List of input args : " + s);
-		
+				
 		SimulationBuilder builder = new SimulationBuilder();
 		
 		checkOptions(builder, args);
@@ -161,34 +155,34 @@ public class MarsProject {
 				if (!isSandbox && !bypassConsoleMenuDialog()) {
 					logger.config("Please go to the Console Main Menu to choose an option.");
 					int type = interactiveTerm.startConsoleMainMenu();
-					if (type == 1) {
-						logger.config("Start the Scenario Editor...");
-						startScenarioEditor(builder);
-					}
-
-					else if (type == 2) {
-						// Load simulation
-						logger.config("Load the sim...");
-						String filePath = selectSimFile();
-						if (filePath != null) {
-							builder.setSimFile(filePath);
+					switch (type) {
+						case 1 -> {
+							logger.config("Start the Scenario Editor...");
+							startScenarioEditor(builder);
 						}
-					}
-					else if (type == 3) {
-						// Proceed with configuring the society mode
-						logger.config("Configuring the society mode...");
-						
-						builder.startSocietySim();
-
-						// Start beryx console
-						startConsoleThread();
-						
-						return;
-					}
-					else {
-						// Check out crew flag
-						builder.setUseCrews(interactiveTerm.getUseCrew());
-					}
+						case 2 -> {
+							// Load simulation
+							logger.config("Load the sim...");
+							String filePath = selectSimFile();
+							if (filePath != null) {
+								builder.setSimFile(filePath);
+							}
+						}
+						case 3 -> {
+							// Proceed with configuring the society mode
+							logger.config("Configuring the society mode...");
+							
+							builder.startSocietySim();
+	
+							// Start beryx console
+							startConsoleThread();
+							
+							return;
+						}
+						default ->
+							// Check out crew flag
+							builder.setUseCrews(interactiveTerm.getUseCrew());
+     				}
 				}
 			}
 
@@ -429,16 +423,9 @@ public class MarsProject {
 	 *
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) throws IOException {
-		// Note: Read the logging configuration from the classloader to make it webstart compatible
-		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
+	public static void main(String[] args) {
 
-		try {
-			LogManager.getLogManager().readConfiguration(MarsProject.class.getResourceAsStream(LOGGING_PROPERTIES));
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "Could not load logging properties", e);
-			LogManager.getLogManager().readConfiguration();
-        }
+		SimulationRuntime.initialseLogging();
 		
 		// Sets text antialiasing
 		System.setProperty("swing.aatext", "true");

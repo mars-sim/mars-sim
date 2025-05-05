@@ -9,10 +9,8 @@ package com.mars_sim.headless;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -45,8 +43,6 @@ public class MarsProjectHeadless {
 
 	/** initialized logger for this class. */
 	private static final Logger logger = Logger.getLogger(MarsProjectHeadless.class.getName());
-
-	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
 	// Location of service files
 	private static final String SERVICE_DIR = "service";
@@ -232,23 +228,9 @@ public class MarsProjectHeadless {
 	 *
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+	public static void main(String[] args) throws IOException {
 
-		Logger.getLogger("").setLevel(Level.ALL);
-
-		new File(SimulationRuntime.getLogDir()).mkdirs();
-
-		try {
-			LogManager.getLogManager()
-					.readConfiguration(MarsProjectHeadless.class.getResourceAsStream(LOGGING_PROPERTIES));
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "Could not load logging properties", e);
-			try {
-				LogManager.getLogManager().readConfiguration();
-			} catch (IOException e1) {
-				logger.log(Level.WARNING, "Could read logging default config", e);
-			}
-		}
+		SimulationRuntime.initialseLogging();
 
 		// starting the simulation
 		new MarsProjectHeadless(args);
