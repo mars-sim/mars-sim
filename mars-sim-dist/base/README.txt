@@ -16,6 +16,7 @@ The mars-sim application requires Java 21 or higher to be installed. There are n
 Common command line arguments are:
  -baseurl <URL to remote content>    URL to the remote content repository
                                      (defaults to master in GitHub)
+ -configdir <directory>              Set a configuration directory
  -crew <true|false>                  Enable or disable use of the crews
  -datadir <path to data directory>   Path to the data directory for
                                      simulation files (defaults to user.home)
@@ -24,6 +25,7 @@ Common command line arguments are:
  -lat <latitude>                     Set the latitude of the new template Settlement
  -load <path to simulation file>     Load the a previously saved sim. No argument open file
                                      selection dialog. 'default' will use default
+ -log                                Log output to a file as well as console
  -lon <longitude>                    Set the longitude of the new template Settlement
  -new                                Enable quick start
  -scenario <scenario name>           New simulation from a scenario
