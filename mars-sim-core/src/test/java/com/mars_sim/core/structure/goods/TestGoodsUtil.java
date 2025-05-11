@@ -16,11 +16,11 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 import junit.framework.TestCase;
 
-public class TestGoods extends TestCase {
+public class TestGoodsUtil extends TestCase {
 
     ItemResource hammer;
     
-    public TestGoods() {
+    public TestGoodsUtil() {
 		super();
 	}
 

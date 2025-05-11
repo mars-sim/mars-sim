@@ -372,9 +372,7 @@ public class PartGood extends Good {
         double mass = getPart().getMassPerItem();
         double quantity = settlement.getItemResourceStored(getID()) ;
         double factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
-        double price = getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
-        setPrice(price);
-        return price;
+        return getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
     }
 
     @Override

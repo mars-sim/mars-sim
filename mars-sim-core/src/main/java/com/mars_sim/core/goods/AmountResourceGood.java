@@ -560,9 +560,7 @@ class AmountResourceGood extends Good {
     double calculatePrice(Settlement settlement, double value) {
 		double totalMass = Math.round(settlement.getAmountResourceStored(getID()) * 100.0)/100.0;
 		double factor = 1.5 / (.5 + Math.log(totalMass + 1));
-	    double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
-	    setPrice(price);
-	    return price;
+	    return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
     }
 
     @Override
@@ -622,13 +620,7 @@ class AmountResourceGood extends Good {
 			+ getResourceConstructionSiteDemand(settlement)
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
-		
-//		if (getID() == ResourceUtil.hydrogenID) {
-//			System.out.println("old projected: " + Math.round(projected * 100.0)/100.0
-//					+ "  flattenDemand: " + Math.round(flattenDemand * 100.0)/100.0
-//					+ "  previousDemand: " + Math.round(previousDemand * 100.0)/100.0);
-//		}
-		
+
 		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
 	
 		this.projectedDemand = projectedDemand;

@@ -48,8 +48,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int MARKET_VALUE_COL = VALUE_COL + 1;
 	static final int COST_COL = MARKET_VALUE_COL + 1;
 	static final int MARKET_COST_COL = COST_COL + 1;
-	static final int PRICE_COL = MARKET_COST_COL + 1;
-	static final int MARKET_PRICE_COL = PRICE_COL + 1;
+	static final int MARKET_PRICE_COL = MARKET_COST_COL + 1;
 
 	private static final int COLUMNCOUNT = MARKET_PRICE_COL + 1;
 
@@ -74,7 +73,6 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
-		COLUMNS[PRICE_COL] = new ColumnSpec ("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}
 
@@ -110,9 +108,6 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			}
 			else if (eventType == UnitEventType.COST_EVENT) {
 				entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
-			}
-			else if (eventType == UnitEventType.PRICE_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);
 			}
 			else if (eventType == UnitEventType.MARKET_VALUE_EVENT) {
 				entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
@@ -178,8 +173,6 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 				return selectedGood.getCostOutput();
 			case MARKET_COST_COL:
 				return selectedSettlement.getGoodsManager().getMarketData(2, selectedGood);
-			case PRICE_COL:
-				return selectedGood.getPrice();
 			case MARKET_PRICE_COL:
 				return selectedSettlement.getGoodsManager().getMarketData(3, selectedGood);
 			default:

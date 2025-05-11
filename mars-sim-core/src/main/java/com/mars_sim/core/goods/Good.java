@@ -19,17 +19,13 @@ import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.CropConfig;
-import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.process.ProcessItem;
-import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleConfig;
@@ -60,14 +56,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private String name;
 
 	private int id;
-	private int count0Out;
-	private int count1Out;
 
-	private double laborTime;
-	private double power;
-	private double processTime;
-	private double skill;
-	private double tech;
+	private double baseCost = -1;
 
 
 	private double costModifier = -1;
@@ -75,9 +65,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private double cost = -1;
 	/** The price for this good. */
 	private double price = -1;
-	
-	private static List<ManufactureProcessInfo> manufactureProcessInfos;
-	private static List<FoodProductionProcessInfo> foodProductionProcessInfos;
 
 	/**
 	 * Constructor with object.
@@ -149,52 +136,26 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 	/**
 	 * Gets the good's category enum.
-	 *
+	 
 	 * @return category.
 	 */
 	public abstract GoodCategory getCategory();
 
-	public double getlaborTime() {
-		return laborTime;
-	}
-
-	public double getPower() {
-		return power;
-	}
-
-	public double getProcessTime() {
-		return processTime;
-	}
-
-	public double getSkill() {
-		return skill;
-	}
-
-	public double getTech() {
-		return tech;
-	}
 
 	public double getModifier() {
 		return costModifier;
-	}
-
-	public double getCount0() {
-		return count0Out;
-	}
-
-	public double getCount1() {
-		return count1Out;
 	}
 
 	/**
 	 * Calculates the two costs of each good.
 	 */
 	public void computeAllCosts() {
-		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
-		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
 
 		// Compute the base output cost
-		computeBaseOutputCost();
+		if (baseCost== -1) {
+			computeBaseOutputCost();
+		}
+
 		// Compute the adjusted output cost
 		computeAdjustedCost();
 	}
@@ -215,14 +176,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		// First compute the modifier
 		if (costModifier == -1) {
 			costModifier = computeCostModifier();
-			// Then compute the total cost
-			cost = (0.01 + costModifier) * (
-					1 + getlaborTime() / LABOR_FACTOR
-					+ getProcessTime() / PROCESS_TIME_FACTOR
-					+ getPower() / POWER_FACTOR
-					+ getSkill() / SKILL_FACTOR
-					+ getTech() / TECH_FACTOR);
 		}
+		
+		// Then compute the total cost
+		cost = (0.01 + costModifier) * baseCost;
 		
 		return cost;
 	}
@@ -234,165 +191,85 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 */
 	protected abstract double computeCostModifier();
 	
+	private record OutputCosts(double labor, double power, double process, double skill, double tech) {}
+
 	/**
-	 * Computes the base cost of each good from manufacturing and food production
+	 * Calul;ates the output costs for a list of processes.
+	 * @param processInfos
+	 * @return
 	 */
-	public void computeBaseOutputCost() {
+	private OutputCosts computeOutputCosts(List<? extends ProcessInfo> processInfos) {
+
+		if (processInfos.isEmpty()) {
+			return new OutputCosts(0, 0, 0, 0, 0);
+		}
+
 		double labor0Out = 0;
 		double power0Out = 0;
 		double process0Out = 0;
 		double skill0Out = 0;
 		double tech0Out = 0;
 
-		if (manufactureProcessInfos != null || !manufactureProcessInfos.isEmpty()) {
+		for (ProcessInfo i: processInfos) {
+			double goodsProduced = 0;
+			for (var j: i.getOutputItemsByName(name)) {
+				goodsProduced += j.getAmount();
+			}
 
-			double goodAmount0Out = 0;
-			double otherAmount0Out = 0;
-			double goodWeight0Out = 1;
-			double otherWeight0Out = 1;
-			int numProcesses = manufactureProcessInfos.size();
+			if (goodsProduced > 0) {
+				// The consumption figures are balanced to the amount produced per unit
+				labor0Out 	 += i.getWorkTimeRequired()/goodsProduced;
+				power0Out 	 += i.getPowerRequired()/goodsProduced;
+				process0Out += i.getProcessTimeRequired()/goodsProduced;
 
-			for (ManufactureProcessInfo i: manufactureProcessInfos) {
-
-				var items = i.getOutputItemsByName(name);
-
-				for (var j: items) {
-					String goodName = j.getName();
-					if (goodName.equalsIgnoreCase(name)) {
-						goodAmount0Out += j.getAmount();
-
-						if (ItemType.PART == j.getType())
-							goodWeight0Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
-					}
-					else {
-						otherAmount0Out += j.getAmount();
-
-						if (ItemType.PART == j.getType())
-							otherWeight0Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
-					}
-				}
-
-				labor0Out 	 += i.getWorkTimeRequired();
-				power0Out 	 += i.getPowerRequired();
-				process0Out += i.getProcessTimeRequired();
 				skill0Out 	 += i.getSkillLevelRequired();
 				tech0Out 	 += i.getTechLevelRequired();
-				count0Out++;
-
-				if (count0Out != 0) {
-					double fraction = 1 / (goodAmount0Out * goodWeight0Out + otherAmount0Out * otherWeight0Out);
-					labor0Out 	 = labor0Out * fraction;
-					power0Out 	 = power0Out * fraction;
-					process0Out = process0Out * fraction;
-					skill0Out	 = skill0Out * fraction;
-					tech0Out 	 = tech0Out * fraction;
-				}
 			}
+		}	
 
-			if (numProcesses != 0) {
-				labor0Out 	 = labor0Out / numProcesses;
-				power0Out 	 = power0Out / numProcesses;
-				process0Out = process0Out / numProcesses;
-				skill0Out	 = skill0Out / numProcesses;
-				tech0Out 	 = tech0Out / numProcesses;
-			}
-		}
-
-		double labor1Out = 0;
-		double power1Out = 0;
-		double process1Out = 0;
-		double skill1Out = 0;
-		double tech1Out = 0;
-
-		if (foodProductionProcessInfos != null || !foodProductionProcessInfos.isEmpty()) {
-
-			double goodAmount1Out = 0;
-			double otherAmount1Out = 0;
-			double goodWeight1Out = 1;
-			double otherWeight1Out = 1;
-			int numProcesses = foodProductionProcessInfos.size();
-
-			for (FoodProductionProcessInfo i: foodProductionProcessInfos) {
-				List<ProcessItem> items = i.getOutputItemsByName(name);
-				for (ProcessItem j: items) {
-					String goodName = j.getName();
-					if (goodName.equalsIgnoreCase(name)) {
-						goodAmount1Out += j.getAmount();
-
-						if (ItemType.PART == j.getType())
-							goodWeight1Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
-					}
-					else {
-						otherAmount1Out += j.getAmount();
-
-						if (ItemType.PART == j.getType())
-							otherWeight1Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
-					}
-				}
-
-				labor1Out 	 += i.getWorkTimeRequired();
-				power1Out 	 += i.getPowerRequired();
-				process1Out += i.getProcessTimeRequired();
-				skill1Out 	 += i.getSkillLevelRequired();
-				tech1Out 	 += i.getTechLevelRequired();
-				count1Out++;
-			}
-
-			if (count1Out != 0) {
-				double fraction = 1 / (goodAmount1Out * goodWeight1Out + otherAmount1Out * otherWeight1Out);
-				labor1Out 	 = labor1Out * fraction;
-				power1Out 	 = power1Out * fraction;
-				process1Out = process1Out * fraction;
-				skill1Out	 = skill1Out * fraction;
-				tech1Out 	 = tech1Out * fraction;
-			}
-
-			if (numProcesses != 0) {
-				labor1Out 	 = labor1Out / numProcesses;
-				power1Out 	 = power1Out / numProcesses;
-				process1Out = process1Out / numProcesses;
-				skill1Out	 = skill1Out / numProcesses;
-				tech1Out 	 = tech1Out / numProcesses;
-			}
-		}
-
-		if (labor0Out == 0)
-			laborTime = labor1Out;
-		else if (labor1Out == 0)
-			laborTime = labor0Out;
-		else
-			laborTime = (labor0Out + labor1Out)/2D;
-
-		if (power0Out == 0)
-			power = power1Out;
-		else if (power1Out == 0)
-			power = power0Out;
-		else
-			power = (power0Out + power1Out)/2D;
-
-		if (process0Out == 0)
-			processTime = process1Out;
-		else if (process1Out == 0)
-			processTime = process0Out;
-		else
-			processTime = (process0Out + process1Out)/2D;
-
-		if (skill0Out == 0)
-			skill = skill1Out;
-		else if (skill1Out == 0)
-			skill = skill0Out;
-		else
-			skill = (skill0Out + skill1Out)/2D;
-
-		if (tech0Out == 0)
-			tech = tech1Out;
-		else if (tech1Out == 0)
-			tech = tech0Out;
-		else
-			tech = (tech0Out + tech1Out)/2D;
-
+		var numProcesses = processInfos.size();
+		return new OutputCosts(labor0Out / numProcesses, power0Out / numProcesses, process0Out / numProcesses,
+						skill0Out / numProcesses, tech0Out / numProcesses);
 	}
 
+	/**
+	 * Computes the base cost of each good from manufacturing and food production. THis is based on the process definitions
+	 * and never changes once created.
+	 */
+	private void computeBaseOutputCost() {
+
+		var manuResults = computeOutputCosts(ManufactureUtil.getManufactureProcessesWithGivenOutput(name));
+		var foodResults = computeOutputCosts(FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name));
+
+		var laborTime = getCombinedValue(manuResults.labor, foodResults.labor);
+		var power = getCombinedValue(manuResults.power, foodResults.power);
+		var processTime = getCombinedValue(manuResults.process, foodResults.process);
+		var skill = getCombinedValue(manuResults.skill, foodResults.skill);
+		var tech = getCombinedValue(manuResults.tech, foodResults.tech);
+
+		baseCost = 
+			1 + laborTime / LABOR_FACTOR
+			+ processTime / PROCESS_TIME_FACTOR
+			+ power / POWER_FACTOR
+			+ skill / SKILL_FACTOR
+			+ tech / TECH_FACTOR;
+	}
+
+	/**
+	 * Combine 2 values. If either is zero then the otehr is returned. If both are
+	 * non-zero then the average is returned.
+	 * @param value0
+	 * @param value1
+	 * @return
+	 */
+	private static double getCombinedValue(double value0, double value1) {
+		if (value0 == 0)
+			return value1;
+		else if (value1 == 0)
+			return value0;
+		else
+			return (value0 + value1)/2D;
+	}
 
 	/**
 	 * Gets the amount of this good being produced at the settlement by ongoing
@@ -473,30 +350,12 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		// Add all resources required to build first prestage, if any.
 		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if (preStage1 != null) {
-			for(var e : preStage1.getResources().entrySet()) {
-				Integer resource = e.getKey();
-				double amount = e.getValue();
-				if (result.containsKey(resource)) {
-					double totalAmount = result.get(resource) + amount;
-					result.put(resource, totalAmount);
-				} else {
-					result.put(resource, amount);
-				}
-			}
+			preStage1.getResources().forEach((k,v) -> result.merge(k, v, Double::sum));
 
 			// Add all resources required to build second prestage, if any.
 			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if (preStage2 != null) {
-				for(var e : preStage2.getResources().entrySet()) {
-					Integer resource = e.getKey();
-					double amount = e.getValue();
-					if (result.containsKey(resource)) {
-						double totalAmount = result.get(resource) + amount;
-						result.put(resource, totalAmount);
-					} else {
-						result.put(resource, amount);
-					}
-				}
+				preStage2.getResources().forEach((k,v) -> result.merge(k, v, Double::sum));
 			}
 		}
 
@@ -517,30 +376,12 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		// Add parts from first prestage, if any.
 		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if (preStage1 != null) {
-			for(var e : preStage1.getParts().entrySet()) {
-				Integer part = e.getKey();
-				int number = e.getValue();
-				if (result.containsKey(part)) {
-					int totalNumber = result.get(part) + number;
-					result.put(part, totalNumber);
-				} else {
-					result.put(part, number);
-				}
-			}
+			preStage1.getParts().forEach((k,v) -> result.merge(k, v, Integer::sum));
 
 			// Add parts from second pre-stage, if any.
 			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if (preStage2 != null) {
-				for(var e : preStage2.getParts().entrySet()) {
-					Integer part = e.getKey();
-					int number = e.getValue();
-					if (result.containsKey(part)) {
-						int totalNumber = result.get(part) + number;
-						result.put(part, totalNumber);
-					} else {
-						result.put(part, number);
-					}
-				}
+				preStage2.getParts().forEach((k,v) -> result.merge(k, v, Integer::sum));
 			}
 		}
 
@@ -552,6 +393,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 *
 	 * @return string.
 	 */
+	@Override
 	public String toString() {
 		return name;
 	}
@@ -561,6 +403,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 *
 	 * @return hash code
 	 */
+	@Override
 	public int hashCode() {
 		return id % 64;
 	}
@@ -572,6 +415,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
 	 */
+	@Override
 	public int compareTo(Good o) {
 		return name.compareTo(o.name);
 	}
@@ -579,6 +423,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/**
 	 * Is this object the same as another object ?
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -634,24 +479,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 			              .filter(Person::isOutside);
     }
 
-    /**
-     * Sets the price.
-     * 
-     * @param price
-     */
-    protected void setPrice(double price) {
-    	this.price = price;
-    }
-    
-    /**
-     * Gets the price.
-     * 
-     * @return price
-     */
-    public double getPrice() {
-    	return price;
-    }
-    
 	/**
 	 * Calculates the price for this Good at a settlement with a specific Value Point.
 	 * 

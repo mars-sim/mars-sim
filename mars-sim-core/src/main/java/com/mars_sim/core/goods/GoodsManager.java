@@ -714,7 +714,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getPrice(Good good) {
-		return good.getPrice();
+		return marketMap.get(good).getPrice();
 	}
 	
 	/**

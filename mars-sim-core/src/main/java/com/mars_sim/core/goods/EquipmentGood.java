@@ -213,9 +213,7 @@ public class EquipmentGood extends Good {
     		factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
     	}
         
-        double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));    
-        setPrice(price);   
-        return price;
+        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));    
     }
 
 	@Override
