@@ -28,6 +28,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementConfig.ResourceLimits;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -136,23 +137,23 @@ public class GoodsManager implements Serializable {
 	private static final int MAX_SUPPLY = 5_000;
 	private static final int MAX_VP = 10_000;
 
+	static final double MIN_VP = 0.01;
+	public static final double MAX_FINAL_VP = 5_000D;
 	static final int MAX_DEMAND = 10_000;
-	
+	static final double MIN_DEMAND = 0.01;
+
 	private static final double MIN_SUPPLY = 0.01;
-	private static final double MIN_VP = 0.01;
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_81 = .81;
 
-	public static final double MAX_FINAL_VP = 5_000D;
-	static final double MIN_DEMAND = 0.01;
 
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
 
 	private static Map<Integer, ResourceLimits> resLimits;
 	
-	private static Map<Good, MarketData> marketMap = new HashMap<>();
+	private Map<Good, MarketData> marketMap = new HashMap<>();
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static Set<Good> unsellableGoods = null;
 
@@ -164,8 +165,6 @@ public class GoodsManager implements Serializable {
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
 	private double eVASuitMod = BASE_EVA_SUIT;
-
-	private boolean initialized = false;
 	
 	private Map<CommerceType, Double> factors = new EnumMap<>(CommerceType.class);
 
@@ -261,7 +260,7 @@ public class GoodsManager implements Serializable {
 			deflationIndexMap.put(id, 0);
 			demandCache.put(id, good.getDefaultDemandValue());
 			supplyCache.put(id, good.getDefaultSupplyValue());
-			marketMap.put(good, new MarketData(good));
+			marketMap.put(good, new MarketData());
 		}
 	}
 
@@ -297,39 +296,25 @@ public class GoodsManager implements Serializable {
 
  		// Update the goods value gradually with the use of buffers
 		for (Good g: GoodsUtil.getGoodsList()) {
-			
+			MarketData mv = marketMap.get(g);
 			double localValue = determineGoodValue(g);
-			double marketValue = getMarketData(1, g); 
 			
 			double localDemand = demandCache.get(g.getID());
-			double marketDemand = getMarketData(0, g); 
 	
 			double localCost = g.computeAdjustedCost();
-			double marketCost = getMarketData(2, g); 
 			
 			double localPrice = g.calculatePrice(settlement, localValue);
-			double marketPrice = getMarketData(3, g); 
 			
-			if (initialized || marketDemand == -1 || marketValue == -1 || marketCost == -1 || marketPrice == -1) {
-				setMarketData(0, g, localDemand);	
-				setMarketData(1, g, localValue);	
-				setMarketData(2, g, localCost);
-				setMarketData(3, g, localPrice);
-			}
-			else {			
-				setMarketData(0, g, 0.95 * marketDemand + 0.05 * localDemand);
-				setMarketData(1, g, 0.95 * marketValue + 0.05 * localValue);
-				setMarketData(2, g, 0.95 * marketCost + 0.05 * localCost);
-				setMarketData(3, g, 0.95 * marketPrice + 0.05 * localPrice);
-			}
+			mv.setDemand(localDemand);	
+			mv.setValue(localValue);	
+			mv.setCost(localCost);
+			mv.setPrice(localPrice);
 			
 			settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, g);				
 			settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, g);
 			settlement.fireUnitUpdate(UnitEventType.MARKET_COST_EVENT, g);
 			settlement.fireUnitUpdate(UnitEventType.MARKET_PRICE_EVENT, g);
-		}
-				
-		initialized = true;
+		}				
 	}
 
 	
@@ -352,6 +337,7 @@ public class GoodsManager implements Serializable {
 			double newDemand = oldDemand;
 			
 			// Adjust the market demand
+			MarketData marketData = getMarketData(good);
 			double adj0 = adjustMarketDemand(good, oldDemand) / 20.0;
 			if (oldDemand + adj0 > 0)
 				newDemand += adj0;
@@ -379,7 +365,7 @@ public class GoodsManager implements Serializable {
 			// Check for inflation and deflation adjustment due to other resources
 			newValue = checkDeflation(id, newValue);
 			// Adjust the market value
-			double adj1 = adjustMarketValue(good, newValue) / 20.0;
+			double adj1 = marketData.setValue(newValue) / 20.0;
 			if (newValue + adj1 > 0)
 				newValue += adj1;
 
@@ -407,80 +393,11 @@ public class GoodsManager implements Serializable {
 	 */
 	private double adjustMarketDemand(Good good, double demand) {
 		// Gets the market demand among the settlements
-		double currentMarket = getMarketData(0, good);
-		double futureMarket = 0;
-
-		if (currentMarket == -1) {
-			// At the startup of the sim
-			futureMarket = demand;
-				
-			if (futureMarket > MAX_DEMAND)
-				futureMarket = MAX_DEMAND;			
-			else if (futureMarket < MIN_DEMAND)
-				futureMarket = MIN_DEMAND;
-			
-			setMarketData(0, good, futureMarket);	
-			settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, good);
-			return 0;
-		}
-
-		else {
-			// Let the market demand affects the local demand of this good
-			futureMarket = .9 * currentMarket + .1 * demand;
-
-			if (futureMarket > MAX_DEMAND)
-				futureMarket = MAX_DEMAND;
-			else if (futureMarket < MIN_DEMAND)
-				futureMarket = MIN_DEMAND;
-			
-			setMarketData(0, good, futureMarket);
-			settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
-			return futureMarket - currentMarket;
-		}
+		var adj = getMarketData(good).setDemand(demand);
+		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
+		return adj;
 	}
 	
-	/**
-	 * Adjusts the market value of a good of a settlement.
-	 * 
-	 * @param good
-	 * @param value
-	 * @return the market adjustment
-	 */
-	private double adjustMarketValue(Good good, double value) {
-		// Gets the market value among the settlements
-		double currentMarket = getMarketData(1, good);
-		double futureMarket = 0;
-
-		if (currentMarket == -1) {
-			// At the startup of the sim
-			futureMarket = value;
-				
-			if (futureMarket > MAX_FINAL_VP)
-				futureMarket = MAX_FINAL_VP;			
-			else if (futureMarket < MIN_VP)
-				futureMarket = MIN_VP;
-			
-			setMarketData(1, good, futureMarket);
-			
-			return 0;
-		}
-
-		else {
-			// Let the market value affects the value of this good
-			// at this settlement 
-			futureMarket = .9 * currentMarket + .1 * value;
-
-			if (futureMarket > MAX_FINAL_VP)
-				futureMarket = MAX_FINAL_VP;
-			else if (futureMarket < MIN_VP)
-				futureMarket = MIN_VP;
-			
-			setMarketData(1, good, futureMarket);
-			
-			return futureMarket - currentMarket;
-		}
-	}
-
 	/**
 	 * Checks the deflation of a resource.
 	 * 
@@ -528,25 +445,23 @@ public class GoodsManager implements Serializable {
 	 * @return the adjusted value
 	 */
 	private double updateDeflationMap(int id, double value, GoodCategory type, boolean exceed) {
-
-		for (int i : deflationIndexMap.keySet()) {
-			if (id != i) {
-				if (type == GoodsUtil.getGood(i).getCategory()) {
-					// This good is of the same category as the one that cause the
-					// inflation/deflation
-					int oldIndex = deflationIndexMap.get(i);
-					if (exceed) {
-						// reduce twice
-						deflationIndexMap.put(id, oldIndex + 2);
-					}
-				}
-				else { // This good is of different category
-					int oldIndex = deflationIndexMap.get(i);
-					if (exceed) {
-						// reduce once
-						deflationIndexMap.put(id, oldIndex + 1);
-					}
-				}
+		if (!deflationIndexMap.containsKey(id)) {
+			return 0;
+		}
+		if (type == GoodsUtil.getGood(id).getCategory()) {
+			// This good is of the same category as the one that cause the
+			// inflation/deflation
+			int oldIndex = deflationIndexMap.get(id);
+			if (exceed) {
+				// reduce twice
+				deflationIndexMap.put(id, oldIndex + 2);
+			}
+		}
+		else { // This good is of different category
+			int oldIndex = deflationIndexMap.get(id);
+			if (exceed) {
+				// reduce once
+				deflationIndexMap.put(id, oldIndex + 1);
 			}
 		}
 
@@ -773,7 +688,7 @@ public class GoodsManager implements Serializable {
 	 * @param newValue
 	 */
 	public void setDemandValue(Good good, double newValue) {
-		double clippedValue = limitMaxMin(newValue, MIN_DEMAND, MAX_DEMAND);
+		double clippedValue = MathUtils.between(newValue, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
 		
 		settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
@@ -790,7 +705,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	public void setSupplyValue(int id, double newValue) {
-		double clippedValue = limitMaxMin(newValue, MIN_SUPPLY, MAX_SUPPLY);
+		double clippedValue = MathUtils.between(newValue, MIN_SUPPLY, MAX_SUPPLY);
 		supplyCache.put(id, clippedValue);
 	}
 
@@ -825,18 +740,6 @@ public class GoodsManager implements Serializable {
 		return previousDemand / supply;
 	}
 
-	/**
-	 * Bounds a prescribed parameter with upper and lower allowable limit.
-	 * 
-	 * @param param
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	private static double limitMaxMin(double param, double min, double max) {
-		return Math.max(min, Math.min(max, param));
-	}
-	
 	/**
 	 * Reset the reviews essential resources.
 	 */
@@ -951,107 +854,15 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets a specific piece of market data of this good.
-	 * 
+	 * Get the market position for a Good from the view of this Settlement
+	 * @param good
 	 * @return
 	 */
-	public double getMarketData(int index, Good good) {
-
-		if (index == 0) {
-			if (marketMap.containsKey(good)) {
-				return marketMap.get(good).getDemand();
-			}
-		}
-		else if (index == 1) {
-			if (marketMap.containsKey(good)) {
-				return marketMap.get(good).getValue();
-			}		
-		}
-		else if (index == 2) {
-			if (marketMap.containsKey(good)) {
-				return marketMap.get(good).getCost();
-			}		
-		}
-		else if (index == 3) {
-			if (marketMap.containsKey(good)) {
-				return marketMap.get(good).getPrice();
-			}
-		}
-		
-		return -1;
+	public MarketData getMarketData(Good good) {
+		// Should always find a value
+		return marketMap.computeIfAbsent(good, g -> new MarketData());
 	}
 
-	
-	/**
-	 * Updates a piece of market data.
-	 * 
-	 * @param index
-	 * @param good
-	 * @param data
-	 */
-	public static void setMarketData(int index, Good good, double data) {
-
-		if (index == 0) {
-			if (marketMap.containsKey(good)) {
-				MarketData mData = marketMap.get(good);
-				
-				synchronized (mData) {
-					double old = mData.getDemand();
-					if (old == -1) {
-						mData.setDemand(data);
-					}
-					else {
-						mData.setDemand(0.95 * old + 0.05 * data);
-					}				
-				}
-			}
-		}
-		else if (index == 1) {
-			if (marketMap.containsKey(good)) {
-				MarketData mData = marketMap.get(good);
-				
-				synchronized (mData) {
-					double old = mData.getValue();
-					if (old == -1) {
-						mData.setValue(data);
-					}
-					else {
-						mData.setValue(0.95 * old + 0.05 * data);
-					}
-				}
-			}		
-		}
-		else if (index == 2) {
-			if (marketMap.containsKey(good)) {
-				MarketData mData = marketMap.get(good);
-				
-				synchronized (mData) {
-					double old = mData.getCost();
-					if (old == -1) {
-						mData.setCost(data);
-					}
-					else {
-						mData.setCost(0.95 * old + 0.05 * data);
-					}
-				}
-			}		
-		}
-		else if (index == 3) {
-			if (marketMap.containsKey(good)) {
-				MarketData mData = marketMap.get(good);
-				
-				synchronized (mData) {
-					double old = mData.getPrice();
-					if (old == -1) {
-						mData.setPrice(data);
-					}
-					else {
-						mData.setPrice(0.95 * old + 0.05 * data);
-					}
-				}
-			}
-		}
-	}
 
 	/**
 	 * Returns the owning Settlement of this manager.

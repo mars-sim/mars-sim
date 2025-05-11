@@ -108,7 +108,7 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 			case LOCAL_VP_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedFood.getID()); 
 			case MARKET_VP_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(1, convertFoodToGood(selectedFood));
+				return selectedSettlement.getGoodsManager().getMarketData(convertFoodToGood(selectedFood)).getValue();
 			case COST_COL:
 				return convertFoodToGood(selectedFood).getCostOutput();
 			case PRICE_COL:
