@@ -10,7 +10,6 @@ package com.mars_sim.core.person.ai.task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import com.mars_sim.core.computing.ComputingJob;
 import com.mars_sim.core.computing.ComputingLoadType;
@@ -178,12 +177,6 @@ public class AnalyzeMapData extends Task {
     		int rand = RandomUtil.getRandomInt(0, limit);
     		
     		int value = (int)Math.round(rand / 5.0);
-    		
-    		logger.log(person, Level.INFO, 20_000, "Requested " 
-    				+ Math.round(compute.getRemainingNeed() * 100.0)/100.0 
-    				+ " CUs for "
-    				+ NAME
-		     		+ ". Selected site: " + exploredLoc.getLocation().getFormattedString() + ".");
     		
     		if (rand < value) {
     	       	// Add task phases

@@ -98,6 +98,9 @@ public class ResourceCache {
             // Checksum the bundled resoruce from a new stream
             if (doChecksum) {
                 try (InputStream checkStream = ResourceCache.class.getResourceAsStream(resourceName)) {
+                    if (checkStream == null) {
+                        throw new IOException("Cannot find resource " + resourceName);
+                    }
                     String existingChecksum = Hash.MD5.getChecksumString(existingFile);
                     String resourceChecksum = Hash.MD5.getChecksumString(checkStream);
                     if (existingChecksum.equals(resourceChecksum)) {
@@ -109,6 +112,9 @@ public class ResourceCache {
 
 		// Need to extract file to folder
 		try (InputStream stream = ResourceCache.class.getResourceAsStream(resourceName)) {
+            if (stream == null) {
+                throw new IOException("Cannot find resource " + resourceName);
+            }
             // Take backup
             if (existingFile.exists()) {
                 File dir = getBackupDir();

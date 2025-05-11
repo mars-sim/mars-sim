@@ -898,9 +898,6 @@ public class AlgaeFarming extends Function {
 			surplus = Math.abs(tendertime);
 			// Reset tendertime value
 			tendertime = currentFood * TEND_TIME_FOR_FOOD;
-			logger.log(building, Level.INFO, 5_000, 
-					"Tended one batch of nutrients for the algae (" 
-					+ Math.round(tendertime * 10.0)/10.0 + " millisols).");
 			// Reset foodAge
 			foodAge = 0;
 		}

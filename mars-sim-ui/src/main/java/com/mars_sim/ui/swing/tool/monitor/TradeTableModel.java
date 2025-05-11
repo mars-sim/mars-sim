@@ -48,8 +48,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int MARKET_VALUE_COL = VALUE_COL + 1;
 	static final int COST_COL = MARKET_VALUE_COL + 1;
 	static final int MARKET_COST_COL = COST_COL + 1;
-	static final int PRICE_COL = MARKET_COST_COL + 1;
-	static final int MARKET_PRICE_COL = PRICE_COL + 1;
+	static final int MARKET_PRICE_COL = MARKET_COST_COL + 1;
 
 	private static final int COLUMNCOUNT = MARKET_PRICE_COL + 1;
 
@@ -74,7 +73,6 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
-		COLUMNS[PRICE_COL] = new ColumnSpec ("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}
 
@@ -102,32 +100,23 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		if (event.getTarget() instanceof Good g
 			&& unit instanceof Settlement s) {
 			
-			if (eventType == UnitEventType.VALUE_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
-			}
-			else if (eventType == UnitEventType.DEMAND_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
-			}
-			else if (eventType == UnitEventType.COST_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
-			}
-			else if (eventType == UnitEventType.PRICE_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);
-			}
-			else if (eventType == UnitEventType.MARKET_VALUE_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
-			}
-			else if (eventType == UnitEventType.MARKET_DEMAND_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), MARKET_DEMAND_COL, MARKET_DEMAND_COL);
-			}
-			else if (eventType == UnitEventType.MARKET_COST_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), MARKET_COST_COL, MARKET_COST_COL);
-			}
-			else if (eventType == UnitEventType.MARKET_PRICE_EVENT) {
-				entityValueUpdated(new CategoryKey<>(s, g), MARKET_PRICE_COL, MARKET_PRICE_COL);
-			}
-			else {
-				entityValueUpdated(new CategoryKey<>(s, g), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+			switch (eventType) {
+				case UnitEventType.VALUE_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
+				case UnitEventType.DEMAND_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
+				case UnitEventType.COST_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
+				case UnitEventType.MARKET_VALUE_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
+				case UnitEventType.MARKET_DEMAND_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MARKET_DEMAND_COL, MARKET_DEMAND_COL);
+				case UnitEventType.MARKET_COST_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MARKET_COST_COL, MARKET_COST_COL);
+				case UnitEventType.MARKET_PRICE_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MARKET_PRICE_COL, MARKET_PRICE_COL);
+				default ->
+					entityValueUpdated(new CategoryKey<>(s, g), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
 		}
 	}
@@ -163,7 +152,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValue(selectedGood);
 			case MARKET_DEMAND_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(0, selectedGood);
+				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getDemand();
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyValue(selectedGood);
 			case QUANTITY_COL:
@@ -173,15 +162,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			case VALUE_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
 			case MARKET_VALUE_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(1, selectedGood);
+				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getValue();
 			case COST_COL:
 				return selectedGood.getCostOutput();
 			case MARKET_COST_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(2, selectedGood);
-			case PRICE_COL:
-				return selectedGood.getPrice();
+				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getCost();
 			case MARKET_PRICE_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(3, selectedGood);
+				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getPrice();
 			default:
 				return null;
 		}

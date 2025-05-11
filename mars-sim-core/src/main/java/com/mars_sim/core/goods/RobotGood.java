@@ -43,22 +43,8 @@ class RobotGood extends Good {
         this.robotType = type;
         
         // Calculate fixed values
-     	flattenDemand = calculateFlattenDemand(type);
+     	flattenDemand = ROBOT_FLATTENING_FACTOR;
     }
-
-    /**
-	 * Calculates the flatten demand based on the equipment type.
-	 * 
-	 * @param robotType
-	 * @return
-	 */
-	private double calculateFlattenDemand(RobotType robotType) {
-//		if (robotType == RobotType.) {
-//			return _FLATTENING_FACTOR;
-//        }
-		
-		return ROBOT_FLATTENING_FACTOR; 
-	}
 	
     /**
      * Gets the flattened demand.
@@ -112,7 +98,6 @@ class RobotGood extends Good {
 
     @Override
     public GoodType getGoodType() {
-        // TODO Must be a better way 
         switch(robotType) {
             case CHEFBOT: return GoodType.CHEFBOT;
             case CONSTRUCTIONBOT: return GoodType.CONSTRUCTIONBOT;
@@ -145,9 +130,7 @@ class RobotGood extends Good {
         double quantity = settlement.getInitialNumOfRobots() ;
         double factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
         // Need to increase the value for robots
-        double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
-        setPrice(price);   
-        return price;
+        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
     }
 
     @Override

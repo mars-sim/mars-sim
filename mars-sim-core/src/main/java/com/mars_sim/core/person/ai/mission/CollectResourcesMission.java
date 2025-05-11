@@ -27,7 +27,6 @@ import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
@@ -181,10 +180,6 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = NUM_TRIPS * containerCap * containerNum / orderSites.size();
-		logger.info(getVehicle(), "Estimating amount of "
-				+ ResourceUtil.findAmountResourceName(resourceID)
-				+ " per site: "
-				+ (int)siteResourceGoal + " kg.");
 
 		// Add home settlement for return
 		addNavpoint(s);
@@ -405,7 +400,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		double weight = person.getMass();
 		if (roverRemainingCap < weight) {
-			logger.info(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
+			logger.warning(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
 			addMissionLog("Rover capacity full");
 			return false;
 		}
@@ -413,14 +408,11 @@ public abstract class CollectResourcesMission extends EVAMission
 		// Compute the collected resources on this person and the rover
 		double amountCollectedAtSiteSoFar0 = getCollectedAtCurrentSite();
 //		Note: computeTotalResources(person) does not work
-		
-//		logger.info(getRover(), 20_000, "amountCollectedAtSiteSoFar0: " +
-//				Math.round(amountCollectedAtSiteSoFar0 * 100.0)/100.0);
+
 		
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
 		if (amountCollectedAtSiteSoFar0 >= siteResourceGoal) {
-			logger.info(getRover(), "Full resources collected at site.");
 			addMissionLog("Full resources collected");
 			return false;
 		}
@@ -468,22 +460,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 
 		return true;
-	}
-
-	/**
-	 * EVA ended so update the mission resources.
-	 */
-	@Override
-	protected void phaseEVAEnded() {
-//		updateResources(getRover());
-	}
-
-	/**
-	 * Signals the start of an EVA phase to do any housekeeping.
-	 */
-	@Override
-	protected void phaseEVAStarted() {
-		super.phaseEVAStarted();
 	}
 
 	/**
