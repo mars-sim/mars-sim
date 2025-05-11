@@ -457,10 +457,6 @@ public class FoodProduction extends Function {
 		}
 
 		processes.remove(process);
-		
-		// Log process ending.
-		logger.log(getBuilding(), Level.INFO, 0,
-				"Ending food production process " + "'" + process.getInfo().getName() + "'.");
 	}
 
 	@Override

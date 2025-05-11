@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
@@ -81,11 +80,6 @@ public class ComputingJob implements Serializable {
         this.purpose = purpose;
         		
         this.nodeLoads = new HashMap<>();
-        
-		logger.log(host, Level.INFO, 30_000, "Requested " 
-		 		+ Math.round(initDemand * 100.0)/100.0 + " CUs for a duration of "
-		 		+ Math.round(duration * 10.0)/10.0 + " msols on '"
-		 		+ purpose + "'.");
     }
 
     public Set<Computation> getNodes() {
@@ -107,7 +101,6 @@ public class ComputingJob implements Serializable {
     	Computation center = null;
     	
 		int nowMSol = now;
-//		logger.info(host, 30_000, "1. nowMSol: " + nowMSol + ".");
         int startMSol = nowMSol + 1;
         int endMSol = (int) (startMSol + duration - timeCompleted);
         

@@ -290,7 +290,6 @@ public class Farming extends Function {
 		}
 	
 		if (cropName != null) {
-			logger.log(getBuilding(), Level.INFO, 0, "Extracting " + cropName + ".");
 			return cropName;
 		}
 		else {	
@@ -309,7 +308,6 @@ public class Farming extends Function {
 			
 			if (selectedTissueName != null) {
 				building.getSettlement().retrieveAmountResource(selectedTissueid, STANDARD_AMOUNT_TISSUE_CULTURE);
-				logger.log(getBuilding(), Level.INFO, 0, "Extracting " + selectedTissueName + ".");
 				return selectedTissueName.replace(" tissue", "");
 			}
 		}
@@ -900,7 +898,6 @@ public class Farming extends Function {
 			cropHistory.put(crop.getIdentifier(), crop.getName());
 			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 	
-			logger.info(worker, 3_000, "Planted a new crop of " + crop.getName() + ".");
 			numCrops2Plant--;
 		}
 	}
