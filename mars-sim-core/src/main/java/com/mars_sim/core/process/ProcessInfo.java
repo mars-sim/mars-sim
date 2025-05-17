@@ -185,6 +185,48 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 		return true;
 	}
 
+	/**
+	 * Deposit the outputs of this process into the given settlement.
+	 * @param settlement
+	 * @param updateGoods Update the value of teh goods
+	 */
+    public void depositOutputs(Settlement settlement, boolean updateGoods) {
+		for (var item : outputList) {
+			item.deposit(settlement, this, true);
+		}
+    }
+
+	/**
+	 * Retrieve the required inputs from the given settlement.
+	 * @param settlement
+	 */
+	public void retrieveInputs(Settlement settlement) {
+		// Consume inputs.
+		for (var item : inputList) {
+			switch(item.getType()) {
+				case AMOUNT_RESOURCE:
+					settlement.retrieveAmountResource(item.getId(), item.getAmount());
+					break;
+				case PART:
+					settlement.retrieveItemResource(item.getId(), (int) item.getAmount());
+					break;
+				default:
+					throw new IllegalArgumentException("Process input: " + item.getType() + " not a valid type.");
+			}
+		}
+	}
+	
+	/**
+	 * Returns the used inputs to the given settlement.
+	 * @param settlement
+	 */
+	public void returnInputs(Settlement settlement) {
+			// Produce outputs.
+		for (var item : inputList) {
+			item.deposit(settlement, this, false);
+		}
+	}
+
 	@Override
 	public String toString() {
 		return name;
