@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.checkerframework.checker.units.qual.s;
+
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.logging.SimLogger;
@@ -43,8 +45,6 @@ public class ResourceUtil {
 	private static final String CO = "carbon monoxide";
 	
 	private static final String CHLORINE = "chlorine";
-	private static final String ETHYLENE = "ethylene";
-	private static final String PROPHYLENE = "prophylene";
 	
 	private static final String HYDROGEN = "hydrogen";
 	public static final String METHANE = "methane";
@@ -101,137 +101,227 @@ public class ResourceUtil {
 	private static final String FISH_OIL = "fish oil";
 	private static final String OLIVE_OIL = "olive oil";
 	
-	private static final String TOILET_TISSUE = "Toilet tissue";
-	private static final String SOYMILK = "Soymilk";
-	private static final String LEAVES = "Leaves";
-	private static final String FISH_MEAT = "Fish meat";
-	private static final String SPIRULINA = "Spirulina";
+	private static final String TOILET_TISSUE = "toilet tissue";
+	private static final String LEAVES = "leaves";
+	private static final String FISH_MEAT = "fish meat";
+	private static final String SPIRULINA = "spirulina";
 
 	protected static Set<Integer> essentialResources;
-	
-	public static final String[] ROCKS  = new String[] {
-			ROCK_SAMPLES,
-			"columnar basalt",
-			"granite",
-			"mudstone",
-			"sandstone",
-			"shale",
-			"conglomerate",
-			"cross bedding",
-			METEORITE,
-			"scoria"};
-
-	private static final String[] MINERAL_CONCENTRATIONS = new String[] {
-	        "chalcopyrite",
-			"goethite",
-			"hematite",
-			"kamacite",
-			"magnesite",
-			"magnetite",
-			"malachite",
-			"olivine",
-			"taenite",
-			"sylvite"};
-
-	private static final String[] ORE_DEPOSITS = new String[] {
-			"allophane",
-			"akaganeite",
-			"basaltic",
-			"bassanite",
-			"gypsum",
-			"smectite"};
 
 	// Data members.
-	private static Map<String, AmountResource> amountResourceMap;
-	private static Map<Integer, AmountResource> amountResourceIDMap;
+	private static Map<String, AmountResource> amountResourceByName;
+	private static Map<Integer, AmountResource> amountResourceById;
 	private static Set<AmountResource> resources;
-	private static List<AmountResource> sortedResources;
 	
 	/** A set of life support resources. */
 	private static Set<Integer> lifeSupportResources;
 
-	public static int waterID;
-	public static int foodID;
+	public static final int waterID = FIRST_AMOUNT_RESOURCE_ID;
+	public static final int foodID = waterID + 1;
 
-	public static int oxygenID;
-	public static int co2ID;
-	public static int argonID;
-	public static int nitrogenID;
-	public static int hydrogenID;
-	public static int methaneID;
-	public static int methanolID;
-	public static int coID;
-	public static int acetyleneID;
+	public static final int oxygenID = foodID + 1;
+	public static final int co2ID = oxygenID + 1;
+	public static final int argonID = co2ID + 1;
+	public static final int nitrogenID = argonID + 1;
+	public static final int hydrogenID = nitrogenID + 1;
+	public static final int methaneID = hydrogenID + 1;
+	public static final int methanolID = methaneID + 1;
+	public static final int coID = methanolID + 1;
+	public static final int acetyleneID = coID + 1;
 	
-	public static int chlorineID;
-	public static int ethyleneID;
-	public static int prophyleneID;
+	public static final int chlorineID = acetyleneID + 1;
 			
-	public static int iceID;
+	public static final int iceID = chlorineID + 1;
 
-	public static int regolithID;
-	public static int regolithBID;
-	public static int regolithCID;
-	public static int regolithDID;
-	public static int olivineID;
-	public static int kamaciteID;
-	public static int gypsumID;
-	public static int malachiteID;
-	public static int sylviteID;
+	public static final int regolithID = iceID + 1;
+	public static final int regolithBID = regolithID + 1;
+	public static final int regolithCID = regolithBID + 1;
+	public static final int regolithDID = regolithCID + 1;
+	public static final int olivineID = regolithDID + 1;
+	public static final int kamaciteID = olivineID + 1;
+	public static final int gypsumID = kamaciteID + 1; 
+	public static final int malachiteID = gypsumID + 1;
+	public static final int sylviteID = malachiteID + 1;
 
-	public static int soilID;
-	public static int sandID;
-	public static int soymilkID;
+	public static final int soilID = sylviteID + 1;
+	public static final int sandID = soilID + 1;
 
-	public static int rockSamplesID;
+	public static final int rockSamplesID = sandID + 1;
 
-	public static int blackWaterID;
-	public static int greyWaterID;
+	public static final int blackWaterID = rockSamplesID + 1;
+	public static final int greyWaterID = blackWaterID + 1;
 	
-	public static int brineWaterID;
+	public static final int brineWaterID = greyWaterID + 1;
 
-	public static int concreteID;
-	public static int cementID;
-	public static int limeID;
+	public static final int concreteID = brineWaterID + 1;
+	public static final int cementID = concreteID + 1;
+	public static final int limeID = cementID + 1;
 
-	public static int compostID;
-	public static int cropWasteID;
-	public static int foodWasteID;
-	public static int toxicWasteID;
-	public static int solidWasteID;
+	public static final int compostID = limeID + 1;
+	public static final int cropWasteID = compostID + 1;
+	public static final int foodWasteID = cropWasteID + 1;
+	public static final int toxicWasteID = foodWasteID + 1;
+	public static final int solidWasteID = toxicWasteID + 1;
 
-	public static int toiletTissueID;
+	public static final int toiletTissueID = solidWasteID + 1;
 
-	public static int fertilizerID;
-	public static int NaClOID;
+	public static final int fertilizerID = toiletTissueID + 1;
+	public static final int NaClOID = fertilizerID + 1; 
 
-	public static int leavesID;
+	public static final int leavesID = NaClOID + 1;
 
-	public static int soybeanOilID;
-	public static int garlicOilID;
-	public static int sesameOilID;
-	public static int peanutOilID;
-	public static int riceBranOilID;
-	public static int fishOilID;
-	public static int oliveOilID;
+	public static final int soybeanOilID = leavesID + 1;
+	public static final int garlicOilID = soybeanOilID + 1;
+	public static final int sesameOilID = garlicOilID + 1;
+	public static final int peanutOilID = sesameOilID + 1;
+	public static final int riceBranOilID = peanutOilID + 1;
+	public static final int fishOilID = riceBranOilID + 1;
+	public static final int oliveOilID = fishOilID + 1;
 
-	public static int epsomSaltID;
-	public static int tableSaltID;
-	public static int rockSaltID;
+	public static final int epsomSaltID = oliveOilID + 1;
+	public static final int tableSaltID = epsomSaltID + 1;
+	public static final int rockSaltID = tableSaltID + 1;
 
-	public static int eWasteID;
+	public static final int eWasteID = rockSaltID + 1;
 
-	public static int napkinID;
+	public static final int napkinID = eWasteID + 1;
 
-	public static int meteoriteID;
+	public static final int meteoriteID = napkinID + 1;
+	public static final int fishMeatID = meteoriteID + 1;
+	public static final int spirulinaID = fishMeatID + 1;
 
-	public static int[] rockIDs = new int[ROCKS.length];
-	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
-	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
-	public static int[] REGOLITH_TYPES = new int[4];
+	private static final int smectiteID = spirulinaID + 1;
+	private static final int basalticID = smectiteID + 1;
+	private static final int bassaniteID = basalticID + 1;
+	private static final int allophaneID = bassaniteID + 1;
+	private static final int akaganeiteID = allophaneID + 1;
+	private static final int chalcopyriteID = akaganeiteID + 1;
+	private static final int goethiteID = chalcopyriteID + 1;
+	private static final int hematiteID = goethiteID + 1;
+	private static final int magnesiteID = hematiteID + 1;
+	private static final int magnetiteID = magnesiteID + 1;
+	private static final int taeniteID = magnetiteID + 1;
+	private static final int columnarbasaltID = taeniteID + 1;
+	private static final int graniteID = columnarbasaltID + 1;
+	private static final int shaleID = graniteID + 1;
+	private static final int mudstoneID = shaleID + 1;
+	private static final int glomerateID = mudstoneID + 1;
+	private static final int conglomerateID = glomerateID + 1;
+	private static final int sandstoneID = conglomerateID + 1;
+	private static final int crossbeddingID = sandstoneID + 1;
+	private static final int scoriaID = crossbeddingID;	
+	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = scoriaID + 1;
 
-	public static int fishMeatID;
-	public static int spirulinaID;
+	public static final int[] rockIDs = new int[] {rockSamplesID, columnarbasaltID,
+													graniteID, mudstoneID, sandstoneID,
+													shaleID, glomerateID, crossbeddingID,
+													meteoriteID, scoriaID};
+	public static final int[] mineralConcIDs = new int[]{chalcopyriteID, goethiteID,
+														hematiteID, kamaciteID, magnesiteID, magnetiteID,
+														malachiteID, olivineID, taeniteID, sylviteID};
+	public static final int[] oreDepositIDs = new int[]{allophaneID, akaganeiteID, basalticID,
+														bassaniteID, gypsumID, smectiteID};
+	public static final int[] REGOLITH_TYPES = new int[] {regolithID, regolithBID,
+														regolithCID, regolithDID};
+
+
+	private static final Map<String, Integer> fixedResources = new HashMap<>();
+
+	static {
+		fixedResources.put(FOOD, foodID);
+		fixedResources.put(WATER, waterID);
+		fixedResources.put(OXYGEN, oxygenID);
+		fixedResources.put(CO2, co2ID);
+		fixedResources.put(ARGON, argonID);
+		fixedResources.put(CO, coID);
+		fixedResources.put(ACETYLENE, acetyleneID);
+		fixedResources.put(HYDROGEN, hydrogenID);
+		fixedResources.put(METHANE, methaneID);
+		fixedResources.put(METHANOL, methanolID);
+		fixedResources.put(NITROGEN, nitrogenID);
+		fixedResources.put(CHLORINE, chlorineID);
+		fixedResources.put(ICE, iceID);
+		fixedResources.put(SOIL, soilID);
+		fixedResources.put(REGOLITH, regolithID);
+		fixedResources.put(REGOLITH_B, regolithBID);
+		fixedResources.put(REGOLITH_C, regolithCID);
+		fixedResources.put(REGOLITH_D, regolithDID);
+		fixedResources.put(OLIVINE, olivineID);
+		fixedResources.put(KAMACITE, kamaciteID);
+		fixedResources.put(GYPSUM, gypsumID);
+		fixedResources.put(MALACHITE, malachiteID);
+		fixedResources.put(SYLVITE, sylviteID);
+		fixedResources.put(ROCK_SAMPLES, rockSamplesID);
+		fixedResources.put(BLACK_WATER, blackWaterID);
+		fixedResources.put(GREY_WATER, greyWaterID);
+		fixedResources.put(BRINE_WATER, brineWaterID);
+		fixedResources.put(CONCRETE, concreteID);
+		fixedResources.put(CEMENT, cementID);
+		fixedResources.put(LIME, limeID);
+		fixedResources.put(SOYBEAN_OIL, soybeanOilID);
+		fixedResources.put(GARLIC_OIL, garlicOilID);
+		fixedResources.put(SESAME_OIL, sesameOilID);
+		fixedResources.put(PEANUT_OIL, peanutOilID);
+		fixedResources.put(RICE_BRAN_OIL, riceBranOilID);
+		fixedResources.put(FISH_OIL, fishOilID);
+		fixedResources.put(OLIVE_OIL, oliveOilID);
+		fixedResources.put(SAND, sandID);
+		fixedResources.put(TOILET_TISSUE, toiletTissueID);
+		fixedResources.put(NAPKIN, napkinID);
+		fixedResources.put(FISH_MEAT, fishMeatID);
+		fixedResources.put(SPIRULINA, spirulinaID);
+		fixedResources.put(FERTILIZER, fertilizerID);
+		fixedResources.put(SODIUM_HYPOCHLORITE, NaClOID);
+		fixedResources.put(CROP_WASTE, cropWasteID);
+		fixedResources.put(FOOD_WASTE, foodWasteID);
+		fixedResources.put(TOXIC_WASTE, toxicWasteID);
+		fixedResources.put(SOLID_WASTE, solidWasteID);
+		fixedResources.put(METEORITE, meteoriteID);
+		fixedResources.put(ELECTRONIC_WASTE, eWasteID);
+		fixedResources.put(LEAVES, leavesID);
+		fixedResources.put(ROCK_SALT, rockSaltID);
+		fixedResources.put(TABLE_SALT, tableSaltID);
+		fixedResources.put(EPSOM_SALT, epsomSaltID);
+		fixedResources.put(COMPOST, compostID);
+		fixedResources.put(FERTILIZER, fertilizerID);
+		fixedResources.put(ROCK_SAMPLES, rockSamplesID);
+		fixedResources.put(SODIUM_HYPOCHLORITE, NaClOID);
+		fixedResources.put(SOYBEAN_OIL, soybeanOilID);
+		fixedResources.put(GARLIC_OIL, garlicOilID);
+		fixedResources.put(SESAME_OIL, sesameOilID);
+		fixedResources.put(PEANUT_OIL, peanutOilID);
+		fixedResources.put(RICE_BRAN_OIL, riceBranOilID);	
+		fixedResources.put(TABLE_SALT, tableSaltID);
+		fixedResources.put(ROCK_SALT, rockSaltID);
+		fixedResources.put(EPSOM_SALT, epsomSaltID);
+
+		fixedResources.put("allophane", allophaneID);
+		fixedResources.put("akaganeite", akaganeiteID);
+		fixedResources.put("basaltic", basalticID);
+		fixedResources.put("bassanite", bassaniteID);
+		fixedResources.put("smectite", smectiteID);
+
+		fixedResources.put("chalcopyrite", chalcopyriteID);
+		fixedResources.put("goethite", goethiteID);
+		fixedResources.put("hematite", hematiteID);
+		fixedResources.put("magnesite", magnesiteID);
+		fixedResources.put("magnetite", magnetiteID);
+		fixedResources.put("taenite", taeniteID);
+
+		fixedResources.put("columnar basalt", columnarbasaltID);
+		fixedResources.put("granite", graniteID);
+		fixedResources.put("mudstone", mudstoneID);
+		fixedResources.put("sandstone", sandstoneID);
+		fixedResources.put("shale", shaleID);
+		fixedResources.put("conglomerate", conglomerateID);
+		fixedResources.put("cross bedding", crossbeddingID);
+		fixedResources.put("scoria", scoriaID);
+
+		int expectedSize = FIRST_AMOUNT_FREE_RESOURCE_ID - FIRST_AMOUNT_RESOURCE_ID;
+		if (fixedResources.size() != expectedSize) {
+			throw new IllegalStateException("The number of fixed resources is not correct. Expected: " + expectedSize + ", Actual: " + fixedResources.size());
+		}
+	};
 
 	/**
 	 * Default Constructor for ResoureUtil.
@@ -245,7 +335,14 @@ public class ResourceUtil {
 	 */
 	public static void registerResources(Set<AmountResource> defined) {
 		resources = defined;
-		mapInstances();
+		createMaps();
+
+		// Double check all predefined resources are in the list
+		var missingFixed = new HashSet<>(fixedResources.values());
+		missingFixed.removeAll(amountResourceById.keySet());
+		if (!missingFixed.isEmpty()) {
+			throw new IllegalStateException("The following fixed resources are missing: " + missingFixed);
+		}
 
 		lifeSupportResources = resources.stream()
 				.filter(AmountResource::isLifeSupport)
@@ -292,9 +389,6 @@ public class ResourceUtil {
 		for (int i: REGOLITH_TYPES) {
 			essentialResources.add(i);
 		}
-		for (int j: oreDepositIDs) {
-			essentialResources.add(j);
-		}
 		
 		essentialResources.addAll(lifeSupportResources);
 	}
@@ -312,131 +406,29 @@ public class ResourceUtil {
 	 * Creates maps of amount resources.
 	 */
 	private static synchronized void createMaps() {
-		if (amountResourceMap == null) {
-			sortedResources = new ArrayList<>(resources);
-			Collections.sort(sortedResources);
+		if (amountResourceByName == null) {
 
 			Map<String, AmountResource> tempAmountResourceMap = new HashMap<>();
-			for (AmountResource resource : sortedResources) {
+			for (AmountResource resource : resources) {
 				tempAmountResourceMap.put(resource.getName().toLowerCase(), resource);
 			}
 
 			Map<Integer, AmountResource> tempAmountResourceIDMap = new HashMap<>();
-			for (AmountResource resource : sortedResources) {
+			for (AmountResource resource : resources) {
 				tempAmountResourceIDMap.put(resource.getID(), resource);
 			}
 
 			// Create immutable internals
-			amountResourceMap = Collections.unmodifiableMap(tempAmountResourceMap);
-			amountResourceIDMap = Collections.unmodifiableMap(tempAmountResourceIDMap);
+			amountResourceByName = Collections.unmodifiableMap(tempAmountResourceMap);
+			amountResourceById = Collections.unmodifiableMap(tempAmountResourceIDMap);
 		}
 	}
 
 	/**
 	 * Maps ids to amount resources.
 	 */
-	private static void mapInstances() {
-
-		// AmountResource instances as Integer
-		foodID = findIDbyAmountResourceName(FOOD); // 1
-		waterID = findIDbyAmountResourceName(WATER); // 2
-
-		oxygenID = findIDbyAmountResourceName(OXYGEN); // 3
-		co2ID = findIDbyAmountResourceName(CO2);
-		argonID = findIDbyAmountResourceName(ARGON);
-		coID = findIDbyAmountResourceName(CO); 
-		
-		acetyleneID = findIDbyAmountResourceName(ACETYLENE);
-		hydrogenID = findIDbyAmountResourceName(HYDROGEN); 
-		methaneID = findIDbyAmountResourceName(METHANE);
-		methanolID = findIDbyAmountResourceName(METHANOL);
-		nitrogenID = findIDbyAmountResourceName(NITROGEN); 
-
-		chlorineID = findIDbyAmountResourceName(CHLORINE); 
-		ethyleneID = findIDbyAmountResourceName(ETHYLENE); 
-		prophyleneID = findIDbyAmountResourceName(PROPHYLENE); 
-		
-		iceID = findIDbyAmountResourceName(ICE); 
-
-		blackWaterID = findIDbyAmountResourceName(BLACK_WATER);
-		greyWaterID = findIDbyAmountResourceName(GREY_WATER);
-		brineWaterID = findIDbyAmountResourceName(BRINE_WATER);
-		
-		cropWasteID = findIDbyAmountResourceName(CROP_WASTE);
-		foodWasteID = findIDbyAmountResourceName(FOOD_WASTE);
-		toxicWasteID = findIDbyAmountResourceName(TOXIC_WASTE);
-		solidWasteID = findIDbyAmountResourceName(SOLID_WASTE);
-		eWasteID = findIDbyAmountResourceName(ELECTRONIC_WASTE);
-		compostID = findIDbyAmountResourceName(COMPOST); 
-
-		fertilizerID = findIDbyAmountResourceName(FERTILIZER);
-
-		leavesID = findIDbyAmountResourceName(LEAVES);
-
-		meteoriteID = findIDbyAmountResourceName(METEORITE);
-
-		soilID = findIDbyAmountResourceName(SOIL);
-		sandID = findIDbyAmountResourceName(SAND);
-		concreteID = findIDbyAmountResourceName(CONCRETE);
-		cementID = findIDbyAmountResourceName(CEMENT);
-		limeID = findIDbyAmountResourceName(LIME);
-		
-		rockSamplesID = findIDbyAmountResourceName(ROCK_SAMPLES);
-
-		soymilkID = findIDbyAmountResourceName(SOYMILK);
-
-		NaClOID = findIDbyAmountResourceName(SODIUM_HYPOCHLORITE);
-
-		soybeanOilID = findIDbyAmountResourceName(SOYBEAN_OIL);
-		garlicOilID = findIDbyAmountResourceName(GARLIC_OIL);
-		sesameOilID = findIDbyAmountResourceName(SESAME_OIL);
-		peanutOilID = findIDbyAmountResourceName(PEANUT_OIL);
-		riceBranOilID = findIDbyAmountResourceName(RICE_BRAN_OIL);
-		fishOilID = findIDbyAmountResourceName(FISH_OIL);
-		oliveOilID = findIDbyAmountResourceName(OLIVE_OIL);
-		
-		tableSaltID = findIDbyAmountResourceName(TABLE_SALT);
-		rockSaltID = findIDbyAmountResourceName(ROCK_SALT);
-		epsomSaltID = findIDbyAmountResourceName(EPSOM_SALT); 
-
-		toiletTissueID = findIDbyAmountResourceName(TOILET_TISSUE);
-		napkinID = findIDbyAmountResourceName(NAPKIN);
-
-		// Assemble the rockIDs array
-		for (int i=0; i<ROCKS.length; i++) {
-			rockIDs[i] = findIDbyAmountResourceName(ROCKS[i]);
-		}
-
-		// Assemble the mineralConcIDs array
-		for (int i=0; i<MINERAL_CONCENTRATIONS.length; i++) {
-			mineralConcIDs[i] = findIDbyAmountResourceName(MINERAL_CONCENTRATIONS[i]);
-		}
-
-		// Assemble the oreDepositIDs array
-		for (int i=0; i<ORE_DEPOSITS.length; i++) {
-			oreDepositIDs[i] = findIDbyAmountResourceName(ORE_DEPOSITS[i]);
-		}
-
-		// Assemble the regolith type array
-		regolithID = findIDbyAmountResourceName(REGOLITH);
-		regolithBID = findIDbyAmountResourceName(REGOLITH_B);
-		regolithCID = findIDbyAmountResourceName(REGOLITH_C);
-		regolithDID = findIDbyAmountResourceName(REGOLITH_D);
-		REGOLITH_TYPES = new int[] {
-				regolithID,
-				regolithBID,
-				regolithCID,
-				regolithDID};
-
-		olivineID = findIDbyAmountResourceName(OLIVINE);
-		kamaciteID = findIDbyAmountResourceName(KAMACITE);
-		gypsumID = findIDbyAmountResourceName(GYPSUM);
-		malachiteID = findIDbyAmountResourceName(MALACHITE);
-		sylviteID = findIDbyAmountResourceName(SYLVITE);
-		
-		fishMeatID = findIDbyAmountResourceName(FISH_MEAT);
-		spirulinaID = findIDbyAmountResourceName(SPIRULINA);
-	
+	public static int getFixedId(String resourceName) {
+		return fixedResources.getOrDefault(resourceName.toLowerCase(), -1);
 	}
 
 	/**
@@ -458,7 +450,7 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(int id) {
-		return amountResourceIDMap.get(id);
+		return amountResourceById.get(id);
 	}
 
 	/**
@@ -469,9 +461,7 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(String name) {
-		if (amountResourceMap == null)
-			createMaps();
-		return amountResourceMap.get(name.toLowerCase());
+		return amountResourceByName.get(name.toLowerCase());
 	}
 
 	/**
@@ -481,7 +471,7 @@ public class ResourceUtil {
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
 	 */
-	public static int findIDbyAmountResourceName(String name) {
+	public static final int findIDbyAmountResourceName(String name) {
 		AmountResource ar = findAmountResource(name);
 		if (ar != null)
 			return ar.getID();
@@ -500,48 +490,16 @@ public class ResourceUtil {
 	}
 
 	/**
-	 * Gets an immutable set of all the amount resources.
-	 *
-	 * @return set of amount resources.
-	 */
-	public static Set<Integer> getIDs() {
-		return amountResourceIDMap.keySet();
-	}
-
-	/**
-	 * A convenience method that calls {@link #getAmountResources()} and turns the
-	 * result into an alphabetically ordered list of strings.
-	 *
-	 * @return {@link List}<{@link String}>
-	 */
-	public static List<String> getAmountResourceStringSortedList() {
-		List<String> resourceNames = new ArrayList<>();
-		Iterator<AmountResource> i = resources.iterator();
-		while (i.hasNext()) {
-			resourceNames.add(i.next().getName());
-		}
-		Collections.sort(resourceNames);
-		return resourceNames;
-	}
-
-	public static List<AmountResource> getSortedAmountResources() {
-		return sortedResources;
-	}
-	
-	/**
 	 * Is this an in-situ resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
 	public static boolean isInSitu(int resource) {
-		if (resource == iceID || resource == regolithID
-				|| resource == regolithBID || resource == regolithCID || resource == regolithDID
-				) {
-			return true;
-		}
-		
-		return false;
+		return switch (resource) {
+			case iceID, regolithID, regolithBID, regolithCID, regolithDID -> true;
+			default -> false;
+		};
 	}
 	
 	/**
@@ -551,14 +509,10 @@ public class ResourceUtil {
 	 * @return
 	 */
 	public static boolean isRawMaterial(int resource) {
-		if (resource == sandID || resource == olivineID
-				|| resource == brineWaterID 
-				|| resource == gypsumID || resource == malachiteID
-				|| resource == kamaciteID || resource == sylviteID
-				) {
-			return true;
-		}
-		
-		return false;
+		return switch (resource) {
+			case sandID, olivineID, brineWaterID, gypsumID,
+					malachiteID, kamaciteID, sylviteID -> true;
+			default -> false;
+		};
 	}
 }

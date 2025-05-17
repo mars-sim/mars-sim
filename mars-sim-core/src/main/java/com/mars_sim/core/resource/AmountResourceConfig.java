@@ -33,7 +33,7 @@ public class AmountResourceConfig {
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String EDIBLE = "edible";
 	private static final String TYPE = "type";
-	private static int nextID = ResourceUtil.FIRST_AMOUNT_RESOURCE_ID;
+	private static int nextID = ResourceUtil.FIRST_AMOUNT_FREE_RESOURCE_ID;
 
 	// Data members.
 	private Set<AmountResource> resourceSet = new TreeSet<>();
@@ -81,21 +81,18 @@ public class AmountResourceConfig {
 			PhaseType phaseType = PhaseType.valueOf(ConfigHelper.convertToEnumName(phaseString));
 
 			// Get the demand modifier
-			double demand = 0;
-			String demandString = resourceElement.getAttributeValue(DEMAND);
-			if (demandString != null)
-				demand = Double.parseDouble(demandString);
+			double demand = ConfigHelper.getOptionalAttributeDouble(resourceElement, DEMAND, 0);
 			
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
-			AmountResource resource = new AmountResource(nextID++, name, goodType, description, phaseType, demand, lifeSupport, edible);
-
-			if (phaseString == null || phaseType == null)
-				throw new IllegalStateException(
-						"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());
+			int newId = ResourceUtil.getFixedId(name);
+			if (newId < 0) {
+				newId = nextID++;
+			}
+			AmountResource resource = new AmountResource(newId, name, goodType, description, phaseType, demand, lifeSupport, edible);
 
 			for (AmountResource r: resourceSet) {
 				if (r.getName().equalsIgnoreCase(resource.getName()))
@@ -109,9 +106,9 @@ public class AmountResourceConfig {
 			if (goodType != null && goodType == GoodType.CROP) {
 				// Note: may set edible to true
 				// Assume the demand multiplier of a crop tissue is twice as much
-				AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
+				AmountResource tissue = new AmountResource(nextID++, (name + " " + TISSUE), GoodType.TISSUE,
 						description, phaseType, demand * 2, lifeSupport, false);
-				tissueCultureSet.add(nextID++);
+				tissueCultureSet.add(tissue.getID());
 
 				for (AmountResource r: resourceSet) {
 					if (r.getName().equalsIgnoreCase(tissue.getName()))

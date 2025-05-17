@@ -107,9 +107,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 				
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
 				
-				if (box != null) {
-					logger.info(person, 10_000, "Type of rocks collected: " + ResourceUtil.ROCKS[randomNum] + ".");
-	
+				if (box != null) {	
 					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
 					double cap = box.getAmountResourceRemainingCapacity(rockId);
 					if (mass <= cap) {
@@ -118,7 +116,8 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 					}
 				}
 				else {
-					logger.info(person, 10_000, "No specimen box is available for " + ResourceUtil.ROCKS[randomNum] + ".");
+					var rockName = ResourceUtil.findAmountResourceName(rockId);
+					logger.info(person, 10_000, "No specimen box is available for " + rockName + ".");
 					endTask();
 				}
 			}
