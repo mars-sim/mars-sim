@@ -26,7 +26,7 @@ public class Drone extends Flyer {
 
 	public static final int METHANOL_ID = ResourceUtil.methanolID;
 	
-	public static final AmountResource METHANOL_AR = ResourceUtil.methanolAR;
+	public static final AmountResource METHANOL_AR = ResourceUtil.findAmountResource(ResourceUtil.methanolID);
 
 	/** The fuel range modifier. */
 	public static final double FUEL_RANGE_FACTOR = 0.95;

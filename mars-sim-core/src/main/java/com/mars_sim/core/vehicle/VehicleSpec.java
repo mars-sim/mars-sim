@@ -22,7 +22,6 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.tool.Conversion;
 
 /** 
  * The Specification of a Vehicle loaded from the external configuration.
@@ -303,15 +302,17 @@ public class VehicleSpec implements Serializable {
 		
 		this.powerSourceType = PowerSourceType.getType(powerSourceStr.replaceAll("_", " ").toLowerCase());
 		
-		this.fuelTypeStr = Conversion.capitalize(fuelTypeStr.toLowerCase());
+		this.fuelTypeStr = fuelTypeStr;
 		
-		if (PowerSourceType.FUEL_POWER == powerSourceType) {
-			
+		if (PowerSourceType.FUEL_POWER == powerSourceType) {	
 			if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
-				fuelTypeID = ResourceUtil.findAmountResource(ResourceUtil.METHANOL).getID();
+				fuelTypeID = ResourceUtil.methanolID;
 			}
 			else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
-				fuelTypeID = ResourceUtil.findAmountResource(ResourceUtil.METHANE).getID();
+				fuelTypeID = ResourceUtil.methaneID;
+			}
+			else {
+				throw new IllegalArgumentException("Invalid fuel type for vehicle: " + fuelTypeStr);
 			}
 		}
 		else if (PowerSourceType.FISSION_POWER == powerSourceType) {

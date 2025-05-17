@@ -44,7 +44,7 @@ public class ConstructionStageTest extends TestCase {
         parts.put(smallHammer.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<>(1);
-        resources.put(ResourceUtil.methaneAR.getID(), 1D);
+        resources.put(ResourceUtil.methaneID, 1D);
 
         List<ConstructionVehicleType> vehicles =
             new ArrayList<>(1);

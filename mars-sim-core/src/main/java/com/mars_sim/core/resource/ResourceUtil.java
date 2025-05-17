@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
@@ -32,79 +33,79 @@ public class ResourceUtil {
 	public static final int FIRST_ROBOT_RESOURCE_ID = 1020;
 	public static final int FIRST_BIN_RESOURCE_ID = 1040;
 	
-	public static final String OXYGEN = "oxygen";
-	public static final String WATER = "water";
-	public static final String FOOD = "food";
+	private static final String OXYGEN = "oxygen";
+	private static final String WATER = "water";
+	private static final String FOOD = "food";
 
-	public static final String ARGON = "argon";
-	public static final String NITROGEN = "nitrogen";
-	public static final String CO2 = "carbon dioxide";
-	public static final String CO = "carbon monoxide";
+	private static final String ARGON = "argon";
+	private static final String NITROGEN = "nitrogen";
+	private static final String CO2 = "carbon dioxide";
+	private static final String CO = "carbon monoxide";
 	
-	public static final String CHLORINE = "chlorine";
-	public static final String ETHYLENE = "ethylene";
-	public static final String PROPHYLENE = "prophylene";
+	private static final String CHLORINE = "chlorine";
+	private static final String ETHYLENE = "ethylene";
+	private static final String PROPHYLENE = "prophylene";
 	
-	public static final String HYDROGEN = "hydrogen";
+	private static final String HYDROGEN = "hydrogen";
 	public static final String METHANE = "methane";
 	public static final String METHANOL = "methanol";
-	public static final String ACETYLENE = "acetylene";
+	private static final String ACETYLENE = "acetylene";
 	
-	public static final String SOIL = "soil";
-	public static final String ICE = "ice";
-	public static final String COMPOST = "compost";
+	private static final String SOIL = "soil";
+	private static final String ICE = "ice";
+	private static final String COMPOST = "compost";
 
-	public static final String REGOLITH = "regolith";
-	public static final String REGOLITH_B = "regolith-b";
-	public static final String REGOLITH_C = "regolith-c";
-	public static final String REGOLITH_D = "regolith-d";
-	public static final String OLIVINE = "olivine";
-	public static final String KAMACITE = "kamacite";
-	public static final String GYPSUM = "gypsum";
-	public static final String MALACHITE = "malachite";
-	public static final String SYLVITE = "sylvite";
+	private static final String REGOLITH = "regolith";
+	private static final String REGOLITH_B = "regolith-b";
+	private static final String REGOLITH_C = "regolith-c";
+	private static final String REGOLITH_D = "regolith-d";
+	private static final String OLIVINE = "olivine";
+	private static final String KAMACITE = "kamacite";
+	private static final String GYPSUM = "gypsum";
+	private static final String MALACHITE = "malachite";
+	private static final String SYLVITE = "sylvite";
 	
-	public static final String ROCK_SAMPLES = "rock samples";
-	public static final String CONCRETE = "concrete";
-	public static final String CEMENT = "cement";
-	public static final String LIME = "lime";
+	private static final String ROCK_SAMPLES = "rock samples";
+	private static final String CONCRETE = "concrete";
+	private static final String CEMENT = "cement";
+	private static final String LIME = "lime";
 
-	public static final String SAND = "sand";
+	private static final String SAND = "sand";
 
-	public static final String METEORITE = "meteorite";
+	private static final String METEORITE = "meteorite";
 
-	public static final String ELECTRONIC_WASTE = "electronic waste";
-	public static final String CROP_WASTE = "crop waste";
-	public static final String FOOD_WASTE = "food waste";
-	public static final String SOLID_WASTE = "solid waste";
-	public static final String TOXIC_WASTE = "toxic waste";
+	private static final String ELECTRONIC_WASTE = "electronic waste";
+	private static final String CROP_WASTE = "crop waste";
+	private static final String FOOD_WASTE = "food waste";
+	private static final String SOLID_WASTE = "solid waste";
+	private static final String TOXIC_WASTE = "toxic waste";
 
-	public static final String BRINE_WATER = "brine water";
-	public static final String GREY_WATER = "grey water";
-	public static final String BLACK_WATER = "black water";
+	private static final String BRINE_WATER = "brine water";
+	private static final String GREY_WATER = "grey water";
+	private static final String BLACK_WATER = "black water";
 	
-	public static final String TABLE_SALT = "table salt";
-	public static final String ROCK_SALT = "rock salt";
-	public static final String EPSOM_SALT = "epsom salt";
+	private static final String TABLE_SALT = "table salt";
+	private static final String ROCK_SALT = "rock salt";
+	private static final String EPSOM_SALT = "epsom salt";
 
-	public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
-	public static final String NAPKIN = "napkin";
+	private static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
+	private static final String NAPKIN = "napkin";
 
-	public static final String FERTILIZER = "fertilizer";
+	private static final String FERTILIZER = "fertilizer";
 
-	public static final String SOYBEAN_OIL = "soybean oil";
-	public static final String GARLIC_OIL = "garlic oil";
-	public static final String SESAME_OIL = "sesame oil";
-	public static final String PEANUT_OIL = "peanut oil";
-	public static final String RICE_BRAN_OIL = "rice bran oil";
-	public static final String FISH_OIL = "fish oil";
-	public static final String OLIVE_OIL = "olive oil";
+	private static final String SOYBEAN_OIL = "soybean oil";
+	private static final String GARLIC_OIL = "garlic oil";
+	private static final String SESAME_OIL = "sesame oil";
+	private static final String PEANUT_OIL = "peanut oil";
+	private static final String RICE_BRAN_OIL = "rice bran oil";
+	private static final String FISH_OIL = "fish oil";
+	private static final String OLIVE_OIL = "olive oil";
 	
-	public static final String TOILET_TISSUE = "Toilet tissue";
-	public static final String SOYMILK = "Soymilk";
-	public static final String LEAVES = "Leaves";
-	public static final String FISH_MEAT = "Fish meat";
-	public static final String SPIRULINA = "Spirulina";
+	private static final String TOILET_TISSUE = "Toilet tissue";
+	private static final String SOYMILK = "Soymilk";
+	private static final String LEAVES = "Leaves";
+	private static final String FISH_MEAT = "Fish meat";
+	private static final String SPIRULINA = "Spirulina";
 
 	protected static Set<Integer> essentialResources;
 	
@@ -120,7 +121,7 @@ public class ResourceUtil {
 			METEORITE,
 			"scoria"};
 
-	protected static final String[] MINERAL_CONCENTRATIONS = new String[] {
+	private static final String[] MINERAL_CONCENTRATIONS = new String[] {
 	        "chalcopyrite",
 			"goethite",
 			"hematite",
@@ -132,7 +133,7 @@ public class ResourceUtil {
 			"taenite",
 			"sylvite"};
 
-	protected static final String[] ORE_DEPOSITS = new String[] {
+	private static final String[] ORE_DEPOSITS = new String[] {
 			"allophane",
 			"akaganeite",
 			"basaltic",
@@ -231,33 +232,6 @@ public class ResourceUtil {
 
 	public static int fishMeatID;
 	public static int spirulinaID;
-	
-	public static AmountResource foodAR;
-	public static AmountResource oxygenAR;
-	public static AmountResource waterAR;
-
-	public static AmountResource iceAR;
-	
-	public static AmountResource hydrogenAR;
-	public static AmountResource methaneAR;
-	public static AmountResource methanolAR;
-	public static AmountResource nitrogenAR;
-	
-	public static AmountResource argonAR;
-	public static AmountResource carbonDioxideAR;
-	public static AmountResource coAR;
-
-	public static AmountResource regolithAR;
-	public static AmountResource regolithBAR;
-	public static AmountResource regolithCAR;
-	public static AmountResource regolithDAR;
-
-	public static AmountResource NaClOAR;
-	public static AmountResource greyWaterAR;
-	public static AmountResource blackWaterAR;
-
-	public static AmountResource rockSamplesAR;
-	public static AmountResource sandAR;
 
 	/**
 	 * Default Constructor for ResoureUtil.
@@ -272,19 +246,13 @@ public class ResourceUtil {
 	public static void registerResources(Set<AmountResource> defined) {
 		resources = defined;
 		mapInstances();
-		createLifeSupportResources();
-		createEssentialResources();
-	}
 
-	/**
-	 * Creates a set of life support resources.
-	 */
-	private static void createLifeSupportResources() {
-		lifeSupportResources = new HashSet<>();
-		for (AmountResource ar: resources) {
-			if (ar.isLifeSupport())
-				lifeSupportResources.add(ar.getID());
-		}
+		lifeSupportResources = resources.stream()
+				.filter(AmountResource::isLifeSupport)
+				.map(AmountResource::getID)
+				.collect(Collectors.toSet());
+		
+		createEssentialResources();
 	}
 	
 	/**
@@ -294,11 +262,7 @@ public class ResourceUtil {
 	 * @return
 	 */
 	public static boolean isLifeSupport(int id) {
-		for (int i: getLifeSupportResources()) {
-			if (i == id)
-				return true;
-		}
-		return false;
+		return lifeSupportResources.contains(id);
 	}
 
 	/**
@@ -472,31 +436,7 @@ public class ResourceUtil {
 		
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT);
 		spirulinaID = findIDbyAmountResourceName(SPIRULINA);
-				
-		// AmountResource instances as objects
-		foodAR = findAmountResource(FOOD);
-		waterAR = findAmountResource(WATER);
-		oxygenAR = findAmountResource(OXYGEN);
-		carbonDioxideAR = findAmountResource(CO2);
-		argonAR = findAmountResource(ARGON);
-		nitrogenAR = findAmountResource(NITROGEN);
-		coAR = findAmountResource(CO);
-		hydrogenAR = findAmountResource(HYDROGEN);
-		methaneAR = findAmountResource(METHANE);
-		methanolAR = findAmountResource(METHANOL); 
-		iceAR = findAmountResource(ICE);
-		greyWaterAR = findAmountResource(GREY_WATER);
-		blackWaterAR = findAmountResource(BLACK_WATER);
-
-		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);
-
-		regolithAR = findAmountResource(REGOLITH);
-		regolithBAR = findAmountResource(REGOLITH_B);
-		regolithCAR = findAmountResource(REGOLITH_C);
-		regolithDAR = findAmountResource(REGOLITH_D);
-
-		rockSamplesAR = findAmountResource(ROCK_SAMPLES);
-		sandAR = findAmountResource(SAND);
+	
 	}
 
 	/**
