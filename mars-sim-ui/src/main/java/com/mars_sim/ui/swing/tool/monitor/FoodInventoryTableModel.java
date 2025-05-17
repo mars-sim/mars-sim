@@ -95,7 +95,7 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 			case FOOD_COL:
 				return selectedFood.getName();
 			case TYPE_COL:
-				return selectedFood.getType();
+				return selectedFood.getFoodType().getName();
 			case SETTLEMENT_COL:
 				return selectedSettlement.getName();
 			
