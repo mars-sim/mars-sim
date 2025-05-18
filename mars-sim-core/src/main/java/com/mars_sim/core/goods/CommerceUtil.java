@@ -37,10 +37,6 @@ public final class CommerceUtil {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(CommerceUtil.class.getName());
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/**
 	 * Credit limit under which a seller is willing to sell goods to a buyer. Buyer
@@ -458,19 +454,19 @@ public final class CommerceUtil {
 			// Get oxygen amount.
 			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 					* lifeSupportMargin;
-			Good oxygenGood = GoodsUtil.getGood(OXYGEN_ID);
+			Good oxygenGood = GoodsUtil.getGood(ResourceUtil.OXYGEN_ID);
 			neededResources.put(oxygenGood, (int) oxygenAmount);
 
 			// Get water amount.
 			double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 					* lifeSupportMargin;
-			Good waterGood = GoodsUtil.getGood(WATER_ID);
+			Good waterGood = GoodsUtil.getGood(ResourceUtil.WATER_ID);
 			neededResources.put(waterGood, (int) waterAmount);
 
 			// Get food amount.
 			double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 					* lifeSupportMargin;
-			Good foodGood = GoodsUtil.getGood(FOOD_ID);
+			Good foodGood = GoodsUtil.getGood(ResourceUtil.FOOD_ID);
 			neededResources.put(foodGood, (int) foodAmount);
 		}
 

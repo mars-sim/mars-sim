@@ -228,10 +228,10 @@ public class CollectResources extends EVAOperation {
 		// Check container
 		Container container = person.findContainer(containerType, false, resourceType);
 		if (container == null) {
-			if (resourceType == ResourceUtil.iceID) {
+			if (resourceType == ResourceUtil.ICE_ID) {
 				checkLocation("No container available for ice.");
 			}
-			else if (resourceType == ResourceUtil.regolithID) {
+			else if (resourceType == ResourceUtil.REGOLITH_ID) {
 				checkLocation("No container available for regolith.");
 			}
 			return time;
@@ -268,7 +268,7 @@ public class CollectResources extends EVAOperation {
 		}
 
 		// Modify collection rate by polar region if ice collecting.
-		if (resourceType == ResourceUtil.iceID
+		if (resourceType == ResourceUtil.ICE_ID
 			&& surfaceFeatures.inPolarRegion(person.getCoordinates())) {
 			samplesCollected *= 10D;
 		}
@@ -314,23 +314,23 @@ public class CollectResources extends EVAOperation {
       	int newResourceID = 0;
       	
     	// Remap regoliths by allowing the possibility of misclassifying regolith types
-		if (resourceType == ResourceUtil.regolithID) {
+		if (resourceType == ResourceUtil.REGOLITH_ID) {
 			int rand = RandomUtil.getRandomInt(10);
 			
 			// Reassign as the other 3 types of regoliths
 			if (rand == 8) {			
-				newResourceID = ResourceUtil.regolithBID;
+				newResourceID = ResourceUtil.REGOLITHB_ID;
 			}
 			else if (rand == 9) {						
-				newResourceID = ResourceUtil.regolithCID;
+				newResourceID = ResourceUtil.REGOLITHC_ID;
 			}
 			else if (rand == 10) {					
-				newResourceID = ResourceUtil.regolithDID;
+				newResourceID = ResourceUtil.REGOLITHD_ID;
 			}
 			else
 				newResourceID = resourceType;
 		}
-		else if (resourceType == ResourceUtil.iceID) {
+		else if (resourceType == ResourceUtil.ICE_ID) {
 			newResourceID = resourceType;
 		}
 		

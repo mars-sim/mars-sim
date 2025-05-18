@@ -49,7 +49,7 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
-		super(MissionType.COLLECT_ICE, startingPerson, ResourceUtil.iceID,
+		super(MissionType.COLLECT_ICE, startingPerson, ResourceUtil.ICE_ID,
 				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, needsReview);
 	}
 
@@ -64,21 +64,10 @@ public class CollectIce extends CollectResourcesMission {
 			List<Coordinates> iceCollectionSites, Rover rover) {
 
 		// Use CollectResourcesMission constructor.
-		super(MissionType.COLLECT_ICE, members, ResourceUtil.iceID,
+		super(MissionType.COLLECT_ICE, members, ResourceUtil.ICE_ID,
 				EquipmentType.BARREL, REQUIRED_BARRELS,
 				rover, iceCollectionSites);
 	}
-
-//	public static double computeAverageCollectionRate(Collection<Coordinates> locations) {
-//		double totalRate = 0;
-//		int size = locations.size();
-//
-//		for (Coordinates location : locations) {
-//			totalRate += TerrainElevation.obtainIceCollectionRate(location);
-//		}
-//
-//		return totalRate / size;
-//	}
 
 	@Override
 	protected double scoreLocation(Coordinates newLocation) {

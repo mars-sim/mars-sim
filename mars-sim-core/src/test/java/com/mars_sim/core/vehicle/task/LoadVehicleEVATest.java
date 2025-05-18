@@ -20,9 +20,9 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
 
         // Create a loading plan and preload Settlement
         var resources = new SuppliesManifest();
-        resources.addAmount(ResourceUtil.oxygenID, 10D, true);
-        resources.addAmount(ResourceUtil.waterID, 10D, true);
-        resources.addAmount(ResourceUtil.foodID, 10D, true);
+        resources.addAmount(ResourceUtil.OXYGEN_ID, 10D, true);
+        resources.addAmount(ResourceUtil.WATER_ID, 10D, true);
+        resources.addAmount(ResourceUtil.FOOD_ID, 10D, true);
         LoadControllerTest.loadSettlement(s, resources);
         v.setLoading(resources);
 
@@ -57,7 +57,7 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
 
         // Set rover to be loading
         var resources = new SuppliesManifest();
-        resources.addAmount(ResourceUtil.oxygenID, 10D, true);
+        resources.addAmount(ResourceUtil.OXYGEN_ID, 10D, true);
         v.setLoading(resources);
 
         tasks = mt.getSettlementTasks(s);

@@ -47,7 +47,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	public CollectRegolith(Person startingPerson, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
-		super(MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.regolithID,
+		super(MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.REGOLITH_ID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, needsReview);
 	}
 
@@ -63,7 +63,7 @@ public class CollectRegolith extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover) {
 
 		// Use CollectResourcesMission constructor.
-		super(MissionType.COLLECT_REGOLITH, members, ResourceUtil.regolithID,
+		super(MissionType.COLLECT_REGOLITH, members, ResourceUtil.REGOLITH_ID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS,
 				rover, regolithCollectionSites);
 	}

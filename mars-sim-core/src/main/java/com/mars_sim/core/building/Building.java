@@ -1329,7 +1329,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 					mal.setTraumatized(victimNames);
 
 					// Store the meteorite fragment in the settlement
-					settlement.storeAmountResource(ResourceUtil.meteoriteID, floorArea * meteorite.getDebrisMass());
+					settlement.storeAmountResource(ResourceUtil.METEORITE_ID, floorArea * meteorite.getDebrisMass());
 
 					logger.info(this, 10_000, "Found " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
 							+ " kg of meteorite fragments");

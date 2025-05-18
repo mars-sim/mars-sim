@@ -532,7 +532,7 @@ public class Cooking extends Function {
 		mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness) * 10D) / 15D;
 
 		// consume salt
-		retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.tableSaltID, true);
+		retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.TABLE_SALT_ID, true);
 
 		// consume water
 		consumeWater();
@@ -641,12 +641,12 @@ public class Cooking extends Function {
 		if (level != 0)
 			usage = usage / 1.5D / level;
 		if (usage > MIN) {
-			retrieveAnIngredientFromMap(usage, ResourceUtil.waterID, true);
+			retrieveAnIngredientFromMap(usage, ResourceUtil.WATER_ID, true);
 			building.getSettlement().addWaterConsumption(WaterUseType.PREP_MEAL, usage);
 		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
-			store(wasteWaterAmount, ResourceUtil.greyWaterID, "Cooking::consumeWater");
+			store(wasteWaterAmount, ResourceUtil.GREY_WATER_ID, "Cooking::consumeWater");
 	}
 
 	/**
@@ -721,7 +721,7 @@ public class Cooking extends Function {
 						if (qNum < 1) {
 							if (dryMassPerServing > 0)
 								// Turn into food waste
-								store(dryMassPerServing, ResourceUtil.foodWasteID, "Cooking::timePassing");
+								store(dryMassPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
 
 							log.append(dryMassPerServing)
 									.append(" kg ").append(meal.getName()).append(DISCARDED);
@@ -796,10 +796,10 @@ public class Cooking extends Function {
 	private void cleanUpKitchen() {
 		
 		double amountAgent = cleaningAgentPerSol;		 
-		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NaClOID, amountAgent);
+		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NACLO_ID, amountAgent);
 
 		double amountWater = 10 * amountAgent;
-		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, amountWater);
+		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
 		
 		// Track water consumption
 		building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, amountWater - lackingWater);
@@ -826,9 +826,9 @@ public class Cooking extends Function {
 	 */
 	public void preserveFood() {
 		// Note: turn this into a task
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true);
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.TABLE_SALT_ID, true);
 		if (dryMassPerServing > 0)
-			store(dryMassPerServing, ResourceUtil.foodID, "Cooking::preserveFood");
+			store(dryMassPerServing, ResourceUtil.FOOD_ID, "Cooking::preserveFood");
 	}
 
 	/**
@@ -849,13 +849,13 @@ public class Cooking extends Function {
 	public static synchronized List<Integer> getOilMenu() {
 		if (oilMenu == null) {
 			oilMenu = new ArrayList<>();
-			oilMenu.add(ResourceUtil.fishOilID);
-			oilMenu.add(ResourceUtil.garlicOilID);
-			oilMenu.add(ResourceUtil.peanutOilID);
-			oilMenu.add(ResourceUtil.riceBranOilID);
-			oilMenu.add(ResourceUtil.sesameOilID);
-			oilMenu.add(ResourceUtil.soybeanOilID);
-			oilMenu.add(ResourceUtil.oliveOilID);
+			oilMenu.add(ResourceUtil.FISH_OIL_ID);
+			oilMenu.add(ResourceUtil.GARLIC_OIL_ID);
+			oilMenu.add(ResourceUtil.PEANUT_OIL_ID);
+			oilMenu.add(ResourceUtil.RICE_BRAN_OIL_ID);
+			oilMenu.add(ResourceUtil.SESAME_OIL_ID);
+			oilMenu.add(ResourceUtil.SOYBEAN_OIL_ID);
+			oilMenu.add(ResourceUtil.OLIVE_OIL_ID);
 		}
 		return oilMenu;
 	}

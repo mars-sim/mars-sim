@@ -392,14 +392,14 @@ public class VehicleSpec implements Serializable {
 		
     	batteryCapacity = energyCapacityPerModule * numBatteryModule;
     	    	
-    	if (fuelTypeID == ResourceUtil.methanolID) {
+    	if (fuelTypeID == ResourceUtil.METHANOL_ID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainFuelEfficiency;
     	}
     	
-    	else if (fuelTypeID == ResourceUtil.methaneID) {
+    	else if (fuelTypeID == ResourceUtil.METHANE_ID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]

@@ -84,12 +84,12 @@ public class ResourceCommand extends AbstractSettlementCommand {
 				break;
 			
 			case WATER:
-				displayWater(settlement, response, ResourceUtil.waterID);
+				displayWater(settlement, response, ResourceUtil.WATER_ID);
 				result = true;
 				break;
 				
 			case GREY_WATER:
-				displayWater(settlement, response, ResourceUtil.greyWaterID);
+				displayWater(settlement, response, ResourceUtil.GREY_WATER_ID);
 				result = true;
 				break;
 				
@@ -111,7 +111,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayCO2(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getAmountResourceStored(ResourceUtil.co2ID);
+		double reserve = settlement.getAmountResourceStored(ResourceUtil.CO2_ID);
 
 		response.appendHeading(CO2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
@@ -120,7 +120,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(ResourceUtil.co2ID);
+			usage += f.computeUsage(ResourceUtil.CO2_ID);
 			totalArea += f.getGrowingArea();
 		}
 		totalArea = (totalArea != 0 ? totalArea: 0.1D); // Guard against divide by zero
@@ -234,7 +234,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayOxygen(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getAmountResourceStored(ResourceUtil.oxygenID);
+		double reserve = settlement.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		
 		response.appendHeading(O2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
@@ -243,7 +243,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(ResourceUtil.oxygenID);
+			usage += f.computeUsage(ResourceUtil.OXYGEN_ID);
 			totalArea += f.getGrowingArea();
 		}
 

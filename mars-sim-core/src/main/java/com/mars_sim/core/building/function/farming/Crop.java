@@ -48,12 +48,6 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The average CO2 needed [in kg] */
 	private static double averageCarbonDioxideNeeded;
 	
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
-	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
-	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
 	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.findIDbyItemResourceName("mushroom containment kit");
 
 	private static final int LIGHT_FACTOR = 0;
@@ -341,7 +335,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// Add Crop Waste
 			double amt = percentageGrowth * maxHarvest / 100D;
 			if (amt > 0) {
-				store(amt, CROP_WASTE_ID);
+				store(amt, ResourceUtil.CROP_WASTE_ID);
 				logger.warning(this, 10_000, 
 						Math.round(amt * 10D)/10D  + " kg crop waste generated.");
 			}
@@ -368,7 +362,7 @@ public class Crop implements Comparable<Crop>, Entity {
 					"No petri dish left for isolating its tissues.");
 		// Require some dead matter for fungi to decompose
 		if (growingArea * .2 > MIN)
-			retrieve(growingArea * .2, CROP_WASTE_ID);
+			retrieve(growingArea * .2, ResourceUtil.CROP_WASTE_ID);
 	}
 
 	public double getLightingPower() {
@@ -713,13 +707,13 @@ public class Crop implements Comparable<Crop>, Entity {
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
 		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES);
 		if (cropWaste > 0) {
-			store(cropWaste, CROP_WASTE_ID);
+			store(cropWaste, ResourceUtil.CROP_WASTE_ID);
 		}
 
 		if (cropSpec.getCropCategory().getName().equalsIgnoreCase("Leaves")) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
-				store(leaves, ResourceUtil.leavesID);
+				store(leaves, ResourceUtil.LEAVES_ID);
 			}
 		}
 	}
@@ -955,7 +949,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		if (waterRequired <= 0)
 			return;
 		// Determine the amount of grey water available.
-		double gw = building.getSettlement().getAmountResourceStored(GREY_WATER_ID);
+		double gw = building.getSettlement().getAmountResourceStored(ResourceUtil.GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
@@ -965,35 +959,35 @@ public class Crop implements Comparable<Crop>, Entity {
 		// First water crops with grey water if it is available.
 		if (greyWaterAvailable >= waterRequired) {
 			greyWaterUsed = waterRequired;
-			retrieveWater(greyWaterUsed, GREY_WATER_ID);
+			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
 			waterModifier = 1D;
 		}
 
 		else {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
-			retrieveWater(greyWaterUsed, GREY_WATER_ID);
+			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
 
 			waterRequired = waterRequired - greyWaterUsed;
-			double waterAvailable = building.getSettlement().getAmountResourceStored(WATER_ID);
+			double waterAvailable = building.getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID);
 
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
-				retrieveWater(waterUsed, WATER_ID);
+				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
 
 				waterModifier = 1D;
 			}
 			else {
 				// not enough water
 				waterUsed = waterAvailable;
-				retrieveWater(waterUsed, WATER_ID);
+				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
 
 				// Incur penalty if water is NOT available
 				// need to add .0001 in case waterRequired becomes zero
 				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .0001);
 			}
 
-			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(FERTILIZER_ID);
+			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(ResourceUtil.FERTILIZER_ID);
 			// The amount of fertilizer to be used depends on the water used
 			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * waterUsed;
 			double fertilizerUsed = fertilizerRequired;
@@ -1009,7 +1003,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			}
 
 			if (fertilizerUsed > 0) {
-				retrieve(fertilizerUsed, FERTILIZER_ID);
+				retrieve(fertilizerUsed, ResourceUtil.FERTILIZER_ID);
 			}
 
 			adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_FACTOR);
@@ -1036,20 +1030,20 @@ public class Crop implements Comparable<Crop>, Entity {
 		if (watt < 40) {
 
 			double o2Required = compositeFactor * averageOxygenNeeded;
-			double o2Available = building.getSettlement().getAmountResourceStored(OXYGEN_ID);
+			double o2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
 
 			o2Modifier = o2Available / o2Required;
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			o2Cache = retrieveGas(o2Used, o2Cache, OXYGEN_ID);
+			o2Cache = retrieveGas(o2Used, o2Cache, ResourceUtil.OXYGEN_ID);
 
 			adjustEnvironmentFactor(o2Modifier, O2_FACTOR);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
-			co2Cache = storeGas(cO2Gen, co2Cache, CO2_ID);
+			co2Cache = storeGas(cO2Gen, co2Cache, ResourceUtil.CO2_ID);
 		}
 
 		else {
@@ -1057,7 +1051,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = compositeFactor * averageCarbonDioxideNeeded;
-			double cO2Available = building.getSettlement().getAmountResourceStored(CO2_ID);
+			double cO2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
 			// Future: allow higher concentration of co2 to be pumped to increase the harvest
@@ -1067,7 +1061,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
-			co2Cache = retrieveGas(cO2Used, co2Cache, CO2_ID);
+			co2Cache = retrieveGas(cO2Used, co2Cache, ResourceUtil.CO2_ID);
 			
 			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
@@ -1079,7 +1073,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// Determine the amount of oxygen generated during the day when photosynthesis
 			// is taking place .
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
-			o2Cache = storeGas(o2Gen, o2Cache, OXYGEN_ID);
+			o2Cache = storeGas(o2Gen, o2Cache, ResourceUtil.OXYGEN_ID);
 		}
 	}
 

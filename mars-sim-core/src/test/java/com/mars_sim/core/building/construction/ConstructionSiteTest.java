@@ -46,7 +46,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
         Map<Integer, Double> resources = new HashMap<>(1);
 
-        resources.put(ResourceUtil.sandID, 1D);
+        resources.put(ResourceUtil.SAND_ID, 1D);
 
         List<ConstructionVehicleType> vehicles =
             new ArrayList<>(1);

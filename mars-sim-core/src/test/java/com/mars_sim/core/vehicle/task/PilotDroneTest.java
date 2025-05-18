@@ -63,7 +63,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -116,7 +116,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -149,7 +149,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         // Now that regen is possible for recharging the battery, the line below won't work
 //        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
             
-        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.oxygenID));
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.OXYGEN_ID));
         assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
        
         // Now it will rely on its battery to power the flight
@@ -214,7 +214,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         
         double currentHoveringHeight = 0;
 		
@@ -257,7 +257,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         
         double currentHoveringHeight = Flyer.ELEVATION_ABOVE_GROUND;
 		
@@ -307,7 +307,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
     	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         
     	double currentHoveringHeight = .1;
     	
@@ -355,7 +355,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         
         double currentHoveringHeight = 0;
         

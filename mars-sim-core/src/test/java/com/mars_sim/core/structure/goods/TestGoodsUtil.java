@@ -52,7 +52,7 @@ public class TestGoodsUtil extends TestCase {
 	}
 
 	public void testGoodsListContainsWater() {
-		Good waterGood = GoodsUtil.getGood(ResourceUtil.waterID);
+		Good waterGood = GoodsUtil.getGood(ResourceUtil.WATER_ID);
 		assertNotNull("Found water Good", waterGood);
 	}
 

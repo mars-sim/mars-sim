@@ -20,7 +20,6 @@ import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Repair;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -37,10 +36,6 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	private static final long serialVersionUID = 1L;
 	/** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
-
-	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	public static final int WATER_ID = ResourceUtil.waterID;
-	public static final int CO2_ID = ResourceUtil.co2ID;
 
 	// Data members.
 	/** is this equipment being salvage. */

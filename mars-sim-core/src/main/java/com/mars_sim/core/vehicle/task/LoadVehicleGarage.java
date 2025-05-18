@@ -309,11 +309,11 @@ public class LoadVehicleGarage extends Task {
 			personConfig = SimulationConfig.instance().getPersonConfig();
 		
 		// Only life support resources are required at settlement at this time.
-		if (resource == ResourceUtil.oxygenID)
+		if (resource == ResourceUtil.OXYGEN_ID)
 			amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
-		else if (resource == ResourceUtil.waterID)
+		else if (resource == ResourceUtil.WATER_ID)
 			amountPersonPerSol = personConfig.getWaterConsumptionRate();
-		else if (resource == ResourceUtil.foodID)
+		else if (resource == ResourceUtil.FOOD_ID)
 			amountPersonPerSol = personConfig.getFoodConsumptionRate();
 		else {
 			// check if this resource is a dessert

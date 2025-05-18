@@ -60,7 +60,7 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         LoadingController plan = assigned.getLoadingPlan();
         assertNotNull("Loading plan created", plan);
         Map<Integer, Double> resources = plan.getAmountManifest(true);
-        assertTrue("Plan has Oxygen", resources.get(ResourceUtil.oxygenID).doubleValue() > 0D);
+        assertTrue("Plan has Oxygen", resources.get(ResourceUtil.OXYGEN_ID).doubleValue() > 0D);
     }
 
     /**

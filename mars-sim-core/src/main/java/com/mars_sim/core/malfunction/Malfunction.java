@@ -635,7 +635,7 @@ public class Malfunction implements Serializable {
 		//  Add producing solid waste
 		double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
 		if (mass > 0) {
-			containerUnit.storeAmountResource(ResourceUtil.solidWasteID, mass);
+			containerUnit.storeAmountResource(ResourceUtil.SOLID_WASTE_ID, mass);
 		}
 
 		if (numberNeeded > 0) {

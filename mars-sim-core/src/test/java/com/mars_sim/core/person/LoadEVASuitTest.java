@@ -36,8 +36,8 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		assertTrue(person + " has no carrying capacity.", capacity > 0);
 		
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.oxygenID, 1D);
-		requiredResourcesMap.put(ResourceUtil.waterID, 4D);
+		requiredResourcesMap.put(ResourceUtil.OXYGEN_ID, 1D);
+		requiredResourcesMap.put(ResourceUtil.WATER_ID, 4D);
 		
 		for (int i: requiredResourcesMap.keySet()) {
 			double amount = (double) requiredResourcesMap.get(i);

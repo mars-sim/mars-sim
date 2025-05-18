@@ -74,11 +74,6 @@ public class Rover extends GroundVehicle implements Crewable,
 	private static final double NORMAL_AIR_PRESSURE = 17; 
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 22.5D;
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/** The ratio of the amount of oxygen inhaled to the amount of carbon dioxide expelled. */
 	private static double gasRatio;
@@ -164,7 +159,7 @@ public class Rover extends GroundVehicle implements Crewable,
 
 		// Gets the estimated cabin compartment air volume.
 		cabinAirVolume =  .8 * spec.getLength() * spec.getWidth() * 2D;
-		oxygenCapacity = spec.getCargoCapacity(ResourceUtil.oxygenID);
+		oxygenCapacity = spec.getCargoCapacity(ResourceUtil.OXYGEN_ID);
 
 		fullO2PartialPressure = Math.round(AirComposition.getOxygenPressure(oxygenCapacity, cabinAirVolume)*1_000.0)/1_000.0;
 		massO2MinimumLimit = Math.round(minO2Pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
@@ -403,7 +398,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 
-				double o2 = getTowingVehicle().getAmountResourceStored(OXYGEN_ID);
+				double o2 = getTowingVehicle().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000,
 						"No more oxygen.");
@@ -417,7 +412,7 @@ public class Rover extends GroundVehicle implements Crewable,
 					return false;
 				}
 
-				if (getTowingVehicle().getAmountResourceStored(WATER_ID) <= 0D) {
+				if (getTowingVehicle().getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000,
 							"Ran out of water.");
 					return false;
@@ -426,7 +421,7 @@ public class Rover extends GroundVehicle implements Crewable,
 
 			else if (getSettlement() != null)  {
 
-				double o2 = getSettlement().getAmountResourceStored(OXYGEN_ID);
+				double o2 = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000,
 						"No more oxygen.");
@@ -440,7 +435,7 @@ public class Rover extends GroundVehicle implements Crewable,
 					return false;
 				}
 
-				if (getSettlement().getAmountResourceStored(WATER_ID) <= 0D) {
+				if (getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000,
 							"Ran out of water.");
 					return false;
@@ -450,7 +445,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 		else {
 
-			double o2 = getAmountResourceStored(OXYGEN_ID);
+			double o2 = getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (o2 < SMALL_AMOUNT) {
 				logger.log(this, Level.WARNING, 60_000,
 					"No more oxygen.");
@@ -464,7 +459,7 @@ public class Rover extends GroundVehicle implements Crewable,
 				return false;
 			}
 
-			if (getAmountResourceStored(WATER_ID) <= 0D) {
+			if (getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 60_000,
 						"Ran out of water.");
 				return false;
@@ -537,20 +532,20 @@ public class Rover extends GroundVehicle implements Crewable,
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 				v = getTowingVehicle();
 
-				lacking = v.retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-				v.storeAmountResource(CO2_ID, gasRatio * (oxygenTaken - lacking));
+				lacking = v.retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+				v.storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
 			}
 
 			else if (isInSettlement()) {
-				lacking = getSettlement().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-				getSettlement().storeAmountResource(CO2_ID, gasRatio * (oxygenTaken - lacking));
+				lacking = getSettlement().retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+				getSettlement().storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
 			}
 		}
 
 		else {
 
-			lacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-			storeAmountResource(CO2_ID, gasRatio * (oxygenTaken - lacking));
+			lacking = retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+			storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
 		}
 
 		return oxygenTaken - lacking;
@@ -573,16 +568,16 @@ public class Rover extends GroundVehicle implements Crewable,
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 				v = getTowingVehicle();
 
-				lacking = v.retrieveAmountResource(WATER_ID, waterTaken);
+				lacking = v.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 			}
 
 			else if (isInSettlement()) {
-				lacking = getSettlement().retrieveAmountResource(WATER_ID, waterTaken);
+				lacking = getSettlement().retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 			}
 		}
 		else {
 
-			lacking = retrieveAmountResource(WATER_ID, waterTaken);
+			lacking = retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 		}
 
 		return waterTaken - lacking;
@@ -606,13 +601,13 @@ public class Rover extends GroundVehicle implements Crewable,
 
 		if (!isInSettlement()) {
 			if (getTowingVehicle() != null) {
-				oxygenLeft = getTowingVehicle().getAmountResourceStored(OXYGEN_ID);
+				oxygenLeft = getTowingVehicle().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			}
 			else
-				oxygenLeft = getAmountResourceStored(OXYGEN_ID);
+				oxygenLeft = getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 		else {
-			oxygenLeft = getSettlement().getAmountResourceStored(OXYGEN_ID);
+			oxygenLeft = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 
 		if (oxygenLeft < SMALL_AMOUNT) {
@@ -924,19 +919,19 @@ public class Rover extends GroundVehicle implements Crewable,
 		// Check food capacity as range limit.
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = getAmountResourceCapacity(FOOD_ID);
+		double foodCapacity = getAmountResourceCapacity(ResourceUtil.FOOD_ID);
 		double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
 		double foodRange = distancePerSol * foodSols / margin;
 
 		// Check water capacity as range limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = getAmountResourceCapacity(WATER_ID);
+		double waterCapacity = getAmountResourceCapacity(ResourceUtil.WATER_ID);
 		double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
 		double waterRange = distancePerSol * waterSols / margin;
 
 		// Check oxygen capacity as range limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = getAmountResourceCapacity(OXYGEN_ID);
+		double oxygenCapacity = getAmountResourceCapacity(ResourceUtil.OXYGEN_ID);
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / margin;
 

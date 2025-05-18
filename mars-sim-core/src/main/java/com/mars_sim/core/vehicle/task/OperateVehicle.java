@@ -428,7 +428,7 @@ public abstract class OperateVehicle extends Task {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
 						"Case 0a1: Ran out of fuel.");
 	    		// Turn on emergency beacon
-	    		turnOnBeacon(ResourceUtil.methanolID);
+	    		turnOnBeacon(ResourceUtil.METHANOL_ID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 				
 		    	if (batteryEnergy < LEAST_AMOUNT) {
@@ -445,13 +445,13 @@ public abstract class OperateVehicle extends Task {
 		    	}
 	    	}
 
-	        remainingOxidizer = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
+	        remainingOxidizer = vehicle.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
 						"Case 0b1: Ran out of fuel oxidizer.");
 	    		// Turn on emergency beacon
-		    	turnOnBeacon(ResourceUtil.oxygenID);
+		    	turnOnBeacon(ResourceUtil.OXYGEN_ID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_OXIDIZER);
 	        	
 		    	if (batteryEnergy < LEAST_AMOUNT) {

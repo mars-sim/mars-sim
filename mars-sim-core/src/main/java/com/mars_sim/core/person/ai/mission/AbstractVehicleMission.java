@@ -72,10 +72,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractVehicleMission.class.getName());
-
-	protected static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	protected static final int WATER_ID = ResourceUtil.waterID;
-	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/** How often are remaining resources checked. */
 	private static final int RESOURCE_CHECK_DURATION = 40;
@@ -1062,11 +1058,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			int fuelTypeID = vehicle.getFuelTypeID();
 			double amountOxygen = 0;
 			
-			if (fuelTypeID == ResourceUtil.methanolID) {
+			if (fuelTypeID == ResourceUtil.METHANOL_ID) {
 				// if useMargin is true, include more oxygen
 				amountOxygen = VehicleController.RATIO_OXIDIZER_METHANOL * amount;
 			}
-			else if (fuelTypeID == ResourceUtil.methaneID) {
+			else if (fuelTypeID == ResourceUtil.METHANE_ID) {
 				// if useMargin is true, include more oxygen
 				amountOxygen = VehicleController.RATIO_OXIDIZER_METHANE * amount;
 			}
@@ -1075,7 +1071,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				amountOxygen = amount;
 			
 			result.put(fuelTypeID, amount);
-			result.put(ResourceUtil.oxygenID, amountOxygen);
+			result.put(ResourceUtil.OXYGEN_ID, amountOxygen);
 		}
 		
 		return result;

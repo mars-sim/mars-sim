@@ -207,13 +207,13 @@ class RendezvousVehiclePanel extends WizardPanel {
             		else if (column == 2) 
             			result = vehicle.getCrewNum();
             		else if (column == 3) {
-            			result = (int) vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
+            			result = (int) vehicle.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
             		}
                 	else if (column == 4) {
-                		result = (int) vehicle.getAmountResourceStored(ResourceUtil.waterID);
+                		result = (int) vehicle.getAmountResourceStored(ResourceUtil.WATER_ID);
                 	}
                 	else if (column == 5) { 
-                		result = (int) vehicle.getAmountResourceStored(ResourceUtil.foodID);
+                		result = (int) vehicle.getAmountResourceStored(ResourceUtil.FOOD_ID);
                 	}
                 	else if (column == 6) { 
                 		AmountResource dessert = ResourceUtil.findAmountResource("Soymilk");

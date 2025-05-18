@@ -212,22 +212,22 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
 									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
 
-		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
+		waterUsageCache = farm.computeUsage(ResourceUtil.WATER_ID);
 		waterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
 									DECIMAL_KG_SOL.format(waterUsageCache),
 									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 		
-		o2Cache = farm.computeUsage(ResourceUtil.oxygenID);
+		o2Cache = farm.computeUsage(ResourceUtil.OXYGEN_ID);
 		o2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
 									DECIMAL_KG_SOL.format(o2Cache),
 									Msg.getString("BuildingPanelFarming.o2.tooltip"));
 
-		greyWaterUsageCache = farm.computeUsage(ResourceUtil.greyWaterID);
+		greyWaterUsageCache = farm.computeUsage(ResourceUtil.GREY_WATER_ID);
 		greyWaterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
 									DECIMAL_KG_SOL.format(greyWaterUsageCache),
 									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
 
-		co2Cache = farm.computeUsage(ResourceUtil.co2ID);
+		co2Cache = farm.computeUsage(ResourceUtil.CO2_ID);
 		co2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
 									DECIMAL_KG_SOL.format(co2Cache),
 								 	Msg.getString("BuildingPanelFarming.co2.tooltip"));
@@ -435,28 +435,28 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		}
 
 		// Update the average water usage
-		double newWater = farm.computeUsage(ResourceUtil.waterID);
+		double newWater = farm.computeUsage(ResourceUtil.WATER_ID);
 		if (waterUsageCache != newWater) {
 			waterUsageCache = newWater;
 			waterLabel.setText(DECIMAL_KG_SOL.format(newWater));
 		}
 
 		// Update the average O2 generated
-		double newO2 = farm.computeUsage(ResourceUtil.oxygenID);
+		double newO2 = farm.computeUsage(ResourceUtil.OXYGEN_ID);
 		if (o2Cache != newO2) {
 			o2Cache = newO2;
 			o2Label.setText(DECIMAL_KG_SOL.format(newO2));
 		}
 
 		// Update the average CO2 consumed
-		double newCo2 = farm.computeUsage(ResourceUtil.co2ID);
+		double newCo2 = farm.computeUsage(ResourceUtil.CO2_ID);
 		if (co2Cache != newCo2) {
 			co2Cache = newCo2;
 			co2Label.setText(DECIMAL_KG_SOL.format(newCo2));
 		}
 
 		// Update the average grey water usage
-		double newGreyWater = farm.computeUsage(ResourceUtil.greyWaterID);
+		double newGreyWater = farm.computeUsage(ResourceUtil.GREY_WATER_ID);
 		if (greyWaterUsageCache != newGreyWater) {
 			greyWaterUsageCache = newGreyWater;
 			greyWaterLabel.setText(DECIMAL_KG_SOL.format(newGreyWater));

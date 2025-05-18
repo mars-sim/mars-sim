@@ -61,8 +61,8 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
         var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         BuildingManager.addPersonToActivitySpot(p, b, FunctionType.EVA);
         Equipment e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
-        e.storeAmountResource(ResourceUtil.oxygenID, EVASuit.OXYGEN_CAPACITY);
-        e.storeAmountResource(ResourceUtil.waterID, EVASuit.WATER_CAPACITY);
+        e.storeAmountResource(ResourceUtil.OXYGEN_ID, EVASuit.OXYGEN_CAPACITY);
+        e.storeAmountResource(ResourceUtil.WATER_ID, EVASuit.WATER_CAPACITY);
 
         // Mark sure person is fit
         var pc = p.getPhysicalCondition();

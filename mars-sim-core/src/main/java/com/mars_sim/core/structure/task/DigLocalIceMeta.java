@@ -50,7 +50,7 @@ public class DigLocalIceMeta extends DigLocalMeta {
         	return Collections.emptyList();
         }
     	
-    	return getSettlementTaskJobs(ResourceUtil.iceID, settlement, 
+    	return getSettlementTaskJobs(ResourceUtil.ICE_ID, settlement, 
             settlement.getIceCollectionRate() * settlement.getIceProbabilityValue());
     }
 }

@@ -470,7 +470,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
 
 		// Create custom collect ice mission panel.
-		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(new int[] {ResourceUtil.iceID});
+		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(new int[] {ResourceUtil.ICE_ID});
 		String collectIceMissionName = CollectIce.class.getName();
 		customInfoPanels.put(collectIceMissionName, collectIcePanel);
 		missionCustomPane.add(collectIcePanel, collectIceMissionName);

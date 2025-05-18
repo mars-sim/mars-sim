@@ -250,26 +250,20 @@ class AmountResourceGood extends Good {
 		case COMPOUND:
 			mod = COMPOUND_FLATTENING_FACTOR;
 	
-			if (ar.getID() == ResourceUtil.acetyleneID)
-				mod *= ACETYLENE_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.sandID)
-				mod *= SAND_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.iceID)
-				mod *= ICE_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.coID)
-				mod *= CO_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.co2ID)
-				mod *= CO2_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.methaneID)
-				mod *= METHANE_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.methanolID)
-				mod *= METHANOL_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.waterID)
-				mod *= WATER_FLATTENING_FACTOR;
+			mod *= switch(ar.getID()) {
+				case ResourceUtil.ACETYLENE_ID -> ACETYLENE_FLATTENING_FACTOR;
+				case ResourceUtil.SAND_ID -> SAND_FLATTENING_FACTOR;
+				case ResourceUtil.ICE_ID -> ICE_FLATTENING_FACTOR;
+				case ResourceUtil.CO_ID -> CO_FLATTENING_FACTOR;
+				case ResourceUtil.CO2_ID -> CO2_FLATTENING_FACTOR;
+				case ResourceUtil.METHANE_ID -> METHANE_FLATTENING_FACTOR;
+				case ResourceUtil.METHANOL_ID -> METHANOL_FLATTENING_FACTOR;
+				case ResourceUtil.WATER_ID -> WATER_FLATTENING_FACTOR;
+				default -> 1D;
+			};
 			
-			String name = ar.getName();
-			
-			if (name.equalsIgnoreCase(NACO3)) 
+			// Special case for NACO3
+			if (ar.getName().equalsIgnoreCase(NACO3)) 
 				mod *= NACO3_FLATTENING_FACTOR;
 			
 			break;
@@ -287,15 +281,13 @@ class AmountResourceGood extends Good {
 		case ELEMENT:
 			mod = ELEMENT_FLATTENING_FACTOR;
 			
-			if (ar.getID() == ResourceUtil.hydrogenID)
+			if (ar.getID() == ResourceUtil.HYDROGEN_ID)
 				mod *= HYDROGEN_FLATTENING_FACTOR;
 			
-			else if (ar.getID() == ResourceUtil.oxygenID)
+			else if (ar.getID() == ResourceUtil.OXYGEN_ID)
 				mod *= OXYGEN_FLATTENING_FACTOR;
-			
-			name = ar.getName();
-		
-			if (name.equalsIgnoreCase(IRON_POWDER))
+					
+			if (ar.getName().equalsIgnoreCase(IRON_POWDER))
 				mod *= IRON_POWDER_FLATTENING_FACTOR;
 			
 			break;
@@ -318,9 +310,9 @@ class AmountResourceGood extends Good {
 		case MINERAL:
 			mod = MINERAL_FLATTENING_FACTOR;
 			
-			if (ar.getID() == ResourceUtil.olivineID)
+			if (ar.getID() == ResourceUtil.OLIVINE_ID)
 				mod *= OLIVINE_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.kamaciteID)
+			else if (ar.getID() == ResourceUtil.KAMACITE_ID)
 				mod *= KAMACITE_FLATTENING_FACTOR;
 			
 			break;
@@ -482,20 +474,18 @@ class AmountResourceGood extends Good {
             result += ELEMENT_COST;
         else if (type == GoodType.CHEMICAL)
             result += CHEMICAL_COST;
-        else if (ar.getID() == ResourceUtil.methaneID)
-            result += CH4_COST;
-        else if (ar.getID() == ResourceUtil.methanolID)
-            result += METHANOL_COST;
-        else if (ar.getID() == ResourceUtil.hydrogenID)
-            result += H2_COST;
-        else if (ar.getID() == ResourceUtil.chlorineID)
-            result += CL_COST;
-        else if (ar.getID() == ResourceUtil.co2ID)
-            result += CO2_COST;
-        else if (ar.getID() == ResourceUtil.coID)
-            result += CO_COST;
-        else if (ar.getID() == ResourceUtil.iceID)
-            result += ICE_COST;
+        else {
+			result += switch(ar.getID()) {
+				case ResourceUtil.METHANE_ID -> CH4_COST;
+            	case ResourceUtil.METHANOL_ID -> METHANOL_COST;
+            	case ResourceUtil.HYDROGEN_ID -> H2_COST;
+            	case ResourceUtil.CHLORINE_ID -> CL_COST;
+            	case ResourceUtil.CO2_ID -> CO2_COST;
+            	case ResourceUtil.CO_ID -> CO_COST;
+            	case ResourceUtil.ICE_ID -> ICE_COST;
+				default -> 0D;
+			};
+		}
 
         return result;
     }
@@ -881,9 +871,7 @@ class AmountResourceGood extends Good {
 				break;
 
 				case TRANSPORTATION_HUB: {
-					if (resourceID == ResourceUtil.methanolID) {
-//					|| resourceID == ResourceUtil.methaneID
-//					|| resourceID == ResourceUtil.hydrogenID) {
+					if (resourceID == ResourceUtil.METHANOL_ID) {
 						cType = CommerceType.TRANSPORT;
 					}
 				} break;
@@ -966,7 +954,7 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 		int id = getID();
 		
-		if (id == ResourceUtil.tableSaltID) {
+		if (id == ResourceUtil.TABLE_SALT_ID) {
 			// Assuming a person takes 3 meals per sol
 			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
 		}
@@ -1184,7 +1172,6 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private double getFarmingResourceDemand(Farming farm) {
-		double base = 0;
 		int resource = getID();
 		
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
@@ -1192,33 +1179,28 @@ class AmountResourceGood extends Good {
 		int solsInOrbit = MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double factor = totalCropArea * averageGrowingCyclesPerOrbit / solsInOrbit;
 
-		if (resource == ResourceUtil.waterID) {
+		double base = switch(resource) {
 			// Average water consumption rate of crops per orbit using total growing area.
-			base = cropConfig.getWaterConsumptionRate() * factor;
-		} else if (resource == ResourceUtil.co2ID) {
+			case ResourceUtil.WATER_ID -> cropConfig.getWaterConsumptionRate() * factor;
 			// Average co2 consumption rate of crops per orbit using total growing area.
-			base = cropConfig.getCarbonDioxideConsumptionRate() * factor * CO2_VALUE_MODIFIER;
-		} else if (resource == ResourceUtil.oxygenID) {
+			case ResourceUtil.CO2_ID -> cropConfig.getCarbonDioxideConsumptionRate() * factor * CO2_VALUE_MODIFIER;
 			// Average oxygen consumption rate of crops per orbit using total growing area.
-			base = cropConfig.getOxygenConsumptionRate() * factor * OXYGEN_VALUE_MODIFIER;
-		} else if (resource == ResourceUtil.soilID) {
-			// Estimate soil needed for average number of crop plantings for total growing
-			// area.
-			base = Crop.NEW_SOIL_NEEDED_PER_SQM * factor;
-		} else if (resource == ResourceUtil.fertilizerID) {
-			// Estimate fertilizer needed for average number of crop plantings for total
-			// growing area.
+			case ResourceUtil.OXYGEN_ID -> cropConfig.getOxygenConsumptionRate() * factor * OXYGEN_VALUE_MODIFIER;
+			// Estimate soil needed for average number of crop plantings for total growing area
+			case ResourceUtil.SOIL_ID -> Crop.NEW_SOIL_NEEDED_PER_SQM * factor;
+			// Estimate fertilizer needed for average number of crop plantings for total growing area.
 			// Estimate fertilizer needed when grey water not available.
-			base = (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 5;
-		} else if (resource == ResourceUtil.greyWaterID) {
+			case ResourceUtil.FERTILIZER_ID -> (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 5;
 			// NOTE: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource
 			// Average grey water consumption rate of crops per orbit using total growing
 			// area.
 			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
-			base = WASTE_WATER_VALUE_MODIFIER;
-		}
+			case ResourceUtil.GREY_WATER_ID -> WASTE_WATER_VALUE_MODIFIER;
 
+			default -> 0D;
+		};
+		
 		return base;
 	}
 
@@ -1356,25 +1338,18 @@ class AmountResourceGood extends Good {
 		
 		AmountResource ar = getAmountResource();
 		if (ar.isLifeSupport()) {
-			double amountNeededSol = 0;
 			int numPeople = settlement.getNumCitizens();
-	
-			if (resource == ResourceUtil.oxygenID) {
-				amountNeededSol = personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.waterID) {
-				amountNeededSol = personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.foodID) {
-				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.methaneID) {
-				// Methane is fuel for heating and is an arguably life support resource
-				amountNeededSol = personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.co2ID) {
-				amountNeededSol = CO2_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.hydrogenID) {
-				amountNeededSol = personConfig.getWaterConsumptionRate() * HYDROGEN_VALUE_MODIFIER;
-			}
+
+			double amountNeededSol = switch(resource) {
+				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
+				case ResourceUtil.WATER_ID -> personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
+				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
+				case ResourceUtil.METHANE_ID -> personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
+				case ResourceUtil.CO2_ID -> CO2_VALUE_MODIFIER;
+				case ResourceUtil.HYDROGEN_ID -> personConfig.getWaterConsumptionRate() * HYDROGEN_VALUE_MODIFIER;
+				default -> 0D;
+			};
 			
-		
 			return numPeople * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
 					* LIFE_SUPPORT_FACTOR;
 		}
@@ -1391,93 +1366,92 @@ class AmountResourceGood extends Good {
 		double base = .25;
 		int resource = getID();
 
-        if (resource == ResourceUtil.rockSaltID)
-			return base * ROCK_SALT_VALUE_MODIFIER;
-		else if (resource == ResourceUtil.epsomSaltID)
-			return base * EPSOM_SALT_VALUE_MODIFIER;
-		else if (resource == ResourceUtil.soilID)
-			// TODO Should be based on growing area
-			return base * settlement.getTotalCropArea() * SOIL_VALUE_MODIFIER;
-		else if (resource == ResourceUtil.cementID) {
-			double cementDemand = owner.getDemandValueWithID(ResourceUtil.cementID);
-			double concreteDemand = owner.getDemandValueWithID(ResourceUtil.concreteID);
-			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
-			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
-			return base * (.5 * cementDemand + .2 * regolithDemand + .2 * sandDemand + .1 * concreteDemand) 
-					/ (1 + cementDemand) * CEMENT_VALUE_MODIFIER;
-		}
-		else if (resource == ResourceUtil.concreteID) {
-			double concreteDemand = owner.getDemandValueWithID(ResourceUtil.concreteID);
-			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
-			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
-			// the demand for sand is dragged up or down by that of regolith
-			// loses 5% by default
-			return base * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
-						/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
-		}
-		else if (resource == ResourceUtil.sandID) {
-			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
-			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
-			// the demand for sand is dragged up or down by that of regolith
-			// loses 10% by default
-			return base * (.2 * regolithDemand + .7 * sandDemand) 
-						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
+		switch(resource) {
+        	case ResourceUtil.ROCK_SALT_ID:
+				return base * ROCK_SALT_VALUE_MODIFIER;
+			case ResourceUtil.EPSOM_SALT_ID:
+				return base * EPSOM_SALT_VALUE_MODIFIER;
+			case ResourceUtil.SOIL_ID:
+				return base * settlement.getTotalCropArea() * SOIL_VALUE_MODIFIER;
+			case ResourceUtil.CEMENT_ID: {
+				double cementDemand = owner.getDemandValueWithID(ResourceUtil.CEMENT_ID);
+				double concreteDemand = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
+				double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
+				double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+				return base * (.5 * cementDemand + .2 * regolithDemand + .2 * sandDemand + .1 * concreteDemand) 
+						/ (1 + cementDemand) * CEMENT_VALUE_MODIFIER;
+			}
+			case ResourceUtil.CONCRETE_ID:{
+				double concreteDemand = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
+				double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
+				double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+				// the demand for sand is dragged up or down by that of regolith
+				// loses 5% by default
+				return base * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
+							/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
+			}
+			case ResourceUtil.SAND_ID: {
+				double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
+				double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+				// the demand for sand is dragged up or down by that of regolith
+				// loses 10% by default
+				return base * (.2 * regolithDemand + .7 * sandDemand) 
+							/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
+			}
 		}
         
-        else {
-			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
-			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
+		double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
+		double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
 
-			for (int id : ResourceUtil.rockIDs) {
-				if (resource == id) {
-					double rockDemand = owner.getDemandValueWithID(id);
-					return base * (.2 * regolithDemand + .9 * rockDemand) 
-							/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
-				}
+		for (int id : ResourceUtil.rockIDs) {
+			if (resource == id) {
+				double rockDemand = owner.getDemandValueWithID(id);
+				return base * (.2 * regolithDemand + .9 * rockDemand) 
+						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 			}
+		}
 
-			for (int id : ResourceUtil.mineralConcIDs) {
-				if (resource == id) {
-					double mineralDemand = owner.getDemandValueWithID(id);
-					return base * (.2 * regolithDemand + .9 * mineralDemand) 
-							/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
-				}
+		for (int id : ResourceUtil.mineralConcIDs) {
+			if (resource == id) {
+				double mineralDemand = owner.getDemandValueWithID(id);
+				return base * (.2 * regolithDemand + .9 * mineralDemand) 
+						/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
 			}
+		}
 
-			for (int id : ResourceUtil.oreDepositIDs) {
-				if (resource == id) {
-					double oreDemand = owner.getDemandValueWithID(id);
-					// loses 10% by default
-					return base * (.3 * regolithDemand + .6 * oreDemand) 
-							/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
-				}
+		for (int id : ResourceUtil.oreDepositIDs) {
+			if (resource == id) {
+				double oreDemand = owner.getDemandValueWithID(id);
+				// loses 10% by default
+				return base * (.3 * regolithDemand + .6 * oreDemand) 
+						/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
 			}
+		}
 
-			if (resource == ResourceUtil.regolithID) {
-				return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
-			}
-			
-			else if (resource == ResourceUtil.regolithBID 
-					|| resource == ResourceUtil.regolithCID) {
-				return base * regolithDemand * REGOLITH_VALUE_MODIFIER_1;
-			}
-			
-			else if (resource == ResourceUtil.regolithDID) {
-				return base * regolithDemand * REGOLITH_VALUE_MODIFIER_2;
-			}
-			
-			// Checks if this resource is a ROCK type
-			GoodType type = getGoodType();
-			if (type != null && type == GoodType.ROCK) {
-				double rockDemand = owner.getDemandValueWithID(resource);
+		if (resource == ResourceUtil.REGOLITH_ID) {
+			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
+		}
+		
+		else if (resource == ResourceUtil.REGOLITHB_ID 
+				|| resource == ResourceUtil.REGOLITHC_ID) {
+			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_1;
+		}
+		
+		else if (resource == ResourceUtil.REGOLITHD_ID) {
+			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_2;
+		}
+		
+		// Checks if this resource is a ROCK type
+		GoodType type = getGoodType();
+		if (type != null && type == GoodType.ROCK) {
+			double rockDemand = owner.getDemandValueWithID(resource);
 
-				if (resource == METEORITE_ID)
-					return base * (.4 * regolithDemand + .5 * rockDemand) 
-							/ (1 + rockDemand) * METEORITE_VALUE_MODIFIER;
-				else
-					return base * (.2 * sandDemand + .7 * rockDemand) 
-							/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
-			}
+			if (resource == METEORITE_ID)
+				return base * (.4 * regolithDemand + .5 * rockDemand) 
+						/ (1 + rockDemand) * METEORITE_VALUE_MODIFIER;
+			else
+				return base * (.2 * sandDemand + .7 * rockDemand) 
+						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 		}
 
 		return base;
@@ -1489,53 +1463,19 @@ class AmountResourceGood extends Good {
 	 * @return demand (kg)
 	 */
 	private double modifyWasteResource() {
-		int resource = getID();
-
-		if (resource == ResourceUtil.brineWaterID) {
-			return BRINE_WATER_VALUE_MODIFIER;
-		}
-		
-		if (resource == ResourceUtil.greyWaterID) {
-			return GREY_WATER_VALUE_MODIFIER;
-		}
-
-		if (resource == ResourceUtil.blackWaterID) {
-			return BLACK_WATER_VALUE_MODIFIER;
-		}
-		
-		if (resource == ResourceUtil.leavesID) {
-			return LEAVES_VALUE_MODIFIER;
-		}
-
-		if (resource == ResourceUtil.soilID) {
-			return SOIL_VALUE_MODIFIER;
-		}
-
-		if (resource == ResourceUtil.foodWasteID) {
-			return 4 * USEFUL_WASTE_VALUE_MODIFIER;
-		}
-
-		if (resource == ResourceUtil.solidWasteID) {
-			return .2;
-		}
-		
-		if (resource == ResourceUtil.toxicWasteID) {
-			return .05;
-		}
-		
-		if (resource == ResourceUtil.cropWasteID) {
-			return 4 * USEFUL_WASTE_VALUE_MODIFIER;
-		}
-
-		if (resource == ResourceUtil.compostID) {
-			return 2 * USEFUL_WASTE_VALUE_MODIFIER;
-		}
-
-//		if (getGoodType() == GoodType.WASTE) {
-//			return WASTE_COST;
-//		}
-		
-		return 1;
+		return switch(getID()) {
+			case ResourceUtil.BRINE_WATER_ID -> BRINE_WATER_VALUE_MODIFIER;
+			case ResourceUtil.GREY_WATER_ID -> GREY_WATER_VALUE_MODIFIER;
+			case ResourceUtil.BLACK_WATER_ID -> BLACK_WATER_VALUE_MODIFIER;
+			case ResourceUtil.LEAVES_ID -> LEAVES_VALUE_MODIFIER;
+			case ResourceUtil.SOIL_ID -> SOIL_VALUE_MODIFIER;
+			case ResourceUtil.FOOD_WASTE_ID -> 4 * USEFUL_WASTE_VALUE_MODIFIER;
+			case ResourceUtil.SOLID_WASTE_ID -> .2;
+			case ResourceUtil.TOXIC_WASTE_ID -> .05;
+			case ResourceUtil.CROP_WASTE_ID -> 4 * USEFUL_WASTE_VALUE_MODIFIER;
+			case ResourceUtil.COMPOST_ID -> 2 * USEFUL_WASTE_VALUE_MODIFIER;
+			default -> 1D;
+		};
 	}
 
 	/**
@@ -1546,7 +1486,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getPotableWaterUsageDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0;
-		if (getID() == ResourceUtil.waterID) {
+		if (getID() == ResourceUtil.WATER_ID) {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRationLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
@@ -1567,9 +1507,9 @@ class AmountResourceGood extends Good {
 	 */
 	private double computeIceProjectedDemand(GoodsManager owner, Settlement settlement) {
         int resource = getID();
-		if (resource == ResourceUtil.iceID) {
+		if (resource == ResourceUtil.ICE_ID) {
 			double ice = 1 + owner.getDemandValueWithID(resource);
-			double water = 1 + owner.getDemandValueWithID(ResourceUtil.waterID);
+			double water = 1 + owner.getDemandValueWithID(ResourceUtil.WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
 			return  (.5 * water + .5 * ice) / ice
 					* ICE_VALUE_MODIFIER;
@@ -1589,19 +1529,19 @@ class AmountResourceGood extends Good {
 		double demand = 0;
 		int resource = getID();
 		// This averaging method make all regolith types to be placed at similar demand
-		if (resource == ResourceUtil.regolithBID
-			|| resource ==  ResourceUtil.regolithCID
-			|| resource ==  ResourceUtil.regolithDID) {
+		if (resource == ResourceUtil.REGOLITHB_ID
+			|| resource ==  ResourceUtil.REGOLITHC_ID
+			|| resource ==  ResourceUtil.REGOLITHD_ID) {
 
-			double sand = owner.getDemandValueWithID(ResourceUtil.sandID);
-			double concrete = owner.getDemandValueWithID(ResourceUtil.concreteID);
-			double cement = owner.getDemandValueWithID(ResourceUtil.cementID);
+			double sand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+			double concrete = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
+			double cement = owner.getDemandValueWithID(ResourceUtil.CEMENT_ID);
 
 			double targetRegolith = owner.getDemandValueWithID(resource);
-			double regolith = owner.getDemandValueWithID(ResourceUtil.regolithID);
-			double regolithB = owner.getDemandValueWithID(ResourceUtil.regolithBID);
-			double regolithC = owner.getDemandValueWithID(ResourceUtil.regolithCID);
-			double regolithD = owner.getDemandValueWithID(ResourceUtil.regolithDID);
+			double regolith = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
+			double regolithB = owner.getDemandValueWithID(ResourceUtil.REGOLITHB_ID);
+			double regolithC = owner.getDemandValueWithID(ResourceUtil.REGOLITHC_ID);
+			double regolithD = owner.getDemandValueWithID(ResourceUtil.REGOLITHD_ID);
 			
 			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
 			
@@ -1620,7 +1560,7 @@ class AmountResourceGood extends Good {
 	 * @return demand (kg)
 	 */
 	private double getToiletryUsageDemand(Settlement settlement) {
-		if (getID() == ResourceUtil.toiletTissueID) {
+		if (getID() == ResourceUtil.TOILET_TISSUE_ID) {
 			double amountNeededSol = LivingAccommodation.TOILET_WASTE_PERSON_SOL;
 			int numPeople = settlement.getIndoorPeopleCount();
 			return numPeople * amountNeededSol;
@@ -1636,23 +1576,26 @@ class AmountResourceGood extends Good {
 	 */
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
-		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR; 
-		if (getID() == ResourceUtil.methanolID) {
-			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
-				double fuelDemand = v.getAmountResourceCapacity(getID());
-				demand += fuelDemand * transFactor * METHANOL_VALUE_MODIFIER;
-			}
-		}
-		
-		else if (getID() == ResourceUtil.methaneID) {
-			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
-				double fuelDemand = v.getAmountResourceCapacity(getID());
-				demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER / 5;
-			}
-		}
+		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR;
 
-		else if (getID() == ResourceUtil.hydrogenID) {
-			demand +=  transFactor * HYDROGEN_VALUE_MODIFIER / 10;
+		switch(getID()) {
+			case ResourceUtil.METHANOL_ID: {
+				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
+					double fuelDemand = v.getAmountResourceCapacity(getID());
+					demand += fuelDemand * transFactor * METHANOL_VALUE_MODIFIER;
+				}
+			} break;
+		
+			case ResourceUtil.METHANE_ID: {
+				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
+					double fuelDemand = v.getAmountResourceCapacity(getID());
+					demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER / 5;
+				}
+			} break;
+
+			case ResourceUtil.HYDROGEN_ID: {
+				demand +=  transFactor * HYDROGEN_VALUE_MODIFIER / 10;
+			} break;
 		}
 
 		return demand / 5;

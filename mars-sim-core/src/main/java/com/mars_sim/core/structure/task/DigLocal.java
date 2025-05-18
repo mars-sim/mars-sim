@@ -386,23 +386,23 @@ public abstract class DigLocal extends EVAOperation {
       	int newResourceID = 0;
       	
     	// Remap regoliths by allowing the possibility of misclassifying regolith types
-		if (resourceID == ResourceUtil.regolithID) {
+		if (resourceID == ResourceUtil.REGOLITH_ID) {
 			int rand = RandomUtil.getRandomInt(10);
 			
 			// Reassign as the other 3 types of regoliths
 			if (rand == 8) {			
-				newResourceID = ResourceUtil.regolithBID;
+				newResourceID = ResourceUtil.REGOLITHB_ID;
 			}
 			else if (rand == 9) {						
-				newResourceID = ResourceUtil.regolithCID;
+				newResourceID = ResourceUtil.REGOLITHC_ID;
 			}
 			else if (rand == 10) {					
-				newResourceID = ResourceUtil.regolithDID;
+				newResourceID = ResourceUtil.REGOLITHD_ID;
 			}
 			else
 				newResourceID = resourceID;
 		}
-		else if (resourceID == ResourceUtil.iceID) {
+		else if (resourceID == ResourceUtil.ICE_ID) {
 			newResourceID = resourceID;
 		}
 		

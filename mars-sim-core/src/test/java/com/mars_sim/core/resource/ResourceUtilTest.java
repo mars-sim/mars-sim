@@ -16,20 +16,20 @@ public class ResourceUtilTest {
 	
     @Test
     void testIsInSitu() {
-        assertFalse("Oxygen is not raw material", ResourceUtil.isInSitu(ResourceUtil.oxygenID));
-        assertTrue("Ice is raw material", ResourceUtil.isInSitu(ResourceUtil.iceID)); 
+        assertFalse("Oxygen is not raw material", ResourceUtil.isInSitu(ResourceUtil.OXYGEN_ID));
+        assertTrue("Ice is raw material", ResourceUtil.isInSitu(ResourceUtil.ICE_ID)); 
     }
 
     @Test
     void testIsLifeSupport() {
-        assertTrue("Oxygen is a life support resource", ResourceUtil.isLifeSupport(ResourceUtil.oxygenID));
-        assertFalse("Sand is not life support resource", ResourceUtil.isLifeSupport(ResourceUtil.sandID));
+        assertTrue("Oxygen is a life support resource", ResourceUtil.isLifeSupport(ResourceUtil.OXYGEN_ID));
+        assertFalse("Sand is not life support resource", ResourceUtil.isLifeSupport(ResourceUtil.SAND_ID));
 
     }
 
     @Test
     void testIsRawMaterial() {
-        assertFalse("Oxygen is not raw material", ResourceUtil.isRawMaterial(ResourceUtil.oxygenID));
-        assertTrue("Sand is raw material", ResourceUtil.isRawMaterial(ResourceUtil.sandID));
+        assertFalse("Oxygen is not raw material", ResourceUtil.isRawMaterial(ResourceUtil.OXYGEN_ID));
+        assertTrue("Sand is raw material", ResourceUtil.isRawMaterial(ResourceUtil.SAND_ID));
     }
 }

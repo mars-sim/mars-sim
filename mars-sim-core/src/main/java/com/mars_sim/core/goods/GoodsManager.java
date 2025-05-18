@@ -275,15 +275,15 @@ public class GoodsManager implements Serializable {
 			for (VehicleType type : VehicleType.values()) {
 				unsellableGoods.add(GoodsUtil.getVehicleGood(type));
 			}
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.regolithID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.iceID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.co2ID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.coID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.sandID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.greyWaterID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.blackWaterID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.eWasteID));
-			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.toxicWasteID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.ICE_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.CO2_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.CO_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.SAND_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.GREY_WATER_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.BLACK_WATER_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.E_WASTE_ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.TOXIC_WASTE_ID));
 			// Note: add vehicles to this list ?
 		}
 		return unsellableGoods;

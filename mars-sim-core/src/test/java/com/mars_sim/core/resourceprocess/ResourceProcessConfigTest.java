@@ -26,12 +26,12 @@ public class ResourceProcessConfigTest extends AbstractMarsSimUnitTest {
         // Check inputs
         var inputs = spec.getInputResources();
         assertEquals("Input resources", 2, inputs.size());
-        assertTrue("Inputs contains hydrogen", inputs.contains(ResourceUtil.hydrogenID));
-        assertTrue("Inputs contains CO2", inputs.contains(ResourceUtil.co2ID));
+        assertTrue("Inputs contains hydrogen", inputs.contains(ResourceUtil.HYDROGEN_ID));
+        assertTrue("Inputs contains CO2", inputs.contains(ResourceUtil.CO2_ID));
 
         // Check minumum
         var mins = spec.getMinimumInputs();
         assertEquals("Minumum resources", 1, mins.size());
-        assertTrue("Minimums contains", mins.keySet().contains(ResourceUtil.hydrogenID));
+        assertTrue("Minimums contains", mins.keySet().contains(ResourceUtil.HYDROGEN_ID));
     }
 }

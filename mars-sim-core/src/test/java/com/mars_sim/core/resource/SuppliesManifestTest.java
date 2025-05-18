@@ -11,18 +11,18 @@ public class SuppliesManifestTest extends AbstractMarsSimUnitTest{
         final double MAND = 10D;
         var manifest = new SuppliesManifest();
 
-        manifest.addAmount(ResourceUtil.argonID, MAND, true);
-        manifest.addAmount(ResourceUtil.oxygenID, MAND, true);
-        manifest.addAmount(ResourceUtil.nitrogenID, OPT, false);
+        manifest.addAmount(ResourceUtil.ARGON_ID, MAND, true);
+        manifest.addAmount(ResourceUtil.OXYGEN_ID, MAND, true);
+        manifest.addAmount(ResourceUtil.NITROGEN_ID, OPT, false);
 
         var mand = manifest.getAmounts(true);
         assertEquals("Mandatory Resources", 2, mand.size());
-        assertEquals("Argon amount", MAND, mand.get(ResourceUtil.argonID));
-        assertEquals("Oxygen amount", MAND, mand.get(ResourceUtil.oxygenID));
+        assertEquals("Argon amount", MAND, mand.get(ResourceUtil.ARGON_ID));
+        assertEquals("Oxygen amount", MAND, mand.get(ResourceUtil.OXYGEN_ID));
 
         var opt = manifest.getAmounts(false);
         assertEquals("Optional Resources", 1, opt.size());
-        assertEquals("Nitrogen amount", OPT, opt.get(ResourceUtil.nitrogenID));
+        assertEquals("Nitrogen amount", OPT, opt.get(ResourceUtil.NITROGEN_ID));
     }
 
     public void testAddItem() {

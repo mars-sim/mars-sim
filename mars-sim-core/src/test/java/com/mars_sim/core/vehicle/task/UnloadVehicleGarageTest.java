@@ -19,8 +19,8 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         // Load the vehicle
         var v = buildRover(s, "rover1", new LocalPosition(10, 10));
-        v.storeAmountResource(ResourceUtil.oxygenID, RESOURCE_AMOUNT);
-        v.storeAmountResource(ResourceUtil.foodID, RESOURCE_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
+        v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
         assertGreaterThan("Initial stored mass", 0D, v.getStoredMass());
 
@@ -34,8 +34,8 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
         assertEquals("Final stored mass", 0D, v.getStoredMass());
-        assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.oxygenID)));
-        assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.foodID)));
+        assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.OXYGEN_ID)));
+        assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.FOOD_ID)));
         assertEquals("Garments unloaded", ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.garmentID));
         assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 
@@ -55,8 +55,8 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         assertEquals("Mo unload tasks found", 0, tasks.size());
 
         // Load and make reserved
-        v.storeAmountResource(ResourceUtil.oxygenID, RESOURCE_AMOUNT);
-        v.storeAmountResource(ResourceUtil.foodID, RESOURCE_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
+        v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
 
         // Skip reserved vehicle

@@ -11,8 +11,6 @@ import java.util.Collection;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 
@@ -23,10 +21,6 @@ public class Drone extends Flyer {
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
-
-	public static final int METHANOL_ID = ResourceUtil.methanolID;
-	
-	public static final AmountResource METHANOL_AR = ResourceUtil.findAmountResource(ResourceUtil.methanolID);
 
 	/** The fuel range modifier. */
 	public static final double FUEL_RANGE_FACTOR = 0.95;
@@ -82,15 +76,6 @@ public class Drone extends Flyer {
 
 
 		return true;
-	}
-
-	/**
-	 * Gets the amount resource type that this vehicle uses as fuel.
-	 *
-	 * @return amount resource
-	 */
-	public AmountResource getFuelTypeAR() {
-		return METHANOL_AR;
 	}
 	
 	/**

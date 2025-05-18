@@ -17,7 +17,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.RandomUtil;
  
  /**
@@ -33,10 +32,6 @@ import com.mars_sim.core.tool.RandomUtil;
 	 /** default logger. */
 	 private static SimLogger logger = SimLogger.getLogger(VehicleController.class.getName());
  
-	 /** The oxygen as fuel oxidizer for the fuel cells. */
-	 public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	 /** The water as the by-product of the fuel cells */
-	 public static final int WATER_ID = ResourceUtil.waterID;
 	 /** The standard hovering height for a drone. */
 	 public static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
 	 /** The standard stepping up height for a drone. */

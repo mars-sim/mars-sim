@@ -47,7 +47,7 @@ public class UnloadHelperTest extends AbstractMarsSimUnitTest{
         int suits = 3;
         for(int i = 0; i < suits; i++) {
             var e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
-            e.storeAmountResource(ResourceUtil.oxygenID, 10);
+            e.storeAmountResource(ResourceUtil.OXYGEN_ID, 10);
             e.transfer(v);
         }
 
@@ -57,7 +57,7 @@ public class UnloadHelperTest extends AbstractMarsSimUnitTest{
         UnloadHelper.unloadEVASuits(v, s, 1000D, 1);
         assertEquals("EVASuits left", 1, inv.getSuitSet().size());
         assertEquals("EVASuits in settlement", suits - 1, s.getEquipmentInventory().getSuitSet().size());
-        assertGreaterThan("Settlement oxygen", 0D, s.getAmountResourceStored(ResourceUtil.oxygenID));
+        assertGreaterThan("Settlement oxygen", 0D, s.getAmountResourceStored(ResourceUtil.OXYGEN_ID));
     }
 
     public void testUnloadInventory() {
@@ -65,9 +65,9 @@ public class UnloadHelperTest extends AbstractMarsSimUnitTest{
         var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION);
 
         // Load the vehicle
-        int res1 = ResourceUtil.oxygenID;
+        int res1 = ResourceUtil.OXYGEN_ID;
         v.storeAmountResource(res1, 10D);
-        int res2 = ResourceUtil.foodID;
+        int res2 = ResourceUtil.FOOD_ID;
         v.storeAmountResource(res2, 10D);
         int part1 = ItemResourceUtil.garmentID;
         v.storeItemResource(part1, 10);

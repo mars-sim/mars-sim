@@ -61,7 +61,7 @@ public class TestGood extends TestCase {
 	}
 
 	public void testOxygenGood() {
-		Good g = GoodsUtil.getGood(ResourceUtil.oxygenID);
+		Good g = GoodsUtil.getGood(ResourceUtil.OXYGEN_ID);
 		
 		testGoodsBasics(g, GoodCategory.AMOUNT_RESOURCE);
 	}

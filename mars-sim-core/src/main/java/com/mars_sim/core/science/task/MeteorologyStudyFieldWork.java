@@ -141,7 +141,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	private boolean takeSpecimenContainer() {
 		Container container = ContainerUtil.findLeastFullContainer(
 													getRover(), EquipmentType.SPECIMEN_BOX,
-													ResourceUtil.rockSamplesID);
+													ResourceUtil.ROCK_SAMPLES_ID);
 		if (container != null) {
 			return container.transfer(person);
 		}

@@ -30,7 +30,7 @@ public class AirComposition implements Serializable {
 	/**
      * Properties of a specific gas.
      */
-    static final public class GasDetails implements Serializable {
+    public static final class GasDetails implements Serializable {
     	private double percent;
     	private double partialPressure;
     	private double numMoles;
@@ -54,7 +54,7 @@ public class AirComposition implements Serializable {
 	private static final int MILLISOLS_PER_UPDATE = 2;
 	
 	// See https://en.wikipedia.org/wiki/Gas_constant
-	// R = 8.314 J/(mol C); 
+	// R = 8.314 J/(mol C)
 	public static final double R_GAS_CONSTANT = 0.082057338D; // [ in L atm K^−1 mol^−1 ]
 	public static final double MB_PER_ATM = 1013.2501D;
 	public static final double KPA_PER_ATM = 101.32501D;
@@ -109,11 +109,11 @@ public class AirComposition implements Serializable {
 	public AirComposition(double t, double vol) {
 
 		// Part 1 : set up initial conditions at the start of sim
-		initialiseGas(ResourceUtil.co2ID);
-		initialiseGas(ResourceUtil.argonID);
-		initialiseGas(ResourceUtil.nitrogenID);
-		initialiseGas(ResourceUtil.oxygenID);
-		initialiseGas(ResourceUtil.waterID);
+		initialiseGas(ResourceUtil.CO2_ID);
+		initialiseGas(ResourceUtil.ARGON_ID);
+		initialiseGas(ResourceUtil.NITROGEN_ID);
+		initialiseGas(ResourceUtil.OXYGEN_ID);
+		initialiseGas(ResourceUtil.WATER_ID);
 		
 		// Part 2 : calculate total # of moles, total mass and total pressure
 		fixedVolume = vol;
@@ -210,11 +210,11 @@ public class AirComposition implements Serializable {
 
 			// Part 1 : calculate for each gas the partial pressure and # of moles
 			double m = gas.mass;
-			if (gasId == ResourceUtil.co2ID) {
+			if (gasId == ResourceUtil.CO2_ID) {
 				m += numPeople * cO2Expelled * time;
-			} else if (gasId == ResourceUtil.oxygenID) {
+			} else if (gasId == ResourceUtil.OXYGEN_ID) {
 				m -= numPeople * o2Consumed * time;
-			} else if (gasId == ResourceUtil.waterID) {
+			} else if (gasId == ResourceUtil.WATER_ID) {
 				m += numPeople * moistureExpelled * time;
 			}
 
@@ -449,22 +449,17 @@ public class AirComposition implements Serializable {
 	 */
 	private static double getByGas(int gasId, double co2,
 								   double argon, double n2, double o2, double h2o) {
-		double result;
-		if (gasId == ResourceUtil.co2ID)
-			result = co2;
-		else if (gasId == ResourceUtil.argonID)
-			result = argon;
-		else if (gasId == ResourceUtil.nitrogenID)
-			result = n2;
-		else if (gasId == ResourceUtil.oxygenID)
-			result = o2;
-		else if (gasId == ResourceUtil.waterID)
-			result = h2o;
-		else {
-			String g = ResourceUtil.findAmountResourceName(gasId);
-			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
-		}
-		return result;
+		return switch (gasId) {
+			case ResourceUtil.CO2_ID -> co2;
+			case ResourceUtil.ARGON_ID -> argon;
+			case ResourceUtil.NITROGEN_ID -> n2;
+			case ResourceUtil.OXYGEN_ID -> o2;
+			case ResourceUtil.WATER_ID -> h2o;
+			default -> {
+					String g = ResourceUtil.findAmountResourceName(gasId);
+					throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
+				}
+		};
 	}
 
     /**

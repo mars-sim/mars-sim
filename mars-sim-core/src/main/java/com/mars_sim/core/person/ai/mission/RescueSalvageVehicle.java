@@ -676,10 +676,10 @@ public class RescueSalvageVehicle extends RoverMission {
 		int fuelTypeID = getVehicle().getFuelTypeID();
 		if (fuelTypeID > 0) {
 			result.put(fuelTypeID, getVehicle().getAmountResourceCapacity(fuelTypeID));
-			result.put(OXYGEN_ID, getVehicle().getAmountResourceCapacity(OXYGEN_ID));
-			result.put(WATER_ID, getVehicle().getAmountResourceCapacity(WATER_ID));
+			result.put(ResourceUtil.OXYGEN_ID, getVehicle().getAmountResourceCapacity(ResourceUtil.OXYGEN_ID));
+			result.put(ResourceUtil.WATER_ID, getVehicle().getAmountResourceCapacity(ResourceUtil.WATER_ID));
 		}
-		result.put(FOOD_ID, getVehicle().getAmountResourceCapacity(FOOD_ID));
+		result.put(ResourceUtil.FOOD_ID, getVehicle().getAmountResourceCapacity(ResourceUtil.FOOD_ID));
 
 		// Get parts too.
 		result.putAll(getSparePartsForTrip(computeTotalDistanceRemaining()));
