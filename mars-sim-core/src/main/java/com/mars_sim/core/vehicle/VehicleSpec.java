@@ -305,15 +305,11 @@ public class VehicleSpec implements Serializable {
 		this.fuelTypeStr = fuelTypeStr;
 		
 		if (PowerSourceType.FUEL_POWER == powerSourceType) {	
-			if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
-				fuelTypeID = ResourceUtil.methanolID;
-			}
-			else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
-				fuelTypeID = ResourceUtil.methaneID;
-			}
-			else {
+			var fr = ResourceUtil.findAmountResource(fuelTypeStr);
+			if (fr == null) {
 				throw new IllegalArgumentException("Invalid fuel type for vehicle: " + fuelTypeStr);
 			}
+			fuelTypeID = fr.getID();
 		}
 		else if (PowerSourceType.FISSION_POWER == powerSourceType) {
 			fuelTypeID = -1;
@@ -395,23 +391,22 @@ public class VehicleSpec implements Serializable {
 		fuelCapacity = getCargoCapacity(getFuelType());
 		
     	batteryCapacity = energyCapacityPerModule * numBatteryModule;
-    	
-    	// Note: ResourceUtil.methanolID has not been initialized at this point of startup
-    	
-    	if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
+    	    	
+    	if (fuelTypeID == ResourceUtil.methanolID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainFuelEfficiency;
     	}
     	
-    	else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
+    	else if (fuelTypeID == ResourceUtil.methaneID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainFuelEfficiency;
 		}
-			
+		
+		// Not sure this case is possible
     	else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;

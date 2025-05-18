@@ -340,7 +340,7 @@ extends AbstractTableModel {
 	 /**
 	  * Inner class to represent a supply table item.
 	  */
-	private class SupplyItem {
+	public class SupplyItem {
 
 		 // Data members
 		 public String category;
