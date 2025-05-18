@@ -7,18 +7,13 @@
 
 package com.mars_sim.core.manufacture;
 
-import java.util.logging.Level;
-
 import com.mars_sim.core.building.function.Manufacture;
-import com.mars_sim.core.logging.SimLogger;
 
 /**
  * A manufacturing process.
  */
 public class ManufactureProcess extends WorkshopProcess {
 	
-	private static final SimLogger logger = SimLogger.getLogger(ManufactureProcess.class.getName());
-
 	/**
 	 * Constructor.
 	 * 
@@ -40,21 +35,7 @@ public class ManufactureProcess extends WorkshopProcess {
 		}
 		var settlement = getBuilding().getSettlement();
 
-		// Consume inputs.
-		for (var item : getInfo().getInputList()) {
-			switch(item.getType()) {
-				case AMOUNT_RESOURCE:
-					settlement.retrieveAmountResource(item.getId(), item.getAmount());
-					break;
-				case PART:
-					settlement.retrieveItemResource(item.getId(), (int) item.getAmount());
-					break;
-				default:
-					logger.log(getBuilding(), Level.SEVERE, 20_000,
-							"Manufacture process input: " + item.getType() + " not a valid type.");
-					return false;
-			}
-		}
+		getInfo().retrieveInputs(settlement);
 
 		return true;
 	}
