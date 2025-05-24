@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.function.cooking.HotMeal;
 import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -92,21 +93,11 @@ extends BuildingFunctionPanel {
 										Msg.getString("BuildingPanelPreparingDessert.dessertsToday"),
 										Integer.toString(servingsDessertTodayCache), null); //$NON-NLS-1$
 
-		dessertGradeCache = computeGrade(kitchen.getBestDessertQualityCache());
+		dessertGradeCache = HotMeal.qualityToString(kitchen.getBestDessertQualityCache());
 		// Update Dessert grade
 		dessertQualityLabel = labelPanel.addTextField(
 										Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert"),
 						 				dessertGradeCache, null); //$NON-NLS-1$
-	}
-
-	/**
-	 * Converts a numeral quality to letter grade for a dessert.
-	 * 
-	 * @param quality 
-	 * @return grade
-	 */
-	private static String computeGrade(double quality) {
-		return BuildingPanelCooking.computeGrade(quality);
 	}
 	
 	/**
@@ -132,7 +123,7 @@ extends BuildingFunctionPanel {
 			servingsDessertTodayLabel.setText(Integer.toString(servingsDessertTodayCache)); //$NON-NLS-1$
 		}
 
-		String dessertGrade = computeGrade(kitchen.getBestDessertQualityCache());
+		String dessertGrade = HotMeal.qualityToString(kitchen.getBestDessertQualityCache());
 		// Update Dessert grade
 		if (!dessertGradeCache.equals(dessertGrade)) {
 			dessertGradeCache = dessertGrade;

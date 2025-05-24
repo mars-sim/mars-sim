@@ -9,7 +9,6 @@ package com.mars_sim.core.building.function.cooking;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jdom2.Document;
@@ -107,7 +106,7 @@ public class MealConfig {
 	public List<HotMeal> getDishList() {
 		return Stream.of(sideDishList, mainDishList)
 				.flatMap(List<HotMeal>::stream)
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	/**
@@ -159,8 +158,10 @@ public class MealConfig {
 			String ingredientName = ingredient.getAttributeValue(NAME).toLowerCase();
 			int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
 			double proportion = ConfigHelper.getAttributeDouble(ingredient, PROPORTION);
+			boolean mandatory = ingredients.size() <= 2;
+			double impact = 1 - (0.25 * (ingredients.size() -2));
 
-			ingredients.add(new Ingredient(ingredients.size(), ingredientID, proportion));
+			ingredients.add(new Ingredient(ingredientID, proportion, mandatory, impact));	
 
 		}
 

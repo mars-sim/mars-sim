@@ -6,11 +6,12 @@
  */
 package com.mars_sim.core.building.function.cooking;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -20,7 +21,6 @@ import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -34,13 +34,67 @@ import com.mars_sim.core.structure.WaterUseType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 /**
  * The Cooking class is a building function for cooking meals.
  */
 public class Cooking extends Function {
+
+	/**
+	 * Statitics of a prepared Dish
+	 */
+	public static final class MealStats implements Serializable {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+		
+		private double bestQuality;
+		private double worseQuality;
+		private int number;
+
+		MealStats(double quality) {
+			number = 1;
+			this.bestQuality = quality;
+			this.worseQuality = quality;
+		}
+
+		private MealStats(int number, double worseQuality, double bestQuality) {
+			this.number = number;
+			this.worseQuality = worseQuality;
+			this.bestQuality = bestQuality;
+		}
+
+		public double getWorseQuality() {
+			return worseQuality;
+		}
+
+		public double getBestQuality() {
+			return bestQuality;
+		}
+
+		public int getNumber() {
+			return number;
+		}
+
+		private void addMeal(double quality) {
+			number++;
+			if (quality < worseQuality) {
+				worseQuality = quality;
+			} else if (quality > bestQuality) {
+				bestQuality = quality;
+			}
+		}
+
+		/**
+		 * Merge two MealStats objects summing the number of meals and takign the worst & best of the 2.
+		 * @param a
+		 * @param b
+		 * @return
+		 */
+		public static MealStats sum(MealStats a, MealStats b) {
+			return new MealStats(a.number + b.number, Math.min(a.worseQuality, b.worseQuality),
+								Math.max(a.bestQuality, b.bestQuality));
+		}
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,7 +119,6 @@ public class Cooking extends Function {
 	private static final double DOWN = 0.007;
 
 	private boolean cookNoMore = false;
-	private boolean noOilLastTime = false;
 
 	/** The cache for msols */
 	private int cookCapacity;
@@ -78,19 +131,12 @@ public class Cooking extends Function {
 	private double cleanliness;
 	private double cookingWorkTime;
 	private double dryMassPerServing;
-	private double bestQualityCache = 0;
 
 	// Data members
-	/** The last cooked meal. */
-	private String lastCookedMeal;
-	/** The list of cooked meals. */
 	private List<CookedMeal> cookedMeals;
-	/** The ingredient map of each meal.  */
-	private Map<Integer, Double> ingredientMap;
+
 	/** The quality history of each meal.  */
-	private Multimap<String, Double> qualityMap;
-	/** The creation time of each meal.  */
-	private Multimap<String, MarsTime> timeMap;
+	private Map<String, MealStats> qualityMap;
 
 	private static MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
 
@@ -107,7 +153,6 @@ public class Cooking extends Function {
 		super(FunctionType.COOKING, spec, building);
 
 		cookedMeals = new CopyOnWriteArrayList<>();
-		ingredientMap = new ConcurrentHashMap<>();
 
 		cookingWorkTime = 0D;
 
@@ -117,31 +162,16 @@ public class Cooking extends Function {
 		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
 		dryMassPerServing = mealConfig.getDryMassPerServing();
 
-		qualityMap = ArrayListMultimap.create();
-		timeMap = ArrayListMultimap.create();
+		qualityMap = new HashMap<>();
 	}
 
-	public Multimap<String, Double> getQualityMap() {
-		Multimap<String, Double> qualityMapCache = ArrayListMultimap.create(qualityMap);
-		// Empty out the map so that the next read by TabPanelCooking.java will be brand
-		// new cookedMeal
-		if (!qualityMap.isEmpty()) {
-			qualityMap.clear();
-		}
-
-		return qualityMapCache;
-	};
-
-	public Multimap<String, MarsTime> getTimeMap() {
-		Multimap<String, MarsTime> timeMapCache = ArrayListMultimap.create(timeMap);
-		// Empty out the map so that the next read by TabPanelCooking.java will be brand
-		// new cookedMeal
-		if (!timeMap.isEmpty()) {
-			timeMap.clear();
-		}
-
-		return timeMapCache;
-	};
+	/**
+	 * Rerturn a map of the best and worse meals cooked today
+	 * @return
+	 */
+	public Map<String, MealStats> getQualityMap() {
+		return qualityMap;
+	}
 
 	/**
 	 * Gets the value of the function for a named building.
@@ -295,31 +325,12 @@ public class Cooking extends Function {
 	 *
 	 * @return quality
 	 */
-	private double getBestMealQuality() {
+	public double getBestMealQuality() {
 
-		double bestQuality = 0;
-		// Question: do we want to remember the best quality ever or just the best
-		// quality among the current servings ?
-		Iterator<CookedMeal> i = cookedMeals.iterator();
-		while (i.hasNext()) {
-			double q = i.next().getQuality();
-			if (q > bestQuality)
-				bestQuality = q;
-		}
-
-		if (bestQuality > bestQualityCache)
-			bestQualityCache = bestQuality;
-		return bestQuality;
-	}
-
-	/**
-	 * Gets the best meal quality.
-	 * 
-	 * @return
-	 */
-	public double getBestMealQualityCache() {
-		getBestMealQuality();
-		return bestQualityCache;
+		return cookedMeals.stream()
+				.mapToDouble(CookedMeal::getQuality)
+				.max()
+				.orElse(0D);
 	}
 
 	/**
@@ -340,7 +351,7 @@ public class Cooking extends Function {
 		return cookNoMore;
 	}
 
-	public int getPopulation() {
+	private int getPopulation() {
 		return building.getSettlement().getIndoorPeopleCount();
 	}
 
@@ -372,7 +383,6 @@ public class Cooking extends Function {
 				HotMeal aMeal = getACookableMeal();
 				if (aMeal != null) {
 					nameOfMeal = cookAHotMeal(aMeal, theCook);
-					lastCookedMeal = nameOfMeal;
 				}
 			}
 		}
@@ -387,28 +397,20 @@ public class Cooking extends Function {
 	 * @return number of cooked meals.
 	 */
 	private int getTotalAvailableCookedMealsAtSettlement() {
-
-		int result = 0;
-
-		Iterator<Building> i = building.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COOKING).iterator();
-		while (i.hasNext()) {
-			result += i.next().getCooking().getNumberOfAvailableCookedMeals();
-		}
-
-		return result;
-
+		return building.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COOKING).stream()
+				.mapToInt(b -> b.getCooking().getNumberOfAvailableCookedMeals())
+				.sum();
 	}
-
-
 
 	/**
 	 * Randomly picks a hot meal with its ingredients fully available.
 	 *
 	 * @return a hot meal or null if none available.
 	 */
-	public HotMeal getACookableMeal() {
+	private HotMeal getACookableMeal() {
+		var s = getBuilding().getSettlement();
 		return mealConfig.getDishList().stream()
-						.filter(this::areAllIngredientsAvailable)
+						.filter(m -> m.isIngredientsAvailable(s))
 						.findAny().orElse(null);
 	}
 
@@ -436,34 +438,10 @@ public class Cooking extends Function {
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
 		Optional<HotMeal> found = mealConfig.getDishList().stream()
-				.filter(this::areAllIngredientsAvailable)
+				.filter(i -> i.isIngredientsAvailable(building.getSettlement()))
 				.findFirst();
 
 		hasCookableMeal = found.isPresent();
-	}
-
-	/**
-	 * Checks if all ingredients are available for a particular meal.
-	 *
-	 * @param aMeal a hot meal
-	 * @return true or false
-	 */
-	public boolean areAllIngredientsAvailable(HotMeal aMeal) {
-		return aMeal.getIngredientList().stream().filter(i -> i.getID() < 3) // only ingredient 0, 1, 2 are must-have's
-				.allMatch(i -> retrieveAnIngredientFromMap(i.getDryMass(), i.getAmountResourceID(), false));
-	}
-
-	/**
-	 * Gets the amount of the food item in the whole settlement.
-	 *
-	 * @param amount
-	 * @return dessertAvailable
-	 */
-	private Integer pickOneOil(double amount) {
-		return ResourceUtil.getOilResources().stream()
-						.filter(oil -> building.getSettlement().getAmountResourceStored(oil) > amount)
-						.findFirst()
-						.orElse(-1);
 	}
 
 	/**
@@ -473,40 +451,8 @@ public class Cooking extends Function {
 	 * @return name of meal
 	 */
 	public String cookAHotMeal(HotMeal hotMeal, Worker theCook) {
-		double mealQuality = 0;
-
-		List<Ingredient> ingredientList = hotMeal.getIngredientList();
-		for (Ingredient oneIngredient : ingredientList) {
-			int ingredientID = oneIngredient.getAmountResourceID();
-
-			int id = oneIngredient.getID();
-			// Update to using dry weight
-			double dryMass = oneIngredient.getDryMass();
-
-			boolean hasIt = retrieveAnIngredientFromMap(dryMass, ingredientID, true);
-
-			// Add the effect of the presence of ingredients on meal quality
-			if (hasIt) {
-				// In general, if the meal has more ingredient the better quality the meal
-				mealQuality = mealQuality + .1;
-			}
-
-			else {
-				// ingredient 0, 1 and 2 are crucial and are must-have's
-				// if ingredients 3-6 are NOT presented, there's a penalty to the meal quality
-				if (id < 3)
-					return null;
-				else if (id == 3)
-					mealQuality = mealQuality - .75;
-				else if (id == 4)
-					mealQuality = mealQuality - .5;
-				else if (id == 5)
-					mealQuality = mealQuality - .25;
-				else if (id == 6)
-					mealQuality = mealQuality - .15;
-			}
-
-		}
+		Settlement s = getBuilding().getSettlement();
+		double mealQuality = hotMeal.retrieveIngredients(s);
 
 		double culinarySkillPerf = 0;
 		// Add influence of a person/robot's performance on meal quality
@@ -515,23 +461,14 @@ public class Cooking extends Function {
 					* theCook.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
 		// consume oil
-		boolean hasOil = true;
-
-		if (!noOilLastTime) {
-			// see reseting no_oil_last_time in timePassing once in a while
-			// This reduce having to call consumeOil() all the time
-			hasOil = consumeOil(hotMeal.getOil());
-			noOilLastTime = !hasOil;
-		}
-
-		// Add how kitchen cleanliness affect meal quality
-		if (hasOil)
+		if ((hotMeal.getOil() > 0) && consumeOil(hotMeal.getOil(), s)) {
 			mealQuality = mealQuality + .2;
+		}
 
 		mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness) * 10D) / 15D;
 
 		// consume salt
-		retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.TABLE_SALT_ID, true);
+		s.retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, hotMeal.getSalt());
 
 		// consume water
 		consumeWater();
@@ -547,80 +484,20 @@ public class Cooking extends Function {
 		// See if there are other meals available
 		resetCookableMeals();
 
-		// Add to Multimaps
-		qualityMap.put(nameOfMeal, mealQuality);
-		timeMap.put(nameOfMeal, currentTime);
+		// Add to Qualtity record
+		var currentQuality = qualityMap.get(nameOfMeal);
+		if (currentQuality == null) {
+			qualityMap.put(nameOfMeal, new MealStats(mealQuality));
+		} else {
+			// If this meal has been cooked before, update the range
+			currentQuality.addMeal(mealQuality);
+		}
 
 		cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
 		// Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
 
 		return nameOfMeal;
-	}
-
-	/**
-	 * Retrieves one ingredient from the ingredient map.
-	 *
-	 * @param amount
-	 * @param resource
-	 * @param isRetrieving
-	 * @return
-	 */
-	private boolean retrieveAnIngredientFromMap(double amount, Integer resource, boolean isRetrieving) {
-		boolean result = true;
-		// 1. check local map cache
-		if (ingredientMap.containsKey(resource)) {
-			double cacheAmount = ingredientMap.get(resource);
-			// 2. if found, retrieve the resource locally
-			// 2a. check if cacheAmount > dryMass
-			if (cacheAmount >= amount) {
-				// compute new value for key
-				// subtract the amount from the cache
-				// set result to true
-				ingredientMap.put(resource, cacheAmount - amount);
-				// result = true && result; // not needed since there is no change to the value
-				// of result
-			} else {
-				result = replenishIngredientMap(cacheAmount, amount, resource, isRetrieving);
-			}
-		} else {
-			result = replenishIngredientMap(0, amount, resource, isRetrieving);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Replenishes the ingredient map.
-	 *
-	 * @param cacheAmount
-	 * @param amount
-	 * @param resource
-	 * @param isRetrieving
-	 * @return
-	 */
-	private boolean replenishIngredientMap(double cacheAmount, double amount, Integer resource, boolean isRetrieving) {
-		boolean result = true;
-		// 2b. if not, retrieve whatever amount from inv
-		// Note: retrieve twice the amount to REDUCE frequent calling of
-		// retrieveAnResource()
-		boolean hasFive = false;
-		if (amount * 5 > MIN)
-			hasFive = Storage.retrieveAnResource(amount * 5, resource, building.getSettlement(), isRetrieving);
-		// 2b1. if inv has it, save it to local map cache
-		if (hasFive) {
-			// take 5 out, put 4 into resourceMap, use 1 right now
-			ingredientMap.put(resource, cacheAmount + amount * 4);
-			// result = true && result; // not needed since there is no change to the value
-			// of result
-		} else { // 2b2.
-			boolean hasOne = false;
-			if (amount > MIN)
-				hasOne = Storage.retrieveAnResource(amount, resource, building.getSettlement(), isRetrieving);
-			if (!hasOne)
-				result = false;
-		}
-		return result;
 	}
 
 	/**
@@ -636,12 +513,13 @@ public class Cooking extends Function {
 			usage = 1 - rand;
 
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = building.getSettlement().getWaterRationLevel();
+		var s = building.getSettlement();
+		int level = s.getWaterRationLevel();
 		if (level != 0)
 			usage = usage / 1.5D / level;
 		if (usage > MIN) {
-			retrieveAnIngredientFromMap(usage, ResourceUtil.WATER_ID, true);
-			building.getSettlement().addWaterConsumption(WaterUseType.PREP_MEAL, usage);
+			s.retrieveAmountResource(ResourceUtil.WATER_ID, usage);
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, usage);
 		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
@@ -654,15 +532,18 @@ public class Cooking extends Function {
 	 * @param oilRequired
 	 * @return
 	 */
-	private boolean consumeOil(double oilRequired) {
-		Integer oil = pickOneOil(oilRequired);
+	private static boolean consumeOil(double oilRequired, Settlement s) {
+		var oil = ResourceUtil.getOilResources().stream()
+						.filter(o -> s.getAmountResourceStored(o) > oilRequired)
+						.findAny()
+						.orElse(-1);
 		if (oil != -1) {
-			retrieveAnIngredientFromMap(oilRequired, oil, true);
+			s.retrieveAmountResource(oil, oilRequired);
 			return true;
 		}
 		// oil is not available
 		else {
-			logger.log(building, Level.FINE, 30_000, "No oil is available.");
+			logger.log(s, Level.FINE, 30_000, "No oil is available.");
 		}
 
 		return false;
@@ -695,55 +576,50 @@ public class Cooking extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			int msol = pulse.getMarsTime().getMillisolInt();
-			if (pulse.isNewIntMillisol() && msol % RECHECKING_FREQ == 0) {
-				// reset
-				noOilLastTime = false;
-			}
-
 			if (hasCookedMeal()) {
 				double rate = building.getSettlement().getMealsReplenishmentRate();
 
 				MarsTime now = masterClock.getMarsTime();
+				var expired = cookedMeals.stream()
+						.filter(meal -> meal.getExpirationTime().getTimeDiff(now) < 0D)
+						.toList();
+
 				// Handle expired cooked meals.
-				for (CookedMeal meal : cookedMeals) {
-					if (meal.getExpirationTime().getTimeDiff(now) < 0D) {
+				for (CookedMeal meal : expired) {
+					// Note: turn this into a task
+					cookedMeals.remove(meal);
 
-						// Note: turn this into a task
-						cookedMeals.remove(meal);
+					// Check if cooked meal has gone bad and has to be thrown out.
+					double quality = meal.getQuality() / 2D + 1D;
+					double qNum = RandomUtil.getRandomDouble(7 * quality + 1);
+					StringBuilder log = new StringBuilder();
 
-						// Check if cooked meal has gone bad and has to be thrown out.
-						double quality = meal.getQuality() / 2D + 1D;
-						double qNum = RandomUtil.getRandomDouble(7 * quality + 1);
-						StringBuilder log = new StringBuilder();
+					if (qNum < 1) {
+						if (dryMassPerServing > 0)
+							// Turn into food waste
+							store(dryMassPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
 
-						if (qNum < 1) {
-							if (dryMassPerServing > 0)
-								// Turn into food waste
-								store(dryMassPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
+						log.append(dryMassPerServing)
+								.append(" kg ").append(meal.getName()).append(DISCARDED);
 
-							log.append(dryMassPerServing)
-									.append(" kg ").append(meal.getName()).append(DISCARDED);
+						logger.log(building, Level.FINE, 10_000, log.toString());
 
-							logger.log(building, Level.FINE, 10_000, log.toString());
+					} else {
+						// Convert the meal into preserved food.
+						preserveFood();
 
-						} else {
-							// Convert the meal into preserved food.
-							preserveFood();
+						log.append(CONVERTING)
+								.append(dryMassPerServing).append(" kg ").append(meal.getName())
+								.append(PRESERVED);
 
-							log.append(CONVERTING)
-									.append(dryMassPerServing).append(" kg ").append(meal.getName())
-									.append(PRESERVED);
-
-							logger.log(building, Level.FINE, 10_000, log.toString());
-						}
-
-						// Adjust the rate to go down for each meal that wasn't eaten.
-						if (rate > 0) {
-							rate -= DOWN;
-						}
-						building.getSettlement().setMealsReplenishmentRate(rate);
+						logger.log(building, Level.FINE, 10_000, log.toString());
 					}
+
+					// Adjust the rate to go down for each meal that wasn't eaten.
+					if (rate > 0) {
+						rate -= DOWN;
+					}
+					building.getSettlement().setMealsReplenishmentRate(rate);
 				}
 			}
 
@@ -770,10 +646,8 @@ public class Cooking extends Function {
 		building.getSettlement().setMealsReplenishmentRate(rate);
 		// reset back to zero at the beginning of a new day.
 		mealCounterPerSol = 0;
-		if (!timeMap.isEmpty())
-			timeMap.clear();
-		if (!qualityMap.isEmpty())
-			qualityMap.clear();
+
+		qualityMap.clear();
 
 		// NOTE: turn this into a task a person can do
 		cleanUpKitchen();
@@ -793,15 +667,15 @@ public class Cooking extends Function {
 	 * NOTE: turn this into a task that a person should do
 	 */
 	private void cleanUpKitchen() {
-		
+		var s = building.getSettlement();
 		double amountAgent = cleaningAgentPerSol;		 
-		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NACLO_ID, amountAgent);
+		double lackingAgent = s.retrieveAmountResource(ResourceUtil.NACLO_ID, amountAgent);
 
 		double amountWater = 10 * amountAgent;
-		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
+		double lackingWater = s.retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
 		
 		// Track water consumption
-		building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, amountWater - lackingWater);
+		s.addWaterConsumption(WaterUseType.CLEAN_MEAL, amountWater - lackingWater);
 		
 		// Modify cleanliness
 		if (lackingAgent <= 0)
@@ -823,9 +697,9 @@ public class Cooking extends Function {
 	/**
 	 * Preserves the food with salts.
 	 */
-	public void preserveFood() {
+	private void preserveFood() {
 		// Note: turn this into a task
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.TABLE_SALT_ID, true);
+		building.getSettlement().retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, AMOUNT_OF_SALT_PER_MEAL);
 		if (dryMassPerServing > 0)
 			store(dryMassPerServing, ResourceUtil.FOOD_ID, "Cooking::preserveFood");
 	}
@@ -845,13 +719,6 @@ public class Cooking extends Function {
 		return cookCapacity * 2.5D;
 	}
 
-	/** 
-	 * Gets the last cooked meal. 
-	 */
-	public String getlastCookedMeal() {
-		return lastCookedMeal;
-	}
-
 	public boolean isFull() {
 		return (getNumCooks() >= getCookCapacity());
 	}
@@ -861,7 +728,5 @@ public class Cooking extends Function {
 		super.destroy();
 		cookedMeals = null;
 		qualityMap = null;
-		timeMap = null;
-		ingredientMap = null;
 	}
 }

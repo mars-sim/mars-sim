@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.building.function.cooking.Cooking;
+import com.mars_sim.core.building.function.cooking.HotMeal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -88,7 +89,7 @@ extends BuildingFunctionPanel {
 									Integer.toString(numMealsTodayCache), null); //$NON-NLS-1$
 
 		// Prepare meal grade label
-		String grade = computeGrade(kitchen.getBestMealQualityCache());
+		String grade = HotMeal.qualityToString(kitchen.getBestMealQuality());
 		mealGradeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelCooking.bestQualityOfMeals"),
 									grade, null); //$NON-NLS-1$
 	}
@@ -123,43 +124,12 @@ extends BuildingFunctionPanel {
 			numMealsTodayLabel.setText(Integer.toString(numMealsToday));
 		}
 
-		double mealQuality = kitchen.getBestMealQualityCache();
-		String grade = computeGrade(mealQuality);
+		double mealQuality = kitchen.getBestMealQuality();
+		String grade = HotMeal.qualityToString(mealQuality);
 		// Update meal grade
 		if (!gradeCache.equals(grade)) {
 			gradeCache = grade;
 			mealGradeLabel.setText(grade); 
 		}
-	}
-	
-	/**
-	 * Converts a numeral quality to letter grade for a meal.
-	 * 
-	 * @param quality 
-	 * @return grade
-	 */
-	static String computeGrade(double quality) {
-		String grade = "";
-				
-		if (quality < -4)
-			grade = "C-";
-		else if (quality < -3)
-			grade = "C";
-		else if (quality < -2)
-			grade = "C+";
-		else if (quality < -1)
-			grade = "B-";
-		else if (quality < 0)
-			grade = "B";
-		else if (quality < 1)
-			grade = "B+";
-		else if (quality < 2)
-			grade = "A-";
-		else if (quality < 3)
-			grade = "A";
-		else
-			grade = "A+";
-				
-		return grade;
 	}
 }

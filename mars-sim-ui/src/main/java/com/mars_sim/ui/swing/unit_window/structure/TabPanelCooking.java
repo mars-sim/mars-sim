@@ -10,12 +10,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,9 +27,10 @@ import javax.swing.table.TableColumnModel;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
+import com.mars_sim.core.building.function.cooking.Cooking.MealStats;
+import com.mars_sim.core.building.function.cooking.HotMeal;
 import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -39,10 +38,6 @@ import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 
 /**
  * This is a tab panel for displaying a settlement's Food Menu.
@@ -54,40 +49,26 @@ public class TabPanelCooking extends TabPanel {
 	private static final FunctionType COOKING = FunctionType.COOKING;
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
 
-	private int numRow = 0;
-	private int dayCache = 1;
-
-	private Set<String> nameSet;
-	private List<String> nameList;
-
 	private CookingTableModel cookingTableModel;
 
 	/** The number of available meals. */
 	private JLabel availableMealsLabel;
-	private int availableMealsCache = -1;
 	/** The number of meals cooked today. */
 	private JLabel mealsTodayLabel;
-	private int mealsTodayCache = -1;
 
 	/** The number of available Desserts. */
 	private JLabel availableDessertsLabel;
-	private int availableDessertsCache = -1;
 	/** The number of Desserts cooked today. */
 	private JLabel dessertsTodayLabel;
-	private int dessertsTodayCache = -1;
 
 	private JLabel mealsReplenishmentLabel;
-	private double mealsReplenishmentCache = -1;
 	private JLabel dessertsReplenishmentLabel;
-	private double dessertsReplenishmentCache = -1;
 	
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
-	private int numCooksCache = -1;
 
 	/** The cook capacity label. */
 	private JLabel cookCapacityLabel;
-	private int cookCapacityCache = -1;
 
 	private Settlement settlement;
 
@@ -222,36 +203,13 @@ public class TabPanelCooking extends TabPanel {
 
 		double mealsReplenishment = Math.round(settlement.getMealsReplenishmentRate() * 100.0) / 100.0;
 
-		// Update # of meals replenishment rate
-		if (mealsReplenishmentCache != mealsReplenishment) {
-			mealsReplenishmentCache = mealsReplenishment;
-			mealsReplenishmentLabel.setText(
-							StyleManager.DECIMAL_PLACES1.format(mealsReplenishmentCache)); 
-		}
 
-		// Update # of available meals
-		if (availableMealsCache != availableMeals) {
-			availableMealsCache = availableMeals;
-			availableMealsLabel.setText(Integer.toString(availableMealsCache)); //$NON-NLS-1$
-		}
-
-		// Update # of meals cooked today
-		if (mealsTodayCache != mealsToday) {
-			mealsTodayCache = mealsToday;
-			mealsTodayLabel.setText(Integer.toString(mealsTodayCache)); //$NON-NLS-1$
-		}
-
-		// Update cook number
-		if (numCooksCache != numCooks) {
-			numCooksCache = numCooks;
-			numCooksLabel.setText(Integer.toString(numCooksCache)); //$NON-NLS-1$
-		}
-
-		// Update cook capacity
-		if (cookCapacityCache != cookCapacity) {
-			cookCapacityCache = cookCapacity;
-			cookCapacityLabel.setText(Integer.toString(cookCapacityCache)); //$NON-NLS-1$
-		}
+		mealsReplenishmentLabel.setText(
+							StyleManager.DECIMAL_PLACES1.format(mealsReplenishment));
+		availableMealsLabel.setText(Integer.toString(availableMeals)); //$NON-NLS-1$
+		mealsTodayLabel.setText(Integer.toString(mealsToday)); //$NON-NLS-1$
+		numCooksLabel.setText(Integer.toString(numCooks)); //$NON-NLS-1$
+		cookCapacityLabel.setText(Integer.toString(cookCapacity)); //$NON-NLS-1$
 	}
 
 	private void updateDesserts() {
@@ -266,25 +224,12 @@ public class TabPanelCooking extends TabPanel {
 		double dessertsReplenishment = settlement.getDessertsReplenishmentRate();
 
 		// Update # of available Desserts
-		if (availableDessertsCache != availableDesserts) {
-			availableDessertsCache = availableDesserts;
-			availableDessertsLabel.setText(Integer.toString(availableDesserts)); //$NON-NLS-1$
-		}
-
-		// Update # of Desserts cooked today
-		if (dessertsTodayCache != dessertsToday) {
-			dessertsTodayCache = dessertsToday;
-			dessertsTodayLabel.setText(Integer.toString(dessertsToday)); //$NON-NLS-1$
-		}
+		availableDessertsLabel.setText(Integer.toString(availableDesserts)); //$NON-NLS-1$
+		dessertsTodayLabel.setText(Integer.toString(dessertsToday)); //$NON-NLS-1$
 
 		dessertsReplenishment = Math.round(dessertsReplenishment * 100.0) / 100.0;
-
-		// Update # of desserts replenishment rate
-		if (dessertsReplenishmentCache != dessertsReplenishment) {
-			dessertsReplenishmentCache = dessertsReplenishment;
-			dessertsReplenishmentLabel.setText(
+		dessertsReplenishmentLabel.setText(
 					StyleManager.DECIMAL_PLACES1.format(dessertsReplenishment));
-		}
 	}
 
 	/**
@@ -294,17 +239,8 @@ public class TabPanelCooking extends TabPanel {
 
 		private Settlement settlement;
 
-		private Multiset<String> allServingsSet;
-
-		private Multimap<String, Double> qualityMap;
-		private Multimap<String, Double> allQualityMap;
-
-		private Multimap<? extends String, ? extends MarsTime> timeMap;
-		private Multimap<String, MarsTime> allTimeMap;
-
-		private Collection<Map.Entry<String, Double>> allQualityMapE;
-		private Collection<Entry<String, MarsTime>> allTimeMapE;
-
+		private List<String> nameList;
+		private Map<String, MealStats> qualityMap = new HashMap<>();
 
 		private String[] columnNames = { "Meal", "# Servings",
 				"Best", "Worst" };
@@ -312,13 +248,11 @@ public class TabPanelCooking extends TabPanel {
 		private CookingTableModel(Settlement settlement) {
 			this.settlement = settlement;
 
-			allServingsSet = HashMultiset.create();
-			allQualityMap = ArrayListMultimap.create();
-			allTimeMap = ArrayListMultimap.create();
+			nameList = new ArrayList<>();
 		}
 
 		public int getRowCount() {
-			return numRow;
+			return nameList.size();
 
 		}
 
@@ -341,37 +275,6 @@ public class TabPanelCooking extends TabPanel {
 			return columnNames[columnIndex];
 		}
 
-		/***
-		 * Converts a numeral quality to letter grade for a meal
-		 * 
-		 * @param quality
-		 * @return grade
-		 */
-		public String computeGrade(double quality) {
-			String grade = "";
-
-			if (quality < -4)
-				grade = "C-";
-			else if (quality < -3)
-				grade = "C";
-			else if (quality < -2)
-				grade = "C+";
-			else if (quality < -1)
-				grade = "B-";
-			else if (quality < 0)
-				grade = "B";
-			else if (quality < 1)
-				grade = "B+";
-			else if (quality < 2)
-				grade = "A-";
-			else if (quality < 3)
-				grade = "A";
-			else
-				grade = "A+";
-
-			return grade;
-		}
-
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (nameList.isEmpty())
@@ -380,6 +283,7 @@ public class TabPanelCooking extends TabPanel {
 			Object result = null;
 			
 			String name = nameList.get(row);
+			var stats = qualityMap.get(name);
 
 			switch(column) {
 			case 0:
@@ -387,38 +291,18 @@ public class TabPanelCooking extends TabPanel {
 				break;
 
 			case 1:
-				// Use Multimap.get(key) returns a view of the values 
-				// associated with the specified key
-				int numServings = allServingsSet.count(name);
-				result = numServings;
+				if (stats != null)
+					result = stats.getNumber();
 				break;
 
 			case 2:
-				double best = 0;
-				double value = 0;
-				for (Map.Entry<String, Double> entry : allQualityMapE) {
-					String key = entry.getKey();
-					if (name.equals(key)) {
-						value = entry.getValue();
-						if (value > best)
-							best = value;
-					}
-					result = computeGrade(best);
-				}
+				if (stats != null)
+					result = HotMeal.qualityToString(stats.getBestQuality());
 				break;
-			case 3:
-				double worst = 10;
-				double v = 0;
-				for (Map.Entry<String, Double> entry : allQualityMapE) {
-					String key = entry.getKey();
-					if (name.equals(key)) {
-						v = entry.getValue();
 
-						if (v < worst)
-							worst = v;
-					}
-					result = computeGrade(worst);
-				}
+			case 3:
+				if (stats != null)
+					result = HotMeal.qualityToString(stats.getWorseQuality());
 				break;
 			default:
 				break;
@@ -427,63 +311,19 @@ public class TabPanelCooking extends TabPanel {
 		}
 
 		public void update() {
-			cleanUpTable();
 			getMultimap();
 			fireTableDataChanged();
 		}
 
-		public void getMultimap() {
+		private void getMultimap() {
 
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
+			qualityMap = settlement.getBuildingManager().getBuildings(COOKING).stream()
+				.map(c -> c.getCooking().getQualityMap())
+				.flatMap(m -> m.entrySet().stream())
+         		.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, MealStats::sum));
 
-			while (i.hasNext()) { 
-				// for each building's kitchen in the settlement
-				Building building = i.next();
-				Cooking kitchen = building.getCooking();
 
-				qualityMap = kitchen.getQualityMap();
-				timeMap = kitchen.getTimeMap();
-
-				allQualityMap.putAll(qualityMap);
-				allTimeMap.putAll(timeMap);
-			}
-
-			allQualityMapE = allQualityMap.entries();
-			allTimeMapE = allTimeMap.entries();
-			allServingsSet = allQualityMap.keys();
-
-			numRow = allTimeMap.keySet().size();
-			nameSet = allTimeMap.keySet();
-			// nameSet = servingsSet.elementSet(); // or using servingsSet
-			nameList = new ArrayList<>(nameSet);
-		}
-
-		/**
-		 * Removes all entries on all maps at the beginning of each new sol.
-		 */
-		public void cleanUpTable() {
-			// 1. find any expired meals
-			// 2. remove any expired meals from all 3 maps
-			// 3. call cookingTableModel.update()
-
-			int currentDay = getDesktop().getSimulation().getMasterClock().getMarsTime().getSolOfMonth();
-
-			if (dayCache != currentDay) {
-				if (!allTimeMap.isEmpty())
-					allTimeMap.clear();
-				if (allTimeMapE != null)
-					allTimeMapE.clear();
-
-				if (!allQualityMap.isEmpty())
-					allQualityMap.clear();
-				if (allQualityMapE != null)
-					allQualityMapE.clear();
-
-				if (!allServingsSet.isEmpty())
-					allServingsSet.clear();
-
-				dayCache = currentDay;
-			}
+			nameList = new ArrayList<>(qualityMap.keySet());
 		}
 	}
 }
