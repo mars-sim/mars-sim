@@ -101,8 +101,8 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
 				// Box is empty so choose at random
-				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-				int rockId = ResourceUtil.rockIDs[randomNum];
+				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
+				int rockId = ResourceUtil.ROCK_IDS[randomNum];
 				// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
 				
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);

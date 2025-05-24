@@ -131,13 +131,13 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		for (int i : ResourceUtil.REGOLITH_TYPES) {
 			RESOURCE_TO_COL.put(i, REGOLITHS_COL);
 		}
-		for (int i : ResourceUtil.oreDepositIDs) {
+		for (int i : ResourceUtil.ORE_DEPOSIT_IDS) {
 			RESOURCE_TO_COL.put(i, ORES_COL);
 		}
-		for (int i : ResourceUtil.mineralConcIDs) {
+		for (int i : ResourceUtil.MINERAL_CONC_IDs) {
 			RESOURCE_TO_COL.put(i, MINERALS_COL);
 		}
-		for (int i : ResourceUtil.rockIDs) {
+		for (int i : ResourceUtil.ROCK_IDS) {
 			RESOURCE_TO_COL.put(i, ROCKS_COL);
 		}
 	}
@@ -244,9 +244,9 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 					int resourceId = COL_TO_RESOURCE[columnIndex];
 					result = switch(resourceId) {
 						case REGOLITH_ID -> getTotalAmount(ResourceUtil.REGOLITH_TYPES, settle);
-						case ORE_ID -> getTotalAmount(ResourceUtil.oreDepositIDs, settle);
-						case MINERAL_ID -> getTotalAmount(ResourceUtil.mineralConcIDs, settle);
-						case ROCK_ID -> getTotalAmount(ResourceUtil.rockIDs, settle);
+						case ORE_ID -> getTotalAmount(ResourceUtil.ORE_DEPOSIT_IDS, settle);
+						case MINERAL_ID -> getTotalAmount(ResourceUtil.MINERAL_CONC_IDs, settle);
+						case ROCK_ID -> getTotalAmount(ResourceUtil.ROCK_IDS, settle);
 						default -> settle.getAllAmountResourceOwned(resourceId);
 					};
 				}

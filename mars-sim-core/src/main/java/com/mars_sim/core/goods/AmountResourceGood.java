@@ -43,6 +43,7 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
+import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -201,7 +202,6 @@ class AmountResourceGood extends Good {
 	private static final double MAX_MANUFACTURING_DEMAND = 3000;
 	private static final double MAX_FOOD_PRODUCTION_DEMAND = 3000;
 
-	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName("meteorite");
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
@@ -210,13 +210,12 @@ class AmountResourceGood extends Good {
 	private double tradeDemand;
 	
 	private double costModifier = -1;
-	
-	private GoodType goodType;
-	
+		
 	private AmountResource resource;
 
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
+		this.resource = ar;
 
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar);
@@ -229,7 +228,7 @@ class AmountResourceGood extends Good {
 	 * @param resource
 	 * @return
 	 */
-	private double calculateFlattenDemand(AmountResource ar) {
+	private static double calculateFlattenDemand(AmountResource ar) {
 
 		// WARNING: do NOT miss adding the break keyword at the end of each case
 		// or else the flatten amount would be invalid
@@ -406,17 +405,7 @@ class AmountResourceGood extends Good {
 
     @Override
     public GoodType getGoodType() {
-    	if (goodType == null) {
-    		goodType = getAmountResource().getGoodType();
-    	}
-        return goodType;
-    }
-
-    private AmountResource getAmountResource() {
-    	if (resource == null) {
-    		resource = ResourceUtil.findAmountResource(getID());
-    	}
-        return resource;
+        return resource.getGoodType();
     }
 
     @Override
@@ -440,51 +429,37 @@ class AmountResourceGood extends Good {
             result += LIFE_SUPPORT_COST;
         
         else if (edible) {
-            if (type == GoodType.DERIVED)
-                result += DERIVED_COST;
-            else if (type == GoodType.SOY_BASED)
-                result += SOY_COST;
-            else if (type == GoodType.ANIMAL)
-                result += ANIMAL_COST;        
-            else if (type == GoodType.ORGANISM)
-                result += ORGANISM_COST;
-            else
-                result += FOOD_COST;
-        }
-        
-        else if (type == GoodType.WASTE)
-            result += WASTE_COST;
-
-		// TODO Should be a Map GoodType -> double VALUE
-        else if (type == GoodType.MEDICAL)
-            result += MEDICAL_COST;
-        else if (type == GoodType.OIL)
-            result += OIL_COST;
-        else if (type == GoodType.CROP)
-            result += CROP_COST;
-        else if (type == GoodType.ROCK)
-            result += ROCK_COST;
-        else if (type == GoodType.REGOLITH)
-            result += REGOLITH_COST;
-        else if (type == GoodType.ORE)
-            result += ORE_COST;
-        else if (type == GoodType.MINERAL)
-            result += MINERAL_COST;
-        else if (type == GoodType.ELEMENT)
-            result += ELEMENT_COST;
-        else if (type == GoodType.CHEMICAL)
-            result += CHEMICAL_COST;
-        else {
-			result += switch(ar.getID()) {
-				case ResourceUtil.METHANE_ID -> CH4_COST;
-            	case ResourceUtil.METHANOL_ID -> METHANOL_COST;
-            	case ResourceUtil.HYDROGEN_ID -> H2_COST;
-            	case ResourceUtil.CHLORINE_ID -> CL_COST;
-            	case ResourceUtil.CO2_ID -> CO2_COST;
-            	case ResourceUtil.CO_ID -> CO_COST;
-            	case ResourceUtil.ICE_ID -> ICE_COST;
-				default -> 0D;
+            result += switch (type) {
+				case GoodType.DERIVED -> DERIVED_COST;
+				case GoodType.SOY_BASED -> SOY_COST;
+				case GoodType.ANIMAL -> ANIMAL_COST;
+				case GoodType.ORGANISM -> ORGANISM_COST;
+				default -> FOOD_COST;
 			};
+        }
+        else {
+			result += switch (type) {
+					case GoodType.CROP -> CROP_COST;
+					case GoodType.WASTE -> WASTE_COST;
+					case GoodType.MEDICAL -> MEDICAL_COST;
+					case GoodType.OIL -> OIL_COST;
+					case GoodType.ROCK -> ROCK_COST;
+					case GoodType.REGOLITH -> REGOLITH_COST;
+					case GoodType.ORE -> ORE_COST;
+					case GoodType.MINERAL -> MINERAL_COST;
+					case GoodType.ELEMENT -> ELEMENT_COST;
+					case GoodType.CHEMICAL -> CHEMICAL_COST;
+					default -> switch(ar.getID()) {
+								case ResourceUtil.METHANE_ID -> CH4_COST;
+								case ResourceUtil.METHANOL_ID -> METHANOL_COST;
+								case ResourceUtil.HYDROGEN_ID -> H2_COST;
+								case ResourceUtil.CHLORINE_ID -> CL_COST;
+								case ResourceUtil.CO2_ID -> CO2_COST;
+								case ResourceUtil.CO_ID -> CO_COST;
+								case ResourceUtil.ICE_ID -> ICE_COST;
+								default -> 0D;
+						};
+				};
 		}
 
         return result;
@@ -575,11 +550,11 @@ class AmountResourceGood extends Good {
 		double totalSupply = 0;	
 
 		// Calculate projected demand
-		double projectedDemand = 
+		double newDemand = 
 			// Tune ice demand.
-			computeIceProjectedDemand(owner, settlement)
+			computeIceProjectedDemand(owner)
 			// Tune regolith projected demand.
-			+ computeRegolithProjectedDemand(owner, settlement)
+			+ computeRegolithProjectedDemand(owner)
 			// Tune life support demand if applicable.
 			+ getLifeSupportDemand(owner, settlement)
 			// Tune potable water usage demand if applicable.
@@ -611,11 +586,11 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
 
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		newDemand = Math.min(HIGHEST_PROJECTED_VALUE, newDemand);
 	
-		this.projectedDemand = projectedDemand;
+		this.projectedDemand = newDemand;
 		
-		double projected = projectedDemand
+		double projected = newDemand
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
@@ -646,13 +621,6 @@ class AmountResourceGood extends Good {
 					+ .00012 * projected 
 					+ .00005 * tradeDemand); 
 		}
-
-//		if (getID() == ResourceUtil.hydrogenID) {
-//			System.out.println("totalDemand: " + Math.round(totalDemand * 100.0)/100.0
-//					+ "  previousDemand: " + Math.round(previousDemand * 100.0)/100.0
-//					+ "  projected: " + Math.round(projected * 100.0)/100.0
-//					+ "  trade: " + Math.round(trade * 100.0)/100.0);
-//		}
 		
 		// Save the goods demand
 		owner.setDemandValue(this, totalDemand);
@@ -690,7 +658,7 @@ class AmountResourceGood extends Good {
 
 		// Get all resource processes at settlement.
 		for(ResourceProcess i : getResourceProcesses(settlement)) {
-			double processDemand = getResourceProcessDemand(owner, settlement, i);
+			double processDemand = getResourceProcessDemand(owner, i);
 			demand += processDemand;
 		}
 
@@ -704,33 +672,24 @@ class AmountResourceGood extends Good {
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceProcessDemand(GoodsManager owner, Settlement settlement, ResourceProcess process) {
+	private double getResourceProcessDemand(GoodsManager owner, ResourceProcess process) {
 
-		int resource = getID();
+		int resourceID = getID();
 
 		Set<Integer> inputResources = process.getInputResources();
 		Set<Integer> outputResources = process.getOutputResources();
 
-		/* For instance,		
-		<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
-		<input resource="methane" rate="3.2"  />
-		<input resource="oxygen" rate="3.2"  />
-		
-		<output resource="methanol" rate="5.888"  />
-		<output resource="methane" rate="0.512"  />
-		*/
-		
-		if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
+		if (inputResources.contains(resourceID) && !process.isAmbientInputResource(resourceID)) {
 			double outputValue = 0D;
 			for (Integer output : outputResources) {
 				double singleOutputRate = process.getBaseSingleOutputRate(output);
-				if (!process.isWasteOutputResource(resource)) {
+				if (!process.isWasteOutputResource(resourceID)) {
 					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) 
 							* singleOutputRate);
 				}
 			}
 
-			double singleInputRate = process.getBaseSingleInputRate(resource);
+			double singleInputRate = process.getBaseSingleInputRate(resourceID);
 
 			return outputValue / singleInputRate / 3; 
 		}
@@ -804,7 +763,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceManufacturingProcessDemand(GoodsManager owner, Settlement settlement, ManufactureProcessInfo process) {
 		double demand = 0D;
-		String r = getAmountResource().getName().toLowerCase();
+		String r = resource.getName().toLowerCase();
 
 		ProcessItem resourceInput = null;
 		for(var item : process.getInputList()) {
@@ -815,15 +774,13 @@ class AmountResourceGood extends Good {
 		}
 
 		if (resourceInput != null) {
-			double outputsValue = 0D;
-			for(var j : process.getOutputList()) {
-				outputsValue += ManufactureUtil.getManufactureProcessItemValue(j, settlement, true);
-			}
+			double outputsValue = process.getOutputList().stream()
+					.mapToDouble(j -> ManufactureUtil.getManufactureProcessItemValue(j, settlement, true))
+					.sum();
 
-			double totalItems = 0D;
-			for(var k : process.getInputList()) {
-				totalItems += k.getAmount();
-			}
+			double totalItems = process.getInputList().stream()
+					.mapToDouble(k -> k.getAmount())
+					.sum();
 
 			// Determine value of required process power.
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
@@ -832,57 +789,10 @@ class AmountResourceGood extends Good {
 			// Obtain the value of this resource
 			double totalInputsValue = (outputsValue - powerValue);
 
-			int resourceID = getID();
-			CommerceType cType = null;
-			GoodType type = getGoodType();
-			switch(settlement.getObjective()) {
-				case BUILDERS_HAVEN: { 
-					if (GoodType.REGOLITH == type
-					|| GoodType.MINERAL == type
-					|| GoodType.ORE == type
-					|| GoodType.UTILITY == type) {
-						cType = CommerceType.BUILDING;
-					}
-				} break;
-
-				case CROP_FARM: {
-					if (GoodType.CROP == type
-					|| GoodType.DERIVED == type
-					|| GoodType.SOY_BASED == type) {
-						cType = CommerceType.CROP;
-					}
-				} break;
-
-				case MANUFACTURING_DEPOT: 
-					cType = CommerceType.MANUFACTURING;
-				break;
-
-				case RESEARCH_CAMPUS: { 
-					if (GoodType.MEDICAL == type
-					|| GoodType.ORGANISM == type
-					|| GoodType.CHEMICAL == type
-					|| GoodType.ROCK == type) {
-						cType = CommerceType.RESEARCH;
-					}
-				} break;
-
-				case TRADE_CENTER:
-					cType = CommerceType.TRADE;
-				break;
-
-				case TRANSPORTATION_HUB: {
-					if (resourceID == ResourceUtil.METHANOL_ID) {
-						cType = CommerceType.TRANSPORT;
-					}
-				} break;
-
-				default:
-					break;
-			}
+			CommerceType cType = toCommerceType(resource, settlement.getObjective());		
 			if (cType != null) {
 				totalInputsValue *= owner.getCommerceFactor(cType);
 			}
-
 			// Modify by other factors
 			totalInputsValue *= MANUFACTURING_INPUT_FACTOR;
 
@@ -895,6 +805,60 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
+	 * Converts an amount resource in the context of an Objective to a commerce type.
+	 * @param resource
+	 * @param objective
+	 * @return
+	 */
+	private static CommerceType toCommerceType(AmountResource resource, ObjectiveType objective) {
+		GoodType type = resource.getGoodType();
+		
+		switch(objective) {
+			case BUILDERS_HAVEN: { 
+				if (GoodType.REGOLITH == type
+				|| GoodType.MINERAL == type
+				|| GoodType.ORE == type
+				|| GoodType.UTILITY == type) {
+					return CommerceType.BUILDING;
+				}
+			} break;
+
+			case CROP_FARM: {
+				if (GoodType.CROP == type
+				|| GoodType.DERIVED == type
+				|| GoodType.SOY_BASED == type) {
+					return CommerceType.CROP;
+				}
+			} break;
+
+			case MANUFACTURING_DEPOT: 
+				return CommerceType.MANUFACTURING;
+
+			case RESEARCH_CAMPUS: { 
+				if (GoodType.MEDICAL == type
+				|| GoodType.ORGANISM == type
+				|| GoodType.CHEMICAL == type
+				|| GoodType.ROCK == type) {
+					return CommerceType.RESEARCH;
+				}
+			} break;
+
+			case TRADE_CENTER:
+				return CommerceType.TRADE;
+
+			case TRANSPORTATION_HUB: {
+				if (resource.getID() == ResourceUtil.METHANOL_ID) {
+					return CommerceType.TRANSPORT;
+				}
+			} break;
+
+			default:
+				break;
+		}
+		return null;
+	}
+
+	/**
 	 * Gets the demand for an input amount resource in a Food Production process.
 	 *
 	 * @param process  the Food Production process.
@@ -902,7 +866,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceFoodProductionProcessDemand(GoodsManager owner, Settlement settlement, FoodProductionProcessInfo process) {
 		double demand = 0D;
-		String name = getAmountResource().getName();
+		String name = resource.getName();
 
 		ProcessItem resourceInput = null;
 		for(ProcessItem i : process.getInputList()) {
@@ -948,7 +912,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getAvailableMealDemand(Settlement settlement) {
 
-		if (!getAmountResource().isEdible())
+		if (!resource.isEdible())
 			return 0;
 		
 		double demand = 0D;
@@ -960,11 +924,9 @@ class AmountResourceGood extends Good {
 		}
 
 		else {
-			for (int oilID : Cooking.getOilMenu()) {
-				if (id == oilID) {
-					// Assuming a person takes 3 meals per sol
-					return MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
-				}
+			if (ResourceUtil.getOilResources().contains(id)) {
+				// Assuming a person takes 3 meals per sol
+				return MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 			}
 
 			// Determine total demand for cooked meal mass for the settlement.
@@ -1029,7 +991,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceConstructionSiteDemand(Settlement settlement) {
 		double base = 0D;
-		int resource = getID();
+		int resourceID = getID();
 
 		// Note: Need to filter the construction resources first here
 		
@@ -1038,14 +1000,10 @@ class AmountResourceGood extends Good {
 		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
 			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
-				if (stage.getMissingResources().containsKey(resource)) {
-					double requiredAmount = stage.getMissingResources().get(resource);
+				if (stage.getMissingResources().containsKey(resourceID)) {
+					double requiredAmount = stage.getMissingResources().get(resourceID);
 					base += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 				}
-				
-//				logger.info(settlement, site, 20_000L, ResourceUtil.findAmountResourceName(resource) + " needed " 
-//						+ Math.round(amount * 10.0)/10.0
-//						+ " for constructions.  Raising demand to " + Math.round(demand * 10.0)/10.0);
 			}
 		}
 
@@ -1066,7 +1024,6 @@ class AmountResourceGood extends Good {
 			ConstructionStageInfo stage = stageDetail.getKey();
 			double stageValue = stageDetail.getValue();
 			if (stageValue > 0D && ConstructionStageInfo.Stage.BUILDING.equals(stage.getType())
-					// TODO: reduce the utilization on this method using 5.7% of total cpu
 					&& isLocallyConstructable(settlement, stage)) {
 				double constructionDemand = getResourceConstructionStageDemand(stage, stageValue);
 				if (constructionDemand > 0D) {
@@ -1092,7 +1049,6 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 		double resourceAmount = getPrerequisiteConstructionResourceAmount(stage);
 
-		// TODO Not sure this makes sense
 		if (resourceAmount > 0D) {
 			Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
 			Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
@@ -1127,20 +1083,20 @@ class AmountResourceGood extends Good {
 	 */
 	private double getPrerequisiteConstructionResourceAmount(ConstructionStageInfo stage) {
 
-		int resource = getID();
+		int resourceID = getID();
 
 		// Add resource amount needed for stage.
-		double result = stage.getResources().getOrDefault(resource, 0D);
+		double result = stage.getResources().getOrDefault(resourceID, 0D);
 
 		// Add resource amount needed for first prestage, if any.
 		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
 		if ((preStage1 != null) && preStage1.isConstructable()) {
-			result += preStage1.getResources().getOrDefault(resource, 0D);
+			result += preStage1.getResources().getOrDefault(resourceID, 0D);
 
 			// Add resource amount needed for second prestage, if any.
 			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
 			if ((preStage2 != null) && preStage2.isConstructable()) {
-				result += preStage2.getResources().getOrDefault(resource, 0D);
+				result += preStage2.getResources().getOrDefault(resourceID, 0D);
 			}
 		}
 
@@ -1172,14 +1128,13 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private double getFarmingResourceDemand(Farming farm) {
-		int resource = getID();
 		
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
 		double totalCropArea = farm.getGrowingArea();
 		int solsInOrbit = MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double factor = totalCropArea * averageGrowingCyclesPerOrbit / solsInOrbit;
 
-		double base = switch(resource) {
+		return switch(getID()) {
 			// Average water consumption rate of crops per orbit using total growing area.
 			case ResourceUtil.WATER_ID -> cropConfig.getWaterConsumptionRate() * factor;
 			// Average co2 consumption rate of crops per orbit using total growing area.
@@ -1195,13 +1150,10 @@ class AmountResourceGood extends Good {
 			// economically vital resource
 			// Average grey water consumption rate of crops per orbit using total growing
 			// area.
-			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
 			case ResourceUtil.GREY_WATER_ID -> WASTE_WATER_VALUE_MODIFIER;
 
 			default -> 0D;
 		};
-		
-		return base;
 	}
 
 	/**
@@ -1213,10 +1165,10 @@ class AmountResourceGood extends Good {
 		if (settlement.getNumCitizens() == 0)
 			return 0;
 
-		if (!getAmountResource().isEdible())
+		if (!resource.isEdible())
 			return 0;
 		
-		if (getAmountResource().getGoodType() == GoodType.TISSUE)
+		if (resource.getGoodType() == GoodType.TISSUE)
 			return 0;
 		
 		double demand = 0D;
@@ -1237,16 +1189,14 @@ class AmountResourceGood extends Good {
 			Person p = i.next();
 			mainMeal = p.getFavorite().getMainDishHotMeal();
 			if (mainMeal != null)
-				demand += computeIngredientDemand(owner, getID(), 
-						mainMeal.getIngredientList());
+				demand += computeIngredientDemand(owner, mainMeal.getIngredientList());
 			sideMeal = p.getFavorite().getSideDishHotMeal();
 			if (sideMeal != null)
-				demand += computeIngredientDemand(owner, getID(), 
-						sideMeal.getIngredientList());
+				demand += computeIngredientDemand(owner, sideMeal.getIngredientList());
 		}
 	
 		// Limit the demand between 0 and 100
-		demand = Math.max(GoodsManager.MIN_DEMAND, Math.min(GoodsManager.MAX_DEMAND, demand));
+		demand = Math.clamp(demand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
 
 		return demand;
 	}
@@ -1259,48 +1209,32 @@ class AmountResourceGood extends Good {
 	 * @param ingredients
 	 * @return
 	 */
-	private double computeIngredientDemand(GoodsManager owner, int resource, List<Ingredient> ingredients) {
+	private double computeIngredientDemand(GoodsManager owner, List<Ingredient> ingredients) {
 		if (ingredients.isEmpty()) {
-			logger.info("ingredients is empty.");
 			return 0;
 		}
 			
 		double averageDemand = 0D;
 		double cropFarmFactor = owner.getCommerceFactor(CommerceType.CROP);
 		double factor = .01 * cropFarmFactor;
-		double count = 0;
 		
+		var resourceID = resource.getID();
 		for (Ingredient it : ingredients) {
-			count++;
-			if (it.getAmountResourceID() == resource) {
-				
-//				logger.info("resource: " + it.getName());
-				GoodType goodType = getAmountResource().getGoodType();
-
-				if (goodType == GoodType.CROP) {
-					// Tune demand with various factors
-					averageDemand += CROP_FACTOR * factor;
-				}
-				else if (goodType == GoodType.ORGANISM) {
-					averageDemand += ORGANISM_FACTOR * factor;
-				}
-				else if (goodType == GoodType.SOY_BASED) {
-					averageDemand += SOY_BASED_FACTOR * factor;
-				}
-				else if (goodType == GoodType.DERIVED) {
-					averageDemand += DERIVED_FACTOR * factor;
-				}
-				else if (goodType == GoodType.INSECT) {
-					averageDemand += INSECT_FACTOR * factor;
-				}		
-				else if (goodType == GoodType.OIL) {
-					averageDemand += OIL_FACTOR * factor;
-				}		
+			if (it.getAmountResourceID() == resourceID) {
+				averageDemand += factor * switch(resource.getGoodType()) {
+					case CROP -> CROP_FACTOR;
+					case ORGANISM -> ORGANISM_FACTOR;
+					case SOY_BASED -> SOY_BASED_FACTOR;
+					case DERIVED -> DERIVED_FACTOR;
+					case INSECT -> INSECT_FACTOR;
+					case OIL -> OIL_FACTOR;
+					default -> 0D;
+				};	
 			}		
 		}
 		// Limit the demand
-		averageDemand = averageDemand / count;
-		averageDemand = Math.max(GoodsManager.MIN_DEMAND, Math.min(GoodsManager.MAX_DEMAND, averageDemand));
+		averageDemand = averageDemand / ingredients.size();
+		averageDemand = Math.clamp(averageDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
 
 		return averageDemand;
 	}
@@ -1316,7 +1250,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double computeTissueDemandDueToCrop(GoodsManager owner) {
 
-		AmountResource ar = getAmountResource();
+		AmountResource ar = resource;
 		if (ar.getGoodType() == GoodType.TISSUE) {		
 			String cropName = ar.getName().replace(" tissue", "");
 			// Convert the tissue name to its crop's name
@@ -1326,7 +1260,6 @@ class AmountResourceGood extends Good {
 			return 0;
 	}
 	
-	
 	/**
 	 * Gets the life support demand for an amount resource.
 	 *
@@ -1334,13 +1267,11 @@ class AmountResourceGood extends Good {
 	 * @return demand (kg)
 	 */
 	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
-		int resource = getID();
-		
-		AmountResource ar = getAmountResource();
-		if (ar.isLifeSupport()) {
+		int resourceID = resource.getID();
+		if (resource.isLifeSupport()) {
 			int numPeople = settlement.getNumCitizens();
 
-			double amountNeededSol = switch(resource) {
+			double amountNeededSol = switch(resourceID) {
 				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
 				case ResourceUtil.WATER_ID -> personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
 				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
@@ -1364,9 +1295,8 @@ class AmountResourceGood extends Good {
 	 */
 	private double getMineralDemand(GoodsManager owner, Settlement settlement) {
 		double base = .25;
-		int resource = getID();
-
-		switch(resource) {
+		int resourceID = getID();
+		switch(resourceID) {
         	case ResourceUtil.ROCK_SALT_ID:
 				return base * ROCK_SALT_VALUE_MODIFIER;
 			case ResourceUtil.EPSOM_SALT_ID:
@@ -1403,24 +1333,24 @@ class AmountResourceGood extends Good {
 		double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
 		double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
 
-		for (int id : ResourceUtil.rockIDs) {
-			if (resource == id) {
+		for (int id : ResourceUtil.ROCK_IDS) {
+			if (resourceID == id) {
 				double rockDemand = owner.getDemandValueWithID(id);
 				return base * (.2 * regolithDemand + .9 * rockDemand) 
 						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 			}
 		}
 
-		for (int id : ResourceUtil.mineralConcIDs) {
-			if (resource == id) {
+		for (int id : ResourceUtil.MINERAL_CONC_IDs) {
+			if (resourceID == id) {
 				double mineralDemand = owner.getDemandValueWithID(id);
 				return base * (.2 * regolithDemand + .9 * mineralDemand) 
 						/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
 			}
 		}
 
-		for (int id : ResourceUtil.oreDepositIDs) {
-			if (resource == id) {
+		for (int id : ResourceUtil.ORE_DEPOSIT_IDS) {
+			if (resourceID == id) {
 				double oreDemand = owner.getDemandValueWithID(id);
 				// loses 10% by default
 				return base * (.3 * regolithDemand + .6 * oreDemand) 
@@ -1428,25 +1358,25 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		if (resource == ResourceUtil.REGOLITH_ID) {
+		if (resourceID == ResourceUtil.REGOLITH_ID) {
 			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
 		}
 		
-		else if (resource == ResourceUtil.REGOLITHB_ID 
-				|| resource == ResourceUtil.REGOLITHC_ID) {
+		else if (resourceID == ResourceUtil.REGOLITHB_ID 
+				|| resourceID == ResourceUtil.REGOLITHC_ID) {
 			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_1;
 		}
 		
-		else if (resource == ResourceUtil.REGOLITHD_ID) {
+		else if (resourceID == ResourceUtil.REGOLITHD_ID) {
 			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_2;
 		}
 		
 		// Checks if this resource is a ROCK type
 		GoodType type = getGoodType();
 		if (type != null && type == GoodType.ROCK) {
-			double rockDemand = owner.getDemandValueWithID(resource);
+			double rockDemand = owner.getDemandValueWithID(resourceID);
 
-			if (resource == METEORITE_ID)
+			if (resourceID == ResourceUtil.METEORITE_ID)
 				return base * (.4 * regolithDemand + .5 * rockDemand) 
 						/ (1 + rockDemand) * METEORITE_VALUE_MODIFIER;
 			else
@@ -1505,10 +1435,10 @@ class AmountResourceGood extends Good {
 	 * @param settlement
 	 * @return demand
 	 */
-	private double computeIceProjectedDemand(GoodsManager owner, Settlement settlement) {
-        int resource = getID();
-		if (resource == ResourceUtil.ICE_ID) {
-			double ice = 1 + owner.getDemandValueWithID(resource);
+	private double computeIceProjectedDemand(GoodsManager owner) {
+        int resourceID = getID();
+		if (resourceID == ResourceUtil.ICE_ID) {
+			double ice = 1 + owner.getDemandValueWithID(resourceID);
 			double water = 1 + owner.getDemandValueWithID(ResourceUtil.WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
 			return  (.5 * water + .5 * ice) / ice
@@ -1525,19 +1455,19 @@ class AmountResourceGood extends Good {
 	 * @param settlement
 	 * @return demand
 	 */
-	private double computeRegolithProjectedDemand(GoodsManager owner, Settlement settlement) {
+	private double computeRegolithProjectedDemand(GoodsManager owner) {
 		double demand = 0;
-		int resource = getID();
+		int resourceID = getID();
 		// This averaging method make all regolith types to be placed at similar demand
-		if (resource == ResourceUtil.REGOLITHB_ID
-			|| resource ==  ResourceUtil.REGOLITHC_ID
-			|| resource ==  ResourceUtil.REGOLITHD_ID) {
+		if (resourceID == ResourceUtil.REGOLITHB_ID
+			|| resourceID ==  ResourceUtil.REGOLITHC_ID
+			|| resourceID ==  ResourceUtil.REGOLITHD_ID) {
 
 			double sand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
 			double concrete = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
 			double cement = owner.getDemandValueWithID(ResourceUtil.CEMENT_ID);
 
-			double targetRegolith = owner.getDemandValueWithID(resource);
+			double targetRegolith = owner.getDemandValueWithID(resourceID);
 			double regolith = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
 			double regolithB = owner.getDemandValueWithID(ResourceUtil.REGOLITHB_ID);
 			double regolithC = owner.getDemandValueWithID(ResourceUtil.REGOLITHC_ID);

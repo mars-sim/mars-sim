@@ -249,17 +249,16 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				if (vehicle != null) {
 					getDesktop().showDetails(vehicle);
 				}
-			} else if (missionCache instanceof ConstructionMission constructionMission) {
-				if (!constructionMission.getConstructionVehicles().isEmpty()) {
-					Vehicle vehicle = constructionMission.getConstructionVehicles().get(0);
-					getDesktop().showDetails(vehicle);
-				}
+			} else if (missionCache instanceof ConstructionMission constructionMission
+						&& !constructionMission.getConstructionVehicles().isEmpty()) {
+				Vehicle vehicle = constructionMission.getConstructionVehicles().get(0);
+				getDesktop().showDetails(vehicle);
 			}
 		});
 		vehicleButton.setVisible(false);
 		vehicleButton.setToolTipText(Msg.getString("MainDetailPanel.vehicleToolTip")); //$NON-NLS-1$
 
-		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));//BorderLayout(5, 5));
+		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonWrapper.add(vehicleButton);
 		mainLayout.add(buttonWrapper, BorderLayout.CENTER);
 		
@@ -274,7 +273,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		
 		// Create center map button
 		centerMapButton = new JButton(ImageLoader.getIconByName("mars")); //$NON-NLS-1$
-//		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
 		centerMapButton.addActionListener(e -> {
 			if (missionCache != null)
 				getDesktop().centerMapGlobe(missionCache.getCurrentMissionLocation());
@@ -282,7 +280,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		centerMapButton.setEnabled(false);
 		centerMapButton.setToolTipText(Msg.getString("MainDetailPanel.gotoMarsMap")); //$NON-NLS-1$
 		
-		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));//BorderLayout(5, 5));
+		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonWrapper.add(centerMapButton);
 		mainLayout.add(buttonWrapper, BorderLayout.CENTER);
 		
@@ -458,7 +456,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionCustomPane.add(salvagePanel, salvageMissionName);
 
 		// Create custom exploration mission panel.
-		MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel(ResourceUtil.rockIDs);
+		MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel(ResourceUtil.ROCK_IDS);
 		String explorationMissionName = Exploration.class.getName();
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
@@ -525,7 +523,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	    Objects.requireNonNull(text);
 	    Objects.requireNonNull(changeListener);
 	    DocumentListener dl = new DocumentListener() {
-	        private int lastChange = 0, lastNotifiedChange = 0;
+	        private int lastChange = 0;
+			private int lastNotifiedChange = 0;
 
 	        @Override
 	        public void insertUpdate(DocumentEvent e) {
@@ -647,11 +646,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (vehicle != null && !mission.isDone()) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
-				try {
-					int currentLegRemainingDist = (int) vehicleMission.getDistanceCurrentLegRemaining();
-					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(currentLegRemainingDist)); //$NON-NLS-1$
-				} catch (Exception e2) {
-				}
+				int currentLegRemainingDist = (int) vehicleMission.getDistanceCurrentLegRemaining();
+				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(currentLegRemainingDist));
 
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
 				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
@@ -866,6 +862,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			this.panel = panel;
 		}
 
+		@Override
 		public void run() {
 			Mission mission = (Mission) event.getSource();
 			MissionEventType type = event.getType();
@@ -921,7 +918,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 			} else if (type == MissionEventType.DISTANCE_EVENT) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
-
 				
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
 				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
@@ -1013,6 +1009,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @param columnIndex the column's index.
 		 * @return the column name.
 		 */
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return "Date"; //$NON-NLS-1$

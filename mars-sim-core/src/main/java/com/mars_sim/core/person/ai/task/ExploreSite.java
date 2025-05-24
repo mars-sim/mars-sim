@@ -90,8 +90,8 @@ public class ExploreSite extends EVAOperation {
 		setRandomOutsideLocation(rover);
 
 		// Box is empty so choose a rock type at random
-		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-		rockId = ResourceUtil.rockIDs[randomNum];
+		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
+		rockId = ResourceUtil.ROCK_IDS[randomNum];
 	
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {

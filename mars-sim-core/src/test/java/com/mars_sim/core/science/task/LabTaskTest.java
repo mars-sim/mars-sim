@@ -28,7 +28,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
         var p = study.getPrimaryResearcher();
 
         // Add some rocks to test
-        int rockId = ResourceUtil.rockIDs[0];
+        int rockId = ResourceUtil.ROCK_IDS[0];
         s.storeAmountResource(rockId, 100D);
 
         var task  = StudyFieldSamples.createTask(p);
@@ -121,7 +121,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
         var p = study.getPrimaryResearcher();
 
         // Add some rocks to test
-        int rockId = ResourceUtil.rockIDs[0];
+        int rockId = ResourceUtil.ROCK_IDS[0];
         s.storeAmountResource(rockId, 100D);
 
         var mmt = new StudyFieldSamplesMeta();

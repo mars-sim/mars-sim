@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.building.function.cooking;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,15 +49,14 @@ public class Cooking extends Function {
 	private static SimLogger logger = SimLogger.getLogger(Cooking.class.getName());
 
 	private static final String CONVERTING = "A meal has expired. Converting ";
-	public static final String DISCARDED = " is expired and discarded at ";
-	public static final String PRESERVED = "into preserved food at ";
+	private static final String DISCARDED = " is expired and discarded at ";
+	private static final String PRESERVED = "into preserved food at ";
 
-	public static final int MAX_NUM_SOLS = 14;
-	public static final int RECHECKING_FREQ = 250; // in millisols
+	private static final int RECHECKING_FREQ = 250; // in millisols
 	public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
 	public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
 	/**  The base amount of work time (cooking skill 0) to produce one single cooked meal.*/
-	public static final double COOKED_MEAL_WORK_REQUIRED = 8D;
+	private static final double COOKED_MEAL_WORK_REQUIRED = 8D;
 	// Note : 10 millisols is 15 mins
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
@@ -94,7 +92,6 @@ public class Cooking extends Function {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsTime> timeMap;
 
-	private static List<Integer> oilMenu;
 	private static MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
 
 
@@ -463,8 +460,10 @@ public class Cooking extends Function {
 	 * @return dessertAvailable
 	 */
 	private Integer pickOneOil(double amount) {
-		return getOilMenu().stream().filter(oil -> building.getSettlement().getAmountResourceStored(oil) > amount).findFirst().orElse(-1);
-
+		return ResourceUtil.getOilResources().stream()
+						.filter(oil -> building.getSettlement().getAmountResourceStored(oil) > amount)
+						.findFirst()
+						.orElse(-1);
 	}
 
 	/**
@@ -844,20 +843,6 @@ public class Cooking extends Function {
 	@Override
 	public double getMaintenanceTime() {
 		return cookCapacity * 2.5D;
-	}
-
-	public static synchronized List<Integer> getOilMenu() {
-		if (oilMenu == null) {
-			oilMenu = new ArrayList<>();
-			oilMenu.add(ResourceUtil.FISH_OIL_ID);
-			oilMenu.add(ResourceUtil.GARLIC_OIL_ID);
-			oilMenu.add(ResourceUtil.PEANUT_OIL_ID);
-			oilMenu.add(ResourceUtil.RICE_BRAN_OIL_ID);
-			oilMenu.add(ResourceUtil.SESAME_OIL_ID);
-			oilMenu.add(ResourceUtil.SOYBEAN_OIL_ID);
-			oilMenu.add(ResourceUtil.OLIVE_OIL_ID);
-		}
-		return oilMenu;
 	}
 
 	/** 

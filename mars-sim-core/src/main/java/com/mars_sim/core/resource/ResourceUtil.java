@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
+import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.logging.SimLogger;
 
 public class ResourceUtil {
@@ -39,6 +40,8 @@ public class ResourceUtil {
 	
 	/** A set of life support resources. */
 	private static Set<Integer> lifeSupportResources;
+
+	private static Set<Integer> oilResources;
 
 	public static final int WATER_ID = FIRST_AMOUNT_RESOURCE_ID;
 	public static final int FOOD_ID = WATER_ID + 1;
@@ -81,14 +84,8 @@ public class ResourceUtil {
 	public static final int FERTILIZER_ID = TOILET_TISSUE_ID + 1;
 	public static final int NACLO_ID = FERTILIZER_ID + 1; 
 	public static final int LEAVES_ID = NACLO_ID + 1;
-	public static final int SOYBEAN_OIL_ID = LEAVES_ID + 1;
-	public static final int GARLIC_OIL_ID = SOYBEAN_OIL_ID + 1;
-	public static final int SESAME_OIL_ID = GARLIC_OIL_ID + 1;
-	public static final int PEANUT_OIL_ID = SESAME_OIL_ID + 1;
-	public static final int RICE_BRAN_OIL_ID = PEANUT_OIL_ID + 1;
-	public static final int FISH_OIL_ID = RICE_BRAN_OIL_ID + 1;
-	public static final int OLIVE_OIL_ID = FISH_OIL_ID + 1;
-	public static final int EPSOM_SALT_ID = OLIVE_OIL_ID + 1;
+	public static final int FISH_OIL_ID = LEAVES_ID + 1;
+	public static final int EPSOM_SALT_ID = FISH_OIL_ID + 1;
 	public static final int TABLE_SALT_ID = EPSOM_SALT_ID + 1;
 	public static final int ROCK_SALT_ID = TABLE_SALT_ID + 1;
 	public static final int E_WASTE_ID = ROCK_SALT_ID + 1;
@@ -121,14 +118,14 @@ public class ResourceUtil {
 	// Must be one after the last fixed resource
 	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = SCORIAL_ID + 1;
 
-	public static final int[] rockIDs = new int[] {ROCK_SAMPLES_ID, COLUMNAR_BASALT_ID,
+	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, COLUMNAR_BASALT_ID,
 													GRANITE_ID, MUDSTONE_ID, SANDSTONE_ID,
 													SHALE_ID, GLOMERATE_ID, CROSSBEDDING_ID,
 													METEORITE_ID, SCORIAL_ID};
-	public static final int[] mineralConcIDs = new int[]{CHALCOPYRITE_ID, GEOTHITE_ID,
+	public static final int[] MINERAL_CONC_IDs = new int[]{CHALCOPYRITE_ID, GEOTHITE_ID,
 														HEMATITE_ID, KAMACITE_ID, MAGNESITE_ID, MAGNETITE_ID,
 														MALACHITE_ID, OLIVINE_ID, TAENITE_ID, SYLVITE_ID};
-	public static final int[] oreDepositIDs = new int[]{ALLOPHANE_ID, AKAGANEITE_ID, BASALTIC_ID,
+	public static final int[] ORE_DEPOSIT_IDS = new int[]{ALLOPHANE_ID, AKAGANEITE_ID, BASALTIC_ID,
 														BASSANITE_ID, GYPSUM_ID, SMECTITE_ID};
 	public static final int[] REGOLITH_TYPES = new int[] {REGOLITH_ID, REGOLITHB_ID,
 														REGOLITHC_ID, REGOLITHD_ID};
@@ -164,7 +161,6 @@ public class ResourceUtil {
 		fixedResources.put("fish oil", FISH_OIL_ID);
 		fixedResources.put("food", FOOD_ID);
 		fixedResources.put("food waste", FOOD_WASTE_ID);
-		fixedResources.put("garlic oil", GARLIC_OIL_ID);
 		fixedResources.put("goethite", GEOTHITE_ID);
 		fixedResources.put("granite", GRANITE_ID);
 		fixedResources.put("grey water", GREY_WATER_ID);
@@ -184,27 +180,22 @@ public class ResourceUtil {
 		fixedResources.put("mudstone", MUDSTONE_ID);
 		fixedResources.put("napkin", NAPKIN_ID);
 		fixedResources.put("nitrogen", NITROGEN_ID);
-		fixedResources.put("olive oil", OLIVE_OIL_ID);
 		fixedResources.put("olivine", OLIVINE_ID);
 		fixedResources.put("oxygen", OXYGEN_ID);
-		fixedResources.put("peanut oil", PEANUT_OIL_ID);
 		fixedResources.put("regolith", REGOLITH_ID);
 		fixedResources.put("regolith-b", REGOLITHB_ID);
 		fixedResources.put("regolith-c", REGOLITHC_ID);
 		fixedResources.put("regolith-d", REGOLITHD_ID);
-		fixedResources.put("rice bran oil", RICE_BRAN_OIL_ID);
 		fixedResources.put("rock salt", ROCK_SALT_ID);
 		fixedResources.put("rock samples", ROCK_SAMPLES_ID);
 		fixedResources.put("sand", SAND_ID);
 		fixedResources.put("sandstone", SANDSTONE_ID);
 		fixedResources.put("scoria", SCORIAL_ID);
-		fixedResources.put("sesame oil", SESAME_OIL_ID);
 		fixedResources.put("shale", SHALE_ID);
 		fixedResources.put("smectite", SMECTITE_ID);
 		fixedResources.put("sodium hypochlorite", NACLO_ID);
 		fixedResources.put("soil", SOIL_ID);
 		fixedResources.put("solid waste", SOLID_WASTE_ID);
-		fixedResources.put("soybean oil", SOYBEAN_OIL_ID);
 		fixedResources.put("spirulina", SPIRULINA_ID);
 		fixedResources.put("sylvite", SYLVITE_ID);
 		fixedResources.put("table salt", TABLE_SALT_ID);
@@ -252,6 +243,11 @@ public class ResourceUtil {
 				.map(AmountResource::getID)
 				.collect(Collectors.toSet());
 		
+		oilResources = resources.stream()
+				.filter(ar -> ar.getGoodType() == GoodType.OIL)
+				.map(AmountResource::getID)
+				.collect(Collectors.toSet());
+
 		createEssentialResources();
 	}
 	
@@ -275,6 +271,14 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * get Resoruces tagged as type OIL
+	 * @return
+	 */
+	public static Set<Integer> getOilResources() {
+		return oilResources;
+	}
+
+	/**
 	 * Creates a set of essential resources.
 	 */
 	private static void createEssentialResources() {
@@ -283,10 +287,10 @@ public class ResourceUtil {
 			essentialResources.add(f.getID());
 		}
 		
-		for (int i: mineralConcIDs) {
+		for (int i: MINERAL_CONC_IDs) {
 			essentialResources.add(i);
 		}
-		for (int i: oreDepositIDs) {
+		for (int i: ORE_DEPOSIT_IDS) {
 			essentialResources.add(i);
 		}
 		for (int i: REGOLITH_TYPES) {

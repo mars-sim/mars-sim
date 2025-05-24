@@ -17,23 +17,6 @@ public final class AmountResource extends ResourceAbstract {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	public static final int FOOD = 1;
-	public static final int WATER = 2;
-	public static final int OXYGEN = 3;
-	public static final int CO2 = 4;
-
-	public static final int METHANE = 8;
-	public static final int ICE = 12;
-	public static final int REGOLITH = 142;
-	public static final int ROCK_SAMLE = 143;
-
-	public static final int FOOD_WASTE = 16;
-	public static final int SOLID_WASTE = 17;
-	public static final int GREY_WATER = 19;
-	public static final int TABLE_SALT = 23;
-	public static final int SODIUM_HYPOCHLORITE = 145;
-	public static final int NAPKIN = 150;
-
 	// Data members
 	private boolean edible;
 
