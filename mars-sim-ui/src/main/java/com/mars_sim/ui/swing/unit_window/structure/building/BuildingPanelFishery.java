@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.building.function.farming.Fishery;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -118,7 +119,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		ageLabel = labelPanel.addRow(Msg.getString("BuildingPanelFishery.age"),
 				StyleManager.DECIMAL2_SOLS.format(ageCache));
 		
-		fishHarvestedCache = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
+		fishHarvestedCache = tank.computeDailyAverage(ResourceUtil.FISH_MEAT_ID);
 		fishHarvestedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.harvestedFish"),
 				StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache),
 									Msg.getString("BuildingPanelFishery.harvestedFish.tooltip"));
@@ -183,7 +184,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			fishMassLabel.setText(StyleManager.DECIMAL_KG.format(newFishMass));
 		}
 		
-		double newFishHarvest = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
+		double newFishHarvest = tank.computeDailyAverage(ResourceUtil.FISH_MEAT_ID);
 		if (fishHarvestedCache != newFishHarvest) {
 			fishHarvestedCache = newFishHarvest;
 			fishHarvestedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache));

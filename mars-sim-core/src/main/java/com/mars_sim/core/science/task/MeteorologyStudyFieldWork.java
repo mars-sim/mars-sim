@@ -101,15 +101,13 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
 				// Box is empty so choose at random
-				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-				int rockId = ResourceUtil.rockIDs[randomNum];
+				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
+				int rockId = ResourceUtil.ROCK_IDS[randomNum];
 				// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
 				
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
 				
-				if (box != null) {
-					logger.info(person, 10_000, "Type of rocks collected: " + ResourceUtil.ROCKS[randomNum] + ".");
-	
+				if (box != null) {	
 					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
 					double cap = box.getAmountResourceRemainingCapacity(rockId);
 					if (mass <= cap) {
@@ -118,7 +116,8 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 					}
 				}
 				else {
-					logger.info(person, 10_000, "No specimen box is available for " + ResourceUtil.ROCKS[randomNum] + ".");
+					var rockName = ResourceUtil.findAmountResourceName(rockId);
+					logger.info(person, 10_000, "No specimen box is available for " + rockName + ".");
 					endTask();
 				}
 			}
@@ -142,7 +141,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	private boolean takeSpecimenContainer() {
 		Container container = ContainerUtil.findLeastFullContainer(
 													getRover(), EquipmentType.SPECIMEN_BOX,
-													ResourceUtil.rockSamplesID);
+													ResourceUtil.ROCK_SAMPLES_ID);
 		if (container != null) {
 			return container.transfer(person);
 		}

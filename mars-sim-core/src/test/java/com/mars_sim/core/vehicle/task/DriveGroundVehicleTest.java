@@ -25,7 +25,7 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION);
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 
         // move rover to outside
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -77,7 +77,7 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION);
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.oxygenID, OXYGEN_AMOUNT);
+        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -103,7 +103,7 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
 //        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
         
         // If Battery power is used, instead of fuel
-        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.oxygenID));
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.OXYGEN_ID));
         assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
         
         // Remove methanol

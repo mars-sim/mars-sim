@@ -27,10 +27,10 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement();
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
-        s.storeAmountResource(ResourceUtil.waterID, INITIAL_RESOURCE);
+        s.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         testWater(p);
-        assertTrue("Water consumed", s.getAmountResourceStored(ResourceUtil.waterID) < INITIAL_RESOURCE);
+        assertTrue("Water consumed", s.getAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
     }
 
     public void testBottleWater() {
@@ -40,24 +40,24 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
 
         // Create bottle and assign to person
         var b = EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, s);
-        b.storeAmountResource(ResourceUtil.waterID, INITIAL_RESOURCE);
+        b.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
         p.assignThermalBottle();
 
         testWater(p);
-        assertTrue("Water consumed", b.getAmountResourceStored(ResourceUtil.waterID) < INITIAL_RESOURCE);
+        assertTrue("Water consumed", b.getAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
     }
 
     public void testVehicleWater() {
         var s = buildSettlement();
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION);
-        v.storeAmountResource(ResourceUtil.waterID, INITIAL_RESOURCE);
+        v.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         p.transfer(v);
         assertTrue("In vehicle", p.isInVehicle());
 
         testWater(p);
-        assertTrue("Water consumed", v.getAmountResourceStored(ResourceUtil.waterID) < INITIAL_RESOURCE);
+        assertTrue("Water consumed", v.getAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
 
     }
 
@@ -110,7 +110,7 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
     }
 
     private void testHunger(Person p, ResourceHolder rh) {
-        rh.storeAmountResource(ResourceUtil.foodID, INITIAL_RESOURCE);
+        rh.storeAmountResource(ResourceUtil.FOOD_ID, INITIAL_RESOURCE);
 
         var pc = p.getPhysicalCondition();
         pc.setHunger(PhysicalCondition.HUNGER_THRESHOLD + 1);
@@ -123,6 +123,6 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         executeTask(p, t, 1000);
         assertTrue("Eatdrnk completed", t.isDone());
         assertFalse("Person is not hungry", pc.isHungry());
-        assertTrue("Food consumed", rh.getAmountResourceStored(ResourceUtil.foodID) < INITIAL_RESOURCE);
+        assertTrue("Food consumed", rh.getAmountResourceStored(ResourceUtil.FOOD_ID) < INITIAL_RESOURCE);
     }
 }

@@ -56,10 +56,6 @@ public class Farming extends Function {
 
 	private static final int MAX_NUM_SOLS = 14;
 	private static final int MAX_SAME_CROPTYPE = 3;
-
-	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
-	private static final int SOIL_ID = ResourceUtil.soilID;
-	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
 	
 	public static final double LOW_AMOUNT_TISSUE_CULTURE = 0.5;
 	public static final double CROP_AMOUNT_FOR_TISSUE_EXTRACTION = 0.5;
@@ -512,9 +508,9 @@ public class Farming extends Function {
 
 		if (amount > MIN) {
 			// Collect some old crop and turn them into crop waste 
-			store(amount, CROP_WASTE_ID, "Farming::provideNewSoil");
+			store(amount, ResourceUtil.CROP_WASTE_ID, "Farming::provideNewSoil");
 			// Note: adjust how much new soil is needed to replenish the soil bed
-			retrieve(amount, SOIL_ID, true);
+			retrieve(amount, ResourceUtil.SOIL_ID, true);
 		}
 	}
 
@@ -527,7 +523,7 @@ public class Farming extends Function {
 		double rand = RandomUtil.getRandomDouble(2);
 		double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea * rand;
 		if (amount > MIN)
-			retrieve(amount, FERTILIZER_ID, true);
+			retrieve(amount, ResourceUtil.FERTILIZER_ID, true);
 	}
 
 	/**
@@ -664,7 +660,7 @@ public class Farming extends Function {
 		}
 
 		// Modify result by value (VP) of food at the settlement.
-		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.foodID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.FOOD_ID);
 
 		result = (demand / (supply + 1D)) * foodValue;
 

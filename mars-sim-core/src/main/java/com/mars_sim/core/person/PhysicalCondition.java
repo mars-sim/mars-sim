@@ -18,7 +18,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.HistoricalEventManager;
@@ -88,8 +87,6 @@ public class PhysicalCondition implements Serializable {
 	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
 	private static final int MAX_VALUE = 1;
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 
 	/** Performance modifier for thirst. */
 	private static final double THIRST_PERFORMANCE_MODIFIER = .00015D;
@@ -445,7 +442,6 @@ public class PhysicalCondition implements Serializable {
 					if (stressFactor > 0) {
 						// Update stress
 				        addStress(stressFactor);
-//				        logger.info(person, 10_000, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
 					}
 				}				
 				
@@ -1326,7 +1322,7 @@ public class PhysicalCondition implements Serializable {
 			else {
 				double received = support.provideOxygen(amount);
 				// Track the amount consumed
-				addGasConsumed(OXYGEN_ID, received);
+				addGasConsumed(ResourceUtil.OXYGEN_ID, received);
 				// Note: how to model how much oxygen we need properly ?
 				// Assume one half as the bare minimum
 				double required = amount / 2D;
@@ -2078,7 +2074,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param amount
 	 */
 	public void addGasConsumed(int type, double amount) {
-		if (type == OXYGEN_ID)
+		if (type == ResourceUtil.OXYGEN_ID)
 			consumption.increaseDataPoint(4, amount);
 	}
 	

@@ -17,6 +17,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.resource.PhaseType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -38,8 +39,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
 
         Map<Integer, Double> resources = new HashMap<>(1);
 
-        AmountResource ar = ResourceUtil.sandAR;
-        resources.put(ar.getID(), 1D);
+        resources.put(ResourceUtil.SAND_ID, 1D);
 
         List<ConstructionVehicleType> vehicles =
             new ArrayList<>(1);
@@ -107,10 +107,9 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
         Iterator<Integer> i = resources.keySet().iterator();
         while (i.hasNext()) {
             Integer id = i.next();
-            AmountResource expected = ResourceUtil.sandAR;
             AmountResource resource = ResourceUtil.findAmountResource(id);
-            assertEquals(expected.getName(), resource.getName());
-            assertEquals(expected.getPhase(), resource.getPhase());
+            assertEquals( "Sand", resource.getName());
+            assertEquals(PhaseType.SOLID, resource.getPhase());
             assertEquals(1D, resources.get(id));
         }
     }

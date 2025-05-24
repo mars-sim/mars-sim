@@ -95,11 +95,11 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         
         var storage = found.getStorage();
-        assertEquals("Oxygen capacity", 5000D, storage.get(ResourceUtil.oxygenID));
-        assertEquals("Nitrogen capacity", 2500D, storage.get(ResourceUtil.nitrogenID));
+        assertEquals("Oxygen capacity", 5000D, storage.get(ResourceUtil.OXYGEN_ID));
+        assertEquals("Nitrogen capacity", 2500D, storage.get(ResourceUtil.NITROGEN_ID));
 
         var initial = found.getInitialResources();
-        assertEquals("Carbon stored", 100D, initial.get(ResourceUtil.co2ID));
+        assertEquals("Carbon stored", 100D, initial.get(ResourceUtil.CO2_ID));
 
         assertEquals("Science research", Set.of(ScienceType.BIOLOGY, ScienceType.BOTANY,
                                                 ScienceType.CHEMISTRY), new HashSet<>(found.getScienceType()));
@@ -131,7 +131,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         
         var storage = found.getStorage();
-        assertEquals("Cement capacity", 500D, storage.get(ResourceUtil.cementID));
+        assertEquals("Cement capacity", 500D, storage.get(ResourceUtil.CEMENT_ID));
 
         FunctionSpec manufacture = found.getFunctionSpec(FunctionType.MANUFACTURE);
         Map<Tooling, Integer> tools = (Map<Tooling, Integer>) manufacture.getProperty("tooling");

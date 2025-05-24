@@ -51,22 +51,22 @@ public class LoadPersonTest extends AbstractMarsSimUnitTest {
 		
 		double amount = 1D;
 		
-		double cap = person.getAmountResourceCapacity(ResourceUtil.foodID);
+		double cap = person.getAmountResourceCapacity(ResourceUtil.FOOD_ID);
 		System.out.println(person + " has a capacity of " + cap + " kg for food.");
 		
-		double remain0 = person.getAmountResourceRemainingCapacity(ResourceUtil.foodID);
+		double remain0 = person.getAmountResourceRemainingCapacity(ResourceUtil.FOOD_ID);
 		System.out.println("1. " + person + " has a remaining capacity of " + remain0 + " kg for food.");
 		assertTrue("Incorrect remaining capacity.", remain0 == 1.0);
 		
-		double excess = person.storeAmountResource(ResourceUtil.foodID, amount);	
+		double excess = person.storeAmountResource(ResourceUtil.FOOD_ID, amount);	
 		
-		double remain1 = person.getAmountResourceRemainingCapacity(ResourceUtil.foodID);
+		double remain1 = person.getAmountResourceRemainingCapacity(ResourceUtil.FOOD_ID);
 		System.out.println("2. " + person + " has a remaining capacity of " + remain1 + " kg for food.");
 		assertTrue("Incorrect remaining capacity.", remain1 == 0.0);
 		
 		assertTrue("Can't carry " + amount + " kg of food.", excess == 0.0);
 		
-		double missing = person.retrieveAmountResource(ResourceUtil.foodID, amount);
+		double missing = person.retrieveAmountResource(ResourceUtil.FOOD_ID, amount);
 		assertTrue("Can't retrieve food.", missing == 0.0);
 	}
 	

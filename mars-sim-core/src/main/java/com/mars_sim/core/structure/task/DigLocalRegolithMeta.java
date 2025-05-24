@@ -48,7 +48,7 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
         	return Collections.emptyList();
         }
     	
-    	return getSettlementTaskJobs(ResourceUtil.regolithID, settlement, 
+    	return getSettlementTaskJobs(ResourceUtil.REGOLITH_ID, settlement, 
     			settlement.getRegolithCollectionRate() * settlement.getRegolithProbabilityValue());
     }
 }

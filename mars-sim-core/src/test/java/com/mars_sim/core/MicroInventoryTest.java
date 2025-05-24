@@ -43,7 +43,7 @@ extends TestCase {
 	 */
 	public void testLoading() {
 		MicroInventory inv = new MicroInventory(settlement);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
 		
 		assertEquals("No excess on 1st load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
@@ -63,7 +63,7 @@ extends TestCase {
 	 */
 	public void testOverloading() {
 		MicroInventory inv = new MicroInventory(settlement);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
 		
 		assertEquals("No excess on capacity load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
@@ -78,10 +78,10 @@ extends TestCase {
 	 */
 	public void testUnsupported() {
 		MicroInventory inv = new MicroInventory(settlement);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
 
-		int unprovisioned = ResourceUtil.oxygenID;
+		int unprovisioned = ResourceUtil.OXYGEN_ID;
 
 		assertTrue("Provisioned resource", inv.isResourceSupported(resource));
 		assertFalse("Unprovisioned resource", inv.isResourceSupported(unprovisioned));
@@ -97,7 +97,7 @@ extends TestCase {
 	 */
 	public void testUnloading()  {
 		MicroInventory inv = new MicroInventory(settlement);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
 		
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT);
@@ -120,9 +120,9 @@ extends TestCase {
 	 */
 	public void testMultiples()  {
 		MicroInventory inv = new MicroInventory(settlement);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 		inv.setCapacity(resource, CAPACITY_AMOUNT);
-		int resource2  = ResourceUtil.oxygenID;
+		int resource2  = ResourceUtil.OXYGEN_ID;
 		inv.setCapacity(resource2, 100D);
 
 		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getAmountResourceRemainingCapacity(resource));

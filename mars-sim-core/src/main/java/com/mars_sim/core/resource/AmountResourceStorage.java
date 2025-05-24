@@ -10,7 +10,6 @@ package com.mars_sim.core.resource;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,15 +107,14 @@ public class AmountResourceStorage implements Serializable {
 	 */
 	public Map<Integer, Double> getAmountResourceTypeCapacities() {
 
-		Map<Integer, Double> typeCapacities = new ConcurrentHashMap<Integer, Double>();
+		Map<Integer, Double> typeCapacities = new ConcurrentHashMap<>();
 
 		if (typeStorage != null) {
-			Iterator<Integer> i = ResourceUtil.getIDs().iterator();
-			while (i.hasNext()) {
-				Integer resource = i.next();
-				double capacity = typeStorage.getAmountResourceTypeCapacity(resource);
+			for(var ar : ResourceUtil.getAmountResources()) {
+				int id = ar.getID();
+				double capacity = typeStorage.getAmountResourceTypeCapacity(id);
 				if (capacity > 0D) {
-					typeCapacities.put(resource, capacity);
+					typeCapacities.put(id, capacity);
 				}
 			}
 		}

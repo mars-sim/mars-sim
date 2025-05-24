@@ -9,9 +9,6 @@ package com.mars_sim.core.food;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.Resource;
-
 /**
  * A meta class describing an economic food in the simulation.
  */
@@ -22,37 +19,24 @@ implements Serializable, Comparable<Food> {
 	private static final long serialVersionUID = 1L;
 	
 	// Data members
-	private int id;
-	private double demandMultiplier;
-	
+	private int id;	
 	private String name;
-	private String type;
-	
-	private Resource resource;
-	
 	private FoodType foodType;
 
 	/**
 	 * Constructor with object.
 	 * 
 	 * @param name the name of the food.
-	 * @param object the food's object if any.
+	 * @param id The resoruce id of the assoicated AmountResource
 	 * @param foodType the food's category.
 	 */
-	Food(String name, AmountResource ar, FoodType foodType, double demandMultiplier) {
+	Food(String name, int id, FoodType foodType) {
 		if (name != null)
 			this.name = name;
 		else throw new IllegalArgumentException("name cannot be null.");
 
-		if (ar != null) {
-			this.resource = ar;
-			this.foodType = foodType;
-			this.type = foodType.getName();
-			this.demandMultiplier = demandMultiplier;
-			this.id = ar.getID();
-		}
-		
-		else throw new IllegalArgumentException("ar cannot be null.");
+		this.foodType = foodType;
+		this.id = id;
 	}
 
 	/**
@@ -62,15 +46,6 @@ implements Serializable, Comparable<Food> {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the food's resource instance if any.
-	 * 
-	 * @return object or null if none.
-	 */
-	public Resource getResource() {
-		return resource;
 	}
 
 	/**
@@ -87,19 +62,11 @@ implements Serializable, Comparable<Food> {
 	 * 
 	 * @return string.
 	 */
+	@Override
 	public String toString() {
 		return name;
 	}
 
-	/**
-	 * Gets the type of food.
-	 * 
-	 * @return string.
-	 */
-	public String getType() {
-		return type;
-	}
-	
 	/**
 	 * Gets the good's id.
 	 * 
@@ -115,6 +82,7 @@ implements Serializable, Comparable<Food> {
 	 * @param object the object to compare.
 	 * @return true if equal
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -126,6 +94,7 @@ implements Serializable, Comparable<Food> {
 	/**
 	 * Gets the hash code value.
 	 */
+	@Override
 	public int hashCode() {
 		return id % 64;
 	}
@@ -137,6 +106,7 @@ implements Serializable, Comparable<Food> {
 	 * @return a negative integer, zero, or a positive integer as this object is less than, 
 	 * equal to, or greater than the specified object.
 	 */
+	@Override
 	public int compareTo(Food o) {
 		return name.compareTo(o.name);
 	}

@@ -60,7 +60,6 @@ public class EmergencySupply extends RoverMission {
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
 	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
 
-	private static final int METHANOL_ID = ResourceUtil.methanolID;
 
 	public static final double BASE_STARTING_PROBABILITY = 20D;
 
@@ -591,19 +590,18 @@ public class EmergencySupply extends RoverMission {
 		double result = 0D;
 
 		if (ResourceUtil.isLifeSupport(resource)) {
-			double amountNeededSol = 0D;
-			if (resource.equals(OXYGEN_ID))
-				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
-			if (resource.equals(WATER_ID))
-				amountNeededSol = personConfig.getWaterConsumptionRate();
-			if (resource.equals(FOOD_ID))
-				amountNeededSol = personConfig.getFoodConsumptionRate();
+			double amountNeededSol = switch(resource) {
+				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate();
+				case ResourceUtil.WATER_ID -> personConfig.getWaterConsumptionRate();
+				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate();
+				default -> 0D;
+			};
 
 			double amountNeededOrbit = amountNeededSol * (MarsTime.SOLS_PER_MONTH_LONG * 3D);
 			int numPeople = startingSettlement.getNumCitizens();
 			result = numPeople * amountNeededOrbit;
 		} else {
-			if (resource.equals(METHANOL_ID)) {
+			if (resource.equals(ResourceUtil.METHANOL_ID)) {
 				Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
 				while (i.hasNext()) {
 					double fuelDemand = i.next().getAmountResourceCapacity(resource);
@@ -677,54 +675,54 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine oxygen amount needed.
 		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
-		double oxygenAmountAvailable = settlement.getAmountResourceStored(OXYGEN_ID);
+		double oxygenAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 
-		oxygenAmountAvailable += getResourcesOnMissions(settlement, OXYGEN_ID);
+		oxygenAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.OXYGEN_ID);
 		if (oxygenAmountAvailable < oxygenAmountNeeded) {
 			double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
 			if (oxygenAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				oxygenAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(OXYGEN_ID, oxygenAmountEmergency);
+			result.put(ResourceUtil.OXYGEN_ID, oxygenAmountEmergency);
 		}
 
 		// Determine water amount needed.
 		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;// * Mission.WATER_MARGIN;
-		double waterAmountAvailable = settlement.getAmountResourceStored(WATER_ID);
+		double waterAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.WATER_ID);
 
-		waterAmountAvailable += getResourcesOnMissions(settlement, WATER_ID);
+		waterAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.WATER_ID);
 		if (waterAmountAvailable < waterAmountNeeded) {
 			double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
 			if (waterAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				waterAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(WATER_ID, waterAmountEmergency);
+			result.put(ResourceUtil.WATER_ID, waterAmountEmergency);
 		}
 
 		// Determine food amount needed.
 		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;// * Mission.FOOD_MARGIN;
-		double foodAmountAvailable = settlement.getAmountResourceStored(FOOD_ID);
+		double foodAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.FOOD_ID);
 
-		foodAmountAvailable += getResourcesOnMissions(settlement, FOOD_ID);
+		foodAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.FOOD_ID);
 		if (foodAmountAvailable < foodAmountNeeded) {
 			double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
 			if (foodAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				foodAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(FOOD_ID, foodAmountEmergency);
+			result.put(ResourceUtil.FOOD_ID, foodAmountEmergency);
 		}
 
 		// Determine methane amount needed.
 		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-		double methaneAmountAvailable = settlement.getAmountResourceStored(METHANOL_ID);
+		double methaneAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.METHANOL_ID);
 
-		methaneAmountAvailable += getResourcesOnMissions(settlement, METHANOL_ID);
+		methaneAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.METHANOL_ID);
 		if (methaneAmountAvailable < methaneAmountNeeded) {
 			double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
 			if (methaneAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				methaneAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(METHANOL_ID, methaneAmountEmergency);
+			result.put(ResourceUtil.METHANOL_ID, methaneAmountEmergency);
 		}
 
 		return result;

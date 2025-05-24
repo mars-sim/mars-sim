@@ -23,9 +23,6 @@ public class FuelHeatSource extends HeatSource {
 	
 	/** The ratio of fuel to oxidizer by mass. */
 	private static final int RATIO = 4;
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
 	
 	/** The work time (millisol) required to toggle this heat source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
@@ -150,8 +147,8 @@ public class FuelHeatSource extends HeatSource {
 				consumed = deltaFuel;
 			}
 			else {
-				double fuelStored = getSettlement().getAmountResourceStored(METHANE_ID);
-				double o2Stored = getSettlement().getAmountResourceStored(OXYGEN_ID);
+				double fuelStored = getSettlement().getAmountResourceStored(ResourceUtil.METHANE_ID);
+				double o2Stored = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				
 				double transferFuel = tankCap + deltaFuel - reserveFuel;
 				
@@ -160,8 +157,8 @@ public class FuelHeatSource extends HeatSource {
 					reserveFuel = tankCap;
 					reserveOxidizer = tankCap * RATIO;
 					
-					getSettlement().retrieveAmountResource(METHANE_ID, transferFuel);
-					getSettlement().retrieveAmountResource(OXYGEN_ID, transferFuel * RATIO);
+					getSettlement().retrieveAmountResource(ResourceUtil.METHANE_ID, transferFuel);
+					getSettlement().retrieveAmountResource(ResourceUtil.OXYGEN_ID, transferFuel * RATIO);
 					
 					consumed = deltaFuel;
 				}
@@ -177,7 +174,7 @@ public class FuelHeatSource extends HeatSource {
 	 * @return amount resource.
 	 */
 	public int getFuelResourceID() {
-		return METHANE_ID;
+		return ResourceUtil.METHANE_ID;
 	}
 
 	/**

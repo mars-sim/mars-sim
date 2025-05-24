@@ -31,7 +31,7 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
         "resources");
 
         // Groups according to Resource Phase
-        setGrouper("Phase", r-> r.getPhase().getName());
+        setGrouper("Type", r-> r.getGoodType().getName());
     }
 
     /**

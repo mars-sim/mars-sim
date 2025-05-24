@@ -26,9 +26,6 @@ public class FuelPowerSource extends PowerSource {
 	
 	/** The ratio of fuel to oxidizer by mass. */
 	private static final int RATIO = 4;
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
 	
 	/** The work time (millisol) required to toggle this power source on or off. */
 	private static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
@@ -119,8 +116,8 @@ public class FuelPowerSource extends PowerSource {
 				consumed = deltaFuel;
 			}
 			else {
-				double fuelStored = getSettlement().getAmountResourceStored(METHANE_ID);
-				double o2Stored = getSettlement().getAmountResourceStored(OXYGEN_ID);
+				double fuelStored = getSettlement().getAmountResourceStored(ResourceUtil.METHANE_ID);
+				double o2Stored = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				
 				double transferFuel = tankCap + deltaFuel - reserveFuel;
 				
@@ -129,8 +126,8 @@ public class FuelPowerSource extends PowerSource {
 					reserveFuel = tankCap;
 					reserveOxidizer = tankCap * RATIO;
 					
-					getSettlement().retrieveAmountResource(METHANE_ID, transferFuel);
-					getSettlement().retrieveAmountResource(OXYGEN_ID, transferFuel * RATIO);
+					getSettlement().retrieveAmountResource(ResourceUtil.METHANE_ID, transferFuel);
+					getSettlement().retrieveAmountResource(ResourceUtil.OXYGEN_ID, transferFuel * RATIO);
 					
 					consumed = deltaFuel;
 				}
@@ -167,7 +164,7 @@ public class FuelPowerSource extends PowerSource {
 	 * @return amount resource.
 	 */
 	 public int getFuelResourceID() {
-		return METHANE_ID;
+		return ResourceUtil.METHANE_ID;
 	}
 		 
 	/**
@@ -199,7 +196,7 @@ public class FuelPowerSource extends PowerSource {
 	 @Override
 	 public double getAveragePower(Settlement settlement) {
 		double fuelPower = getMaxPower();
-		double fuelValue = settlement.getGoodsManager().getGoodValuePoint(METHANE_ID);
+		double fuelValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.METHANE_ID);
 		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;

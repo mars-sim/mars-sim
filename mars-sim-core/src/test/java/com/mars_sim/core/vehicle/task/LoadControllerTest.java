@@ -87,8 +87,8 @@ extends TestCase {
 	 */
 	public void testBackgroundLoading() {
 		var requiredResourcesMap = new SuppliesManifest();
-		requiredResourcesMap.addAmount(ResourceUtil.oxygenID, 20D, true);
-		requiredResourcesMap.addAmount(ResourceUtil.methanolID, 10D, true);
+		requiredResourcesMap.addAmount(ResourceUtil.OXYGEN_ID, 20D, true);
+		requiredResourcesMap.addAmount(ResourceUtil.METHANOL_ID, 10D, true);
 
 		loadSettlement(settlement, requiredResourcesMap);
 
@@ -205,8 +205,8 @@ extends TestCase {
 	 */
 	public void testLoadRequiredAmountResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addAmount(ResourceUtil.foodID, 30D, true);
-		manifest.addAmount(ResourceUtil.waterID, 10D, true);
+		manifest.addAmount(ResourceUtil.FOOD_ID, 30D, true);
+		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
 
 		// Load the manifest
 		testLoading(200, manifest);
@@ -219,7 +219,7 @@ extends TestCase {
 	public void testLoadFailedAmountResources() {
 		var requiredResourcesMap = new SuppliesManifest();
 		// Add 2000kg food to the manifest
-		requiredResourcesMap.addAmount(ResourceUtil.foodID, 50D, true);
+		requiredResourcesMap.addAmount(ResourceUtil.FOOD_ID, 50D, true);
 
 		LoadingController controller = vehicle.setLoading(requiredResourcesMap);
 
@@ -243,10 +243,10 @@ extends TestCase {
 	 */
 	public void testLoadOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addAmount(ResourceUtil.foodID, 20D, true);
-		manifest.addAmount(ResourceUtil.waterID, 10D, true);
+		manifest.addAmount(ResourceUtil.FOOD_ID, 20D, true);
+		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
 
-		manifest.addAmount(ResourceUtil.co2ID, 4D, false);
+		manifest.addAmount(ResourceUtil.CO2_ID, 4D, false);
 
 		// Load the manifest
 		testLoading(200, manifest);
@@ -257,12 +257,12 @@ extends TestCase {
 	 */
 	public void testLoadMissingOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addAmount(ResourceUtil.foodID, 100D, true);
+		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
 
-		manifest.addAmount(ResourceUtil.co2ID, 4D, false);
+		manifest.addAmount(ResourceUtil.CO2_ID, 4D, false);
 
 		testLoadOptionalResources(100, manifest,
-								  ResourceUtil.nitrogenID);
+								  ResourceUtil.NITROGEN_ID);
 	}
 
 	/*
@@ -275,11 +275,11 @@ extends TestCase {
 
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5, false);
 
-		manifest.addAmount(ResourceUtil.foodID, 100D, true);
+		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
 
-		manifest.addAmount(ResourceUtil.co2ID, 4D, false);
+		manifest.addAmount(ResourceUtil.CO2_ID, 4D, false);
 		manifest.addItem(pipeWrenchID, 5, false);
 
 		// Load the manifest

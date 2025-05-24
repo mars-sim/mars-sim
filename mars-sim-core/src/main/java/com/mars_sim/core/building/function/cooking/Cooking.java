@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.building.function.cooking;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,15 +49,14 @@ public class Cooking extends Function {
 	private static SimLogger logger = SimLogger.getLogger(Cooking.class.getName());
 
 	private static final String CONVERTING = "A meal has expired. Converting ";
-	public static final String DISCARDED = " is expired and discarded at ";
-	public static final String PRESERVED = "into preserved food at ";
+	private static final String DISCARDED = " is expired and discarded at ";
+	private static final String PRESERVED = "into preserved food at ";
 
-	public static final int MAX_NUM_SOLS = 14;
-	public static final int RECHECKING_FREQ = 250; // in millisols
+	private static final int RECHECKING_FREQ = 250; // in millisols
 	public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
 	public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
 	/**  The base amount of work time (cooking skill 0) to produce one single cooked meal.*/
-	public static final double COOKED_MEAL_WORK_REQUIRED = 8D;
+	private static final double COOKED_MEAL_WORK_REQUIRED = 8D;
 	// Note : 10 millisols is 15 mins
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
@@ -94,7 +92,6 @@ public class Cooking extends Function {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsTime> timeMap;
 
-	private static List<Integer> oilMenu;
 	private static MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
 
 
@@ -463,8 +460,10 @@ public class Cooking extends Function {
 	 * @return dessertAvailable
 	 */
 	private Integer pickOneOil(double amount) {
-		return getOilMenu().stream().filter(oil -> building.getSettlement().getAmountResourceStored(oil) > amount).findFirst().orElse(-1);
-
+		return ResourceUtil.getOilResources().stream()
+						.filter(oil -> building.getSettlement().getAmountResourceStored(oil) > amount)
+						.findFirst()
+						.orElse(-1);
 	}
 
 	/**
@@ -532,7 +531,7 @@ public class Cooking extends Function {
 		mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness) * 10D) / 15D;
 
 		// consume salt
-		retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.tableSaltID, true);
+		retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.TABLE_SALT_ID, true);
 
 		// consume water
 		consumeWater();
@@ -641,12 +640,12 @@ public class Cooking extends Function {
 		if (level != 0)
 			usage = usage / 1.5D / level;
 		if (usage > MIN) {
-			retrieveAnIngredientFromMap(usage, ResourceUtil.waterID, true);
+			retrieveAnIngredientFromMap(usage, ResourceUtil.WATER_ID, true);
 			building.getSettlement().addWaterConsumption(WaterUseType.PREP_MEAL, usage);
 		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
-			store(wasteWaterAmount, ResourceUtil.greyWaterID, "Cooking::consumeWater");
+			store(wasteWaterAmount, ResourceUtil.GREY_WATER_ID, "Cooking::consumeWater");
 	}
 
 	/**
@@ -721,7 +720,7 @@ public class Cooking extends Function {
 						if (qNum < 1) {
 							if (dryMassPerServing > 0)
 								// Turn into food waste
-								store(dryMassPerServing, ResourceUtil.foodWasteID, "Cooking::timePassing");
+								store(dryMassPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
 
 							log.append(dryMassPerServing)
 									.append(" kg ").append(meal.getName()).append(DISCARDED);
@@ -796,10 +795,10 @@ public class Cooking extends Function {
 	private void cleanUpKitchen() {
 		
 		double amountAgent = cleaningAgentPerSol;		 
-		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NaClOID, amountAgent);
+		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NACLO_ID, amountAgent);
 
 		double amountWater = 10 * amountAgent;
-		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, amountWater);
+		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
 		
 		// Track water consumption
 		building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, amountWater - lackingWater);
@@ -826,9 +825,9 @@ public class Cooking extends Function {
 	 */
 	public void preserveFood() {
 		// Note: turn this into a task
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true);
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.TABLE_SALT_ID, true);
 		if (dryMassPerServing > 0)
-			store(dryMassPerServing, ResourceUtil.foodID, "Cooking::preserveFood");
+			store(dryMassPerServing, ResourceUtil.FOOD_ID, "Cooking::preserveFood");
 	}
 
 	/**
@@ -844,20 +843,6 @@ public class Cooking extends Function {
 	@Override
 	public double getMaintenanceTime() {
 		return cookCapacity * 2.5D;
-	}
-
-	public static synchronized List<Integer> getOilMenu() {
-		if (oilMenu == null) {
-			oilMenu = new ArrayList<>();
-			oilMenu.add(ResourceUtil.fishOilID);
-			oilMenu.add(ResourceUtil.garlicOilID);
-			oilMenu.add(ResourceUtil.peanutOilID);
-			oilMenu.add(ResourceUtil.riceBranOilID);
-			oilMenu.add(ResourceUtil.sesameOilID);
-			oilMenu.add(ResourceUtil.soybeanOilID);
-			oilMenu.add(ResourceUtil.oliveOilID);
-		}
-		return oilMenu;
 	}
 
 	/** 

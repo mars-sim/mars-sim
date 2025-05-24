@@ -45,12 +45,7 @@ public class AlgaeFarming extends Function {
 	/** The average CO2 needed [in kg]. */
 	private static double averageCarbonDioxideNeeded;
 	
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 
-	public static final int HARVESTED_ALGAE_ID = ResourceUtil.spirulinaID;
 	// 
 	public static final int PRODUCED_ALGAE_ID = 0;
 	
@@ -295,7 +290,7 @@ public class AlgaeFarming extends Function {
 		}
 
 		// Modify result by value (VP) of spirulina at the settlement.
-		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.spirulinaID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.SPIRULINA_ID);
 
 		return (demand / (supply + 1D)) * foodValue;
 	}
@@ -389,20 +384,20 @@ public class AlgaeFarming extends Function {
 		if (watt < 40) {
 
 			double o2Required = compositeFactor * averageOxygenNeeded;
-			double o2Available = building.getSettlement().getAmountResourceStored(OXYGEN_ID);
+			double o2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
 
 			o2Modifier = o2Available / o2Required;
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			o2Cache = retrieveGas(o2Used, o2Cache, OXYGEN_ID);
+			o2Cache = retrieveGas(o2Used, o2Cache, ResourceUtil.OXYGEN_ID);
 
 			adjustEnvironmentFactor(o2Modifier, O2_FACTOR);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
-			co2Cache = storeGas(cO2Gen, co2Cache, CO2_ID);
+			co2Cache = storeGas(cO2Gen, co2Cache, ResourceUtil.CO2_ID);
 		}
 
 		else {
@@ -410,7 +405,7 @@ public class AlgaeFarming extends Function {
 
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = compositeFactor * averageCarbonDioxideNeeded;
-			double cO2Available = building.getSettlement().getAmountResourceStored(CO2_ID);
+			double cO2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
 			// Future: allow higher concentration of co2 to be pumped to increase the harvest
@@ -420,7 +415,7 @@ public class AlgaeFarming extends Function {
 
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
-			co2Cache = retrieveGas(cO2Used, co2Cache, CO2_ID);
+			co2Cache = retrieveGas(cO2Used, co2Cache, ResourceUtil.CO2_ID);
 			
 			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
@@ -432,7 +427,7 @@ public class AlgaeFarming extends Function {
 			// Determine the amount of oxygen generated during the day when photosynthesis
 			// is taking place .
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
-			o2Cache = storeGas(o2Gen, o2Cache, OXYGEN_ID);
+			o2Cache = storeGas(o2Gen, o2Cache, ResourceUtil.OXYGEN_ID);
 		}
 	}
 
@@ -460,7 +455,7 @@ public class AlgaeFarming extends Function {
 	 */
 	private void retrieveWater(double amount, int id) {
 		if (amount > 0) {
-			retrieve(amount, WATER_ID, true);
+			retrieve(amount, ResourceUtil.WATER_ID, true);
 			// Record the amount of water consumed
 			addResourceLog(amount, id);		
 		}
@@ -496,7 +491,7 @@ public class AlgaeFarming extends Function {
 	 */
 	private void storeGreyWater(double amount, int id) {
 		if (amount > 0) {
-			store(amount, GREY_WATER_ID, "AlgaeFarming::storeGreyWater");
+			store(amount, ResourceUtil.GREY_WATER_ID, "AlgaeFarming::storeGreyWater");
 			// Record the amount of grey water produced
 			addResourceLog(amount, id);		
 		}
@@ -561,7 +556,7 @@ public class AlgaeFarming extends Function {
 			// Compute the amount of fresh water to be added at the inlet
 			double freshWater = new2Old * AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
 			// Consume fresh water
-			retrieveWater(freshWater, ResourceUtil.waterID);
+			retrieveWater(freshWater, ResourceUtil.WATER_ID);
 		    // Add fresh water to the existing tank water
 			waterMass += freshWater;
 		}
@@ -571,7 +566,7 @@ public class AlgaeFarming extends Function {
 			// Compute the amount of fresh water to be released at the outlet
 			double greyWater = AVERAGE_FRESH_WATER / new2Old * currentAlgae * timeFactor;
 			// Produce grey water
-			storeGreyWater(greyWater, ResourceUtil.greyWaterID);
+			storeGreyWater(greyWater, ResourceUtil.GREY_WATER_ID);
 		    // Retrieve grey water from the existing tank water
 			waterMass -= greyWater;
 		}
@@ -580,7 +575,7 @@ public class AlgaeFarming extends Function {
 		// Estimate 0.01% water evaporated
 		double greyWater = waterMass * .0001 * timeFactor;
 		// Produce grey water
-		storeGreyWater(greyWater, ResourceUtil.greyWaterID);
+		storeGreyWater(greyWater, ResourceUtil.GREY_WATER_ID);
 	    // Retrieve grey water from the existing tank water
 		waterMass -= greyWater;
 		
@@ -659,7 +654,7 @@ public class AlgaeFarming extends Function {
 		// Compute the amount of fresh water to be replenished at the inlet
 		double freshWater = newAlgae / ALGAE_TO_WATER_RATIO * RandomUtil.getRandomDouble(.9, 1.1);
 		// Consume fresh water
-		retrieveWater(freshWater, ResourceUtil.waterID);
+		retrieveWater(freshWater, ResourceUtil.WATER_ID);
 		// Add fresh water to the existing tank water
 		waterMass += freshWater;
 	}
@@ -958,13 +953,13 @@ public class AlgaeFarming extends Function {
 		
 		currentAlgae += returnAlgae;
 
-		store(foodWaste, ResourceUtil.foodWasteID, "AlgaeFarming::foodWaste");
+		store(foodWaste, ResourceUtil.FOOD_WASTE_ID, "AlgaeFarming::foodWaste");
 		
-		storeGreyWater(greyWaterWaste, GREY_WATER_ID);
+		storeGreyWater(greyWaterWaste, ResourceUtil.GREY_WATER_ID);
 		
-		store(spirulinaExtracted, HARVESTED_ALGAE_ID, "AlgaeFarming::harvestAlgae");
+		store(spirulinaExtracted, ResourceUtil.SPIRULINA_ID, "AlgaeFarming::harvestAlgae");
 		// Record the harvest amount
-		addResourceLog(spirulinaExtracted, HARVESTED_ALGAE_ID);
+		addResourceLog(spirulinaExtracted, ResourceUtil.SPIRULINA_ID);
 
 		logger.info(worker, 5000, "spirulinaExtracted: " 
 				+ Math.round(spirulinaExtracted * 100.0)/100.0 

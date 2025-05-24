@@ -38,8 +38,8 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 	 */
 	public void testAmountInEquipmentLoading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
-		int co2 = ResourceUtil.co2ID;
-		int rock = ResourceUtil.rockSamplesID;
+		int co2 = ResourceUtil.CO2_ID;
+		int rock = ResourceUtil.ROCK_SAMPLES_ID;
 		double co2Mass = CAPACITY_AMOUNT/10; // 100 kg
 		double rockMass = CAPACITY_AMOUNT/20; // 50 kg
 		
@@ -75,7 +75,7 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 	 */
 	public void testAmountLoading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 
 		assertEquals("No excess on 1st load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, inv.getAmountResourceStored(resource));
@@ -114,7 +114,7 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 	 */
 	public void testAmountOverloading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 
 		assertEquals("No excess on capacity load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 
@@ -128,7 +128,7 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 	 */
 	public void testAmountUnloading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
-		int resource = ResourceUtil.co2ID;
+		int resource = ResourceUtil.CO2_ID;
 
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT);
 
@@ -150,8 +150,8 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 	 */
 	public void testMultiples() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
-		int resource = ResourceUtil.co2ID;
-		int resource2  = ResourceUtil.oxygenID;
+		int resource = ResourceUtil.CO2_ID;
+		int resource2  = ResourceUtil.OXYGEN_ID;
 
 		// if Using general/cargo capacity instead of the dedicated capacity for a resource
 		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());

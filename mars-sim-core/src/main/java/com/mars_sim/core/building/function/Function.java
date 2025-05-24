@@ -25,7 +25,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
@@ -42,12 +41,6 @@ public abstract class Function implements Serializable, Temporal {
 
 	// The default inspection work time in millisols for a function 
 	protected static final int BASE_MAINT_TIME = 5;
-	
-	protected static final int WATER_ID = ResourceUtil.waterID;
-	protected static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
-	protected static final int GREY_WATER_ID = ResourceUtil. greyWaterID;
-	protected static final int TOILET_TISSUE_ID = ResourceUtil.toiletTissueID;
-	protected static final int TOXIC_WASTE_ID = ResourceUtil.toxicWasteID;
 
 	private long lastPulse = 0; // First initial pulse is always 1
 

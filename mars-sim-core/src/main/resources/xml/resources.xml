@@ -94,7 +94,6 @@
 
 	<resource name="Electronic waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
 	<resource name="Food waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
-	<!-- <resource name="Manure" phase="solid">Human feces</resource> -->
 
 	<resource name="Solid waste" type="waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
 	<resource name="Toxic waste" type="waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
@@ -227,13 +226,13 @@
 	<resource name="Olive oil" type="oil" phase="liquid" edible="true">
 		Oil pressed from olive.</resource>
 <!-- Since garlic oil is not a neutral flavour (just like fish oil), it should not be used in place of generic oil -->
-	<resource name="Garlic oil" type="derived" phase="liquid" edible="true">Oil pressed from garlic.</resource>
+	<resource name="Garlic oil" type="oil" phase="liquid" edible="true">Oil pressed from garlic.</resource>
 	
 <!-- Food resources derived from fish -->
 	<resource name="Fish meat" type="animal" phase="solid" edible="true">
 		meat from fish</resource>
 <!-- Since fish oil is not a neutral flavour (just like garlic oil), it should not be used in place of generic oil -->
-	<resource name="Fish oil" type="animal" phase="liquid" edible="true">
+	<resource name="Fish oil" type="oil" phase="liquid" edible="true">
 		Oil derived from fish.</resource>
 	<resource name="Fish patty" type="animal" phase="solid" edible="true">
 		patty made of fish meat</resource>

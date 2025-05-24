@@ -37,9 +37,6 @@ public class EatDrinkMeta extends FactoryMetaTask {
 	public static final double VEHICLE_FOOD_RATION = .25;
 	public static final double MISSION_FOOD_RATION = .5;
 		
-	private static final int FOOD_ID = ResourceUtil.foodID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 
@@ -61,15 +58,15 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		}
 		
 		// Identify the available amoutn first
-		double foodAmount = person.getAmountResourceStored(FOOD_ID);
-		double waterAmount = person.getAmountResourceStored(WATER_ID);
+		double foodAmount = person.getAmountResourceStored(ResourceUtil.FOOD_ID);
+		double waterAmount = person.getAmountResourceStored(ResourceUtil.WATER_ID);
 		
 		var container = person.getContainerUnit();
 		if (container instanceof ResourceHolder rh) {
 			if (foodAmount == 0)
-				foodAmount = rh.getAmountResourceStored(FOOD_ID);
+				foodAmount = rh.getAmountResourceStored(ResourceUtil.FOOD_ID);
 			if (waterAmount == 0)
-				waterAmount = rh.getAmountResourceStored(WATER_ID);
+				waterAmount = rh.getAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
 		boolean needFood = false;
@@ -122,9 +119,9 @@ public class EatDrinkMeta extends FactoryMetaTask {
 					// How to make a person walk out of vehicle back to settlement 
 					// if hunger is >500 ?
 					if (foodAmount == 0)
-						foodAmount = vehicle.getSettlement().getAmountResourceStored(FOOD_ID);
+						foodAmount = vehicle.getSettlement().getAmountResourceStored(ResourceUtil.FOOD_ID);
 					if (waterAmount == 0)
-						waterAmount = vehicle.getSettlement().getAmountResourceStored(WATER_ID);
+						waterAmount = vehicle.getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID);
 		
 					needFood = (hungry && (foodAmount > 0 || dFactor > 1));
 				}
@@ -136,9 +133,9 @@ public class EatDrinkMeta extends FactoryMetaTask {
 					// Note: if not, it may affect the amount of water/food available 
 					// for the mission
 					if (foodAmount == 0)
-						foodAmount = person.getAmountResourceStored(FOOD_ID);
+						foodAmount = person.getAmountResourceStored(ResourceUtil.FOOD_ID);
 					if (waterAmount == 0)
-						waterAmount = person.getAmountResourceStored(WATER_ID);
+						waterAmount = person.getAmountResourceStored(ResourceUtil.WATER_ID);
 		
 					needFood = (hungry && (foodAmount > 0 || dFactor > 1));
 				}

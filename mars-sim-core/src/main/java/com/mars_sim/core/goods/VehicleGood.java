@@ -461,13 +461,13 @@ class VehicleGood extends Good {
 					/ (double) settlement.getPopulationCapacity());
 
 		case COLLECT_ICE:
-			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.iceID)), 100);
+			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 100);
 		
 		case TRADE, DELIVERY:
 			return JobUtil.numJobs(JobType.TRADER, settlement);
 		
 		case COLLECT_REGOLITH:
-			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.regolithID)), 100);
+			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 100);
 		
 		case MINING, AREOLOGY, EXPLORATION:
 			return JobUtil.numJobs(JobType.AREOLOGIST, settlement);
@@ -667,7 +667,7 @@ class VehicleGood extends Good {
             
             // Check food capacity as range limit.       
             double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-            double foodCapacity = v.getCargoCapacity(ResourceUtil.foodID);
+            double foodCapacity = v.getCargoCapacity(ResourceUtil.FOOD_ID);
             double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
             double foodRange = distancePerSol * foodSols / 3D;
             if (foodRange < range)
@@ -675,7 +675,7 @@ class VehicleGood extends Good {
 
             // Check water capacity as range limit.
             double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-            double waterCapacity = v.getCargoCapacity(ResourceUtil.waterID);
+            double waterCapacity = v.getCargoCapacity(ResourceUtil.WATER_ID);
             double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
             double waterRange = distancePerSol * waterSols / 3D;
             if (waterRange < range)
@@ -683,7 +683,7 @@ class VehicleGood extends Good {
 
             // Check oxygen capacity as range limit.
             double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-            double oxygenCapacity = v.getCargoCapacity(ResourceUtil.oxygenID);
+            double oxygenCapacity = v.getCargoCapacity(ResourceUtil.OXYGEN_ID);
             double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
             double oxygenRange = distancePerSol * oxygenSols / 3D;
             if (oxygenRange < range)

@@ -22,7 +22,6 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.tool.Conversion;
 
 /** 
  * The Specification of a Vehicle loaded from the external configuration.
@@ -303,16 +302,14 @@ public class VehicleSpec implements Serializable {
 		
 		this.powerSourceType = PowerSourceType.getType(powerSourceStr.replaceAll("_", " ").toLowerCase());
 		
-		this.fuelTypeStr = Conversion.capitalize(fuelTypeStr.toLowerCase());
+		this.fuelTypeStr = fuelTypeStr;
 		
-		if (PowerSourceType.FUEL_POWER == powerSourceType) {
-			
-			if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
-				fuelTypeID = ResourceUtil.findAmountResource(ResourceUtil.METHANOL).getID();
+		if (PowerSourceType.FUEL_POWER == powerSourceType) {	
+			var fr = ResourceUtil.findAmountResource(fuelTypeStr);
+			if (fr == null) {
+				throw new IllegalArgumentException("Invalid fuel type for vehicle: " + fuelTypeStr);
 			}
-			else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
-				fuelTypeID = ResourceUtil.findAmountResource(ResourceUtil.METHANE).getID();
-			}
+			fuelTypeID = fr.getID();
 		}
 		else if (PowerSourceType.FISSION_POWER == powerSourceType) {
 			fuelTypeID = -1;
@@ -394,23 +391,22 @@ public class VehicleSpec implements Serializable {
 		fuelCapacity = getCargoCapacity(getFuelType());
 		
     	batteryCapacity = energyCapacityPerModule * numBatteryModule;
-    	
-    	// Note: ResourceUtil.methanolID has not been initialized at this point of startup
-    	
-    	if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
+    	    	
+    	if (fuelTypeID == ResourceUtil.METHANOL_ID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainFuelEfficiency;
     	}
     	
-    	else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
+    	else if (fuelTypeID == ResourceUtil.METHANE_ID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainFuelEfficiency;
 		}
-			
+		
+		// Not sure this case is possible
     	else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			fullTankFuelEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;

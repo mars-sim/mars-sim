@@ -65,7 +65,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 
 		var container = person.getContainerUnit();
 		if (container instanceof ResourceHolder rh) {
-			for (int i: ResourceUtil.rockIDs) {
+			for (int i: ResourceUtil.ROCK_IDS) {
 				double stored = rh.getAmountResourceStored(i);
 				mostStored = Math.max(stored, mostStored);
 			}

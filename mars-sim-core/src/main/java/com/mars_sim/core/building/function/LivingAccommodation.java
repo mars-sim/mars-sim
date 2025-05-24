@@ -17,6 +17,7 @@ import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
@@ -273,7 +274,7 @@ public class LivingAccommodation extends Function {
 		
 		// Remove wash water from settlement.
 		if (estimatedWaterUsed > MIN) {
-			retrieve(estimatedWaterUsed, WATER_ID, true);
+			retrieve(estimatedWaterUsed, ResourceUtil.WATER_ID, true);
 			// Track daily average
 			addDailyWaterUsage(estimatedWaterUsed);
 		}
@@ -284,13 +285,13 @@ public class LivingAccommodation extends Function {
 		double blackWaterProduced = estimatedWasteWaterProduced * (1 - greyWaterFraction);
 
 		if (greyWaterProduced > MIN) {
-			store(greyWaterProduced, GREY_WATER_ID, WASTE_NAME);
+			store(greyWaterProduced, ResourceUtil.GREY_WATER_ID, WASTE_NAME);
 			// Track daily average
 			addDailyGreyWaterGen(greyWaterProduced);
 		}
 		
 		if (blackWaterProduced > MIN)
-			store(blackWaterProduced, BLACK_WATER_ID, WASTE_NAME);
+			store(blackWaterProduced, ResourceUtil.BLACK_WATER_ID, WASTE_NAME);
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000;
@@ -299,8 +300,8 @@ public class LivingAccommodation extends Function {
 				*  getNumAssignedBeds() * (1 + RandomUtil.getRandomDouble(-0.5, 0.5));	
 
 		if (toiletPaperUsageBuilding > MIN) {
-			retrieve(toiletPaperUsageBuilding, TOILET_TISSUE_ID, true);
-			store(toiletPaperUsageBuilding, TOXIC_WASTE_ID, WASTE_NAME);
+			retrieve(toiletPaperUsageBuilding, ResourceUtil.TOILET_TISSUE_ID, true);
+			store(toiletPaperUsageBuilding, ResourceUtil.TOXIC_WASTE_ID, WASTE_NAME);
 		}
 	}
 
@@ -325,16 +326,13 @@ public class LivingAccommodation extends Function {
 		// settlement
 		// Note: Will starting using absenteeFactor after accounting for wastes
 		// generated in vehicles on mission
-		double absenteeFactor = 1; //(double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
+		double absenteeFactor = 1; 
 
 		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
 		
 		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE / 3D, TOILET_CHANCE * 3D) * portion;
 		
 		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
-		
-//		logger.config(building, "water: " + estimatedWaterUsed 
-//				+ "  waste water: " + estimatedWasteWaterProduced);
 		
 		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
 	}

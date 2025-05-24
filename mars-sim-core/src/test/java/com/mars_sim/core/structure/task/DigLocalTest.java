@@ -83,7 +83,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         executeTaskUntilPhase(p, task, 1000);
 
         // Add up reg resources
-        double collected = s.getAmountResourceStored(ResourceUtil.iceID);
+        double collected = s.getAmountResourceStored(ResourceUtil.ICE_ID);
         assertGreaterThan("Collected Ice", 0D, collected);
     }
 
@@ -133,7 +133,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         assertTrue("Task is EVA", task.isEVA());
 
         // Fill capacity
-        s.storeAmountResource(ResourceUtil.iceID, s.getAmountResourceCapacity(ResourceUtil.iceID));
+        s.storeAmountResource(ResourceUtil.ICE_ID, s.getAmountResourceCapacity(ResourceUtil.ICE_ID));
         tasks = mt.getSettlementTasks(s);
         assertTrue("No Tasks when no capacity", tasks.isEmpty());
     }

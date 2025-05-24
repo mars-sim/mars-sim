@@ -64,8 +64,8 @@ public class PreparingDessert extends Function {
 	 */
 	public static final double PREPARE_DESSERT_WORK_REQUIRED = 3D;
 
-	public static double UP = 0.01;
-	public static double DOWN = 0.007;
+	private final static double UP = 0.01;
+	private final static double DOWN = 0.007;
 
 	// SERVING_FRACTION also used in GoodsManager
 	public static final int NUM_OF_DESSERT_PER_SOL = 4;
@@ -88,9 +88,6 @@ public class PreparingDessert extends Function {
 
 	private static int NUM_DESSERTS = availableDesserts.length;
 
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodWasteID = ResourceUtil.foodWasteID;
-	public static int NaClOID = ResourceUtil.NaClOID;
 
 	public static int[] availableDessertsID = {
 			ResourceUtil.findIDbyAmountResourceName(availableDesserts[0]),
@@ -383,10 +380,10 @@ public class PreparingDessert extends Function {
 	private void cleanUpKitchen() {
 		
 		double amountAgent = cleaningAgentPerSol;		 
-		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NaClOID, amountAgent);
+		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NACLO_ID, amountAgent);
 
 		double amountWater = 10 * amountAgent;
-		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, amountWater);
+		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
 		
 		// Track water consumption
 		building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_DESSERT, amountWater - lackingWater);
@@ -435,7 +432,7 @@ public class PreparingDessert extends Function {
 				isAvailable = retrieve(amount, availableDessertsAR[i].getID(), false);
 			boolean isWater_av = false;
 			if (dessertMassPerServing - amount > MIN)
-				isWater_av = retrieve(dessertMassPerServing - amount, waterID, false);
+				isWater_av = retrieve(dessertMassPerServing - amount, ResourceUtil.WATER_ID, false);
 
 			if (isAvailable && isWater_av) {
 				dessertList.add(availableDesserts[i]);
@@ -548,7 +545,7 @@ public class PreparingDessert extends Function {
 			}
 
 			if (dessertMassPerServing - dryMass > MIN) {
-				retrieve(dessertMassPerServing - dryMass, waterID, true);
+				retrieve(dessertMassPerServing - dryMass, ResourceUtil.WATER_ID, true);
 				building.getSettlement().addWaterConsumption(WaterUseType.PREP_DESSERT, dessertMassPerServing - dryMass);
 			}
 
@@ -611,7 +608,7 @@ public class PreparingDessert extends Function {
 							// Throw out bad dessert as food waste.
 							double m = getDryMass(dessert.getName());
 							if (m > MIN)
-								store(m, foodWasteID, "PreparingDessert::timePassing");
+								store(m, ResourceUtil.FOOD_WASTE_ID, "PreparingDessert::timePassing");
 	
 							log.append(getDryMass(dessert.getName())).append(" kg ")
 									.append(dessert.getName()).append(DISCARDED);

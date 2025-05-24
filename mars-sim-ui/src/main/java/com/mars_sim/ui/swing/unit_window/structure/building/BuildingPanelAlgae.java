@@ -125,10 +125,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 		AttributePanel labelPanel = new AttributePanel(18);
 		center.add(labelPanel, BorderLayout.NORTH);
-		
-//		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.tankSize"), 
-//				Double.toString(pond.getTankSize()), null);
-		
+
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.type"), 
 				"Spirulina", null);
 		
@@ -144,12 +141,12 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		maxAlgaeMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.maxAlgaeMass"),
 				StyleManager.DECIMAL_KG2.format(maxAlgaeMass), null);
 
-		algaeProducedCache = pond.computeDailyAverage(AlgaeFarming.PRODUCED_ALGAE_ID);
+		algaeProducedCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
 		algaeProducedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.produced"),
 									DECIMAL_KG_SOL.format(algaeProducedCache),
 									Msg.getString("BuildingPanelAlgae.algae.produced.tooltip"));
 		
-		algaeHarvestCache = pond.computeDailyAverage(AlgaeFarming.HARVESTED_ALGAE_ID);
+		algaeHarvestCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
 		algaeHarvestLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.harvested"),
 									DECIMAL_KG_SOL.format(algaeHarvestCache),
 									Msg.getString("BuildingPanelAlgae.algae.harvested.tooltip"));
@@ -184,22 +181,22 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		radLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.solarIrradiance.title"),
 							 radCache + " W/m", "Estimated sunlight on top of the greenhouse roof");
 		
-		waterUsageCache = pond.computeDailyAverage(ResourceUtil.waterID);
+		waterUsageCache = pond.computeDailyAverage(ResourceUtil.WATER_ID);
 		waterUsageLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterUsage.title"),
 									DECIMAL_KG_SOL.format(waterUsageCache),
 									Msg.getString("BuildingPanelAlgae.waterUsage.tooltip"));
 
-		greyWaterProducedCache = pond.computeDailyAverage(ResourceUtil.greyWaterID);
+		greyWaterProducedCache = pond.computeDailyAverage(ResourceUtil.GREY_WATER_ID);
 		greyWaterLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.greyWaterProduced.title"),
 									DECIMAL_KG_SOL.format(greyWaterProducedCache),
 									Msg.getString("BuildingPanelAlgae.greyWaterProduced.tooltip"));
 		
-		o2Cache = pond.computeDailyAverage(ResourceUtil.oxygenID);
+		o2Cache = pond.computeDailyAverage(ResourceUtil.OXYGEN_ID);
 		o2GenLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.o2.title"),
 									DECIMAL_KG_SOL.format(o2Cache),
 									Msg.getString("BuildingPanelAlgae.o2.tooltip"));
 
-		co2Cache = pond.computeDailyAverage(ResourceUtil.co2ID);
+		co2Cache = pond.computeDailyAverage(ResourceUtil.CO2_ID);
 		co2ConsumedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.co2.title"),
 									DECIMAL_KG_SOL.format(co2Cache),
 								 	Msg.getString("BuildingPanelAlgae.co2.tooltip"));
@@ -243,7 +240,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 			maxAlgaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newMaxAlgae));
 		}
 
-		double newAlgaeHarvested = pond.computeDailyAverage(AlgaeFarming.HARVESTED_ALGAE_ID);
+		double newAlgaeHarvested = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
 		if (algaeHarvestCache != newAlgaeHarvested) {
 			algaeHarvestCache = newAlgaeHarvested;
 			algaeHarvestLabel.setText(DECIMAL_KG_SOL.format(newAlgaeHarvested));
@@ -294,28 +291,28 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		}
 		
 		// Update the average water usage
-		double newWater = pond.computeDailyAverage(ResourceUtil.waterID);
+		double newWater = pond.computeDailyAverage(ResourceUtil.WATER_ID);
 		if (waterUsageCache != newWater) {
 			waterUsageCache = newWater;
 			waterUsageLabel.setText(DECIMAL_KG_SOL.format(newWater));
 		}
 
 		// Update the average O2 generated
-		double newO2 = pond.computeDailyAverage(ResourceUtil.oxygenID);
+		double newO2 = pond.computeDailyAverage(ResourceUtil.OXYGEN_ID);
 		if (o2Cache != newO2) {
 			o2Cache = newO2;
 			o2GenLabel.setText(DECIMAL_KG_SOL.format(newO2));
 		}
 
 		// Update the average CO2 consumed
-		double newCo2 = pond.computeDailyAverage(ResourceUtil.co2ID);
+		double newCo2 = pond.computeDailyAverage(ResourceUtil.CO2_ID);
 		if (co2Cache != newCo2) {
 			co2Cache = newCo2;
 			co2ConsumedLabel.setText(DECIMAL_KG_SOL.format(newCo2));
 		}
 
 		// Update the average grey water usage
-		double newGreyWater = pond.computeDailyAverage(ResourceUtil.greyWaterID);
+		double newGreyWater = pond.computeDailyAverage(ResourceUtil.GREY_WATER_ID);
 		if (greyWaterProducedCache != newGreyWater) {
 			greyWaterProducedCache = newGreyWater;
 			greyWaterLabel.setText(DECIMAL_KG_SOL.format(newGreyWater));
@@ -332,6 +329,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	/**
 	 * Prepares for deletion.
 	 */
+	@Override
 	public void destroy() {
 		super.destroy();
 		

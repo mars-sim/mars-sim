@@ -52,8 +52,6 @@ public class Fishery extends Function {
 	
 	/** Time before weed need tendering. */
 	private static final int WEED_DEMAND = 250;
-	/** The id for fish meat. */
-	public static final int FISH_MEAT_ID = ResourceUtil.fishMeatID;
 	/** Convert from kg to ounce. */
 	public static final double KG_PER_OUNCE = 0.02834952;
 	/** Convert from ounce to kg. */
@@ -229,7 +227,7 @@ public class Fishery extends Function {
 		}
 
 		// Modify result by value (VP) of food meat at the settlement.
-		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.fishMeatID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.FISH_MEAT_ID);
 
 		return (demand / (supply + 1D)) * foodValue;
 	}
@@ -552,13 +550,13 @@ public class Fishery extends Function {
 					+ " kg. Stock:" + fish.size());
 			
 			// Record as a harvest
-			addResourceLog(mass, ResourceUtil.fishMeatID);
+			addResourceLog(mass, ResourceUtil.FISH_MEAT_ID);
 			
 			// Fish stored as KG, 90% is useful
-			store((removed.getSize() * 0.9D) * KG_PER_OUNCE, ResourceUtil.fishMeatID, "Fishery::catchFish");
+			store((removed.getSize() * 0.9D) * KG_PER_OUNCE, ResourceUtil.FISH_MEAT_ID, "Fishery::catchFish");
 			
 			// Fish Oil is 1% of fish size, a guess
-			store((removed.getSize() * 0.01D) * KG_PER_OUNCE, ResourceUtil.fishOilID, "Fishery::catchFish");
+			store((removed.getSize() * 0.01D) * KG_PER_OUNCE, ResourceUtil.FISH_OIL_ID, "Fishery::catchFish");
 		}
 		return 0;
 	}

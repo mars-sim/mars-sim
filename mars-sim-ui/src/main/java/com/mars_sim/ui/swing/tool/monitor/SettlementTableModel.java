@@ -85,21 +85,21 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		COLUMNS[ENERGY_STORED] = new ColumnSpec("kWh Stored", String.class);
 		COLUMNS[MALFUNCTION] = new ColumnSpec("Malfunction", String.class);		
 		COLUMNS[OXYGEN_COL] = new ColumnSpec("Oxygen", Double.class);
-		COL_TO_RESOURCE[OXYGEN_COL] = ResourceUtil.oxygenID;
+		COL_TO_RESOURCE[OXYGEN_COL] = ResourceUtil.OXYGEN_ID;
 		COLUMNS[HYDROGEN_COL] = new ColumnSpec("Hydrogen", Double.class);	
-		COL_TO_RESOURCE[HYDROGEN_COL] = ResourceUtil.hydrogenID;
+		COL_TO_RESOURCE[HYDROGEN_COL] = ResourceUtil.HYDROGEN_ID;
 		COLUMNS[METHANE_COL] = new ColumnSpec("Methane", Double.class);
-		COL_TO_RESOURCE[METHANE_COL] = ResourceUtil.methaneID;	
+		COL_TO_RESOURCE[METHANE_COL] = ResourceUtil.METHANE_ID;	
 		COLUMNS[METHANOL_COL] = new ColumnSpec("Methanol", Double.class);
-		COL_TO_RESOURCE[METHANOL_COL] = ResourceUtil.methanolID;	
+		COL_TO_RESOURCE[METHANOL_COL] = ResourceUtil.METHANOL_ID;	
 		COLUMNS[WATER_COL] = new ColumnSpec("Water", Double.class);
-		COL_TO_RESOURCE[WATER_COL] = ResourceUtil.waterID;	
+		COL_TO_RESOURCE[WATER_COL] = ResourceUtil.WATER_ID;	
 		COLUMNS[ICE_COL] = new ColumnSpec("Ice", Double.class);
-		COL_TO_RESOURCE[ICE_COL] = ResourceUtil.iceID;			
+		COL_TO_RESOURCE[ICE_COL] = ResourceUtil.ICE_ID;			
 		COLUMNS[REGOLITHS_COL] = new ColumnSpec("Regoliths", Double.class);
 		COL_TO_RESOURCE[REGOLITHS_COL] = REGOLITH_ID;	
 		COLUMNS[SAND_COL] = new ColumnSpec("Sand", Double.class);	
-		COL_TO_RESOURCE[SAND_COL] = ResourceUtil.sandID;	
+		COL_TO_RESOURCE[SAND_COL] = ResourceUtil.SAND_ID;	
 		COLUMNS[ROCKS_COL] = new ColumnSpec("Rocks", Double.class);	
 		COL_TO_RESOURCE[ROCKS_COL] = ROCK_ID;	
 		COLUMNS[ORES_COL] = new ColumnSpec("Ores", Double.class);
@@ -107,37 +107,37 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		COLUMNS[MINERALS_COL] = new ColumnSpec("Minerals", Double.class);
 		COL_TO_RESOURCE[MINERALS_COL] = MINERAL_ID;	
 		COLUMNS[CONCRETE_COL] = new ColumnSpec("Concrete", Double.class);
-		COL_TO_RESOURCE[CONCRETE_COL] = ResourceUtil.concreteID;	
+		COL_TO_RESOURCE[CONCRETE_COL] = ResourceUtil.CONCRETE_ID;	
 		COLUMNS[CEMENT_COL] = new ColumnSpec("Cement", Double.class);
-		COL_TO_RESOURCE[CEMENT_COL] = ResourceUtil.cementID;	
+		COL_TO_RESOURCE[CEMENT_COL] = ResourceUtil.CEMENT_ID;	
 		COLUMNS[LIME_COL] = new ColumnSpec("Lime", Double.class);
-		COL_TO_RESOURCE[LIME_COL] = ResourceUtil.limeID;
+		COL_TO_RESOURCE[LIME_COL] = ResourceUtil.LIME_ID;
 		
 		
 		// Mapping from resource to the column
 		RESOURCE_TO_COL = new HashMap<>();
-		RESOURCE_TO_COL.put(ResourceUtil.oxygenID, OXYGEN_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.hydrogenID, HYDROGEN_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.methanolID, METHANOL_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.methaneID, METHANE_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.waterID, WATER_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.oxygenID, OXYGEN_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.iceID, ICE_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.sandID, SAND_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.concreteID, CONCRETE_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.cementID, CEMENT_COL);
-		RESOURCE_TO_COL.put(ResourceUtil.limeID, LIME_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.OXYGEN_ID, OXYGEN_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.HYDROGEN_ID, HYDROGEN_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.METHANOL_ID, METHANOL_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.METHANE_ID, METHANE_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.WATER_ID, WATER_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.OXYGEN_ID, OXYGEN_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.ICE_ID, ICE_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.SAND_ID, SAND_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.CONCRETE_ID, CONCRETE_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.CEMENT_ID, CEMENT_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.LIME_ID, LIME_COL);
 		
 		for (int i : ResourceUtil.REGOLITH_TYPES) {
 			RESOURCE_TO_COL.put(i, REGOLITHS_COL);
 		}
-		for (int i : ResourceUtil.oreDepositIDs) {
+		for (int i : ResourceUtil.ORE_DEPOSIT_IDS) {
 			RESOURCE_TO_COL.put(i, ORES_COL);
 		}
-		for (int i : ResourceUtil.mineralConcIDs) {
+		for (int i : ResourceUtil.MINERAL_CONC_IDs) {
 			RESOURCE_TO_COL.put(i, MINERALS_COL);
 		}
-		for (int i : ResourceUtil.rockIDs) {
+		for (int i : ResourceUtil.ROCK_IDS) {
 			RESOURCE_TO_COL.put(i, ROCKS_COL);
 		}
 	}
@@ -244,9 +244,9 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 					int resourceId = COL_TO_RESOURCE[columnIndex];
 					result = switch(resourceId) {
 						case REGOLITH_ID -> getTotalAmount(ResourceUtil.REGOLITH_TYPES, settle);
-						case ORE_ID -> getTotalAmount(ResourceUtil.oreDepositIDs, settle);
-						case MINERAL_ID -> getTotalAmount(ResourceUtil.mineralConcIDs, settle);
-						case ROCK_ID -> getTotalAmount(ResourceUtil.rockIDs, settle);
+						case ORE_ID -> getTotalAmount(ResourceUtil.ORE_DEPOSIT_IDS, settle);
+						case MINERAL_ID -> getTotalAmount(ResourceUtil.MINERAL_CONC_IDs, settle);
+						case ROCK_ID -> getTotalAmount(ResourceUtil.ROCK_IDS, settle);
 						default -> settle.getAllAmountResourceOwned(resourceId);
 					};
 				}

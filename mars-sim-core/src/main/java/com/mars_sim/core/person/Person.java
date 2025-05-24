@@ -258,7 +258,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
-		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
+		eqmInventory.setResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
 		
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
@@ -1671,7 +1671,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	public void fillUpThermalBottle(double amount) {
 		Container bottle = lookForThermalBottle();
-		bottle.storeAmountResource(ResourceUtil.waterID, amount);
+		bottle.storeAmountResource(ResourceUtil.WATER_ID, amount);
 	}
 	
 	/**
@@ -1680,9 +1680,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return
 	 */
 	public Container lookForThermalBottle() {
-		Container c = eqmInventory.findOwnedContainer(EquipmentType.THERMAL_BOTTLE, getIdentifier(), ResourceUtil.waterID);
+		Container c = eqmInventory.findOwnedContainer(EquipmentType.THERMAL_BOTTLE, getIdentifier(), ResourceUtil.WATER_ID);
 		if (c == null)
-			return findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.waterID);
+			return findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.WATER_ID);
 		else
 			return c;
 	}

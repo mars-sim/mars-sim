@@ -22,9 +22,9 @@ public class VehicleConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Crew size", 4, found.getCrewSize());
 
         assertEquals("Cargo capacity", 2000D, found.getTotalCapacity());
-        assertEquals("Methanol capacity", 100D, found.getCargoCapacity(ResourceUtil.methanolID));
-        assertEquals("Oxygen capacity", 180D, found.getCargoCapacity(ResourceUtil.oxygenID));
-        assertEquals("Water capacity", 200D, found.getCargoCapacity(ResourceUtil.waterID));
+        assertEquals("Methanol capacity", 100D, found.getCargoCapacity(ResourceUtil.METHANOL_ID));
+        assertEquals("Oxygen capacity", 180D, found.getCargoCapacity(ResourceUtil.OXYGEN_ID));
+        assertEquals("Water capacity", 200D, found.getCargoCapacity(ResourceUtil.WATER_ID));
 
         assertEquals("Power source", PowerSourceType.FUEL_POWER, found.getPowerSourceType());
         

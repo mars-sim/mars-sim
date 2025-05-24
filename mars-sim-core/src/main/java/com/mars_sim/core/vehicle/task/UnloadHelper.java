@@ -34,10 +34,10 @@ public final class UnloadHelper {
 	/**
 	 * Resources that are excluded from the Output reporting
 	 */
-    static final Set<Integer> EXCLUDE_OUTPUTS = Set.of(ResourceUtil.waterID,
-					ResourceUtil.methanolID,
-					ResourceUtil.foodID,
-					ResourceUtil.oxygenID);
+    static final Set<Integer> EXCLUDE_OUTPUTS = Set.of(ResourceUtil.WATER_ID,
+					ResourceUtil.METHANOL_ID,
+					ResourceUtil.FOOD_ID,
+					ResourceUtil.OXYGEN_ID);
 
     private UnloadHelper() {
         // Stop instantiation
@@ -137,7 +137,7 @@ public final class UnloadHelper {
     		
     		// Resources count towards the output ??
     		if (!UnloadHelper.EXCLUDE_OUTPUTS.contains(id)) {
-    			double laborTime = ((id == ResourceUtil.iceID) || (id == ResourceUtil.regolithID)
+    			double laborTime = ((id == ResourceUtil.ICE_ID) || (id == ResourceUtil.REGOLITH_ID)
     								? CollectResources.LABOR_TIME : CollectMinedMinerals.LABOR_TIME);
     			dest.addOutput(id, amount, laborTime);
     		}

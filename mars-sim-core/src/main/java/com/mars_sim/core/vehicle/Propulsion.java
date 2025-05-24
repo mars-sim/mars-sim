@@ -20,11 +20,6 @@ public abstract class Propulsion implements Serializable {
 	
 	/** Default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Propulsion.class.getName());
-	
-	 /** The oxygen as fuel oxidizer for the fuel cells. */
-	 public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	 /** The water as the by-product of the fuel cells */
-	 public static final int WATER_ID = ResourceUtil.waterID;
 	 
 	/** Conversion factor : 1 Wh = 3.6 kilo Joules */
 	private static final double JOULES_PER_WH = 3_600.0;
@@ -88,22 +83,22 @@ public abstract class Propulsion implements Serializable {
 	public void retrieveFuelNOxidizer(double fuelNeeded, int fuelTypeID) {
 		 if (fuelNeeded > 0) {
 			 
-			 if (fuelTypeID == ResourceUtil.methanolID) {
+			 if (fuelTypeID == ResourceUtil.METHANOL_ID) {
 				 // Retrieve the fuel needed for the distance traveled
 				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
-				 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_METHANOL * fuelNeeded);
+				 vehicle.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANOL * fuelNeeded);
 				 // Generate  water from the fuel cells
-				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
+				 vehicle.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
 			 }
 
-			 else if (fuelTypeID == ResourceUtil.methaneID) {
+			 else if (fuelTypeID == ResourceUtil.METHANE_ID) {
 				 // Retrieve the fuel needed for the distance traveled
 				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
-				 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_METHANE * fuelNeeded);
+				 vehicle.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANE * fuelNeeded);
 				 // Generate the water from the fuel cells
-				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANE * fuelNeeded);
+				 vehicle.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANE * fuelNeeded);
 			 }				 
 		 }
 	}

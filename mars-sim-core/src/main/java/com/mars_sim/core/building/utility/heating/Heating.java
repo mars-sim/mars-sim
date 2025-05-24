@@ -1127,7 +1127,7 @@ public class Heating implements Serializable {
 		LifeSupport ls = building.getLifeSupport();
 		if (ls != null)
 			/** The percent of the air is moisture. Assume 1%. */
-			percentAirMoisture = ls.getAir().getGas(ResourceUtil.waterID).getPercent();
+			percentAirMoisture = ls.getAir().getGas(ResourceUtil.WATER_ID).getPercent();
 
 //		double airMoistureMass = gas.getMass();
 
@@ -1369,13 +1369,6 @@ public class Heating implements Serializable {
 			newHeat = extraHeat;
 			// Dump a half quarter of selectedReqHeat. Reduce selectedReqHeat by a quarter
 			selReqHeat = selReqHeat + extraHeat;
-
-//			logger.info("selReqHeat: " + selReqHeat
-//					+ "  areaFactor: " + areaFactor
-//					+ "  devT: " + devT
-//					+ "  extraHeat: " + extraHeat
-//					+ "  newHeat: " + newHeat
-//					);
 
 			// Pick the first heat sink (air or water) randomly
 			int rand = RandomUtil.getRandomInt(1);

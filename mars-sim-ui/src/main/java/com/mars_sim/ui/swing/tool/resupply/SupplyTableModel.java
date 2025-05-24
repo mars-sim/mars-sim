@@ -133,8 +133,7 @@ extends AbstractTableModel {
 	private void createSupplyTypeList(String category, List<String> supplies) {
 
 		// Create map of supplies and their numbers.
-		Map<String, Integer> supplyMap =
-				new HashMap<>(supplies.size());
+		Map<String, Integer> supplyMap = HashMap.newHashMap(supplies.size());
 		Iterator<String> i = supplies.iterator();
 		while (i.hasNext()) {
 			String supplyType = i.next();
@@ -305,7 +304,7 @@ extends AbstractTableModel {
 
 		 if (categoryTypeMap == null) {
 			 // Create and populate category type map.
-			 categoryTypeMap = new HashMap<>(5);
+			 categoryTypeMap = HashMap.newHashMap(5);
 
 			 // Create building type list.
 			 categoryTypeMap.put(BUILDING, getSortedBuildingTypes());
@@ -321,15 +320,17 @@ extends AbstractTableModel {
 			 categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
 
 			 // Create resource type list.
-			 categoryTypeMap.put(RESOURCE, ResourceUtil.getAmountResourceStringSortedList());
+			 var amountNames = ResourceUtil.getAmountResources().stream()
+					 						.map(AmountResource::getName)
+					 						.sorted()
+					 						.toList();
+			 categoryTypeMap.put(RESOURCE, amountNames);
 
 			 // Create part type list.
-			 List<String> partNames = new ArrayList<>();
-			 Iterator<Part> j = Part.getParts().iterator();
-			 while (j.hasNext()) {
-				 partNames.add(j.next().getName());
-			 }
-			 Collections.sort(partNames);
+			 var partNames = Part.getParts().stream()
+					 						.map(Part::getName)
+					 						.sorted()
+					 						.toList();
 			 categoryTypeMap.put(PART, partNames);
 		 }
 
@@ -339,7 +340,7 @@ extends AbstractTableModel {
 	 /**
 	  * Inner class to represent a supply table item.
 	  */
-	 public class SupplyItem {
+	public class SupplyItem {
 
 		 // Data members
 		 public String category;

@@ -44,7 +44,7 @@ extends DigLocal {
 	 */
 	DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
+        super(NAME, COLLECT_REGOLITH, ResourceUtil.REGOLITH_ID, 
         	  CONTAINER_TYPE, person, 150);
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());

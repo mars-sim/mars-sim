@@ -59,7 +59,7 @@ extends TestCase {
 	public void testSingleResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
-		int rockID = ResourceUtil.rockSamplesID;
+		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
 		assertEquals("EMpty capacity", bagCap,
 						c.getAmountResourceCapacity(rockID));
@@ -84,7 +84,7 @@ extends TestCase {
 	public void testTwoResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
-		int rockID = ResourceUtil.rockSamplesID;
+		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
 		
 		// Load rock
@@ -94,7 +94,7 @@ extends TestCase {
 		assertEquals("Stored resource", rockID, c.getResource());
 		
 		// Attempt to load 2nd resource
-		int secondResource = ResourceUtil.iceID;
+		int secondResource = ResourceUtil.ICE_ID;
 		assertEquals("Stored 2nd resource", quantity, c.storeAmountResource(secondResource, quantity));
 		assertEquals("2nd resource capacity", 0D, c.getAmountResourceStored(secondResource));
 		assertEquals("2nd resource remaining capacity", 0D, c.getAmountResourceRemainingCapacity(secondResource));
@@ -106,7 +106,7 @@ extends TestCase {
 	public void testEmptying() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
-		int rockID = ResourceUtil.rockSamplesID;
+		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
 		
 		// Load rock
@@ -123,7 +123,7 @@ extends TestCase {
 
 		
 		// Still fixed to original resource
-		int secondResource = ResourceUtil.iceID;
+		int secondResource = ResourceUtil.ICE_ID;
 		assertEquals("1st resource after unload", bagCap, c.getAmountResourceRemainingCapacity(rockID));
 		assertEquals("2nd resource after unload", 0D, c.getAmountResourceRemainingCapacity(secondResource));
 	}
@@ -134,8 +134,8 @@ extends TestCase {
 	public void testNoneReusable() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
-		int secondResource = ResourceUtil.iceID;
-		int rockID = ResourceUtil.rockSamplesID;
+		int secondResource = ResourceUtil.ICE_ID;
+		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
 		
 		// Load rock
@@ -152,8 +152,8 @@ extends TestCase {
 	public void testReusable() {
 		GenericContainer c = new GenericContainer("Specimen", EquipmentType.SPECIMEN_BOX, true, settlement);
 		
-		int secondResource = ResourceUtil.iceID;
-		int rockID = ResourceUtil.rockSamplesID;
+		int secondResource = ResourceUtil.ICE_ID;
+		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.SPECIMEN_BOX);
 		
 		// Load rock
@@ -173,9 +173,9 @@ extends TestCase {
 		GenericContainer c = new GenericContainer(cType.getName(), cType, true, settlement);
 
 		double cap = ContainerUtil.getContainerCapacity(cType);
-		int	allowedId1 = ResourceUtil.waterID;
-		int failedId1 = ResourceUtil.oxygenID;
-		int allowedId2 = ResourceUtil.regolithBID;
+		int	allowedId1 = ResourceUtil.WATER_ID;
+		int failedId1 = ResourceUtil.OXYGEN_ID;
+		int allowedId2 = ResourceUtil.REGOLITHB_ID;
 		
 		// Test negatives first
 		assertPhaseNotSupported(c, failedId1);
@@ -228,21 +228,21 @@ extends TestCase {
 		int failedId2 = 0;
 		switch(required) {
 		case LIQUID:
-			allowedId = ResourceUtil.waterID;
-			failedId1 = ResourceUtil.oxygenID;
-			failedId2 = ResourceUtil.regolithBID;
+			allowedId = ResourceUtil.WATER_ID;
+			failedId1 = ResourceUtil.OXYGEN_ID;
+			failedId2 = ResourceUtil.REGOLITHB_ID;
 			break;
 		
 		case GAS:
-			allowedId = ResourceUtil.oxygenID;
-			failedId1 = ResourceUtil.waterID;
-			failedId2 = ResourceUtil.regolithBID;
+			allowedId = ResourceUtil.OXYGEN_ID;
+			failedId1 = ResourceUtil.WATER_ID;
+			failedId2 = ResourceUtil.REGOLITHB_ID;
 			break;
 			
 		case SOLID:
-			allowedId = ResourceUtil.regolithBID;
-			failedId1 = ResourceUtil.oxygenID;
-			failedId2 = ResourceUtil.waterID;
+			allowedId = ResourceUtil.REGOLITHB_ID;
+			failedId1 = ResourceUtil.OXYGEN_ID;
+			failedId2 = ResourceUtil.WATER_ID;
 			break;
 		}
 		

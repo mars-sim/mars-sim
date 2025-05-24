@@ -131,14 +131,14 @@ public class MissionTravelStep extends MissionStep {
         double amount = vehicle.getFuelNeededForTrip(distance, addOptionals);
         manifest.addAmount(vehicle.getFuelTypeID(), amount, true);
          
-        if (vehicle.getFuelTypeID() == ResourceUtil.methanolID) {
+        if (vehicle.getFuelTypeID() == ResourceUtil.METHANOL_ID) {
             // if useMargin is true, include more oxygen
-            manifest.addAmount(ResourceUtil.oxygenID, 
+            manifest.addAmount(ResourceUtil.OXYGEN_ID, 
             		VehicleController.RATIO_OXIDIZER_METHANOL * amount, true);
         }
-        else if (vehicle.getFuelTypeID() == ResourceUtil.methaneID) {
+        else if (vehicle.getFuelTypeID() == ResourceUtil.METHANE_ID) {
             // if useMargin is true, include more oxygen
-            manifest.addAmount(ResourceUtil.oxygenID, 
+            manifest.addAmount(ResourceUtil.OXYGEN_ID, 
             		VehicleController.RATIO_OXIDIZER_METHANE * amount, true);
         }
 

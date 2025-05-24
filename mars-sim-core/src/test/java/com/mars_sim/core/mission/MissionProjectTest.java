@@ -54,8 +54,8 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
          */
         @Override
         void getRequiredResources(SuppliesManifest manifest, boolean optionl) {
-            manifest.addAmount(ResourceUtil.oxygenID, oxygen, true);
-            manifest.addAmount(ResourceUtil.foodID, food, true);
+            manifest.addAmount(ResourceUtil.OXYGEN_ID, oxygen, true);
+            manifest.addAmount(ResourceUtil.FOOD_ID, food, true);
         }
     }
 
@@ -91,8 +91,8 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
 
         SuppliesManifest manifest = mp.getResources(true);
         Map<Integer,Double> needed = manifest.getAmounts(true);
-        assertEquals("Oxygen needed", numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.oxygenID));
-        assertEquals("Food needed", numSteps * FOOD_VALUE, needed.get(ResourceUtil.foodID));
+        assertEquals("Oxygen needed", numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.OXYGEN_ID));
+        assertEquals("Food needed", numSteps * FOOD_VALUE, needed.get(ResourceUtil.FOOD_ID));
         assertEquals("Number of resources needed", 2, needed.size());
     }
 }

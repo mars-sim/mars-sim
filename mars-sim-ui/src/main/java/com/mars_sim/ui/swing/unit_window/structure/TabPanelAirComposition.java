@@ -302,31 +302,31 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 		else {
 
-			double cO2 = getOverallComposition(ResourceUtil.co2ID);
+			double cO2 = getOverallComposition(ResourceUtil.CO2_ID);
 			if (cO2Cache != cO2) {
 				cO2Cache = cO2;
 				cO2Label.setText(StyleManager.DECIMAL2_PERC.format(cO2Cache));
 			}
 
-			double ar = getOverallComposition(ResourceUtil.argonID);
+			double ar = getOverallComposition(ResourceUtil.ARGON_ID);
 			if (arCache != ar) {
 				arCache = ar;
 				arLabel.setText(StyleManager.DECIMAL2_PERC.format(ar));
 			}
 
-			double n2 =  getOverallComposition(ResourceUtil.nitrogenID);
+			double n2 =  getOverallComposition(ResourceUtil.NITROGEN_ID);
 			if (n2Cache != n2) {
 				n2Cache = n2;
 				n2Label.setText(StyleManager.DECIMAL2_PERC.format(n2));
 			}
 
-			double o2 = getOverallComposition(ResourceUtil.oxygenID);
+			double o2 = getOverallComposition(ResourceUtil.OXYGEN_ID);
 			if (o2Cache != o2) {
 				o2Cache = o2;
 				o2Label.setText(StyleManager.DECIMAL2_PERC.format(o2Cache));
 			}
 
-			double h2O = getOverallComposition(ResourceUtil.waterID);
+			double h2O = getOverallComposition(ResourceUtil.WATER_ID);
 			if (h2OCache != h2O) {
 				h2OCache = h2O;
 				h2OLabel.setText(StyleManager.DECIMAL2_PERC.format(h2O));
@@ -426,11 +426,11 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		private int getGasId(int columnIndex) {
-		 	if (columnIndex == 2) return ResourceUtil.oxygenID;
-			else if (columnIndex == 3) return ResourceUtil.waterID;
-			else if (columnIndex == 4) return ResourceUtil.nitrogenID;
-			else if (columnIndex == 5) return ResourceUtil.co2ID;
-			else if (columnIndex == 6) return ResourceUtil.argonID;
+		 	if (columnIndex == 2) return ResourceUtil.OXYGEN_ID;
+			else if (columnIndex == 3) return ResourceUtil.WATER_ID;
+			else if (columnIndex == 4) return ResourceUtil.NITROGEN_ID;
+			else if (columnIndex == 5) return ResourceUtil.CO2_ID;
+			else if (columnIndex == 6) return ResourceUtil.ARGON_ID;
 
 			else return -1;
 		}

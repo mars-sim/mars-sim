@@ -68,10 +68,6 @@ public class EatDrink extends Task {
 
 	private static final String JUICE = "juice";
 	private static final String MILK = "milk";
-	
-	// Static members
-	private static final int FOOD_ID = ResourceUtil.foodID;
-	private static final int WATER_ID = ResourceUtil.waterID;
 
 	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
 	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
@@ -153,22 +149,22 @@ public class EatDrink extends Task {
 
 		double waterAmount = 0;
 
-		foodAmount = person.getAmountResourceStored(FOOD_ID);
-		waterAmount = person.getAmountResourceStored(WATER_ID);
+		foodAmount = person.getAmountResourceStored(ResourceUtil.FOOD_ID);
+		waterAmount = person.getAmountResourceStored(ResourceUtil.WATER_ID);
 		
 		var container = person.getContainerUnit();
 		if (container instanceof ResourceHolder c) {
 			// Take preserved food from inventory if it is available.
 			if (foodAmount == 0)
-				foodAmount = c.getAmountResourceStored(FOOD_ID);
+				foodAmount = c.getAmountResourceStored(ResourceUtil.FOOD_ID);
 			if (waterAmount == 0)
-				waterAmount = c.getAmountResourceStored(WATER_ID);
+				waterAmount = c.getAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
 		// If still no water, check bottle
 		if ((waterAmount == 0) && person.hasThermalBottle()) {
 			var bottle = person.lookForThermalBottle();
-			waterAmount = bottle.getAllAmountResourceStored(WATER_ID);
+			waterAmount = bottle.getAllAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
 		// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -253,26 +249,26 @@ public class EatDrink extends Task {
 	 */
 	private void checkPersonVehicle(Vehicle container, boolean hungry, boolean thirsty) {
 
-		foodAmount = person.getAmountResourceStored(FOOD_ID);
+		foodAmount = person.getAmountResourceStored(ResourceUtil.FOOD_ID);
 		
 		if (hungry && (foodAmount > 0 || desserts > 0)) {
 			food = true;
 		}
 		else {
-			foodAmount = container.getAmountResourceStored(FOOD_ID);
+			foodAmount = container.getAmountResourceStored(ResourceUtil.FOOD_ID);
 			
 			if (hungry && (foodAmount > 0 || desserts > 0)) {
 				food = true;
 			}
 		}
 
-		var waterAmount = person.getAmountResourceStored(WATER_ID);
+		var waterAmount = person.getAmountResourceStored(ResourceUtil.WATER_ID);
 			
 		if (thirsty && waterAmount > 0) {
 			water = true;
 		}
 		else {
-			waterAmount = container.getAmountResourceStored(WATER_ID);
+			waterAmount = container.getAmountResourceStored(ResourceUtil.WATER_ID);
 			
 			if (thirsty && waterAmount > 0) {
 				water = true;
@@ -336,7 +332,7 @@ public class EatDrink extends Task {
 			walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
 
 		// Take napkin from inventory if available.
-		if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
+		if (person.getSettlement().retrieveAmountResource(ResourceUtil.NAPKIN_ID, NAPKIN_MASS) > 0)
 			hasNapkin = true;
 	}
 	
@@ -594,7 +590,7 @@ public class EatDrink extends Task {
 		// Check directly from settlement
 		if (person.isInSettlement()) {
 			// Take preserved food from container if it is available.
-			double shortfall = person.getSettlement().retrieveAmountResource(FOOD_ID, proportion);
+			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
 			if (proportion > shortfall) {
 				proportion -= shortfall;			
 			}
@@ -638,17 +634,17 @@ public class EatDrink extends Task {
 		// If on mission, food is limited and should be 'shared'
 		if (person.isInSettlement()) {	
 			// Take preserved food from container and store it in a person if it is available 
-			double shortfall = person.getSettlement().retrieveAmountResource(FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
+			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
 			if (shortfall > 0) {
 				if (shortfall - PACKED_PRESERVED_FOOD_CARRIED < MIN) {
 					logger.info(person, 20_000L, "No preserved food available.");
 				}
 				else {
 					// Store the food on a person
-					double excess = person.storeAmountResource(FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
+					double excess = person.storeAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
 					if (excess > 0) {
 						// Transfer any excess that a person cannot carry back to the settlement
-						person.getSettlement().storeAmountResource(FOOD_ID, excess);
+						person.getSettlement().storeAmountResource(ResourceUtil.FOOD_ID, excess);
 					}
 				}
 			}
@@ -665,10 +661,10 @@ public class EatDrink extends Task {
 	 */
 	private double consumeFoodProportion(double proportion) {
 		// Assume the person carries preserved food 	
-		double shortfall = person.retrieveAmountResource(FOOD_ID, proportion);
+		double shortfall = person.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
 		if (shortfall > 0) {
 			var container = person.getContainerUnit();
-			shortfall = ((ResourceHolder)container).retrieveAmountResource(FOOD_ID, shortfall);
+			shortfall = ((ResourceHolder)container).retrieveAmountResource(ResourceUtil.FOOD_ID, shortfall);
 		}
 		
 		return proportion - shortfall;
@@ -1001,7 +997,7 @@ public class EatDrink extends Task {
 			// Doing EVA outside. Get water from one's EVA suit
 			EVASuit suit = person.getSuit();
 
-			double available = suit.getAmountResourceStored(WATER_ID);
+			double available = suit.getAmountResourceStored(ResourceUtil.WATER_ID);
 			
 			// Test to see if there's enough water
 			if (available >= amount) {
@@ -1021,7 +1017,7 @@ public class EatDrink extends Task {
 			// Get the bottle the person is carrying
 			Container bottle = person.lookForThermalBottle();
 			if (bottle != null)  {
-				availableAmount = bottle.getAmountResourceStored(WATER_ID);
+				availableAmount = bottle.getAmountResourceStored(ResourceUtil.WATER_ID);
 		
 				// Case 1: See if there's enough water in the bottle
 				if (availableAmount >= amount) {
@@ -1037,7 +1033,7 @@ public class EatDrink extends Task {
 				// Case 2: See if the person needs to fill up the empty bottle
 				if (availableAmount == 0.0) {
 					// Retrieve the water from settlement/vehicle
-					double missing = foodStore.retrieveAmountResource(WATER_ID, 1);
+					double missing = foodStore.retrieveAmountResource(ResourceUtil.WATER_ID, 1);
 					// Fill up the bottle with water
 					if (missing < 1) {
 						amount = 1 - missing;
@@ -1061,7 +1057,7 @@ public class EatDrink extends Task {
 			}
 
 			// Take water carried by person if available
-			double available = foodStore.getAmountResourceStored(WATER_ID);
+			double available = foodStore.getAmountResourceStored(ResourceUtil.WATER_ID);
 			// Test to see if there's enough water
 			if (available >= amount) {
 				consumeWater(foodStore, amount, waterOnly);
@@ -1093,7 +1089,7 @@ public class EatDrink extends Task {
 		// Reduce thirst
 		pc.reduceThirst(amount * THIRST_PER_WATER_SERVING);
 		// Retrieve the water
-		rh.retrieveAmountResource(WATER_ID, amount);
+		rh.retrieveAmountResource(ResourceUtil.WATER_ID, amount);
 		// Record the amount consumed
 		pc.recordFoodConsumption(amount, 3);
 
@@ -1274,7 +1270,7 @@ public class EatDrink extends Task {
 	protected void clearDown() {
 		// Throw away napkin waste if one was used.
 		if (hasNapkin && person.isInside()) {
-			((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.solidWasteID, NAPKIN_MASS);
+			((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.SOLID_WASTE_ID, NAPKIN_MASS);
 		}
 	}
 }
