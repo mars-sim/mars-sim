@@ -1,17 +1,17 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE meal-configuration [
-	<!ELEMENT meal-configuration (global-settings, main-list, side-list)>
+	<!ELEMENT meal-configuration (global-settings, main-list, side-list, dessert-list)>
 	<!ELEMENT global-settings EMPTY>
 	<!ATTLIST global-settings water-consumption-rate CDATA #REQUIRED>
 	<!ATTLIST global-settings cleaning-agent-per-sol CDATA #REQUIRED>
 	<!ATTLIST global-settings meals-per-sol CDATA #REQUIRED>
 	<!ELEMENT main-list (dish*)>
 	<!ELEMENT side-list (dish*)>
+	<!ELEMENT dessert-list (dish*)>
 	<!ELEMENT dish (ingredient+)>
 	<!ATTLIST dish name CDATA #REQUIRED>
-	<!ATTLIST dish oil CDATA #REQUIRED>
-	<!ATTLIST dish salt CDATA #REQUIRED>
-	<!ATTLIST dish category CDATA #REQUIRED>
+	<!ATTLIST dish oil CDATA #IMPLIED>
+	<!ATTLIST dish salt CDATA #IMPLIED>
 	<!ELEMENT ingredient EMPTY >
 	<!ATTLIST ingredient name CDATA #REQUIRED>
 	<!ATTLIST ingredient proportion CDATA #REQUIRED>
@@ -301,5 +301,31 @@
 		</dish>
 				
 	</side-list>
+	<dessert-list>
+		<dish name="Fruit Salad">
+			<ingredient name="Apple" proportion="0.3"/>
+			<ingredient name="Blueberry" proportion="0.3"/>
+			<ingredient name="Orange" proportion="0.2"/>
+			<ingredient name="Cinnamon" proportion="0.1"/>
+		</dish>
+
+		<dish name="Granola">
+			<ingredient name="Granola Bar" proportion="0.3"/>
+			<ingredient name="Sesame Milk" proportion="0.2"/>
+			<ingredient name="Honey" proportion="0.1"/>
+		</dish>
+
+		<dish name="Strawberries">
+			<ingredient name="Strawberry" proportion="0.5"/>
+			<ingredient name="Sugar" proportion="0.1"/>
+		</dish>
+
+		<dish name="Yogurt Parfait">
+			<ingredient name="Granola Bar" proportion="0.2"/>
+			<ingredient name="Blueberry" proportion="0.3"/>
+			<ingredient name="Cranberry" proportion="0.3"/>
+		</dish>
+	</dessert-list>
+
 
 </meal-configuration>

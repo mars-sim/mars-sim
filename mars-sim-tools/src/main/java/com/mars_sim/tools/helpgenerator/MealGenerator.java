@@ -22,7 +22,7 @@ class MealGenerator extends TypeGenerator<HotMeal> {
         "meals");
                 
         // Groups by part type
-        setGrouper("Meal Type", r-> r.getCategory());
+        setGrouper("Meal Type", r-> r.getCategory().name());
     }
 
     /**

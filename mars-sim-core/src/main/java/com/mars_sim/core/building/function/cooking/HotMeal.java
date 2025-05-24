@@ -9,6 +9,7 @@ package com.mars_sim.core.building.function.cooking;
 import java.io.Serializable;
 import java.util.List;
 
+import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 import com.mars_sim.core.structure.Settlement;
 
 public class HotMeal implements Serializable {
@@ -20,11 +21,11 @@ public class HotMeal implements Serializable {
 	private double salt;
 
 	private String mealName;
-	private String mealCategory;
+	private DishCategory mealCategory;
 
 	private List<Ingredient> ingredientList;
 
-	HotMeal(String nameOfMeal, double oil, double salt, List<Ingredient> ingredients, String category) {
+	HotMeal(String nameOfMeal, double oil, double salt, List<Ingredient> ingredients, DishCategory category) {
 
 		this.mealName = nameOfMeal;
 		this.oil = oil;
@@ -37,7 +38,7 @@ public class HotMeal implements Serializable {
 		return mealName;
 	}
 
-	public String getCategory() {
+	public DishCategory getCategory() {
 		return mealCategory;
 	}
 

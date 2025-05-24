@@ -2,18 +2,21 @@ package com.mars_sim.core.building.function.cooking;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 
 public class MealConfigTest extends AbstractMarsSimUnitTest {
 
     public void testGetDishList() {
         var mealConf = getConfig().getMealConfiguration();
 
-        var mains = mealConf.getMainDishList();
+        var mains = mealConf.getDishList(DishCategory.MAIN);
         assertFalse("Mains are not empty", mains.isEmpty());
 
-        var sides = mealConf.getSideDishList();
+        var sides = mealConf.getDishList(DishCategory.SIDE);
         assertFalse("Sides are not empty", sides.isEmpty());
 
+        var desserts = mealConf.getDishList(DishCategory.DESSERT);
+        assertFalse("Desserts are not empty", desserts.isEmpty());
     }
 
     public void testGarlicBread() {
@@ -26,10 +29,28 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Name", name, rice.getMealName());
         assertEquals("Salt", 0.01, rice.getSalt());
         assertEquals("Oil", 0.15, rice.getOil());
-        assertEquals("Category", MealConfig.SIDE_DISH, rice.getCategory());
+        assertEquals("Category", DishCategory.SIDE, rice.getCategory());
 
         var ingredients = rice.getIngredientList();
         assertEquals("Ingregients", 2, ingredients.size());
+    }
+
+    public void testDessertDish() {
+        var name = "Strawberries";
+        var mealConf = getConfig().getMealConfiguration();
+
+        var dish = mealConf.getHotMeal(name);
+
+        assertNotNull(name, dish);
+        assertEquals("Name", name, dish.getMealName());
+        assertEquals("Salt", 0D, dish.getSalt());
+        assertEquals("Oil", 0D, dish.getOil());
+        assertEquals("Category", DishCategory.DESSERT, dish.getCategory());
+
+        var ingredients = dish.getIngredientList();
+        assertEquals("Ingregients", 2, ingredients.size());
+        assertEquals("Ingredient 0", "Strawberry", ingredients.get(0).getName());
+        assertEquals("Ingredient 1", "Sugar", ingredients.get(1).getName());
     }
 
     public void testMainDish() {
@@ -42,7 +63,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Name", name, mainDish.getMealName());
         assertEquals("Salt", 0.01, mainDish.getSalt());
         assertEquals("Oil", 0.005, mainDish.getOil());
-        assertEquals("Category", MealConfig.MAIN_DISH, mainDish.getCategory());
+        assertEquals("Category", DishCategory.MAIN, mainDish.getCategory());
 
         var ingredients = mainDish.getIngredientList();
         assertEquals("Ingregients", 5, ingredients.size());
@@ -54,8 +75,6 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Ingredient 3 impact", 0.75, ingredients.get(3).getImpact());
         assertFalse("Ingredient 4 mandatory", ingredients.get(4).isMandatory());
         assertEquals("Ingredient 4 impact", 0.5, ingredients.get(4).getImpact());
-
-
     }
 
     public void testAvailableIngredients() {

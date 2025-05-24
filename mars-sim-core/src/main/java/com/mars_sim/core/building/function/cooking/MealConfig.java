@@ -7,9 +7,7 @@
 package com.mars_sim.core.building.function.cooking;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -25,8 +23,10 @@ import com.mars_sim.core.resource.ResourceUtil;
  */
 public class MealConfig {
 
-	public static final String SIDE_DISH = "Side Dish";
-	public static final String MAIN_DISH = "Main Dish";
+	// Category of dishes
+	public enum DishCategory {
+		MAIN, SIDE, DESSERT
+	}
 
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
@@ -35,8 +35,6 @@ public class MealConfig {
 
 	// Element names
 	private static final String DISH = "dish";
-	private static final String MAIN_LIST = "main-list";
-	private static final String SIDE_LIST = "side-list";
 	private static final String INGREDIENT = "ingredient";
 	private static final String NAME = "name";
 	private static final String PROPORTION = "proportion";
@@ -47,9 +45,7 @@ public class MealConfig {
 	private double waterConsumptionRate;
 	private double dryMassPerServing;
 
-	private List<HotMeal> mainDishList;
-	private List<HotMeal> sideDishList;
-	
+	private List<HotMeal> dishList;
 
 	/**
 	 * Constructor.
@@ -65,9 +61,11 @@ public class MealConfig {
 		var mealsPerSol = ConfigHelper.getAttributeInt(globals, NUMBER_OF_MEAL_PER_SOL);
 		dryMassPerServing = personConfig.getFoodConsumptionRate() / mealsPerSol;
 
-		// Generate meal list
-		mainDishList = parseMealList(root.getChild(MAIN_LIST), MAIN_DISH, cropConfig);
-		sideDishList = parseMealList(root.getChild(SIDE_LIST), SIDE_DISH, cropConfig);
+		// Generate dish list
+		dishList = new ArrayList<>();
+		dishList.addAll(parseDishList(root, DishCategory.MAIN, cropConfig));
+		dishList.addAll(parseDishList(root, DishCategory.SIDE, cropConfig));
+		dishList.addAll(parseDishList(root, DishCategory.DESSERT, cropConfig));
 	}
 
 	/**
@@ -104,52 +102,46 @@ public class MealConfig {
 	 * @return a list of all dishes 
 	 */
 	public List<HotMeal> getDishList() {
-		return Stream.of(sideDishList, mainDishList)
-				.flatMap(List<HotMeal>::stream)
+		return dishList;
+	}
+	
+	/**
+	 * Gets the dish list for a specific category.
+	 * 
+	 * @return a list of  dish meals
+	 */
+	public List<HotMeal> getDishList(DishCategory category) {
+		return dishList.stream()
+				.filter(dish -> dish.getCategory() == category)
 				.toList();
 	}
-	
-	/**
-	 * Gets the main dish meal list.
-	 * 
-	 * @return a list of main dish meals
-	 */
-	public List<HotMeal> getMainDishList() {
-		return mainDishList;
-	}
-	
-	/**
-	 * Gets the side dish meal list.
-	 * 
-	 * @return a list of side dish meals
-	 */
-	public List<HotMeal> getSideDishList() {
-		return sideDishList;
-	}
+
 	
 	/**
 	 * Creates a list of meal.
 	 * 
 	 * @return list of meal
 	 */
-	private List<HotMeal> parseMealList(Element dishList, String cat, CropConfig crops) {
+	private List<HotMeal> parseDishList(Element root, DishCategory cat, CropConfig crops) {
 		
-		// Main Dishes
-		List<HotMeal> mainDishMeals = new ArrayList<>();
+		var dishNodes = root.getChild(cat.name().toLowerCase() + "-list");
 
-		for (Element mainDish : dishList.getChildren(DISH)) {
+		// Main Dishes
+		List<HotMeal> dishes = new ArrayList<>();
+
+		for (Element mainDish : dishNodes.getChildren(DISH)) {
 			var meal = parseHotMeal(mainDish, cat, crops);
-			mainDishMeals.add(meal);
+			dishes.add(meal);
 		}
 
-		return Collections.unmodifiableList(mainDishMeals);
+		return dishes;
 	}
 
-	private HotMeal parseHotMeal(Element mealNode, String category, CropConfig crops) {
+	private HotMeal parseHotMeal(Element mealNode, DishCategory category, CropConfig crops) {
 		
 		String name = mealNode.getAttributeValue(NAME);
-		double oil = ConfigHelper.getAttributeDouble(mealNode, OIL);
-		double salt = ConfigHelper.getAttributeDouble(mealNode, SALT);
+		double oil = ConfigHelper.getOptionalAttributeDouble(mealNode, OIL, 0D);
+		double salt = ConfigHelper.getOptionalAttributeDouble(mealNode, SALT, 0D);
 
 		List<Ingredient> ingredients = new ArrayList<>();
 		for (Element ingredient : mealNode.getChildren(INGREDIENT)) {

@@ -17,12 +17,9 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.goods.GoodType;
-import com.mars_sim.core.logging.SimLogger;
 
 public class ResourceUtil {
 
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
 	
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
 	public static final int FIRST_ITEM_RESOURCE_ID = 500;
@@ -380,11 +377,10 @@ public class ResourceUtil {
 	 */
 	public static final int findIDbyAmountResourceName(String name) {
 		AmountResource ar = findAmountResource(name);
-		if (ar != null)
-			return ar.getID();
-		
-		logger.severe("The name '" + name + "' does not exist.");
-		return -1;
+		if (ar == null) {
+			throw new IllegalArgumentException("Resource '" + name + "' not found.");
+		}
+		return ar.getID();
 	}
 
 	/**

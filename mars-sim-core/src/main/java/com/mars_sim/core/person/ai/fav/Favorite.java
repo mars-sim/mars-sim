@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import com.mars_sim.core.building.function.cooking.HotMeal;
 import com.mars_sim.core.building.function.cooking.MealConfig;
 import com.mars_sim.core.building.function.cooking.PreparingDessert;
+import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class Favorite implements Serializable {
@@ -37,8 +38,8 @@ public class Favorite implements Serializable {
         availableDesserts = PreparingDessert.getArrayOfDesserts();
         
     	favoriteType = determineRandomFavoriteType();
-        favoriteMainDish = RandomUtil.getRandomElement(meals.getMainDishList()).getMealName();
-    	favoriteSideDish = RandomUtil.getRandomElement(meals.getSideDishList()).getMealName();
+        favoriteMainDish = RandomUtil.getRandomElement(meals.getDishList(DishCategory.MAIN)).getMealName();
+    	favoriteSideDish = RandomUtil.getRandomElement(meals.getDishList(DishCategory.SIDE)).getMealName();
     	favoriteDessert = determineRandomDessert();
 	}
 
