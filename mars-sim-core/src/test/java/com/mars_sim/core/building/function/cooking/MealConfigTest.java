@@ -2,7 +2,6 @@ package com.mars_sim.core.building.function.cooking;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 
 public class MealConfigTest extends AbstractMarsSimUnitTest {
 
@@ -26,7 +25,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         var rice = mealConf.getHotMeal(name);
 
         assertNotNull(name, rice);
-        assertEquals("Name", name, rice.getMealName());
+        assertEquals("Name", name, rice.getName());
         assertEquals("Salt", 0.01, rice.getSalt());
         assertEquals("Oil", 0.15, rice.getOil());
         assertEquals("Category", DishCategory.SIDE, rice.getCategory());
@@ -42,7 +41,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         var dish = mealConf.getHotMeal(name);
 
         assertNotNull(name, dish);
-        assertEquals("Name", name, dish.getMealName());
+        assertEquals("Name", name, dish.getName());
         assertEquals("Salt", 0D, dish.getSalt());
         assertEquals("Oil", 0D, dish.getOil());
         assertEquals("Category", DishCategory.DESSERT, dish.getCategory());
@@ -60,7 +59,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         var mainDish = mealConf.getHotMeal(name);
 
         assertNotNull(name, mainDish);
-        assertEquals("Name", name, mainDish.getMealName());
+        assertEquals("Name", name, mainDish.getName());
         assertEquals("Salt", 0.01, mainDish.getSalt());
         assertEquals("Oil", 0.005, mainDish.getOil());
         assertEquals("Category", DishCategory.MAIN, mainDish.getCategory());

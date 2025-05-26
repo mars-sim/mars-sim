@@ -1,18 +1,20 @@
 /*
  * Mars Simulation Project
- * HotMeal.java
- * @date 2022-07-15
- * @author Manny Kung
+ * DishRecipe.java
+ * @date 2025-05-26
+ * @author Barry Evans
  */
 package com.mars_sim.core.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.List;
 
-import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 import com.mars_sim.core.structure.Settlement;
 
-public class HotMeal implements Serializable {
+/**
+ * Represents a recipe for creating a Dish.
+ */
+public class DishRecipe implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -20,31 +22,31 @@ public class HotMeal implements Serializable {
 	private double oil;
 	private double salt;
 
-	private String mealName;
-	private DishCategory mealCategory;
+	private String name;
+	private DishCategory category;
 
 	private List<Ingredient> ingredientList;
 
-	HotMeal(String nameOfMeal, double oil, double salt, List<Ingredient> ingredients, DishCategory category) {
+	DishRecipe(String nameOfMeal, double oil, double salt, List<Ingredient> ingredients, DishCategory category) {
 
-		this.mealName = nameOfMeal;
+		this.name = nameOfMeal;
 		this.oil = oil;
 		this.salt = salt;
 		this.ingredientList = ingredients;
-		this.mealCategory = category;
+		this.category = category;
 	}
 
-	public String getMealName() {
-		return mealName;
+	public String getName() {
+		return name;
 	}
 
 	public DishCategory getCategory() {
-		return mealCategory;
+		return category;
 	}
 
 	@Override
 	public String toString() {
-		return mealName;
+		return name;
 	}
 
 	public List<Ingredient> getIngredientList() {

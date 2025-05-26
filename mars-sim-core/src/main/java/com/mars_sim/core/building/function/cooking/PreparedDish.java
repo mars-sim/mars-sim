@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * CookedMeal.java
- * @date 2022-08-30
- * @author Manny Kung
+ * PreparedDish.java
+ * @date 2025-05-26
+ * @author Barry Evans
  */
 package com.mars_sim.core.building.function.cooking;
 
@@ -10,9 +10,9 @@ import com.mars_sim.core.time.MarsTime;
 import java.io.Serializable;
 
 /**
- * This class represents a cooked meal from a kitchen.
+ * This class represents a prepared dish from a kitchen.
  */
-public class CookedMeal implements Serializable, Cloneable {
+public class PreparedDish implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -24,7 +24,7 @@ public class CookedMeal implements Serializable, Cloneable {
 	private double quality;
 	private double dryMass;
 
-	private String mealName;
+	private String name;
 	private MarsTime expirationTime;
 
 	/**
@@ -33,15 +33,15 @@ public class CookedMeal implements Serializable, Cloneable {
 	 * @param quality      the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(String mealName, double quality, double dryMass, MarsTime creationTime) {
+	public PreparedDish(String mealName, double quality, double dryMass, MarsTime creationTime) {
 		this.quality = quality;
-		this.mealName = mealName;
+		this.name = mealName;
 		this.dryMass = dryMass;
 		expirationTime = creationTime.addTime(SHELF_LIFE);
 	}
 
 	public String getName() {
-		return mealName;
+		return name;
 	}
 
 	/**

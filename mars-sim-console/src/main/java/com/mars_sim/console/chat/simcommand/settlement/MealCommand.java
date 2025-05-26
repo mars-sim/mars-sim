@@ -14,7 +14,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.cooking.CookedMeal;
+import com.mars_sim.core.building.function.cooking.PreparedDish;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.structure.Settlement;
 
@@ -43,13 +43,13 @@ public class MealCommand extends AbstractSettlementCommand {
 		for (Building building : kitchens) {
 			Cooking kitchen = building.getCooking();
 			response.appendHeading(building.getName());
-			List<CookedMeal> meals = kitchen.getCookedMealList();
+			List<PreparedDish> meals = kitchen.getCookedMealList();
 			if (meals.isEmpty()) {
 				response.append("No meals available");
 			}
 			else {
 				response.appendTableHeading("Meal", 34, "Servings", "Best Before");
-				for (CookedMeal m : meals) {
+				for (PreparedDish m : meals) {
 					response.appendTableRow(m.getName(), m.getQuality(), m.getExpirationTime().getDateTimeStamp());
 				}
 			}

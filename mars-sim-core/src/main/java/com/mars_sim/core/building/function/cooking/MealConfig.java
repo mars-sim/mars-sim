@@ -23,11 +23,6 @@ import com.mars_sim.core.resource.ResourceUtil;
  */
 public class MealConfig {
 
-	// Category of dishes
-	public enum DishCategory {
-		MAIN, SIDE, DESSERT
-	}
-
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
 	private static final String NUMBER_OF_MEAL_PER_SOL = "meals-per-sol";
@@ -45,7 +40,7 @@ public class MealConfig {
 	private double waterConsumptionRate;
 	private double dryMassPerServing;
 
-	private List<HotMeal> dishList;
+	private List<DishRecipe> dishList;
 
 	/**
 	 * Constructor.
@@ -101,7 +96,7 @@ public class MealConfig {
 	 * 
 	 * @return a list of all dishes 
 	 */
-	public List<HotMeal> getDishList() {
+	public List<DishRecipe> getDishList() {
 		return dishList;
 	}
 	
@@ -110,7 +105,7 @@ public class MealConfig {
 	 * 
 	 * @return a list of  dish meals
 	 */
-	public List<HotMeal> getDishList(DishCategory category) {
+	public List<DishRecipe> getDishList(DishCategory category) {
 		return dishList.stream()
 				.filter(dish -> dish.getCategory() == category)
 				.toList();
@@ -122,12 +117,12 @@ public class MealConfig {
 	 * 
 	 * @return list of meal
 	 */
-	private List<HotMeal> parseDishList(Element root, DishCategory cat, CropConfig crops) {
+	private List<DishRecipe> parseDishList(Element root, DishCategory cat, CropConfig crops) {
 		
 		var dishNodes = root.getChild(cat.name().toLowerCase() + "-list");
 
 		// Main Dishes
-		List<HotMeal> dishes = new ArrayList<>();
+		List<DishRecipe> dishes = new ArrayList<>();
 
 		for (Element mainDish : dishNodes.getChildren(DISH)) {
 			var meal = parseHotMeal(mainDish, cat, crops);
@@ -137,7 +132,7 @@ public class MealConfig {
 		return dishes;
 	}
 
-	private HotMeal parseHotMeal(Element mealNode, DishCategory category, CropConfig crops) {
+	private DishRecipe parseHotMeal(Element mealNode, DishCategory category, CropConfig crops) {
 		
 		String name = mealNode.getAttributeValue(NAME);
 		double oil = ConfigHelper.getOptionalAttributeDouble(mealNode, OIL, 0D);
@@ -158,7 +153,7 @@ public class MealConfig {
 		}
 
 		computeDryMass(ingredients, crops);
-		return new HotMeal(name, oil, salt, ingredients, category);
+		return new DishRecipe(name, oil, salt, ingredients, category);
 	}
 
 	/**
@@ -210,9 +205,9 @@ public class MealConfig {
 	 * @param dish
 	 * @return
 	 */
-	public HotMeal getHotMeal(String dish) {
-		for (HotMeal hm : getDishList()) {
-			if (hm.getMealName().equalsIgnoreCase(dish))
+	public DishRecipe getHotMeal(String dish) {
+		for (DishRecipe hm : getDishList()) {
+			if (hm.getName().equalsIgnoreCase(dish))
 				return hm;
 		}
 		return null;

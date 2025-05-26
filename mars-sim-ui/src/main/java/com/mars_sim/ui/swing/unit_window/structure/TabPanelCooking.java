@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +26,8 @@ import javax.swing.table.TableColumnModel;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.cooking.Cooking.MealStats;
-import com.mars_sim.core.building.function.cooking.HotMeal;
+import com.mars_sim.core.building.function.cooking.Cooking.DishStats;
+import com.mars_sim.core.building.function.cooking.DishRecipe;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -54,7 +53,6 @@ public class TabPanelCooking extends TabPanel {
 	private JLabel mealsTodayLabel;
 
 	private JLabel mealsReplenishmentLabel;
-	private JLabel dessertsReplenishmentLabel;
 	
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
@@ -196,9 +194,9 @@ public class TabPanelCooking extends TabPanel {
 		private Settlement settlement;
 
 		private List<String> nameList;
-		private Map<String, MealStats> qualityMap = new HashMap<>();
+		private Map<String, DishStats> qualityMap = new HashMap<>();
 
-		private String[] columnNames = { "Meal", "# Servings",
+		private String[] columnNames = { "Dish", "# Servings",
 				"Best", "Worst" };
 		
 		private CookingTableModel(Settlement settlement) {
@@ -253,12 +251,12 @@ public class TabPanelCooking extends TabPanel {
 
 			case 2:
 				if (stats != null)
-					result = HotMeal.qualityToString(stats.getBestQuality());
+					result = DishRecipe.qualityToString(stats.getBestQuality());
 				break;
 
 			case 3:
 				if (stats != null)
-					result = HotMeal.qualityToString(stats.getWorseQuality());
+					result = DishRecipe.qualityToString(stats.getWorseQuality());
 				break;
 			default:
 				break;
@@ -276,7 +274,7 @@ public class TabPanelCooking extends TabPanel {
 			qualityMap = settlement.getBuildingManager().getBuildings(FunctionType.COOKING).stream()
 				.map(c -> c.getCooking().getQualityMap())
 				.flatMap(m -> m.entrySet().stream())
-         		.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, MealStats::sum));
+         		.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DishStats::sum));
 
 
 			nameList = new ArrayList<>(qualityMap.keySet());

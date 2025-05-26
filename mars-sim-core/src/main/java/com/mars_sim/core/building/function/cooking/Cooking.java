@@ -8,7 +8,6 @@ package com.mars_sim.core.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,7 +41,7 @@ public class Cooking extends Function {
 	/**
 	 * Statitics of a prepared Dish
 	 */
-	public static final class MealStats implements Serializable {
+	public static final class DishStats implements Serializable {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		
@@ -50,13 +49,13 @@ public class Cooking extends Function {
 		private double worseQuality;
 		private int number;
 
-		MealStats(double quality) {
+		DishStats(double quality) {
 			number = 1;
 			this.bestQuality = quality;
 			this.worseQuality = quality;
 		}
 
-		private MealStats(int number, double worseQuality, double bestQuality) {
+		private DishStats(int number, double worseQuality, double bestQuality) {
 			this.number = number;
 			this.worseQuality = worseQuality;
 			this.bestQuality = bestQuality;
@@ -74,7 +73,7 @@ public class Cooking extends Function {
 			return number;
 		}
 
-		private void addMeal(double quality) {
+		private void addDish(double quality) {
 			number++;
 			if (quality < worseQuality) {
 				worseQuality = quality;
@@ -89,8 +88,8 @@ public class Cooking extends Function {
 		 * @param b
 		 * @return
 		 */
-		public static MealStats sum(MealStats a, MealStats b) {
-			return new MealStats(a.number + b.number, Math.min(a.worseQuality, b.worseQuality),
+		public static DishStats sum(DishStats a, DishStats b) {
+			return new DishStats(a.number + b.number, Math.min(a.worseQuality, b.worseQuality),
 								Math.max(a.bestQuality, b.bestQuality));
 		}
 	}
@@ -101,7 +100,7 @@ public class Cooking extends Function {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Cooking.class.getName());
 
-	private static final String CONVERTING = "A meal has expired. Converting ";
+	private static final String CONVERTING = "A dish has expired. Converting ";
 	private static final String DISCARDED = " is expired and discarded at ";
 	private static final String PRESERVED = "into preserved food at ";
 
@@ -131,10 +130,10 @@ public class Cooking extends Function {
 	private double dryMassPerServing;
 
 	// Data members
-	private List<CookedMeal> cookedMeals;
+	private List<PreparedDish> availableDishes;
 
 	/** The quality history of each meal.  */
-	private Map<String, MealStats> qualityMap;
+	private Map<String, DishStats> qualityMap;
 
 	private static MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
 
@@ -150,7 +149,7 @@ public class Cooking extends Function {
 		// Use Function constructor.
 		super(FunctionType.COOKING, spec, building);
 
-		cookedMeals = new CopyOnWriteArrayList<>();
+		availableDishes = new CopyOnWriteArrayList<>();
 
 		cookingWorkTime = 0D;
 
@@ -167,7 +166,7 @@ public class Cooking extends Function {
 	 * Rerturn a map of the best and worse meals cooked today
 	 * @return
 	 */
-	public Map<String, MealStats> getQualityMap() {
+	public Map<String, DishStats> getQualityMap() {
 		return qualityMap;
 	}
 
@@ -187,9 +186,7 @@ public class Cooking extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
@@ -242,7 +239,7 @@ public class Cooking extends Function {
 	 * @return true if cooked meals
 	 */
 	public boolean hasCookedMeal() {
-		return ((cookedMeals != null) && !cookedMeals.isEmpty());
+		return (!availableDishes.isEmpty());
 	}
 
 	/**
@@ -251,7 +248,7 @@ public class Cooking extends Function {
 	 * @return number of meals
 	 */
 	public int getNumberOfAvailableCookedMeals() {
-		return cookedMeals.size();
+		return availableDishes.size();
 	}
 
 	public int getTotalNumberOfCookedMealsToday() {
@@ -263,12 +260,12 @@ public class Cooking extends Function {
 	 *
 	 * @return the meal
 	 */
-	public CookedMeal chooseAMeal(Person person) {
-		CookedMeal bestMeal = null;
+	public PreparedDish chooseAMeal(Person person) {
+		PreparedDish bestMeal = null;
 		double bestQuality = Integer.MIN_VALUE;
 		var favourites = person.getFavorite().getFavoriteDishes();
 
-		for (CookedMeal m : cookedMeals) {
+		for (PreparedDish m : availableDishes) {
 			String n = m.getName();
 			double q = m.getQuality();
 
@@ -286,7 +283,7 @@ public class Cooking extends Function {
 
 		if (bestMeal != null) {
 			// a person will eat the best quality meal
-			cookedMeals.remove(bestMeal);
+			availableDishes.remove(bestMeal);
 		}
 
 		return bestMeal;
@@ -299,8 +296,8 @@ public class Cooking extends Function {
 	 */
 	public double getBestMealQuality() {
 
-		return cookedMeals.stream()
-				.mapToDouble(CookedMeal::getQuality)
+		return availableDishes.stream()
+				.mapToDouble(PreparedDish::getQuality)
 				.max()
 				.orElse(0D);
 	}
@@ -323,10 +320,6 @@ public class Cooking extends Function {
 		return cookNoMore;
 	}
 
-	private int getPopulation() {
-		return building.getSettlement().getIndoorPeopleCount();
-	}
-
 	/**
 	 * Adds cooking work to this facility. The amount of work is dependent upon the
 	 * person's cooking skill.
@@ -337,13 +330,12 @@ public class Cooking extends Function {
 	public String addWork(double workTime, Worker theCook) {
 
 		String nameOfMeal = null;
-
+		var s = building.getSettlement();
 		cookingWorkTime += workTime;
 
 		if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
-			double population = getPopulation();
-			double maxServings = population * building.getSettlement().getMealsReplenishmentRate();
+			double maxServings = s.getIndoorPeopleCount() * s.getMealsReplenishmentRate();
 
 			int totalServings = getTotalAvailableCookedMealsAtSettlement();
 			if (totalServings >= maxServings) {
@@ -352,7 +344,7 @@ public class Cooking extends Function {
 
 			else {
 				// Randomly pick a meal which ingredients are available
-				HotMeal aMeal = getACookableMeal();
+				DishRecipe aMeal = getACookableMeal();
 				if (aMeal != null) {
 					nameOfMeal = cookAHotMeal(aMeal, theCook);
 				}
@@ -379,7 +371,7 @@ public class Cooking extends Function {
 	 *
 	 * @return a hot meal or null if none available.
 	 */
-	private HotMeal getACookableMeal() {
+	private DishRecipe getACookableMeal() {
 		var s = getBuilding().getSettlement();
 		return mealConfig.getDishList().stream()
 						.filter(m -> m.isIngredientsAvailable(s))
@@ -409,7 +401,7 @@ public class Cooking extends Function {
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
-		Optional<HotMeal> found = mealConfig.getDishList().stream()
+		Optional<DishRecipe> found = mealConfig.getDishList().stream()
 				.filter(i -> i.isIngredientsAvailable(building.getSettlement()))
 				.findFirst();
 
@@ -422,7 +414,7 @@ public class Cooking extends Function {
 	 * @param hotMeal the meal to cook.
 	 * @return name of meal
 	 */
-	public String cookAHotMeal(HotMeal hotMeal, Worker theCook) {
+	private String cookAHotMeal(DishRecipe hotMeal, Worker theCook) {
 		Settlement s = getBuilding().getSettlement();
 		double mealQuality = hotMeal.retrieveIngredients(s);
 
@@ -445,12 +437,12 @@ public class Cooking extends Function {
 		// consume water
 		consumeWater();
 
-		String nameOfMeal = hotMeal.getMealName();
+		String nameOfMeal = hotMeal.getName();
 
 		MarsTime currentTime = masterClock.getMarsTime();
-		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing,
+		PreparedDish meal = new PreparedDish(nameOfMeal, mealQuality, dryMassPerServing,
 										currentTime);
-		cookedMeals.add(meal);
+		availableDishes.add(meal);
 		mealCounterPerSol++;
 
 		// See if there are other meals available
@@ -459,10 +451,10 @@ public class Cooking extends Function {
 		// Add to Qualtity record
 		var currentQuality = qualityMap.get(nameOfMeal);
 		if (currentQuality == null) {
-			qualityMap.put(nameOfMeal, new MealStats(mealQuality));
+			qualityMap.put(nameOfMeal, new DishStats(mealQuality));
 		} else {
 			// If this meal has been cooked before, update the range
-			currentQuality.addMeal(mealQuality);
+			currentQuality.addDish(mealQuality);
 		}
 
 		cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
@@ -535,8 +527,8 @@ public class Cooking extends Function {
 	 *
 	 * @return cookedMeals
 	 */
-	public List<CookedMeal> getCookedMealList() {
-		return cookedMeals;
+	public List<PreparedDish> getCookedMealList() {
+		return availableDishes;
 	}
 
 	/**
@@ -552,14 +544,14 @@ public class Cooking extends Function {
 				double rate = building.getSettlement().getMealsReplenishmentRate();
 
 				MarsTime now = pulse.getMarsTime();
-				var expired = cookedMeals.stream()
+				var expired = availableDishes.stream()
 						.filter(meal -> meal.getExpirationTime().getTimeDiff(now) < 0D)
 						.toList();
 
 				// Handle expired cooked meals.
-				for (CookedMeal meal : expired) {
+				for (PreparedDish meal : expired) {
 					// Note: turn this into a task
-					cookedMeals.remove(meal);
+					availableDishes.remove(meal);
 
 					// Check if cooked meal has gone bad and has to be thrown out.
 					double quality = meal.getQuality() / 2D + 1D;
@@ -698,7 +690,7 @@ public class Cooking extends Function {
 	@Override
 	public void destroy() {
 		super.destroy();
-		cookedMeals = null;
+		availableDishes = null;
 		qualityMap = null;
 	}
 }

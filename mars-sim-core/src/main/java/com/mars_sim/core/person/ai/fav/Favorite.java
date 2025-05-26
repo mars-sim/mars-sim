@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mars_sim.core.building.function.cooking.DishCategory;
 import com.mars_sim.core.building.function.cooking.MealConfig;
-import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class Favorite implements Serializable {
@@ -27,9 +27,9 @@ public class Favorite implements Serializable {
 	public Favorite(MealConfig meals) {
 		        
     	favoriteType = determineRandomFavoriteType();
-        favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.MAIN)).getMealName());
-		favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.SIDE)).getMealName());
-        favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.DESSERT)).getMealName());
+        favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.MAIN)).getName());
+		favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.SIDE)).getName());
+        favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.DESSERT)).getName());
 	}
 
 	/**

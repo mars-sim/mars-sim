@@ -14,7 +14,7 @@ import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.cooking.CookedMeal;
+import com.mars_sim.core.building.function.cooking.PreparedDish;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.environment.MarsSurface;
@@ -90,7 +90,7 @@ public class EatDrink extends Task {
 	private double eatingDuration = 0D;
 	private double waterEachServing;
 
-	private CookedMeal cookedMeal;
+	private PreparedDish cookedMeal;
 	private Cooking kitchen;
 	private PhysicalCondition pc;
 

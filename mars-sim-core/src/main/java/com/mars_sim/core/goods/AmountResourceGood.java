@@ -25,7 +25,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.cooking.HotMeal;
+import com.mars_sim.core.building.function.cooking.DishRecipe;
 import com.mars_sim.core.building.function.cooking.MealConfig;
 import com.mars_sim.core.building.function.farming.Crop;
 import com.mars_sim.core.building.function.farming.Farming;
@@ -943,7 +943,7 @@ class AmountResourceGood extends Good {
 		
 		int id = ar.getID();
 		double demand = 0D;
-			for (HotMeal meal : mConfig.getDishList()) {
+			for (DishRecipe meal : mConfig.getDishList()) {
 				demand += meal.getIngredientList().stream()
 					.filter(ingredient -> id == ingredient.getAmountResourceID())
 					.mapToDouble(i -> i.getProportion())
