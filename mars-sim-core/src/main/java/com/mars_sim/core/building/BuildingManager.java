@@ -57,11 +57,9 @@ import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.Dining;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.building.function.farming.Fishery;
-import com.mars_sim.core.building.function.task.PrepareDessert;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerStorage;
@@ -1593,7 +1591,6 @@ public class BuildingManager implements Serializable {
 					case MEDICAL_CARE -> MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
 					case POWER_GENERATION -> PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
 					case POWER_STORAGE -> PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
-					case PREPARING_DESSERT -> PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
 					case RECREATION -> Recreation.getFunctionValue(buildingType, newBuilding, settlement);
 					case RESEARCH -> Research.getFunctionValue(buildingType, newBuilding, settlement);
 					case RESOURCE_PROCESSING -> ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
@@ -2059,7 +2056,7 @@ public class BuildingManager implements Serializable {
 	 * @param functionType
 	 * @return
 	 */
-	public static Building getAvailableKitchen(Worker worker, FunctionType functionType) {
+	public static Building getAvailableKitchen(Worker worker) {
 		Building result = null;		
 		
 		if (worker.isInSettlement()) {
@@ -2068,21 +2065,19 @@ public class BuildingManager implements Serializable {
 			Set<Building> kitchenBuildings = null;
 					
 			if (worker.getBuildingLocation() != null) {
-				kitchenBuildings = manager.getBuildings(functionType)
+				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
 						.stream()
 						.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
 								&& !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());
 			}
 			else {
-				kitchenBuildings = manager.getBuildings(functionType)
+				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
 						.stream()
 						.filter(b -> b.getZone() == 0
 								&& !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());		
 			}
-			
-			kitchenBuildings = PrepareDessert.getKitchensNeedingCooks(kitchenBuildings);
 			
 			if (UnitType.PERSON == worker.getUnitType()) {
 				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);

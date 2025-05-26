@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -23,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -315,15 +313,6 @@ public class LoadVehicleGarage extends Task {
 			amountPersonPerSol = personConfig.getWaterConsumptionRate();
 		else if (resource == ResourceUtil.FOOD_ID)
 			amountPersonPerSol = personConfig.getFoodConsumptionRate();
-		else {
-			// check if this resource is a dessert
-			for (AmountResource dessert : PreparingDessert.getArrayOfDessertsAR()) {
-				if (ResourceUtil.findAmountResource(resource).getName().equals(dessert.getName())) {
-					amountPersonPerSol = PreparingDessert.getDessertMassPerServing();
-					break;
-				}
-			}
-		}
 
 		return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
 	}

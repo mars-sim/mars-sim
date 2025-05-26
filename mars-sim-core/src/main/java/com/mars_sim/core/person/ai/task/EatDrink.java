@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -16,11 +14,8 @@ import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.building.function.cooking.CookedMeal;
 import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.cooking.PreparedDessert;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
@@ -34,9 +29,7 @@ import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -60,17 +53,11 @@ public class EatDrink extends Task {
 
 	/** Task phases. */
 	private static final TaskPhase LOOK_FOR_FOOD = new TaskPhase(Msg.getString("Task.phase.lookingforFood")); //$NON-NLS-1$
-	private static final TaskPhase PICK_UP_DESSERT = new TaskPhase(Msg.getString("Task.phase.pickUpDessert")); //$NON-NLS-1$
 	private static final TaskPhase EAT_MEAL = new TaskPhase(Msg.getString("Task.phase.eatingMeal")); //$NON-NLS-1$
 	private static final TaskPhase EAT_PRESERVED_FOOD = new TaskPhase(Msg.getString("Task.phase.eatingFood")); //$NON-NLS-1$
-	private static final TaskPhase EAT_DESSERT = new TaskPhase(Msg.getString("Task.phase.eatingDessert")); //$NON-NLS-1$
 	private static final TaskPhase DRINK_WATER = new TaskPhase(Msg.getString("Task.phase.drinkingWater")); //$NON-NLS-1$
 
-	private static final String JUICE = "juice";
-	private static final String MILK = "milk";
-
 	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
-	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
 	
 	/** The conversion ratio of hunger to one serving of food. */	
 	private static final int HUNGER_RATIO_PER_FOOD_SERVING = 300;
@@ -82,15 +69,12 @@ public class EatDrink extends Task {
 	private static final double PACKED_PRESERVED_FOOD_CARRIED = .2; 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
-	private static final double DESSERT_STRESS_MODIFIER = -.8D;
 	/** Mass (kg) of single napkin for meal. */
 	private static final double NAPKIN_MASS = .0025D;
 
 	private double foodConsumedPerServing;
-	private double dessertConsumedPerServing;
 
 	private double millisolPerKgFood;
-	private double millisolPerKgDessert;
 
 	// Data members
 	private boolean food = false;
@@ -98,7 +82,6 @@ public class EatDrink extends Task {
 	private boolean hasNapkin = false;
 	
 	private int meals = 0;
-	private int desserts = 0;
 	
 	private double foodAmount = 0;
 	/** how much eaten [in kg]. */
@@ -108,11 +91,8 @@ public class EatDrink extends Task {
 	private double waterEachServing;
 
 	private CookedMeal cookedMeal;
-	private PreparedDessert nameOfDessert;
 	private Cooking kitchen;
-	private PreparingDessert dessertKitchen;
 	private PhysicalCondition pc;
-	private AmountResource unpreparedDessertAR;
 
 	/**
 	 * Constructor.
@@ -138,9 +118,6 @@ public class EatDrink extends Task {
 
 		foodConsumedPerServing = personConfig.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;			
 		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
-		
-		dessertConsumedPerServing = personConfig.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
-		millisolPerKgDessert = HUNGER_RATIO_PER_FOOD_SERVING / dessertConsumedPerServing;
 		
 		// ~.03 kg per serving
 		waterEachServing = pc.getWaterConsumedPerServing();
@@ -171,12 +148,6 @@ public class EatDrink extends Task {
 		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 		if (kitchen0 != null) {
 			meals = kitchen0.getNumberOfAvailableCookedMeals();
-		}
-
-		// Check dessert is available in a kitchen building at the settlement.
-		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
-		if (kitchen1 != null) {
-			desserts = kitchen1.getAvailableServingsDesserts();
 		}
 
 		boolean hungry = pc.isHungry();
@@ -231,7 +202,7 @@ public class EatDrink extends Task {
         	}			
 		}
 
-		if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
+		if (hungry && (foodAmount > 0 || meals > 0)) {
 			food = true;
 		}
 
@@ -251,13 +222,13 @@ public class EatDrink extends Task {
 
 		foodAmount = person.getAmountResourceStored(ResourceUtil.FOOD_ID);
 		
-		if (hungry && (foodAmount > 0 || desserts > 0)) {
+		if (hungry && (foodAmount > 0)) {
 			food = true;
 		}
 		else {
 			foodAmount = container.getAmountResourceStored(ResourceUtil.FOOD_ID);
 			
-			if (hungry && (foodAmount > 0 || desserts > 0)) {
+			if (hungry && (foodAmount > 0)) {
 				food = true;
 			}
 		}
@@ -338,35 +309,10 @@ public class EatDrink extends Task {
 	
 	
 	private void checkFoodDessertAmount() {
-		
-		if (foodAmount > 0 && desserts > 0) {
-			
-			int rand = RandomUtil.getRandomInt(5);
-			if (rand == 0) {
-				addPhase(PICK_UP_DESSERT);
-				addPhase(EAT_DESSERT);
-				setPhase(LOOK_FOR_FOOD);
-			}
-			else {
-				addPhase(LOOK_FOR_FOOD);
-				addPhase(EAT_PRESERVED_FOOD);
-				setPhase(LOOK_FOR_FOOD);
-			}
-		}
-				
-		else if (desserts > 0) {
-			// Initialize task phase.
-			addPhase(PICK_UP_DESSERT);
-			addPhase(EAT_DESSERT);
-			setPhase(LOOK_FOR_FOOD);
-		}
-
-		else if (foodAmount > 0) {
-			// Initialize task phase.
-			addPhase(LOOK_FOR_FOOD);
-			addPhase(EAT_PRESERVED_FOOD);
-			setPhase(LOOK_FOR_FOOD);
-		}
+		// Initialize task phase.
+		addPhase(LOOK_FOR_FOOD);
+		addPhase(EAT_PRESERVED_FOOD);
+		setPhase(LOOK_FOR_FOOD);
 	}
 	
 	/**
@@ -428,10 +374,6 @@ public class EatDrink extends Task {
 			return eatingMealPhase(time);
 		} else if (EAT_PRESERVED_FOOD.equals(getPhase())) {
 			return eatingPreservedFoodPhase(time);
-		} else if (PICK_UP_DESSERT.equals(getPhase())) {
-			return pickingUpDessertPhase(time);
-		} else if (EAT_DESSERT.equals(getPhase())) {
-			return eatingDessertPhase(time);
 		} else {
 			return time;
 		}
@@ -483,7 +425,7 @@ public class EatDrink extends Task {
 			setPhase(EAT_MEAL);
 		}
 		else {
-			choosePreservedFoodOrDessert();
+			choosePreservedFood();
 			return time * .75;
 		}
 		
@@ -496,20 +438,10 @@ public class EatDrink extends Task {
 	/**
 	 * Chooses either preserved food or dessert randomly.
 	 */
-	private void choosePreservedFoodOrDessert() {
-		
-		// Need to resolve if dessert and/or preserved food are not available 
-		
-		int rand = RandomUtil.getRandomInt(5);
-		if (rand == 0) {
-			addPhase(EAT_DESSERT);
-			setPhase(EAT_DESSERT);
-		}
-		else {
-			// usually eat preserved food
-			addPhase(EAT_PRESERVED_FOOD);
-			setPhase(EAT_PRESERVED_FOOD);
-		}
+	private void choosePreservedFood() {	
+		// usually eat preserved food
+		addPhase(EAT_PRESERVED_FOOD);
+		setPhase(EAT_PRESERVED_FOOD);
 	}
 
 	/**
@@ -728,47 +660,6 @@ public class EatDrink extends Task {
 	}
 
 	/**
-	 * Performs the pick up dessert phase.
-	 *
-	 * @param time the amount of time (millisol) to perform the phase.
-	 * @return the remaining time (millisol) after the phase has been performed.
-	 */
-	private double pickingUpDessertPhase(double time) {
-		double remainingTime = 0;
-
-		// Determine preferred kitchen to get dessert.
-		if (dessertKitchen == null) {
-			dessertKitchen = getKitchenWithDessert(person);
-
-			if (dessertKitchen != null) {
-				// Walk to dessert kitchen.
-				boolean canWalk = walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), FunctionType.DINING, true);
-
-				// Pick up a dessert at kitchen if one is available.
-				nameOfDessert = dessertKitchen.chooseADessert(person);
-
-				if (nameOfDessert != null) {
-					logger.log(worker, Level.FINE, 4_000, "Picked up a serving of '" 
-							+ nameOfDessert.getName() + ".");
-					setPhase(EAT_DESSERT);
-					return remainingTime;
-				}
-				
-				if (canWalk)
-					return remainingTime;
-			}
-
-			else {
-				endTask();
-				// If no dessert kitchen found, go eat preserved food
-				return time;
-			}
-		}
-
-		return remainingTime;
-	}
-
-	/**
 	 * Eats a cooked meal.
 	 *
 	 * @param eatingTime the amount of time (millisols) to eat.
@@ -809,178 +700,6 @@ public class EatDrink extends Task {
 		}
 		
 		return proportion;
-	}
-
-	/**
-	 * Gets a resource from a provider.
-	 * 
-	 * @param quantity amount to retrieve
-	 * @param resourceID Resource to retrieve
-	 * @param provider The provider of resources.
-	 * @return Did retrieve all ?
-	 */
-	private boolean retrieveAnResource(double quantity, int resourceID, ResourceHolder provider) {
-		return provider.retrieveAmountResource(resourceID, quantity) == 0D;
-	}
-
-	/**
-	 * Performs the eating dessert phase of the task.
-	 *
-	 * @param time the amount of time (millisol) to perform the eating dessert
-	 *             phase.
-	 * @return the amount of time (millisol) left after performing the eating
-	 *         dessert phase.
-	 */
-	private double eatingDessertPhase(double time) {
-		
-		// Checks if this person has eaten too much already 
-		if (pc.eatTooMuch()) {
-			endTask();
-			return time;
-		}
-		
-		// Give a person the chance to eat even if in high fatigue
-		int rand = RandomUtil.getRandomInt(1);
-		if (rand == 1 && pc.getFatigue() > 2_000) {
-			endTask();
-			return time;
-		}
-		
-		double remainingTime = 0D;
-		double eatingTime = time;
-		
-		if ((totalEatingTime + eatingTime) >= eatingDuration) {
-			eatingTime = eatingDuration - totalEatingTime;
-		}
-
-		if (eatingTime > 0D) {
-
-			if (nameOfDessert != null) {
-				// Display what dessert to east
-				showDessertDescription(PreparingDessert.convertString2AR(nameOfDessert.getName()));
-				// Eat a serving of prepared dessert
-				eatPreparedDessert(eatingTime);
-
-			} else {
-				// Eat a serving of unprepared dessert (fruit, soymilk, etc).
-				boolean enoughDessert = eatUnpreparedDessert(eatingTime);
-
-				if (enoughDessert) {
-					// Display what dessert to east
-					showDessertDescription(unpreparedDessertAR);
-					// Obtain the dry mass of the dessert
-					double dryMass = PreparingDessert.getDryMass(PreparingDessert.convertAR2String(unpreparedDessertAR));
-		
-					if (cumulativeProportion> dryMass) {
-						endTask();
-					}
-
-					// If finished eating, end task.
-					if (eatingTime < time) {
-						remainingTime = time - eatingTime;
-					}
-					
-					totalEatingTime += eatingTime;
-				}
-
-				// If not enough unprepared dessert available, end task.
-				else {
-					remainingTime = time;
-					// Need endTask() below to quit EatDrink
-					endTask();
-				}
-			}
-		}
-
-		return remainingTime;
-	}
-
-	private void showDessertDescription(AmountResource dessertAR) {
-		String s = dessertAR.getName();
-		String text = "";
-		if (s.contains(MILK) || s.contains(JUICE)) {	
-			text = DRINKING + " " + s;
-			
-		} else {
-			text = EATING + " " +  s; 
-		}
-		
-		setDescription(text);
-		logger.log(worker, Level.FINE, 4_000, text + ".");
-	}
-
-	/**
-	 * Eats a prepared dessert.
-	 *
-	 * @param eatingTime the amount of time (millisols) to eat.
-	 */
-	private void eatPreparedDessert(double eatingTime) {
-		// Obtain the dry mass of the dessert
-		double dryMass = nameOfDessert.getDryMass();
-		// Proportion of dessert being eaten over this time period.
-		double proportion = person.getEatingSpeed() * eatingTime;
-
-		if (cumulativeProportion + proportion > dryMass) {
-			double excess = cumulativeProportion + proportion - dryMass;
-			proportion = proportion - excess;
-		}
-		
-		if (proportion > MIN) {
-			// Dessert amount eaten over this period of time.
-			var containerUnit = person.getContainerUnit();
-
-			if (containerUnit != null) {
-				// Take dessert resource from inventory if it is available.
-				// Add to cumulativeProportion
-				cumulativeProportion += proportion;
-
-				boolean hasDessert = retrieveAnResource(proportion,
-							ResourceUtil.findIDbyAmountResourceName(nameOfDessert.getName()),
-							(ResourceHolder)containerUnit);
-
-				if (hasDessert) {
-					// Record the amount consumed
-					pc.recordFoodConsumption(proportion, 2);
-					// Consume water
-					consumeDessertWater(dryMass);
-					// dessert amount eaten over this period of time.
-					double hungerRelieved = millisolPerKgDessert * proportion;
-					// Consume unpreserved dessert.
-					pc.reduceHunger(hungerRelieved);
-
-					// Reduce person's stress after eating a prepared dessert.
-					// This is in addition to normal stress reduction from eating task.
-					double stressModifier = DESSERT_STRESS_MODIFIER * (nameOfDessert.getQuality() + 1D);
-					double deltaStress = stressModifier * eatingTime;
-					pc.reduceStress(deltaStress);
-
-					// Add caloric energy from dessert.
-					double caloricEnergy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
-					pc.addEnergy(caloricEnergy);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Calculates the amount of water to consume during a dessert.
-	 *
-	 * @param dryMass of the dessert
-	 */
-	private void consumeDessertWater(double dryMass) {
-		// Note that the water content within the dessert has already been deducted from
-		// the settlement when the dessert was made.
-		double proportion = PreparingDessert.getDessertMassPerServing() - dryMass;
-		if (proportion > 0) {
-			// Record the dessert amount consumed
-			pc.recordFoodConsumption(proportion, 2);
-			// Record the water amount consumed
-			pc.recordFoodConsumption(proportion, 3);
-			// Reduce thirst
-			pc.reduceThirst(proportion * THIRST_PER_WATER_SERVING);
-			// Assume dessert can reduce stress
-			pc.reduceStress(proportion * 2);
-		}
 	}
 
 	/**
@@ -1100,121 +819,7 @@ public class EatDrink extends Task {
 		if (pc.getThirst() < PhysicalCondition.THIRST_THRESHOLD / 6)
 			endTask();
 	}
-
-	/**
-	 * Eat an unprepared dessert.
-	 *
-	 * @param eatingTime the amount of time (millisols) to eat.
-	 * @return true if enough unprepared dessert was available to eat.
-	 */
-	private boolean eatUnpreparedDessert(double eatingTime) {
-
-		boolean result = true;
-
-		// Determine dessert resource type if not known.
-		if (unpreparedDessertAR == null) {
-
-			boolean isThirsty = pc.getThirst() > 50;
-            // Determine list of available dessert resources.
-			List<AmountResource> availableDessertResources = getAvailableDessertResources(dessertConsumedPerServing,
-					isThirsty);
-			
-			if (!availableDessertResources.isEmpty()) {
-				// Randomly choose available dessert resource.
-				int index = RandomUtil.getRandomInt(availableDessertResources.size() - 1);
-				unpreparedDessertAR = availableDessertResources.get(index);
-			} else {
-				result = false;
-			}
-		}
-
-		// Consume portion of unprepared dessert resource.
-		if (unpreparedDessertAR != null) {
-
-			// Obtain the dry mass of the dessert
-			double dryMass = PreparingDessert.getDryMass(PreparingDessert.convertAR2String(unpreparedDessertAR));
-			// Proportion of dessert being eaten over this time period.
-			double proportion = person.getEatingSpeed() * eatingTime;
-
-			if (cumulativeProportion + proportion > dryMass) {
-				double excess = cumulativeProportion + proportion - dryMass;
-				proportion = proportion - excess;
-			}
-
-			if (proportion > MIN) {
-
-				var containerUnit = person.getContainerUnit();
-
-				if (containerUnit != null) {
-					// Add to cumulativeProportion
-					cumulativeProportion += proportion;
-					// Take dessert resource from inventory if it is available.
-					boolean hasDessert = Storage.retrieveAnResource(proportion, unpreparedDessertAR, (ResourceHolder) containerUnit, true);
-
-					if (hasDessert) {
-						// Consume water inside the dessert
-						consumeDessertWater(dryMass);
-						// Record the amount consumed
-						pc.recordFoodConsumption(proportion, 2);
-						// dessert amount eaten over this period of time.
-						double hungerRelieved = millisolPerKgDessert * proportion;
-
-						// Consume unpreserved dessert.
-						pc.reduceHunger(hungerRelieved);
-
-						// Reduce person's stress after eating an unprepared dessert.
-						// This is in addition to normal stress reduction from eating task.
-						double stressModifier = DESSERT_STRESS_MODIFIER;
-						double deltaStress = stressModifier * eatingTime;
-						pc.reduceStress(deltaStress);
-
-						// Add caloric energy from dessert.
-						double caloricEnergy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
-						pc.addEnergy(caloricEnergy);
-					} else {
-						// Not enough dessert resource available to eat.
-						result = false;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of available unprepared dessert AmountResource.
-	 *
-	 * @param amountNeeded the amount (kg) of unprepared dessert needed for eating.
-	 * @return list of AmountResource.
-	 */
-	private List<AmountResource> getAvailableDessertResources(double amountNeeded, boolean isThirsty) {
-
-		List<AmountResource> result = new ArrayList<>();
-
-		var containerUnit = person.getContainerUnit();
-
-		if (containerUnit instanceof ResourceHolder rh) {
-			boolean option = true;
-
-			AmountResource[] resources = PreparingDessert.getArrayOfDessertsAR();
-			for (AmountResource ar : resources) {
-				if (isThirsty)
-					option = ar.getName().contains(JUICE) || ar.getName().contains(MILK);
-
-				boolean hasAR = false;
-				if (amountNeeded > MIN) {
-					hasAR = Storage.retrieveAnResource(amountNeeded, ar, rh, false);
-				}
-				if (option && hasAR) {
-					result.add(ar);
-				}
-			}
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Gets a kitchen in the person's settlement that currently has cooked meals.
 	 *
@@ -1230,31 +835,6 @@ public class EatDrink extends Task {
 			for (Building building : cookingBuildings) {
 				Cooking kitchen = building.getCooking();
 				if (kitchen.hasCookedMeal()) {
-					result = kitchen;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a kitchen in the person's settlement that currently has prepared
-	 * desserts.
-	 *
-	 * @param person the person to check for
-	 * @return the kitchen or null if none.
-	 */
-	public static PreparingDessert getKitchenWithDessert(Person person) {
-		PreparingDessert result = null;
-		Settlement settlement = person.getSettlement();
-
-		if (settlement != null) {
-			BuildingManager manager = settlement.getBuildingManager();
-			Set<Building> dessertBuildings = manager.getBuildingSet(FunctionType.PREPARING_DESSERT);
-			for (Building building : dessertBuildings) {
-				PreparingDessert kitchen = building.getPreparingDessert();
-				if (kitchen.hasFreshDessert()) {
 					result = kitchen;
 				}
 			}

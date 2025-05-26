@@ -308,18 +308,22 @@
 			<ingredient name="Orange" proportion="0.2"/>
 			<ingredient name="Cinnamon" proportion="0.1"/>
 		</dish>
-
 		<dish name="Granola">
 			<ingredient name="Granola Bar" proportion="0.3"/>
 			<ingredient name="Sesame Milk" proportion="0.2"/>
 			<ingredient name="Honey" proportion="0.1"/>
 		</dish>
-
+		<dish name="Peanut butter sandwich">
+			<ingredient name="Peanut butter" proportion="0.1"/>
+			<ingredient name="White bread" proportion="0.2"/>
+		</dish>
 		<dish name="Strawberries">
 			<ingredient name="Strawberry" proportion="0.5"/>
 			<ingredient name="Sugar" proportion="0.1"/>
 		</dish>
-
+		<dish name="Blueberry muffin">
+			<ingredient name="Blueberry muffin" proportion="0.5"/>
+		</dish>
 		<dish name="Yogurt Parfait">
 			<ingredient name="Granola Bar" proportion="0.2"/>
 			<ingredient name="Blueberry" proportion="0.3"/>

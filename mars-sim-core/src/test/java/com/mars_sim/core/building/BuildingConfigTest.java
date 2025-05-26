@@ -26,7 +26,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertNotNull("Building spec " + LANDER_HAB, spec);
 
         // Lander Hab has many functions
-        assertEquals("Number of Functions in " + LANDER_HAB, 22, spec.getFunctionSupported().size());
+        assertEquals("Number of Functions in " + LANDER_HAB, 21, spec.getFunctionSupported().size());
     }
 
     public void testLanderHabActivitySpots() {

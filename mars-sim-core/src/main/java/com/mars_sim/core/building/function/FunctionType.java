@@ -35,7 +35,6 @@ public enum FunctionType {
 	MEDICAL_CARE				(BuildingCategory.MEDICAL, Msg.getString("FunctionType.medicalCare")), //$NON-NLS-1$
 	POWER_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.powerGeneration")), //$NON-NLS-1$
 	POWER_STORAGE				(BuildingCategory.POWER, Msg.getString("FunctionType.powerStorage")), //$NON-NLS-1$
-	PREPARING_DESSERT			(BuildingCategory.LIVING, Msg.getString("FunctionType.preparingDessert")),  //$NON-NLS-1$
 	RECREATION					(BuildingCategory.LIVING, Msg.getString("FunctionType.recreation")), //$NON-NLS-1$
 	RESEARCH					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.research")), //$NON-NLS-1$
 	RESOURCE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.resourceProcessing")), //$NON-NLS-1$

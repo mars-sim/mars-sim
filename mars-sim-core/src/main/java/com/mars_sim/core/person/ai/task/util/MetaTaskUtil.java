@@ -19,7 +19,6 @@ import com.mars_sim.core.activities.GroupActivityMetaTask;
 import com.mars_sim.core.building.function.task.CookMealMeta;
 import com.mars_sim.core.building.function.task.ObserveAstronomicalObjectsMeta;
 import com.mars_sim.core.building.function.task.OptimizeSystemMeta;
-import com.mars_sim.core.building.function.task.PrepareDessertMeta;
 import com.mars_sim.core.building.function.task.ProduceFoodMeta;
 import com.mars_sim.core.building.function.task.TendAlgaePondMeta;
 import com.mars_sim.core.building.function.task.TendFishTankMeta;
@@ -160,7 +159,6 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new PlayHoloGameMeta());
 		allMetaTasks.add(new SavePowerMeta());
 		
-		allMetaTasks.add(new PrepareDessertMeta());
 		allMetaTasks.add(new PrescribeMedicationMeta());
 		allMetaTasks.add(new ProduceFoodMeta());
 		allMetaTasks.add(new ProposeScientificStudyMeta());

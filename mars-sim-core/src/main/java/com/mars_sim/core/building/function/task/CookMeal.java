@@ -76,7 +76,7 @@ public class CookMeal extends Task {
 		setDescription(NAME + " " + getTypeOfMeal());
 
 		// Get an available kitchen.
-		kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.COOKING);
+		kitchenBuilding = BuildingManager.getAvailableKitchen(person);
 
 		if (kitchenBuilding != null) {
 			kitchen = kitchenBuilding.getCooking();
@@ -111,7 +111,7 @@ public class CookMeal extends Task {
 		setDescription(NAME + " " + getTypeOfMeal()); // $NON-NLS-1$
 
 		// Get available kitchen if any.
-		kitchenBuilding = BuildingManager.getAvailableKitchen(robot, FunctionType.COOKING);
+		kitchenBuilding = BuildingManager.getAvailableKitchen(robot);
 
 		if (kitchenBuilding != null) {
 			kitchen = kitchenBuilding.getCooking();

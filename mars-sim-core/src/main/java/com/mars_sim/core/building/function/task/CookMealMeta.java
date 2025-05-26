@@ -69,7 +69,7 @@ public class CookMealMeta extends FactoryMetaTask {
         RatingScore score = RatingScore.ZERO_RATING;
     		
         // See if there is an available kitchen.
-        Building kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.COOKING);
+        Building kitchenBuilding = BuildingManager.getAvailableKitchen(person);
 
         if (kitchenBuilding != null) {
             Cooking kitchen = kitchenBuilding.getCooking();
@@ -110,7 +110,7 @@ public class CookMealMeta extends FactoryMetaTask {
 
         if (CookMeal.isMealTime(robot.getAssociatedSettlement(), CookMeal.PREP_TIME)) {
             // See if there is an available kitchen.
-            Building kitchenBuilding = BuildingManager.getAvailableKitchen(robot, FunctionType.COOKING);
+            Building kitchenBuilding = BuildingManager.getAvailableKitchen(robot);
 
             if (kitchenBuilding != null) {
 

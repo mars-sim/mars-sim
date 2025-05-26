@@ -27,7 +27,6 @@ import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.HotMeal;
 import com.mars_sim.core.building.function.cooking.MealConfig;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.farming.Crop;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.food.FoodProductionProcess;
@@ -564,8 +563,6 @@ class AmountResourceGood extends Good {
 			+ getResourceFoodProductionDemand(owner, settlement)
 			// Tune demand for the ingredients in all meals.
 			+ getAvailableMealDemand(settlement)
-			// Tune dessert demand.
-			+ getResourceDessertDemand(settlement)
 			// Tune construction demand.
 			+ getResourceConstructionDemand(settlement)
 			// Tune construction site demand.
@@ -952,36 +949,6 @@ class AmountResourceGood extends Good {
 					.mapToDouble(i -> i.getProportion())
 					.sum();
 			}
-		return demand;
-	}
-
-	/**
-	 * Gets the demand for a food dessert item.
-	 *
-	 * @param resource the amount resource.
-	 * @return demand (kg)
-	 */
-	private double getResourceDessertDemand(Settlement settlement) {
-		double demand = 0D;
-
-		AmountResource[] dessert = PreparingDessert.getArrayOfDessertsAR();
-		boolean hasDessert = false;
-
-		if (dessert[0] != null) {
-			for (AmountResource ar : dessert) {
-				if (ar.getID() == getID()) {
-					hasDessert = true;
-					break;
-				}
-			}
-
-			if (hasDessert) {
-				double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
-				int numPeople = settlement.getNumCitizens();
-				demand = 5 * Math.log(1.0 + numPeople) * amountNeededSol * DESSERT_FACTOR;
-			}
-		}
-
 		return demand;
 	}
 

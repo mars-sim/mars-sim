@@ -48,7 +48,6 @@ import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.Dining;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.building.function.farming.Fishery;
@@ -160,7 +159,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private ThermalGeneration furnace;
 	private PowerGeneration powerGen;
 	private PowerStorage powerStorage;
-	private PreparingDessert preparingDessert;
 	private Recreation rec;
 	private Research lab;
 	private ResourceProcessing resourceProcessing;
@@ -436,12 +434,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return powerStorage;
 	}
 
-	public PreparingDessert getPreparingDessert() {
-		if (preparingDessert == null)
-			preparingDessert = (PreparingDessert) getFunction(FunctionType.PREPARING_DESSERT);
-		return preparingDessert;
-	}
-
 	public Recreation getRecreation() {
 		if (rec == null)
 			rec = (Recreation) getFunction(FunctionType.RECREATION);
@@ -605,7 +597,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 			case MEDICAL_CARE -> new MedicalCare(this, fSpec);
 			case POWER_GENERATION -> new PowerGeneration(this, fSpec);
 			case POWER_STORAGE -> new PowerStorage(this, fSpec);
-			case PREPARING_DESSERT -> new PreparingDessert(this, fSpec);				
 			case RECREATION -> new Recreation(this, fSpec);
 			case RESEARCH -> new Research(this, fSpec);
 			case RESOURCE_PROCESSING -> new ResourceProcessing(this, fSpec);

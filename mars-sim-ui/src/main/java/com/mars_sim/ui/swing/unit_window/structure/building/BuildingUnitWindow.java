@@ -15,7 +15,6 @@ import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import com.mars_sim.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
-import com.mars_sim.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
 
 
 /**
@@ -55,9 +54,6 @@ public class BuildingUnitWindow extends UnitWindow {
     				break;
     			case COOKING:
     	        	addTabPanel( new BuildingPanelCooking(building.getCooking(), desktop));	
-    				break;
-    			case PREPARING_DESSERT:
-    				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
     				break;
     			case EVA:
     				addTabPanel( new BuildingPanelEVA(building.getEVA(), desktop));
