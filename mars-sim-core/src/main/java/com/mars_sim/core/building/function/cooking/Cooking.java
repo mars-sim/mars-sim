@@ -25,7 +25,6 @@ import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
@@ -106,7 +105,6 @@ public class Cooking extends Function {
 	private static final String DISCARDED = " is expired and discarded at ";
 	private static final String PRESERVED = "into preserved food at ";
 
-	private static final int RECHECKING_FREQ = 250; // in millisols
 	public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
 	public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
 	/**  The base amount of work time (cooking skill 0) to produce one single cooked meal.*/
@@ -266,47 +264,21 @@ public class Cooking extends Function {
 	 * @return the meal
 	 */
 	public CookedMeal chooseAMeal(Person person) {
-		CookedMeal bestFavDish = null;
 		CookedMeal bestMeal = null;
-		double bestQuality = -1;
-		Favorite fav = person.getFavorite();
-		String mainDish = fav.getFavoriteMainDish();
-		String sideDish = fav.getFavoriteSideDish();
+		double bestQuality = Integer.MIN_VALUE;
+		var favourites = person.getFavorite().getFavoriteDishes();
 
 		for (CookedMeal m : cookedMeals) {
-			// Note: define how a person will choose to eat a main dish and/or side dish
 			String n = m.getName();
 			double q = m.getQuality();
-			if (n.equals(mainDish)) {
-				// person will choose the main dish
-				if (q > bestQuality) {
-					// save the one with the best quality
-					bestQuality = q;
-					bestFavDish = m;
-					cookedMeals.remove(bestFavDish);
-					return bestFavDish;
-				}
-			}
 
-			else if (n.equals(sideDish)) {
-				// person will choose side dish
-				if (q > bestQuality) {
-					// save the one with the best quality
-					bestQuality = q;
-					bestFavDish = m;
-					cookedMeals.remove(bestFavDish);
-					return bestFavDish;
-				}
-			}
-
-			else if (q > bestQuality) {
-				// not his/her fav but still save the one with the best quality
-				bestQuality = q;
+			if (favourites.contains(n)) {
+				// this is a favourite meal
 				bestMeal = m;
+				break;
 			}
-
-			else {
-				// not his/her fav but still save the one with the best quality
+			else if (q > bestQuality) {
+				// save the one with the best quality
 				bestQuality = q;
 				bestMeal = m;
 			}
@@ -579,7 +551,7 @@ public class Cooking extends Function {
 			if (hasCookedMeal()) {
 				double rate = building.getSettlement().getMealsReplenishmentRate();
 
-				MarsTime now = masterClock.getMarsTime();
+				MarsTime now = pulse.getMarsTime();
 				var expired = cookedMeals.stream()
 						.filter(meal -> meal.getExpirationTime().getTimeDiff(now) < 0D)
 						.toList();

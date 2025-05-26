@@ -279,7 +279,6 @@ public class PreparingDessert extends Function {
 		PreparedDessert bestDessert = null;
 		PreparedDessert bestFavDessert = null;
 		double bestQuality = -1;
-		String favoriteDessert = person.getFavorite().getFavoriteDessert();
 
 		double thirst = person.getPhysicalCondition().getThirst();
 
@@ -295,17 +294,7 @@ public class PreparingDessert extends Function {
 		while (i.hasNext()) {
 			PreparedDessert d = i.next();
 			double q = d.getQuality();
-			if (d.getName().equals(favoriteDessert)) {
-				// person will choose his/her favorite dessert right away
-				if (q > bestQuality) {
-					bestQuality = q;
-					bestFavDessert = d;
-					menu.remove(bestFavDessert);
-					return bestFavDessert;
-				}
-			}
-
-			else if (q > bestQuality) {
+			if (q > bestQuality) {
 				bestQuality = q;
 				bestDessert = d;
 				// pick this by breaking

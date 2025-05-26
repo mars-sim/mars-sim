@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
@@ -18,7 +19,6 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.Favorite;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -33,9 +33,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class TabPanelFavorite extends TabPanelTable {
 
 	private static final String FAV_ICON = "favourite"; //$NON-NLS-1$
-	
-	/** The Preference Table Model. */	
-	private PreferenceTableModel tableModel;
+		
 	/** The Person instance. */
 	private Person person = null;
 
@@ -59,19 +57,20 @@ public class TabPanelFavorite extends TabPanelTable {
 	@Override
 	protected JPanel createInfoPanel() {
 		// Prepare SpringLayout for info panel.
-		AttributePanel infoPanel = new AttributePanel(4);
+		AttributePanel infoPanel = new AttributePanel(2);
 
 		Favorite fav = person.getFavorite();
-		infoPanel.addTextField(Msg.getString("TabPanelFavorite.mainDish"), fav.getFavoriteMainDish(), null);
-		infoPanel.addTextField(Msg.getString("TabPanelFavorite.sideDish"), fav.getFavoriteSideDish(), null);
-		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dessert"), Conversion.capitalize(fav.getFavoriteDessert()), null);
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
 
+		String dishes = fav.getFavoriteDishes().stream().collect(Collectors.joining("<br>", "<html>", "</html>"));
+		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dishes"), dishes, null);
+		
 		return infoPanel;
 	}
 
 	@Override
 	protected TableModel createModel() {
+  PreferenceTableModel tableModel;
 		tableModel = new PreferenceTableModel(person);
 		return tableModel;
 	}
@@ -99,14 +98,17 @@ public class TabPanelFavorite extends TabPanelTable {
 			Collections.sort(scoreStringList);
 		}
 
+		@Override
 		public int getRowCount() {
 			return scoreStringMap.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			return switch (columnIndex) {
 				case 0 -> String.class;
@@ -115,6 +117,7 @@ public class TabPanelFavorite extends TabPanelTable {
 			};
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
 				case 0 -> Msg.getString("TabPanelFavorite.column.metaTask");
@@ -123,15 +126,14 @@ public class TabPanelFavorite extends TabPanelTable {
 			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			String name = scoreStringList.get(row);
-			if (column == 0)
-				return name;
-			else if (column == 1) {
-				return scoreStringMap.get(name);
-			}
-			else
-				return null;
+			return switch (column) {
+				case 0 -> name;
+				case 1 -> scoreStringMap.get(name);
+				default -> null;
+			};
 		}
 	}
 }

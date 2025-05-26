@@ -8,11 +8,10 @@
 package com.mars_sim.core.person.ai.fav;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.mars_sim.core.building.function.cooking.HotMeal;
 import com.mars_sim.core.building.function.cooking.MealConfig;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.cooking.MealConfig.DishCategory;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -20,47 +19,17 @@ public class Favorite implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    /** default logger. */
-	private static final Logger logger = Logger.getLogger(Favorite.class.getName());
 	
-	private String favoriteMainDish;
-	private String favoriteSideDish;
-	private String favoriteDessert;
+	private Set<String> favoriteDishes = new HashSet<>();
 	private FavoriteType favoriteType;
 
-	private static String[] availableDesserts;
-	
-	private transient HotMeal mainMeal;
-	private transient HotMeal sideMeal;
-	
+
 	public Favorite(MealConfig meals) {
-		
-        availableDesserts = PreparingDessert.getArrayOfDesserts();
-        
+		        
     	favoriteType = determineRandomFavoriteType();
-        favoriteMainDish = RandomUtil.getRandomElement(meals.getDishList(DishCategory.MAIN)).getMealName();
-    	favoriteSideDish = RandomUtil.getRandomElement(meals.getDishList(DishCategory.SIDE)).getMealName();
-    	favoriteDessert = determineRandomDessert();
-	}
-
-	public HotMeal getMainDishHotMeal() {
-		return mainMeal;
-	}
-	
-	public HotMeal getSideDishHotMeal() {
-		return sideMeal;
-	}
-
-	/**
-	 * Determines a dessert randomly.
-	 * 
-	 * @return
-	 */
-	private String determineRandomDessert() {
-		String result = "";
-    	int rand = RandomUtil.getRandomInt(availableDesserts.length - 1);
-    	result = availableDesserts[rand];
-		return result;
+        favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.MAIN)).getMealName());
+		favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.SIDE)).getMealName());
+        favoriteDishes.add(RandomUtil.getRandomElement(meals.getDishList(DishCategory.DESSERT)).getMealName());
 	}
 
 	/**
@@ -71,18 +40,6 @@ public class Favorite implements Serializable {
 	public FavoriteType determineRandomFavoriteType() {
     	int num = RandomUtil.getRandomInt(FavoriteType.availableFavoriteTypes.length - 1);
 		return FavoriteType.availableFavoriteTypes[num];
-	}
-	
-	public boolean isDessert(String name) {
-		if (name != null) {
-	    	for (String s : availableDesserts) {
-	    		if (name.equalsIgnoreCase(s)) {
-	    			return true;
-	    		}
-	    	}
-		}
-		
-		return false;
 	}
 	
 	public boolean isActivity(String name) {
@@ -97,35 +54,18 @@ public class Favorite implements Serializable {
 		return false;
 	}
 	
-	public String getFavoriteMainDish() {
-		return favoriteMainDish;
-	}
 
-	public String getFavoriteSideDish() {
-		return favoriteSideDish;
-	}
-
-	public String getFavoriteDessert() {
-		return favoriteDessert;
+	public Set<String> getFavoriteDishes() {
+		return favoriteDishes;
 	}
 
 	public FavoriteType getFavoriteActivity() {
 		return favoriteType;
 	}
 
-	public void setFavoriteMainDish(String name) {
-		favoriteMainDish = name;
-	}
-
-	public void setFavoriteSideDish(String name) {
-		favoriteSideDish = name;
-	}
-
-	public void setFavoriteDessert(String name) {
-		if (isDessert(name))
-			favoriteDessert = name;
-		else
-			logger.severe("The dessert '" + name + "' does not exist in mars-sim !"); 
+	public void setFavoriteDishes(Set<String> favs) {
+		favoriteDishes.clear();
+		favoriteDishes.addAll(favs);
 	}
 
 	public void setFavoriteActivityType(FavoriteType type) {

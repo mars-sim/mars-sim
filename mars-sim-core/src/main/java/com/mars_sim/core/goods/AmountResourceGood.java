@@ -26,7 +26,7 @@ import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.HotMeal;
-import com.mars_sim.core.building.function.cooking.Ingredient;
+import com.mars_sim.core.building.function.cooking.MealConfig;
 import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.farming.Crop;
 import com.mars_sim.core.building.function.farming.Farming;
@@ -34,10 +34,8 @@ import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemType;
@@ -54,9 +52,6 @@ import com.mars_sim.core.vehicle.Vehicle;
 class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
-	
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(AmountResourceGood.class.getName());
 
 	private static final String NACO3 = "Sodium Carbonate";
 	private static final String IRON_POWDER = "Iron Powder";
@@ -129,16 +124,8 @@ class AmountResourceGood extends Good {
 	private static final double LEAVES_VALUE_MODIFIER = .5;
 
 	private static final double DESSERT_FACTOR = .1;
-
-	private static final double CROP_FACTOR = .01;
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
-	
-	private static final double ORGANISM_FACTOR = 0.05;
-	private static final double SOY_BASED_FACTOR = 0.075;
-	private static final double DERIVED_FACTOR = 0.15;
-	private static final double INSECT_FACTOR = 0.075;
-	private static final double OIL_FACTOR = 0.025;
 	
 	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 2;
 	private static final double REGOLITH_VALUE_MODIFIER = 2.0;
@@ -208,6 +195,7 @@ class AmountResourceGood extends Good {
 	private double projectedDemand;
 	/** The trade demand of each refresh cycle. */
 	private double tradeDemand;
+	private double ingredientDemand;
 	
 	private double costModifier = -1;
 		
@@ -220,6 +208,7 @@ class AmountResourceGood extends Good {
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar);
 		costModifier = calculateCostModifier(ar);
+		ingredientDemand = calculateIngredientDemand(ar, SimulationConfig.instance().getMealConfiguration());
     }
 
 	/**
@@ -575,8 +564,6 @@ class AmountResourceGood extends Good {
 			+ getResourceFoodProductionDemand(owner, settlement)
 			// Tune demand for the ingredients in all meals.
 			+ getAvailableMealDemand(settlement)
-			// Tune the favorite meal demand
-			+ getFavoriteMealDemand(owner, settlement)
 			// Tune dessert demand.
 			+ getResourceDessertDemand(settlement)
 			// Tune construction demand.
@@ -940,17 +927,31 @@ class AmountResourceGood extends Good {
 			
 			// Determine demand for the resource as an ingredient for each cooked meal
 			// recipe.
+			demand += ingredientDemand * factor;
 
-			
-			for (HotMeal meal : meals) {
-				for (Ingredient ingredient : meal.getIngredientList()) {
-					if (id == ingredient.getAmountResourceID()) {
-						demand += ingredient.getProportion() * factor;
-					}
-				}
-			}
 		}
 
+		return demand;
+	}
+
+	/**
+	 * Get the base demand for this resource as an ingredient in all meals.
+	 * @param mConfig
+	 * @return
+	 */
+	private static double calculateIngredientDemand(AmountResource ar, MealConfig mConfig) {
+		
+		if (!ar.isEdible())
+			return 0;
+		
+		int id = ar.getID();
+		double demand = 0D;
+			for (HotMeal meal : mConfig.getDishList()) {
+				demand += meal.getIngredientList().stream()
+					.filter(ingredient -> id == ingredient.getAmountResourceID())
+					.mapToDouble(i -> i.getProportion())
+					.sum();
+			}
 		return demand;
 	}
 
@@ -1155,92 +1156,6 @@ class AmountResourceGood extends Good {
 			default -> 0D;
 		};
 	}
-
-	/**
-	 * Gets the resource demand based on settlement favorite meals.
-	 *
-	 * @return demand (kg) for the resource.
-	 */
-	private double getFavoriteMealDemand(GoodsManager owner, Settlement settlement) {
-		if (settlement.getNumCitizens() == 0)
-			return 0;
-
-		if (!resource.isEdible())
-			return 0;
-		
-		if (resource.getGoodType() == GoodType.TISSUE)
-			return 0;
-		
-		double demand = 0D;
-
-		HotMeal mainMeal = null;
-		HotMeal sideMeal = null;
-
-		// Q: Why does it scan all People, instead of scanning each meal in MealConfig/meal.xml ? 
-		
-		// A: Each settlement will have unique demand (and the demand of each ingredient vary 
-		// over time) over the food ingredients because it's based on what settlers like to eat.
-		
-		// Q: how to save cpu cycles from having to look at the favorite main dish 
-		// and side dish of a person if they are unchanged ? 
-		
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			Person p = i.next();
-			mainMeal = p.getFavorite().getMainDishHotMeal();
-			if (mainMeal != null)
-				demand += computeIngredientDemand(owner, mainMeal.getIngredientList());
-			sideMeal = p.getFavorite().getSideDishHotMeal();
-			if (sideMeal != null)
-				demand += computeIngredientDemand(owner, sideMeal.getIngredientList());
-		}
-	
-		// Limit the demand between 0 and 100
-		demand = Math.clamp(demand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
-
-		return demand;
-	}
-
-	/**
-	 * Computes the food ingredient demand.
-	 * 
-	 * @param owner
-	 * @param resource
-	 * @param ingredients
-	 * @return
-	 */
-	private double computeIngredientDemand(GoodsManager owner, List<Ingredient> ingredients) {
-		if (ingredients.isEmpty()) {
-			return 0;
-		}
-			
-		double averageDemand = 0D;
-		double cropFarmFactor = owner.getCommerceFactor(CommerceType.CROP);
-		double factor = .01 * cropFarmFactor;
-		
-		var resourceID = resource.getID();
-		for (Ingredient it : ingredients) {
-			if (it.getAmountResourceID() == resourceID) {
-				averageDemand += factor * switch(resource.getGoodType()) {
-					case CROP -> CROP_FACTOR;
-					case ORGANISM -> ORGANISM_FACTOR;
-					case SOY_BASED -> SOY_BASED_FACTOR;
-					case DERIVED -> DERIVED_FACTOR;
-					case INSECT -> INSECT_FACTOR;
-					case OIL -> OIL_FACTOR;
-					default -> 0D;
-				};	
-			}		
-		}
-		// Limit the demand
-		averageDemand = averageDemand / ingredients.size();
-		averageDemand = Math.clamp(averageDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
-
-		return averageDemand;
-	}
-
-	
-
 
 	/**
 	 * Computes the tissue demand.

@@ -596,16 +596,19 @@ public final class SettlementBuilder {
 		// Add Favorite class
 		Favorite f = person.getFavorite();
 
+		Set<String> favoriteDishes = new HashSet<>();
 		if (mainDish != null) {
-			f.setFavoriteMainDish(mainDish);
+			favoriteDishes.add(mainDish);
 		}
-
 		if (sideDish != null) {
-			f.setFavoriteSideDish(sideDish);
+			favoriteDishes.add(sideDish);
 		}
-
 		if (dessert != null) {
-			f.setFavoriteDessert(dessert);
+			favoriteDishes.add(dessert);
+		}
+		if (!favoriteDishes.isEmpty()) {
+			// If no favorite dishes then generate some random ones
+			f.setFavoriteDishes(favoriteDishes);
 		}
 
 		if (activity != null) {
