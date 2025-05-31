@@ -9,7 +9,6 @@ package com.mars_sim.core.robot.ai.job;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -68,12 +67,6 @@ public class Chefbot extends RobotJob {
 			// Add all kitchen work space in settlement.
 			for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
 				Cooking kitchen = building.getCooking(); 
-				prepArea += kitchen.getCookCapacity();
-			}
-
-			// Add all kitchen work space in settlement.
-			for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.PREPARING_DESSERT)) {
-				PreparingDessert kitchen = building.getPreparingDessert(); 
 				prepArea += kitchen.getCookCapacity();
 			}
 		}

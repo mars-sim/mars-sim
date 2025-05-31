@@ -89,6 +89,25 @@ public class Msg {
 		}
 	}
 
+	
+	/**
+	 * This search for an entry <category>.<key> in the resource bundle. If no entry is found then the key 
+	 * is formatted and returned.
+	 * This ispartocualrly useful to create readabler labels for Enum
+	 * @param category should comply with the format <code>"ClassName.categoryIfAny"</code>
+	 * @param key should comply with the format <code>"keyForThisText"</code>
+	 * @return translation for given key to the current locale or the automatically
+	 * generated key if no translation is found.
+	 */
+	public static String getStringOptional(String category, String key) {
+		var fullKey = category + "." + key.toLowerCase(); //$NON-NLS-1$
+		try {
+			return RESOURCE_BUNDLE.getString(fullKey);
+		} catch (MissingResourceException e) {
+			return Conversion.capitalize(key.replace("_", " "));
+		}
+	}
+
 	/**
 	 * replaces all occurrences of "{n}" (with n an integer)
 	 * with the
@@ -152,7 +171,7 @@ public class Msg {
 				String[] parts = rest.split(",");
 				List<String> list = new ArrayList<>();
 				for (String part : parts) {
-					if (part != null && part.length() > 0) {
+					if (part != null && !part.isEmpty()) {
 						list.add(part);
 					}
 				}
@@ -169,9 +188,7 @@ public class Msg {
 
 	/** prints an error message to the console. */
 	private static final String handle(Exception e, String key) {
-		// Note : StringBuffer is thread safe and synchronized whereas StringBuilder is not.
-		// StringBuilder is not synchronized and is faster than StringBuffer.
-		StringBuffer msg = new StringBuffer();
+		var msg = new StringBuilder();
 		msg.append("!! ") //$NON-NLS-1$
 		.append(key)
 		.append(" ??") //$NON-NLS-1$

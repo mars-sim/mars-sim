@@ -95,7 +95,7 @@ public class Conversion {
 		if (input != null) {
 			StringBuilder s = new StringBuilder();
 			boolean nextTitleCase = true;
-			char[] charArray = input.toCharArray();
+			char[] charArray = input.toLowerCase().toCharArray();
 			int index = 0;
 			for (char c : charArray) {
 				if (Character.isSpaceChar(c) 
@@ -213,12 +213,4 @@ public class Conversion {
 		// NOTE: i must be > 1, if i = 0, return null
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
 	}
-	
-    public static void main(String[] args) {
-			new Conversion();
-			
-			String testString = "he and she are from the galaxy andromeda ! ";
-			String result = capitalize(testString);
-			System.out.println(result);
-    }
 }

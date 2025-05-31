@@ -8,12 +8,12 @@ package com.mars_sim.tools.helpgenerator;
 
 import java.util.List;
 
-import com.mars_sim.core.building.function.cooking.HotMeal;
+import com.mars_sim.core.building.function.cooking.DishRecipe;
 
 /**
  * Generates help content for HotMeal
  */
-class MealGenerator extends TypeGenerator<HotMeal> {
+class MealGenerator extends TypeGenerator<DishRecipe> {
 
     static final String TYPE_NAME = "meal";
 
@@ -22,22 +22,22 @@ class MealGenerator extends TypeGenerator<HotMeal> {
         "meals");
                 
         // Groups by part type
-        setGrouper("Meal Type", r-> r.getCategory());
+        setGrouper("Dish Type", r-> r.getCategory().getLabel());
     }
 
     /**
      * Get a list of all configured food processes
      */
     @Override
-    protected List<HotMeal> getEntities() {
+    protected List<DishRecipe> getEntities() {
 		return getConfig().getMealConfiguration().getDishList().stream()
-		 							.sorted((o1, o2)->o1.getMealName().compareTo(o2.getMealName()))
+		 							.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 									.toList();
 	
     }
 
     @Override
-    protected String getEntityName(HotMeal v) {
-        return v.getMealName();
+    protected String getEntityName(DishRecipe v) {
+        return v.getName();
     }
 }

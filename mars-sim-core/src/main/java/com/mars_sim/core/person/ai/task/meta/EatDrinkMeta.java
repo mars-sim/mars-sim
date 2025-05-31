@@ -11,7 +11,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.building.function.task.CookMeal;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -82,12 +81,6 @@ public class EatDrinkMeta extends FactoryMetaTask {
 			if (kitchen0 != null) {
 				mFactor = 200.0 * kitchen0.getNumberOfAvailableCookedMeals();
 			}
-		}
-
-		// Check dessert is available in a kitchen building at the settlement.
-		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
-		if (kitchen1 != null) {
-			dFactor = 100.0 * kitchen1.getAvailableServingsDesserts();
 		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
