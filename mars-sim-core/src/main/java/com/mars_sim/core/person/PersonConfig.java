@@ -43,7 +43,6 @@ public class PersonConfig {
 	private static final String GREY_TO_BLACK_WATER_RATIO = "grey-to-black-water-ratio";
 
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
-	private static final String DESSERT_CONSUMPTION_RATE = "dessert-consumption-rate";
 
 	private static final String DEHYDRATION_START_TIME = "dehydration-start-time";
 	private static final String STARVATION_START_TIME = "starvation-start-time";
@@ -98,7 +97,6 @@ public class PersonConfig {
 
 	private Double waterConsumption;
 	private double foodConsumption;
-	private double dessertConsumption;
 	private double dehyrationStartTime;
 	private double starvationStartTime;
 	private double minTemperature;
@@ -158,7 +156,6 @@ public class PersonConfig {
 		maxTemperature = personAttributes.get(MAX_TEMPERATURE);
 
 		foodConsumption = personAttributes.get(FOOD_CONSUMPTION_RATE);
-		dessertConsumption = personAttributes.get(DESSERT_CONSUMPTION_RATE);
 
 		dehyrationStartTime = personAttributes.get(DEHYDRATION_START_TIME);
 		starvationStartTime = personAttributes.get(STARVATION_START_TIME);
@@ -250,15 +247,6 @@ public class PersonConfig {
 	 */
 	public double getFoodConsumptionRate() {
 		return foodConsumption;
-	}
-
-	/**
-	 * Gets the dessert consumption rate.
-	 * 
-	 * @return dessert rate (kg/sol)
-	 */
-	public double getDessertConsumptionRate() {
-		return dessertConsumption;
 	}
 
 	/**

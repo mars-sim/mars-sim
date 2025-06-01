@@ -16,15 +16,17 @@ public class Ingredient implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private int id;
+	private boolean mandatory;
+	private double impact;
 
 	private double proportion;
 	private double ingredientDryMass;
 
 	private int amountResource;
 
-	Ingredient(int id, int amountResourceID, double proportion) {
-		this.id = id;
+	Ingredient(int amountResourceID, double proportion, boolean mandatory, double impact) {
+		this.impact = impact;
+		this.mandatory = mandatory;
 		this.amountResource = amountResourceID;
 		this.proportion = proportion;
 	}
@@ -41,8 +43,12 @@ public class Ingredient implements Serializable {
 		return proportion;
 	}
 
-	public int getID() {
-		return id;
+	public double getImpact() {
+		return impact;
+	}
+
+	public boolean isMandatory() {
+		return mandatory;
 	}
 
 	void setDrymass(double newMass) {
@@ -53,8 +59,8 @@ public class Ingredient implements Serializable {
 		return ingredientDryMass;
 	}
 
+	@Override
 	public String toString() {
 		return getName();
 	}
-
 }

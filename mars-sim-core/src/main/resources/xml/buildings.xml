@@ -21,7 +21,7 @@
 	<!ELEMENT functions (administration?, algae-farming?, astronomical-observation?, connection?,
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
 	vehicle-maintenance?, life-support?, living-accommodation?, management?, manufacture?,
-	medical-care?, power-generation?, power-storage?, preparing-dessert?, recreation?, research?,
+	medical-care?, power-generation?, power-storage?, recreation?, research?,
 	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-processing? )>
 
 	<!ELEMENT administration (activity?)>
@@ -129,8 +129,6 @@
 	<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
 	<!ELEMENT waste-processing (process-engine+, activity?)>
 	<!ATTLIST waste-processing power-down-level CDATA #REQUIRED>
-	<!ELEMENT preparing-dessert (activity?)>
-	<!ATTLIST preparing-dessert capacity CDATA #REQUIRED>
 
 	<!ELEMENT process-engine EMPTY>
 	<!ATTLIST process-engine name CDATA #REQUIRED>
@@ -316,13 +314,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- capacity: the battery energy storage capacity in the unit of kWh. -->
 			<!-- discharge rate: The max C-rating of the battery in the unit of C. -->
 			<power-storage capacity="40" discharge-rate="1.25"/>
-
-			<!-- The building has facilities for preparing dessert. -->
-			<preparing-dessert capacity="1">
-				<activity>
-					<activity-spot xloc="2.25"  yloc="-3.05" />
-				</activity>
-			</preparing-dessert>
 			
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="2">
@@ -692,13 +683,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-	
-			<preparing-dessert capacity="2">
-				<activity>
-					<activity-spot xloc="-1.9"  yloc="-8.15" />
-					<activity-spot xloc="-6.7"  yloc="-2.9" />
-				</activity>
-			</preparing-dessert>
 			
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="10">
@@ -1863,12 +1847,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 
 			<power-storage capacity="20"  discharge-rate="1.25"/>
-			
-			<preparing-dessert capacity="1">
-				<activity>
-					<activity-spot xloc="-3.25"  yloc="2.95" />
-				</activity>
-			</preparing-dessert>
 
 			<recreation capacity="20">
 				<activity>
@@ -3300,12 +3278,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-
-			<preparing-dessert capacity="1">
-				<activity>
-					<activity-spot xloc="-1.1"  yloc="3.7" />
-				</activity>
-			</preparing-dessert>
 			
 			<recreation capacity="10">
 				<activity>
