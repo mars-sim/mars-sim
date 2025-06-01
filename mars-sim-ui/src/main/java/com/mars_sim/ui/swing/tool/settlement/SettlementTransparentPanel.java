@@ -10,7 +10,6 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -38,7 +36,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -52,14 +49,14 @@ import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.building.BuildingConfig;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.BuildingConfig;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SunData;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -74,6 +71,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -434,7 +432,7 @@ public class SettlementTransparentPanel extends JComponent {
 		settlementListBox = new JComboBox<>(settlementCBModel);
 		settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		settlementListBox.setRenderer(new PromptComboBoxRenderer());
+		settlementListBox.setRenderer(new EntityListCellRenderer());
 		settlementListBox.addItemListener(event -> {
 			Settlement s = (Settlement) event.getItem();
 			if (s != null) {
@@ -696,33 +694,6 @@ public class SettlementTransparentPanel extends JComponent {
 		
 		opticalIcon.setIcon(updatedIcon);
 		opticalIcon.setToolTipText(tooltip);
-	}
- 
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private static final long serialVersionUID = 1L;
-		private String prompt;
-
-		public PromptComboBoxRenderer(){
-		    setHorizontalAlignment(CENTER);
-		}
-
-		public PromptComboBoxRenderer(String prompt){
-				this.prompt = prompt;
-			}
-
-		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value,
-		            int index, boolean isSelected, boolean cellHasFocus) {
-				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-				if (value == null) {
-					setText(prompt);
-					return this;
-				}
-
-		        return c;
-		    }
 	}
 
 	/**

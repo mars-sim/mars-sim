@@ -159,12 +159,10 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		newProcessButton.addActionListener(e -> {
 				try {
 					Object selectedItem = processComboBox.getSelectedItem();
-					if (selectedItem != null
-						&& selectedItem instanceof FoodProductionProcessInfo) {
-						FoodProductionProcessInfo selectedProcess = (FoodProductionProcessInfo) selectedItem;
-						if (FoodProductionUtil.canProcessBeStarted(selectedProcess, getFoodFactory())) {
+					if (selectedItem instanceof FoodProductionProcessInfo sp) {
+						if (FoodProductionUtil.canProcessBeStarted(sp, getFoodFactory())) {
 							getFoodFactory()
-									.addProcess(new FoodProductionProcess(selectedProcess, getFoodFactory()));
+									.addProcess(new FoodProductionProcess(sp, getFoodFactory()));
 							update();
 						}
 					}
@@ -253,8 +251,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 		for (int x = 0; x < processListPane.getComponentCount(); x++) {
 			Component component = processListPane.getComponent(x);
-			if (component instanceof FoodProductionPanel) {
-				FoodProductionPanel panel = (FoodProductionPanel) component;
+			if (component instanceof FoodProductionPanel panel) {
 				if (panel.getFoodProductionProcess().equals(process))
 					result = panel;
 

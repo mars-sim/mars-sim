@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,6 +47,7 @@ import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.unit_window.structure.building.food.FoodProductionPanel;
+import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food
@@ -141,14 +140,10 @@ public class TabPanelFoodProduction extends TabPanel {
 		Collections.sort(buildingComboBoxCache);
 		buildingComboBox = new JComboBoxMW<>(buildingComboBoxCache);
 		// AddePromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingComboBox.setRenderer(new EntityListCellRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
-		buildingComboBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent event) {
-				update();
-			}
-		});
+		buildingComboBox.addItemListener(event -> update());
 		interactionPanel.add(buildingComboBox);
 
 		// Create new foodProduction process selection.
@@ -180,7 +175,7 @@ public class TabPanelFoodProduction extends TabPanel {
 									logger.log(b, Level.CONFIG, 0L, "Player starts the '" 
 											+ selectedProcess.getName() + "'.");
 									
-									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+									buildingComboBox.setRenderer(new EntityListCellRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setRenderer(
 											new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
@@ -201,44 +196,6 @@ public class TabPanelFoodProduction extends TabPanel {
 		overrideCheckbox.addActionListener(e -> setOverride(OverrideType.FOOD_PRODUCTION, overrideCheckbox.isSelected()));
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
 		interactionPanel.add(overrideCheckbox);
-	}
-
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private String prompt;
-
-		/*
-		 * Set the text to display when no item has been selected.
-		 */
-		public PromptComboBoxRenderer(String prompt) {
-			this.prompt = prompt;
-		}
-
-		/*
-		 * Custom rendering to display the prompt text when no item is selected
-		 */
-		// Add color rendering
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-
-			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			if (value == null) {
-				setText(prompt);
-				return this;
-			}
-//			if (c instanceof JLabel) {
-//				if (isSelected) {
-//					c.setBackground(Color.orange);
-//				} else {
-//					c.setBackground(Color.white);
-//				}
-//			} else {
-//				c.setBackground(Color.white);
-//				c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-//			}
-			return c;
-		}
 	}
 
 	@SuppressWarnings("unchecked")
