@@ -11,28 +11,59 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.Icon;
+
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
  * The UnitMapLayer is an abstract graphics layer to display units.
  */
-abstract class UnitMapLayer implements MapLayer {
+public class UnitMapLayer implements FilteredMapLayer {
+	/**
+	 * Is a clickable hotspot for a Unit on the surface
+	 */
+	private class UnitHotspot extends MapHotspot {
+
+		private Unit target;
+
+		protected UnitHotspot(IntPoint center, Unit target) {
+			super(center, 5);
+			this.target = target;
+		}
+
+		/**
+		 * Delegate to the desktop to display the unit window
+		 */
+		@Override
+		public void clicked() {
+			displayComponent.getDesktop().showDetails(target);
+		}
+	}
+
+	private static final int LABEL_HORIZONTAL_OFFSET = 2;
+	private static final String LABEL_FILTER = "label";
 
 	// Domain data
 	private boolean blinkFlag = false;
 	private long blinkTime = 0L;
 	private Collection<Settlement> unitsToDisplay;
 	private UnitManager unitManager;
+	private MapPanel displayComponent;
+	private boolean displayLabel = true;
+	private Icon labelIcon = ImageLoader.getIconByName("map/text_small");
 
-	protected UnitMapLayer(MapPanel panel) {
+	public UnitMapLayer(MapPanel panel) {
 		unitManager = panel.getDesktop().getSimulation().getUnitManager();
+		displayComponent = panel;
 	}
 
 	/**
@@ -110,22 +141,61 @@ abstract class UnitMapLayer implements MapLayer {
 				
 				IntPoint locn = MapUtils.getRectPosition(unitPosn, mapCenter, baseMap);
 				var hs = displayUnit(unit, i, locn, baseMap, g);
-				if (hs != null) {
-					hotspots.add(hs);
-				}
+				hotspots.add(hs);
 		}
 	}
 
 	/**
 	 * Displays a unit on the map.
 	 * 
-	 * @param unit      the unit to display.
+ 	 * @param unit      the unit to display.
 	 * @param info		details how to render unit
 	 * @param location  Lociation on the map of this unit
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
-	 * @return Has this unit a hot spot?
 	 */
-	protected abstract MapHotspot displayUnit(Unit unit, UnitDisplayInfo info, IntPoint location,
-												MapDisplay baseMap, Graphics2D g);
+	protected MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
+							MapDisplay baseMap, Graphics2D g) {
+
+
+		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
+			MapMetaData mapType = baseMap.getMapMetaData();
+			Icon displayIcon = displayInfo.getMapIcon(unit, mapType);	
+
+			int locX = location.getiX() - (displayIcon.getIconWidth() / 2);
+			int locY =  location.getiY() - (displayIcon.getIconHeight() / 2);
+			displayIcon.paintIcon(displayComponent, g, locX, locY);
+
+			//Draw label
+			if (displayLabel) {
+				g.setColor(displayInfo.getMapLabelColor(baseMap.getMapMetaData()));
+				g.setFont(displayInfo.getMapLabelFont());
+				g.drawString(unit.getName(), locX + displayIcon.getIconWidth() + LABEL_HORIZONTAL_OFFSET,
+											locY + (displayIcon.getIconHeight()/2));
+			}
+
+			return new UnitHotspot(location, unit);
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<MapFilter> getFilterDetails() {
+		List<MapFilter> filters = new ArrayList<>();
+		filters.add(new MapFilter(LABEL_FILTER, "Labels", labelIcon));
+		return filters;
+	}
+
+	@Override
+	public void displayFilter(String name, boolean display) {
+		if (name.equals(LABEL_FILTER)) {
+			displayLabel = display;
+		}
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return (LABEL_FILTER.equals(filterName) && displayLabel);
+	}
 }

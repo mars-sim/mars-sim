@@ -46,8 +46,7 @@ import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 
 /**
  * A wizard panel for the mining site.
@@ -68,8 +67,7 @@ public class MiningSitePanel extends WizardPanel {
 
 	// Data members.
 	private MapPanel mapPane;
-	private UnitIconMapLayer unitIconLayer;
-	private UnitLabelMapLayer unitLabelLayer;
+	private UnitMapLayer unitLayer;
 	private EllipseLayer ellipseLayer;
 	private ExploredSiteMapLayer exploredSiteLayer;
 	private MineralMapLayer mineralLayer;
@@ -118,20 +116,18 @@ public class MiningSitePanel extends WizardPanel {
 		mineralLayer = new MineralMapLayer(mapPane);
 		
 		mapPane.addMapLayer(mineralLayer, 0);
-		mapPane.addMapLayer(unitIconLayer = new UnitIconMapLayer(mapPane), 1);
-		mapPane.addMapLayer(unitLabelLayer = new UnitLabelMapLayer(mapPane), 2);
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 3);
-		mapPane.addMapLayer(exploredSiteLayer = new ExploredSiteMapLayer(mapPane), 4);
+		mapPane.addMapLayer(unitLayer = new UnitMapLayer(mapPane), 1);
+		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
+		mapPane.addMapLayer(exploredSiteLayer = new ExploredSiteMapLayer(mapPane), 3);
 		
-		exploredSiteLayer.setDisplayClaimed(false);
-		exploredSiteLayer.setDisplayReserved(false);
+		exploredSiteLayer.displayFilter(ExploredSiteMapLayer.CLAIMED_FILTER, false);
+		exploredSiteLayer.displayFilter(ExploredSiteMapLayer.RESERVED_FILTER, false);
 		mapPane.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
 				mouseSelection(event.getX(), event.getY());
 			}
 		});
-//		mapPane.setMaximumSize(mapPane.getPreferredSize());
-//		mapPanel.add(mapPane);
+
 		mapPanel.add(mapPane, BorderLayout.NORTH);
 		
 		// Create selected site panel.
@@ -152,7 +148,6 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalStrut(10));
 
 		JPanel coordPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-//		coordPane.setBorder(new MarsPanelBorder());
 		selectedSitePane.add(coordPane);
 		
 		// Create longitude label.
@@ -280,8 +275,7 @@ public class MiningSitePanel extends WizardPanel {
 		try {
 			Collection<Settlement> unitsToDisplay = new ArrayList<>(1);
 			unitsToDisplay.add(getWizard().getMissionData().getStartingSettlement());
-			unitIconLayer.setUnitsToDisplay(unitsToDisplay);
-			unitLabelLayer.setUnitsToDisplay(unitsToDisplay);
+			unitLayer.setUnitsToDisplay(unitsToDisplay);
 			ellipseLayer.setEllipseDetails(new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX), new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX),
 					(convertRadiusToMapPixels(getRoverRange()) * 2));
 			ellipseLayer.setDisplayEllipse(true);

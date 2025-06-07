@@ -167,6 +167,7 @@ public class Exploration extends EVAMission
 		this.explorationSiteCompletion = new HashMap<>();
 		
 		Person person = (Person)members.toArray()[0];
+		explorationMgr = getStartingSettlement().getExplorations();
 		
 		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);		
 		

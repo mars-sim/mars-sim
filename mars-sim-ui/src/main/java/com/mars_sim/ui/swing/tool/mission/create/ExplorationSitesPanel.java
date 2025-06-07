@@ -13,8 +13,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -45,8 +43,7 @@ import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 
 /**
  * This is a wizard panel for selecting exploration sites for the mission.
@@ -123,10 +120,9 @@ class ExplorationSitesPanel extends WizardPanel {
 		navLayer = new NavpointEditLayer(mapPane, true);
 		
 		mapPane.addMapLayer(mineralLayer, 0);
-		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
-		mapPane.addMapLayer(new UnitLabelMapLayer(mapPane), 2);
-		mapPane.addMapLayer(ellipseLayer, 3);
-		mapPane.addMapLayer(navLayer, 4);
+		mapPane.addMapLayer(new UnitMapLayer(mapPane), 1);
+		mapPane.addMapLayer(ellipseLayer, 2);
+		mapPane.addMapLayer(navLayer, 3);
 		
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
@@ -314,8 +310,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private double getRange() {
 		// Use range modifier.
-		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
-		return range;
+		return getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 	}
 
 	/**
@@ -492,14 +487,12 @@ class ExplorationSitesPanel extends WizardPanel {
 			if (siteNum > 0) {
 				// Create the remove button.
 				JButton removeButton = new JButton("Remove");
-				removeButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Remove this site panel from the site list.
-						setVisible(false);
-						siteListPane.remove(getSiteNum());
-						updateSiteNumbers();
-						siteListPane.validate();
-					}
+				removeButton.addActionListener(e -> {
+					// Remove this site panel from the site list.
+					setVisible(false);
+					siteListPane.remove(getSiteNum());
+					updateSiteNumbers();
+					siteListPane.validate();
 				});
 				add(removeButton);
 			} else
@@ -555,6 +548,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * 
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mousePressed(MouseEvent event) {
 			// Checks which navpoint flag was selected if any.
 			navSelected = navLayer.overNavIcon(event.getX(), event.getY());
@@ -620,6 +614,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * 
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mouseReleased(MouseEvent event) {
 			navSelected = -1;
 			navLayer.clearSelectedNavpoint();
@@ -638,6 +633,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * 
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mouseDragged(MouseEvent event) {
 			if (navSelected > -1) {
 				// Drag navpoint flag if selected.
@@ -668,10 +664,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * @return true if within boundaries.
 		 */
 		private boolean withinBounds(IntPoint position, Coordinates location) {
-			boolean result = navLayer.withinDisplayEdges(position);
-            if (getRemainingRange(false) < getDistanceDiff(location))
-				result = false;
-			return result;
+            if (getRemainingRange(false) < getDistanceDiff(location)) {
+				return false;
+			}
+			return navLayer.withinDisplayEdges(position);
 		}
 
 		/**
@@ -738,7 +734,7 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		private MineralTableModel() {
 			mineralColors = mineralLayer.getMineralColors();
-			mineralNames = new ArrayList<String>(mineralColors.keySet());
+			mineralNames = new ArrayList<>(mineralColors.keySet());
 		}
 
 		public int getRowCount() {
@@ -749,24 +745,21 @@ class ExplorationSitesPanel extends WizardPanel {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0)
-				dataType = String.class;
-			if (columnIndex == 1)
-				dataType = Color.class;
-			return dataType;
+				return String.class;
+			return Color.class;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return "Mineral";
-			else if (columnIndex == 1)
-				return "Color";
-			else
-				return null;
+			return "Color";
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
@@ -789,8 +782,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 
-			if ((value != null) && (value instanceof Color)) {
-				Color color = (Color) value;
+			if (value instanceof Color color) {
 				JPanel colorPanel = new JPanel();
 				colorPanel.setOpaque(true);
 				colorPanel.setBackground(color);

@@ -7,7 +7,9 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,8 @@ import com.mars_sim.core.mineral.MineralType;
 /**
  * A map layer showing mineral concentrations.
  */
-public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit> {
+public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
+	implements FilteredMapLayer {
 
 	/**
 	 * Create a tooltip for a mineral concentation showing the details
@@ -53,6 +56,7 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit> {
 	private MineralMap mineralMap;
 	private Map<String, Color> mineralColorMap;
 	private Set<String> mineralsDisplaySet = new HashSet<>();
+	private Component displayComponent;
 
 	
 	/**
@@ -60,9 +64,10 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit> {
 	 * 
 	 * @param displayComponent the display component.
 	 */
-	public MineralMapLayer(MapPanel displayComponent) {
+	public MineralMapLayer(MapPanel map) {
 		super("Mineral");
-		mineralMap = displayComponent.getDesktop().getSimulation().getSurfaceFeatures().getMineralMap();
+		this.displayComponent = map;
+		mineralMap = map.getDesktop().getSimulation().getSurfaceFeatures().getMineralMap();
 	
 		mineralColorMap = getMineralColors();
 	}
@@ -121,7 +126,8 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit> {
 	 * @param mineralType the mineral type to display.
 	 * @param displayed   true if displayed, false if not.
 	 */
-	public void setMineralDisplayed(String mineralType, boolean displayed) {
+	@Override
+	public void displayFilter(String mineralType, boolean displayed) {
 		if (displayed) {
 			mineralsDisplaySet.add(mineralType);	
 		}
@@ -167,5 +173,20 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit> {
 		g.fillRect(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 
 		return new MineralHotspot(location, CIRCLE_DIAMETER, f);
+	}
+
+	@Override
+	public List<MapFilter> getFilterDetails() {
+		List<MapFilter> results = new ArrayList<>();
+		for(var e : getMineralColors().entrySet()) {
+			results.add(new MapFilter(e.getKey(), e.getKey(),
+								ColorLegendFactory.getLegend(e.getValue(), displayComponent)));
+		}
+		return results;
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return mineralsDisplaySet.contains(filterName);
 	}
 }

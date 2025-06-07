@@ -14,8 +14,7 @@ import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,10 +67,9 @@ public class FieldSitePanel extends WizardPanel {
         // Create the map panel.
         mapPane = new MapPanel(wizard.getDesktop(), 200L);
         
-        mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
-        mapPane.addMapLayer(new UnitLabelMapLayer(mapPane), 1);
-        mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
-        mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 3);
+        mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
+        mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
+        mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 2);
         
         mapPane.addMouseListener(new NavpointMouseListener());
         mapPane.addMouseMotionListener(new NavpointMouseMotionListener());

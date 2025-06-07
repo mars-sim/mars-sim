@@ -76,6 +76,9 @@ extends MissionCustomInfoPanel implements UnitListener  {
 		amountLabels = new JLabel[resourceIds.length];
 		for (int i=0; i<resourceIds.length; i++) {
 			AmountResource ar = ResourceUtil.findAmountResource(resourceIds[i]);
+			if (ar == null) {
+				throw new IllegalArgumentException("Cannot find resource with id:" + resourceIds[i]);
+			}
 			resourcesCollected.add(ar);
 			amountLabels[i] = collectionPanel.addRow(ar.getName(), StyleManager.DECIMAL_KG.format(0D));
 		}

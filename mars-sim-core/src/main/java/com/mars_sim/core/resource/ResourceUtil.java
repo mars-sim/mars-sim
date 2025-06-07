@@ -106,18 +106,17 @@ public class ResourceUtil {
 	private static final int GRANITE_ID = COLUMNAR_BASALT_ID + 1;
 	private static final int SHALE_ID = GRANITE_ID + 1;
 	private static final int MUDSTONE_ID = SHALE_ID + 1;
-	private static final int GLOMERATE_ID = MUDSTONE_ID + 1;
-	private static final int CONGLOMERATE_ID = GLOMERATE_ID + 1;
+	private static final int CONGLOMERATE_ID = MUDSTONE_ID + 1;
 	private static final int SANDSTONE_ID = CONGLOMERATE_ID + 1;
 	private static final int CROSSBEDDING_ID = SANDSTONE_ID + 1;
-	private static final int SCORIAL_ID = CROSSBEDDING_ID;
+	private static final int SCORIAL_ID = CROSSBEDDING_ID + 1;
 
 	// Must be one after the last fixed resource
 	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = SCORIAL_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, COLUMNAR_BASALT_ID,
 													GRANITE_ID, MUDSTONE_ID, SANDSTONE_ID,
-													SHALE_ID, GLOMERATE_ID, CROSSBEDDING_ID,
+													SHALE_ID, CONGLOMERATE_ID, CROSSBEDDING_ID,
 													METEORITE_ID, SCORIAL_ID};
 	public static final int[] MINERAL_CONC_IDs = new int[]{CHALCOPYRITE_ID, GEOTHITE_ID,
 														HEMATITE_ID, KAMACITE_ID, MAGNESITE_ID, MAGNETITE_ID,

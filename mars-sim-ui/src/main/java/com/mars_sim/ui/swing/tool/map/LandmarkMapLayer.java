@@ -10,7 +10,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.LandmarkType;
@@ -21,7 +24,9 @@ import com.mars_sim.core.map.location.SurfaceManager;
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.
  */
-public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
+public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> 
+	implements FilteredMapLayer {
+		
 	private class LandmarkHotspot extends MapHotspot {
 
 		private Landmark site;
@@ -47,35 +52,39 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 			return tooltip;
 		}	
 	}
-
-	/** Diameter of marking circle. */
-	private static final int CIRCLE_DIAMETER = 4;
-	/** Diameter of marking circle for artificial objects. */
-	private static final int AO_CIRCLE_DIAMETER = 4;
-	/** Horizontal offset for label. */
-	private static final int LABEL_HORIZONTAL_OFFSET = 2;
-	/** Horizontal offset for artificial objects. */
-	private static final int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
-	/** Light pink color for landmarks on surface map. */
-	private static final Color SURFACE_COLOR = new Color(230, 186, 186);
-	/** Dark pink color for landmarks on topo map. */
-	private static final Color TOPO_COLOR = new Color(95, 60, 60);
-	/** Light violet color for artificial objects on surface map. */
-	private static final Color AO_COLOR_0 = new Color(127, 127, 255);
-	/** Gray color for artificial objects on topo map. */
-	private static final Color AO_COLOR_1 = new Color(173, 173, 173);
 	/** Label font for landmarks. */
-	private static final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
+	private static final Font OTHERS_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
+	private static final Color OTHERS_MONO = new Color(95, 60, 60);
+	private static final Color OTHERS_COLOR = new Color(230, 186, 186);
+	private static final int LABEL_HORIZONTAL_OFFSET = 2;
+	private static final int CIRCLE_DIAMETER = 4;
+
 	/** Label font for artificial object. */
 	private static final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
-	
-	private SurfaceManager<Landmark> landmarks;
+	private static final Color AO_MONO = new Color(173, 173, 173);
+	private static final Color AO_COLOR = new Color(127, 127, 255);
+	private static final int AO_LABEL_HORIZONTAL_OFFSET = 1;
+	private static final int AO_CIRCLE_DIAMETER = 4;
 
+	private Set<String> displayed = new HashSet<>();
+	private SurfaceManager<Landmark> landmarks;
+	private MapPanel displayComponent;
+
+	/**
+	 * Create a landmark layer for a Map Panel
+	 * @param panel
+	 */
 	public LandmarkMapLayer(MapPanel panel) {
 		super("Landmark Layer");
 		landmarks = panel.getDesktop().getSimulation().getConfig()
 							.getLandmarkConfiguration().getLandmarks();
+		displayComponent = panel;
+
+		// By default everything
+		for(var l : LandmarkType.values()) {
+			displayed.add(l.name());
+		}
 	}
 
     /**
@@ -113,52 +122,73 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark> {
 	@Override
     protected MapHotspot displayFeature(Landmark landmark, IntPoint location, Graphics2D g2d,
 								boolean isColourful) {
-		// Determine circle location.
-		int locX = location.getiX() - (CIRCLE_DIAMETER / 2);
-		int locY = location.getiY() - (CIRCLE_DIAMETER / 2);
+		if (!displayed.contains(landmark.getType().name())) {
+			return null;
+		}
 
 		int locLabelX = 0;
 		int locLabelY = 0;
 
+		Font labelFont;
+		int circleDim;
+		Color circleColour;
 		if (landmark.getType() == LandmarkType.AO) {
 			// Find location to display label.
 			locLabelX = location.getiX() + (AO_CIRCLE_DIAMETER / 2) + AO_LABEL_HORIZONTAL_OFFSET;
 			locLabelY = location.getiY() +  AO_CIRCLE_DIAMETER;
-			// Set the label font.
-			g2d.setFont(AO_LABEL_FONT);
-			// Set the label color.
-			if (isColourful)
-				g2d.setColor(AO_COLOR_0);
-			else
-				g2d.setColor(AO_COLOR_1);
 			
-			// Draw a circle at the location.
-			g2d.drawOval(locX, locY, AO_CIRCLE_DIAMETER, AO_CIRCLE_DIAMETER);
-			
-			// Draw the landmark name.
-			g2d.drawString(landmark.getName(), locLabelX, locLabelY);
+			circleDim = AO_CIRCLE_DIAMETER;
+			labelFont = AO_LABEL_FONT;
+			circleColour = (isColourful ? AO_COLOR : AO_MONO);
 		}
-		
 		else {
 
 			// Find location to display label.
 			locLabelX = location.getiX() + (CIRCLE_DIAMETER / 2) + LABEL_HORIZONTAL_OFFSET;
 			locLabelY = location.getiY() - (CIRCLE_DIAMETER / 2) - LABEL_HORIZONTAL_OFFSET;
-			// Set the label font.
-			g2d.setFont(MAP_LABEL_FONT);
-			// Set the label color.
-			if (isColourful)
-				g2d.setColor(SURFACE_COLOR);
-			else
-				g2d.setColor(TOPO_COLOR);
-			
-			// Draw a circle at the location.
-			g2d.drawOval(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
-			
-			// Draw the landmark name.
-			g2d.drawString(landmark.getName(), locLabelX, locLabelY);
+
+			labelFont = OTHERS_LABEL_FONT;
+			circleColour = (isColourful ? OTHERS_COLOR : OTHERS_MONO);
+			circleDim = CIRCLE_DIAMETER;
 		}
 
+		// Draw a circle at the location.
+		g2d.setColor(circleColour);
+		int locX = location.getiX() - (circleDim / 2);
+		int locY = location.getiY() - (circleDim / 2);
+		g2d.drawOval(locX, locY, circleDim, circleDim);
+		
+		// Draw the landmark name.
+		g2d.setFont(labelFont);
+		g2d.drawString(landmark.getName(), locLabelX, locLabelY);
+
 		return new LandmarkHotspot(location, landmark);
+	}
+
+	@Override
+	public List<MapFilter> getFilterDetails() {
+		List<MapFilter> filters = new ArrayList<>();
+		for(var lt : LandmarkType.values()) {
+			filters.add(new MapFilter(lt.name(), lt.getName(), 
+							ColorLegendFactory.getLegend((lt == LandmarkType.AO ? AO_COLOR : OTHERS_COLOR),
+													displayComponent)));
+		}
+
+		return filters;
+	}
+
+	@Override
+	public void displayFilter(String name, boolean display) {
+		if (display) {
+			displayed.add(name);
+		}
+		else {
+			displayed.remove(name);
+		}
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return displayed.contains(filterName);
 	}
 }

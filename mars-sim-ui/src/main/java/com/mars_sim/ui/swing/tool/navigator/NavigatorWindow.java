@@ -7,49 +7,34 @@
 package com.mars_sim.ui.swing.tool.navigator;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
@@ -67,11 +52,13 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
-import com.mars_sim.ui.swing.JComboBoxMW;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
+import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
+import com.mars_sim.ui.swing.tool.map.FilteredMapLayer.MapFilter;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
 import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
@@ -80,10 +67,13 @@ import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
+import com.mars_sim.ui.swing.utils.JCoordinateEditor;
+import com.mars_sim.ui.swing.utils.TreeCheckFactory;
+import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -93,31 +83,99 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 @SuppressWarnings("serial")
 public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow {
 
-	private static record MapOrder(int order, MapLayer layer) {}
+	// Binding from name to layer
+	private static record NamedLayer(String name, MapLayer layer) {}
+
+	/**
+	 * This is used to show a MapFilter instance in a CheckTree
+	 */
+	private static class FilterNode implements SelectableNode {
+		private MapFilter filter;
+		private FilteredMapLayer layer;
+
+		public FilterNode(FilteredMapLayer l, MapFilter m) {
+			filter = m;
+			layer = l;
+		}
+
+		@Override
+		public String getName() {
+			return filter.label();
+		}
+
+		@Override
+		public Icon getIcon() {
+			return filter.symbol();
+		}
+
+		@Override
+		public boolean isSelected() {
+			return layer.isFilterActive(filter.name());
+		}
+
+		@Override
+		public void toggleSelection() {
+			var selected = !isSelected();
+			layer.displayFilter(filter.name(), selected);
+		}
+	}
 	
+	/**
+	 * This is used to show a MapLayer instance in a CheckTree
+	 */
+	private class LayerNode implements SelectableNode {
+		private String layerName;
+		private String label;
+		private MapLayer layer;
+
+		public LayerNode(String layerName, MapLayer layer) {
+			this.layerName = layerName;
+			this.label = Msg.getString("NavigatorWindow.menu.layer." + layerName);
+			this.layer = layer;
+		}
+
+		@Override
+		public String getName() {
+			return label;
+		}
+
+		@Override
+		public Icon getIcon() {
+			return null;
+		}
+
+		@Override
+		public boolean isSelected() {
+			return mapPanel.hasMapLayer(layer);
+		}
+
+		@Override
+		public void toggleSelection() {
+			setMapLayer(!isSelected(), layerName);
+		}
+	}
+
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 18;
-	private static final int CONTROL_PANE_HEIGHT = 85;
-	private static final String DEGREE_SIGN = Msg.getString("direction.degreeSign");
-	
+	private static final int CONTROL_PANE_WIDTH = 250;
+
+
+	private static final String MAP_SEPERATOR = "~";
+
 	private static final String LEVEL = "Level ";
-	private static final String DASH = "- ";
-	private static final String CHOOSE_SETTLEMENT = "List";
-	private static final String MAPTYPE_PROP = "mapType";
-	private static final String RESOLUTION_PROP = "resolution";
+	private static final String CHOOSE_SETTLEMENT = "Settlement";
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
-	private static final String LAYER_ACTION = "layer";
-	private static final String GO_THERE_ACTION = "goThere";
-	private static final String MINERAL_ACTION = "mineralLayer";
-	private static final String MINERAL = "mineral";
 
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
 	private static final String EXPLORED_LAYER = "exploredSites";
 
+	private static final String MAPTYPE_PROP = "mapType";
+	private static final String RESOLUTION_PROP = "resolution";
+	private static final String LAYER_PROP = "lyr" + MAP_SEPERATOR;
 	private static final String LON_PROP = "longitude";
 	private static final String LAT_PROP = "latitude";
 
@@ -137,35 +195,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String KM_PIXEL = " pixel: ";
 	private static final String ELEVATION = " height: ";
 	private static final String KM = " km";
-	private static final String MAP_SEPERATOR = "~";
 	
 	private static final String RESOLUTION = "0";
-	
-	/** The latitude combox.  */
-	private JComboBoxMW<?> latCB;
-	/** The longitude combox. */
-	private JComboBoxMW<?> lonCB;
-	/** Settlement Combo box. */
-	private JComboBox<Settlement> settlementComboBox;
-	/** Latitude direction choice. */
-	private JComboBoxMW<?> latCBDir;
-	/** Longitude direction choice. */
-	private JComboBoxMW<?> lonCBDir;
 
-	/** Toggle button for mineral types. */
-	private JButton mineralsButton;
+	private static final Object LAYER_VISIBLE = "displayed";
+
 	/** Toggle button for GPU acceleration. */
 	private FlatToggleButton gpuButton;
-	/** Go button. */
-	private JButton goButton;
-	
-	private JRadioButton r0;
-	private JRadioButton r1;
-	
-	private JPanel settlementPane;
-	private JPanel goPane;
-	private JPanel bottomPane;
-	
+
 	/** The info label on the status bar. */
 	private JLabel scaleLabel;
 	private JLabel kmPerPixelLabel;
@@ -175,21 +212,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel thetaLabel;
 	private JLabel rhoLabel;
 
-	private transient Map<String, MapOrder> mapLayers = new HashMap<>();
-	
-	private transient MineralMapLayer mineralLayer;
-	
+	private transient List<NamedLayer> mapLayers = new ArrayList<>();
+		
 	private transient UnitManagerListener umListener;
 	
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapPanel;
-
-	private JPanel detailPane;
 	
 	private UnitManager unitManager;
-	
-	private Settlement selectedSettlement;
-	
+
+	private JCoordinateEditor coordEditor;
+	private JComboBox<Settlement> settlementComboBox;
 
 	/**
 	 * Constructor.
@@ -234,202 +267,88 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapPanel.addMouseMotionListener(mapListner);
 		
 		// Create map layers.
-		createMapLayer(DAYLIGHT_LAYER, 0, new ShadingMapLayer(mapPanel));
-		mineralLayer = new MineralMapLayer(mapPanel);
-		createMapLayer(MINERAL_LAYER, 1, mineralLayer);
-		createMapLayer("unitIcon", 2, new UnitIconMapLayer(mapPanel));
-		createMapLayer("unitLabels", 3, new UnitLabelMapLayer(mapPanel));
-		createMapLayer("navPoints", 4, new NavpointMapLayer(mapPanel));
-		createMapLayer("vehicleTrails", 5, new VehicleTrailMapLayer(mapPanel));
-		createMapLayer("landmarks", 6, new LandmarkMapLayer(mapPanel));
-		createMapLayer(EXPLORED_LAYER, 7, new ExploredSiteMapLayer(mapPanel));
+		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("unit", new UnitMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("navPoints", new NavpointMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer(EXPLORED_LAYER, new ExploredSiteMapLayer(mapPanel)));
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
 		mapPane.add(mapPanel);
-		
-		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
-		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
-		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
-		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
-		wholePane.add(wholeBottomPane, BorderLayout.SOUTH);
-		
-		JPanel coordControlPane = new JPanel(new BorderLayout());
-		wholeBottomPane.add(coordControlPane, BorderLayout.CENTER);
-		
-		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
-		coordControlPane.add(centerPane, BorderLayout.CENTER);
-		
-		JPanel westPane = new JPanel(new BorderLayout());
-		coordControlPane.add(westPane, BorderLayout.WEST);
-		
-		// Create a button panel
-		JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
-		westPane.add(buttonPanel, BorderLayout.EAST);
 
-		buttonPanel.setBorder(BorderFactory.createTitledBorder("POI"));
-		buttonPanel.setToolTipText("Select your point of Interest");
+		wholePane.add(createControlPanel(), BorderLayout.EAST);
 
-		ButtonGroup group = new ButtonGroup();
+		// Create the status bar
+		contentPane.add(createStatusBar(), BorderLayout.SOUTH);
 
-		r0 = new JRadioButton("Coordinate", true);
-		r1 = new JRadioButton("Settlement");
-
-		r0.setSelected(true);	
-			
-		group.add(r0);
-		group.add(r1);
-
-		buttonPanel.add(r0);
-		buttonPanel.add(r1);
+		// Apply user choice from xml config file
+		checkSettings();
 		
-		PolicyRadioActionListener actionListener = new PolicyRadioActionListener();
-	
-		r0.addActionListener(actionListener);
-		r1.addActionListener(actionListener);
-		
-		////////////////////////////////////////////
-			
-		JPanel twoLevelPane = new JPanel(new BorderLayout(0, 0));
-		centerPane.add(twoLevelPane, BorderLayout.CENTER);
-		
-		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topPane.setAlignmentY(BOTTOM_ALIGNMENT);
-		twoLevelPane.add(topPane, BorderLayout.CENTER);
+		setClosable(true);
+		setResizable(false);
+		setMaximizable(false);
 
-		bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPane.setAlignmentY(TOP_ALIGNMENT);
-		twoLevelPane.add(bottomPane, BorderLayout.SOUTH);
+		setVisible(true);
+		// Pack window
+		pack();
+	}
+
+	private JPanel createControlPanel() {
+		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
+
+		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		controlPane.setMaximumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		
+		JPanel searchPane = new JPanel();
+		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
+		searchPane.setBorder(StyleManager.createLabelBorder("Search"));
+
+		controlPane.add(searchPane, BorderLayout.NORTH);
         
-		// Prepare the go button and button pane
-		createGoPane(true);
-			
-		// Create the settlement combo box
-        buildSettlementComboBox(setupSettlements());
-        
-        // Set up the label and the settlement pane
-        createSettlementPane(false);
+        searchPane.add(createSettlementPane());
+		searchPane.add(createCoordPane());
 
-		////////////////////////////////////////////
-			
-		// Prepare latitude entry components
-		JLabel latLabel = new JLabel("   Lat :", SwingConstants.RIGHT);
-		topPane.add(latLabel);
+		var layerRoot = createLayerModel();
+		JTree layers = TreeCheckFactory.createCheckTree(layerRoot);
+		JScrollPane treeView = new JScrollPane(layers);
+		controlPane.add(treeView, BorderLayout.CENTER);
+		treeView.setBorder(StyleManager.createLabelBorder("Layers"));
 
-		Integer[] lonDegrees = new Integer[361];
-		Integer[] latDegrees = new Integer[91];
-		
-		// Switch to using ComboBoxMW for latitude
-		int lonSize = lonDegrees.length;
-		for (int i = 0; i < lonSize; i++) {
-			lonDegrees[i] = i;
-		}
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+		buttonPane.setBorder(StyleManager.createLabelBorder("Graphics"));
 
-		int latSize = latDegrees.length;
-		for (int i = 0; i < latSize; i++) {
-			latDegrees[i] = i;
-		}
+		controlPane.add(buttonPane, BorderLayout.SOUTH);
 
-		latCB = new JComboBoxMW<>(latDegrees);
-		latCB.setPreferredSize(new Dimension(60, 25));
-		latCB.setSelectedItem(0);
-		topPane.add(latCB);
-
-		String[] latStrings = { DEGREE_SIGN + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
-							DEGREE_SIGN+ Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
-		};
-		latCBDir = new JComboBoxMW<>(latStrings);
-		latCBDir.setPreferredSize(new Dimension(60, 25));
-		latCBDir.setEditable(false);
-		topPane.add(latCBDir);
-
-		// Prepare longitude entry components
-		JLabel longLabel = new JLabel("Lon :", SwingConstants.RIGHT);
-		topPane.add(longLabel);
-
-		// Switch to using ComboBoxMW for longitude
-		lonCB = new JComboBoxMW<>(lonDegrees);
-		lonCB.setPreferredSize(new Dimension(60, 25));
-		lonCB.setSelectedItem(0);
-		topPane.add(lonCB);
-
-		String[] longStrings = { DEGREE_SIGN + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
-					DEGREE_SIGN + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
-		};
-		lonCBDir = new JComboBoxMW<>(longStrings);
-		lonCBDir.setPreferredSize(new Dimension(60, 25));
-		lonCBDir.setEditable(false);
-		topPane.add(lonCBDir);
-
-		///////////////////////////////////////////////////////////////////////////
-		
-		// Prepare options panel on the right pane
-		JPanel gridPane = new JPanel(new GridLayout(3, 1));
-		gridPane.setAlignmentY(Component.CENTER_ALIGNMENT);
-		coordControlPane.add(gridPane, BorderLayout.EAST);
-
-		JPanel topOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topOptionPane.setPreferredSize(new Dimension(120, 25));
-		topOptionPane.setMinimumSize(new Dimension(120, 25));
-		topOptionPane.setMaximumSize(new Dimension(120, 25));
-		gridPane.add(topOptionPane);
-        
 		// Prepare options button.
-		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
-		optionsButton.putClientProperty("JButton.buttonType", "help");
-//		May add back 
-		optionsButton.setIcon(UIManager.getIcon("Tree.closedIcon"));
-		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
-		optionsButton.addActionListener(e ->
-				SwingUtilities.invokeLater(() ->
-					createMapOptionsMenu().show(optionsButton, 0, optionsButton.getHeight())
-				)
-		);
-		
-		topOptionPane.add(optionsButton);
-
-		JPanel mineralBtnPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mineralBtnPane.setPreferredSize(new Dimension(100, 25));
-		mineralBtnPane.setMinimumSize(new Dimension(100, 25));
-		mineralBtnPane.setMaximumSize(new Dimension(100, 25));
-		gridPane.add(mineralBtnPane);
-		
-		// Prepare minerals button
-		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
-		mineralsButton.setPreferredSize(new Dimension(100, 25));
-		mineralsButton.putClientProperty("JButton.buttonType", "roundRect");
-		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
-		mineralsButton.setEnabled(false);
-		mineralsButton.addActionListener(e -> 
-				SwingUtilities.invokeLater(() -> 
-					createMineralsMenu().show(mineralsButton, 0, mineralsButton.getHeight())
-			)
-		);
-		
-		mineralBtnPane.add(mineralsButton);
-		
-		JPanel gpuBtnPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		gpuBtnPane.setPreferredSize(new Dimension(80, 25));
-		gpuBtnPane.setMinimumSize(new Dimension(80, 25));
-		gpuBtnPane.setMaximumSize(new Dimension(80, 25));
-		gridPane.add(gpuBtnPane);
+		JButton mapButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //-NLS-1$
+		mapButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //-NLS-1$
+		mapButton.addActionListener(e -> {
+					var s = (Component)e.getSource();
+					createMapOptionsMenu().show(s, s.getWidth(), s.getHeight());
+			}
+		);		
+		buttonPane.add(mapButton);
 	
 		// Prepare gpu button
 		gpuButton = new FlatToggleButton(); 
 		gpuButton.setPreferredSize(new Dimension(80, 25));
 		gpuButton.putClientProperty("JButton.buttonType", "roundRect");
-		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //$NON-NLS-1$
+		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //-NLS-1$
 		gpuButton.setSelected(IntegerMapData.isHardwareAccel());
 
 		updateGPUButton();
-		gpuButton.addActionListener(e -> SwingUtilities.invokeLater(this::updateGPUButton));
+		gpuButton.addActionListener(e -> updateGPUButton());
+		buttonPane.add(gpuButton);
+		return controlPane;
+	}
 
-
-		gpuBtnPane.add(gpuButton);
-
-		// Create the status bar
+	private JStatusBar createStatusBar() {
 		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
-		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
 		Font font = StyleManager.getSmallFont();
 		
@@ -474,16 +393,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		statusBar.addRightComponent(scaleLabel, false);
 		statusBar.addRightComponent(kmPerPixelLabel, false);
 
-		// Apply user choice from xml config file
-		checkSettings();
-		
-		setClosable(true);
-		setResizable(false);
-		setMaximizable(false);
-
-		setVisible(true);
-		// Pack window
-		pack();
+		return statusBar;
 	}
 
 	/**
@@ -516,6 +426,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * Checks for config settings.
 	 */
 	private void checkSettings() {
+		boolean layerDefined = false;
 		// Apply user choice from xml config file
 		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 		if (userSettings != null) {
@@ -532,7 +443,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			changeMap(userSettings.getProperty(MAPTYPE_PROP, MapDataFactory.DEFAULT_MAP_TYPE), resolution);
 			
 			// Check for layer action and mineral action
-			checkLayerAction(userSettings);
+			layerDefined = checkLayerAction(userSettings);
 
 			String latString = userSettings.getProperty(LAT_PROP);
 			String lonString = userSettings.getProperty(LON_PROP);
@@ -541,9 +452,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				updateCoordsMaps(userCenter);
 			}
 		}
-		else {
+		
+		if (!layerDefined) {
 			// Add default map layers
-			for (String layerName : mapLayers.keySet()) {
+			for (var l : mapLayers) {
+				String layerName = l.name();
 				if (!layerName.equals(DAYLIGHT_LAYER) && !layerName.equals(MINERAL_LAYER)
 					&& !layerName.equals(EXPLORED_LAYER)) {
 					setMapLayer(true, layerName);
@@ -557,68 +470,94 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * 
 	 * @param userSettings
 	 */
-	private void checkLayerAction(Properties userSettings) {
+	private boolean checkLayerAction(Properties userSettings) {
+		boolean layerDefined = false;
 		for (Object key : userSettings.keySet()) {
 			String prop = (String) key;
 			String propValue = userSettings.getProperty(prop);
 
-			if (prop.startsWith(LAYER_ACTION)) {
-				String layer = prop.substring(LAYER_ACTION.length());
-				// Check if a layer is selected
-				boolean selected = Boolean.parseBoolean(propValue);
-				setMapLayer(selected, layer);
-
-				if (MINERAL_LAYER.equals(layer)) {
-					selectMineralLayer(selected);
+			if (prop.startsWith(LAYER_PROP)) {
+				layerDefined = true;
+				String []parts = prop.split(MAP_SEPERATOR);
+				if (parts.length != 3) {
+					logger.warning("Cannot use user prop" + prop);
 				}
+				else {
+					boolean selected = Boolean.parseBoolean(propValue);
 
-			}
-			else if (prop.startsWith(MINERAL_ACTION)) {
-				String mineral = prop.substring(MINERAL_ACTION.length());
-				mineralLayer.setMineralDisplayed(mineral, Boolean.parseBoolean(propValue));
+					String layerName = parts[1];
+					String command = parts[2];
+					if (command.equals(LAYER_VISIBLE)) {
+						setMapLayer(selected, layerName);
+					}
+					// Must be a filter
+					else if (nameToLayer(layerName) instanceof FilteredMapLayer fl) {
+						fl.displayFilter(command, selected);
+					}
+				}
 			}
 		}
+
+		return layerDefined;
 	}
-	
-	/**
-	 * Creates the go button and pane.
-	 * 
-	 * @param isCreatingButton
-	 */
-	public void createGoPane(boolean isCreatingButton) {
-		
-		if (isCreatingButton) {
-			goButton = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
-			goButton.setToolTipText("Go to the location with your specified coordinate");
-			goButton.setActionCommand(GO_THERE_ACTION);
-			goButton.addActionListener(this);
-		}
-		
-		goPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		goPane.add(goButton);
-		
-		bottomPane.add(goPane);
+
+	private JPanel createCoordPane() {
+		var p = new JPanel();
+		coordEditor = new JCoordinateEditor(true);
+
+		var goTo = new JButton(ImageLoader.getIconByName("action/find"));
+		goTo.addActionListener(e -> {							
+			// Reset it back to the prompt text
+			settlementComboBox.setSelectedIndex(-1);
+
+			var locn = coordEditor.getCoordinates();
+			mapPanel.showMap(locn);
+		});
+
+		p.add(coordEditor);
+		p.add(goTo);
+
+		return p;
 	}
-	
-	public void setZoomPanel(JPanel zoomPanel) {
-		detailPane.add(zoomPanel);
-	}
-	
+
 	/**
 	 * Creates the settlement pane.
-	 * 
-	 * @param isAdding
 	 */
-	public void createSettlementPane(boolean isAdding) {   
-	    settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    JLabel label = new JLabel("Select a settlement: ");
+	private JPanel createSettlementPane() {   
+	    var settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+	    JLabel label = new JLabel("Settlement: ");
 	    settlementPane.add(label);
-	    
+	    	
+		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
+		model.addAll(setupSettlements());
+		settlementComboBox = new JComboBox<>(model);
+		settlementComboBox.setOpaque(false);
+		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //-NLS-1$
+		settlementComboBox.setRenderer(new EntityListCellRenderer(CHOOSE_SETTLEMENT));
+
+		// Set the item listener only after the setup is done
+		settlementComboBox.addItemListener(e -> {
+			Settlement newSettlement = (Settlement) e.getItem();
+			
+			if (newSettlement != null) {				
+				// Need to update the coordinates
+				updateCoordsMaps(newSettlement.getCoordinates());
+			}
+		});
+		
+		// Listen for new Settlements
+		umListener = event -> {
+			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
+				settlementComboBox.addItem((Settlement) event.getUnit());
+			}
+		};
+		
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+
     	settlementPane.add(settlementComboBox);
-    	
-	    if (isAdding) {
-			bottomPane.add(settlementPane);
-	    }
+
+		return settlementPane;
 	}
 	
 	/**
@@ -640,17 +579,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Collections.sort(settlements);
 		
 		return settlements;
-	}
-	
-	/**
-	 * Creates the map layer.
-	 * 
-	 * @param name
-	 * @param order
-	 * @param layer
-	 */
-	private void createMapLayer(String name, int order, MapLayer layer) {
-		mapLayers.put(name, new MapOrder(order, layer));
 	}
 
 	/**
@@ -679,156 +607,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	/**
-	 * Builds the settlement combo box.
-	 * 
-	 * @param startingSettlements
-	 */
-	private void buildSettlementComboBox(List<Settlement> startingSettlements) {
-
-		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
-		model.addAll(startingSettlements);
-		model.setSelectedItem(selectedSettlement);
-		settlementComboBox = new JComboBox<>(model);
-		settlementComboBox.setOpaque(false);
-		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		settlementComboBox.setRenderer(new PromptComboBoxRenderer(CHOOSE_SETTLEMENT));
-
-		// Set the item listener only after the setup is done
-		settlementComboBox.addItemListener(e -> {
-			if (settlementComboBox.getSelectedIndex() == -1)
-				return;
-			
-			Settlement newSettlement = (Settlement) e.getItem();
-			
-			if (newSettlement != null) {
-				// Change to the selected settlement in SettlementMapPanel
-				if (selectedSettlement != newSettlement) {
-					// Set the selected settlement
-					selectedSettlement = newSettlement;
-				}
-				
-				// Need to update the coordinates
-				updateCoordsMaps(newSettlement.getCoordinates());
-				
-				// Reset it back to the prompt text
-				settlementComboBox.setSelectedIndex(-1);
-			}
-		});
-		
-		// Listen for new Settlements
-		umListener = event -> {
-			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
-				settlementComboBox.addItem((Settlement) event.getUnit());
-			}
-		};
-		
-		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
-	}
-
-	/**
-	 * Updates coordinates in map, buttons, and globe Redraw map and globe if
-	 * necessary.
-	 * 
-	 * @param newCoords the new center location
-	 */
-	public void updateCoordsBox(Coordinates newCoords) {
-		
-		String lat = newCoords.getFormattedLatitudeString();
-		String lon = newCoords.getFormattedLongitudeString();
-		
-		String latNumS = lat.substring(0, lat.indexOf(' '));
-		String latDirS = DEGREE_SIGN + lat.substring(lat.indexOf(' ') + 1);
-		
-		String lonNumS = lon.substring(0, lon.indexOf(' '));
-		String lonDirS = DEGREE_SIGN + lon.substring(lon.indexOf(' ') + 1);
-		
-		int latNum = (int) Math.round(Double.parseDouble(latNumS));
-		int lonNum = (int) Math.round(Double.parseDouble(lonNumS));
-		
-		latCB.setSelectedItem(latNum);
-		lonCB.setSelectedItem(lonNum);
-		
-		latCBDir.setSelectedItem(latDirS);
-		lonCBDir.setSelectedItem(lonDirS);
-	}
-	
-	/**
 	 * Updates coordinates and map and globe.
 	 * 
 	 * @param newCoords the new center location
 	 */
 	public void updateCoordsMaps(Coordinates newCoords) {
-		updateCoordsBox(newCoords);
+		coordEditor.setCoordinates(newCoords);
 		mapPanel.showMap(newCoords);
 	}
-	
-	/**
-	 * Updates map and globe.
-	 * 
-	 * @param newCoords the new center location
-	 */
-	public void updateMaps(Coordinates newCoords) {
-		mapPanel.showMap(newCoords);
-	}
-	
-	private void goToLocation() {
 
-		double latitude = (int) latCB.getSelectedItem();
-		double longitude = (int) lonCB.getSelectedItem();
-		
-		String latDirStr = ((String) latCBDir.getSelectedItem()).substring(1);
-		String longDirStr = ((String) lonCBDir.getSelectedItem()).substring(1);
-
-		if ((latitude >= 0D) && (latitude <= 90D) && (longitude >= 0D) && (longitude <= 360)) {
-
-			String westString = Msg.getString("direction.westShort"); // $NON-NLS-1$
-			if (longDirStr.equals(westString)) {
-				// If it's toward west
-				longitude = 360D - longitude; 
-			}
-
-			updateMaps(new Coordinates(latitude + " " + latDirStr, longitude + " " + longDirStr)); // $NON-NLS-1$
-			// FUTURE: May switch to having a prompt statement at the top of the combobox
-			settlementComboBox.setSelectedIndex(-1);
-		}
-	}
-		
-	/**
-	 * Processes the mineral command.
-	 * 
-	 * @param source
-	 */
-	private void goToMineral(Object source) {
-		JCheckBoxMenuItem mineralItem = (JCheckBoxMenuItem) source;
-		boolean previous = mineralLayer.isMineralDisplayed(mineralItem.getText());
-		boolean now = !previous;
-		mineralItem.setSelected(now);
-		mineralLayer.setMineralDisplayed(mineralItem.getText(), now);
-		logger.config("Just set the state of " + mineralItem.getText() + " to " + now + " in mineral layer.");
-	}
-	
-	/**
-	 * Processes other commands.
-	 * 
-	 * @param command
-	 * @param source
-	 */
-	private void goToOtherCommands(String command, Object source) {
-		if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {			
-			goToMapTypeReload(command, source);
-		}
-		else if (command.startsWith(LAYER_ACTION)) {
-			String selectedLayer = command.substring(LAYER_ACTION.length());
-			// Check if a layer is selected
-			boolean selected = ((JCheckBoxMenuItem) source).isSelected();
-			setMapLayer(selected, selectedLayer);
-			
-			if (MINERAL_LAYER.equals(selectedLayer)) {
-				selectMineralLayer(selected);
-			}
-		}
-	}
-	
 	/**
 	 * Processes the map reload command.
 	 * 
@@ -853,26 +640,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param event
 	 */
 	public void actionPerformed(ActionEvent event) {
-
 		Object source = event.getSource();
 		String command = event.getActionCommand();
-		switch (command) {
-			case GO_THERE_ACTION: {
-				// Read longitude and latitude from user input, translate to radians,
-				// and recenter globe and surface map on that location.
-				try {
-					goToLocation();
-				} catch (NumberFormatException e) {
-					// show exception
-				}
-			} break;
-
-			case MINERAL: {				
-				goToMineral(source);			
-			} break;
-		
-		default: // Grouped command
-			goToOtherCommands(command, source);
+		if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {			
+			goToMapTypeReload(command, source);
 		}
 	}
 
@@ -901,24 +672,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (isColourful) {
 			// turn off day night layer
 			setMapLayer(false, DAYLIGHT_LAYER);
-			// turn off mineral layer
-			setMapLayer(false, MINERAL_LAYER);
-			
 		}
-		selectMineralLayer(!isColourful);
 	}
 
-	/**
-	 * Selects the mineral button state and text.
-	 * 
-	 * @param selected
-	 */
-	private void selectMineralLayer(boolean selected) {
-		mineralsButton.setEnabled(selected);
-		mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") +
-								(selected ? " on " : " off "));
+	private MapLayer nameToLayer(String name) {
+		return mapLayers.stream()
+					.filter(n -> n.name().equals(name))
+					.map(l -> l.layer())
+					.findFirst()
+					.orElse(null);
 	}
-	
+
 	/**
 	 * Sets a map layer on or off.
 	 * 
@@ -926,11 +690,37 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param layerName Name of the map layer to change
 	 */
 	private void setMapLayer(boolean setMap, String layerName) {
-		MapOrder selected = mapLayers.get(layerName);
-		if (setMap) {
-			mapPanel.addMapLayer(selected.layer, selected.order);
-		} else {
+		int idx = 0;
+		NamedLayer selected = null;
+		for(var nl : mapLayers) {
+			if (nl.name().equals(layerName)) {
+				selected = nl;
+				break;
+			}
+		}
+		if (selected == null) {
+			logger.warning("No layer called " + layerName);
+		}
+		else if (setMap) {
+			mapPanel.addMapLayer(selected.layer, idx);
+		}
+		else {
 			mapPanel.removeMapLayer(selected.layer);
+		}
+	}
+
+	private class JActiveMenu extends JMenu {
+		private String baseName;
+
+		public JActiveMenu(String name, boolean initialActive) {
+			super();
+			this.baseName = name;
+
+			setActive(initialActive);
+		}
+
+		public void setActive(boolean active) {
+			setText((active ? "> " : "") + baseName);
 		}
 	}
 
@@ -940,15 +730,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JPopupMenu createMapOptionsMenu() {
 		// Create map options menu.
 		JPopupMenu optionsMenu = new JPopupMenu();
-		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
 				
 		var currentMap = mapPanel.getMapMetaData();
 		var currentRes = mapPanel.getMapResolution();
 		for (MapMetaData metaData: MapDataFactory.getLoadedTypes()) {
 	
-			boolean active = metaData.equals(currentMap);
-			JMenu mapMenu = new JMenu((active ? "> " : "") + metaData.getDescription());
-			mapMenu.setBackground(mapMenu.getBackground().darker());
+			JMenu mapMenu = new JActiveMenu(metaData.getDescription(), metaData.equals(currentMap));
 
 			for(int lvl = 0; lvl < metaData.getNumLevel(); lvl++) {
 				boolean displayed = (metaData.equals(currentMap)
@@ -963,81 +750,28 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			}
 			optionsMenu.add(mapMenu);
 		}
-		
-		optionsMenu.addSeparator();
+		return optionsMenu;
+	}
+	
+	private DefaultMutableTreeNode createLayerModel() {
+		var root = new DefaultMutableTreeNode("Layers");
 
-		int size = mapLayers.size();
-		for (int i = 0; i < size; i++) {
-			for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
-				MapOrder mo = e.getValue();
-				if (mo.order() == i) {
-					optionsMenu.add(createSelectableMapOptions(LAYER_ACTION, e.getKey(),
-								mapPanel.hasMapLayer(e.getValue().layer)));
+		for(var nl : mapLayers) {
+			var layerNode = new DefaultMutableTreeNode(
+						new LayerNode(nl.name(), nl.layer()));
+			root.add(layerNode);
+
+			if (nl.layer() instanceof FilteredMapLayer fl) {
+				for(var m : fl.getFilterDetails()) {
+					var filterNode = new DefaultMutableTreeNode(new FilterNode(fl, m));
+					layerNode.add(filterNode);
 				}
 			}
 		}
 
-		optionsMenu.pack();
-		return optionsMenu;
+		return root;
 	}
 
-	/**
-	 * Activates action listeners for map options menu.
-	 * 
-	 * @param actionPrefix
-	 * @param action
-	 * @param selected
-	 * @return
-	 */
-	private JCheckBoxMenuItem createSelectableMapOptions(String actionPrefix, String action, boolean selected) {
-		JCheckBoxMenuItem item = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map." + action), //$NON-NLS-1$
-														selected);
-		item.setActionCommand(actionPrefix + action);
-		item.addActionListener(this);
-		return item;
-	}
-
-	/**
-	 * Returns the minerals menu.
-	 */
-	private JPopupMenu createMineralsMenu() {
-		// Create the mineral options menu.
-		JPopupMenu minMenu = new JPopupMenu();
-
-		// Create each mineral check box item.
-		java.util.Map<String, Color> mineralColors = mineralLayer.getMineralColors();
-		Iterator<String> i = mineralColors.keySet().iterator();
-		while (i.hasNext()) {
-			String mineralName = i.next();
-			Color mineralColor = mineralColors.get(mineralName);
-			boolean isMineralDisplayed = mineralLayer.isMineralDisplayed(mineralName);
-			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
-			
-			Icon icon = createColorLegendIcon(mineralColor, mineralItem);
-			mineralItem.setIcon(icon);
-			mineralItem.addActionListener(this);
-			mineralItem.setActionCommand(MINERAL);
-			minMenu.add(mineralItem);
-		}
-
-		minMenu.pack();
-		return minMenu;
-	}
-	
-	/**
-	 * Creates an icon representing a color.
-	 * 
-	 * @param color            the color for the icon.
-	 * @param displayComponent the component to display the icon on.
-	 * @return the color icon.
-	 */
-	private Icon createColorLegendIcon(Color color, Component displayComponent) {
-		int[] imageArray = new int[10 * 10];
-		Arrays.fill(imageArray, color.getRGB());
-		Image image = displayComponent.createImage(new MemoryImageSource(10, 10, imageArray, 0, 10));
-		return new ImageIcon(image);
-	}
-	
 	/**
 	 * Updates the map with time pulse.
 	 * 
@@ -1048,13 +782,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if ((mapPanel != null) && mapPanel.updateDisplay()) {
 			updateMapControls();
 		}
-	}
-	 	
-	/** 
-	 * Gets the map panel class.
-	 */
-	public MapPanel getMapPanel() {
-		return mapPanel;
 	}
 	
 	@Override
@@ -1072,17 +799,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		results.setProperty(LAT_PROP, center.getFormattedLatitudeString());
 
 		// Additional layers
-		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
+		for (var e : mapLayers) {
 			// Record the choice of layers
-			results.setProperty(LAYER_ACTION + e.getKey(),
-							Boolean.toString(mapPanel.hasMapLayer(e.getValue().layer)));
+			results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + LAYER_VISIBLE,
+							Boolean.toString(mapPanel.hasMapLayer(e.layer())));
+			if (e.layer() instanceof FilteredMapLayer fl) {
+				for(var f : fl.getFilterDetails()) {
+					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),
+								Boolean.toString(fl.isFilterActive(f.name())));
+				}
+			}
 		}
 
-		// Record the mineral layers
-		for (String mineralName : mineralLayer.getMineralColors().keySet()) {
-			results.setProperty(MINERAL_ACTION + mineralName, Boolean.toString(mineralLayer.isMineralDisplayed(mineralName)));
-		}
-		
 		return results;
 	}
 
@@ -1091,132 +819,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */	
 	@Override
 	public void destroy() {
+		super.destroy();
 		if (mapPanel != null)
 			mapPanel.destroy();
 
-		latCB = null;
-		lonCB = null;
-		mapPanel = null;
-		latCBDir = null;
-		lonCBDir = null;
 		
-		settlementComboBox = null;
-		mineralsButton = null;
-		gpuButton = null;
-		goButton = null;
-		
-		r0 = null;	
-		r1 = null;
-		settlementPane = null;
-		goPane = null;
-		
-		bottomPane = null;
-		heightLabel = null;
-		coordLabel = null;
-		phiLabel = null;
-		thetaLabel = null;
-
-		mapLayers  = null;
-		mapPanel = null;
-		mineralLayer = null;
-
 		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
-
-		unitManager = null;
-		umListener = null;
-		selectedSettlement = null;
 		
-	}
-	
-	class DoubleJSlider extends JSlider {
-
-	    final int scale;
-
-	    public DoubleJSlider(int min, int max, int value, int scale) {
-	        super(min, max, value);
-	        this.scale = scale;
-	    }
-
-	    public double getScaledValue() {
-	        return ((double)super.getValue()) / this.scale;
-	    }
-	}
-	
-	/**
-	 * This class allows appending a message to each element of the combo box.
-	 */
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private String prompt;
-		public PromptComboBoxRenderer() {
-
-			setHorizontalAlignment(CENTER);
-			setVerticalAlignment(CENTER);
-		}
-
-		public PromptComboBoxRenderer(String prompt) {
-			this.prompt = prompt;
-		}
-
-		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			
-			if (index == -1 && value == null) {
-				setText(prompt);
-			}
-            else {
-    			setText(DASH + value);
-            }
-			
-            return c;
-		}
-	}
-
-	
-	class PolicyRadioActionListener implements ActionListener {
-	    @Override
-	    public void actionPerformed(ActionEvent event) {
-	        JRadioButton button = (JRadioButton) event.getSource();
-
-			// Note: due to the behavior of FlatLAF
-			// If player changes to a different FlatLAF theme while the settlementPane is
-			// not visible, it won't get updated with the new theme color.
-			// Therefore, it's best rebuilding settlementPane and goPane when r0/r1 radio button is clicked
-			// in order to match the current color theme
-	        
-	        if (button == r0) {
-			
-				// Enable all lat lon controls
-				latCB.setEnabled(true);
-				latCBDir.setEnabled(true);
-				lonCB.setEnabled(true);
-				lonCBDir.setEnabled(true);
-			
-				bottomPane.remove(settlementPane);
-				bottomPane.add(goPane);
-							
-				// Call to update the all components if a new theme is chosen
-				FlatLaf.updateUI();
-				
-				repaint();
-				
-	        } else if (button == r1) {
-				// Disable all lat lon controls
-				latCB.setEnabled(false);
-				latCBDir.setEnabled(false);
-				lonCB.setEnabled(false);
-				lonCBDir.setEnabled(false);
-				
-				bottomPane.remove(goPane);
-				bottomPane.add(settlementPane);
-							
-				// Call to update the all components if a new theme is chosen
-				FlatLaf.updateUI();
-				
-				repaint();
-	        }
-	    }
 	}
 }
