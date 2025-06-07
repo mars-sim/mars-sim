@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -113,18 +114,18 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g, Dimension d) {
 		List<MapHotspot> results;
 		if (singleMission != null) {
 			if (singleMission instanceof VehicleMission vm)
-				results = displayMission(vm, mapCenter, baseMap, g);
+				results = displayMission(vm, mapCenter, baseMap, g, d);
 			else
 				results = Collections.emptyList();
 		} else {
 			results = new ArrayList<>();
 			for (Mission mission : missionManager.getMissions()) {
 				if (mission instanceof VehicleMission vm)
-					results.addAll(displayMission(vm, mapCenter, baseMap, g));
+					results.addAll(displayMission(vm, mapCenter, baseMap, g, d));
 			}
 		}
 
@@ -139,10 +140,11 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private List<MapHotspot> displayMission(VehicleMission mission, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	private List<MapHotspot> displayMission(VehicleMission mission, Coordinates mapCenter, MapDisplay baseMap, Graphics g,
+			Dimension d) {
 		List<MapHotspot> results = new ArrayList<>();
 		for (NavPoint np : mission.getNavpoints()) {
-			var hotspot = displayNavpoint(mission, np, mapCenter, baseMap, g);
+			var hotspot = displayNavpoint(mission, np, mapCenter, baseMap, g, d);
 			if (hotspot != null) {
 				results.add(hotspot);
 			}
@@ -161,7 +163,8 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 * @return 
 	 */
-	private NavpointHotspot displayNavpoint(Mission mission, NavPoint navpoint, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	private NavpointHotspot displayNavpoint(Mission mission, NavPoint navpoint, Coordinates mapCenter, MapDisplay baseMap,
+					Graphics g, Dimension displaySize) {
 
 		if (mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
 			MapMetaData mapType = baseMap.getMapMetaData();
@@ -176,7 +179,7 @@ public class NavpointMapLayer implements MapLayer {
 				navIcon = navpointIconColor;
 
 			// Determine the draw location for the icon.
-			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, baseMap);
+			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, baseMap, displaySize);
 			IntPoint drawLocation = new IntPoint(location.getiX() + MAP_X_OFFSET, 
 					(location.getiY() + MAP_Y_OFFSET - navIcon.getIconHeight()));
 

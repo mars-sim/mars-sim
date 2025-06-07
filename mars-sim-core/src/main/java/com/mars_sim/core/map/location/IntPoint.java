@@ -5,24 +5,24 @@
  * @author Greg Whelan
  */
 package com.mars_sim.core.map.location;
-
-import java.awt.Point;
+import java.io.Serializable;
 
 /**
- * The IntPoint class is an extension of
+ * The IntPoint class is a replacement of
  * java.awt.Point that returns int typed
  * X and Y coordinates.
  */
-
-public final class IntPoint
-extends Point {
+public final class IntPoint implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private int x;
+	private int y;
 
 	/** Constructor. */
 	public IntPoint(int x, int y) {
-		super(x, y);
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
@@ -30,8 +30,12 @@ extends Point {
 	 * 
 	 * @return the X coordinate of the point as int
 	 */
-	public int getiX() {
+	public int getX() {
 		return x;
+	}
+
+	public int getiX() {
+		return getX();
 	}
 
 	/**
@@ -39,7 +43,21 @@ extends Point {
 	 * 
 	 * @return the Y coordinate of the point as int
 	 */
-	public int getiY() {
+	public int getY() {
 		return y;
+	}
+
+	public int getiY() {
+		return getY();
+	}
+
+	/**
+	 * Get the distance between 2 points.
+	 * @param position
+	 * @return
+	 */
+	public int getDistance(IntPoint position) {
+		return (int) Math.round(Math.sqrt(Math.pow(getX() - position.getX(), 2D) +
+			        Math.pow(getY() - position.getY(), 2D)));
 	}
 }

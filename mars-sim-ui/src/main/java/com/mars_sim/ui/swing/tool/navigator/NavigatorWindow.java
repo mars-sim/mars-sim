@@ -60,7 +60,6 @@ import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer.MapFilter;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
-import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
 import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
@@ -157,8 +156,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
-	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
-	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
+	private static final int MAP_BOX_WIDTH = 512;
+	private static final int MAP_BOX_HEIGHT = 512;
 	private static final int HEIGHT_STATUS_BAR = 18;
 	private static final int CONTROL_PANE_WIDTH = 250;
 
@@ -250,9 +249,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		wholePane.add(mapPane, BorderLayout.CENTER);
 
 		mapPanel = new MapPanel(desktop);
-		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
+		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		
-		mapPanel.setMouseDragger(true);
+		mapPanel.setMouseDragger();
 
 		// Create a mouse listener to show hotspots and update status bar
 		var mapListner = new MapMouseListener(mapPanel) {

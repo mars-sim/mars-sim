@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
@@ -67,7 +68,7 @@ public class EllipseLayer implements MapLayer {
 	 * @param g2d         graphics context of the map display.
 	 */
 	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d, Dimension d) {
 		// Display ellipse if flag is true.
 		if (displayEllipse) {
 			g2d.setColor(drawColor);

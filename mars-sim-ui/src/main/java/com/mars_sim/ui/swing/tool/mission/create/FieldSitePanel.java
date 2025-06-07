@@ -10,7 +10,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
-import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
@@ -65,7 +64,7 @@ public class FieldSitePanel extends WizardPanel {
         add(titleLabel);
         
         // Create the map panel.
-        mapPane = new MapPanel(wizard.getDesktop(), 200L);
+        mapPane = new MapPanel(wizard.getDesktop());
         
         mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
         mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
@@ -111,8 +110,7 @@ public class FieldSitePanel extends WizardPanel {
 	@Override
     boolean commitChanges(boolean isTesting) {
         IntPoint navpointPixel = navLayer.getNavpointPosition(0);
-        Coordinates navpoint = getCenterCoords().convertRectIntToSpherical(navpointPixel.getiX() - MapDisplay.HALF_MAP_BOX, 
-        		navpointPixel.getiY() - MapDisplay.HALF_MAP_BOX, mapPane.getMap().getRho());
+        Coordinates navpoint = mapPane.getCoordsOfPoint(getCenterCoords(), navpointPixel);
         getWizard().getMissionData().setFieldSite(navpoint);
         return true;
     }
@@ -127,9 +125,9 @@ public class FieldSitePanel extends WizardPanel {
         try {
             double range = (getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER) / 2D;
             pixelRange = convertRadiusToMapPixels(range);
-            ellipseLayer.setEllipseDetails(new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX), 
-            		new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX), (pixelRange * 2));
-            IntPoint initialNavpointPos = new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX - pixelRange / 2);
+            var panelCenter = mapPane.getCenterPoint();
+            ellipseLayer.setEllipseDetails(panelCenter, panelCenter, (pixelRange * 2));
+            IntPoint initialNavpointPos = new IntPoint(panelCenter.getiX(), panelCenter.getiY() - pixelRange / 2);
             navLayer.addNavpointPosition(initialNavpointPos);
             
             Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0.0, pixelRange / 2D, 
@@ -236,8 +234,7 @@ public class FieldSitePanel extends WizardPanel {
                 if (withinBounds(displayPos)) {
                     navLayer.setNavpointPosition(0, displayPos);
                     Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-                    Coordinates navpoint = center.convertRectIntToSpherical(displayPos.getiX() - MapDisplay.HALF_MAP_BOX, 
-                    		displayPos.getiY() - MapDisplay.HALF_MAP_BOX, mapPane.getMap().getRho());
+                    Coordinates navpoint = mapPane.getCoordsOfPoint(center, displayPos);
                     locationLabel.setText("Location: " + navpoint.getFormattedString());
                 
                     mapPane.repaint();
@@ -257,8 +254,7 @@ public class FieldSitePanel extends WizardPanel {
 			
 			pixelRange = convertRadiusToMapPixels(getRoverRange());
 			
-            int radius = (int) Math.round(Math.sqrt(Math.pow(MapDisplay.HALF_MAP_BOX - position.getX(), 2D) +
-			        Math.pow(MapDisplay.HALF_MAP_BOX - position.getY(), 2D)));
+            int radius = mapPane.getCenterPoint().getDistance(position);
             
 			if (radius > pixelRange) 
 				return false;

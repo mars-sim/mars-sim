@@ -47,6 +47,7 @@ import com.mars_sim.core.map.MapData.MapState;
 import com.mars_sim.core.map.MapDataFactory;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -59,9 +60,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
 	
 	private static final double HALF_PI = Math.PI / 2d;
-
-	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
-	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH;
 
 	private static final int MAX_SLIDER = 100;	// Slider internal value max
 	private static final int SLIDER_LABELS = 6; // Number of labels on slider
@@ -98,16 +96,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private List<MapHotspot> hotspots = new ArrayList<>();
 
 	/**
-	 * Constructor 3.
-	 * 
-	 * @param desktop
-	 * @param refreshRate
-	 */
-	public MapPanel(MainDesktopPane desktop, long refreshRate) {
-		this(desktop);
-	}
-	
-	/**
 	 * Constructor 4.
 	 * 
 	 * @param desktop
@@ -121,7 +109,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	public void init() {
 
-		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
+		setPreferredSize(new Dimension(512, 512));
 		setMaximumSize(getPreferredSize());
 		setSize(getPreferredSize());
 		
@@ -214,7 +202,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		zoomSlider.setVisible(true);
 		
-		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //-NLS-1$
 		zoomSlider.addChangeListener(e -> applyZoomToMap());
 
 		Dictionary<Integer, JLabel> labelTable = new Hashtable<>();	
@@ -272,7 +260,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	/*
 	 * Sets up the mouse dragging capability.
 	 */
-	public void setMouseDragger(boolean isNavigator) {
+	public void setMouseDragger() {
 
 		// Detect the mouse scroll
 		addMouseWheelListener(this);
@@ -287,8 +275,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				int dy = dragy - y;
 
 				if ((dx != 0 || dy != 0) 
-					 && x > 0 && x < MAP_BOX_WIDTH 
-					 && y > 0 && y < MAP_BOX_HEIGHT) {
+					 && x > 0 && x < getWidth() 
+					 && y > 0 && y < getHeight()) {
 					
 					mouseDragging = true;
 					
@@ -296,7 +284,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					centerCoords = centerCoords.convertRectIntToSpherical(dx, dy, marsMap.getRho());
 					// Do we really want to update the map while dragging ? 
 					// Yes. It's needed to provide smooth viewing of the surface map
-					marsMap.drawMap(centerCoords, getRho());
+					marsMap.drawMap(centerCoords, getRho(), getSize());
 				
 					repaint();
 				}
@@ -443,6 +431,15 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		return centerCoords;
 	}
 	
+	/**
+	 * Get the center point in the panel
+	 * @return
+	 */
+	public IntPoint getCenterPoint() {
+		return new IntPoint(getWidth()/2, getHeight()/2);
+
+	}
+
 	public void showMap(Coordinates newCenter) {
 		showMap(newCenter, getRho());
 	}
@@ -548,7 +545,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					mapDetails.setText(buf);
 				}
 
-				marsMap.drawMap(centerCoords, rho);
+				marsMap.drawMap(centerCoords, rho, getSize());
 				
 				wait = false;
 				repaint();
@@ -592,8 +589,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	        		// Not working: g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT)
 	        		// Paint black background
 	        		g2d.setColor(Color.BLACK);
+
+					var size = getSize();
 	                
-	        		g2d.fillRect(0, 0, MapDisplay.MAP_BOX_WIDTH, MapDisplay.MAP_BOX_HEIGHT);
+	        		g2d.fillRect(0, 0, (int)size.getWidth(), (int)size.getHeight());
         		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
@@ -610,7 +609,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 						// Display the layers and record any hotspots
 	                	for(var i : mapLayers) {
-	                		hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d));
+	                		hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d, size));
 						}
               		
 		        		g2d.setBackground(Color.BLACK);
@@ -643,8 +642,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		int msgWidth = messageMetrics.stringWidth(message);
 
 		// Determine message draw position
-		int x = (MapDisplay.MAP_BOX_WIDTH - msgWidth) / 2;
-		int y = (MapDisplay.MAP_BOX_HEIGHT + msgHeight) / 2;
+		int x = ((getWidth() - msgWidth) / 2);
+		int y = ((getHeight() + msgHeight) / 2);
 
 		// Draw message
 		g.drawString(message, x, y);
@@ -658,10 +657,23 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return
 	 */
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xx = x - MapDisplay.MAP_BOX_WIDTH / 2.0;
-		double yy = y - MapDisplay.MAP_BOX_HEIGHT / 2.0;
+		double xx = x - getWidth() / 2.0;
+		double yy = y - getHeight() / 2.0;
 		// Based on the current centerCoords
 		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
+    }
+
+	
+	/**
+	 * Get the Coordindates of a point on the Map from a center.
+	 * @param center
+	 * @param displayPos
+	 * @return
+	 */
+    public Coordinates getCoordsOfPoint(Coordinates center, IntPoint displayPos) {
+		return center.convertRectIntToSpherical(displayPos.getiX() - getWidth()/2, 
+										displayPos.getiY() - getHeight()/2,
+										marsMap.getRho());
     }
 
 	/**
@@ -690,7 +702,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
 	public void setRho(double rho) {
 		if (marsMap != null) {
-			marsMap.drawMap(centerCoords, rho);
+			marsMap.drawMap(centerCoords, rho, getSize());
 			repaint();
 		}
 	}

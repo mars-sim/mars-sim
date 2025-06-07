@@ -429,11 +429,12 @@ public final class Coordinates implements Serializable {
 	 *
 	 * @param newCoords    the offset location
 	 * @param rho      diameter of planet (in km)
-	 * @param halfMap half the map's width (in pixels)
-	 * @param lowEdge lower edge of map (in pixels)
+	 * @param xHalfMap half the map's width (in pixels)
+	 * @param xLowEdge lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public IntPoint findRectPosition(Coordinates newCoords, double rho, int halfMap, int lowEdge) {
+	public IntPoint findRectPosition(Coordinates newCoords, double rho, int xHalfMap, int xLowEdge,
+							int yHalfMap, int yLowEdge) {
 
 		double sinPhi = Math.sin(this.phi);
 		double cosPhi = Math.cos(this.phi);
@@ -444,10 +445,10 @@ public final class Coordinates implements Serializable {
 		double col = newTheta + (-PI_HALF - theta);
 		double x = rho * Math.sin(newPhi);
 		
-		int buffX = ((int) Math.round(x * Math.cos(col)) + halfMap) - lowEdge;
+		int buffX = ((int) Math.round(x * Math.cos(col)) + xHalfMap) - xLowEdge;
 		int buffY = ((int) Math.round(((x * (0D - cosPhi)) * Math.sin(col)) 
 				+ (rho * Math.cos(newPhi) * (0D - sinPhi)))
-				+ halfMap) - lowEdge;
+				+ yHalfMap) - yLowEdge;
 		return new IntPoint(buffX, buffY);
 	}
  	

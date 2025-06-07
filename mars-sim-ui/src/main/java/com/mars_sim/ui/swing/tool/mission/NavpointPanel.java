@@ -57,8 +57,8 @@ public class NavpointPanel
 extends JPanel
 implements MissionListener {
 
-	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH;
-	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT;
+	private static final int WIDTH = 512;
+	private static final int HEIGHT = 512;
 	private static final double TWO_PI = Math.PI * 2D;
 	
 	// Private members.
@@ -121,7 +121,7 @@ implements MissionListener {
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
 		// Set up mouse control
-		mapPanel.setMouseDragger(false);
+		mapPanel.setMouseDragger();
 
 		var mouseListener = new MapMouseListener(mapPanel);
 		mapPanel.addMouseListener(mouseListener);

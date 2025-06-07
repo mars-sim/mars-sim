@@ -7,6 +7,7 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
+import java.awt.Dimension;
 import java.awt.Image;
 
 import com.mars_sim.core.data.Range;
@@ -18,11 +19,6 @@ import com.mars_sim.core.map.location.Coordinates;
  */
 public interface MapDisplay {
 
-	/** The display box map dimensions (for scrolling) */
-	public static final int MAP_BOX_HEIGHT = 512;
-	public static final int MAP_BOX_WIDTH = MAP_BOX_HEIGHT;
-	public static final int HALF_MAP_BOX = (int) (0.5 * MAP_BOX_HEIGHT);
-
 	public static final double HALF_MAP_ANGLE = 0.48587;
 	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
 
@@ -33,9 +29,9 @@ public interface MapDisplay {
 	 * 
 	 * @param newCenter 	The new center location
 	 * @param rho 		The new map rho
-	 * @throws Exception if error in drawing map.
+	 * @param d			Size of the map to draw
 	 */
-	public void drawMap(Coordinates newCenter, double rho);
+	public void drawMap(Coordinates newCenter, double rho, Dimension d);
 
 	/**
 	 * Checks if a requested map is complete.

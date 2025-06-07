@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.map;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,7 +93,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 	 * @param g2d         graphics context of the map display.
 	 */
 	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {	
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d, Dimension d) {	
 		List<MapHotspot> hotspots = new ArrayList<>();
 		
 		Collection<Settlement> settlements = unitsToDisplay;
@@ -104,12 +105,12 @@ public class UnitMapLayer implements FilteredMapLayer {
 		}
 
 		// Display Settlements first
-		settlements.forEach(s -> renderUnit(s, s.getCoordinates(), mapCenter, baseMap, g2d, hotspots));
+		settlements.forEach(s -> renderUnit(s, s.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots));
 
 		if (vehicles != null) {
 			for(var v : vehicles) {
 				if (v.isOutsideOnMarsMission()) {
-					renderUnit(v, v.getCoordinates(), mapCenter, baseMap, g2d, hotspots);
+					renderUnit(v, v.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots);
 				}
 			}
 		}
@@ -133,13 +134,13 @@ public class UnitMapLayer implements FilteredMapLayer {
 	 * @param hotspots 
 	 */
 	private void renderUnit(Unit unit, Coordinates unitPosn, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g,
-				List<MapHotspot> hotspots) {
+							Dimension displaySize, List<MapHotspot> hotspots) {
 		
 		UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 		if (i != null && i.isMapDisplayed(unit)
 			&& mapCenter != null && mapCenter.getAngle(unitPosn) < baseMap.getHalfAngle()) {
 				
-				IntPoint locn = MapUtils.getRectPosition(unitPosn, mapCenter, baseMap);
+				IntPoint locn = MapUtils.getRectPosition(unitPosn, mapCenter, baseMap, displaySize);
 				var hs = displayUnit(unit, i, locn, baseMap, g);
 				hotspots.add(hs);
 		}
@@ -154,7 +155,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
+	private MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
 							MapDisplay baseMap, Graphics2D g) {
 
 
