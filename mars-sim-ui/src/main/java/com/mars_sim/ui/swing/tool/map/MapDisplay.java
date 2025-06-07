@@ -41,11 +41,13 @@ public interface MapDisplay {
 	public boolean isImageDone();
 
 	/**
-	 * Gets the constructed map image.
+	 * Gte an image for this details.
 	 * 
-	 * @return constructed map image
+	 * @param newCenter 	The new center location
+	 * @param rho 		The new map rho
+	 * @param d			Size of the map to draw
 	 */
-	public Image getMapImage();
+	public Image getMapImage(Coordinates newCenter, double rho, Dimension d);
 
 	/**
 	 * Gets the rho of the Mars surface map (height pixels divided by pi).

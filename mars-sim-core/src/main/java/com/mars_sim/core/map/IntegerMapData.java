@@ -65,22 +65,16 @@ import com.mars_sim.core.map.location.Coordinates;
 	private int pixelHeight;
 	/* The resolution of the map image. */
 	private int resolution;
-	/* The cache for the last rho. */
-	private double rhoCache;
 	/* The default value of rho. */
 	private double rhoDefault;
 	
 	/* The base map color pixels double array. */
  	private int[][] colorPixels = new int[0][0];
  	
-	/* The cache for the last center. */
-	private Coordinates centerCache;
  	/* The meta data of the map. */
 	private MapMetaData meta;
  	/* The OpenCL kernel instance. */
 	private CLKernel kernel;
-	
-	private BufferedImage bImageCache;
 
 	private MapState loaded = MapState.PENDING;
  	
@@ -349,15 +343,8 @@ import com.mars_sim.core.map.location.Coordinates;
  	@Override
  	public Image createMapImage(Coordinates center, int mapBoxWidth, int mapBoxHeight, double newRho) {
 		 
- 		if (bImageCache != null && newRho == rhoCache
-				&& centerCache.equals(center))
- 			return bImageCache;
 		double centerPhi = center.getPhi();
 		double centerTheta = center.getTheta();
- 
- 		// Update cache identifiers
-		centerCache = center;
-		rhoCache = newRho;
 
  		// Create a new buffered image to draw the map on.
  		BufferedImage bImage 
@@ -386,8 +373,6 @@ import com.mars_sim.core.map.location.Coordinates;
 
 	 	// Gets the color pixels ready for the new projected map image in Mars Navigator.
 	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
-	
-	 	bImageCache = bImage;
 	 	
  		return bImage;
  	}

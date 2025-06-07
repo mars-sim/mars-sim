@@ -118,6 +118,8 @@ implements MissionListener {
 		
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop());
+		mapPane.setPreferredSize(new Dimension(400, 512));
+
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
 		// Set up mouse control

@@ -65,7 +65,8 @@ public class FieldSitePanel extends WizardPanel {
         
         // Create the map panel.
         mapPane = new MapPanel(wizard.getDesktop());
-        
+        mapPane.setPreferredSize(new Dimension(400, 512));
+
         mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
         mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
         mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 2);

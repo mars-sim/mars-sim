@@ -21,16 +21,20 @@ import com.mars_sim.core.map.location.Coordinates;
  * order to generate a map image.
  */
 @SuppressWarnings("serial")
-public class CannedMarsMap extends JComponent implements MapDisplay {
+public class CannedMarsMap implements MapDisplay {
 
 	// Data members
 	private boolean mapImageDone = false;
 
-	private transient Image mapImage = null;
+	private Image mapImage = null;
 	
-	private transient MapData mapData;
+	private MapData mapData;
 
-	private double rho;
+	private double lastRHO;
+
+	private Coordinates lastCenter;
+
+	private Dimension lastSize;
 
 	/**
 	 * Constructor.
@@ -60,7 +64,9 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	public void drawMap(Coordinates newCenter, double rho, Dimension d) {	
 		mapImage = mapData.createMapImage(newCenter,
 								(int)d.getWidth(), (int)d.getHeight(), rho);
-		this.rho = rho;
+		this.lastRHO = rho;
+		this.lastCenter = newCenter;
+		this.lastSize = d;
 		mapImageDone = true;
 	}
 	
@@ -80,7 +86,11 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	 * @return constructed map image
 	 */
 	@Override
-	public Image getMapImage() {
+	public Image getMapImage(Coordinates center, double rho, Dimension size) {
+		if (!lastCenter.equals(center) || (lastRHO != rho) || !lastSize.equals(size)) {
+			// Redraw map
+			drawMap(center, rho, size);
+		}
 		return mapImage;
 	}
 
@@ -90,7 +100,7 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
      * @return
      */
     public double getScale() {
-		return rho/mapData.getRhoDefault();
+		return lastRHO/mapData.getRhoDefault();
 	}
 	   
 	/**
@@ -100,7 +110,7 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	 */
 	@Override
 	public double getRho() {
-		return rho;
+		return lastRHO;
 	}
 	
 	/**

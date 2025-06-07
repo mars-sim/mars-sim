@@ -111,6 +111,8 @@ public class MiningSitePanel extends WizardPanel {
 
 		// Create the map panel.
 		mapPane = new MapPanel(wizard.getDesktop());
+		mapPane.setPreferredSize(new Dimension(400, 512));
+
 		mineralLayer = new MineralMapLayer(mapPane);
 		
 		mapPane.addMapLayer(mineralLayer, 0);

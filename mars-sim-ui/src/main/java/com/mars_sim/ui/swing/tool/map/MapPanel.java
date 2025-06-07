@@ -52,8 +52,6 @@ import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements MouseWheelListener {
@@ -81,7 +79,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private Coordinates centerCoords;
 
-	private Image mapImage;
 	private MapDisplay marsMap;
 	private MainDesktopPane desktop;
 	
@@ -495,15 +492,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param rho
 	 */
 	private void updateDisplay(double rho) {
-		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
-			|| desktop.isToolWindowOpen(MissionWindow.NAME))
-			&& (!executor.isTerminated() || !executor.isShutdown())) {
-				if (marsMap == null) {
-					logger.warning("No mars map loaded for updateDisplay");
-				}
-				else {
-					executor.execute(new MapTask(rho));
-				}
+		if (!executor.isTerminated() || !executor.isShutdown() && (marsMap != null)) {
+			executor.execute(new MapTask(rho));
 		}
 	}
 
@@ -597,7 +587,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
         		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
-	                		mapImage = marsMap.getMapImage();
+	                		var mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
 	                		if (mapImage != null) {
 	                			g2d.drawImage(mapImage, 0, 0, this);  
 	                		}         		
@@ -738,6 +728,5 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 		executor = null;
 		marsMap = null;
-		mapImage = null;
 	}
 }

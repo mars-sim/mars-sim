@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.mission.create;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -84,7 +85,8 @@ class ProspectingSitePanel extends WizardPanel {
 		
 		// Create the map panel.
 		mapPane = new MapPanel(wizard.getDesktop());
-		
+		mapPane.setPreferredSize(new Dimension(400, 512));
+
 		mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 2);

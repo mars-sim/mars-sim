@@ -114,6 +114,7 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create the map panel.
 		mapPane = new MapPanel(desktop);
+		mapPane.setPreferredSize(new Dimension(400, 512));
 		mineralLayer = new MineralMapLayer(mapPane);
 		ellipseLayer = new EllipseLayer(Color.GREEN);
 		navLayer = new NavpointEditLayer(mapPane, true);
