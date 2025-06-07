@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -107,12 +108,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		init();
 	}
 	
-	public void init() {
+	private void init() {
 
-		setPreferredSize(new Dimension(512, 512));
-		setMaximumSize(getPreferredSize());
-		setSize(getPreferredSize());
-		
+		setMinimumSize(new Dimension(100, 100));
 		executor = Executors.newSingleThreadExecutor();
 		
 		mapError = false;
@@ -121,9 +119,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		centerCoords = new Coordinates(HALF_PI, 0D);
 	
 		buildZoomSlider();
-
-		// Initializes map to default map level 0
-		loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
 
 		addMouseWheelListener(this);
 		
@@ -203,7 +198,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		zoomSlider.setVisible(true);
 		
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //-NLS-1$
-		zoomSlider.addChangeListener(e -> applyZoomToMap());
+		zoomSlider.addChangeListener(e -> setRho(calculateRHO()));
 
 		Dictionary<Integer, JLabel> labelTable = new Hashtable<>();	
 		for (int i = 1; i <= SLIDER_LABELS; i++) {
@@ -213,21 +208,18 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     }
 		
 	/**
-	 * Applies the zoom slider to the current map. This means convert the slider value
+	 * Converts the RHO. This means convert the slider value
 	 * into a rho that is between the min & max of the MapDisplay.
 	 * This will update the rho value and hence redraw map.
 	 */
-	private void applyZoomToMap() {
+	private double calculateRHO() {
 
 		// Change scale of map based on slider position.
 		double sliderRatio = (double)zoomSlider.getValue()/MAX_SLIDER;
 		Range rhoRange = marsMap.getRhoRange();
 						
 		// Rho is the slider ratio applied to the min & max
-		double newRho = rhoRange.min() + ((rhoRange.max() - rhoRange.min()) * sliderRatio);
-
-		// Note: Call setRho() will redraw the map
-		setRho(newRho);
+		return rhoRange.min() + ((rhoRange.max() - rhoRange.min()) * sliderRatio);
 	}
 
 	/**
@@ -423,8 +415,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private void createMapDisplay(MapData newMapData) {
 		marsMap = new CannedMarsMap(this, newMapData);
 
-		// Apply the current user's Zoom to the new map; this will redraw
-		applyZoomToMap();
+		// Apply the current user's Zoom to the new map; this will redraw map if the Panel is sized
+		if (getWidth() > 0) {
+			setRho(calculateRHO());
+		}
 	}
 
 	public Coordinates getCenterLocation() {
@@ -504,7 +498,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
 			|| desktop.isToolWindowOpen(MissionWindow.NAME))
 			&& (!executor.isTerminated() || !executor.isShutdown())) {
-				executor.execute(new MapTask(rho));
+				if (marsMap == null) {
+					logger.warning("No mars map loaded for updateDisplay");
+				}
+				else {
+					executor.execute(new MapTask(rho));
+				}
 		}
 	}
 
@@ -531,7 +530,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				if (rho == 0D) {
 					// Should never happen but it can
 					rho = marsMap.getRhoDefault();
-					logger.warning("RHO requested is zero");
+					logger.warning("RHO requested is zero, default to " + rho);
 				}
 				
 				// Add some debug
@@ -553,7 +552,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			} catch (Exception e) {
 				mapError = true;
 				mapErrorMessage = e.getMessage();
-				logger.severe("Can't draw surface map: " + e);
+				logger.log(Level.SEVERE, "Can't draw surface map: " + e, e);
 			}
 		}
 	}
@@ -562,17 +561,19 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (desktop != null && isShowing() && 
-        		(desktop.isToolWindowOpen(NavigatorWindow.NAME)
-        		|| desktop.isToolWindowOpen(MissionWindow.NAME))) {
-	        
+        if (isShowing()) {
+
         	Graphics2D g2d = (Graphics2D) g.create();
 	        
         	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-			
+
+			if (marsMap == null) {
+				// First paint with no user defined map
+				loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
+			}
 	        if (wait) {
 	        	String message = "Generating Map";
 	        	drawCenteredMessage(message, g2d);
@@ -700,7 +701,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 *
 	 * @param rho
 	 */
-	public void setRho(double rho) {
+	private void setRho(double rho) {
 		if (marsMap != null) {
 			marsMap.drawMap(centerCoords, rho, getSize());
 			repaint();

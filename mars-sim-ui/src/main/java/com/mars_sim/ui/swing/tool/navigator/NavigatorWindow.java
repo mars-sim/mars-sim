@@ -160,6 +160,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final int MAP_BOX_HEIGHT = 512;
 	private static final int HEIGHT_STATUS_BAR = 18;
 	private static final int CONTROL_PANE_WIDTH = 250;
+	private static final int MIN_WIDTH = 400 + CONTROL_PANE_WIDTH;
+	private static final int MIN_HEIGHT = 450;
 
 
 	private static final String MAP_SEPERATOR = "~";
@@ -245,11 +247,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		JPanel mapPane = new JPanel();
-		wholePane.add(mapPane, BorderLayout.CENTER);
-
 		mapPanel = new MapPanel(desktop);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
+		wholePane.add(mapPanel, BorderLayout.CENTER);
 		
 		mapPanel.setMouseDragger();
 
@@ -276,8 +276,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
-		mapPane.add(mapPanel);
-
 		wholePane.add(createControlPanel(), BorderLayout.EAST);
 
 		// Create the status bar
@@ -287,20 +285,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		checkSettings();
 		
 		setClosable(true);
-		setResizable(false);
-		setMaximizable(false);
 
 		setVisible(true);
 		// Pack window
 		pack();
+		setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
+
 	}
 
 	private JPanel createControlPanel() {
 		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
 
 		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
-		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
-		controlPane.setMaximumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, 200));
 		
 		JPanel searchPane = new JPanel();
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
@@ -412,7 +409,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			IntegerMapData.setHardwareAccel(isSelected);
 			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
 			
-			mapPanel.setRho(mapPanel.getRho());
+			mapPanel.repaint();
 		}
 		else {
 			gpuButton.setEnabled(false);
@@ -432,11 +429,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			String resolutionString = userSettings.getProperty(RESOLUTION_PROP, RESOLUTION);
 			
-			int resolution = mapPanel.getMapResolution();
-			
-			if (resolutionString != null) {
-				resolution = Integer.parseInt(resolutionString);
-			}
+			int resolution = Integer.parseInt(resolutionString);
 			
 			// Set the map type
 			changeMap(userSettings.getProperty(MAPTYPE_PROP, MapDataFactory.DEFAULT_MAP_TYPE), resolution);

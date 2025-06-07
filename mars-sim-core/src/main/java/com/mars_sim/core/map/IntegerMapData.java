@@ -369,10 +369,11 @@ import com.mars_sim.core.map.location.Coordinates;
  		
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
-		var rendered = hardwareAccel;
+		var rendered = false;
 		if (hardwareAccel) {
 			try {
 				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
+				rendered = true;
 			} catch(Exception e) {
 				hardwareAccel = false;
 				rendered = false; // Fallback to CPU
@@ -384,7 +385,7 @@ import com.mars_sim.core.map.location.Coordinates;
 		}
 
 	 	// Gets the color pixels ready for the new projected map image in Mars Navigator.
-	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxHeight);
+	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 	
 	 	bImageCache = bImage;
 	 	
