@@ -62,8 +62,7 @@ import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
@@ -95,7 +94,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String LAYER_PROP = "lyr" + MAP_SEPERATOR;
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
-	private static final String LAYER_FILTER = "filter";
 
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
@@ -194,8 +192,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("unitIcon", new UnitIconMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("unitLabels", new UnitLabelMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("unit", new UnitMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("navPoints", new NavpointMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
@@ -553,10 +550,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param source
 	 * @param object 
 	 */
-	private void toggleFilter(FilteredMapLayer layer, Object source) {
+	private void toggleFilter(FilteredMapLayer layer, String filterName, Object source) {
 		JCheckBoxMenuItem filterItem = (JCheckBoxMenuItem) source;
 		boolean now = filterItem.getState();
-		layer.displayFilter(filterItem.getText(), now);
+		layer.displayFilter(filterName, now);
 	}
 	
 	/**
@@ -619,11 +616,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		var isColourful = metaType.isColourful();
 		if (isColourful) {
-			// TODO layer shows defined if supports colourful maps
 			// turn off day night layer
 			setMapLayer(false, DAYLIGHT_LAYER);
-			// turn off mineral layer
-			setMapLayer(false, MINERAL_LAYER);	
 		}
 	}
 
@@ -744,7 +738,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private JMenu createFilterMenu(String name, FilteredMapLayer layer) {
 		// Create the mineral options menu.
-		JMenu minMenu = new JMenu(name);
+		JMenu minMenu = new JMenu(Msg.getString("NavigatorWindow.menu.layer." + name));
 
 		boolean isVisible = mapPanel.hasMapLayer(layer);
 		// Add a select  options
@@ -753,13 +747,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		// Create each filter check box item.
 		for(var m : layer.getFilterDetails()) {
-			JCheckBoxMenuItem filterItem = new JCheckBoxMenuItem(m.name(), m.enabled());
+			JCheckBoxMenuItem filterItem = new JCheckBoxMenuItem(m.label(), m.enabled());
 			filterItem.setEnabled(isVisible);
 			if (m.symbol() != null) {
 				filterItem.setIcon(m.symbol());
 			}
-			filterItem.addActionListener(e -> toggleFilter(layer, e.getSource()));
-			filterItem.setActionCommand(LAYER_FILTER);
+			filterItem.addActionListener(e -> toggleFilter(layer, m.name(), e.getSource()));
 			minMenu.add(filterItem);
 		}
 
@@ -805,8 +798,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + LAYER_VISIBLE,
 							Boolean.toString(mapPanel.hasMapLayer(e.layer())));
 			if (e.layer() instanceof FilteredMapLayer fl) {
-				for(var f : fl.getActiveFilters()) {
-					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f, "true");
+				for(var f : fl.getFilterDetails()) {
+					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),
+								Boolean.toString(f.enabled()));
 				}
 			}
 		}

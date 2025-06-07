@@ -45,8 +45,7 @@ import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 
 
@@ -136,10 +135,9 @@ implements MissionListener {
         mineralLayer = new MineralMapLayer(mapPanel);
         
         mapPanel.addMapLayer(mineralLayer, 1);
-		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
-		mapPanel.addMapLayer(new UnitLabelMapLayer(mapPanel), 3);
-		mapPanel.addMapLayer(trailLayer, 4);
-		mapPanel.addMapLayer(navpointLayer, 5);
+		mapPanel.addMapLayer(new UnitMapLayer(mapPanel), 2);
+		mapPanel.addMapLayer(trailLayer, 3);
+		mapPanel.addMapLayer(navpointLayer, 4);
   
         mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));  
         
@@ -202,8 +200,7 @@ implements MissionListener {
         navpointTable.getSelectionModel().addListSelectionListener(e -> {
 			// Recenter map on selected navpoint.
 			if (e.getValueIsAdjusting() && (missionCache != null) 
-					&& (missionCache instanceof VehicleMission)) {
-				VehicleMission travelMission = (VehicleMission) missionCache;
+					&& (missionCache instanceof VehicleMission travelMission)) {
 				int index = navpointTable.getSelectedRow();
 				if (index > -1) {
 					NavPoint navpoint = travelMission.getNavpoints().get(index); 
@@ -385,12 +382,14 @@ implements MissionListener {
 		 */
 		@Override
 		public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return Msg.getString("NavpointPanel.column.name"); //$NON-NLS-1$
-            else if (columnIndex == 1) return Msg.getString("NavpointPanel.column.location"); //$NON-NLS-1$
-            else if (columnIndex == 2) return Msg.getString("NavpointPanel.column.description"); //$NON-NLS-1$
-            else if (columnIndex == 3) return Msg.getString("NavpointPanel.column.distance.leg"); //$NON-NLS-1$
-            else if (columnIndex == 4) return Msg.getString("NavpointPanel.column.distance.actual"); //$NON-NLS-1$
-            else return "";
+            return switch (columnIndex) {
+              case 0 -> Msg.getString("NavpointPanel.column.name");
+              case 1 -> Msg.getString("NavpointPanel.column.location");
+              case 2 -> Msg.getString("NavpointPanel.column.description");
+              case 3 -> Msg.getString("NavpointPanel.column.distance.leg");
+              case 4 -> Msg.getString("NavpointPanel.column.distance.actual");
+              default -> "";
+            };
         }
 		
 		/**
@@ -403,12 +402,14 @@ implements MissionListener {
 		public Object getValueAt(int row, int column) {
             if (row < navpoints.size()) {
             	NavPoint navpoint = navpoints.get(row);
-            	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1); //$NON-NLS-1$
-            	else if (column == 1) return navpoint.getLocation().getFormattedString();
-            	else if (column == 2) return navpoint.getDescription();
-            	else if (column == 3) return Math.round(navpoint.getPointToPointDistance()*10.0)/10.0;
-            	else if (column == 4) return Math.round(navpoint.getActualTravelled()*10.0)/10.0;
-            	else return Msg.getString("unknown"); //$NON-NLS-1$
+            	return switch (column) {
+					case 0 -> Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1);
+					case 1 -> navpoint.getLocation().getFormattedString();
+					case 2 -> navpoint.getDescription();
+					case 3 -> Math.round(navpoint.getPointToPointDistance()*10.0)/10.0;
+					case 4 -> Math.round(navpoint.getActualTravelled()*10.0)/10.0;
+					default -> Msg.getString("unknown");
+					}; //$NON-NLS-1$
             }   
             else return Msg.getString("unknown"); //$NON-NLS-1$
         }

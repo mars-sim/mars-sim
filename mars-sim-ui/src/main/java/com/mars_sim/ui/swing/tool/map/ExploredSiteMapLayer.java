@@ -6,9 +6,14 @@
  */
 package com.mars_sim.ui.swing.tool.map;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.Icon;
 
@@ -18,7 +23,8 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.ImageLoader;
 
-public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> {
+public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
+	implements FilteredMapLayer {
 
 	/**
 	 * Map hotspot for any explroed sites visible
@@ -49,19 +55,21 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> 
 	}
 
 	// Static members
-	private static final String EXPLORED_ICON_NAME = "map/flag_smallyellow"; 
-	private static final String CLAIMED_ICON_NAME = "map/flag_smallgray"; 
-	private static final String SELECTED_ICON_NAME ="map/flag_smallblue"; 
+	private static final String SELECTED_ICON_NAME ="map/flag_smallblue";
+
+	public static final String EXPLORED_FILTER = "Explored";
+	public static final String CLAIMED_FILTER = "Claimed";
+	public static final String RESERVED_FILTER = "Reserved";
+	public static final String UNEXPLORED_FILTER = "Unexplored"; 
+
+	private static Map<String,Icon> filterIcons = null;
 
 	// Domain members
 	private Component displayComponent;
-	private Icon navpointIconExplored;
-	private Icon navpointIconClaimed;
 	private Icon navpointIconSelected;
-	private boolean displayClaimed;
-	private boolean displayReserved;
 	private ExploredLocation selectedSite;
 	private SurfaceFeatures surfaceFeatures;
+	private Set<String> filters = new HashSet<>();
 
 	/**
 	 * Constructor.
@@ -73,32 +81,14 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> 
 
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
-		navpointIconExplored = ImageLoader.getIconByName(EXPLORED_ICON_NAME);
-		navpointIconClaimed = ImageLoader.getIconByName(CLAIMED_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIconByName(SELECTED_ICON_NAME);
-		displayClaimed = true;
-		displayReserved = true;
+
+		filters.add(CLAIMED_FILTER);
+		filters.add(RESERVED_FILTER);
+
 		selectedSite = null;
 
 		surfaceFeatures = displayComponent.getDesktop().getSimulation().getSurfaceFeatures();
-	}
-
-	/**
-	 * Should claimed sites be displayed?
-	 * 
-	 * @param displayClaimed true if display mined sites.
-	 */
-	public void setDisplayClaimed(boolean displayClaimed) {
-		this.displayClaimed = displayClaimed;
-	}
-
-	/**
-	 * Should reserved sites be displayed?
-	 * 
-	 * @param displayReserved true if display reserved sites.
-	 */
-	public void setDisplayReserved(boolean displayReserved) {
-		this.displayReserved = displayReserved;
 	}
 
 	/**
@@ -130,38 +120,87 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation> 
      */
 	@Override
     protected MapHotspot displayFeature(ExploredLocation site, IntPoint location, Graphics2D g, boolean isColourful) {
-		// Check layer filters
-		boolean displaySite = !site.isReserved() || displayReserved;
-		if (!site.isClaimed() && !displayClaimed)
-			displaySite = false;
-		// Need to add this back in
-		// if (!site.isExplored())
-		// 	displaySite = false;
-		if (!displaySite) {
-			return null;
+		Icon siteIcon = null;
+
+		// Work out the precendence of the site to select the icon
+		if (site.equals(selectedSite)) {
+			siteIcon = navpointIconSelected; 
+		}
+		else {
+			String siteFilter = UNEXPLORED_FILTER;
+			if (site.isReserved()) {
+				siteFilter = RESERVED_FILTER;
+			}
+			else if (site.isClaimed()) {
+				siteFilter = CLAIMED_FILTER;
+			}
+			else if (site.isExplored()) {
+				siteFilter = EXPLORED_FILTER;
+			}
+
+			// Check against fitlers
+			if (!filters.contains(siteFilter)) {
+				return null;
+			}
+			siteIcon = getFilterIcons().get(siteFilter);
 		}
 
-		// Chose a navpoint icon based on the map type.
-		Icon navIcon = navpointIconExplored;
-		if (site.equals(selectedSite))
-			navIcon = navpointIconSelected;
-		else if (site.isMinable())
-			navIcon = navpointIconClaimed;
-
 		// Determine the draw location for the icon.
-		IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
+		IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - siteIcon.getIconHeight()));
 
 		// Draw the navpoint icon.
-		navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
+		siteIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
 
 		return new SiteHotspot(drawLocation, site);
 	}
 
 	public int getIconWidth() {
-		return navpointIconExplored.getIconWidth();
+		return navpointIconSelected.getIconWidth();
 	}
 
 	public int getIconHeight() {
-		return navpointIconExplored.getIconHeight();
+		return navpointIconSelected.getIconHeight();
+	}
+
+	/**
+	 * Get the details of the icons associated to different filters.
+	 * @return
+	 */
+	private static final Map<String,Icon> getFilterIcons() {
+		if (filterIcons == null) {
+			filterIcons = new HashMap<>();
+			filterIcons.put(EXPLORED_FILTER,  ImageLoader.getIconByName("map/flag_smallgreen")); 
+			filterIcons.put(CLAIMED_FILTER,  ImageLoader.getIconByName("map/flag_smallgray")); 
+			filterIcons.put(RESERVED_FILTER,  ImageLoader.getIconByName("map/flag_smallred")); 
+			filterIcons.put(UNEXPLORED_FILTER,  ImageLoader.getIconByName("map/flag_smallblue")); 
+		}
+		return filterIcons;
+	}
+
+	/**
+	 * Get a list of the filters the Explored layer supports.
+	 * @return List of filters supported.
+	 */
+	@Override
+	public List<MapFilter> getFilterDetails() {
+		return getFilterIcons().entrySet().stream()
+					.map(e -> new MapFilter(e.getKey(), e.getKey(), filters.contains(e.getKey()),
+							ColorLegendFactory.addBackground(Color.WHITE, e.getValue(), displayComponent)))
+					.toList();
+	}
+
+	/**
+	 * Update the state of a filter for explroed sites
+	 * @param name Name of the filter
+	 * @param display New display state of filter.
+	 */
+	@Override
+	public void displayFilter(String name, boolean display) {
+		if (display) {
+			filters.add(name);
+		}
+		else {
+			filters.remove(name);
+		}
 	}
 }

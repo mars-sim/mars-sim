@@ -43,8 +43,7 @@ import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
-import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
-import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 
 /**
  * This is a wizard panel for selecting exploration sites for the mission.
@@ -121,10 +120,9 @@ class ExplorationSitesPanel extends WizardPanel {
 		navLayer = new NavpointEditLayer(mapPane, true);
 		
 		mapPane.addMapLayer(mineralLayer, 0);
-		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
-		mapPane.addMapLayer(new UnitLabelMapLayer(mapPane), 2);
-		mapPane.addMapLayer(ellipseLayer, 3);
-		mapPane.addMapLayer(navLayer, 4);
+		mapPane.addMapLayer(new UnitMapLayer(mapPane), 1);
+		mapPane.addMapLayer(ellipseLayer, 2);
+		mapPane.addMapLayer(navLayer, 3);
 		
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
@@ -616,6 +614,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * 
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mouseReleased(MouseEvent event) {
 			navSelected = -1;
 			navLayer.clearSelectedNavpoint();
@@ -634,6 +633,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * 
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mouseDragged(MouseEvent event) {
 			if (navSelected > -1) {
 				// Drag navpoint flag if selected.
@@ -664,10 +664,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * @return true if within boundaries.
 		 */
 		private boolean withinBounds(IntPoint position, Coordinates location) {
-			boolean result = navLayer.withinDisplayEdges(position);
-            if (getRemainingRange(false) < getDistanceDiff(location))
-				result = false;
-			return result;
+            if (getRemainingRange(false) < getDistanceDiff(location)) {
+				return false;
+			}
+			return navLayer.withinDisplayEdges(position);
 		}
 
 		/**

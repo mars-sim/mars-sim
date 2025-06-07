@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.Icon;
 
@@ -16,7 +15,7 @@ import javax.swing.Icon;
  */
 public interface FilteredMapLayer extends MapLayer {
     // Details of a MapFilter
-    public record MapFilter(String name, boolean enabled, Icon symbol) {}
+    public record MapFilter(String name, String label, boolean enabled, Icon symbol) {}
     
     /**
      * Get the details of all supported filters
@@ -26,15 +25,8 @@ public interface FilteredMapLayer extends MapLayer {
 
     /**
      * Set a filter to be displayed or not
-     * @param name
-     * @param display
+     * @param name Name of filter
+     * @param display Is to be displayed or not?
      */
     public void displayFilter(String name, boolean display);
-
-    /**
-     * Get the names of the active filters.
-     * @return
-     */
-    public Set<String> getActiveFilters();
-
 }
