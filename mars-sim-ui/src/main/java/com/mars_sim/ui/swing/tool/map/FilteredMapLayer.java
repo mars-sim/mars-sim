@@ -15,7 +15,7 @@ import javax.swing.Icon;
  */
 public interface FilteredMapLayer extends MapLayer {
     // Details of a MapFilter
-    public record MapFilter(String name, String label, boolean enabled, Icon symbol) {}
+    public record MapFilter(String name, String label, Icon symbol) {}
     
     /**
      * Get the details of all supported filters
@@ -29,4 +29,11 @@ public interface FilteredMapLayer extends MapLayer {
      * @param display Is to be displayed or not?
      */
     public void displayFilter(String name, boolean display);
+
+    /**
+     * Is the specified filter active
+     * @param filterName
+     * @return
+     */
+    public boolean isFilterActive(String filterName);
 }

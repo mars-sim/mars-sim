@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.map;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.util.HashMap;
@@ -184,8 +183,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
 	@Override
 	public List<MapFilter> getFilterDetails() {
 		return getFilterIcons().entrySet().stream()
-					.map(e -> new MapFilter(e.getKey(), e.getKey(), filters.contains(e.getKey()),
-							ColorLegendFactory.addBackground(Color.WHITE, e.getValue(), displayComponent)))
+					.map(e -> new MapFilter(e.getKey(), e.getKey(), e.getValue()))
 					.toList();
 	}
 
@@ -202,5 +200,10 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
 		else {
 			filters.remove(name);
 		}
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return filters.contains(filterName);
 	}
 }

@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.utils;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,9 +36,11 @@ public class JCoordinateEditor extends JPanel {
     private SpinnerNumberModel latModel;
     private SpinnerNumberModel lonModel;
 
-    public JCoordinateEditor() {
+    public JCoordinateEditor(boolean vertical) {
         super();
-
+        if (vertical) {
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        }
         initComponents();
     }
 
@@ -86,7 +89,7 @@ public class JCoordinateEditor extends JPanel {
 
         add(latPanel);
 
-        var lonPanel = new JPanel();
+        var lonPanel = new JPanel(new FlowLayout(SwingConstants.CENTER, 1, 1));
 		JLabel longLabel = new JLabel("Lon :", SwingConstants.RIGHT);
 		lonPanel.add(longLabel);
 

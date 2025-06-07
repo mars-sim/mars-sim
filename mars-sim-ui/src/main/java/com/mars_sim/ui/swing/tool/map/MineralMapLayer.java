@@ -179,9 +179,14 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> results = new ArrayList<>();
 		for(var e : getMineralColors().entrySet()) {
-			results.add(new MapFilter(e.getKey(), e.getKey(), mineralsDisplaySet.contains(e.getKey()),
+			results.add(new MapFilter(e.getKey(), e.getKey(),
 								ColorLegendFactory.getLegend(e.getValue(), displayComponent)));
 		}
 		return results;
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return mineralsDisplaySet.contains(filterName);
 	}
 }

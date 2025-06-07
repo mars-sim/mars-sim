@@ -20,6 +20,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -58,6 +59,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 	private UnitManager unitManager;
 	private MapPanel displayComponent;
 	private boolean displayLabel = true;
+	private Icon labelIcon = ImageLoader.getIconByName("map/text_small");
 
 	public UnitMapLayer(MapPanel panel) {
 		unitManager = panel.getDesktop().getSimulation().getUnitManager();
@@ -181,7 +183,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 	@Override
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> filters = new ArrayList<>();
-		filters.add(new MapFilter(LABEL_FILTER, "Labels", displayLabel, null));
+		filters.add(new MapFilter(LABEL_FILTER, "Labels", labelIcon));
 		return filters;
 	}
 
@@ -190,5 +192,10 @@ public class UnitMapLayer implements FilteredMapLayer {
 		if (name.equals(LABEL_FILTER)) {
 			displayLabel = display;
 		}
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return (LABEL_FILTER.equals(filterName) && displayLabel);
 	}
 }

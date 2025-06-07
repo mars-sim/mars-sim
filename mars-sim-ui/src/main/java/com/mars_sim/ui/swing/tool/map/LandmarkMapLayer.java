@@ -67,7 +67,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	private static final int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	private static final int AO_CIRCLE_DIAMETER = 4;
 
-	private Set<LandmarkType> displayed = new HashSet<>();
+	private Set<String> displayed = new HashSet<>();
 	private SurfaceManager<Landmark> landmarks;
 	private MapPanel displayComponent;
 
@@ -83,7 +83,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 
 		// By default everything
 		for(var l : LandmarkType.values()) {
-			displayed.add(l);
+			displayed.add(l.name());
 		}
 	}
 
@@ -122,7 +122,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	@Override
     protected MapHotspot displayFeature(Landmark landmark, IntPoint location, Graphics2D g2d,
 								boolean isColourful) {
-		if (!displayed.contains(landmark.getType())) {
+		if (!displayed.contains(landmark.getType().name())) {
 			return null;
 		}
 
@@ -169,7 +169,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> filters = new ArrayList<>();
 		for(var lt : LandmarkType.values()) {
-			filters.add(new MapFilter(lt.name(), lt.getName(), displayed.contains(lt), 
+			filters.add(new MapFilter(lt.name(), lt.getName(), 
 							ColorLegendFactory.getLegend((lt == LandmarkType.AO ? AO_COLOR : OTHERS_COLOR),
 													displayComponent)));
 		}
@@ -179,17 +179,16 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 
 	@Override
 	public void displayFilter(String name, boolean display) {
-		try {
-			LandmarkType lt = LandmarkType.valueOf(name);
-			if (display) {
-				displayed.add(lt);
-			}
-			else {
-				displayed.remove(lt);
-			}
+		if (display) {
+			displayed.add(name);
 		}
-		catch(IllegalArgumentException iae) {
-			// Problem loading filter
+		else {
+			displayed.remove(name);
 		}
+	}
+
+	@Override
+	public boolean isFilterActive(String filterName) {
+		return displayed.contains(filterName);
 	}
 }

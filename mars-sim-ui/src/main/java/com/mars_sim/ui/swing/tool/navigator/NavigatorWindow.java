@@ -21,7 +21,9 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
@@ -29,7 +31,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.GameManager;
@@ -54,6 +58,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
+import com.mars_sim.ui.swing.tool.map.FilteredMapLayer.MapFilter;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
 import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
@@ -67,6 +72,8 @@ import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
 import com.mars_sim.ui.swing.utils.JCoordinateEditor;
+import com.mars_sim.ui.swing.utils.TreeCheckFactory;
+import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -76,29 +83,99 @@ import com.mars_sim.ui.swing.utils.JCoordinateEditor;
 @SuppressWarnings("serial")
 public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow {
 
+	// Binding from name to layer
 	private static record NamedLayer(String name, MapLayer layer) {}
+
+	/**
+	 * This is used to show a MapFilter instance in a CheckTree
+	 */
+	private static class FilterNode implements SelectableNode {
+		private MapFilter filter;
+		private FilteredMapLayer layer;
+
+		public FilterNode(FilteredMapLayer l, MapFilter m) {
+			filter = m;
+			layer = l;
+		}
+
+		@Override
+		public String getName() {
+			return filter.label();
+		}
+
+		@Override
+		public Icon getIcon() {
+			return filter.symbol();
+		}
+
+		@Override
+		public boolean isSelected() {
+			return layer.isFilterActive(filter.name());
+		}
+
+		@Override
+		public void toggleSelection() {
+			var selected = !isSelected();
+			layer.displayFilter(filter.name(), selected);
+		}
+	}
 	
+	/**
+	 * This is used to show a MapLayer instance in a CheckTree
+	 */
+	private class LayerNode implements SelectableNode {
+		private String layerName;
+		private String label;
+		private MapLayer layer;
+
+		public LayerNode(String layerName, MapLayer layer) {
+			this.layerName = layerName;
+			this.label = Msg.getString("NavigatorWindow.menu.layer." + layerName);
+			this.layer = layer;
+		}
+
+		@Override
+		public String getName() {
+			return label;
+		}
+
+		@Override
+		public Icon getIcon() {
+			return null;
+		}
+
+		@Override
+		public boolean isSelected() {
+			return mapPanel.hasMapLayer(layer);
+		}
+
+		@Override
+		public void toggleSelection() {
+			setMapLayer(!isSelected(), layerName);
+		}
+	}
+
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
 	private static final int HEIGHT_STATUS_BAR = 18;
-	private static final int CONTROL_PANE_HEIGHT = 105;
+	private static final int CONTROL_PANE_WIDTH = 250;
+
 
 	private static final String MAP_SEPERATOR = "~";
 
 	private static final String LEVEL = "Level ";
-	private static final String CHOOSE_SETTLEMENT = "Select Settlement";
-	private static final String MAPTYPE_PROP = "mapType";
-	private static final String RESOLUTION_PROP = "resolution";
-	private static final String LAYER_PROP = "lyr" + MAP_SEPERATOR;
+	private static final String CHOOSE_SETTLEMENT = "Settlement";
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
-	private static final String LAYER_ACTION = "layer";
 
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
 	private static final String EXPLORED_LAYER = "exploredSites";
 
+	private static final String MAPTYPE_PROP = "mapType";
+	private static final String RESOLUTION_PROP = "resolution";
+	private static final String LAYER_PROP = "lyr" + MAP_SEPERATOR;
 	private static final String LON_PROP = "longitude";
 	private static final String LAT_PROP = "latitude";
 
@@ -201,27 +278,51 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
 		mapPane.add(mapPanel);
-		
-		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
-		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
-		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
-		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, CONTROL_PANE_HEIGHT));
-		wholePane.add(wholeBottomPane, BorderLayout.SOUTH);
-		
-		////////////////////////////////////////////
-			
-		JPanel twoLevelPane = new JPanel(new BorderLayout(0, 0));
-		wholeBottomPane.add(twoLevelPane, BorderLayout.CENTER);
-        
-        // Set up the label and the settlement pane
-        twoLevelPane.add(createSettlementPane(), BorderLayout.SOUTH);
-		twoLevelPane.add(createCoordPane(), BorderLayout.NORTH);
 
-		JPanel topOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topOptionPane.setPreferredSize(new Dimension(120, 25));
-		topOptionPane.setMinimumSize(new Dimension(120, 25));
-		topOptionPane.setMaximumSize(new Dimension(120, 25));
-		wholeBottomPane.add(topOptionPane, BorderLayout.EAST);
+		wholePane.add(createControlPanel(), BorderLayout.EAST);
+
+		// Create the status bar
+		contentPane.add(createStatusBar(), BorderLayout.SOUTH);
+
+		// Apply user choice from xml config file
+		checkSettings();
+		
+		setClosable(true);
+		setResizable(false);
+		setMaximizable(false);
+
+		setVisible(true);
+		// Pack window
+		pack();
+	}
+
+	private JPanel createControlPanel() {
+		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
+
+		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		controlPane.setMaximumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		
+		JPanel searchPane = new JPanel();
+		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
+		searchPane.setBorder(StyleManager.createLabelBorder("Search"));
+
+		controlPane.add(searchPane, BorderLayout.NORTH);
+        
+        searchPane.add(createSettlementPane());
+		searchPane.add(createCoordPane());
+
+		var layerRoot = createLayerModel();
+		JTree layers = TreeCheckFactory.createCheckTree(layerRoot);
+		JScrollPane treeView = new JScrollPane(layers);
+		controlPane.add(treeView, BorderLayout.CENTER);
+		treeView.setBorder(StyleManager.createLabelBorder("Layers"));
+
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+		buttonPane.setBorder(StyleManager.createLabelBorder("Graphics"));
+
+		controlPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Prepare options button.
 		JButton mapButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //-NLS-1$
@@ -231,15 +332,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					createMapOptionsMenu().show(s, s.getWidth(), s.getHeight());
 			}
 		);		
-		topOptionPane.add(mapButton);
-
-		JButton layerButton = new JButton(Msg.getString("NavigatorWindow.button.layerOptions")); //-NLS-1$
-		layerButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.layerOptions")); //-NLS-1$
-		layerButton.addActionListener(e ->
-					createLayerMenu().show(layerButton, 0, layerButton.getHeight())
-		);
-		topOptionPane.add(layerButton);
-	
+		buttonPane.add(mapButton);
 	
 		// Prepare gpu button
 		gpuButton = new FlatToggleButton(); 
@@ -250,11 +343,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		updateGPUButton();
 		gpuButton.addActionListener(e -> updateGPUButton());
-		topOptionPane.add(gpuButton);
+		buttonPane.add(gpuButton);
+		return controlPane;
+	}
 
-		// Create the status bar
+	private JStatusBar createStatusBar() {
 		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
-		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
 		Font font = StyleManager.getSmallFont();
 		
@@ -299,16 +393,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		statusBar.addRightComponent(scaleLabel, false);
 		statusBar.addRightComponent(kmPerPixelLabel, false);
 
-		// Apply user choice from xml config file
-		checkSettings();
-		
-		setClosable(true);
-		setResizable(false);
-		setMaximizable(false);
-
-		setVisible(true);
-		// Pack window
-		pack();
+		return statusBar;
 	}
 
 	/**
@@ -417,19 +502,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	private JPanel createCoordPane() {
-		var p = new JPanel(new FlowLayout(SwingConstants.CENTER, 0, 0));
-		p.setBorder(BorderFactory.createEtchedBorder());
-		coordEditor = new JCoordinateEditor();
+		var p = new JPanel();
+		coordEditor = new JCoordinateEditor(true);
 
 		var goTo = new JButton(ImageLoader.getIconByName("action/find"));
-
-		goTo.addActionListener(e -> {
-										
+		goTo.addActionListener(e -> {							
 			// Reset it back to the prompt text
 			settlementComboBox.setSelectedIndex(-1);
 
 			var locn = coordEditor.getCoordinates();
-			updateMaps(locn);
+			mapPanel.showMap(locn);
 		});
 
 		p.add(coordEditor);
@@ -443,9 +525,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private JPanel createSettlementPane() {   
 	    var settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		settlementPane.setBorder(BorderFactory.createEtchedBorder());
 
-	    JLabel label = new JLabel("Select a settlement: ");
+	    JLabel label = new JLabel("Settlement: ");
 	    settlementPane.add(label);
 	    	
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
@@ -534,28 +615,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		coordEditor.setCoordinates(newCoords);
 		mapPanel.showMap(newCoords);
 	}
-	
-	/**
-	 * Updates map and globe.
-	 * 
-	 * @param newCoords the new center location
-	 */
-	public void updateMaps(Coordinates newCoords) {
-		mapPanel.showMap(newCoords);
-	}
-		
-	/**
-	 * Processes the filter layer command
-	 * 
-	 * @param source
-	 * @param object 
-	 */
-	private void toggleFilter(FilteredMapLayer layer, String filterName, Object source) {
-		JCheckBoxMenuItem filterItem = (JCheckBoxMenuItem) source;
-		boolean now = filterItem.getState();
-		layer.displayFilter(filterName, now);
-	}
-	
+
 	/**
 	 * Processes the map reload command.
 	 * 
@@ -584,12 +644,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		String command = event.getActionCommand();
 		if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {			
 			goToMapTypeReload(command, source);
-		}
-		else if (command.startsWith(LAYER_ACTION)) {
-			String selectedLayer = command.substring(LAYER_ACTION.length());
-			// Check if a layer is selected
-			boolean selected = ((JCheckBoxMenuItem) source).isSelected();
-			setMapLayer(selected, selectedLayer);
 		}
 	}
 
@@ -699,66 +753,25 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		return optionsMenu;
 	}
 	
-	private JPopupMenu createLayerMenu() {
-		// Create map options menu.
-		JPopupMenu optionsMenu = new JPopupMenu();
+	private DefaultMutableTreeNode createLayerModel() {
+		var root = new DefaultMutableTreeNode("Layers");
 
 		for(var nl : mapLayers) {
+			var layerNode = new DefaultMutableTreeNode(
+						new LayerNode(nl.name(), nl.layer()));
+			root.add(layerNode);
+
 			if (nl.layer() instanceof FilteredMapLayer fl) {
-				optionsMenu.add(createFilterMenu(nl.name(), fl));
-			}
-			else {
-				optionsMenu.add(createSelectableLayerOptions(nl.name(), null,
-							mapPanel.hasMapLayer(nl.layer())));
+				for(var m : fl.getFilterDetails()) {
+					var filterNode = new DefaultMutableTreeNode(new FilterNode(fl, m));
+					layerNode.add(filterNode);
+				}
 			}
 		}
 
-		optionsMenu.pack();
-		return optionsMenu;
+		return root;
 	}
 
-	/**
-	 * Activates action listeners for map options menu.
-	 * 
-	 * @param actionPrefix
-	 * @param action
-	 * @param selected
-	 * @return
-	 */
-	private JCheckBoxMenuItem createSelectableLayerOptions(String action, String label, boolean selected) {
-		String name = (label != null ? label : Msg.getString("NavigatorWindow.menu.layer." + action));
-		JCheckBoxMenuItem item = new JCheckBoxMenuItem(name, selected);
-		item.setActionCommand(LAYER_ACTION + action);
-		item.addActionListener(this);
-		return item;
-	}
-
-	/**
-	 * Creates a Menu that holds a set of map layer filters
-	 */
-	private JMenu createFilterMenu(String name, FilteredMapLayer layer) {
-		// Create the mineral options menu.
-		JMenu minMenu = new JMenu(Msg.getString("NavigatorWindow.menu.layer." + name));
-
-		boolean isVisible = mapPanel.hasMapLayer(layer);
-		// Add a select  options
-		var visItem = createSelectableLayerOptions(name, "Visible", isVisible);
-		minMenu.add(visItem);
-		
-		// Create each filter check box item.
-		for(var m : layer.getFilterDetails()) {
-			JCheckBoxMenuItem filterItem = new JCheckBoxMenuItem(m.label(), m.enabled());
-			filterItem.setEnabled(isVisible);
-			if (m.symbol() != null) {
-				filterItem.setIcon(m.symbol());
-			}
-			filterItem.addActionListener(e -> toggleFilter(layer, m.name(), e.getSource()));
-			minMenu.add(filterItem);
-		}
-
-		return minMenu;
-	}
-	
 	/**
 	 * Updates the map with time pulse.
 	 * 
@@ -769,13 +782,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if ((mapPanel != null) && mapPanel.updateDisplay()) {
 			updateMapControls();
 		}
-	}
-	 	
-	/** 
-	 * Gets the map panel class.
-	 */
-	public MapPanel getMapPanel() {
-		return mapPanel;
 	}
 	
 	@Override
@@ -800,7 +806,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			if (e.layer() instanceof FilteredMapLayer fl) {
 				for(var f : fl.getFilterDetails()) {
 					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),
-								Boolean.toString(f.enabled()));
+								Boolean.toString(fl.isFilterActive(f.name())));
 				}
 			}
 		}
