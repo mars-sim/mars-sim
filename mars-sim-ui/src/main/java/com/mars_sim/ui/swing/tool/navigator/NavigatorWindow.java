@@ -29,6 +29,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -615,15 +616,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param source
 	 */
 	private void goToMapTypeReload(String command, Object source) {
-		if (((JCheckBoxMenuItem) source).isSelected()) {
-			String [] parts = command.split(MAP_SEPERATOR);
-			String newMapType = parts[2];
-			int reply = Integer.parseInt(parts[1]);
+		String [] parts = command.split(MAP_SEPERATOR);
+		String newMapType = parts[2];
+		int reply = Integer.parseInt(parts[1]);
 
-			// if it's the same map type but of a different resolution
-			// Change the map
-			changeMap(newMapType, reply);
-		}
+		// if it's the same map type but of a different resolution
+		// Change the map
+		changeMap(newMapType, reply);
 	}
 	
 	/** 
@@ -701,25 +700,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
-	private class JActiveMenu extends JMenu {
-		private String baseName;
-
-		public JActiveMenu(String name, boolean initialActive) {
-			super();
-			this.baseName = name;
-
-			setActive(initialActive);
-		}
-
-		public void setActive(boolean active) {
-			setText((active ? "> " : "") + baseName);
-		}
-	}
-
 	/**
 	 * Returns the map options menu.
 	 */
 	private JPopupMenu createMapOptionsMenu() {
+		var downloadIcon = ImageLoader.getIconByName("action/download");
+		var viewIcon = ImageLoader.getIconByName("action/view");
+
 		// Create map options menu.
 		JPopupMenu optionsMenu = new JPopupMenu();
 				
@@ -727,14 +714,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		var currentRes = mapPanel.getMapResolution();
 		for (MapMetaData metaData: MapDataFactory.getLoadedTypes()) {
 	
-			JMenu mapMenu = new JActiveMenu(metaData.getDescription(), metaData.equals(currentMap));
-
+			JMenu mapMenu = new JMenu(metaData.getDescription());
+			if (metaData.equals(currentMap)) {
+				mapMenu.setIcon(viewIcon);
+			}
 			for(int lvl = 0; lvl < metaData.getNumLevel(); lvl++) {
 				boolean displayed = (metaData.equals(currentMap)
 										&& (lvl == currentRes));
-				JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(LEVEL + lvl
-															+ (metaData.isLocal(lvl) ? " *" : "")
-															, displayed);
+				var icon = (displayed ? viewIcon : (metaData.isLocal(lvl) ? null : downloadIcon));
+
+				JMenuItem mapItem = new JMenuItem(LEVEL + lvl, icon);
 				mapItem.setEnabled(!displayed);
 				mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + MAP_SEPERATOR + lvl + MAP_SEPERATOR + metaData.getId());
 				mapItem.addActionListener(this);

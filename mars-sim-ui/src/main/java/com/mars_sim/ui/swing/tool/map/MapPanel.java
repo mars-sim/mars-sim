@@ -17,7 +17,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -534,7 +533,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					mapDetails.setText(buf);
 				}
 
-				marsMap.drawMap(centerCoords, rho, getSize());
+				var sz = getSize();
+				if ((sz.getWidth() > 0) && (sz.getHeight() > 0)) {
+					marsMap.drawMap(centerCoords, rho, sz);
+				}
 				
 				wait = false;
 				repaint();
@@ -542,7 +544,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			} catch (Exception e) {
 				mapError = true;
 				mapErrorMessage = e.getMessage();
-				logger.log(Level.SEVERE, "Can't draw surface map: " + e, e);
+				logger.log(Level.WARNING, "Can't draw surface map: " + e);
 			}
 		}
 	}
