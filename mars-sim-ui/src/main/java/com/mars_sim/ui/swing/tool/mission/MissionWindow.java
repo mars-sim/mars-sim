@@ -42,7 +42,6 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.create.CreateMissionWizard;
 import com.mars_sim.ui.swing.tool.mission.edit.ModifyMissionDialog;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
@@ -59,9 +58,11 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	
 	private static final int PADDING = 20;
 	static final int LEFT_PANEL_WIDTH = 220;
-	static final int WIDTH = LEFT_PANEL_WIDTH + NavigatorWindow.MAP_BOX_WIDTH + PADDING * 2;
+	private static final int MAP_WIDTH = 512;
+	private static final int MAP_HEIGHT = 512;
+	static final int WIDTH = LEFT_PANEL_WIDTH + MAP_WIDTH + PADDING * 2;
 	
-	static final int MAP_BOX_HEIGHT = NavigatorWindow.MAP_BOX_HEIGHT;
+	private static final int MAP_BOX_HEIGHT = MAP_HEIGHT;
 	static final int TABLE_HEIGHT = 160;
 	static final int HEIGHT = MAP_BOX_HEIGHT + TABLE_HEIGHT;
 	
@@ -133,8 +134,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		            .getPath().getLastPathComponent();
 			Object selection = node.getUserObject();
 
-			if (selection instanceof Mission) {
-				Mission m = (Mission) selection;
+			if (selection instanceof Mission m) {
 				selectMission(m);
 			}
 			else {
@@ -231,12 +231,11 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 	private DefaultMutableTreeNode addMissionNode(Mission m) {
 		Settlement s = m.getAssociatedSettlement();
-		DefaultMutableTreeNode sNode = settlementNodes.get(s);
-		if (sNode == null) {
-			sNode = new DefaultMutableTreeNode(s.getName(), true);
-			treeModel.insertNodeInto(sNode, missionRoot, missionRoot.getChildCount());
-			settlementNodes.put(s, sNode);
-		}
+		DefaultMutableTreeNode sNode = settlementNodes.computeIfAbsent(s, k -> {
+			var n = new DefaultMutableTreeNode(k.getName(), true);
+			treeModel.insertNodeInto(n, missionRoot, missionRoot.getChildCount());
+			return n;
+		});
 
 		DefaultMutableTreeNode mNode = new DefaultMutableTreeNode(m, false);
 		treeModel.insertNodeInto(mNode, sNode, sNode.getChildCount());

@@ -8,6 +8,7 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -52,17 +53,17 @@ public class VehicleTrailMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 */
 	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g, Dimension d) {
 
 		// Set trail color
 		g.setColor((baseMap.getMapMetaData().isColourful() ? Color.BLACK : new Color(0, 96, 0)));
 
 		// Draw trail
 		if (singleVehicle != null)
-			displayTrail(singleVehicle, mapCenter, baseMap, g);
+			displayTrail(singleVehicle, mapCenter, baseMap, g, d);
 		else {
 			for(var v : unitManager.getVehicles()) {
-				displayTrail(v, mapCenter, baseMap, g);
+				displayTrail(v, mapCenter, baseMap, g, d);
 			}
 		}
 
@@ -77,7 +78,7 @@ public class VehicleTrailMapLayer implements MapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, MapDisplay baseMap, Graphics g) {
+	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, MapDisplay baseMap, Graphics g, Dimension displaySize) {
 
 		// Get map angle.
 		double angle = baseMap.getHalfAngle();
@@ -89,7 +90,7 @@ public class VehicleTrailMapLayer implements MapLayer {
 			Coordinates c = j.next();
 			if (c != null
 				&& mapCenter.getAngle(c) < angle) {
-					IntPoint pt = MapUtils.getRectPosition(c, mapCenter, baseMap);
+					IntPoint pt = MapUtils.getRectPosition(c, mapCenter, baseMap, displaySize);
 					if (oldpt == null)
 						g.drawRect(pt.getiX(), pt.getiY(), 1, 1);
 					else if (!pt.equals(oldpt))

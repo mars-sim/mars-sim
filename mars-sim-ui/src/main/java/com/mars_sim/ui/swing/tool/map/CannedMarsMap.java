@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.map;
 
+import java.awt.Dimension;
 import java.awt.Image;
 
 import javax.swing.JComponent;
@@ -20,16 +21,20 @@ import com.mars_sim.core.map.location.Coordinates;
  * order to generate a map image.
  */
 @SuppressWarnings("serial")
-public class CannedMarsMap extends JComponent implements MapDisplay {
+public class CannedMarsMap implements MapDisplay {
 
 	// Data members
 	private boolean mapImageDone = false;
 
-	private transient Image mapImage = null;
+	private Image mapImage = null;
 	
-	private transient MapData mapData;
+	private MapData mapData;
 
-	private double rho;
+	private double lastRHO;
+
+	private Coordinates lastCenter;
+
+	private Dimension lastSize;
 
 	/**
 	 * Constructor.
@@ -55,10 +60,13 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	 * 
 	 * @param newCenter the new center location
 	 */
-	public void drawMap(Coordinates newCenter, double rho) {	
+	@Override
+	public void drawMap(Coordinates newCenter, double rho, Dimension d) {	
 		mapImage = mapData.createMapImage(newCenter,
-								MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, rho);
-		this.rho = rho;
+								(int)d.getWidth(), (int)d.getHeight(), rho);
+		this.lastRHO = rho;
+		this.lastCenter = newCenter;
+		this.lastSize = d;
 		mapImageDone = true;
 	}
 	
@@ -78,7 +86,11 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	 * @return constructed map image
 	 */
 	@Override
-	public Image getMapImage() {
+	public Image getMapImage(Coordinates center, double rho, Dimension size) {
+		if (!lastCenter.equals(center) || (lastRHO != rho) || !lastSize.equals(size)) {
+			// Redraw map
+			drawMap(center, rho, size);
+		}
 		return mapImage;
 	}
 
@@ -88,7 +100,7 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
      * @return
      */
     public double getScale() {
-		return rho/mapData.getRhoDefault();
+		return lastRHO/mapData.getRhoDefault();
 	}
 	   
 	/**
@@ -98,7 +110,7 @@ public class CannedMarsMap extends JComponent implements MapDisplay {
 	 */
 	@Override
 	public double getRho() {
-		return rho;
+		return lastRHO;
 	}
 	
 	/**

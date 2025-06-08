@@ -29,6 +29,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -60,7 +61,6 @@ import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer.MapFilter;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
-import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
 import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
@@ -157,10 +157,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
-	public static final int MAP_BOX_WIDTH = MapDisplay.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
-	public static final int MAP_BOX_HEIGHT = MapDisplay.MAP_BOX_HEIGHT;
+	private static final int MAP_BOX_WIDTH = 512;
+	private static final int MAP_BOX_HEIGHT = 512;
 	private static final int HEIGHT_STATUS_BAR = 18;
 	private static final int CONTROL_PANE_WIDTH = 250;
+	private static final int MIN_WIDTH = 400 + CONTROL_PANE_WIDTH;
+	private static final int MIN_HEIGHT = 450;
 
 
 	private static final String MAP_SEPERATOR = "~";
@@ -246,13 +248,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		JPanel mapPane = new JPanel();
-		wholePane.add(mapPane, BorderLayout.CENTER);
-
 		mapPanel = new MapPanel(desktop);
-		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
+		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
+		wholePane.add(mapPanel, BorderLayout.CENTER);
 		
-		mapPanel.setMouseDragger(true);
+		mapPanel.setMouseDragger();
 
 		// Create a mouse listener to show hotspots and update status bar
 		var mapListner = new MapMouseListener(mapPanel) {
@@ -277,8 +277,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
-		mapPane.add(mapPanel);
-
 		wholePane.add(createControlPanel(), BorderLayout.EAST);
 
 		// Create the status bar
@@ -288,20 +286,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		checkSettings();
 		
 		setClosable(true);
-		setResizable(false);
-		setMaximizable(false);
 
 		setVisible(true);
 		// Pack window
 		pack();
+		setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
+
 	}
 
 	private JPanel createControlPanel() {
 		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
 
 		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
-		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
-		controlPane.setMaximumSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
+		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, 200));
 		
 		JPanel searchPane = new JPanel();
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
@@ -413,7 +410,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			IntegerMapData.setHardwareAccel(isSelected);
 			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
 			
-			mapPanel.setRho(mapPanel.getRho());
+			mapPanel.repaint();
 		}
 		else {
 			gpuButton.setEnabled(false);
@@ -433,11 +430,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			String resolutionString = userSettings.getProperty(RESOLUTION_PROP, RESOLUTION);
 			
-			int resolution = mapPanel.getMapResolution();
-			
-			if (resolutionString != null) {
-				resolution = Integer.parseInt(resolutionString);
-			}
+			int resolution = Integer.parseInt(resolutionString);
 			
 			// Set the map type
 			changeMap(userSettings.getProperty(MAPTYPE_PROP, MapDataFactory.DEFAULT_MAP_TYPE), resolution);
@@ -623,15 +616,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param source
 	 */
 	private void goToMapTypeReload(String command, Object source) {
-		if (((JCheckBoxMenuItem) source).isSelected()) {
-			String [] parts = command.split(MAP_SEPERATOR);
-			String newMapType = parts[2];
-			int reply = Integer.parseInt(parts[1]);
+		String [] parts = command.split(MAP_SEPERATOR);
+		String newMapType = parts[2];
+		int reply = Integer.parseInt(parts[1]);
 
-			// if it's the same map type but of a different resolution
-			// Change the map
-			changeMap(newMapType, reply);
-		}
+		// if it's the same map type but of a different resolution
+		// Change the map
+		changeMap(newMapType, reply);
 	}
 	
 	/** 
@@ -709,25 +700,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
-	private class JActiveMenu extends JMenu {
-		private String baseName;
-
-		public JActiveMenu(String name, boolean initialActive) {
-			super();
-			this.baseName = name;
-
-			setActive(initialActive);
-		}
-
-		public void setActive(boolean active) {
-			setText((active ? "> " : "") + baseName);
-		}
-	}
-
 	/**
 	 * Returns the map options menu.
 	 */
 	private JPopupMenu createMapOptionsMenu() {
+		var downloadIcon = ImageLoader.getIconByName("action/download");
+		var viewIcon = ImageLoader.getIconByName("action/view");
+
 		// Create map options menu.
 		JPopupMenu optionsMenu = new JPopupMenu();
 				
@@ -735,14 +714,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		var currentRes = mapPanel.getMapResolution();
 		for (MapMetaData metaData: MapDataFactory.getLoadedTypes()) {
 	
-			JMenu mapMenu = new JActiveMenu(metaData.getDescription(), metaData.equals(currentMap));
-
+			JMenu mapMenu = new JMenu(metaData.getDescription());
+			if (metaData.equals(currentMap)) {
+				mapMenu.setIcon(viewIcon);
+			}
 			for(int lvl = 0; lvl < metaData.getNumLevel(); lvl++) {
 				boolean displayed = (metaData.equals(currentMap)
 										&& (lvl == currentRes));
-				JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(LEVEL + lvl
-															+ (metaData.isLocal(lvl) ? " *" : "")
-															, displayed);
+				var icon = (displayed ? viewIcon : (metaData.isLocal(lvl) ? null : downloadIcon));
+
+				JMenuItem mapItem = new JMenuItem(LEVEL + lvl, icon);
 				mapItem.setEnabled(!displayed);
 				mapItem.setActionCommand(MAPTYPE_RELOAD_ACTION + MAP_SEPERATOR + lvl + MAP_SEPERATOR + metaData.getId());
 				mapItem.addActionListener(this);

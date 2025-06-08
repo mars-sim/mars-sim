@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.map;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLa
      * @return Any hotspots this layer creates.
 	 */
 	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d, Dimension d) {
         List<MapHotspot> hotspots = new ArrayList<>();
 
         timer.startTimer();
@@ -56,7 +57,7 @@ public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLa
         boolean isColourful = baseMap.getMapMetaData().isColourful();
 		for (var f : features) {
             // Determine display location of feature on the map.
-            IntPoint pointOnMap = MapUtils.getRectPosition(f.getCoordinates(), mapCenter, baseMap);
+            IntPoint pointOnMap = MapUtils.getRectPosition(f.getCoordinates(), mapCenter, baseMap, d);
             if ((pointOnMap.getiX() >= 0) && (pointOnMap.getiY() >= 0)) {
                 var h = displayFeature(f, pointOnMap, g2d, isColourful);
                 if (h != null) {

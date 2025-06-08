@@ -8,6 +8,7 @@
 package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +43,7 @@ public class ShadingMapLayer implements MapLayer {
 	 * @param g2d         graphics context of the map display.
 	 */
 	@Override
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d) {
+	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d, Dimension d) {
 
 		// Need to determine which side of Mars is facing the sun
 		
@@ -53,7 +54,7 @@ public class ShadingMapLayer implements MapLayer {
         if (sunlight < 0.85) {	        
         	int opacity = LIGHT_THRESHOLD - sunlightInt;
             g2d.setColor(new Color(5, 0, 0, opacity));
-            g2d.fillRect(0, 0, MapDisplay.MAP_BOX_WIDTH, MapDisplay.MAP_BOX_HEIGHT);
+            g2d.fillRect(0, 0, (int)d.getWidth(), (int)d.getHeight());
 		}
 
 		return Collections.emptyList();

@@ -38,7 +38,6 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
-import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
@@ -114,7 +113,8 @@ class ExplorationSitesPanel extends WizardPanel {
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 
 		// Create the map panel.
-		mapPane = new MapPanel(desktop, 200L);
+		mapPane = new MapPanel(desktop);
+		mapPane.setPreferredSize(new Dimension(400, 512));
 		mineralLayer = new MineralMapLayer(mapPane);
 		ellipseLayer = new EllipseLayer(Color.GREEN);
 		navLayer = new NavpointEditLayer(mapPane, true);
@@ -171,7 +171,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				SitePanel p = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
 				siteListPane.add(p);
 				navLayer.addNavpointPosition(
-						MapUtils.getRectPosition(p.getSite(), getCenterCoords(), mapPane.getMap()));
+						MapUtils.getRectPosition(p.getSite(), getCenterCoords(), mapPane.getMap(), mapPane.getSize()));
 				mapPane.repaint();
 				addButton.setEnabled(canAddMoreSites());
 				validate();
@@ -254,7 +254,8 @@ class ExplorationSitesPanel extends WizardPanel {
 			SitePanel startingSitePane = new SitePanel(0, startingSite);
 			siteListPane.add(startingSitePane);
 			navLayer.addNavpointPosition(
-					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), mapPane.getMap()));
+					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), mapPane.getMap(),
+								mapPane.getSize()));
 			mapPane.showMap(startingSite);
 			addButton.setEnabled(canAddMoreSites());
 		} catch (Exception e) {
@@ -406,7 +407,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			SitePanel sitePane = (SitePanel) siteListPane.getComponent(x);
 			sitePane.setSiteNum(x);
 			navLayer.addNavpointPosition(
-					MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
+					MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap(), mapPane.getSize()));
 		}
 		mapPane.repaint();
 	}
@@ -558,10 +559,13 @@ class ExplorationSitesPanel extends WizardPanel {
 				navLayer.selectNavpoint(navSelected);
 				navOffset = determineOffset(event.getX(), event.getY());
 
-				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), getCenterCoords(),
-						mapPane.getMap());
-				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(),
-						mapPane.getMap());
+				var displaySize = mapPane.getSize();
+				var map = mapPane.getMap();
+				var center = getCenterCoords();
+				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), center,
+										map, displaySize);
+				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), center,
+										map, displaySize);
 				int radiusPixels = convertDistanceToMapPixels(getRadius());
 
 				ellipseLayer.setEllipseDetails(prevNavpoint, nextNavpoint, radiusPixels);
@@ -641,9 +645,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				int displayY = event.getPoint().y + navOffset.getiY();
 				IntPoint displayPos = new IntPoint(displayX, displayY);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-				Coordinates navpoint = center.convertRectIntToSpherical(displayPos.getiX() - MapDisplay.HALF_MAP_BOX, 
-						displayPos.getiY() - MapDisplay.HALF_MAP_BOX,
-						mapPane.getMap().getRho());
+				Coordinates navpoint = mapPane.getCoordsOfPoint(center, displayPos);
 
 				// Only drag navpoint flag if within ellipse range bounds.
 				if (withinBounds(displayPos, navpoint)) {
@@ -763,12 +765,11 @@ class ExplorationSitesPanel extends WizardPanel {
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
-				if (column == 0) {
-					return mineralName;
-				} else if (column == 1) {
-					return mineralColors.get(mineralName);
-				} else
-					return null;
+				return switch (column) {
+					case 0 -> mineralName;
+					case 1 -> mineralColors.get(mineralName);
+					default -> null;
+					};
 			} else
 				return null;
 		}

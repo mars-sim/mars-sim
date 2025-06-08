@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.mission.create;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,7 +26,6 @@ import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
-import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
 import com.mars_sim.ui.swing.tool.map.NavpointEditLayer;
@@ -84,8 +84,9 @@ class ProspectingSitePanel extends WizardPanel {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the map panel.
-		mapPane = new MapPanel(wizard.getDesktop(), 200L);
-		
+		mapPane = new MapPanel(wizard.getDesktop());
+		mapPane.setPreferredSize(new Dimension(400, 512));
+
 		mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 2);
@@ -134,8 +135,7 @@ class ProspectingSitePanel extends WizardPanel {
 	@Override
 	boolean commitChanges(boolean isTesting) {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
-		Coordinates navpoint = getCenterCoords().convertRectIntToSpherical(navpointPixel.getiX() - MapDisplay.HALF_MAP_BOX, 
-				 navpointPixel.getiY() - MapDisplay.HALF_MAP_BOX, mapPane.getMap().getRho());
+		Coordinates navpoint = mapPane.getCoordsOfPoint(getCenterCoords(), navpointPixel);
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.COLLECT_ICE == type) 
 			getWizard().getMissionData().setIceCollectionSite(navpoint);
@@ -160,8 +160,9 @@ class ProspectingSitePanel extends WizardPanel {
 			
 			pixelRange = convertRadiusToMapPixels(getRoverRange());
 			
-			ellipseLayer.setEllipseDetails(new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX), new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX), (pixelRange * 2));
-			IntPoint initialNavpointPos = new IntPoint(MapDisplay.HALF_MAP_BOX, MapDisplay.HALF_MAP_BOX - (pixelRange / 2));
+			var paneCenter = mapPane.getCenterPoint();
+			ellipseLayer.setEllipseDetails(paneCenter, paneCenter, (pixelRange * 2));
+			IntPoint initialNavpointPos = new IntPoint(paneCenter.getiX(), paneCenter.getiY() - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
 			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0.0, pixelRange / 2D, 
 										mapPane.getMap().getRho());
@@ -268,8 +269,7 @@ class ProspectingSitePanel extends WizardPanel {
 				if (withinBounds(displayPos)) {
 					navLayer.setNavpointPosition(0, displayPos);
 					Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-					Coordinates navpoint = center.convertRectIntToSpherical(displayPos.getiX() - MapDisplay.HALF_MAP_BOX, 
-							displayPos.getiY() - MapDisplay.HALF_MAP_BOX, mapPane.getMap().getRho());
+					Coordinates navpoint = mapPane.getCoordsOfPoint(center, displayPos);
 					locationLabel.setText("Location: " + navpoint.getFormattedString());
 				
 					mapPane.repaint();
@@ -289,10 +289,7 @@ class ProspectingSitePanel extends WizardPanel {
 				return false;
 			
 			pixelRange = convertRadiusToMapPixels(getRoverRange());
-			
-            int radius = (int) Math.round(Math.sqrt(Math.pow(MapDisplay.HALF_MAP_BOX - position.getX(), 2D) +
-			        Math.pow(MapDisplay.HALF_MAP_BOX - position.getY(), 2D)));
-            
+            int radius = mapPane.getCenterPoint().getDistance(position);
 			if (radius > pixelRange) 
 				return false;
 			else
