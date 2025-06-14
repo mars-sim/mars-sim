@@ -13,13 +13,13 @@ public enum DishCategory {
     
 	MAIN, SIDE, DESSERT;
 
-    private String label;
+    private String name;
 
     private DishCategory() {
-        this.label = Msg.getStringOptional("DishCategory", name());
+        this.name = Msg.getStringOptional("DishCategory", name());
     }
 
-    public String getLabel() {
-        return label;
+    public String getName() {
+        return name;
     }
 }

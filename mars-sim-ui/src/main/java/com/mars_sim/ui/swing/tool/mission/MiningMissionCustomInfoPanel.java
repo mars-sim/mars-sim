@@ -33,7 +33,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 
 /**
  * A panel for displaying mining mission information.

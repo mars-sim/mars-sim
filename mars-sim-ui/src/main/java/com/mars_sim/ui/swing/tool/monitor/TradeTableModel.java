@@ -301,6 +301,6 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 * @return
 	 */
 	private static String getGoodCategoryName(Good good) {
-		return good.getCategory().getMsgKey();
+		return good.getCategory().getName();
 	}
 }

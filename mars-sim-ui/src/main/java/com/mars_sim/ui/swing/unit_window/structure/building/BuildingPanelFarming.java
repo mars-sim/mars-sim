@@ -52,11 +52,11 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.tool.VerticalLabelUI;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 
@@ -316,7 +316,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(40);
 		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(30);
 		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(15);
-		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageCellRenderer(true));
+		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageTableCellRenderer(true));
 		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(20);
 		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(new NumberCellRenderer());
 		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(30);

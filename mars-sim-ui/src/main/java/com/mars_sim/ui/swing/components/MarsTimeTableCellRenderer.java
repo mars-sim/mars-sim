@@ -4,12 +4,13 @@
  * @date 2023-05-06
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.awt.Component;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.mars_sim.core.time.MarsTime;
@@ -18,13 +19,13 @@ import com.mars_sim.core.time.MarsTime;
  * Simple table cell renderer that styles the values as Mars Clock according to the Stylemanager
  */
 @SuppressWarnings("serial")
-public class MarsTimeCellRenderer extends DefaultTableCellRenderer {
+public class MarsTimeTableCellRenderer extends DefaultTableCellRenderer {
 
     /**
      * Render a MarsTime value
      */
-    public MarsTimeCellRenderer() {
-        setHorizontalAlignment( JLabel.RIGHT );
+    public MarsTimeTableCellRenderer() {
+        setHorizontalAlignment( SwingConstants.RIGHT );
     }
 
     @Override

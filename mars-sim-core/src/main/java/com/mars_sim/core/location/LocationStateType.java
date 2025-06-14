@@ -18,27 +18,17 @@ public enum LocationStateType {
 	// WITHIN_SETTLEMENT_VICINITY can be used by a person or a vehicle
 	// WITHIN_SETTLEMENT_VICINITY is for a vehicle is parked right outside a settlement and not on a mission
 
-	INSIDE_SETTLEMENT				(Msg.getString("LocationStateType.insideSettlement")), //$NON-NLS-1$
-	INSIDE_VEHICLE					(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
-	ON_PERSON_OR_ROBOT				(Msg.getString("LocationStateType.onPersonOrRobot")), //$NON-NLS-1$
-	SETTLEMENT_VICINITY				(Msg.getString("LocationStateType.settlementVicinity")), //$NON-NLS-1$
-	VEHICLE_VICINITY				(Msg.getString("LocationStateType.vehicleVicinity")), //$NON-NLS-1$
-	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")) //$NON-NLS-1$
-	;
+	INSIDE_SETTLEMENT,INSIDE_VEHICLE,ON_PERSON_OR_ROBOT,
+	SETTLEMENT_VICINITY,VEHICLE_VICINITY,MARS_SURFACE;
 
 	private String name;
 
 	/** hidden constructor. */
-	LocationStateType(String name) {
-		this.name = name;
+	LocationStateType() {
+        this.name = Msg.getStringOptional("LocationStateType", name());
 	}
 	
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

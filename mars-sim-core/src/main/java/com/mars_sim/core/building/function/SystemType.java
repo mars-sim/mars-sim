@@ -12,12 +12,7 @@ import com.mars_sim.core.tool.Msg;
 
 public enum SystemType {
 
-	BUILDING		(Msg.getString("SystemType.building")), //$NON-NLS-1$
-    EVA_SUIT        (Msg.getString("SystemType.EVASuit")), //$NON-NLS=1$ 
-	ROBOT			(Msg.getString("SystemType.robot")), //$NON-NLS-1$
-    ROVER			(Msg.getString("SystemType.rover")), //$NON-NLS-1$
-	VEHICLE			(Msg.getString("SystemType.vehicle")), //$NON-NLS-1$
-    ;
+	BUILDING, EVA_SUIT, ROBOT, ROVER, VEHICLE;
 	
 	/**
 	 * Returns a set of all system types.
@@ -32,8 +27,8 @@ public enum SystemType {
 	private String name;
 
 	/** hidden constructor. */
-	private SystemType(String name) {
-		this.name = name;
+	private SystemType() {
+		this.name = Msg.getStringOptional("SystemType", name());
 	}
 
 	public String getName() {

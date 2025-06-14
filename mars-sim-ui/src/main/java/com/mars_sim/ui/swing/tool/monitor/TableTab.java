@@ -30,10 +30,9 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.tool.NumberRenderer;
+import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
-import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
@@ -44,11 +43,11 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 public class TableTab extends MonitorTab {
 
 	// Common shared renderers
-	private static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0, true);
-	private static final NumberCellRenderer DIGIT1_RENDERER = new NumberCellRenderer(1, true);
-	private static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2, true);
-	private static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3, true);
-	private static final MarsTimeCellRenderer TIME_RENDERER = new MarsTimeCellRenderer();
+	private static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0);
+	private static final NumberCellRenderer DIGIT1_RENDERER = new NumberCellRenderer(1);
+	private static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2);
+	private static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3);
+	private static final MarsTimeTableCellRenderer TIME_RENDERER = new MarsTimeTableCellRenderer();
 	private static final NumberCellRenderer CURRENCY_RENDERER = new NumberCellRenderer(2, "$");
 
 	private TableProperties propsWindow;
@@ -96,7 +95,7 @@ public class TableTab extends MonitorTab {
 
 			TableCellRenderer renderer = switch(style) {
 				case ColumnSpec.STYLE_CURRENCY -> CURRENCY_RENDERER;
-				case ColumnSpec.STYLE_INTEGER -> NumberRenderer.getIntegerRenderer();
+				case ColumnSpec.STYLE_INTEGER -> DIGIT0_RENDERER;
 				case ColumnSpec.STYLE_DIGIT1 -> DIGIT1_RENDERER;
 				case ColumnSpec.STYLE_DIGIT2 -> DIGIT2_RENDERER;
 				case ColumnSpec.STYLE_DIGIT3 -> DIGIT3_RENDERER;

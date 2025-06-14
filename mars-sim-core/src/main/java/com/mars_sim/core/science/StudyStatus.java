@@ -21,7 +21,7 @@ public enum StudyStatus {
 
 	/** hidden constructor. */
 	private StudyStatus() {
-        name = Msg.getString("StudyStatus."+ name().toLowerCase());
+        this.name = Msg.getStringOptional("StudyStatus", name());
     }
 
     /**

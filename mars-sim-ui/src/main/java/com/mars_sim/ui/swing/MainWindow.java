@@ -50,9 +50,9 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
+import com.mars_sim.ui.swing.components.JMemoryMeter;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.utils.JMemoryMeter;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the

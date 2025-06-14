@@ -31,7 +31,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 
 /**
  * A tab panel with info about an item's salvage.

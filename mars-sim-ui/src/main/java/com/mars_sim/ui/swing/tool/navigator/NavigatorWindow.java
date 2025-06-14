@@ -25,7 +25,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -56,6 +55,8 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.JCoordinateEditor;
+import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
@@ -70,8 +71,6 @@ import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
-import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
-import com.mars_sim.ui.swing.utils.JCoordinateEditor;
 import com.mars_sim.ui.swing.utils.TreeCheckFactory;
 import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
 
@@ -527,7 +526,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //-NLS-1$
-		settlementComboBox.setRenderer(new EntityListCellRenderer(CHOOSE_SETTLEMENT));
+		settlementComboBox.setRenderer(new NamedListCellRenderer(CHOOSE_SETTLEMENT));
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(e -> {

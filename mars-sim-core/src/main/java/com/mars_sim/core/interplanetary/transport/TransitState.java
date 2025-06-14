@@ -11,16 +11,13 @@ import com.mars_sim.core.tool.Msg;
 
 public enum TransitState {
 
-	PLANNED (Msg.getString("TransitState.planned")), //$NON-NLS-1$
-	IN_TRANSIT (Msg.getString("TransitState.inTransit")), //$NON-NLS-1$
-	ARRIVED (Msg.getString("TransitState.arrived")), //$NON-NLS-1$
-	CANCELED (Msg.getString("TransitState.canceled")); //$NON-NLS-1$
+	PLANNED, IN_TRANSIT, ARRIVED, CANCELED;
 
 	private String name;
 
 	/** hidden constructor. */
-	private TransitState(String name) {
-		this.name = name;
+	private TransitState() {
+		this.name = Msg.getStringOptional("TransitState", name());
 	}
 
 	/** 

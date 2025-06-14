@@ -31,8 +31,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 
 /**
  * The MaintenanceTabPanel is a tab panel for maintenance information.
@@ -152,7 +152,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		columnModel.getColumn(3).setPreferredWidth(30);	
 		
 		// Add percentage format
-		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
+		columnModel.getColumn(3).setCellRenderer(new PercentageTableCellRenderer(false));
 	}
 
 	/**

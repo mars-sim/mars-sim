@@ -7,12 +7,10 @@
 
 package com.mars_sim.core.environment;
 
-import com.mars_sim.core.tool.Msg;
-
 public enum PlanetType {
 
-	EARTH			(Msg.getString("PlanetType.earth.mass"), Msg.getString("PlanetType.earth.radius")), //$NON-NLS-1$
-	MARS			(Msg.getString("PlanetType.mars.mass"), Msg.getString("PlanetType.mars.radius")) //$NON-NLS-1$
+	EARTH			(5.975e+24, 6.378e6),
+	MARS			(6.419e+23, 3.393e6)
 	;
 
 	private final double mass;
@@ -21,9 +19,9 @@ public enum PlanetType {
 	private static final double G = 6.67300E-11; 
 	
 	/** hidden constructor. */
-	private PlanetType(String mass, String radius) {
-		this.mass = Double.parseDouble(mass);
-		this.radius = Double.parseDouble(radius);
+	private PlanetType(double mass, double radius) {
+		this.mass = mass;
+		this.radius = radius;
 		surfaceGravity = G * this.mass / (this.radius * this.radius);
 		
 	}

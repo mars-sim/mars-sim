@@ -45,9 +45,9 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.unit_window.structure.building.food.FoodProductionPanel;
-import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food
@@ -140,7 +140,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		Collections.sort(buildingComboBoxCache);
 		buildingComboBox = new JComboBoxMW<>(buildingComboBoxCache);
 		// AddePromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingComboBox.setRenderer(new EntityListCellRenderer(" (1). Select a Building"));
+		buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingComboBox.addItemListener(event -> update());
@@ -166,16 +166,15 @@ public class TabPanelFoodProduction extends TabPanel {
 						FoodProduction foodFactory = b.getFoodProduction();
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
-							if (selectedItem instanceof FoodProductionProcessInfo) {
-								FoodProductionProcessInfo selectedProcess = (FoodProductionProcessInfo) selectedItem;
-								if (FoodProductionUtil.canProcessBeStarted(selectedProcess, foodFactory)) {
-									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
+							if (selectedItem instanceof FoodProductionProcessInfo sp) {
+								if (FoodProductionUtil.canProcessBeStarted(sp, foodFactory)) {
+									foodFactory.addProcess(new FoodProductionProcess(sp, foodFactory));
 									update();
 									
 									logger.log(b, Level.CONFIG, 0L, "Player starts the '" 
-											+ selectedProcess.getName() + "'.");
+											+ sp.getName() + "'.");
 									
-									buildingComboBox.setRenderer(new EntityListCellRenderer(" (1). Select a Building"));
+									buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setRenderer(
 											new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));

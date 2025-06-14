@@ -11,24 +11,16 @@ import com.mars_sim.core.tool.Msg;
 
 public enum PlanType {
 
-	PREPARING 				("Preparing"),
-	PENDING					(Msg.getString("PlanType.pending")), //$NON-NLS-1$
-	APPROVED				(Msg.getString("PlanType.approved")), //$NON-NLS-1$
-	NOT_APPROVED			(Msg.getString("PlanType.notApproved")); //$NON-NLS-1$
+	PREPARING,PENDING,APPROVED,NOT_APPROVED;
 
 	private String name;
 
 	/** hidden constructor. */
-	private PlanType(String name) {
-		this.name = name;
+	private PlanType() {
+        this.name = Msg.getStringOptional("PlanType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

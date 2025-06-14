@@ -19,7 +19,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 /**

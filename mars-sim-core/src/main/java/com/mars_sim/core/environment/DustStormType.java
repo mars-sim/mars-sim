@@ -21,26 +21,16 @@ public enum DustStormType {
 	// the dust devils observed	by Viking and Pathfinder
 
 	// Order in terms of size
-	LOCAL								(Msg.getString("DustStormType.localStorm")), //$NON-NLS-1$
-	DUST_DEVIL							(Msg.getString("DustStormType.dustDevil")), //$NON-NLS-1$
-	REGIONAL							(Msg.getString("DustStormType.regionalStorm")), //$NON-NLS-1$
-	PLANET_ENCIRCLING					(Msg.getString("DustStormType.planetEncirclingStorm")), //$NON-NLS-1$
-	;
-
+	LOCAL, DUST_DEVIL, REGIONAL, PLANET_ENCIRCLING;
 
 	private String name;
 
 	/** hidden constructor. */
-	private DustStormType(String name) {
-		this.name = name;
+	private DustStormType() {
+        this.name = Msg.getStringOptional("DustStormType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

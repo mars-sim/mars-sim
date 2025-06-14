@@ -17,9 +17,9 @@ public enum HealthProblemState {
     private String name;
 
     private HealthProblemState() {
-        name = Msg.getString("HealthProblemState." + name());
-
+        this.name = Msg.getStringOptional("HealthProblemState", name());
     }
+
     public String getName() {
         return name;
     }

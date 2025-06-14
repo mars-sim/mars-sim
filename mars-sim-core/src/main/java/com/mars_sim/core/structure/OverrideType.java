@@ -20,7 +20,7 @@ public enum OverrideType {
 	private String name;
 
 	private OverrideType() {
-		this.name = Msg.getString("OverrideType." + name().toLowerCase());
+        this.name = Msg.getStringOptional("OverrideType", name());
 	}
 
 	/** gives the internationalized name of this enum for display in user interface. */

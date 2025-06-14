@@ -16,32 +16,22 @@ import com.mars_sim.core.tool.Msg;
 public enum EquipmentType {
 	
 	// non-container
-	EVA_SUIT			(Msg.getString("EquipmentType.EVASuit")), //$NON-NLS-1$ 
+	EVA_SUIT, 
 
 	// Container 
-	BAG 				(Msg.getString("EquipmentType.bag")), //$NON-NLS-1$
-	BARREL 				(Msg.getString("EquipmentType.barrel")), //$NON-NLS-1$
-	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
-	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
-	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")), //$NON-NLS-1$
-	THERMAL_BOTTLE		(Msg.getString("EquipmentType.thermalBottle")), //$NON-NLS-1$
-	WHEELBARROW			(Msg.getString("EquipmentType.wheelbarrow")); //$NON-NLS-1$
+	BAG, BARREL, GAS_CANISTER, LARGE_BAG,SPECIMEN_BOX,
+	THERMAL_BOTTLE, WHEELBARROW;
 	
 	private String name;	
 
 	private static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		
 	/** hidden constructor. */
-	private EquipmentType(String name) {
-		this.name = name;
+	private EquipmentType() {
+		this.name = Msg.getStringOptional("EquipmentType", name());
 	}
 
 	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public String toString() {
 		return this.name;
 	}
 

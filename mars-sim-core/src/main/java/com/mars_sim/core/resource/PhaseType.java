@@ -15,18 +15,15 @@ import com.mars_sim.core.tool.Msg;
  */
 public enum PhaseType {
 
-	GAS (Msg.getString("PhaseType.gas")), //$NON-NLS-1$
-	LIQUID (Msg.getString("PhaseType.liquid")), //$NON-NLS-1$
-	SOLID (Msg.getString("PhaseType.solid")); //$NON-NLS-1$
+	GAS,LIQUID,SOLID;
 
 	private String name;
 
 	/**
 	 * Private constructor.
-	 * @param name the name of the phase.
 	 */
-	private PhaseType(String name) {
-		this.name = name;
+	private PhaseType() {
+        this.name = Msg.getStringOptional("PhaseType", name());
 	}
 
 	/**
@@ -34,11 +31,6 @@ public enum PhaseType {
 	 * @return name
 	 */
 	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String toString() {
 		return name;
 	}
 }

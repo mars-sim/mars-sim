@@ -6,7 +6,8 @@
  */
 package com.mars_sim.core.goods;
 
-import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.food.FoodType;
+import com.mars_sim.core.robot.RobotType;
 
 /**
  * The GoodType enum class is used for distinguishing between various type of goods
@@ -16,14 +17,14 @@ public enum GoodType {
 	// For Amount Resources
 	
 	// food resources
-	ANIMAL				(Msg.getString("FoodType.animal")), //$NON-NLS-1$ 
-	CROP				(Msg.getString("FoodType.crop")), //$NON-NLS-1$ 
-	DERIVED				(Msg.getString("FoodType.derived")), //$NON-NLS-1$
-	INSECT				(Msg.getString("FoodType.insect")), //$NON-NLS-1$ 
-	OIL					(Msg.getString("FoodType.oil")), //$NON-NLS-1$ 
-	ORGANISM			(Msg.getString("FoodType.organism")), //$NON-NLS-1$ 
-	SOY_BASED			(Msg.getString("FoodType.soyBased")), //$NON-NLS-1$ 
-	TISSUE				(Msg.getString("FoodType.tissue")), //$NON-NLS-1$ 
+	ANIMAL				(FoodType.ANIMAL.getName()),
+	CROP				(FoodType.CROP.getName()),
+	DERIVED				(FoodType.DERIVED.getName()),
+	INSECT				(FoodType.INSECT.getName()),
+	OIL					(FoodType.OIL.getName()),
+	ORGANISM			(FoodType.ORGANISM.getName()),
+	SOY_BASED			(FoodType.SOY_BASED.getName()),
+	TISSUE				(FoodType.TISSUE.getName()),
 
 	// non-food resources
 	GEMSTONE	("Gemstone"),
@@ -50,7 +51,7 @@ public enum GoodType {
     VEHICLE			("Vehicle"),
     
 	// For both Amount Resources or Parts
-	CHEMICAL		(Msg.getString("FoodType.chemical")), //$NON-NLS-1$ 
+	CHEMICAL		(FoodType.CHEMICAL.getName()),
     ELEMENT			("Element"),
     UTILITY			("Utility"),
     
@@ -67,13 +68,13 @@ public enum GoodType {
 	VEHICLE_SMALL		("Vehicle Small"),
     
     // For robots
-    CHEFBOT				(Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
-	CONSTRUCTIONBOT		(Msg.getString("RobotType.constructionBot")), //$NON-NLS-1$
-	DELIVERYBOT			(Msg.getString("RobotType.deliveryBot")), //$NON-NLS-1$ )
-	GARDENBOT			(Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
-	MAKERBOT			(Msg.getString("RobotType.makerBot")), //$NON-NLS-1$
-	MEDICBOT			(Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
-	REPAIRBOT			(Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
+    CHEFBOT				(RobotType.CHEFBOT.getName()),
+	CONSTRUCTIONBOT		(RobotType.CONSTRUCTIONBOT.getName()),
+	DELIVERYBOT			(RobotType.DELIVERYBOT.getName()),
+	GARDENBOT			(RobotType.GARDENBOT.getName()),
+	MAKERBOT			(RobotType.MAKERBOT.getName()),
+	MEDICBOT			(RobotType.MEDICBOT.getName()),
+	REPAIRBOT			(RobotType.REPAIRBOT.getName()),
     ;
     
 	private String name;	
@@ -84,11 +85,6 @@ public enum GoodType {
 	}
 
 	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public String toString() {
 		return this.name;
 	}
 }

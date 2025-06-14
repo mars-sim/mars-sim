@@ -11,23 +11,16 @@ import com.mars_sim.core.tool.Msg;
 
 public enum AssignmentType {
 
-	PENDING					(Msg.getString("AssignmentType.pending")), //$NON-NLS-1$
-	APPROVED				(Msg.getString("AssignmentType.approved")), //$NON-NLS-1$
-	NOT_APPROVED			(Msg.getString("AssignmentType.notApproved")); //$NON-NLS-1$
+	PENDING,APPROVED,NOT_APPROVED;
 
 	private String name;
 
 	/** hidden constructor. */
-	private AssignmentType(String name) {
-		this.name = name;
+	private AssignmentType() {
+        this.name = Msg.getStringOptional("AssignmentType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

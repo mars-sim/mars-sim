@@ -20,10 +20,10 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.EntityModel;
-import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 
 /**
  * The TabPanelMaintenance is a tab panel for settlement's building maintenance.
@@ -65,10 +65,10 @@ public class TabPanelMaintenance extends TabPanelTable {
 	protected void setColumnDetails(TableColumnModel tc) {
 		tc.getColumn(0).setPreferredWidth(120);
 		tc.getColumn(1).setPreferredWidth(55);
-		tc.getColumn(1).setCellRenderer(new PercentageCellRenderer(false));
+		tc.getColumn(1).setCellRenderer(new PercentageTableCellRenderer(false));
 		tc.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
 		tc.getColumn(2).setPreferredWidth(65);
-		tc.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
+		tc.getColumn(3).setCellRenderer(new PercentageTableCellRenderer(false));
 		tc.getColumn(3).setPreferredWidth(55);
 	}
 

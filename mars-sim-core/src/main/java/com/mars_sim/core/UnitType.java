@@ -11,24 +11,15 @@ import com.mars_sim.core.tool.Msg;
 
 public enum UnitType {
 
-	OUTER_SPACE		("UnitType.outerSpace"),
-	MARS			("UnitType.mars"),
-	MOON			("UnitType.moon"),
-	SETTLEMENT 		("UnitType.settlement"),
-	PERSON 			("UnitType.person"),
-	VEHICLE 		("UnitType.vehicle"),
-//	EQUIPMENT 		("UnitType.equipment"),
-	CONTAINER		("UnitType.container"),
-	EVA_SUIT 		("UnitType.evasuit"),
-	ROBOT 			("UnitType.robot"),
-	BUILDING 		("UnitType.building"),
-	CONSTRUCTION 	("UnitType.construction");
-
+	OUTER_SPACE,MARS,MOON,SETTLEMENT,PERSON,
+	VEHICLE,CONTAINER,EVA_SUIT,ROBOT,
+	BUILDING,CONSTRUCTION;
+	
 	private String name;
 
 	/** hidden constructor. */
-	private UnitType(String msgKey) {
-		this.name = Msg.getString(msgKey);
+	private UnitType() {
+        this.name = Msg.getStringOptional("UnitType", name());
 	}
 
 	public String getName() {

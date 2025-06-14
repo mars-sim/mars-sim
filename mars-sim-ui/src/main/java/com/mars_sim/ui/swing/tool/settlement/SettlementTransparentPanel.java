@@ -70,8 +70,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
-import com.mars_sim.ui.swing.utils.EntityListCellRenderer;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -432,7 +432,7 @@ public class SettlementTransparentPanel extends JComponent {
 		settlementListBox = new JComboBox<>(settlementCBModel);
 		settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		settlementListBox.setRenderer(new EntityListCellRenderer());
+		settlementListBox.setRenderer(new NamedListCellRenderer());
 		settlementListBox.addItemListener(event -> {
 			Settlement s = (Settlement) event.getItem();
 			if (s != null) {

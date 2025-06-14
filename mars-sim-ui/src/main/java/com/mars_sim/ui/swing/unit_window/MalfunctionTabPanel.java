@@ -31,9 +31,9 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
-import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 
 
 /**
@@ -314,8 +314,8 @@ public class MalfunctionTabPanel extends TabPanel {
         columnModel.getColumn(EVA_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(INSIDE_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(COMPLETED - offset).setPreferredWidth(50);
-        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageCellRenderer.DEFAULT_WIDTH);
-		columnModel.getColumn(COMPLETED - offset).setCellRenderer(new PercentageCellRenderer(true));
+        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageTableCellRenderer.DEFAULT_WIDTH);
+		columnModel.getColumn(COMPLETED - offset).setCellRenderer(new PercentageTableCellRenderer(true));
         center.add(scrollPanel, BorderLayout.CENTER);
 	}
 

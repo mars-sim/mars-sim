@@ -24,7 +24,7 @@ import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.SettlementSupplies;
-import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 
 /**
  * Panel to show the various quantities of a SettlementSupply object in a tabbed set of tables.

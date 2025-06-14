@@ -23,8 +23,8 @@ import javax.swing.table.AbstractTableModel;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 
 /**
  * Class to creates a panel containing a sorted table of ScientificStudy
