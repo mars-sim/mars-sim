@@ -7,9 +7,10 @@
 
 package com.mars_sim.core.person.ai.role;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.tool.Msg;
 
-public enum RoleType {
+public enum RoleType implements Named {
 
 	AGRICULTURE_SPECIALIST				(RoleLevel.SPECIALIST),
 	ENGINEERING_SPECIALIST				(RoleLevel.SPECIALIST),

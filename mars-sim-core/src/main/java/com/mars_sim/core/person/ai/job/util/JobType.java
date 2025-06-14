@@ -11,9 +11,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.tool.Msg;
 
-public enum JobType {
+public enum JobType implements Named{
 
 	ARCHITECT,AREOLOGIST,ASTRONOMER,BIOLOGIST,BOTANIST,
 	CHEF,CHEMIST,COMPUTER_SCIENTIST,DOCTOR,ENGINEER,MATHEMATICIAN,
