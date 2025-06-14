@@ -4,13 +4,14 @@
  * @date 2023-03-01
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.awt.Component;
 import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.mars_sim.ui.swing.StyleManager;
@@ -19,12 +20,12 @@ import com.mars_sim.ui.swing.StyleManager;
  * Simple table cell renderer that styles the values as percentages according to the Stylemanager
  */
 @SuppressWarnings("serial")
-public class PercentageCellRenderer extends DefaultTableCellRenderer {
+public class PercentageTableCellRenderer extends DefaultTableCellRenderer {
 
     /**
      * The default width for a cell using this renderer
      */
-    public static int DEFAULT_WIDTH = 50;
+    public static final int DEFAULT_WIDTH = 50;
 
     private DecimalFormat format;
 
@@ -32,8 +33,8 @@ public class PercentageCellRenderer extends DefaultTableCellRenderer {
      * Render a double as a percentage value.
      * @param showDecimal Show decimal value
      */
-    public PercentageCellRenderer(boolean showDecimal) {
-        setHorizontalAlignment( JLabel.RIGHT );
+    public PercentageTableCellRenderer(boolean showDecimal) {
+        setHorizontalAlignment( SwingConstants.RIGHT );
 
         if (showDecimal) {
             format = StyleManager.DECIMAL2_PERC;

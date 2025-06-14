@@ -45,11 +45,11 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.tool.SpringUtilities;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -547,7 +547,7 @@ extends TabPanel {
 		healthLogTable = new JTable(healthLogTableModel);
 		healthLogTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		healthLogTable.setRowSelectionAllowed(true);
-		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeCellRenderer());
+		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeTableCellRenderer());
 		healthLogScrollPanel.setViewportView(healthLogTable);
 		
 		// Add sorting

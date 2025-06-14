@@ -38,8 +38,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
@@ -218,7 +218,7 @@ public class TabPanelAirComposition extends TabPanel {
 		tableColumnModel.getColumn(6).setPreferredWidth(20);
 
 		// Override default cell renderer for formatting double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);

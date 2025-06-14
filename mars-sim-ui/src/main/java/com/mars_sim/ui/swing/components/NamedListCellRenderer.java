@@ -1,34 +1,34 @@
 /*
  * Mars Simulation Project
- * EntityListCellRenderer.java
- * @date 2025-06-01
+ * NamedListCellRenderer.java
+ * @date 2025-06-14
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.awt.Component;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.Named;
 
 /**
- * This class renderers a Entity instance on a ListCell.
+ * This class renderers a Names instance on a ListCell.
  * 
  * This can also be used in a ComboBox
  */
-public class EntityListCellRenderer extends DefaultListCellRenderer {
+public class NamedListCellRenderer extends DefaultListCellRenderer {
 
 	private String prompt;
-	public EntityListCellRenderer() {
+	public NamedListCellRenderer() {
 	}
 
     /**
      * The prompt will be displayed of the is no values selected.
      * @param prompt
      */
-	public EntityListCellRenderer(String prompt) {
+	public NamedListCellRenderer(String prompt) {
 		this.prompt = prompt;
 	}
 
@@ -40,7 +40,7 @@ public class EntityListCellRenderer extends DefaultListCellRenderer {
 		if ((value == null) && (prompt != null)) {
 			setText(prompt);
 		}
-        else if (value instanceof Entity e) {
+        else if (value instanceof Named e) {
 			setText(e.getName());
         }
 		
