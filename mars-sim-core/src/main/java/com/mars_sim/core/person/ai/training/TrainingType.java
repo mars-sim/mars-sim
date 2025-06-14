@@ -11,34 +11,12 @@ import com.mars_sim.core.tool.Msg;
 
 public enum TrainingType {
 
-	BIOETHICAL							(Msg.getString("TrainingType.bioethical")), //$NON-NLS-1$
-	EXTREME_ENV_OPS						(Msg.getString("TrainingType.extremeEnvOps")), //$NON-NLS-1$
-	NASA_DESERT_RATS					(Msg.getString("TrainingType.NASADesertRATS")), //$NON-NLS-1$
-	SURVIVAL_TRAINING					(Msg.getString("TrainingType.survival")), //$NON-NLS-1$
-	SCUBA_DIVING_MASTER					(Msg.getString("TrainingType.scubaDiving")), //$NON-NLS-1$
-	
-	FLIGHT_SAFETY						(Msg.getString("TrainingType.flightSafety")), //$NON-NLS-1$
-	SEARCH_AND_RESCUE					(Msg.getString("TrainingType.searchAndRescue")), //$NON-NLS-1$
-	MOUNTAINEERING_MASTER				(Msg.getString("TrainingType.mountaineering")), //$NON-NLS-1$
-	AIRBORNE_AND_RANGER_SCHOOL			(Msg.getString("TrainingType.airborneRanger")), //$NON-NLS-1$
-	HAUGHTON_MARS_GEOLOGICAL			(Msg.getString("TrainingType.haughtonMarsGeological")), //$NON-NLS-1$
-	
-	HALO_JUMPMASTER						(Msg.getString("TrainingType.HALOJump")), //$NON-NLS-1$
-	MISHAP_INVESTIGATION				(Msg.getString("TrainingType.mishapInvestigation")), //$NON-NLS-1$
-	MARS_500_C							(Msg.getString("TrainingType.mars500C")), //$NON-NLS-1$
-	MARS_ANALOG_ENVIRONMENT				(Msg.getString("TrainingType.analogEnvironment")), //$NON-NLS-1$
-	UNDERSEA_MISSION					(Msg.getString("TrainingType.underseaMission")), //$NON-NLS-1$
-	
-	MILITARY_DEPLOYMENT				(Msg.getString("TrainingType.militaryDeployment")), //$NON-NLS-1$
-	AVIATION_CERTIFICATION				(Msg.getString("TrainingType.aviationCert")), //$NON-NLS-1$
-	ANTARCTICA_EDEN_ISS					(Msg.getString("TrainingType.antarcticaResearch")), //$NON-NLS-1$
-	MARS_TWO_FINAL_100		 			(Msg.getString("TrainingType.marsTwoFinal100")), //$NON-NLS-1$
-	UNDERGROUND_CAVES_EXPLORATION      	(Msg.getString("TrainingType.undergroundCaves")), //$NON-NLS-1$
-	
-	NASA_CHAPEA      					(Msg.getString("TrainingType.NASACHAPEA")), //$NON-NLS-1$
-	// https://www.marssociety.org/news/2022/07/15/space-nomads-why-mongolians-are-destined-to-go-to-mars/
-	MARS_V_GOBI							(Msg.getString("TrainingType.marsGobi")) //$NON-NLS-1$
-	;
+	BIOETHICAL,EXTREME_ENV_OPS,NASA_DESERT_RATS, SURVIVAL_TRAINING,
+	SCUBA_DIVING_MASTER,FLIGHT_SAFETY,SEARCH_AND_RESCUE,MOUNTAINEERING_MASTER,
+	AIRBORNE_AND_RANGER_SCHOOL,HAUGHTON_MARS_GEOLOGICAL,HALO_JUMPMASTER,
+	MISHAP_INVESTIGATION,MARS_500_C,MARS_ANALOG_ENVIRONMENT,UNDERSEA_MISSION,
+	MILITARY_DEPLOYMENT,AVIATION_CERTIFICATION,ANTARCTICA_EDEN_ISS,MARS_TWO_FINAL_100,
+	UNDERGROUND_CAVES_EXPLORATION,NASA_CHAPEA,MARS_V_GOBI;
 	
 	// References : 
 	// 1. ESA Cooperative Adventure for Valuing and Exercising human behaviour and performance Skills (CAVES) training. 
@@ -66,16 +44,11 @@ public enum TrainingType {
 	private String name;
 
 	/** hidden constructor. */
-	private TrainingType(String name) {
-		this.name = name;
+	private TrainingType() {
+        this.name = Msg.getStringOptional("TrainingType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

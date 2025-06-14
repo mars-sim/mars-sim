@@ -11,25 +11,16 @@ import com.mars_sim.core.tool.Msg;
 
 public enum ComputingLoadType {
 
-	LOW				(Msg.getString("ComputingLoadType.low")), //$NON-NLS-1$
-	MID				(Msg.getString("ComputingLoadType.mid")), //$NON-NLS-1$
-	HIGH			(Msg.getString("ComputingLoadType.high")), //$NON-NLS-1$
-	HEAVY			(Msg.getString("ComputingLoadType.heavy")), //$NON-NLS-1$
-	;
+	LOW, MID, HIGH, HEAVY;
 	
 	private String name;
 
 	/** Hidden constructor. */
-	private ComputingLoadType(String name) {
-		this.name = name;
+	private ComputingLoadType() {
+		this.name = Msg.getStringOptional("ComputingLoadType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

@@ -11,25 +11,16 @@ import com.mars_sim.core.tool.Msg;
 
 public enum CertificationType {
 
-	EVA				(Msg.getString("CertificationType.eva")), //$NON-NLS-1$
-	LAB				(Msg.getString("CertificationType.lab")), //$NON-NLS-1$
-	SAFETY			(Msg.getString("CertificationType.safety")), //$NON-NLS-1$
-	PROSPECTING		(Msg.getString("CertificationType.prospecting")), //$NON-NLS-1$
-	;
+	EVA, LAB, SAFETY, PROSPECTING;
 	
 	private String name;
 
 	/** Hidden Constructor. */
-	private CertificationType(String name) {
-		this.name = name;
+	private CertificationType() {
+        this.name = Msg.getStringOptional("CertificationType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 }

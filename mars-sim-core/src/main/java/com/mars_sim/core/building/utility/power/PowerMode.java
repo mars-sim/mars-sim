@@ -11,15 +11,13 @@ import com.mars_sim.core.tool.Msg;
 
 public enum PowerMode {
 
-	FULL_POWER (Msg.getString("PowerMode.fullPower")), //$NON-NLS-1$
-	LOW_POWER (Msg.getString("PowerMode.lowPower")), //$NON-NLS-1$
-	NO_POWER (Msg.getString("PowerMode.noPower")); //$NON-NLS-1$
+	FULL_POWER, LOW_POWER, NO_POWER;
 
 	private String name;
 
 	/** hidden constructor. */
-	private PowerMode(String name) {
-		this.name = name;
+	private PowerMode() {
+		this.name = Msg.getStringOptional("PowerMode", name());
 	}
 
 	/** gives back an internationalized {@link String} for display in user interface. */

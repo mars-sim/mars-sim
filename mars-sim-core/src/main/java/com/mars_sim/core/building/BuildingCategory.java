@@ -31,7 +31,7 @@ public enum BuildingCategory {
 
 	/** hidden constructor. */
 	private BuildingCategory() {
-		this.name = Msg.getString("BuildingCategory." + name()); //$NON-NLS-1$
+		this.name = Msg.getStringOptional("BuildingCategory", name());
 	}
 
 	/** gives back an internationalized {@link String} for display in user interface. */

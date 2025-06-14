@@ -12,41 +12,41 @@ import com.mars_sim.core.tool.Msg;
 
 public enum FunctionType {
 
-    ADMINISTRATION              (BuildingCategory.COMMAND, Msg.getString("FunctionType.administration")), //$NON-NLS=1$
-	ALGAE_FARMING				(BuildingCategory.FARMING, Msg.getString("FunctionType.algaeFarming")), //$NON-NLS-1$
-    ASTRONOMICAL_OBSERVATION	(BuildingCategory.ASTRONOMY, Msg.getString("FunctionType.astronomicalObservation")), //$NON-NLS-1$
-	CONNECTION					(BuildingCategory.CONNECTION, Msg.getString("FunctionType.connection")), //$NON-NLS-1$
-	COMMUNICATION				(BuildingCategory.COMMUNICATION,Msg.getString("FunctionType.communication")), //$NON-NLS-1$
-	COMPUTATION					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.computation")), //$NON-NLS-1$
-	COOKING						(BuildingCategory.LIVING, Msg.getString("FunctionType.cooking")), //$NON-NLS-1$
-	DINING						(BuildingCategory.LIVING, Msg.getString("FunctionType.dining")), //$NON-NLS-1$
-	EARTH_RETURN				(BuildingCategory.ERV, Msg.getString("FunctionType.earthReturn")), //$NON-NLS-1$
-	EVA							(BuildingCategory.EVA, Msg.getString("FunctionType.eva")), //$NON-NLS-1$
-	EXERCISE					(BuildingCategory.LIVING, Msg.getString("FunctionType.exercise")), //$NON-NLS-1$
-	FARMING						(BuildingCategory.FARMING, Msg.getString("FunctionType.farming")), //$NON-NLS-1$
-	FISHERY						(BuildingCategory.FARMING, Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
-	FOOD_PRODUCTION  			(BuildingCategory.LIVING, Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
-	VEHICLE_MAINTENANCE			(BuildingCategory.VEHICLE, Msg.getString("FunctionType.vehicleMaintenance")), //$NON-NLS-1$
+    ADMINISTRATION              (BuildingCategory.COMMAND), 
+	ALGAE_FARMING				(BuildingCategory.FARMING), 
+    ASTRONOMICAL_OBSERVATION	(BuildingCategory.ASTRONOMY), 
+	CONNECTION					(BuildingCategory.CONNECTION), 
+	COMMUNICATION				(BuildingCategory.COMMUNICATION), 
+	COMPUTATION					(BuildingCategory.LABORATORY), 
+	COOKING						(BuildingCategory.LIVING), 
+	DINING						(BuildingCategory.LIVING), 
+	EARTH_RETURN				(BuildingCategory.ERV), 
+	EVA							(BuildingCategory.EVA), 
+	EXERCISE					(BuildingCategory.LIVING), 
+	FARMING						(BuildingCategory.FARMING), 
+	FISHERY						(BuildingCategory.FARMING), 
+	FOOD_PRODUCTION  			(BuildingCategory.LIVING), 	
+	VEHICLE_MAINTENANCE			(BuildingCategory.VEHICLE), 
 	// Life support is everywhere so has no category on it's own
-	LIFE_SUPPORT				(null, Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
-	LIVING_ACCOMMODATION		(BuildingCategory.LIVING, Msg.getString("FunctionType.livingAccommodation")), //$NON-NLS-1$
-	MANAGEMENT					(BuildingCategory.COMMAND, Msg.getString("FunctionType.management")), //$NON-NLS-1$
-	MANUFACTURE					(BuildingCategory.WORKSHOP, Msg.getString("FunctionType.manufacture")), //$NON-NLS-1$
-	MEDICAL_CARE				(BuildingCategory.MEDICAL, Msg.getString("FunctionType.medicalCare")), //$NON-NLS-1$
-	POWER_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.powerGeneration")), //$NON-NLS-1$
-	POWER_STORAGE				(BuildingCategory.POWER, Msg.getString("FunctionType.powerStorage")), //$NON-NLS-1$
-	RECREATION					(BuildingCategory.LIVING, Msg.getString("FunctionType.recreation")), //$NON-NLS-1$
-	RESEARCH					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.research")), //$NON-NLS-1$
-	RESOURCE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.resourceProcessing")), //$NON-NLS-1$
+	LIFE_SUPPORT				(null), 
+	LIVING_ACCOMMODATION		(BuildingCategory.LIVING), 
+	MANAGEMENT					(BuildingCategory.COMMAND), 
+	MANUFACTURE					(BuildingCategory.WORKSHOP), 
+	MEDICAL_CARE				(BuildingCategory.MEDICAL), 
+	POWER_GENERATION			(BuildingCategory.POWER), 
+	POWER_STORAGE				(BuildingCategory.POWER), 
+	RECREATION					(BuildingCategory.LIVING), 
+	RESEARCH					(BuildingCategory.LABORATORY), 
+	RESOURCE_PROCESSING			(BuildingCategory.PROCESSING), 
 	// Like LifeSupport this is a secondary, supporting Function
-	ROBOTIC_STATION				(null, Msg.getString("FunctionType.roboticStation")), //$NON-NLS-1$
-	STORAGE						(BuildingCategory.STORAGE, Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
-	THERMAL_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
-	WASTE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.wasteProcessing")), //$NON-NLS-1$
+	ROBOTIC_STATION				(null), 
+	STORAGE						(BuildingCategory.STORAGE),  
+	THERMAL_GENERATION			(BuildingCategory.POWER), 
+	WASTE_PROCESSING			(BuildingCategory.PROCESSING), 
 	
 	// Not implemented yet
-	FIELD_STUDY					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
-	UNKNOWN						(BuildingCategory.LIVING, Msg.getString("FunctionType.unknown")) //$NON-NLS-1$
+	FIELD_STUDY					(BuildingCategory.LABORATORY), 
+	UNKNOWN						(BuildingCategory.LIVING) 
 	;
 
 	private String name;
@@ -54,8 +54,8 @@ public enum FunctionType {
 
 
 	/** hidden constructor. */
-	private FunctionType(BuildingCategory category, String name) {
-		this.name = name;
+	private FunctionType(BuildingCategory category) {
+		this.name = Msg.getStringOptional("FunctionType", name());
 		this.category = category;
 	}
 
