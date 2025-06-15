@@ -491,7 +491,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param rho
 	 */
 	private void updateDisplay(double rho) {
-		if (!executor.isTerminated() || !executor.isShutdown() && (marsMap != null)) {
+		if ((!executor.isTerminated() || !executor.isShutdown()) && (marsMap != null)) {
 			executor.execute(new MapTask(rho));
 		}
 	}
@@ -517,7 +517,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					centerCoords = new Coordinates(HALF_PI, 0);
 				}
 				if (rho == 0D) {
-					// Should never happen but it can
+					// Should never happen but it can buy it does on the MissionWindow
+					if (marsMap == null) {
+						return;
+	 				}
 					rho = marsMap.getRhoDefault();
 					logger.warning("RHO requested is zero, default to " + rho);
 				}

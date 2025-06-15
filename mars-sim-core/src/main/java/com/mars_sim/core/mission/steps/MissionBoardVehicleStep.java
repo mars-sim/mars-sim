@@ -4,7 +4,7 @@
  * @date 2023-06-03
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.mission.steps;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +15,9 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.MissionProject;
+import com.mars_sim.core.mission.MissionStep;
+import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -219,7 +222,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 	 * @param addOptionals Any optional spares
      */
     @Override
-    void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
+    protected void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
 		MissionVehicleProject mvp = (MissionVehicleProject) getMission();
 		
 		// Get the estimated duration

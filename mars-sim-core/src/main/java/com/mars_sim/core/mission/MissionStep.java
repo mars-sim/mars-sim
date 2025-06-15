@@ -69,7 +69,7 @@ public abstract class MissionStep extends ProjectStep {
      * @param includeOptionals
      * @param resources
      */
-    void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {}
+    protected void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {}
 
     /**
      * Calculate and add life support resources to the manifest for the crew

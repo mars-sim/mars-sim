@@ -53,7 +53,7 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
          * @return
          */
         @Override
-        void getRequiredResources(SuppliesManifest manifest, boolean optionl) {
+        protected void getRequiredResources(SuppliesManifest manifest, boolean optionl) {
             manifest.addAmount(ResourceUtil.OXYGEN_ID, oxygen, true);
             manifest.addAmount(ResourceUtil.FOOD_ID, food, true);
         }

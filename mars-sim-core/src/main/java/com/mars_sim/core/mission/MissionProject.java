@@ -17,6 +17,7 @@ import java.util.Set;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionListener;
@@ -123,7 +124,7 @@ public abstract class MissionProject implements Mission {
         abortMission(new MissionStatus(MISSION_ABORT, reason));
     }
 
-    protected void abortMission(MissionStatus reason) {
+    public void abortMission(MissionStatus reason) {
         if (!control.isFinished()) {
             logger.warning(leader, "Mission aborted : " + reason.getName());
 

@@ -11,6 +11,10 @@ import java.util.Collection;
 import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.steps.MissionBoardVehicleStep;
+import com.mars_sim.core.mission.steps.MissionDisembarkStep;
+import com.mars_sim.core.mission.steps.MissionLoadVehicleStep;
+import com.mars_sim.core.mission.steps.MissionTravelStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
