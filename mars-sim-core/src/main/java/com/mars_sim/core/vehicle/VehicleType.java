@@ -12,20 +12,15 @@ import com.mars_sim.core.tool.Msg;
 
 public enum VehicleType {
 		
-	LUV					(Msg.getString("VehicleType.luv")), //$NON-NLS-1$
-	DELIVERY_DRONE		(Msg.getString("VehicleType.drone.delivery")), //$NON-NLS-1$
-	CARGO_DRONE			(Msg.getString("VehicleType.drone.cargo")), //$NON-NLS-1$
-	EXPLORER_ROVER 		(Msg.getString("VehicleType.rover.explorer")), //$NON-NLS-1$ 
-	TRANSPORT_ROVER		(Msg.getString("VehicleType.rover.transport")), //$NON-NLS-1$ 
-	CARGO_ROVER			(Msg.getString("VehicleType.rover.cargo")); //$NON-NLS-1$
+	LUV,DELIVERY_DRONE,CARGO_DRONE,EXPLORER_ROVER,TRANSPORT_ROVER,CARGO_ROVER;
 	
 	// Note: these vehicle types are also used in message.properties 
 	// they must also match those in vehicles.xml.
 	
 	private String name;
 
-	private VehicleType(String name) {
-		this.name = name;
+	private VehicleType() {
+        this.name = Msg.getStringOptional("VehicleType", name());
 	}
 
 	public String getName() {

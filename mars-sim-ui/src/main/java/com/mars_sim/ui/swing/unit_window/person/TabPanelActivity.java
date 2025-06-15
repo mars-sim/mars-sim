@@ -41,8 +41,8 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
@@ -68,6 +68,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private static final String EXTRA = "...";
 	
 	private static final String HTML = "<html>";
+	private static final String END_HTML = "</html>";
 
 	/** data cache */
 	private String missionTextCache = "";
@@ -85,7 +86,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private Worker worker;
 
 	private JTextArea taskStack;
-//	private JTextArea missionStack;
 	
 	private TaskCacheModel taskCacheModel;
 	private MissionCacheModel missionCacheModel;
@@ -170,10 +170,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		missionTextArea = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionDesc"), ""); //$NON-NLS-1$
 		missionPhaseTextArea = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionPhase"), ""); //$NON-NLS-1$
 		missionScoreTextArea = missionAttributePanel.addRow("Best Score", "");
-		
-//		missionStack = new JTextArea(3, 30);
-//		missionStack.setToolTipText("Show the description and phase of a mission and its submission(s)");
-//		missionSubPanel.add(missionStack, BorderLayout.CENTER);
 
 		missionCacheModel = new MissionCacheModel();
 		JPanel missionCachePanel = new JPanel(new BorderLayout(1, 3));
@@ -186,7 +182,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
             }
 		};
 		missionCacheTable.setDefaultRenderer(Double.class,
-						new NumberCellRenderer(2, true));
+						new NumberCellRenderer(2));
 		missionCacheTable.setPreferredScrollableViewportSize(new Dimension(225, 80));
 		missionCacheTable.getColumnModel().getColumn(0).setPreferredWidth(170);
 		missionCacheTable.getColumnModel().getColumn(1).setPreferredWidth(20);
@@ -234,7 +230,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
             }
 		};
 		taskCacheTable.setDefaultRenderer(Double.class,
-						new NumberCellRenderer(2, true));
+						new NumberCellRenderer(2));
 		taskCacheTable.setPreferredScrollableViewportSize(new Dimension(225, 120));
 		taskCacheTable.getColumnModel().getColumn(0).setPreferredWidth(170);
 		taskCacheTable.getColumnModel().getColumn(1).setPreferredWidth(20);
@@ -261,7 +257,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		TaskManager taskManager = worker.getTaskManager();
 		MissionRating selected = null;
 		
-		/////////////// Update mission /////////////////////
 		if (worker instanceof Person) {
 			selected = ((PersonTaskManager)taskManager).getSelectedMission();
 			
@@ -294,9 +289,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		// Update mission and monitor buttons.
 		missionButton.setEnabled(mission != null);
 		monitorButton.setEnabled(mission != null);
-		
-		/////////////// Update tasks /////////////////////
-		
+
 		boolean addLine = false;
 		StringBuilder prefix = new StringBuilder();
 		StringBuilder newTaskText = new StringBuilder();
@@ -336,7 +329,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		RatingScore score = taskManager.getScore();
 		if (score != null) {
 			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
-			scoreTooltip = HTML + RatingScoreRenderer.getHTMLFragment(score) + "</html>";
+			scoreTooltip = HTML + RatingScoreRenderer.getHTMLFragment(score) + END_HTML;
 
 		}
 
@@ -405,7 +398,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		public String getToolTipAt(int rowIndex, int colIndex) {
 			if ((colIndex == 1) && (rowIndex < missions.size())) {
 				var t = missions.get(rowIndex);
-				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
+				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + END_HTML;
 
 			}
 			return null;
@@ -477,7 +470,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		public String getToolTipAt(int rowIndex, int colIndex) {
 			if ((colIndex == 1) && (rowIndex < tasks.size())) {
 				var t = tasks.get(rowIndex);
-				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
+				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + END_HTML;
 
 			}
 			return null;

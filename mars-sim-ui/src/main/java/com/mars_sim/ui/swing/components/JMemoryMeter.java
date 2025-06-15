@@ -4,7 +4,7 @@
  * @date 2023-05-14
  * @author Barry EVans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.awt.event.MouseEvent;
 

@@ -13,10 +13,8 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
@@ -47,6 +45,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.structure.ChainOfCommand;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -78,55 +77,9 @@ public class TabPanelOrganization extends TabPanel {
 
 	private DefaultTreeModel defaultTreeModel;
 
-	private DefaultMutableTreeNode crewNode;
-	private DefaultMutableTreeNode crewEngineerNode;
-	private DefaultMutableTreeNode crewScientistNode;
-	private DefaultMutableTreeNode crewOperationOfficerNode;
-	private DefaultMutableTreeNode crewHealthNSafetyOfficerNode;
-	
-	private DefaultMutableTreeNode commanderStaffNode;
-	private DefaultMutableTreeNode commanderNode;
-	private DefaultMutableTreeNode subCommanderNode;
-	private DefaultMutableTreeNode mayorNode;
-	private DefaultMutableTreeNode presidentNode;
-	
-	private DefaultMutableTreeNode divisionNode;
-	
-	private DefaultMutableTreeNode agricultureNode;
-	private DefaultMutableTreeNode agricultureSpecialistNode;
-	private DefaultMutableTreeNode agricultureChiefNode;
-
-	private DefaultMutableTreeNode computingNode;
-	private DefaultMutableTreeNode computingSpecialistNode;
-	private DefaultMutableTreeNode computingChiefNode;
-
-	private DefaultMutableTreeNode engineeringNode;
-	private DefaultMutableTreeNode engineeringSpecialistNode;
-	private DefaultMutableTreeNode engineeringChiefNode;
-
-	private DefaultMutableTreeNode logisticNode;
-	private DefaultMutableTreeNode logisticSpecialistNode;
-	private DefaultMutableTreeNode logisticChiefNode;
-
-	private DefaultMutableTreeNode missionNode;
-	private DefaultMutableTreeNode missionSpecialistNode;
-	private DefaultMutableTreeNode missionChiefNode;
-
-	private DefaultMutableTreeNode safetyNode;
-	private DefaultMutableTreeNode safetySpecialistNode;
-	private DefaultMutableTreeNode safetyChiefNode;
-
-	private DefaultMutableTreeNode scienceNode;
-	private DefaultMutableTreeNode scienceSpecialistNode;
-	private DefaultMutableTreeNode scienceChiefNode;
-	
-	private DefaultMutableTreeNode supplyNode;
-	private DefaultMutableTreeNode supplySpecialistNode;
-	private DefaultMutableTreeNode supplyChiefNode;
-
 	private Map<Person, RoleType> roles = new HashMap<>();
 
-	private List<DefaultMutableTreeNode> nodes = new ArrayList<>();
+	private Map<RoleType,DefaultMutableTreeNode> roleNodes = new HashMap<>();
 
 	private Map<Person, PersonListener> listeners  = new HashMap<>();
 
@@ -184,8 +137,6 @@ public class TabPanelOrganization extends TabPanel {
 		scrollPane.setViewportView(tree);
 		content.add(scrollPane, BorderLayout.CENTER);
 		
-		buildTreeNodes();
-
 		initNodes();
 	}
 
@@ -197,9 +148,7 @@ public class TabPanelOrganization extends TabPanel {
 	public void valueChanged(TreeSelectionEvent e) {
 		
 		emptyNodes();
-		
-		buildTreeNodes();
-		
+				
 		initNodes();
 	}
 
@@ -215,232 +164,102 @@ public class TabPanelOrganization extends TabPanel {
 			tree.expandRow(i);
 	}
 
-	public void buildTreeNodes() {
+	private DefaultMutableTreeNode getRoleNode(RoleType roleType) {
+		return roleNodes.computeIfAbsent(roleType, rt -> new DefaultMutableTreeNode(rt.getName()));
+	}
+
+	private void constructNodes() {
 		int population = settlement.getNumCitizens();
 		
 		if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-
-			commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
-			crewNode = new DefaultMutableTreeNode("Crew");
-			
-			crewEngineerNode = new DefaultMutableTreeNode(
-					RoleType.CREW_ENGINEER.toString());
-			crewScientistNode = new DefaultMutableTreeNode(
-					RoleType.CREW_SCIENTIST.toString());
-			crewHealthNSafetyOfficerNode = new DefaultMutableTreeNode(
-					RoleType.CREW_HEALTH_N_SAFETY_OFFICER.toString());
-			crewOperationOfficerNode = new DefaultMutableTreeNode(
-					RoleType.CREW_OPERATION_OFFICER.toString());
-			
-			nodes.add(commanderNode);	
-			nodes.add(crewNode);	
-				
-			crewNode.add(crewEngineerNode);
-			crewNode.add(crewScientistNode);
-			crewNode.add(crewOperationOfficerNode);
-			crewNode.add(crewHealthNSafetyOfficerNode);
-		}
-		
-		else {
-			
-			commanderStaffNode = new DefaultMutableTreeNode("(A). Command Staff");
-			commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
-			subCommanderNode = new DefaultMutableTreeNode(RoleType.SUB_COMMANDER.toString());
-	
-			nodes.add(commanderStaffNode);
-			nodes.add(commanderNode);
-			nodes.add(subCommanderNode);
-	
-			divisionNode = new DefaultMutableTreeNode("(B). Division");
-			mayorNode = new DefaultMutableTreeNode(RoleType.MAYOR.toString());
-			presidentNode = new DefaultMutableTreeNode(RoleType.PRESIDENT.toString());
-			
-			nodes.add(divisionNode);
-			nodes.add(mayorNode);
-			nodes.add(presidentNode);
-			
-			agricultureNode = new DefaultMutableTreeNode("(1). Agriculture");
-			agricultureSpecialistNode = new DefaultMutableTreeNode(
-					RoleType.AGRICULTURE_SPECIALIST.toString());
-			agricultureChiefNode = new DefaultMutableTreeNode(
-					RoleType.CHIEF_OF_AGRICULTURE.toString());
-	
-			nodes.add(agricultureNode);
-			nodes.add(agricultureSpecialistNode);
-			nodes.add(agricultureChiefNode);
-	
-			computingNode = new DefaultMutableTreeNode("(2). Computing");
-			computingSpecialistNode = new DefaultMutableTreeNode(
-					RoleType.COMPUTING_SPECIALIST.toString());
-			computingChiefNode = new DefaultMutableTreeNode(
-					RoleType.CHIEF_OF_COMPUTING.toString());
-	
-			nodes.add(computingNode);
-			nodes.add(computingSpecialistNode);
-			nodes.add(computingChiefNode);
-	
-			engineeringNode = new DefaultMutableTreeNode("(3). Engineering");
-			engineeringSpecialistNode = new DefaultMutableTreeNode(
-					RoleType.ENGINEERING_SPECIALIST.toString());
-			engineeringChiefNode = new DefaultMutableTreeNode(
-					RoleType.CHIEF_OF_ENGINEERING.toString());
-	
-			nodes.add(engineeringNode);
-			nodes.add(engineeringSpecialistNode);
-			nodes.add(engineeringChiefNode);
-	
-			logisticNode = new DefaultMutableTreeNode("(4). Logistic");
-			logisticSpecialistNode = new DefaultMutableTreeNode(
-					RoleType.LOGISTIC_SPECIALIST.toString());
-			logisticChiefNode = new DefaultMutableTreeNode(
-					RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS.toString());
-	
-			nodes.add(logisticNode);
-			nodes.add(logisticSpecialistNode);
-			nodes.add(logisticChiefNode);
-	
-			missionNode = new DefaultMutableTreeNode("(5). Mission");
-			missionSpecialistNode = new DefaultMutableTreeNode(
-					RoleType.MISSION_SPECIALIST.toString());
-			missionChiefNode = new DefaultMutableTreeNode(
-					RoleType.CHIEF_OF_MISSION_PLANNING.toString());
-	
-			nodes.add(missionNode);
-			nodes.add(missionSpecialistNode);
-			nodes.add(missionChiefNode);
-	
-			safetyNode = new DefaultMutableTreeNode("(6). Safety");
-			safetySpecialistNode = new DefaultMutableTreeNode(RoleType.SAFETY_SPECIALIST.toString());
-			safetyChiefNode = new DefaultMutableTreeNode(
-					RoleType.CHIEF_OF_SAFETY_N_HEALTH.toString());
-	
-			nodes.add(safetyNode);
-			nodes.add(safetySpecialistNode);
-			nodes.add(safetyChiefNode);
-	
-			scienceNode = new DefaultMutableTreeNode("(7). Science");
-			scienceSpecialistNode = new DefaultMutableTreeNode(
-					RoleType.SCIENCE_SPECIALIST.toString());
-			scienceChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SCIENCE);
-	
-			nodes.add(scienceNode);
-			nodes.add(scienceSpecialistNode);
-			nodes.add(scienceChiefNode);
-	
-			supplyNode = new DefaultMutableTreeNode("(8). Supply");
-			supplySpecialistNode = new DefaultMutableTreeNode(
-					RoleType.RESOURCE_SPECIALIST.toString());
-			supplyChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
-	
-			nodes.add(supplyNode);
-			nodes.add(supplySpecialistNode);
-			nodes.add(supplyChiefNode);
-		}
-	}
-
-	public void deleteAllNodes() {
-		nodes.clear();
-		root.removeAllChildren();
-	}
-
-	public void constructNodes() {
-		int population = settlement.getNumCitizens();
-		
-		if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-			root.add(commanderNode);
+			root.add(getRoleNode(RoleType.COMMANDER));
+			var crewNode = new DefaultMutableTreeNode("Crew");
+			for(var c : RoleUtil.getCrewRoles()) {
+				crewNode.add(getRoleNode(c));
+			}
 			root.add(crewNode);
+
 			return;
 		}
 		
-		if (population >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
-
-			divisionNode.add(agricultureNode);
-			agricultureNode.add(agricultureChiefNode);
-			agricultureNode.add(agricultureSpecialistNode);
-
-			divisionNode.add(computingNode);
-			computingNode.add(computingChiefNode);
-			computingNode.add(computingSpecialistNode);
-
-			divisionNode.add(engineeringNode);
-			engineeringNode.add(engineeringChiefNode);
-			engineeringNode.add(engineeringSpecialistNode);
-
-			divisionNode.add(logisticNode);
-			logisticNode.add(logisticChiefNode);
-			logisticNode.add(logisticSpecialistNode);
-
-			divisionNode.add(missionNode);
-			missionNode.add(missionChiefNode);
-			missionNode.add(missionSpecialistNode);
-
-			divisionNode.add(safetyNode);
-			safetyNode.add(safetyChiefNode);
-			safetyNode.add(safetySpecialistNode);
-
-			divisionNode.add(scienceNode);
-			scienceNode.add(scienceChiefNode);
-			scienceNode.add(scienceSpecialistNode);
-
-			divisionNode.add(supplyNode);
-			supplyNode.add(supplyChiefNode);
-			supplyNode.add(supplySpecialistNode);
-
-		}
-
-		else {
-
-			divisionNode.add(agricultureNode);
-			agricultureNode.add(agricultureSpecialistNode);
-
-			divisionNode.add(computingNode);
-			computingNode.add(computingSpecialistNode);
-
-			divisionNode.add(engineeringNode);
-			engineeringNode.add(engineeringSpecialistNode);
-
-			divisionNode.add(logisticNode);
-			logisticNode.add(logisticSpecialistNode);
-
-			divisionNode.add(missionNode);
-			missionNode.add(missionSpecialistNode);
-
-			divisionNode.add(safetyNode);
-			safetyNode.add(safetySpecialistNode);
-
-			divisionNode.add(scienceNode);
-			scienceNode.add(scienceSpecialistNode);
-
-			divisionNode.add(supplyNode);
-			supplyNode.add(supplySpecialistNode);
-		}
-
-
-		if (population >= ChainOfCommand.POPULATION_WITH_PRESIDENT) {
-			root.add(commanderStaffNode);
-			commanderStaffNode.add(presidentNode);
-			commanderStaffNode.add(mayorNode);
-		}
-		
-		else if (population >= ChainOfCommand.POPULATION_WITH_MAYOR) {
-			root.add(commanderStaffNode);
-			commanderStaffNode.add(mayorNode);
-		}
-
-		else if (population >= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
-			root.add(commanderStaffNode);
-			commanderStaffNode.add(commanderNode);
-			commanderStaffNode.add(subCommanderNode);
-		}
-
-		else if (population > ChainOfCommand.POPULATION_WITH_COMMANDER) {
-			root.add(commanderStaffNode);
-			commanderStaffNode.add(commanderNode);
-		}
-
-		root.add(divisionNode);
+		root.add(buildCommandNode(population));
+		root.add(buildDivisionNode(population));
 	}
 
+	private DefaultMutableTreeNode buildCommandNode(int pop) {
+		var commanderStaffNode = new DefaultMutableTreeNode("(A). Command Staff");
+	
+		if (pop >= ChainOfCommand.POPULATION_WITH_PRESIDENT) {
+			commanderStaffNode.add(getRoleNode(RoleType.PRESIDENT));
+			commanderStaffNode.add(getRoleNode(RoleType.MAYOR));
+		}
+		
+		else if (pop >= ChainOfCommand.POPULATION_WITH_MAYOR) {
+			commanderStaffNode.add(getRoleNode(RoleType.MAYOR));
+		}
+
+		else if (pop >= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
+			commanderStaffNode.add(getRoleNode(RoleType.COMMANDER));
+			commanderStaffNode.add(getRoleNode(RoleType.SUB_COMMANDER));
+		}
+
+		else if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
+			commanderStaffNode.add(getRoleNode(RoleType.COMMANDER));
+		}
+		return commanderStaffNode;
+	}
+
+	private DefaultMutableTreeNode buildDivisionNode(int pop) {
+		var divisionNode = new DefaultMutableTreeNode("(B). Division");
+
+		var agricultureNode = new DefaultMutableTreeNode("(1). Agriculture");
+		divisionNode.add(agricultureNode);
+
+		var computingNode = new DefaultMutableTreeNode("(2). Computing");
+		divisionNode.add(computingNode);
+
+		var engineeringNode = new DefaultMutableTreeNode("(3). Engineering");
+		divisionNode.add(engineeringNode);
+
+		var logisticNode = new DefaultMutableTreeNode("(4). Logistic");
+		divisionNode.add(logisticNode);
+
+		var missionNode = new DefaultMutableTreeNode("(5). Mission");
+		divisionNode.add(missionNode);
+
+		var	safetyNode = new DefaultMutableTreeNode("(6). Safety");
+		divisionNode.add(safetyNode);
+
+		var scienceNode = new DefaultMutableTreeNode("(7). Science");
+		divisionNode.add(scienceNode);
+
+		var supplyNode = new DefaultMutableTreeNode("(8). Supply");
+		divisionNode.add(supplyNode);
+
+		
+		// Chiefs appear first
+		if (pop >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
+			agricultureNode.add(getRoleNode(RoleType.CHIEF_OF_AGRICULTURE));
+			computingNode.add(getRoleNode(RoleType.CHIEF_OF_COMPUTING));
+			engineeringNode.add(getRoleNode(RoleType.CHIEF_OF_ENGINEERING));
+			logisticNode.add(getRoleNode(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS));
+			missionNode.add(getRoleNode(RoleType.CHIEF_OF_MISSION_PLANNING));
+			safetyNode.add(getRoleNode(RoleType.CHIEF_OF_SAFETY_N_HEALTH));
+			scienceNode.add(getRoleNode(RoleType.CHIEF_OF_SCIENCE));
+			supplyNode.add(getRoleNode(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES));
+		}
+
+		agricultureNode.add(getRoleNode(RoleType.AGRICULTURE_SPECIALIST));
+		computingNode.add(getRoleNode(RoleType.COMPUTING_SPECIALIST));
+		engineeringNode.add(getRoleNode(RoleType.ENGINEERING_SPECIALIST));
+		logisticNode.add(getRoleNode(RoleType.LOGISTIC_SPECIALIST));
+		missionNode.add(getRoleNode(RoleType.MISSION_SPECIALIST));
+		safetyNode.add(getRoleNode(RoleType.SAFETY_SPECIALIST));
+		scienceNode.add(getRoleNode(RoleType.SCIENCE_SPECIALIST));
+		supplyNode.add(getRoleNode(RoleType.RESOURCE_SPECIALIST));
+		
+		return divisionNode;
+	}
 
 	public void considerRoles() {
 
@@ -457,82 +276,22 @@ public class TabPanelOrganization extends TabPanel {
 			RoleType rt = p.getRole().getType();
 
 			roles.put(p, rt);
-
-			if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-				if (rt == RoleType.COMMANDER) {
-					commanderNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.CREW_ENGINEER) {
-					crewEngineerNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.CREW_HEALTH_N_SAFETY_OFFICER) {
-					crewHealthNSafetyOfficerNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.CREW_OPERATION_OFFICER) {
-					crewOperationOfficerNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.CREW_SCIENTIST) {
-					crewScientistNode.add(new DefaultMutableTreeNode(p));	
-				}
-			}
 			
-			else {
-				if (rt == RoleType.COMMANDER) {
-					commanderNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.SUB_COMMANDER) {
-					subCommanderNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.MAYOR) {
-					mayorNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.PRESIDENT) {
-					presidentNode.add(new DefaultMutableTreeNode(p));
-					
-				} else if (rt == RoleType.CHIEF_OF_AGRICULTURE) {
-					agricultureChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.AGRICULTURE_SPECIALIST) {
-					agricultureSpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_COMPUTING) {
-					computingChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.COMPUTING_SPECIALIST) {
-					computingSpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_ENGINEERING) {
-					engineeringChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.ENGINEERING_SPECIALIST) {
-					engineeringSpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
-					logisticChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.LOGISTIC_SPECIALIST) {
-					logisticSpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_MISSION_PLANNING) {
-					missionChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.MISSION_SPECIALIST) {
-					missionSpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
-					safetyChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.SAFETY_SPECIALIST) {
-					safetySpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_SCIENCE) {
-					scienceChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.SCIENCE_SPECIALIST) {
-					scienceSpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else if (rt == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-					supplyChiefNode.add(new DefaultMutableTreeNode(p));
-				} else if (rt == RoleType.RESOURCE_SPECIALIST) {
-					supplySpecialistNode.add(new DefaultMutableTreeNode(p));
-
-				} else {
-					// anyone who does not belong will be placed in the root node
-					DefaultMutableTreeNode node = new DefaultMutableTreeNode(p);
-					root.add(node);
-				}
+			DefaultMutableTreeNode node = new DefaultMutableTreeNode(p);
+			if (rt != null) {
+				var roleNode = getRoleNode(rt);
+				roleNode.add(new DefaultMutableTreeNode(p));
+			}
+ 			else {
+				// anyone who does not belong will be placed in the root node
+				root.add(node);
 			}
 		}
 	}
 
 	public void setupMouseOnNodes() {
 		MouseListener ml = new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
@@ -542,11 +301,8 @@ public class TabPanelOrganization extends TabPanel {
 
 						// Check for node to avoid java.lang.ClassCastException:
 						// java.lang.String cannot be cast to com.mars_sim.core.person.Person
-						if (node.getUserObject() instanceof Person) {
-							Person person = (Person) node.getUserObject();
-							if (person != null) {
-								getDesktop().showDetails(person);
-							}
+						if (node.getUserObject() instanceof Person person) {
+							getDesktop().showDetails(person);
 						}
 					}
 				}
@@ -568,7 +324,6 @@ public class TabPanelOrganization extends TabPanel {
 			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
 					boolean isLeaf, int row, boolean focused) {
 				Component c = super.getTreeCellRendererComponent(tree, value, selected, expanded, isLeaf, row, focused);
-				// if (selected)
 				if (isLeaf)
 					// this node is a person
 					setIcon(personIcon);
@@ -578,7 +333,6 @@ public class TabPanelOrganization extends TabPanel {
 				else
 					// this node is just a role
 					setIcon(roleIcon);
-				// TODO: how to detect a brand node that is empty ?
 				return c;
 			}
 		});
@@ -603,16 +357,16 @@ public class TabPanelOrganization extends TabPanel {
 		for (int i = 0; i < tree.getRowCount(); i++)
 			tree.collapseRow(i);
 
-		deleteAllNodes();
+		root.removeAllChildren();
+		roleNodes.clear();
 	}
 
 	/**
 	 * Removes the listener for a person.
 	 */
 	public void removeListener(Person p) {
-//		for (Person p : listeners.keySet()) {
-			p.removeUnitListener(listeners.get(p));
-//		}
+		p.removeUnitListener(listeners.get(p));
+
 		listeners.remove(p);
 	}
 
@@ -641,7 +395,6 @@ public class TabPanelOrganization extends TabPanel {
 					Person p = (Person) unit;
 					if (p.getAssociatedSettlement() == settlement) {
 						emptyNodes();
-						buildTreeNodes();
 						initNodes();
 						reloadTree();
 					}
@@ -665,19 +418,15 @@ public class TabPanelOrganization extends TabPanel {
 			UnitManagerEventType eventType = event.getEventType();
 			if (unit.getUnitType() == UnitType.PERSON) {
 				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					// TODO: should only add/remove the affected person's listener and node
 					addListener((Person) unit);
 					emptyNodes();
-					buildTreeNodes();
 					initNodes();
 					reloadTree();
 				}
 
 				else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-					// TODO: should only add/remove the affected person's listener and node
 					removeListener((Person) unit);
 					emptyNodes();
-					buildTreeNodes();
 					initNodes();
 					reloadTree();
 				}

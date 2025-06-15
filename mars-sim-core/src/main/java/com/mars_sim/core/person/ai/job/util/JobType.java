@@ -11,33 +11,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.tool.Msg;
 
-public enum JobType {
+public enum JobType implements Named{
 
-	ARCHITECT			(Msg.getString("JobType.Architect")), //$NON-NLS-1$
-	AREOLOGIST			(Msg.getString("JobType.Areologist")), //$NON-NLS-1$
-	ASTRONOMER			(Msg.getString("JobType.Astronomer")), //$NON-NLS-1$
-	BIOLOGIST			(Msg.getString("JobType.Biologist")), //$NON-NLS-1$
-	BOTANIST			(Msg.getString("JobType.Botanist")), //$NON-NLS-1$t
-
-	CHEF				(Msg.getString("JobType.Chef")), //$NON-NLS-1$
-	CHEMIST				(Msg.getString("JobType.Chemist")), //$NON-NLS-1$
-	COMPUTER_SCIENTIST  (Msg.getString("JobType.ComputerScientist")),  //$NON-NLS-1$
-	DOCTOR				(Msg.getString("JobType.Doctor")), //$NON-NLS-1$
-	ENGINEER			(Msg.getString("JobType.Engineer")), //$NON-NLS-1$
-
-	MATHEMATICIAN		(Msg.getString("JobType.Mathematician")), //$NON-NLS-1$
-	METEOROLOGIST		(Msg.getString("JobType.Meteorologist")), //$NON-NLS-1$
-	PHYSICIST			(Msg.getString("JobType.Physicist")), //$NON-NLS-1$
-	PILOT				(Msg.getString("JobType.Pilot")), //$NON-NLS-1$
-	POLITICIAN			(Msg.getString("JobType.Politician")), //$NON-NLS-1$
-
-	PSYCHOLOGIST		(Msg.getString("JobType.Psychologist")), //$NON-NLS-1$
-	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
-	TECHNICIAN			(Msg.getString("JobType.Technician")), //$NON-NLS-1$
-	TRADER				(Msg.getString("JobType.Trader")), //$NON-NLS-1$
-	;
+	ARCHITECT,AREOLOGIST,ASTRONOMER,BIOLOGIST,BOTANIST,
+	CHEF,CHEMIST,COMPUTER_SCIENTIST,DOCTOR,ENGINEER,MATHEMATICIAN,
+	METEOROLOGIST,PHYSICIST,PILOT,POLITICIAN,PSYCHOLOGIST,
+	REPORTER,TECHNICIAN,TRADER;
 
 	// Interals allows to be built is static initiaiser method
 	private static final Set<JobType> INTERNAL_ACA = new HashSet<>();
@@ -102,17 +84,12 @@ public enum JobType {
 	private String name;
 
 	/** hidden constructor. */
-	private JobType(String name) {
-		this.name = name;
+	private JobType() {
+        this.name = Msg.getStringOptional("JobType", name());
 	}
 
 	public final String getName() {
 		return this.name;
-	}
-
-	@Override
-	public final String toString() {
-		return getName();
 	}
 
 	public static JobType getJobTypeByName(String name) {

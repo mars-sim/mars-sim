@@ -7,9 +7,10 @@
 
 package com.mars_sim.core.person.ai.role;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.tool.Msg;
 
-public enum RoleType {
+public enum RoleType implements Named {
 
 	AGRICULTURE_SPECIALIST				(RoleLevel.SPECIALIST),
 	ENGINEERING_SPECIALIST				(RoleLevel.SPECIALIST),
@@ -45,19 +46,13 @@ public enum RoleType {
 
 	/** hidden constructor. */
 	private RoleType(RoleLevel level) {
-		this.name = Msg.getString("RoleType." + name().toLowerCase());
+        this.name = Msg.getStringOptional("RoleType", name());
 		this.level = level;
 	}
 
 	public final String getName() {
 		return this.name;
 	}
-
-	@Override
-	public final String toString() {
-		return getName();
-	}
-	
 
 	public static RoleType getType(String name) {
 		if (name != null) {

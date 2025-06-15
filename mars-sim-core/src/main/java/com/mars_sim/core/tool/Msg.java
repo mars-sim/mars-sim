@@ -81,7 +81,7 @@ public class Msg {
 	 * <code>"ClassName.categoryIfAny.keyForThisText"</code>
 	 * @param fallback Fallback value if no key match
 	 */
-	public static String getString(String key, String fallback) {
+	public static String getStringWithFallback(String key, String fallback) {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {

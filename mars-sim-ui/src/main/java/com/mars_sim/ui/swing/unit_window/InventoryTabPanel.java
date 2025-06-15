@@ -42,7 +42,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
@@ -227,7 +227,7 @@ public class InventoryTabPanel extends TabPanel {
 			// Add sorting
 	        equipmentTable.setAutoCreateRowSorter(true);
 			
-	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 	
 			// Align the preference score to the center of the cell
 			DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();

@@ -9,13 +9,9 @@ package com.mars_sim.core.person.ai.role;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.Person;
@@ -58,16 +54,14 @@ public class RoleUtil implements Serializable {
 		}
 
 		// Cache the specialists
-		specalistsRoles = Collections.unmodifiableList(
-							Arrays.stream(RoleType.values())
+		specalistsRoles = Arrays.stream(RoleType.values())
 								.filter(RoleType::isSpecialist)
-								.collect(Collectors.toList()));
+								.toList();
 		
 		// Cache the crew roles
-		crewRoles = Collections.unmodifiableList(
-							Arrays.stream(RoleType.values())
+		crewRoles = Arrays.stream(RoleType.values())
 								.filter(RoleType::isCrew)
-								.collect(Collectors.toList()));
+								.toList();
 		
 	}
 
@@ -279,52 +273,44 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Gets a list of role type name strings.
+	 * Gets a list of role suitable for a settlement of a certain size
 	 *
 	 * @return
 	 */
-	public static List<String> getRoleNames(int pop) {
+	public static List<RoleType> getRoles(int pop) {
 
-		Set<String> roleNames = new HashSet<>();
+		List<RoleType> roles = new ArrayList<>();
 
 		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-			roleNames.add(RoleType.COMMANDER.getName());
-			for (RoleType r : RoleUtil.getCrewRoles()) {
-				roleNames.add(r.getName());
-			}
+			roles.add(RoleType.COMMANDER);
+			roles.addAll(crewRoles);
 		}
 
 		else if (pop <= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
-			roleNames.add(RoleType.COMMANDER.getName());
-			roleNames.add(RoleType.SUB_COMMANDER.getName());
-			for (RoleType r : RoleUtil.getSpecialists()) {
-				roleNames.add(r.getName());
-			}
+			roles.add(RoleType.COMMANDER);
+			roles.add(RoleType.SUB_COMMANDER);
+			roles.addAll(specalistsRoles);
 		}
 
 		else if (pop <= ChainOfCommand.POPULATION_WITH_CHIEFS) {
 			for (RoleType r : RoleType.values()) {
 				if (r != RoleType.MAYOR || r != RoleType.PRESIDENT)
-					roleNames.add(r.getName());
+					roles.add(r);
 			}
 		}
 
 		else if (pop <= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			for (RoleType r : RoleType.values()) {
 				if (r != RoleType.PRESIDENT)
-					roleNames.add(r.getName());
+					roles.add(r);
 			}
 		}
 
 		else {
-			for (RoleType r : RoleType.values()) {
-				roleNames.add(r.getName());
-			}
+			roles.addAll(Arrays.asList(RoleType.values()));
 		}
 		
-		List<String> list = new ArrayList<>(roleNames);
-		Collections.sort(list);
-		return list;
+		return roles;
 	}
 	
 	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {

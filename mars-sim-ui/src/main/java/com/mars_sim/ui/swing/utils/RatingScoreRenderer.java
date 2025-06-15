@@ -36,7 +36,7 @@ public class RatingScoreRenderer {
 
         var bases = score.getBases();
         output.append(bases.entrySet().stream()
-                                .map(entry -> "  " + Msg.getString(RATING_KEY + entry.getKey(), entry.getKey())
+                                .map(entry -> "  " + Msg.getStringWithFallback(RATING_KEY + entry.getKey(), entry.getKey())
                                                     + ": " + SCORE_FORMAT.format(entry.getValue()))
                                 .collect(Collectors.joining("<br>")));
 

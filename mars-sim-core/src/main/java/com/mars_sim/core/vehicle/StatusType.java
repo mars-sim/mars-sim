@@ -35,7 +35,7 @@ public enum StatusType {
 	private boolean primary;
 
 	private StatusType(boolean primary) {
-		this.name = Msg.getString("StatusType." + name().toLowerCase());
+        this.name = Msg.getStringOptional("StatusType", name());
 		this.primary = primary;
 	}
 
