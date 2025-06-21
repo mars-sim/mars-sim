@@ -16,7 +16,6 @@ import java.util.Set;
 
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -54,7 +53,12 @@ public abstract class MissionProject implements Mission {
 
         @Override
         protected void completed(boolean successful) {
-            completeMission(successful);
+            if (successful) {
+                // Assume that the status has already been updated as part of the abort
+                log.addEntry("Completed");
+                status.add(ACCOMPLISHED);
+            }
+            clearDown();
         }
 
         @Override
@@ -133,18 +137,6 @@ public abstract class MissionProject implements Mission {
         }
     }
 
-    /**
-     * Call back from the Project controller
-     * @see Project.completed
-     */
-    private void completeMission(boolean successful) {
-        if (successful) {
-            // Assume that the status has already been updated as part of the abort
-            log.addEntry("Completed");
-            status.add(ACCOMPLISHED);
-        }
-        clearDown();
-    }
 
     /**
      * Complete the current step immediately
@@ -172,15 +164,6 @@ public abstract class MissionProject implements Mission {
     @Override
     public void setName(String name) {
         control.setName(name);
-    }
-
-    /**
-     * Return the location which is the home settlement
-     * @return Coordinates of home
-     */
-    @Override
-    public Coordinates getCurrentMissionLocation() {
-        return getAssociatedSettlement().getCoordinates();
     }
 
     /**
@@ -417,8 +400,7 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public List<MissionObjective> getObjectives() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObjectives'");
+        return Collections.emptyList();
     }
 
     /**

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -57,11 +56,6 @@ public interface Mission extends Entity {
 	 * @param name New Name.
 	 */
     void setName(String name);
-
-	/**
-	 * Returns the current mission location. For a vehicle mission, return its vehicle's position.
-	 */
-	Coordinates getCurrentMissionLocation();
 
 	/**
 	 * Gets the settlement associated with the mission.

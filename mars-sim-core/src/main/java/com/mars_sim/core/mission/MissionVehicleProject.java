@@ -146,7 +146,8 @@ public class MissionVehicleProject extends MissionProject
         if (!isDone()) {
             return getVehicle().getCoordinates();
         }
-        return super.getCurrentMissionLocation();
+
+        return getAssociatedSettlement().getCoordinates();
     }
 
     @Override

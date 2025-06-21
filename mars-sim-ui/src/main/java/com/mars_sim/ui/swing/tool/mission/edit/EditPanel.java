@@ -14,12 +14,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -33,16 +32,12 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.JComboBoxMW;
@@ -264,35 +259,23 @@ public class EditPanel extends JPanel {
 	 * @return collection of available members.
 	 */
 	private Collection<Worker> getAvailableMembers() {
-		Collection<Worker> result = new ConcurrentLinkedQueue<>();
+		Collection<Worker> result = new HashSet<>();
 	
-		// Add people and robots in the settlement or rover.
-		if (mission instanceof RoverMission) {
-			Rover rover = ((RoverMission) mission).getRover();
+		// Add people in the settlement or rover.
+		if (mission instanceof RoverMission rm) {
+			Rover rover = rm.getRover();
 			Stage phase = mission.getStage();
-			Collection<Worker> membersAtLocation = new ArrayList<>();
 			if (rover != null) {
 				if (phase == Stage.PREPARATION) {
 					// Add available people and robots at the local settlement.
 					Settlement settlement = rover.getSettlement();
 					if (settlement != null) {
-					    membersAtLocation.addAll(settlement.getIndoorPeople());
-					    membersAtLocation.addAll(settlement.getAllAssociatedRobots());
+					    result.addAll(settlement.getIndoorPeople());
 					}
 				}
 				else {
 					// Add available people and robots in the rover.
-					membersAtLocation.addAll(rover.getCrew());
-					membersAtLocation.addAll(rover.getRobotCrew());
-				}
-			}
-			
-			// Add people.
-			Iterator<Worker> i = membersAtLocation.iterator();
-			while (i.hasNext()) {
-				Worker member = i.next();
-				if (!memberListModel.contains(member)) {
-				    result.add(member);
+					result.addAll(rover.getCrew());
 				}
 			}
 		}
@@ -301,57 +284,16 @@ public class EditPanel extends JPanel {
 		    // Add people and robots at settlement.
 		    Settlement settlement = mission.getAssociatedSettlement();
 		    if (settlement != null) {
-		        Iterator<Person> i = settlement.getIndoorPeople().iterator();
-		        while (i.hasNext()) {
-		            Person person = i.next();
-		            if (!memberListModel.contains(person)) {
-		                result.add(person);
-		            }
-		        }
-		        
-		        Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
-		        while (j.hasNext()) {
-		            Robot robot = j.next();
-		            if (!memberListModel.contains(robot)) {
-		                result.add(robot);
-		            }
-		        }
+				result.addAll(settlement.getIndoorPeople());
+				result.addAll(settlement.getAllAssociatedRobots());
 		    }
 		}
-		
-		// Add people and robots who are outside at this location as well.
-		UnitManager unitManager = desktop.getSimulation().getUnitManager();
-		Coordinates missionLocation = mission.getCurrentMissionLocation();
-		Iterator<Person> i = unitManager.getPeople().iterator();
-		while (i.hasNext()) {
-		    Person person = i.next();
-		    if (person.isOutside()) {
-		        if (person.getCoordinates().equals(missionLocation)) {
-		            if (!memberListModel.contains(person)) {
-		                result.add(person);
-		            }
-		        }
-		    }
-		}
-		
-		Iterator<Robot> j = unitManager.getRobots().iterator();
-        while (j.hasNext()) {
-            Robot robot = j.next();
-            if (robot.isOutside()) {
-                if (robot.getCoordinates().equals(missionLocation)) {
-                    if (!memberListModel.contains(robot)) {
-                        result.add(robot);
-                    }
-                }
-            }
-        }
-		
+
 		return result;
 	}
 	
 	public JInternalFrame getParent() {
 		return frame;
 	}
-	
 	
 }

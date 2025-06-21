@@ -277,8 +277,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		// Create center map button
 		centerMapButton = new JButton(ImageLoader.getIconByName("mars")); //$NON-NLS-1$
 		centerMapButton.addActionListener(e -> {
-			if (missionCache != null)
-				getDesktop().centerMapGlobe(missionCache.getCurrentMissionLocation());
+			if (missionCache instanceof VehicleMission vm) {
+				getDesktop().centerMapGlobe(vm.getCurrentMissionLocation());
+			}
 		});
 		centerMapButton.setEnabled(false);
 		centerMapButton.setToolTipText(Msg.getString("MainDetailPanel.gotoMarsMap")); //$NON-NLS-1$
