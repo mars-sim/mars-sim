@@ -415,7 +415,12 @@ public abstract class MissionProject implements Mission {
         return resources;
     }
 
-    
+    @Override
+    public List<MissionObjective> getObjectives() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getObjectives'");
+    }
+
     /**
      * Add a listener to the Mission
      * @param newListener Listener

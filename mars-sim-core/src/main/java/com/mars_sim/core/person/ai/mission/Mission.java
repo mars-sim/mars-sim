@@ -6,12 +6,13 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
@@ -22,7 +23,7 @@ import com.mars_sim.core.time.MarsTime;
 /**
  * Represents the behave that a Mission exhibits.
  */
-public interface Mission extends Entity, Serializable {
+public interface Mission extends Entity {
 
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
@@ -203,4 +204,10 @@ public interface Mission extends Entity, Serializable {
 	 * @param oldListener the listener to remove.
 	 */
 	void removeMissionListener(MissionListener oldListener);
+
+	/**
+	 * Get the list of objectives for this mission.
+	 * @return
+	 */
+    List<MissionObjective> getObjectives();
 }

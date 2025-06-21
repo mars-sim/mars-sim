@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -50,13 +51,12 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.mission.MissionObjective;
+import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
-import com.mars_sim.core.person.ai.mission.SalvageMission;
-import com.mars_sim.core.person.ai.mission.CollectIce;
-import com.mars_sim.core.person.ai.mission.CollectRegolith;
 import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.person.ai.mission.EmergencySupply;
 import com.mars_sim.core.person.ai.mission.Exploration;
@@ -69,6 +69,7 @@ import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
+import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -81,11 +82,11 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The tab panel for showing mission details.
@@ -138,6 +139,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 	private LogTableModel logTableModel;
 
+	private JTabbedPane objectivesPane;
+
 
 	/**
 	 * Constructor.
@@ -166,12 +169,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		// Create the top box.
 		JPanel topBox = new JPanel(new BorderLayout(1, 1));
-		topBox.setBorder(new MarsPanelBorder());
 		mainBox.add(topBox, BorderLayout.NORTH);
 
 		// Create the center box.
 		JPanel centerBox = new JPanel(new BorderLayout(1, 1));
-		centerBox.setBorder(new MarsPanelBorder());
 		mainBox.add(centerBox, BorderLayout.CENTER);
 
 		// Create the member panel.
@@ -197,7 +198,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		memberOuterPane.add(memberPane, BorderLayout.CENTER);
 				
 		bottomBox.add(memberOuterPane, BorderLayout.NORTH);
-		bottomBox.add(initCustomMissionPane(), BorderLayout.SOUTH);
+
+		objectivesPane = initObjectivePane();
+		bottomBox.add(objectivesPane, BorderLayout.SOUTH);
 		
 		// Update the log table model
 		logTableModel.update();
@@ -219,12 +222,12 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		AttributePanel missionPanel = new AttributePanel(6);
 		missionLayout.add(missionPanel, BorderLayout.NORTH);
 		
-		typeTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.type"), "", null); // $NON-NLS-1$
-		designationTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null); // $NON-NLS-1$
-		settlementTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.settlement"), "", null); // $NON-NLS-1$
-		leadTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.startingMember"), "", null); // $NON-NLS-1$
-		phaseTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null); // $NON-NLS-1$
-		statusTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null); // $NON-NLS-1$
+		typeTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.column.name"), "", null);
+		phaseTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null);
+		designationTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null);
+		settlementTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.settlement"), "", null);
+		leadTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.startingMember"), "", null);
+		statusTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null);
 
 		
 		return missionLayout;
@@ -388,6 +391,22 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	}
 
 	/**
+	 * Initializes the objective pane.
+	 *
+	 * @return
+	 */
+ 	private JTabbedPane initObjectivePane() {	
+		// Create the objective panel.
+		var objectivePane = new JTabbedPane();
+		objectivePane.setBorder(StyleManager.createLabelBorder("Objectives"));
+
+		// First tab is legacy; this will be removed
+		objectivePane.addTab("Legacy", initCustomMissionPane());
+
+		return objectivePane;
+	}
+
+	/**
 	 * Initializes the custom mission pane.
 	 * 
 	 * @return
@@ -398,9 +417,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new JPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-		Border blackline = StyleManager.createLabelBorder("Mission Specific");
-		missionCustomPane.setBorder(blackline);
 		
 		// Create custom empty panel.
 		JPanel emptyCustomPanel = new JPanel();
@@ -460,18 +476,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		String explorationMissionName = Exploration.class.getName();
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
-
-		// Create custom collect regolith mission panel.
-		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(ResourceUtil.REGOLITH_TYPES);
-		String collectRegolithMissionName = CollectRegolith.class.getName();
-		customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
-		missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
-
-		// Create custom collect ice mission panel.
-		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(new int[] {ResourceUtil.ICE_ID});
-		String collectIceMissionName = CollectIce.class.getName();
-		customInfoPanels.put(collectIceMissionName, collectIcePanel);
-		missionCustomPane.add(collectIcePanel, collectIceMissionName);
 
 		// Create custom rescue/salvage vehicle mission panel.
 		MissionCustomInfoPanel rescuePanel = new RescueMissionCustomInfoPanel(desktop);
@@ -765,18 +769,42 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 * @param mission the mission.
 	 */
 	private void updateCustomPanel(Mission mission) {
-		boolean hasMissionPanel = false;
-		if (mission != null) {		
-			String missionClassName = mission.getClass().getName();
-			if (customInfoPanels.containsKey(missionClassName)) {
-				hasMissionPanel = true;
-				MissionCustomInfoPanel panel = customInfoPanels.get(missionClassName);
-				customPanelLayout.show(missionCustomPane, missionClassName);
-				panel.updateMission(mission);
+		boolean clearLegacy = false;
+		// Drop old panels expecgt first one legacy
+		while(objectivesPane.getTabCount() > 1) {
+			objectivesPane.remove(1);
+		}
+
+		if (mission != null) {
+
+			// Add custom mission panel.
+			for(MissionObjective o : mission.getObjectives()) {
+				JPanel newPanel = switch(o) {
+					case CollectResourceObjective cro -> new CollectResourcePanel(cro);
+					default -> null;
+				};
+
+				if (newPanel != null) {
+	 				objectivesPane.addTab(newPanel.getName(), newPanel);
+					clearLegacy = true;
+				}
+			}
+
+			if (!clearLegacy) {
+				// Defautl back to legacy behaviour
+				String missionClassName = mission.getClass().getName();
+				if (customInfoPanels.containsKey(missionClassName)) {
+					MissionCustomInfoPanel panel = customInfoPanels.get(missionClassName);
+					customPanelLayout.show(missionCustomPane, missionClassName);
+					panel.updateMission(mission);
+				}
+				else {
+					clearLegacy = true;
+				}
 			}
 		}
 
-		if (!hasMissionPanel)
+		if (clearLegacy)
 			customPanelLayout.show(missionCustomPane, EMPTY);
 	}
 
@@ -937,6 +965,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 			// Update custom mission panel.
 			updateCustomPanelMissionEvent(event);
+
+			logTableModel.fireTableDataChanged();
 		}
 	}
 
@@ -959,6 +989,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
 				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
+
+			// Forward to any objective panels
+			for(int i = 0; i < objectivesPane.getTabCount(); i++) {
+				Component comp = objectivesPane.getComponentAt(i);
+				if (comp instanceof UnitListener ul) {
+					ul.unitUpdate(event);
+				}
+   			}
 		}
 	}
 

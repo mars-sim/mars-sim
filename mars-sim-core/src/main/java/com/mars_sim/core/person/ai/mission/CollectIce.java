@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
+import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -70,10 +70,7 @@ public class CollectIce extends CollectResourcesMission {
 	}
 
 	@Override
-	protected double scoreLocation(Coordinates newLocation) {
-		if (terrainElevation == null) 
-			terrainElevation = Simulation.instance().getSurfaceFeatures().getTerrainElevation();
-		
+	protected double scoreLocation(TerrainElevation terrainElevation, Coordinates newLocation) {
 		return terrainElevation.obtainIceCollectionRate(newLocation);
 	}
 
@@ -87,27 +84,11 @@ public class CollectIce extends CollectResourcesMission {
 
 		return accept;
 	}
-
-	@Override
-	protected double calculateRate(Worker worker) {
-		return scoreLocation(worker.getCoordinates());
-	}
 	
-	protected void pickType(Worker worker) {
-		setResourceID(resourceID);
-	}
-
-	/**
-	 * Gets the resources can be collected once on site. By default this is just
-	 * the main resource but could be others.
-	 * 
-	 * @return
-	 */
 	@Override
-	public int [] getCollectibleResources() {
-		return new int [] {resourceID};
+	protected int pickType(Worker worker) {
+		return ResourceUtil.ICE_ID;
 	}
-
 	
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {

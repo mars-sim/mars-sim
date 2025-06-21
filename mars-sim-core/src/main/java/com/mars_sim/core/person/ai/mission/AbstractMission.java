@@ -33,6 +33,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -146,6 +147,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	
 	/** A set of those who sign up for this mission. After the mission is over, it will still be retained and will not be deleted. */
 	private Set<Worker> signUp;
+
+	private List<MissionObjective> objectives = new ArrayList<>();
 
 	/** 
 	 * A collection of those who are actually went on the mission.
@@ -1538,6 +1541,29 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return true;
 	}
 	
+	protected void addObjective(MissionObjective objective) {
+		objectives.add(objective);
+	}
+
+	/**
+	 * Sets the mission objectives.
+	 *
+	 * @param objectives the list of objectives
+	 */
+	protected void setObjectives(List<MissionObjective> objectives) {
+		this.objectives = objectives;
+	}
+
+	/**
+	 * Gets the mission objectives.
+	 *
+	 * @return list of {@link MissionObjective}
+	 */
+	@Override
+    public List<MissionObjective> getObjectives() {
+        return objectives;
+    }
+
 	/**
 	 * Compares if this object equals this instance of mission.
 	 */

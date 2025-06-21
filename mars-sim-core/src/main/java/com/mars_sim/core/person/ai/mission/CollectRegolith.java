@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
+import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -69,52 +69,31 @@ public class CollectRegolith extends CollectResourcesMission {
 	}
 
 	@Override
-	protected double scoreLocation(Coordinates newLocation) {
-		if (terrainElevation == null) 
-			terrainElevation = Simulation.instance().getSurfaceFeatures().getTerrainElevation();
-		
-		return terrainElevation.obtainRegolithCollectionRate(newLocation);
+	protected double scoreLocation(TerrainElevation terrain, Coordinates newLocation) {
+		return terrain.obtainRegolithCollectionRate(newLocation);
 	}
 
-	/**
-	 * The main resource is regolith but on site it can cover numerous
-	 * sub-resources.
-	 * 
-	 * @return
-	 */
 	@Override
-	public int [] getCollectibleResources() {
-		return ResourceUtil.REGOLITH_TYPES;
-	}
-
-	/**
-	 * This implementation can refine the resource being collected according to what is at the site.
-	 */
-	@Override
-	protected double calculateRate(Worker worker) {
-		return scoreLocation(worker.getCoordinates());
-	}
-
-	protected void pickType(Worker worker) {
-		int rand = RandomUtil.getRandomInt(3);
-		if (rand == 0) {
+	protected int pickType(Worker worker) {
+		if (RandomUtil.getRandomInt(3) == 0) {
 			// Pick the one that has the highest vp
 			double highest = 0;
 			int bestType = 0;
-			for (int type: getCollectibleResources()) {
-				double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePoint(type);
+			var goodsMgr = worker.getAssociatedSettlement().getGoodsManager();
+			for (int type: ResourceUtil.REGOLITH_TYPES) {
+				double vp = goodsMgr.getGoodValuePoint(type);
 				if (highest < vp) {
 					highest = vp;
 					bestType = type;
 				}
 			}
 			
-			setResourceID(bestType);
+			return bestType;
 		}
-		else {
-			// Randomly pick one of the 4 regolith types
-			setResourceID(getCollectibleResources()[rand]);
-		}
+		// Randomly pick one of the 4 regolith types
+		int rand = RandomUtil.getRandomInt(ResourceUtil.REGOLITH_TYPES.length - 1);
+
+		return ResourceUtil.REGOLITH_TYPES[rand];
 	}
 	
 	@Override
