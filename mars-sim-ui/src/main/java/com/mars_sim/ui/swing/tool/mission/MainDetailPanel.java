@@ -53,14 +53,12 @@ import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
+import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
-import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.person.ai.mission.EmergencySupply;
 import com.mars_sim.core.person.ai.mission.Exploration;
-import com.mars_sim.core.person.ai.mission.MeteorologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -84,6 +82,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
+import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -424,24 +423,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionCustomPane.add(emptyCustomPanel, EMPTY);
 		customInfoPanels = new HashMap<>();
 
-		// Create custom areology field mission panel.
-		MissionCustomInfoPanel areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
-		String areologyMissionName = AreologyFieldStudy.class.getName();
-		customInfoPanels.put(areologyMissionName, areologyFieldPanel);
-		missionCustomPane.add(areologyFieldPanel, areologyMissionName);
-
-		// Create custom biology field mission panel.
-		MissionCustomInfoPanel biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
-		String biologyMissionName = BiologyFieldStudy.class.getName();
-		customInfoPanels.put(biologyMissionName, biologyFieldPanel);
-		missionCustomPane.add(biologyFieldPanel, biologyMissionName);
-
-		// Create custom meteorology field mission panel.
-		MissionCustomInfoPanel meteorologyFieldPanel = new MeteorologyStudyFieldMissionCustomInfoPanel(desktop);
-		String meteorologyMissionName = MeteorologyFieldStudy.class.getName();
-		customInfoPanels.put(meteorologyMissionName, meteorologyFieldPanel);
-		missionCustomPane.add(meteorologyFieldPanel, meteorologyMissionName);
-
 		// Create custom delivery mission panel.
 		MissionCustomInfoPanel deliveryPanel = new DeliveryMissionCustomInfoPanel();
 		String deliveryMissionName = Delivery.class.getName();
@@ -773,7 +754,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		boolean clearLegacy = false;
 		// Drop old panels expecgt first one legacy
 		while(objectivesPane.getTabCount() > 1) {
-			objectivesPane.remove(1);
+			var pan = objectivesPane.getComponentAt(1);
+			if (pan instanceof ObjectivesPanel op) {
+				op.unregister();
+			}
+			objectivesPane.removeTabAt(1);
 		}
 
 		if (mission != null) {
@@ -782,6 +767,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			for(MissionObjective o : mission.getObjectives()) {
 				JPanel newPanel = switch(o) {
 					case CollectResourceObjective cro -> new CollectResourcePanel(cro);
+					case FieldStudyObjectives fso -> new FieldStudyPanel(fso);
 					default -> null;
 				};
 
@@ -812,6 +798,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	/**
 	 * Mission event update.
 	 */
+	@Override
 	public void missionUpdate(MissionEvent e) {
 		if (e.getSource().equals(missionCache)) {
 			SwingUtilities.invokeLater(new MissionEventUpdater(e, this));

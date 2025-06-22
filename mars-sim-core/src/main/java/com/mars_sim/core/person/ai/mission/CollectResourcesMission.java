@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
@@ -252,16 +251,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	 */
 	protected boolean isValidScore(double score) {
 		return true;
-	}
-
-
-	/**
-	 * Gets the total amount of resources collected so far in the mission.
-	 *
-	 * @return resource amount (kg).
-	 */
-	public Map<Integer, Double> getCumulativeCollectedByID() {
-		return objective.getResourcesCollected();
 	}
 	
 	/**

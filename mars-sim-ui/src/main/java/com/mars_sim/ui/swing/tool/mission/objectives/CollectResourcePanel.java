@@ -58,6 +58,8 @@ public class CollectResourcePanel extends JPanel implements UnitListener {
 
 		siteModel = new DefaultListModel<>();
 		horz.add(createList(siteModel, "Sites"));
+
+		updateCollectionValueLabel();
 	}
 
 
