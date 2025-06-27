@@ -701,9 +701,11 @@ public class ThermalGeneration extends Function {
 		heatGen = heat[0];
 		remainHeatReq = heat[1];
 		
-		if (remainHeatReq > 0.5) {
-			logger.warning(building, 10_000L , "2. Unmet remaining heat req: " 
-					+ Math.round(remainHeatReq * 100.0)/100.0 + " kW.");
+		double kwPerSQM = remainHeatReq/building.getFloorArea();
+		
+		if (kwPerSQM > 1) {
+			logger.warning(building, 20_000L , "2. Unmet remaining heat req (>1 kW/SQM): " 
+					+ Math.round(kwPerSQM * 100.0)/100.0 + " kW/sqm.");
 		}
 			
 		// Update heat generated in Heating

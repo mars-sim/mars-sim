@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * ScheduledEventHandler.java
  * @date 2023-05-01
@@ -16,14 +16,16 @@ import com.mars_sim.core.time.MarsTime;
 public interface ScheduledEventHandler extends Serializable {
 
     /**
-     * Get a description of this future event
+     * Gets a description of this future event.
+     * 
      * @return
      */
     String getEventDescription();
 
     /**
-     * The event has arrived so it can be executed. The exeuction can return a positive number that
+     * The event has arrived so it can be executed. The execution can return a positive number that
      * indicates the event should be rescheduled at millisols in the future.
+     * 
      * @param currentTime The time when this handler was triggered
      * @return The millisols to a rescheduled event.
      */
