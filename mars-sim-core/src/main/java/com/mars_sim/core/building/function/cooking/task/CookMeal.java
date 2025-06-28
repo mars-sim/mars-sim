@@ -35,8 +35,6 @@ public class CookMeal extends Task {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.cookMeal"); //$NON-NLS-1$
-
-	private static final String FINISH_COOKING = Msg.getString("Task.description.cookMeal.detail.finish"); //$NON-NLS-1$
 	
 	/** Task phases. */
 	private static final TaskPhase COOKING = new TaskPhase(Msg.getString("Task.phase.cooking")); //$NON-NLS-1$
@@ -50,8 +48,6 @@ public class CookMeal extends Task {
 	private static final String NO_INGREDIENT = "Cannot cook any meals. None of the ingredients are available.";
 
 	// Data members
-	/** The last cooked meal. */
-	private String lastCookedMeal;
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
 	private Building kitchenBuilding;
@@ -124,16 +120,6 @@ public class CookMeal extends Task {
 
 		double workTime = time;
 
-		// If meal time is over, end task.
-		if (!isMealTime(worker.getAssociatedSettlement(), PREP_TIME)) {
-			if (lastCookedMeal != null)
-				logger.log(worker, Level.FINE, 0, "Ended cooking " + lastCookedMeal + ". The meal time was over.");
-			else
-				logger.log(worker, Level.FINE, 0, "Ended cooking. The meal time was over.");
-			endTask();
-			return time;
-		}
-
 		// If enough meals have been cooked for this meal, end task.
 		if (kitchen.getCookNoMore()) {
 			endTask();
@@ -163,10 +149,6 @@ public class CookMeal extends Task {
 		checkForAccident(kitchenBuilding, time, 0.003);
 
 		if (nameOfMeal != null) {
-			lastCookedMeal = nameOfMeal;
-			String s = FINISH_COOKING + " " + nameOfMeal;
-			logger.log(worker, Level.INFO, 4_000, s); 
-			setDescription(s);
 			endTask();
 		}
 

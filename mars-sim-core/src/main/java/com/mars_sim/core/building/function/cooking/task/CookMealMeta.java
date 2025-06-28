@@ -107,19 +107,24 @@ public class CookMealMeta extends MetaTask
 
         // IKs it meal time and can at least one meal me cooked
         if (CookMeal.isMealTime(settlement, CookMeal.PREP_TIME) && Cooking.hasMealIngredients(settlement)) {
-            // See if there is an available kitchen.
-            for(var kitchenBuilding : settlement.getBuildingManager().getBuildings(FunctionType.COOKING)) {
-                Cooking kitchen = kitchenBuilding.getCooking();
+            int mealShortfall = Cooking.getSettlementMealShortfall(settlement);
+            if (mealShortfall > 0) {
+                // See if there is an available kitchen.
+                for(var kitchenBuilding : settlement.getBuildingManager().getBuildings(FunctionType.COOKING)) {
+                    Cooking kitchen = kitchenBuilding.getCooking();
 
-                // Check if enough meals have been cooked at kitchen for this meal time.
-                boolean enoughMeals = kitchen.getCookNoMore();
-                int demand = kitchen.getCookCapacity() - kitchen.getNumCooks();
-                if (!enoughMeals && (demand > 0)) {
-                	
-                    RatingScore rating = new RatingScore(200);
-        		    rating.addBase("clealiness", (kitchen.getCleanliness() + 1) * 10);
+                    // Check if enough meals have been cooked at kitchen for this meal time.
+                    boolean enoughMeals = kitchen.getCookNoMore();
+                    int demand = kitchen.getCookCapacity() - kitchen.getNumCooks();
+                    if (!enoughMeals && (demand > 0)) {
+                        
+                        RatingScore rating = new RatingScore(250);
+                        rating.addBase("cleanliness", (kitchen.getCleanliness() + 1) * 10);
 
-                    results.add(new CookMealJob(this, kitchen, demand, rating));
+                        rating.addModifier("meals", 1 + (mealShortfall/10D));
+
+                        results.add(new CookMealJob(this, kitchen, demand, rating));
+                    }
                 }
             }
         }

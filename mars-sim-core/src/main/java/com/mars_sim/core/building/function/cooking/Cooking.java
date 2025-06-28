@@ -322,6 +322,15 @@ public class Cooking extends Function {
 		return cookNoMore;
 	}
 
+	public static final int getSettlementMealShortfall(Settlement s) {
+		int requiredMeals = (int)(s.getIndoorPeopleCount() * s.getMealsReplenishmentRate());
+		int availableMeals = s.getBuildingManager().getBuildingSet(FunctionType.COOKING).stream()
+				.mapToInt(b -> b.getCooking().getNumberOfAvailableCookedMeals())
+				.sum();
+		
+		return (requiredMeals - availableMeals);
+	}
+
 	/**
 	 * Adds cooking work to this facility. The amount of work is dependent upon the
 	 * person's cooking skill.
@@ -337,14 +346,8 @@ public class Cooking extends Function {
 
 		if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
-			double maxServings = s.getIndoorPeopleCount() * s.getMealsReplenishmentRate();
-
-			int totalServings = getTotalAvailableCookedMealsAtSettlement();
-			if (totalServings >= maxServings) {
-				cookNoMore = true;
-			}
-
-			else {
+			cookNoMore = (getSettlementMealShortfall(s) <= 0);
+			if (!cookNoMore) {
 				// Randomly pick a meal which ingredients are available
 				DishRecipe aMeal = getACookableMeal();
 				if (aMeal != null) {
@@ -354,18 +357,6 @@ public class Cooking extends Function {
 		}
 
 		return nameOfMeal;
-	}
-
-	/**
-	 * Gets the total number of available cooked meals at a settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @return number of cooked meals.
-	 */
-	private int getTotalAvailableCookedMealsAtSettlement() {
-		return building.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COOKING).stream()
-				.mapToInt(b -> b.getCooking().getNumberOfAvailableCookedMeals())
-				.sum();
 	}
 
 	/**
