@@ -213,4 +213,10 @@ public class Conversion {
 		// NOTE: i must be > 1, if i = 0, return null
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
 	}
+
+	public static String trim(String source, int length) {
+		if (source.length() > length)
+			source = source.substring(0, length-3) + "...";
+		return source;
+	}
 }

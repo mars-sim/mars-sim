@@ -49,8 +49,8 @@ import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.StyleManager;
 
 
 
@@ -428,13 +428,13 @@ public class CrewEditor implements ActionListener {
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
 		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(StyleManager.newEmptyBorder());
 		f.getContentPane().add(mainPane);
 		
 		// Create main panel.
 		scrollPane = new JPanel();
 		scrollPane.setLayout(new BoxLayout(scrollPane, BoxLayout.X_AXIS));
-		scrollPane.setBorder(MainDesktopPane.newEmptyBorder());
+		scrollPane.setBorder(StyleManager.newEmptyBorder());
 
 		// Prepare scroll panel.
 		JScrollPane scrollPanel = new JScrollPane(scrollPane);

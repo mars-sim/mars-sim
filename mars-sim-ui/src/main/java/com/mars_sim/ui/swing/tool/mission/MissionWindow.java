@@ -116,7 +116,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		
 		// Create content panel.
 		JPanel mPane = new JPanel(new BorderLayout());
-		mPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mPane.setBorder(StyleManager.newEmptyBorder());
 		setContentPane(mPane);
 
 		// Create the left panel.

@@ -83,7 +83,7 @@ public class ResupplyWindow extends ToolWindow
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(StyleManager.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create the left panel.

@@ -102,7 +102,7 @@ public class MonitorWindow extends ToolWindow
 	private static final String TASK_ICON = "task";
 	private static final String TRASH_ICON = "action/trash";
 	private static final String LOCATE_ICON = "action/locate";
-	private static final String DETAILS_ICON = "details";
+	private static final String DETAILS_ICON = "action/details";
 	private static final String COLUMN_ICON = "action/column";
 	private static final String FILTER_ICON = "action/filter";
 
@@ -295,12 +295,12 @@ public class MonitorWindow extends ToolWindow
 
 		// Create buttons based on selection
 		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
-		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
+		buttonMap.setToolTipText(Msg.getString("EntityLabel.locate")); //$NON-NLS-1$
 		buttonMap.addActionListener(e -> centerMap());
 		statusPanel.add(buttonMap);
 
 		buttonDetails = new JButton(ImageLoader.getIconByName(DETAILS_ICON)); // $NON-NLS-1$
-		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
+		buttonDetails.setToolTipText(Msg.getString("EntityLabel.details")); //$NON-NLS-1$
 		buttonDetails.addActionListener(e -> displayDetails());
 		statusPanel.add(buttonDetails);
 

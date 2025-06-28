@@ -4,8 +4,10 @@
  * @date 2023-06-05
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.mission.steps;
 
+import com.mars_sim.core.mission.MissionStep;
+import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.task.util.Task;

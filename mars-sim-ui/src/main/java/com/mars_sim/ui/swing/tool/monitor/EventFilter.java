@@ -19,6 +19,7 @@ import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 
 
 /**
@@ -49,7 +50,7 @@ implements ActionListener {
 		// Prepare content pane
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(StyleManager.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create category pane

@@ -243,7 +243,6 @@ public class CollectResources extends EVAOperation {
 			checkLocation("Container capacity maxed out.");
 		}
 		
-//		double collectedAtThisSite = rover.getAmountResourceStored(resourceType) - startingCargo;
 		double collectedAtThisSite = mission.getCollectedAtCurrentSite();
 		
 		double remainingSamplesNeeded = targettedAmount - collectedAtThisSite;
@@ -281,21 +280,12 @@ public class CollectResources extends EVAOperation {
 		
 		// Collect resources
 		if (samplesCollected <= sampleLimit) {
-			mission.recordResourceCollected(resourceType, samplesCollected);
 			container.storeAmountResource(resourceType, samplesCollected);
 		} 
 		else {
-			mission.recordResourceCollected(resourceType, sampleLimit);
 			container.storeAmountResource(resourceType, sampleLimit);
 			checkLocation("Samples collected exceeded set limits.");
 		}
-		
-//		logger.info(person, 5000, "sampleLimit: " + Math.round(sampleLimit * 100.0)/100.0
-//				+ "  samplesCollected: " + Math.round(samplesCollected * 100.0)/100.0
-//				+ "  collectedAtThisSite: " + Math.round(collectedAtThisSite * 100.0)/100.0 
-//				+ "  targettedAmount: " + Math.round(targettedAmount * 100.0)/100.0
-//				+ "  compositeRate: " + Math.round(compositeRate * 100.0)/100.0);
-		
 		return 0;
 	}
 
@@ -311,7 +301,7 @@ public class CollectResources extends EVAOperation {
 		// Retrieve this amount from the container
 		container.retrieveAmountResource(resourceType, amount);
 
-      	int newResourceID = 0;
+      	int newResourceID = resourceType;
       	
     	// Remap regoliths by allowing the possibility of misclassifying regolith types
 		if (resourceType == ResourceUtil.REGOLITH_ID) {
@@ -330,14 +320,12 @@ public class CollectResources extends EVAOperation {
 			else
 				newResourceID = resourceType;
 		}
-		else if (resourceType == ResourceUtil.ICE_ID) {
-			newResourceID = resourceType;
-		}
 		
 		// Add to the daily output
 		rover.getAssociatedSettlement().addOutput(newResourceID, amount, effort);
 		// Store the amount in the settlement
 		rover.storeAmountResource(newResourceID, amount);
+		mission.recordResourceCollected(resourceType, newResourceID);
 	}
     
 	/**

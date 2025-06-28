@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -19,9 +20,12 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.ColorUIResource;
 
@@ -63,9 +67,9 @@ public class StyleManager {
     
     public static final DecimalFormat DECIMAL_M2 = new DecimalFormat("#,##0.00 m\u00B2");
     public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 "
-									+ Msg.getString("unit.meterperssecsquared")); //$NON-NLS-1$   
+									+ Msg.getString("unit.meterperssecsquared")); //-NLS-1$   
     public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.meterpersec")); //$NON-NLS-1$
+    								+ Msg.getString("unit.meterpersec")); //-NLS-1$
     
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
@@ -101,13 +105,13 @@ public class StyleManager {
     
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.wattpermetersquared")); //$NON-NLS-1$
+    								+ Msg.getString("unit.wattpermetersquared")); //-NLS-1$
     // For air density
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.grampercubicmeter")); //$NON-NLS-1$
+    								+ Msg.getString("unit.grampercubicmeter")); //-NLS-1$
     // For air pressure
     public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("pressure.unit.kPa")); //$NON-NLS-1$
+    								+ Msg.getString("pressure.unit.kPa")); //-NLS-1$
 
     
     // Supported LAFs
@@ -486,20 +490,6 @@ public class StyleManager {
     }
 
     /**
-     * Creates a Titled border that uses the Label font.
-     * 
-     * @param title
-     * @return
-     */
-    public static Border createLabelBorder(String title, String tooltip) {
-    	return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
-                                                        TitledBorder.DEFAULT_POSITION,
-                                                        labelFont, (Color)null);
-    }
-    
-    
-    
-    /**
      * Gets the Bold default font.
      * 
      * @return
@@ -521,5 +511,25 @@ public class StyleManager {
      */
     public static Font getSmallLabelFont() {
         return smallLabelFont;
+    }
+
+    /**
+     * Creates a standardized empty border.
+     */
+    public static Border newEmptyBorder() {
+    	return new EmptyBorder(1, 1, 1, 1);
+    }
+
+    /**
+     * 
+     * @param title
+     * @param content
+     * @return
+     */
+    public static JScrollPane createScrollBorder(String title, Component content) {
+		JScrollPane listScroller = new JScrollPane(content);
+		listScroller.setBorder(StyleManager.createLabelBorder(title));
+
+        return listScroller;
     }
 }

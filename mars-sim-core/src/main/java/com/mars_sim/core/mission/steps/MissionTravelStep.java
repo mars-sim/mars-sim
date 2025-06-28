@@ -4,10 +4,12 @@
  * @date 2023-06-03
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.mission.steps;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MissionStep;
+import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -121,7 +123,7 @@ public class MissionTravelStep extends MissionStep {
      * Gets the resources are needed for this travel. Should be vehicle fuel plus food and oxygen.
      */
     @Override
-    void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
+    protected void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
 
         Vehicle vehicle = getVehicle();
         double distance = destination.getPointToPointDistance() - getDistanceCovered();

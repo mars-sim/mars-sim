@@ -6,7 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool_window;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -27,7 +27,12 @@ public final class MapSelector {
         // Stop creation as static helper
     }
 
-    public static void displayOnMap(MainDesktopPane desktop, Unit u) {
+	/**
+	 * Display the Entity on the most appropriate map window.
+	 * @param desktop
+	 * @param u
+	 */
+    public static void displayOnMap(MainDesktopPane desktop, Entity u) {
         Coordinates marsPosn = null;
         if (u instanceof MobileUnit mu) {
             marsPosn = openMobileUnit(desktop, mu);
@@ -107,8 +112,8 @@ public final class MapSelector {
 		else if (u instanceof Robot r) {
 			sw.displayRobot(r);
 		}
-        else if (u instanceof FixedUnit fu) {
-            sw.displayPosition(fu.getAssociatedSettlement(), fu.getPosition());
+        else if (u instanceof Vehicle fu) {
+            sw.displayPosition(fu.getSettlement(), fu.getPosition());
         }
 	}
 	

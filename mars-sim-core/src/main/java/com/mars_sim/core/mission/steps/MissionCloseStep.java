@@ -4,16 +4,18 @@
  * @date 2023-06-03
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.mission.steps;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MissionProject;
+import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 
 /**
  * This is a step in a Mission that closes it down.
  */
-class MissionCloseStep extends MissionStep {
+public class MissionCloseStep extends MissionStep {
 
     private static final long serialVersionUID = 1L;
 	private static final SimLogger logger = SimLogger.getLogger(MissionCloseStep.class.getName());

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -42,15 +43,8 @@ public abstract class FieldStudyMission extends EVAMission {
 	private static final MissionStatus NO_ONGOING_SCIENTIFIC_STUDY = new MissionStatus("Mission.status.noStudy");
 
 	private static final int MIN_MEMEBRS = 2;
-	
-	// Data members
-	/** The field site location. */
-	private Coordinates fieldSite;
-	/** Scientific study to research. */
-	private ScientificStudy study;
 
-	private double fieldSiteTime;
-	private ScienceType science;
+	private FieldStudyObjectives objective;
 
 	/**
 	 * Constructor.
@@ -65,18 +59,19 @@ public abstract class FieldStudyMission extends EVAMission {
 
 		// Use RoverMission constructor.
 		super(missionType, startingPerson, null, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
-
-		this.science = science;
-		this.fieldSiteTime = fieldSiteTime;
 		
 		Settlement s = startingPerson.getSettlement();
 
 		if (!isDone() && s != null) {
 			// Set the lead researcher and study.
-			study = determineStudy(science, startingPerson);
+			var study = determineStudy(science, startingPerson);
 			if (study == null) {
 				endMission(NO_ONGOING_SCIENTIFIC_STUDY);
+				return;
 			}
+
+			objective = new FieldStudyObjectives(study, science, fieldSiteTime);
+			addObjective(objective);
 
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_MEMEBRS))
@@ -122,10 +117,9 @@ public abstract class FieldStudyMission extends EVAMission {
 		// Use RoverMission constructor.
 		super(missionType, leadResearcher, rover, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
 
-		this.study = study;
-		this.science = study.getScience();
-		this.fieldSite = fieldSite;
-		this.fieldSiteTime = fieldSiteTime;
+		objective = new FieldStudyObjectives(study, study.getScience(), fieldSiteTime);
+		addObjective(objective);
+
 		addNavpoint(fieldSite, "a field research site");
 
 		// Add mission members.
@@ -144,24 +138,6 @@ public abstract class FieldStudyMission extends EVAMission {
 
 		// Set initial mission phase.
 		setInitialPhase(false);
-	}
-
-	/**
-	 * Gets the scientific study for the mission.
-	 * 
-	 * @return scientific study.
-	 */
-	public ScientificStudy getScientificStudy() {
-		return study;
-	}
-
-	/**
-	 * Gets the lead researcher for the mission.
-	 * 
-	 * @return the researcher.
-	 */
-	public Person getLeadResearcher() {
-		return getStartingPerson();
 	}
 
 	/**
@@ -220,7 +196,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
 		double limit = range / 4D;
 		double siteDistance = RandomUtil.getRandomDouble(limit);
-		fieldSite = startingLocation.getNewLocation(direction, siteDistance);
+		var fieldSite = startingLocation.getNewLocation(direction, siteDistance);
 		addNavpoint(fieldSite, "a field research site");
 	}
 
@@ -231,22 +207,22 @@ public abstract class FieldStudyMission extends EVAMission {
 		if ((result > 0D) && (member instanceof Person person)) {
 
 			// Add modifier if person is a researcher on the same scientific study.
-			if (study != null) {
-				if (person.equals(study.getPrimaryResearcher())) {
-					result += 2D;
+			var study = objective.getStudy();
+			if (person.equals(study.getPrimaryResearcher())) {
+				result += 2D;
 
-					// Check if study's primary science.
-					if (science == study.getScience()) {
-						result += 1D;
-					}
-				} else if (study.getCollaborativeResearchers().contains(person)) {
+				// Check if study's primary science.
+				if (objective.getScience() == study.getScience()) {
 					result += 1D;
+				}
+			}
+			else {
+				result += 1D;
 
-					// Check if study collaboration science
-					ScienceType collabScience = study.getContribution(person);
-					if (science == collabScience) {
-						result += 1D;
-					}
+				// Check if study collaboration science
+				ScienceType collabScience = study.getContribution(person);
+				if (objective.getScience() == collabScience) {
+					result += 1D;
 				}
 			}
 		}
@@ -265,7 +241,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		if (canResearchSite(member)) {
 			assignTask(member, createFieldStudyTask(member,
 											getStartingPerson(),
-											study, (Rover) getVehicle()));
+											objective.getStudy(), (Rover) getVehicle()));
 		}
 
 		return true;
@@ -300,6 +276,6 @@ public abstract class FieldStudyMission extends EVAMission {
 
 	@Override
 	protected double getEstimatedTimeAtEVASite(boolean buffer) {
-		return fieldSiteTime;
+		return objective.getFieldSiteTime();
 	}
 }

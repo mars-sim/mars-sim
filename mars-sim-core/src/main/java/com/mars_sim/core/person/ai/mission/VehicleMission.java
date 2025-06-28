@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.List;
 
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -70,6 +71,11 @@ public interface VehicleMission extends Mission {
      * @see #isTravelling()
 	 */
 	NavPoint getCurrentDestination();
+ 
+	/**
+	 * Returns the current mission location. For a vehicle mission, return its vehicle's position.
+	 */
+	Coordinates getCurrentMissionLocation();
 
     /**
 	 * Gets the navpoint at an index value.

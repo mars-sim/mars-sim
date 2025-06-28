@@ -4,13 +4,16 @@
  * @date 2023-06-10
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.mission.steps;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.MissionProject;
+import com.mars_sim.core.mission.MissionStep;
+import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.Task;

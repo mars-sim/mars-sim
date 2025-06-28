@@ -18,6 +18,7 @@ import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
@@ -54,7 +55,7 @@ extends ToolWindow {
 
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(StyleManager.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create lists panel.

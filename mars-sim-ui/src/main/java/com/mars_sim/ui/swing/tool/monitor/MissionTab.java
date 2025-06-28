@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 
 /**
@@ -39,7 +39,7 @@ public class MissionTab extends TableTab {
 	@Override
     public Coordinates getSelectedCoordinates() {
 		List<?> rows = getSelection();
-		if (!rows.isEmpty() && (rows.get(0) instanceof Mission m)) {
+		if (!rows.isEmpty() && (rows.get(0) instanceof VehicleMission m)) {
 			return m.getCurrentMissionLocation();
 		}
 		return null;

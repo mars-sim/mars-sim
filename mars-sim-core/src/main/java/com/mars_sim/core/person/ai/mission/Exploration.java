@@ -9,11 +9,9 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.environment.ExploredLocation;
@@ -21,6 +19,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -67,25 +66,15 @@ public class Exploration extends EVAMission
 	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 	
-	// Data members
-	/** Number of collection sites. */
-	private int numSites;
-	/**
-	 * The cumulative and combined site time for all members who will explore the site
-	 */
-	private double siteTime;
 
-	/** The cumulative amount (kg) of resources collected across multiple sites. */
-	private Map<Integer, Double> amountCollectedBySite;
-	/** The cumulative amount (kg) of resources collected across multiple sites. */
-	private Map<Integer, Double> cumulativeCollectedByID;
-	/** Map of exploration sites and their completion. */
-	private Map<String, Double> explorationSiteCompletion;
+	private double currentSiteTime;
+	private ExploredLocation currentSite;
+
+	private ExplorationObjective objective;
 	/** The set of sites to be claimed by this mission. */
-	private Set<ExploredLocation> claimedSites;
+	private Set<ExploredLocation> claimedSites = new HashSet<>();
 	
 	/** The current exploration site. */
-	private ExploredLocation currentSite;
 
 	/** Manager of the explorations at the home Settlement */
 	private ExplorationManager explorationMgr;
@@ -102,9 +91,8 @@ public class Exploration extends EVAMission
 		super(MISSION_TYPE, startingPerson, null,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
-		this.amountCollectedBySite = new HashMap<>();
-		this.cumulativeCollectedByID = new HashMap<>();
-		this.explorationSiteCompletion = new HashMap<>();
+		this.objective = new ExplorationObjective();
+		addObjective(objective);
 		
 		Settlement s = getStartingSettlement();
 
@@ -127,7 +115,7 @@ public class Exploration extends EVAMission
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 
 			int sol = getMarsTime().getMissionSol();
-			numSites = 2 + (int)(1.0 * sol / 20);
+			var numSites = 2 + (int)(1.0 * sol / 20);
 			
 			List<Coordinates> sitesToClaim = determineExplorationSites(getVehicle().getEstimatedRange(),
 					getRover().getTotalTripTimeLimit(true),
@@ -141,7 +129,7 @@ public class Exploration extends EVAMission
 			// Update the number of determined sites
 			numSites = sitesToClaim.size();
 			
-			initializeExplorationSites(sitesToClaim, skill);
+			initializeExplorationSites(sitesToClaim);
 
 			// Set initial mission phase.
 			setInitialPhase(needsReview);
@@ -162,16 +150,12 @@ public class Exploration extends EVAMission
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
-		this.amountCollectedBySite = new HashMap<>();
-		this.cumulativeCollectedByID = new HashMap<>();
-		this.explorationSiteCompletion = new HashMap<>();
-		
-		Person person = (Person)members.toArray()[0];
+		this.objective = new ExplorationObjective();
+		addObjective(objective);
+
 		explorationMgr = getStartingSettlement().getExplorations();
-		
-		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);		
-		
-		initializeExplorationSites(explorationSites, skill);
+				
+		initializeExplorationSites(explorationSites);
 
 		// Add mission members.
 		if (!isDone()) {
@@ -187,16 +171,9 @@ public class Exploration extends EVAMission
 	 * @param explorationSites
 	 * @param skill
 	 */
-	private void initializeExplorationSites(List<Coordinates> explorationSites, int skill) {
-
-		numSites = explorationSites.size();
+	private void initializeExplorationSites(List<Coordinates> explorationSites) {
 		
 		// Initialize explored sites.
-		if (claimedSites == null || claimedSites.isEmpty())
-			claimedSites = new HashSet<>(numSites);
-		
-		explorationSiteCompletion = new HashMap<>(numSites);
-		
 		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
 		int buffer = (int)(numMembers * 1.5);
 		int newContainerNum = Math.max(buffer, REQUIRED_SPECIMEN_CONTAINERS);
@@ -220,7 +197,7 @@ public class Exploration extends EVAMission
 	 * Gets the range of a trip based on its time limit and exploration sites.
 	 *
 	 * @param numSites
-	 * @param siteTime
+	 * @param currentSiteTime
 	 * @param tripTimeLimit time (millisols) limit of trip.
 	 * @param averageSpeed  the average speed of the vehicle.
 	 * @return range (km) limit.
@@ -239,36 +216,18 @@ public class Exploration extends EVAMission
 	 */
 	private ExploredLocation retrieveASiteToClaim() {
 		
-		if (claimedSites != null && !claimedSites.isEmpty()) {
-			Coordinates current = getCurrentMissionLocation();
-			for (ExploredLocation e: claimedSites) {
-				if (e.getLocation().equals(current))
-					return e;
-			}
+		Coordinates current = getCurrentMissionLocation();
+		for (ExploredLocation e: claimedSites) {
+			if (e.getLocation().equals(current))
+				return e;
 		}
 		
 		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
 		
-		// Creates an random site
-		Coordinates location = determineFirstSiteCoordinate();
-		if (location == null) {
-			logger.info(getStartingSettlement(), "No site is found.");
-			return null;
-		}
-		
-		return declareARegionOfInterest(location, 2);
+	
+		return declareARegionOfInterest(current, 2);
 	}
 
-	/**
-	 * Determines the coordinate of the first exploration site.
-	 *
-	 * @return
-	 */
-	private Coordinates determineFirstSiteCoordinate() {
-		double range = getVehicle().getRange();
-		return explorationMgr.getNextClosestMineralLoc(range);
-	}
-	
 	/**
 	 * Updates the explored site and start an ExploreSite Task.
 	 * 
@@ -290,10 +249,10 @@ public class Exploration extends EVAMission
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
 			currentSite = retrieveASiteToClaim();
-			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
-		
-		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
+		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
+
+		objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
 
 		// If person can explore the site, start that task.
 		if (ExploreSite.canExploreSite(person, getRover())) {
@@ -315,6 +274,7 @@ public class Exploration extends EVAMission
 			currentSite.setExplored(true);
 		}
 		
+		currentSiteTime = 0D;
 		currentSite = null;
 	}
 
@@ -330,8 +290,6 @@ public class Exploration extends EVAMission
 		
 		ExploredLocation el = explorationMgr.createARegionOfInterest(siteLocation, skill);
 		
-		if (claimedSites == null || claimedSites.isEmpty())
-			claimedSites = new HashSet<>();
 		if (el != null)
 			claimedSites.add(el);
 		
@@ -549,15 +507,6 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Gets a map of exploration site names and their level of completion.
-	 *
-	 * @return map of site names and completion level (0.0 - 1.0).
-	 */
-	public Map<String, Double> getExplorationSiteCompletion() {
-		return new HashMap<>(explorationSiteCompletion);
-	}
-
-	/**
 	 * Estimates the time needed at an EVA site.
 	 * 
 	 * @param buffer Add a buffer allowance
@@ -596,44 +545,8 @@ public class Exploration extends EVAMission
 	 * @param samplesCollected
 	 */
 	public void recordResourceCollected(int resourceType, double samplesCollected) {
-		// Update amountCollectedBySite
-		int siteIndex = getCurrentNavpointIndex(); 
-		if (amountCollectedBySite.containsKey(siteIndex)) {
-			double oldAmount0 = amountCollectedBySite.get(siteIndex);
-			double newAmount0 = oldAmount0 + samplesCollected;
-			amountCollectedBySite.put(siteIndex, newAmount0);
-		}
-		else {
-			amountCollectedBySite.put(siteIndex, samplesCollected);
-		}
-		
-		// Update cumulativeCollectedByID
-		if (cumulativeCollectedByID.containsKey(resourceType)) {
-			double oldAmount1 = cumulativeCollectedByID.get(resourceType);
-			double newAmount1 = oldAmount1 + samplesCollected;
-			cumulativeCollectedByID.put(resourceType, newAmount1);
-		}
-		else {
-			cumulativeCollectedByID.put(resourceType, samplesCollected);
-		}
+		objective.recordResourceCollected(resourceType, samplesCollected);
 	}
-	
-	/**
-	 * Gets the total amount of resources collected so far in the mission.
-	 *
-	 * @return resource amount (kg).
-	 */
-	public Map<Integer, Double> getCumulativeCollectedByID() {
-		return cumulativeCollectedByID;
-	}
-
-	/** 
-	 * Gets number of collection sites. 
-	 */
-	public int getNumSites() {
-		return numSites;
-	}
-
 	
 	/**
 	 * Adds the site time.
@@ -641,14 +554,14 @@ public class Exploration extends EVAMission
 	 * @param time
 	 */
 	public void addSiteTime(double time) {
-		siteTime += time;
+		currentSiteTime += time;
 	}
 	
 	/** 
 	 * Gets amount of time to explore a site. 
 	 */
-	public double getSiteTime() {
-		return siteTime;
+	public double getCurrentSiteTime() {
+		return currentSiteTime;
 	}
 	
 	@Override
@@ -665,9 +578,6 @@ public class Exploration extends EVAMission
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		explorationSiteCompletion.clear();
-		explorationSiteCompletion = null;
-		currentSite = null;
 		claimedSites.clear();
 		claimedSites = null;
 	}

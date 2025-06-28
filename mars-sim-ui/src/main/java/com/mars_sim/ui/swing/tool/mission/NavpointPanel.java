@@ -298,9 +298,7 @@ implements MissionListener {
 		}
 		else {
 			if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
-		}
-		
-		mapPanel.showMap(missionCache.getCurrentMissionLocation());		
+		}	
 	}
 	
 	/**
