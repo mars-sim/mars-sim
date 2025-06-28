@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
@@ -63,14 +62,13 @@ public class CollectResourcePanel extends JPanel implements UnitListener {
 	}
 
 
-	private static Component createList(DefaultListModel<String> model, String title) {
+	static Component createList(DefaultListModel<String> model, String title) {
 		var list = new JList<>(model); 
 		list.setLayoutOrientation(JList.VERTICAL);
 		list.setVisibleRowCount(-1);
-		JScrollPane listScroller = new JScrollPane(list);
-		listScroller.setBorder(StyleManager.createLabelBorder(title));
 
-		return listScroller;
+
+		return StyleManager.createScrollBorder(title, list);
 	}
 
 

@@ -285,7 +285,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private void improveMineralConcentrationEstimates(double time, int skill) {
 
-		double siteTime = ((Exploration)person.getMission()).getSiteTime();
+		double siteTime = ((Exploration)person.getMission()).getCurrentSiteTime();
 			
 		double probability = (time * siteTime / 100.0) 
 				* skill
