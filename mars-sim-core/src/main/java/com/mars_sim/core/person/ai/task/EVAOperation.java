@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.task.CookMeal;
+import com.mars_sim.core.building.function.cooking.task.CookMeal;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;

@@ -11,7 +11,7 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.task.CookMeal;
+import com.mars_sim.core.building.function.cooking.task.CookMeal;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;

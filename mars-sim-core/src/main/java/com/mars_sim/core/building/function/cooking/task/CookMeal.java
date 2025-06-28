@@ -4,21 +4,19 @@
  * @date 2022-07-24
  * @author Scott Davis
  */
-package com.mars_sim.core.building.function.task;
+package com.mars_sim.core.building.function.cooking.task;
 
 import java.util.logging.Level;
 
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 
@@ -61,14 +59,13 @@ public class CookMeal extends Task {
 	/**
 	 * Constructor.
 	 * 
-	 * @param person the person performing the task.
-	 * @throws Exception if error constructing task.
+	 * @param chef Chef cooking the meal
 	 */
-	public CookMeal(Person person) {
+	public CookMeal(Worker chef, Cooking kitchen) {
 		// Use Task constructor
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
+		super(NAME, chef, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
 		
-		if (person.isOutside()) {
+		if (chef.isOutside()) {
 			endTask();
 		}
 		
@@ -76,63 +73,23 @@ public class CookMeal extends Task {
 		setDescription(NAME + " " + getTypeOfMeal());
 
 		// Get an available kitchen.
-		kitchenBuilding = BuildingManager.getAvailableKitchen(person);
+		this.kitchen = kitchen;
+		kitchenBuilding = kitchen.getBuilding();
 
-		if (kitchenBuilding != null) {
-			kitchen = kitchenBuilding.getCooking();
 
-			// Walk to kitchen building.
-			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false);
+		// Walk to kitchen building.
+		walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false);
 
-			// Need to reset numGoodRecipes periodically since it's a cache value
-			// and won't get updated unless a meal is cooked.
-			// Note: it's reset at least once a day at the end of a sol
-			if (!kitchen.canCookMeal()) {
-				logger.log(person, Level.WARNING, 10_000, NO_INGREDIENT);
+		if (!Cooking.hasMealIngredients(kitchenBuilding.getSettlement())) {
+			logger.log(person, Level.WARNING, 10_000, NO_INGREDIENT);
 
-				endTask();
-			} else {
-
-				// Add task phase
-				addPhase(COOKING);
-				setPhase(COOKING);
-
-			}
-		} else {
 			endTask();
 		}
-	}
-
-	public CookMeal(Robot robot) {
-		// Use Task constructor
-		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
-
-		// Initialize data members
-		setDescription(NAME + " " + getTypeOfMeal()); // $NON-NLS-1$
-
-		// Get available kitchen if any.
-		kitchenBuilding = BuildingManager.getAvailableKitchen(robot);
-
-		if (kitchenBuilding != null) {
-			kitchen = kitchenBuilding.getCooking();
-
-			// Walk to kitchen building.
-			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false);
-
-			if (!kitchen.canCookMeal()) {
-				logger.log(robot, Level.WARNING, 5000, NO_INGREDIENT);
-
-				endTask();
-
-			} else {
-
-				// Add task phase
-				addPhase(COOKING);
-				setPhase(COOKING);
-			}
-		} else
-			endTask();
-
+		else {
+			// Add task phase
+			addPhase(COOKING);
+			setPhase(COOKING);
+		}
 	}
 
 	/**

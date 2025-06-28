@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.activities.GroupActivityMetaTask;
-import com.mars_sim.core.building.function.task.CookMealMeta;
+import com.mars_sim.core.building.function.cooking.task.CookMealMeta;
 import com.mars_sim.core.building.function.task.ObserveAstronomicalObjectsMeta;
 import com.mars_sim.core.building.function.task.OptimizeSystemMeta;
 import com.mars_sim.core.building.function.task.ProduceFoodMeta;
