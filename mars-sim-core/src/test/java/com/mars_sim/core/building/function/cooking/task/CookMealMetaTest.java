@@ -16,7 +16,7 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
      
         buildKitchen(s.getBuildingManager());
 
-        addMealIngredients(s);
+        setupScenario(s);
 
         var mt = new CookMealMeta();
 
@@ -41,7 +41,7 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
         var b1 = buildKitchen(s.getBuildingManager());
         var b2 = buildKitchen(s.getBuildingManager());
 
-        addMealIngredients(s);
+        setupScenario(s);
 
         var mt = new CookMealMeta();
 
@@ -60,7 +60,7 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
         var b = buildKitchen(s.getBuildingManager());
         var k = b.getCooking();
 
-        addMealIngredients(s);
+        setupScenario(s);
 
         var mt = new CookMealMeta();
 
@@ -90,7 +90,10 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
 		getSim().getMasterClock().setMarsTime(midBreakfast);
     }
 
-    private void addMealIngredients(Settlement s) {
+    private void setupScenario(Settlement s) {
+        // Add people to generate a demand for Meals
+        buildPerson("Hungry 1", s);
+
         // Add ingreidents for a meal
         var mealConf = getConfig().getMealConfiguration();
         var gBread = mealConf.getHotMeal("Garlic Bread");

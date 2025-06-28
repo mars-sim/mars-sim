@@ -323,7 +323,8 @@ public class Cooking extends Function {
 	}
 
 	public static final int getSettlementMealShortfall(Settlement s) {
-		int requiredMeals = (int)(s.getIndoorPeopleCount() * s.getMealsReplenishmentRate());
+		// Force rounding up so at least one meal will be need if anyone is inside
+		int requiredMeals = (int)Math.ceil(s.getIndoorPeopleCount() * s.getMealsReplenishmentRate());
 		int availableMeals = s.getBuildingManager().getBuildingSet(FunctionType.COOKING).stream()
 				.mapToInt(b -> b.getCooking().getNumberOfAvailableCookedMeals())
 				.sum();
