@@ -4,7 +4,7 @@
  * @date 2022-08-01
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.malfunction.task;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +22,6 @@ import com.mars_sim.core.malfunction.RepairHelper;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.task.RepairEVAMalfunction;
-import com.mars_sim.core.person.ai.task.RepairInsideMalfunction;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
