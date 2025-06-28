@@ -1,4 +1,4 @@
-package com.mars_sim.core.building.function.task;
+package com.mars_sim.core.building.function.farming.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.building.Building;
@@ -29,10 +29,6 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
         var b = buildGreenhouse(s);
         var p = buildPerson("gardener", s, JobType.BOTANIST, b, FunctionType.FARMING);
         var farm = b.getFarming();
-        var lab = b.getResearch();
-
-        // Add tissue that needs checking
-        int orig = lab.getUncheckedTissues().size();
 
         var task = new TendGreenhouse(p, farm, TendGreenhouse.SAMPLING);
         assertFalse("Tending task created", task.isDone());

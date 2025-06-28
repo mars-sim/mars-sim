@@ -26,7 +26,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.HouseKeeping;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.Research;
-import com.mars_sim.core.building.function.task.TendGreenhouse;
+import com.mars_sim.core.building.function.farming.task.TendGreenhouse;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.food.FoodType;

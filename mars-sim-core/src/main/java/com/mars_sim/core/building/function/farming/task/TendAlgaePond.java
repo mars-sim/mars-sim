@@ -4,7 +4,7 @@
  * @date 2023-12-07
  * @author Manny
  */
-package com.mars_sim.core.building.function.task;
+package com.mars_sim.core.building.function.farming.task;
 
 
 import com.mars_sim.core.building.Building;

@@ -4,7 +4,7 @@
  * @date 2023-12-07
  * @author Barry Evans
  */
-package com.mars_sim.core.building.function.task;
+package com.mars_sim.core.building.function.farming.task;
 
 
 import com.mars_sim.core.building.Building;
@@ -85,9 +85,7 @@ public class TendFishTank extends TendHousekeeping {
 	static TaskPhase selectActivity(Fishery fishTank, boolean doFishing) {
 		TaskPhase selected;
 		int rand = RandomUtil.getRandomInt(6);
-		
-//		If surplus is less than zero, do NOT catch any fish double surplus = fishTank.getSurplusStock();
-		
+				
 		// If it hasn't tended the fish for over 500 millisols, do it now
 		if (fishTank.getWeedDemand() > 0) {
 			selected = TENDING;
