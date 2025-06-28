@@ -24,6 +24,7 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 
 /**
  * The TableProperties class display the columns of a specific table.
@@ -59,7 +60,7 @@ class TableProperties extends JInternalFrame {
         // Prepare content pane
         JPanel mainPane = new JPanel();
         mainPane.setLayout(new BorderLayout());
-        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+        mainPane.setBorder(StyleManager.newEmptyBorder());
         setContentPane(mainPane);
 
         // Create column pane

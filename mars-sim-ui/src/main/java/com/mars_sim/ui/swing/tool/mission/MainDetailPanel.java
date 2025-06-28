@@ -11,8 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -24,7 +22,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -78,9 +75,9 @@ import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -110,18 +107,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	
 	private JLabel typeTextField;
 	private JLabel designationTextField;
-	private JLabel settlementTextField;
-	private JLabel leadTextField;
+	private EntityLabel settlementTextField;
+	private EntityLabel leadTextField;
 	private JLabel phaseTextField;
 	private JLabel statusTextField;
 	
 	private JLabel memberLabel = new JLabel("", SwingConstants.LEFT);
 	
 	private MemberTableModel memberTableModel;
-	private JTable memberTable;
-
-	private JButton centerMapButton;
-	private JButton vehicleButton;
 
 	private CardLayout customPanelLayout;
 
@@ -139,6 +132,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private LogTableModel logTableModel;
 
 	private JTabbedPane objectivesPane;
+
+	private EntityLabel vehicleLabel;
 
 
 	/**
@@ -181,12 +176,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		topBox.add(initMissionPane(), BorderLayout.CENTER);
 		topBox.add(initLogPane(), BorderLayout.SOUTH);
 
-		// Create the member panel.
-		JPanel leftRightBox = new JPanel(new GridLayout(1, 2));
-		leftRightBox.add(initVehiclePane());
-		leftRightBox.add(initLocationPane());
-		centerBox.add(leftRightBox, BorderLayout.NORTH);
-
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
 		memberOuterPane = new JPanel(new BorderLayout(1, 1));
@@ -218,78 +207,22 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionLayout.setBorder(blackline);
 	
 		// Prepare count spring layout panel.
-		AttributePanel missionPanel = new AttributePanel(6);
+		AttributePanel missionPanel = new AttributePanel();
 		missionLayout.add(missionPanel, BorderLayout.NORTH);
 		
 		typeTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.column.name"), "", null);
 		phaseTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null);
 		designationTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null);
-		settlementTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.settlement"), "", null);
-		leadTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.startingMember"), "", null);
-		statusTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null);
+		settlementTextField = new EntityLabel(desktop);
+		missionPanel.addLabelledItem(Msg.getString("MainDetailPanel.settlement"), settlementTextField);
 
+		leadTextField = new EntityLabel(desktop);
+		missionPanel.addLabelledItem(Msg.getString("MainDetailPanel.startingMember"), leadTextField);
+		statusTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null);
 		
 		return missionLayout;
 	}
 	
-	/**
-	 * Initializes the vehicle pane.
-	 * 
-	 * @return
-	 */
-	private JPanel initVehiclePane() {
-		
-		JPanel mainLayout = new JPanel(new BorderLayout(5, 5));
-		Border blackline = StyleManager.createLabelBorder(Msg.getString("MainDetailPanel.vehicle")); //$NON-NLS-1$
-		mainLayout.setBorder(blackline);
-
-		// Create the vehicle panel.
-		vehicleButton = new JButton(" ");
-		vehicleButton.addActionListener(e -> {
-			if (missionCache instanceof VehicleMission vehicleMission) {
-				Vehicle vehicle = vehicleMission.getVehicle();
-				if (vehicle != null) {
-					getDesktop().showDetails(vehicle);
-				}
-			} else if (missionCache instanceof ConstructionMission constructionMission
-						&& !constructionMission.getConstructionVehicles().isEmpty()) {
-				Vehicle vehicle = constructionMission.getConstructionVehicles().get(0);
-				getDesktop().showDetails(vehicle);
-			}
-		});
-		vehicleButton.setVisible(false);
-		vehicleButton.setToolTipText(Msg.getString("MainDetailPanel.vehicleToolTip")); //$NON-NLS-1$
-
-		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buttonWrapper.add(vehicleButton);
-		mainLayout.add(buttonWrapper, BorderLayout.CENTER);
-		
-		return mainLayout;
-	}
-	
-	private JPanel initLocationPane() {
-
-		JPanel mainLayout = new JPanel(new BorderLayout(5, 5));
-		Border blackline = StyleManager.createLabelBorder(Msg.getString("MainDetailPanel.location")); //$NON-NLS-1$
-		mainLayout.setBorder(blackline);
-		
-		// Create center map button
-		centerMapButton = new JButton(ImageLoader.getIconByName("mars")); //$NON-NLS-1$
-		centerMapButton.addActionListener(e -> {
-			if (missionCache instanceof VehicleMission vm) {
-				getDesktop().centerMapGlobe(vm.getCurrentMissionLocation());
-			}
-		});
-		centerMapButton.setEnabled(false);
-		centerMapButton.setToolTipText(Msg.getString("MainDetailPanel.gotoMarsMap")); //$NON-NLS-1$
-		
-		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buttonWrapper.add(centerMapButton);
-		mainLayout.add(buttonWrapper, BorderLayout.CENTER);
-		
-		return mainLayout;
-	}
-
 	/**
 	 * Initializes the travel pane.
 	 * 
@@ -304,9 +237,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		mainLayout.setBorder(blackline);
 		
 		// Prepare travel grid layout.
-		AttributePanel travelGridPane = new AttributePanel(4);
+		AttributePanel travelGridPane = new AttributePanel();
 		mainLayout.add(travelGridPane, BorderLayout.CENTER);
 
+		vehicleLabel = new EntityLabel(desktop);
+		travelGridPane.addLabelledItem("Vehicle", vehicleLabel);
 		vehicleStatusLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleStatus"), "", null);
 		speedLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleSpeed"), "", null);
 		distanceNextNavLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.distanceNextNavPoint"), "", null);
@@ -376,7 +311,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			memberTableModel = new MemberTableModel();
 	
 			// Create member table.
-			memberTable = new JTable(memberTableModel);
+			var memberTable = new JTable(memberTableModel);
 			memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 			memberTable.getColumnModel().getColumn(2).setPreferredWidth(40);
@@ -602,7 +537,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		designationTextField.setText(d);
 		typeTextField.setText(mission.getName());
 		
-		leadTextField.setText(mission.getStartingPerson().getName());
+		leadTextField.setEntity(mission.getStartingPerson());
 
 		String phaseText = mission.getPhaseDescription();
 		phaseTextField.setToolTipText(phaseText);
@@ -614,20 +549,16 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionStatusText.append(mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 		statusTextField.setText(missionStatusText.toString());
 		
-		settlementTextField.setText(mission.getAssociatedSettlement().getName());
+		settlementTextField.setEntity(mission.getAssociatedSettlement());
 
 		logTableModel.setMission(mission);
 		logTableModel.update();
-		
-		centerMapButton.setEnabled(true);
+
 		
 		// Update mission vehicle info in UI.
 		if (mission instanceof VehicleMission vehicleMission) {
 			Vehicle vehicle = vehicleMission.getVehicle();
-			if (vehicle != null) {
-				vehicleButton.setText(vehicle.getName());
-				vehicleButton.setVisible(true);
-			}
+			vehicleLabel.setEntity(vehicle);
 
 			if (vehicle != null && !mission.isDone()) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
@@ -675,8 +606,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
 			if (!constVehicles.isEmpty()) {
 				Vehicle vehicle = constVehicles.get(0);
-				vehicleButton.setText(vehicle.getName());
-				vehicleButton.setVisible(true);
+				vehicleLabel.setEntity(vehicle);
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -698,22 +628,20 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	public void clearInfo() {
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 		// Clear mission info in UI.
-		leadTextField.setText(" ");
+		leadTextField.setEntity(null);
 		designationTextField.setText(" ");
 		typeTextField.setText(" ");
 		phaseTextField.setText(" ");
 		phaseTextField.setToolTipText(" ");
 		
 		statusTextField.setText(" ");
-		settlementTextField.setText(" ");
+		settlementTextField.setEntity(null);
 
 		memberTableModel.setMission(null);
 		
 		logTableModel.update();
 		logTableModel.setMission(null);
-		
-		centerMapButton.setEnabled(false);
-		
+				
 		vehicleStatusLabel.setText(" ");
 		speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -767,7 +695,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			for(MissionObjective o : mission.getObjectives()) {
 				JPanel newPanel = switch(o) {
 					case CollectResourceObjective cro -> new CollectResourcePanel(cro);
-					case FieldStudyObjectives fso -> new FieldStudyPanel(fso);
+					case FieldStudyObjectives fso -> new FieldStudyPanel(fso, desktop);
 					default -> null;
 				};
 
@@ -832,41 +760,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 	}
 
-	public MissionWindow getMissionWindow() {
-		return missionWindow;
-	}
-
 	public void destroy() {
-		designationTextField = null;
-		typeTextField = null;
-		leadTextField = null;
-		phaseTextField = null;
-		statusTextField = null;
-		settlementTextField = null;
-		vehicleStatusLabel = null;
-		speedLabel = null;
-		distanceNextNavLabel = null;
-		traveledLabel = null;
-		centerMapButton = null;
-		vehicleButton = null;
-		customPanelLayout = null;
-		missionCustomPane = null;
-		missionCache = null;
-		currentVehicle = null;
-		missionWindow = null;
-		desktop = null;
-		memberTable = null;
 		memberTableModel = null;
 	}
-	
-	/**
-	 * Gets the main desktop.
-	 *
-	 * @return desktop.
-	 */
-	private MainDesktopPane getDesktop() {
-		return desktop;
-	}
+
 
 	private class MissionEventUpdater implements Runnable {
 
@@ -917,15 +814,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				memberTableModel.updateMembers();
 			} else if (type == MissionEventType.VEHICLE_EVENT) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				vehicleLabel.setEntity(vehicle);
 				if (vehicle != null) {
-					vehicleButton.setText(vehicle.getName());
-					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
 					speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
 				} else {
-					vehicleButton.setVisible(false);
 					vehicleStatusLabel.setText("Not Applicable");
 					speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$
 					if (currentVehicle != null)

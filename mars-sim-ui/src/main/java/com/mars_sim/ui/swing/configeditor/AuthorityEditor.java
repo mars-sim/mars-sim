@@ -36,8 +36,8 @@ import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.authority.MissionAgenda;
 import com.mars_sim.core.authority.MissionCapability;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.StyleManager;
 
 /**
  * UI Editor that allows a reporting authority to be edited.
@@ -145,13 +145,13 @@ public class AuthorityEditor  {
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(StyleManager.newEmptyBorder());
 		f.getContentPane().add(mainPane);
 		
 		// Create main panel.
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-		contentPane.setBorder(MainDesktopPane.newEmptyBorder());
+		contentPane.setBorder(StyleManager.newEmptyBorder());
 		mainPane.add(contentPane, BorderLayout.CENTER);
 				
 		JPanel leftPanel = new JPanel(new BorderLayout());

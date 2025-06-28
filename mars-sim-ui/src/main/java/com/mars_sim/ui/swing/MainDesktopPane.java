@@ -30,7 +30,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager.GameMode;
@@ -100,8 +99,6 @@ public class MainDesktopPane extends JDesktopPane
 	/** The image icon of the tiled background. */
 	private Image baseImageIcon = ImageLoader.getImage("background");
 
-	/** The desktop popup announcement window. */
-	private AnnouncementWindow announcementWindow;
 
 	private MainWindow mainWindow;
 	
@@ -165,21 +162,13 @@ public class MainDesktopPane extends JDesktopPane
 		
 		// Prep listeners
 		prepareListeners();
-		// Setup announcement window
-		prepareAnnouncementWindow();
 
 		// Set background paper size
 		Dimension selectedSize = mainWindow.getSelectedSize();
 		if (selectedSize != null) {
-			int w = selectedSize.width;
-			int h = selectedSize.height;
-			setSize(new Dimension(w, h));
-			setPreferredSize(new Dimension(w, h));
-			logger.config("Main Window initially set to "
-					+ w
-					+ " x "
-					+ h
-					+ ".");
+			setSize(selectedSize);
+			setPreferredSize(selectedSize);
+			logger.config("Main Window initially set to " + selectedSize);
 		}
 	}
 
@@ -301,19 +290,6 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(MonitorWindow.NAME, true);
 		getToolWindow(MissionWindow.NAME, true);
 		getToolWindow(ResupplyWindow.NAME, true);
-	}
-
-	/**
-	 * Creates announcement windows & transportWizard
-	 */
-	private void prepareAnnouncementWindow() {
-		// Prepare announcementWindow.
-		announcementWindow = new AnnouncementWindow(this);
-		try {
-			announcementWindow.setClosed(true);
-		} catch (java.beans.PropertyVetoException e) {
-			logger.severe("Announcement Window not ready: " + e.getMessage());
-		}
 	}
 
 	/**
@@ -507,16 +483,6 @@ public class MainDesktopPane extends JDesktopPane
 		}
     }
 
-    /**
-	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
-	 * 
-	 * @param unit Unit to display
-     * @return
-     */
-	public UnitWindow openUnitWindow(Unit unit) {
-		return openUnitWindow(unit, null);
-	}
-
 	/**
 	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
 	 * 
@@ -532,16 +498,13 @@ public class MainDesktopPane extends JDesktopPane
 		for (UnitWindow window : unitWindows) {
 			if (window.getUnit() == unit) {
 				tempWindow = window;
+				if (tempWindow.isClosed()) {
+					add(tempWindow, 0);
+				}
 			}
 		}
 
-		if (tempWindow != null) {
-			if (tempWindow.isClosed()) {
-				add(tempWindow, 0);
-			}
-		}
-
-		else {
+		if (tempWindow == null) {
 			// Create new window for unit.
 			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
 			
@@ -719,34 +682,6 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Opens a popup announcement window on the desktop.
-	 *
-	 * @param announcement the announcement text to display.
-	 */
-	public void openAnnouncementWindow(String announcement) {
-		announcementWindow.setAnnouncement(announcement);
-		announcementWindow.setSize(new Dimension(200, 100));
-		announcementWindow.pack();
-		add(announcementWindow, 0);
-		int xloc = (int) ((getWidth() - announcementWindow.getWidth()) * .5D);
-		int yloc = (int) ((getHeight() - announcementWindow.getHeight()) * .15D);
-		announcementWindow.setLocation(xloc, yloc);
-		// Note: second window packing seems necessary to get window
-		// to display components correctly.
-		announcementWindow.pack();
-		announcementWindow.setVisible(true);
-		validate();
-		repaint();
-	}
-
-	/**
-	 * Removes the popup announcement window from the desktop.
-	 */
-	public void disposeAnnouncementWindow() {
-		announcementWindow.dispose();
-	}
-
-	/**
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
@@ -780,17 +715,6 @@ public class MainDesktopPane extends JDesktopPane
 				openToolWindow(MonitorWindow.NAME);
 			}
 		}
-	}
-
-	/**
-	 * Creates a standardized empty border.
-	 */
-	public static EmptyBorder newEmptyBorder() {
-		return new EmptyBorder(1, 1, 1, 1);
-	}
-
-	public AnnouncementWindow getAnnouncementWindow() {
-		return announcementWindow;
 	}
 
 	/**
@@ -847,9 +771,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 			toolWindows = null;
 		}
-		backgroundImageIcon = null;
-		backgroundLabel = null;
-		announcementWindow = null;
+
 		mainWindow = null;
 	}
 

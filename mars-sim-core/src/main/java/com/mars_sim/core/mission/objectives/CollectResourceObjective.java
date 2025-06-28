@@ -33,7 +33,7 @@ public class CollectResourceObjective implements MissionObjective {
      * @param name the name of the objective
      */
     public CollectResourceObjective(double siteResourceGoal) {
-        this.name = "Collection Resources";
+        this.name = "Collect Resources";
         this.siteGoal = siteResourceGoal;
     }
 

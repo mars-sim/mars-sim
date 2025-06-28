@@ -258,7 +258,7 @@ public class CommanderWindow extends ToolWindow {
 				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(StyleManager.newEmptyBorder());
 		setContentPane(mainPane);
 
 		JPanel topPane = new JPanel(new FlowLayout());
@@ -1293,14 +1293,10 @@ public class CommanderWindow extends ToolWindow {
 		
 		prefButton = new JButton();
 		prefPanel.add(prefButton);
-		prefButton.setText("Go to " + settlement.getName() + " Preference tab");
+		prefButton.setText("Go to " + settlement.getName());
 		prefButton.addActionListener(e -> {
 			Settlement selected = (Settlement) settlementBox.getSelectedItem();
-			UnitWindow window = getDesktop().openUnitWindow(selected);
-			TabPanel tab = window.openTab(Msg.getString("TabPanelPreferences.title")); //$NON-NLS-1$
-			if (tab != null) {
-				logger.info(selected, "The Preference tab is opened.");
-			}
+			getDesktop().showDetails(selected);
 			repaint();
 		});
 

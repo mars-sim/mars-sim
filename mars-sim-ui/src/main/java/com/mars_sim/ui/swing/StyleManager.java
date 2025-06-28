@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.ColorUIResource;
 
@@ -486,20 +487,6 @@ public class StyleManager {
     }
 
     /**
-     * Creates a Titled border that uses the Label font.
-     * 
-     * @param title
-     * @return
-     */
-    public static Border createLabelBorder(String title, String tooltip) {
-    	return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
-                                                        TitledBorder.DEFAULT_POSITION,
-                                                        labelFont, (Color)null);
-    }
-    
-    
-    
-    /**
      * Gets the Bold default font.
      * 
      * @return
@@ -521,5 +508,12 @@ public class StyleManager {
      */
     public static Font getSmallLabelFont() {
         return smallLabelFont;
+    }
+
+    /**
+     * Creates a standardized empty border.
+     */
+    public static Border newEmptyBorder() {
+    	return new EmptyBorder(1, 1, 1, 1);
     }
 }

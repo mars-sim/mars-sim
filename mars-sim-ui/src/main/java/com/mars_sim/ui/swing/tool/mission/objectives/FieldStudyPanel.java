@@ -16,6 +16,8 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyEvent;
 import com.mars_sim.core.science.ScientificStudyListener;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.ObjectivesPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -37,7 +39,7 @@ public class FieldStudyPanel extends JPanel implements ObjectivesPanel, Scientif
 	 * 
 	 * @param desktop the main desktop pane.
 	 */
-	public FieldStudyPanel(FieldStudyObjectives objectives) {
+	public FieldStudyPanel(FieldStudyObjectives objectives, MainDesktopPane uiContext) {
 		super();
 
 		// Set layout.
@@ -48,11 +50,14 @@ public class FieldStudyPanel extends JPanel implements ObjectivesPanel, Scientif
 		var attrPanel = new AttributePanel();
 		add(attrPanel, BorderLayout.NORTH);
 
+	
 		study = objectives.getStudy();
-		attrPanel.addRow(Msg.getString("FieldStudyPanel.study"), study.getName());
+		attrPanel.addLabelledItem(Msg.getString("FieldStudyPanel.study"), 
+															new EntityLabel(study, uiContext));
 		attrPanel.addRow(Msg.getString("FieldStudyPanel.science"), objectives.getScience().getName());
 		attrPanel.addRow(Msg.getString("FieldStudyPanel.siteTime"), Double.toString(objectives.getFieldSiteTime()));
-		attrPanel.addRow(Msg.getString("FieldStudyPanel.leadResearcher"), study.getPrimaryResearcher().getName());
+		attrPanel.addLabelledItem(Msg.getString("FieldStudyPanel.leadResearcher"),
+															new EntityLabel(study.getPrimaryResearcher(), uiContext));
 
 		// Create study research progress bar.
 		studyResearchBar = new JProgressBar(0, 100);

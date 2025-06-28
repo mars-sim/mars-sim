@@ -43,6 +43,7 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 
 /**
  * The mission edit panel of a dialog.
@@ -118,7 +119,7 @@ public class EditPanel extends JPanel {
 		
 		// Create the members panel.
 		JPanel membersPane = new JPanel(new BorderLayout());
-		membersPane.setBorder(MainDesktopPane.newEmptyBorder());
+		membersPane.setBorder(StyleManager.newEmptyBorder());
 		membersPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(membersPane);
 		
