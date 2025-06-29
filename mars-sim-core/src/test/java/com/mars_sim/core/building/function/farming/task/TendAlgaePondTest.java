@@ -1,4 +1,4 @@
-package com.mars_sim.core.building.function.task;
+package com.mars_sim.core.building.function.farming.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.building.Building;

@@ -20,7 +20,7 @@ import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.task.CookMeal;
+import com.mars_sim.core.building.function.cooking.task.CookMeal;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -120,7 +120,6 @@ public class Cooking extends Function {
 	/** The cache for msols */
 	private int cookCapacity;
 	private int mealCounterPerSol = 0;
-	private boolean hasCookableMeal = false;
 
 	// Dynamically adjusted the rate of generating meals
 	private double cleaningAgentPerSol;
@@ -225,9 +224,12 @@ public class Cooking extends Function {
 		}
 
 		// Officiate Chefbot's contribution as cook
-		for (Robot r : getBuilding().getRoboticStation().getRobotOccupants()) {
-			if (r.getBotMind().getBotTaskManager().getTask() instanceof CookMeal) {
-				result++;
+		var rSta = getBuilding().getRoboticStation();
+		if (rSta != null) {
+			for (Robot r : rSta.getRobotOccupants()) {
+				if (r.getBotMind().getBotTaskManager().getTask() instanceof CookMeal) {
+					result++;
+				}
 			}
 		}
 		return result;
@@ -320,6 +322,16 @@ public class Cooking extends Function {
 		return cookNoMore;
 	}
 
+	public static final int getSettlementMealShortfall(Settlement s) {
+		// Force rounding up so at least one meal will be need if anyone is inside
+		int requiredMeals = (int)Math.ceil(s.getIndoorPeopleCount() * s.getMealsReplenishmentRate());
+		int availableMeals = s.getBuildingManager().getBuildingSet(FunctionType.COOKING).stream()
+				.mapToInt(b -> b.getCooking().getNumberOfAvailableCookedMeals())
+				.sum();
+		
+		return (requiredMeals - availableMeals);
+	}
+
 	/**
 	 * Adds cooking work to this facility. The amount of work is dependent upon the
 	 * person's cooking skill.
@@ -335,14 +347,8 @@ public class Cooking extends Function {
 
 		if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
-			double maxServings = s.getIndoorPeopleCount() * s.getMealsReplenishmentRate();
-
-			int totalServings = getTotalAvailableCookedMealsAtSettlement();
-			if (totalServings >= maxServings) {
-				cookNoMore = true;
-			}
-
-			else {
+			cookNoMore = (getSettlementMealShortfall(s) <= 0);
+			if (!cookNoMore) {
 				// Randomly pick a meal which ingredients are available
 				DishRecipe aMeal = getACookableMeal();
 				if (aMeal != null) {
@@ -352,18 +358,6 @@ public class Cooking extends Function {
 		}
 
 		return nameOfMeal;
-	}
-
-	/**
-	 * Gets the total number of available cooked meals at a settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @return number of cooked meals.
-	 */
-	private int getTotalAvailableCookedMealsAtSettlement() {
-		return building.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COOKING).stream()
-				.mapToInt(b -> b.getCooking().getNumberOfAvailableCookedMeals())
-				.sum();
 	}
 
 	/**
@@ -379,33 +373,15 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Can this Kitchen cook any meals from available ingredients ?
-	 * 
-	 * @return
+	 * Tests if at least one meal is cookable with the current ingredient store at a Settlement
 	 */
-	public boolean canCookMeal() {
-
-        // Check if there are enough ingredients to cook a meal.
-		// Need to reset numGoodRecipes periodically since it's a cache value
-		// and won't get updated unless a meal is cooked.
-		// Note: it's reset at least once a day at the end of a sol
-        if (!hasCookableMeal && (RandomUtil.getRandomInt(5) == 0)) {
-        	resetCookableMeals();
-        }
-
-        return hasCookableMeal;
-	}
-
-	/**
-	 * Tests if at least one meal is cookable with the current ingredient store.
-	 */
-	private void resetCookableMeals() {
+	public static boolean hasMealIngredients(Settlement s) {
 		// Find the first meal with all ingredients
 		Optional<DishRecipe> found = mealConfig.getDishList().stream()
-				.filter(i -> i.isIngredientsAvailable(building.getSettlement()))
+				.filter(i -> i.isIngredientsAvailable(s))
 				.findFirst();
 
-		hasCookableMeal = found.isPresent();
+		return found.isPresent();
 	}
 
 	/**
@@ -444,9 +420,6 @@ public class Cooking extends Function {
 										currentTime);
 		availableDishes.add(meal);
 		mealCounterPerSol++;
-
-		// See if there are other meals available
-		resetCookableMeals();
 
 		// Add to Qualtity record
 		var currentQuality = qualityMap.get(nameOfMeal);
