@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StyleManager.java
- * @date 2024-07-10
+ * @date 2025-06-30
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing;
@@ -32,8 +32,12 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTLightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMonokaiProIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTNightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedLightIJTheme;
+
 import com.formdev.flatlaf.util.HSLColor;
 import com.mars_sim.core.tool.Msg;
 
@@ -112,26 +116,36 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("pressure.unit.kPa")); //-NLS-1$
 
+    public static final String SYSTEM = "Default System";
     
-    // Supported LAFs
-    public static final String HIBERBEE_DARK = "Hiberbee Dark";
-    public static final String SOLARIZED_LIGHT = "Solarized Light";
-    public static final String SOLARIZED_DARK = "Solarized Dark";
-    public static final String DARK = "Flat Dark";
     public static final String LIGHT = "Flat Light";
     public static final String LIGHT_BLUE = LIGHT + " - Blue";
+    public static final String LIGHT_GREEN = LIGHT + " - Green";
     public static final String LIGHT_RED = LIGHT + " - Red";
     public static final String LIGHT_ORANGE = LIGHT + " - Orange";
-    public static final String LIGHT_GREEN = LIGHT + " - Green";
-    public static final String SYSTEM = "Default System";
-    private static final String [] LAF_STYLES = {
-    		LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, SOLARIZED_LIGHT,
-    		DARK, HIBERBEE_DARK, SOLARIZED_DARK, SYSTEM};
+    public static final String LIGHT_OWL = "Light Owl";
+    public static final String SOLARIZED_LIGHT = "Solarized Light";
+    
+    public static final String DARK = "Flat Dark";
+    public static final String HIBERBEE_DARK = "Hiberbee Dark";
+    public static final String NIGHT_OWL = "Night Owl";
+    public static final String MONOKAI_DARK = "Monokai Dark";
+    public static final String SOLARIZED_DARK = "Solarized Dark";
+    
     private static final String [] LAF_LIGHT_STYLES = {
-    		LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, SOLARIZED_LIGHT};
+    		SYSTEM, LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, LIGHT_OWL, SOLARIZED_LIGHT};
+    
     private static final String [] LAF_DARK_STYLES = {
-    		DARK, HIBERBEE_DARK, SOLARIZED_DARK, SYSTEM};
-    private static final String [] LAF_SYSTEM_STYLES = {SYSTEM};
+    		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK};
+    
+ // Create a new static string array that combines the elements of array1 and array2
+    public static String[] LAF_STYLES = new String[LAF_LIGHT_STYLES.length + LAF_DARK_STYLES.length];
+    
+    // Initialize the combined array
+    static {
+        System.arraycopy(LAF_LIGHT_STYLES, 0, LAF_STYLES, 0, LAF_LIGHT_STYLES.length);
+        System.arraycopy(LAF_DARK_STYLES, 0, LAF_STYLES, LAF_LIGHT_STYLES.length, LAF_DARK_STYLES.length);
+    }
     
     // Constants for font definition
     private static final String UIMANAGER_FONT = "defaultFont";
@@ -217,7 +231,7 @@ public class StyleManager {
      * Gets available system color LAF.
      */
     public static String[] getAvailableSystemLAF() {
-        return LAF_SYSTEM_STYLES;
+        return new String [] {SYSTEM};
     }
     
     /**
@@ -256,10 +270,15 @@ public class StyleManager {
                     break;
 	
                 case SOLARIZED_LIGHT:
-                	lafClass = FlatSolarizedLightIJTheme.class.getName();
-                	FlatSolarizedLightIJTheme.setup();
+                	lafClass = FlatMTSolarizedLightIJTheme.class.getName();
+                	FlatMTSolarizedLightIJTheme.setup();
                     break;
                     
+                case LIGHT_OWL:
+	                lafClass = FlatMTLightOwlIJTheme.class.getName();
+	                FlatMTLightOwlIJTheme.setup();
+	                break;
+                
                 case DARK:
                     lafClass = FlatDarkLaf.class.getName();
                     break;
@@ -269,10 +288,22 @@ public class StyleManager {
                     FlatHiberbeeDarkIJTheme.setup();
                     break;
 
+                case MONOKAI_DARK:
+	                lafClass = FlatMTMonokaiProIJTheme.class.getName();
+	                FlatMTMonokaiProIJTheme.setup();
+	                break;
+	                
+                case NIGHT_OWL:
+	                lafClass = FlatMTNightOwlIJTheme.class.getName();
+	                FlatMTNightOwlIJTheme.setup();
+	                break;
+	                
                 case SOLARIZED_DARK:
-                	lafClass = FlatSolarizedDarkIJTheme.class.getName();
-                	FlatSolarizedDarkIJTheme.setup();
+                	lafClass = FlatMTSolarizedDarkIJTheme.class.getName();
+                	FlatMTSolarizedDarkIJTheme.setup();
                     break;
+                    
+
                     
                 case SYSTEM:
                     lafClass = UIManager.getSystemLookAndFeelClassName();
