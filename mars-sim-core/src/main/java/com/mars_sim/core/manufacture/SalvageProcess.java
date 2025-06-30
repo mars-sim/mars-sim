@@ -28,7 +28,9 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public class SalvageProcess extends WorkshopProcess {
 	
-    private static final SimLogger logger = SimLogger.getLogger(SalvageProcess.class.getName());
+	private static final long serialVersionUID = 1L;
+
+	private static final SimLogger logger = SimLogger.getLogger(SalvageProcess.class.getName());
 
 	// Data members.    
     private Salvagable salvagedUnit;

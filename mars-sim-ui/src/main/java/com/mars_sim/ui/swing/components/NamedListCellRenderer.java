@@ -18,6 +18,7 @@ import com.mars_sim.core.Named;
  * 
  * This can also be used in a ComboBox
  */
+@SuppressWarnings("serial")
 public class NamedListCellRenderer extends DefaultListCellRenderer {
 
 	private String prompt;

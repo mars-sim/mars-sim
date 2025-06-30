@@ -14,6 +14,8 @@ import com.mars_sim.core.building.function.Manufacture;
  */
 public class ManufactureProcess extends WorkshopProcess {
 	
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Constructor.
 	 * 

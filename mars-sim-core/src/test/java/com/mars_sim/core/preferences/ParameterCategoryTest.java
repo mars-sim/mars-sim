@@ -26,7 +26,9 @@ public class ParameterCategoryTest extends TestCase {
 
 	class TestCategory extends ParameterCategory {
 
-        public TestCategory() {
+        private static final long serialVersionUID = 1L;
+
+		public TestCategory() {
             super(CAT_NAME);
         }
 

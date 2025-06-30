@@ -17,6 +17,7 @@ import com.mars_sim.core.resource.Part;
  * Immutable implementation of a Settlemetn Supplies
  */
 class SettlementSuppliesImpl implements SettlementSupplies {
+	private static final long serialVersionUID = 1L;
 	private List<BuildingTemplate> buildings;
 	private Map<String, Integer> vehicles;
 	private Map<String, Integer> equipment;

@@ -14,7 +14,8 @@ import com.mars_sim.core.structure.SettlementSupplies;
  * Definition of a Supply Manifest used in a resupply mission.
  */
 public class ResupplyManifest implements Serializable  {
-    private String name;
+    private static final long serialVersionUID = 1L;
+	private String name;
     private int people;
     private SettlementSupplies supplies;
 

@@ -7,9 +7,6 @@
 
 package com.mars_sim.core.person.ai.fav;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.mars_sim.core.tool.Msg;
 
 public enum FavoriteType {

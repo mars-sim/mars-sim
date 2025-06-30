@@ -214,7 +214,8 @@ public class ResourceUtil {
 	}
 
 	/**
-	 * Register the known Amunt Resources in the helper
+	 * Registers the known Amount Resources in the helper.
+	 * 
 	 * @param defined
 	 */
 	public static void registerResources(Set<AmountResource> defined) {
@@ -267,7 +268,8 @@ public class ResourceUtil {
 	}
 	
 	/**
-	 * get Resoruces tagged as type OIL
+	 * Gets Resources tagged as type OIL.
+	 * 
 	 * @return
 	 */
 	public static Set<Integer> getOilResources() {

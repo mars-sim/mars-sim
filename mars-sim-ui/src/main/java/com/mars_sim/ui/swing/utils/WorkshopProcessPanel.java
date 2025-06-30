@@ -26,8 +26,8 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 /**
  * A panel showing information about a Workshop process.
  */
+@SuppressWarnings("serial")
 class WorkshopProcessPanel extends JPanel {
-
 	// Data members
 	private WorkshopProcess process;
 	private BoundedRangeModel workBarModel;

@@ -13,10 +13,11 @@ import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 
 /**
- * Definiton of a process in a Workshop that needs tooling
+ * Definition of a process in a Workshop that needs tooling.
  */
 public abstract class WorkshopProcessInfo extends ProcessInfo {
-    private Tooling tooling;
+    private static final long serialVersionUID = 1L;
+	private Tooling tooling;
 
     WorkshopProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,
 			double workTimeRequired, double processTimeRequired, double powerRequired, Tooling tool,
@@ -28,6 +29,7 @@ public abstract class WorkshopProcessInfo extends ProcessInfo {
 
     /**
 	 * What tool is used for this process?
+	 * 
 	 * @return
 	 */
     public Tooling getTooling() {
@@ -36,6 +38,7 @@ public abstract class WorkshopProcessInfo extends ProcessInfo {
 
     /**
      * Is this process supported by the given tools?
+     * 
      * @param tools
      * @return
      */

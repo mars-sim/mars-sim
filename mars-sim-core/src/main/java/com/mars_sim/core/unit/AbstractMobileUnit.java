@@ -24,10 +24,11 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * Represent a Unit that can move around the surface
  */
+@SuppressWarnings("serial")
 public abstract class AbstractMobileUnit extends Unit
 	implements MobileUnit  {
-    
-    private Settlement owner;
+
+	private Settlement owner;
     private LocalPosition localPosn = LocalPosition.DEFAULT_POSITION;
     private int currentBuildingInt;
 	private double baseMass = 0D;

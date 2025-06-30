@@ -18,6 +18,7 @@ import com.mars_sim.core.structure.Settlement;
  */
 public abstract class WorkshopProcess implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private double workTimeRemaining;
 	private double processTimeRemaining;

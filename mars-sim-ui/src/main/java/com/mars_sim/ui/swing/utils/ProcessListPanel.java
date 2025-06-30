@@ -19,6 +19,7 @@ import com.mars_sim.core.manufacture.WorkshopProcess;
 /**
  * This is a panel that renders a list of workshop processes that are active
  */
+@SuppressWarnings("serial")
 public class ProcessListPanel extends JPanel {
 	private static final int WORD_WIDTH = 70;
 

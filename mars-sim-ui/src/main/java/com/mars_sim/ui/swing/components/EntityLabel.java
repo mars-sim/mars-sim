@@ -28,8 +28,9 @@ import com.mars_sim.ui.swing.tool_window.MapSelector;
  * A label that displays the name of an Entity and provides buttons to show details
  * or location on the map.
  */
+@SuppressWarnings("serial")
 public class EntityLabel extends JPanel {
-
+	
     private static final Icon DETAILS = ImageLoader.getIconByName("action/details_small");
     private static final Icon LOCATE = ImageLoader.getIconByName("action/locate_small");
 

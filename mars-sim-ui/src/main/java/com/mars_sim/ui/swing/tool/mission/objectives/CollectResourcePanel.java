@@ -25,8 +25,9 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 /**
  * A panel for displaying collect resources objectives information.
  */
+@SuppressWarnings("serial")
 public class CollectResourcePanel extends JPanel implements UnitListener {
-	
+
 	private CollectResourceObjective objective;
 
 	private DefaultListModel<String> resourceModel;

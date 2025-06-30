@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * TabPanelWeights.java
+ * TabPanelPreferences.java
  * @date 2023-06-08
  * @author Barry Evans
  */
@@ -323,6 +323,7 @@ public class TabPanelPreferences extends TabPanelTable {
 	private static class ParameterCategoryRenderer extends BasicComboBoxRenderer {
 		private static final long serialVersionUID = 5196005571089330950L;
 
+		@SuppressWarnings("rawtypes")
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 					int index, boolean isSelected, boolean cellHasFocus) {

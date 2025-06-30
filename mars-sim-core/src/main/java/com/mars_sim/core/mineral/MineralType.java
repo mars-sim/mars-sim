@@ -16,6 +16,7 @@ import java.util.Set;
  * 
  */
 public class MineralType implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private int resourceId;
 	private String name;
 	private String colour;

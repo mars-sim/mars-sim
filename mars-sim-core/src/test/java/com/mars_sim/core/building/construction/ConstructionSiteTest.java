@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;

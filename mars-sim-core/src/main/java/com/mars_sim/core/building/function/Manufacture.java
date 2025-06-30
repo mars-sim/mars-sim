@@ -42,6 +42,7 @@ public class Manufacture extends Function {
 	 * Records the available capacity of a tooling in a Manufacture function.
 	 */
 	public static class ToolCapacity implements Serializable {
+		private static final long serialVersionUID = 1L;
 		int used = 0;
 		int capacity;
 

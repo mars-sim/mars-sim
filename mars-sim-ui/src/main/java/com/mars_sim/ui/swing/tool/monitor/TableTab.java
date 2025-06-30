@@ -40,6 +40,7 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * displays the contents of a MonutorTableModel in a Table window. It supports
  * the selection and deletion of rows.
  */
+@SuppressWarnings("serial")
 public class TableTab extends MonitorTab {
 
 	// Common shared renderers
@@ -66,6 +67,7 @@ public class TableTab extends MonitorTab {
 	 * @param singleSelection Does this table only allow single selection?
 	 * @param icon name        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
+	@SuppressWarnings("serial")
 	protected TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String iconname) {
 		super(model, mandatory, true, ImageLoader.getIconByName(iconname));

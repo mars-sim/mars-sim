@@ -17,7 +17,8 @@ import com.mars_sim.core.structure.Settlement;
 public abstract class FixedUnit extends Unit 
     implements LocalBoundedObject {
     
-    private Settlement owner;
+    private static final long serialVersionUID = 1L;
+	private Settlement owner;
 
     /**
 	 * Constructor.

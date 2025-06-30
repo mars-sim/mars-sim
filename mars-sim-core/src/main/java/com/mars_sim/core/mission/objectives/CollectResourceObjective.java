@@ -15,8 +15,9 @@ import com.mars_sim.core.mission.MissionObjective;
  *  This class represents an objective for collecting resources during a mission.
  *  It tracks the amount of resources collected at various sites and cumulatively.
  */
+@SuppressWarnings("serial")
 public class CollectResourceObjective implements MissionObjective {
-
+	
     private String name;
     private double siteGoal = 0.0;
 

@@ -17,7 +17,7 @@ import java.util.List;
  * giving it optimised lookup on Coordinate.
  */
 public class SurfaceManager<T extends SurfacePOI> implements Serializable {
-
+	private static final long serialVersionUID = 1L;
     private static final int LATITUDE_SLICES = 6;
     private static final double LATITUDE_RANGE = Math.PI/LATITUDE_SLICES;
 
@@ -35,8 +35,9 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
     }
 
     /**
-     * Select the best slicer based on the Coordinate. This is based on the Latitude (phi)
-     * @param phi Lantitude phi vlaue
+     * Selects the best slicer based on the coordinate. This is based on the Latitude (phi).
+     * 
+     * @param phi Latitude phi value
      * @return
      */
     private int getSlice(double phi) {
@@ -51,7 +52,8 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
     }
 
     /**
-     * Get a feature at a specific location.
+     * Gets a feature at a specific location.
+     * 
      * @param newLocation
      * @return
      */
@@ -63,7 +65,8 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
     }
 
     /**
-     * Find all features within a range from a center location.
+     * Finds all features within a range from a center location.
+     * 
      * @param center Center point
      * @param arcAngle 
      * @return
@@ -86,7 +89,8 @@ public class SurfaceManager<T extends SurfacePOI> implements Serializable {
     }
 
     /**
-     * Get the distribution of details per slice. 
+     * Gets the distribution of details per slice. 
+     * 
      * @return Array of the number of items in each slice
      */
     public int[] getStats() {
