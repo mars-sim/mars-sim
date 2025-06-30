@@ -4,7 +4,7 @@
 	name="Default" description="Default Scenario">
 	<initial-settlement-list>
 	<!-- List of initial settlements in the simulation -->
-		<settlement name="Dreamville" template="Phase 2-BO" persons="8" robots="4" sponsor="BO">
+		<settlement name="Origin" template="Phase 2-BO" persons="8" robots="4" sponsor="BO">
 			<location longitude="29.75 W" latitude="10.63 N" />
 		</settlement>
 
@@ -47,7 +47,7 @@
 			<location longitude="105.8939 W" latitude="40.4244 N" />
 		</settlement>
 
-		<settlement name="Starcity" template="Phase 3-SX" persons="16" robots="8" sponsor="SPACEX">
+		<settlement name="Star Base" template="Phase 3-SX" persons="16" robots="8" sponsor="SPACEX">
     	<!-- 52nd Lunar and Planetary Science Conference 2021 (LPI COntrib. No. 2548), 
         "SpaceX Starship Landing Sites on Mars" 2420.pdf -->   
        		<!-- PM-1 site (Elev -3.2 km) in Phelgra Montes, the 1st prime landing -->

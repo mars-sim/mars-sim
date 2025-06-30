@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * SimulationFiles.java
+ * SimulationRuntime.java
  * @date 2024-09-01
  * @author Barry Evans
  */
@@ -126,7 +126,7 @@ public class SimulationRuntime {
 	}
 
 	/**
-	 * Initialise the runtime logging. This is a facade onto the java logging classes
+	 * Initialises the runtime logging. This is a facade onto the java logging classes.
 	 */
     public static void initialseLogging() {
 
@@ -134,11 +134,12 @@ public class SimulationRuntime {
             LogManager.getLogManager().readConfiguration(conf);
         } catch (IOException e) {
             // Problem with the logging.properties file
+        	logger.log(Level.SEVERE, "Unable to initialize logging.properties ", e);
         }
     }
 
     /**
-     * Programmically enable file logging. This will use the configured log folder.
+     * Programmically enables file logging. This will use the configured log folder.
      */
     public static void enableFileLogging() {
         if (!fileLogEnabled) {
@@ -152,7 +153,7 @@ public class SimulationRuntime {
                 fileHandler.setFormatter(new SimuLoggingFormatter());
                 fileHandler.setLevel (Level.ALL);
 				
-				logger.config("File logging enabled to " + logFile);
+				logger.config("File logging enabled to " + logFile + ".");
 				
                 // Get top level logger
                 Logger.getLogger("").addHandler(fileHandler);
@@ -160,8 +161,7 @@ public class SimulationRuntime {
                 fileLogEnabled = true;
 
             } catch (IOException e) {
-                // Not sure what to do here
-                e.printStackTrace();
+            	logger.log(Level.SEVERE, "Unable to start file logging ", e);
             }
         }
     }
@@ -190,7 +190,7 @@ public class SimulationRuntime {
 				}
 			}
 			catch(Exception e) {
-				logger.log(Level.WARNING, "Failed to remove old file " + child, e);
+				logger.log(Level.SEVERE, "Failed to remove old file " + child, e);
 			}
 		}
     }

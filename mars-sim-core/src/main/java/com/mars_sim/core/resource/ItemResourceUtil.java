@@ -68,7 +68,8 @@ public class ItemResourceUtil {
 	}
 
 	/**
-	 * Register the parts of the simulation.
+	 * Registers the parts of the simulation.
+	 * 
 	 * @param parts
 	 */
 	public static void registerParts(Set<Part> parts) {

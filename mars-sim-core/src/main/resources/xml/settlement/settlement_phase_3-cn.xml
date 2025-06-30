@@ -197,8 +197,8 @@
 	<building-package name="Syngas Set 1 - 1x2"/>
 	<building-package name="Solar Set 1 - 1x9"/>
    	<building-package name="Wind Set 1 - 1x9"/>	
-   	<building-package name="TOPAZ-2A Set 1 - 1x3"/>
-	<building-package name="TOPAZ-3 Set 1 - 1x2"/>		   	
+   	<building-package name="TOPAZ-2A Set 1 - 1x2"/>
+	<building-package name="TOPAZ-3 Set 1 - 1x1"/>		   	
 	
 
     <vehicle type="Explorer Rover" number="2" />
