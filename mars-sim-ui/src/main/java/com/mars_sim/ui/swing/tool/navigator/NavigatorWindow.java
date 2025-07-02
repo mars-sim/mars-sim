@@ -370,7 +370,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setPreferredSize(new Dimension(85, HEIGHT_STATUS_BAR));
+		heightLabel.setPreferredSize(new Dimension(95, HEIGHT_STATUS_BAR));
 	    
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);

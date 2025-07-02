@@ -1569,7 +1569,7 @@ public class Settlement extends Unit implements Temporal,
 
 	/**
 	 * Gets all people associated with this settlement, even if they are out on
-	 * missions.
+	 * missions. But it won't include anyone who have been both dead and buried.
 	 *
 	 * @return collection of associated people.
 	 */
@@ -1590,8 +1590,9 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Returns a collection of deceased people who may or may NOT have been buried
-	 * outside this settlement
+	 * Returns a collection of deceased people. 
+	 * Note: They may or may NOT have been buried
+	 * outside this settlement.
 	 *
 	 * @return {@link Collection<Person>}
 	 */

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MonitorWindow.java
- * @date 2024-06-29
+ * @date 2025-07-02
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -124,6 +124,9 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonFilter;
 		
 	private JCheckBox deceasedBox;
+	private JCheckBox deceaseBuriedBox;
+	
+	
 	/** Selection Combo box */
 	private JComboBox<Entity> selectionCombo;
 	
@@ -316,12 +319,19 @@ public class MonitorWindow extends ToolWindow
 
 		statusPanel.add(new JSeparator(SwingConstants.VERTICAL));
 		
-		// if it's a person table model, then display the deceased personnel checkbox
-		deceasedBox = new JCheckBox("Show Deceased", true);
+		// Displays the deceased citizens 
+		deceasedBox = new JCheckBox("Deceased", false);
 		deceasedBox.setBorder(BorderFactory.createLoweredBevelBorder());
-		deceasedBox.setToolTipText("Display or hide the deceased personnel in the settlement"); //$NON-NLS-1$
+		deceasedBox.setToolTipText("Display the already deceased citizens in this settlement"); //$NON-NLS-1$
 		deceasedBox.addActionListener(e -> displayDeceased());
 		statusPanel.add(deceasedBox);
+		
+		// Displays the deceased and buried citizens 
+		deceaseBuriedBox = new JCheckBox("Deceased & Buried", false);
+		deceaseBuriedBox.setBorder(BorderFactory.createLoweredBevelBorder());
+		deceaseBuriedBox.setToolTipText("Display the already deceased and buried citizens in this settlement"); //$NON-NLS-1$
+		deceaseBuriedBox.addActionListener(e -> displayDeceasedBuried());
+		statusPanel.add(deceaseBuriedBox);
 	}
 
 	/**
@@ -405,7 +415,7 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * New settlement so add to the selection and update the Reporting Auhority as well
+	 * New settlement so add to the selection and update the Reporting Authority as well
 	 */
 	private void addNewSettlement(Unit unit) {
 		if (unit instanceof Settlement s) {
@@ -681,19 +691,40 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * Displays or hides the deceased personnel.
+	 * Displays the already-deceased personnel.
 	 */
 	private void displayDeceased() {
-		boolean isCheck = deceasedBox.isSelected();
+		boolean deceased = deceasedBox.isSelected();
 		MonitorTab selectedTab = getSelectedTab();
 		MonitorModel tabTableModel = selectedTab.getModel();
 		if (tabTableModel instanceof PersonTableModel model) {
-			model.modifyPersonnel(isCheck);
+			model.showDeceased(deceased);
 			// refresh the tab
 			selectNewTab(selectedTab);
 		}
 	}
 		
+	/**
+	 * Displays the deceased and buried citizens.
+	 */
+	private void displayDeceasedBuried() {
+		boolean buried = deceaseBuriedBox.isSelected();
+		MonitorTab selectedTab = getSelectedTab();
+		MonitorModel tabTableModel = selectedTab.getModel();
+		if (tabTableModel instanceof PersonTableModel model) {
+			
+			// If a person is buried, it's also deceased
+			if (buried)
+				model.showDeceased(buried);
+			
+			model.showDeceasedBuried(buried);
+			// refresh the tab
+			selectNewTab(selectedTab);
+		}
+	}
+	
+	
+	
 	/** 
 	 * Gets the details of which tab is selected.
 	 */

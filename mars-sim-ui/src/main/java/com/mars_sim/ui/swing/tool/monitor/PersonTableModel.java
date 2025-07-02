@@ -123,12 +123,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * Inner enum with valid source types. 
 	 */
 	private enum ValidSourceType {
-		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
+		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, BURIED_PEOPLE, MISSION_PEOPLE;
 	}
 
 	private ValidSourceType sourceType;
 
-	private boolean isCheck = true;
+	private boolean isDeceased = false;
+	private boolean isBuried = false;
 	
 	private transient Crewable vehicle;
 	private Set<Settlement> settlements = Collections.emptySet();
@@ -208,6 +209,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {	
 		if ((sourceType != ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) &&
+			(sourceType != ValidSourceType.BURIED_PEOPLE) &&
 			(sourceType != ValidSourceType.SETTLEMENT_INHABITANTS)) {
 				return false;
 		}
@@ -218,30 +220,46 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		this.settlements = filter;
-		List<Person> entities;
-		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-			entities = settlements.stream()
-							.map(Settlement::getAllAssociatedPeople)
-							.flatMap(Collection::stream)
-							.collect(Collectors.toList());
-			settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+		List<Person> entities = null;
+		
+		if (isBuried) {
+			
+			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+				entities = settlements.stream()
+								.map(Settlement::getBuriedPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
+												UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+			}
+			
 		}
 		else {
-			entities = settlements.stream()
-							.map(Settlement::getIndoorPeople)
-							.flatMap(Collection::stream)
-							.collect(Collectors.toList());
-			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-											UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+			
+			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+				entities = settlements.stream()
+								.map(Settlement::getAllAssociatedPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
+												UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+			}
+			else {
+				entities = settlements.stream()
+								.map(Settlement::getIndoorPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+			}
+			
+			if (isDeceased)
+				entities = entities.stream().filter(p -> p.isDeclaredDead()).toList();
 		}
 
-		// Pick and attach to People
-		if (!isCheck) {
-			entities = entities.stream().filter(p -> !p.isDeclaredDead()).toList();
-		}
-			
-		resetEntities(entities);
+
+		if (entities != null)	
+			resetEntities(entities);
 
 		// Listen to the settlements for new People
 		settlements.forEach(s -> s.addUnitListener(settlementListener));
@@ -249,14 +267,24 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		return true;
 	}
 
-
 	/**
-	 * Changes if the deceased personnel checkbox is selected.
+	 * Shows deceased personnel if selected.
 	 * 
-	 * @param isCheck
+	 * @param isDeceased
 	 */
-	public void modifyPersonnel(boolean isCheck) {
-		this.isCheck = isCheck;
+	public void showDeceased(boolean isDeceased) {
+		this.isDeceased = isDeceased;
+	}
+	
+	/**
+	 * Shows deceased and buried citizen if selected.
+	 * 
+	 * @param isBuried
+	 */
+	public void showDeceasedBuried(boolean isBuried) {
+		this.isBuried = isBuried;
+		if (isBuried)
+			showDeceased(true);
 	}
 	
 	/**
