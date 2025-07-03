@@ -403,9 +403,10 @@ public final class SettlementBuilder {
 	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
 
 		Authority sponsor = settlement.getReportingAuthority();
-		long males = settlement.getAllAssociatedPeople().stream()
-												.filter(p -> p.getGender() == GenderType.MALE).count();
-		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
+		
+//		long males = settlement.getAllAssociatedPeople().stream()
+//												.filter(p -> p.getGender() == GenderType.MALE).count();
+//		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
 		
 		// Who exists already
 		Set<String> existingfullnames = new HashSet<>(unitManager.getPeople().stream()
@@ -414,15 +415,20 @@ public final class SettlementBuilder {
 		// Fill up the settlement by creating more people
 		while (settlement.getNumCitizens() < targetPopulation) {
 			// Choose the next gender based on the current ratio of M/F
-			GenderType gender;
-			if (males < targetMales) {
-				gender = GenderType.MALE;
-				males++;
-			}
-			else {
-				gender = GenderType.FEMALE;
-			}
+//			GenderType gender;
+//			if (males < targetMales) {
+//				gender = GenderType.MALE;
+//				males++;
+//			}
+//			else {
+//				gender = GenderType.FEMALE;
+//			}
 
+			GenderType gender = GenderType.MALE;
+			int rand = RandomUtil.getRandomInt(1);
+			if (rand == 1)
+				gender = GenderType.FEMALE;
+			
 			// This is random and may change on each call
 			String country = sponsor.getRandomCountry();
 			NationSpec spec = namingSpecs.getItem(country);

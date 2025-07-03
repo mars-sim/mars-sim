@@ -58,7 +58,7 @@ public class TabPanelGeneral extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare attribute panel.
-		AttributePanel infoPanel = new AttributePanel(8);
+		AttributePanel infoPanel = new AttributePanel(9);
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
@@ -66,6 +66,10 @@ public class TabPanelGeneral extends TabPanel {
 		String gender = person.getGender().getName();
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.gender"), gender, null);
 		
+		// Prepare blood type
+		String bloodType = person.getBloodType();
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.bloodType"), bloodType, null);
+				
 		// Prepare birthdate and age textfield
 		var birthDate = person.getBirthDate();
 

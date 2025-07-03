@@ -232,6 +232,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		// Create preferences
 		preference = new Preference(this);
+		
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap(ethnicity);
 
@@ -287,11 +288,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (nationPeople == null) {
 			nationPeople = personConfig.getDefaultPhysicalChars();
 		}
+		
 		height = nationPeople.getRandomHeight(gender);
+		
 		setBaseMass(nationPeople.getRandomWeight(gender, height));
 		// Biochemistry: id 0 - 19
 		setupBloodType();
-
 		// Set up carrying capacity and personality traits: id 40 - 59
 		setupCarryingCapAttributeTrait(personConfig);
 	}
@@ -353,13 +355,23 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	private static final String getRandomBloodtype() {
-		int rand = RandomUtil.getRandomInt(2);
-		return switch(rand) {
-			case 0 -> "A";
-			case 1 -> "B";
-			case 2 -> "O";
-			default -> throw new IllegalStateException("Cannot get bloodtype of value " + rand);
-		};
+		int rand = RandomUtil.getRandomInt(100);
+		if (rand <= 34)
+			return "A_POS";
+		else if (rand < 40)
+			return "A_NEG";
+		else if (rand < 49)
+			return "B_POS";
+		else if (rand < 51)
+			return "B_NEG";
+		else if (rand < 55)
+			return "AB_POS";
+		else if (rand < 56)
+			return "AB_NEG";
+		else if (rand < 94)
+			return "O_POS";
+		else 
+			return "O_NEG";
 	}
 
 	/**
@@ -367,22 +379,81 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	private void setupBloodType() {
 
-		String dadBloodType = getRandomBloodtype();
-		String momBloodType = getRandomBloodtype();
-		String combined = dadBloodType + "-" + momBloodType;
+		String dad = getRandomBloodtype();
+		String mom = getRandomBloodtype();
+		
+		String[] dadSplitted = dad.split("_");
+		String dadBlood = dadSplitted[0];
+		String dadRh = dadSplitted[1];
+		
+		String[] momSplitted = mom.split("_");
+		String momBlood = momSplitted[0];
+		String momRh = momSplitted[1];
+		
+		// Compute the person's blood type
+		String tempBloodType = dadBlood + "-" + momBlood;
+		
+		
+		tempBloodType = switch(tempBloodType) {
+		
+		// Note 0 : Need to rework into calculating percent probability of possible blood type for a child
+		// Note 1 : that the O blood type is recessive, and the B blood type is dominant		
+		// Note 3 : variable = (condition) ? expressionTrue : expressionFalse
+		// (RandomUtil.getRandomInt(1) == 0 ) ? "A" : "O" 	
+		// (RandomUtil.getRandomInt(2) == 0 ) ? "B" : ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 	
+		
+	
+			case "A-A" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
+			case "A-B" -> (RandomUtil.getRandomInt(1) == 0 ) 
+						? ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 
+						: ((RandomUtil.getRandomInt(1) == 0 ) ? "AB" : "O");
+			case "A-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
+			case "A-O" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
 
-		bloodType = switch(combined) {
-			case "A-A" -> "A";
-			case "A-B" -> "AB";
-			case "A-O" -> "A";
-			case "B-A" -> "AB";
-			case "B-B" -> "B";
-			case "B-O" -> "B";
-			case "O-A" -> "A";
-			case "O-B" -> "B";
+			
+			case "B-A" -> (RandomUtil.getRandomInt(1) == 0 ) 
+						? ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 
+						: ((RandomUtil.getRandomInt(1) == 0 ) ? "AB" : "O");
+			case "B-B" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
+			case "B-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
+			case "B-O" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
+			
+			
+			case "AB-A" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
+			case "AB-B" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
+			case "AB-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
+			case "AB-O" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "B";
+			
+			
+			case "O-A" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
+			case "O-B" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
+			case "O-AB" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "B";
 			case "O-O" -> "O";
-			default -> throw new IllegalStateException("Cannot get bloodtype from parents of " + combined);
+			
+			default -> throw new IllegalStateException("Cannot get bloodtype from parents of " + tempBloodType);
 		};
+		
+		// Compute the person's Rh factor
+		String tempRh = null; //"POS";
+		double percentRhPositive = 0;
+		
+		if (momRh.equals("POS") && dadRh.equals("POS"))
+			percentRhPositive = 93.75;
+		else if ((momRh.equals("POS") && dadRh.equals("NEG"))
+			|| (momRh.equals("NEG") && momRh.equals("POS")))
+			percentRhPositive = 75.0;
+		else 
+			tempRh = "-";
+		
+		if (tempRh == null) {
+			int rand = RandomUtil.getRandomInt(100);
+			if (rand <= percentRhPositive)
+				tempRh =  "+";
+			else 
+				tempRh = "-";
+		}
+
+		this.bloodType = tempBloodType + tempRh;
 	}
 
 	/**

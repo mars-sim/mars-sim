@@ -290,7 +290,7 @@ public class PersonBuilder {
 		if (attributeMap == null) {
 			attributeMap = buildDefaultAttributes();
 		}
-		
+				
 		Person p = new Person(name, settlement, gender, age, ethnicity, attributeMap);
 
 		applyPersonality(p);

@@ -279,7 +279,7 @@ public class MonitorWindow extends ToolWindow
 	 * Adds the bottom bar.
 	 */
 	private void addBottomBar() {
-  JButton buttonProps;
+		JButton buttonProps;
 		// Prepare row count label
 		rowCount = new JLabel("  ");
 		rowCount.setPreferredSize(new Dimension(120, STATUS_HEIGHT));

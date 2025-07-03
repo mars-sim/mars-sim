@@ -29,6 +29,7 @@ import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 
 import junit.framework.TestCase;
@@ -207,9 +208,17 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	public Person buildPerson(String name, Settlement settlement, JobType job,
 					Building place, FunctionType activity) {
-		Person person = Person.create(name, settlement, GenderType.MALE)
+		
+		GenderType gender = GenderType.MALE;
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1)
+			gender = GenderType.FEMALE;
+		
+		Person person = Person.create(name, settlement, gender)
 				.build();
+		
 		person.setJob(job, "Test");
+		
 		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
 		
 		unitManager.addUnit(person);
