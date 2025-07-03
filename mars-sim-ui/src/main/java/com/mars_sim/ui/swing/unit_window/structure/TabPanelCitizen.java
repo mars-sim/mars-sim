@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelCitizen.java
- * @date 2022-07-09
+ * @date 2025-07-02
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -23,7 +23,7 @@ import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
- * The TabPanelAssociatedPeople is a tab panel for information on all people
+ * The TabPanelCitizen is a tab panel for information on all people
  * associated with a settlement.
  */
 @SuppressWarnings("serial")
@@ -34,13 +34,16 @@ public class TabPanelCitizen extends TabPanel{
 	private int populationCitizensCache;
 	private int populationCapacityCache;
 	private int populationIndoorCache;
-
+	
+	private String genderRatioCache;
+	
 	private Settlement settlement;
 
 	private JLabel populationCitizensLabel;
 	private JLabel populationCapacityLabel;
 	private JLabel populationIndoorLabel;
-
+	private JLabel genderRatioLabel;
+	
 	private UnitListPanel<Person> populationList;
 
 	/**
@@ -64,12 +67,12 @@ public class TabPanelCitizen extends TabPanel{
 	@Override
 	protected void buildUI(JPanel content) {
 		// Prepare count spring layout panel.
-		AttributePanel countPanel = new AttributePanel(3);
+		AttributePanel countPanel = new AttributePanel(4);
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create associate label
 		populationCitizensCache = settlement.getNumCitizens();
-		populationCitizensLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.associated"),
+		populationCitizensLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.citizen"),
 											   		Integer.toString(populationCitizensCache), null);
 
 		// Create population indoor label
@@ -82,6 +85,11 @@ public class TabPanelCitizen extends TabPanel{
 		populationCapacityLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.capacity"),
 											   		Integer.toString(populationCapacityCache), null);
 
+		genderRatioCache = settlement.getGenderRatioString();
+		genderRatioLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.gender"),
+		   		genderRatioCache, null);
+
+		
 		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {
 			@Override
 			protected Collection<Person> getData() {
@@ -117,6 +125,13 @@ public class TabPanelCitizen extends TabPanel{
 		if (populationCapacityCache != cap) {
 			populationCapacityCache = cap;
 			populationCapacityLabel.setText(populationCapacityCache + "");
+		}
+		
+		String ratio = genderRatioCache = settlement.getGenderRatioString();
+		// Update gender ratio
+		if (!genderRatioCache.equals(ratio)) {
+			genderRatioCache = ratio;
+			genderRatioLabel.setText(genderRatioCache);
 		}
 
 		// Update population list

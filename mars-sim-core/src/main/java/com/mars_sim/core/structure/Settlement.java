@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2024-07-23
+ * @date 2025-07-02
  * @author Scott Davis
  */
 
@@ -71,6 +71,7 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -661,6 +662,59 @@ public class Settlement extends Unit implements Temporal,
 		return buildingManager.getPopulationCapacity();
 	}
 
+	
+	/**
+	 * Gets the number of males of a settlement.
+	 *
+	 * @return the  number of males
+	 */
+	public int getMaleFemaleCount(boolean male) {
+		if (male) {
+			return (int)citizens
+					.stream()
+					.filter(p -> p.getGender() == GenderType.MALE)
+					.count();
+		}
+		else {
+			return (int)citizens
+					.stream()
+					.filter(p -> p.getGender() == GenderType.FEMALE)
+					.count();
+		}
+	}
+
+	/**
+	 * Gets the gender ratio of the settlement.
+	 *
+	 * @return the gender ratio (Male/Female)
+	 */
+	public double getGenderRatio() {
+		return Math.round(1.0 * getMaleFemaleCount(true)/getMaleFemaleCount(false) * 100.0)/100.0;
+	}
+	
+	/**
+	 * Gets the statistical string showing the gender ratio.
+	 *  
+	 * @return
+	 */
+	public String getGenderRatioString() {
+		int male = getMaleFemaleCount(true);
+		int female = getMaleFemaleCount(false);
+		
+		double ratio = Double.MAX_VALUE;
+		
+		if (male == 0)
+			ratio = 0;
+		else if (female == 0)
+			ratio = Double.POSITIVE_INFINITY;
+		else	
+			ratio = Math.round(1.0 * male/female * 100.0)/100.0;
+		
+		return male + " to " + female + " (" + ratio + ")";
+		
+	}
+	
+	
 	/**
 	 * Ends all the indoor tasks people are doing.
 	 */

@@ -64,7 +64,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare gender textfield
 		String gender = person.getGender().getName();
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.gender"), gender,null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.gender"), gender, null);
 		
 		// Prepare birthdate and age textfield
 		var birthDate = person.getBirthDate();

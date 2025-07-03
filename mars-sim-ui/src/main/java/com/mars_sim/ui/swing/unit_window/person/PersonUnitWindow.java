@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * PersonWindow.java
+ * PersonUnitWindow.java
  * @date 2023-06-04
  * @author Scott Davis
  */

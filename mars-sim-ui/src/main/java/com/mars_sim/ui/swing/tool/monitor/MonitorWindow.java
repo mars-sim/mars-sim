@@ -435,7 +435,9 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * New settlement so add to the selection and update the Reporting Authority as well
+	 * Adds new settlement to the selection and updates the Reporting Authority.
+	 * 
+	 * @param unit
 	 */
 	private void addNewSettlement(Unit unit) {
 		if (unit instanceof Settlement s) {
@@ -453,6 +455,8 @@ public class MonitorWindow extends ToolWindow
 
 	/**
 	 * Reacts to a change in the Combo selection. 
+	 * 
+	 * @param event
 	 */
 	private void changeSelection(ItemEvent event) {
 		String newDescription = "";
