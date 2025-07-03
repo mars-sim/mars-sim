@@ -135,6 +135,8 @@ public class MonitorWindow extends ToolWindow
 	private JComboBox<Entity> selectionCombo;
 	
 	private JPanel statusPanel;
+	
+	private JPanel choosePanel;
 
 	private Set<Settlement> currentSelection;
 
@@ -324,12 +326,12 @@ public class MonitorWindow extends ToolWindow
 
 		statusPanel.add(new JSeparator(SwingConstants.VERTICAL));
 
-		JPanel choosePanel = new JPanel(new GridLayout(1, 3, 0, 0));			
+		choosePanel = new JPanel(new GridLayout(1, 3, 0, 0));			
 		choosePanel.setBorder(StyleManager.createLabelBorder("Types:"));	
 		statusPanel.add(choosePanel, BorderLayout.CENTER);
 		
 		// Displays the live citizens 
-		aliveB = new JCheckBox("Live", true);
+		aliveB = new JCheckBox("Alive", true);
 		aliveB.setBorder(BorderFactory.createLoweredBevelBorder());
 		aliveB.setToolTipText("Display the live citizens in this settlement"); //$NON-NLS-1$
 		aliveB.addActionListener(e -> displayLive());
@@ -632,8 +634,18 @@ public class MonitorWindow extends ToolWindow
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
 		
-		deceasedB.setVisible(tabTableModel instanceof PersonTableModel);
-		buriedB.setVisible(tabTableModel instanceof PersonTableModel);
+		if (tabTableModel instanceof PersonTableModel) {
+			choosePanel.setVisible(true);
+			aliveB.setVisible(true);
+			deceasedB.setVisible(true);
+			buriedB.setVisible(true);
+		}
+		else {
+			choosePanel.setVisible(false);
+			aliveB.setVisible(false);
+			deceasedB.setVisible(false);
+			buriedB.setVisible(false);
+		}
 	}
 
 	@Override
