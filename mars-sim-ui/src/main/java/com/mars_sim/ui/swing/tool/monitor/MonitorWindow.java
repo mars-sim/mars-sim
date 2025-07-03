@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -53,6 +55,7 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
@@ -123,9 +126,10 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonDetails;
 	private JButton buttonFilter;
 		
-	private JCheckBox deceasedBox;
-	private JCheckBox deceaseBuriedBox;
-	
+	protected JCheckBox aliveB;
+	protected JCheckBox deceasedB;
+	protected JCheckBox buriedB;
+	protected ButtonGroup group = new ButtonGroup();
 	
 	/** Selection Combo box */
 	private JComboBox<Entity> selectionCombo;
@@ -228,6 +232,7 @@ public class MonitorWindow extends ToolWindow
 		
 		// Lastly activate the default tab
 		selectNewTab(getSelectedTab());
+		
 	}
 
 	/**
@@ -318,20 +323,35 @@ public class MonitorWindow extends ToolWindow
 		statusPanel.add(buttonFilter);
 
 		statusPanel.add(new JSeparator(SwingConstants.VERTICAL));
+
+		JPanel choosePanel = new JPanel(new GridLayout(1, 3, 0, 0));			
+		choosePanel.setBorder(StyleManager.createLabelBorder("Types:"));	
+		statusPanel.add(choosePanel, BorderLayout.CENTER);
+		
+		// Displays the live citizens 
+		aliveB = new JCheckBox("Live", true);
+		aliveB.setBorder(BorderFactory.createLoweredBevelBorder());
+		aliveB.setToolTipText("Display the live citizens in this settlement"); //$NON-NLS-1$
+		aliveB.addActionListener(e -> displayLive());
+		choosePanel.add(aliveB);
 		
 		// Displays the deceased citizens 
-		deceasedBox = new JCheckBox("Deceased", false);
-		deceasedBox.setBorder(BorderFactory.createLoweredBevelBorder());
-		deceasedBox.setToolTipText("Display the already deceased citizens in this settlement"); //$NON-NLS-1$
-		deceasedBox.addActionListener(e -> displayDeceased());
-		statusPanel.add(deceasedBox);
+		deceasedB = new JCheckBox("Deceased", false);
+		deceasedB.setBorder(BorderFactory.createLoweredBevelBorder());
+		deceasedB.setToolTipText("Display the deceased citizens in this settlement"); //$NON-NLS-1$
+		deceasedB.addActionListener(e -> displayDeceased());
+		choosePanel.add(deceasedB);
 		
-		// Displays the deceased and buried citizens 
-		deceaseBuriedBox = new JCheckBox("Deceased & Buried", false);
-		deceaseBuriedBox.setBorder(BorderFactory.createLoweredBevelBorder());
-		deceaseBuriedBox.setToolTipText("Display the already deceased and buried citizens in this settlement"); //$NON-NLS-1$
-		deceaseBuriedBox.addActionListener(e -> displayDeceasedBuried());
-		statusPanel.add(deceaseBuriedBox);
+		// Displays the buried citizens 
+		buriedB = new JCheckBox("Buried", false);
+		buriedB.setBorder(BorderFactory.createLoweredBevelBorder());
+		buriedB.setToolTipText("Display the buried citizens in this settlement"); //$NON-NLS-1$
+		buriedB.addActionListener(e -> displayBuried());
+		choosePanel.add(buriedB);
+		
+		group.add(aliveB);
+		group.add(deceasedB);
+		group.add(buriedB);
 	}
 
 	/**
@@ -608,7 +628,8 @@ public class MonitorWindow extends ToolWindow
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
 		
-		deceasedBox.setVisible(tabTableModel instanceof PersonTableModel);
+		deceasedB.setVisible(tabTableModel instanceof PersonTableModel);
+		buriedB.setVisible(tabTableModel instanceof PersonTableModel);
 	}
 
 	@Override
@@ -689,15 +710,35 @@ public class MonitorWindow extends ToolWindow
 			removeTab(getSelectedTab());
 		}
 	}
-
+	
+	/**
+	 * Displays the live citizens.
+	 */
+	private void displayLive() {
+		boolean alive = aliveB.isSelected();
+		MonitorTab selectedTab = getSelectedTab();
+		MonitorModel tabTableModel = selectedTab.getModel();
+		if (tabTableModel instanceof PersonTableModel model) {
+			if (alive)
+				group.clearSelection();
+			aliveB.setSelected(alive);
+			model.showAlive(alive);
+			// refresh the tab
+			selectNewTab(selectedTab);
+		}
+	}
+	
 	/**
 	 * Displays the already-deceased personnel.
 	 */
 	private void displayDeceased() {
-		boolean deceased = deceasedBox.isSelected();
+		boolean deceased = deceasedB.isSelected();
 		MonitorTab selectedTab = getSelectedTab();
 		MonitorModel tabTableModel = selectedTab.getModel();
 		if (tabTableModel instanceof PersonTableModel model) {
+			if (deceased)
+				group.clearSelection();
+			deceasedB.setSelected(deceased);
 			model.showDeceased(deceased);
 			// refresh the tab
 			selectNewTab(selectedTab);
@@ -705,25 +746,21 @@ public class MonitorWindow extends ToolWindow
 	}
 		
 	/**
-	 * Displays the deceased and buried citizens.
+	 * Displays the buried citizens.
 	 */
-	private void displayDeceasedBuried() {
-		boolean buried = deceaseBuriedBox.isSelected();
+	private void displayBuried() {
+		boolean buried = buriedB.isSelected();
 		MonitorTab selectedTab = getSelectedTab();
 		MonitorModel tabTableModel = selectedTab.getModel();
 		if (tabTableModel instanceof PersonTableModel model) {
-			
-			// If a person is buried, it's also deceased
 			if (buried)
-				model.showDeceased(buried);
-			
-			model.showDeceasedBuried(buried);
+				group.clearSelection();
+			buriedB.setSelected(buried);
+			model.showBuried(buried);		
 			// refresh the tab
 			selectNewTab(selectedTab);
 		}
 	}
-	
-	
 	
 	/** 
 	 * Gets the details of which tab is selected.

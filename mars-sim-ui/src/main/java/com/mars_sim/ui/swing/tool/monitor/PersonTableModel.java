@@ -128,8 +128,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	private ValidSourceType sourceType;
 
-	private boolean isDeceased = false;
-	private boolean isBuried = false;
+	private boolean isLiveCB = true;
+	private boolean isDeceasedCB = false;
+	private boolean isBuriedCB = false;
 	
 	private transient Crewable vehicle;
 	private Set<Settlement> settlements = Collections.emptySet();
@@ -139,6 +140,21 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private transient UnitListener settlementListener;
 	private transient MissionListener missionListener;
 
+	/**
+	 * Constructs a PersonTableModel that displays residents are all associated
+	 * people with a specified settlement.
+	 *
+	 */
+	public PersonTableModel()  {
+		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
+				"PersonTableModel.countingCitizens", COLUMNS);
+		setupCache();
+		
+		setSettlementColumn(SETTLEMENT);
+
+		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
+	}
+	
 	/**
 	 * Constructs a PersonTableModel object that displays all people from the
 	 * specified vehicle.
@@ -160,20 +176,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		crewListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		((Unit) vehicle).addUnitListener(crewListener);
-	}
-
-	/**
-	 * Constructs a PersonTableModel that displays residents are all associated
-	 * people with a specified settlement.
-	 *
-	 */
-	public PersonTableModel()  {
-		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
-				"PersonTableModel.countingCitizens", COLUMNS);
-		setupCache();
-		setSettlementColumn(SETTLEMENT);
-
-		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
 	}
 
 	/**
@@ -222,29 +224,18 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		this.settlements = filter;
 		List<Person> entities = null;
 		
-		if (isBuried) {
-			
+		if (isLiveCB) {
 			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-				entities = settlements.stream()
-								.map(Settlement::getBuriedPeople)
-								.flatMap(Collection::stream)
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-												UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			}
-			
-		}
-		else {
-			
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+
 				entities = settlements.stream()
 								.map(Settlement::getAllAssociatedPeople)
 								.flatMap(Collection::stream)
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-												UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
 			else {
+
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
@@ -252,14 +243,53 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}
-			
-			if (isDeceased)
-				entities = entities.stream().filter(p -> p.isDeclaredDead()).toList();
+		}
+		else if (isDeceasedCB) {
+			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+
+				entities = settlements.stream()
+								.map(Settlement::getDeceasedPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
+										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+			}
+			else {
+
+				entities = settlements.stream()
+								.map(Settlement::getIndoorPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+			}
+		}
+		else if (isBuriedCB) {
+			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+	
+				entities = settlements.stream()
+								.map(Settlement::getBuriedPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
+											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+
+			}
+			else {
+
+				entities = settlements.stream()
+								.map(Settlement::getIndoorPeople)
+								.flatMap(Collection::stream)
+								.collect(Collectors.toList());
+				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+			}		
 		}
 
-
-		if (entities != null)	
+		
+		if (entities != null) {
 			resetEntities(entities);
+		}
 
 		// Listen to the settlements for new People
 		settlements.forEach(s -> s.addUnitListener(settlementListener));
@@ -268,23 +298,42 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 
 	/**
-	 * Shows deceased personnel if selected.
+	 * Shows live citizens if selected.
+	 * 
+	 * @param isLive
+	 */
+	public void showAlive(boolean isLive) {
+		this.isLiveCB = isLive;
+		if (isLive) {
+			this.isDeceasedCB = false;
+			this.isBuriedCB = false;
+		}
+	}
+	
+	/**
+	 * Shows deceased citizens if selected.
 	 * 
 	 * @param isDeceased
 	 */
 	public void showDeceased(boolean isDeceased) {
-		this.isDeceased = isDeceased;
+		this.isDeceasedCB = isDeceased;
+		if (isDeceased) {
+			this.isLiveCB = false;
+			this.isBuriedCB = false;
+		}
 	}
 	
 	/**
-	 * Shows deceased and buried citizen if selected.
+	 * Shows buried citizens if selected.
 	 * 
 	 * @param isBuried
 	 */
-	public void showDeceasedBuried(boolean isBuried) {
-		this.isBuried = isBuried;
-		if (isBuried)
-			showDeceased(true);
+	public void showBuried(boolean isBuried) {
+		this.isBuriedCB = isBuried;
+		if (isBuried) {
+			this.isLiveCB = false;
+			this.isDeceasedCB = false;
+		}
 	}
 	
 	/**
