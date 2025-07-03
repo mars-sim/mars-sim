@@ -404,9 +404,9 @@ public final class SettlementBuilder {
 
 		Authority sponsor = settlement.getReportingAuthority();
 		
-//		long males = settlement.getAllAssociatedPeople().stream()
-//												.filter(p -> p.getGender() == GenderType.MALE).count();
-//		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
+		long males = settlement.getAllAssociatedPeople().stream()
+												.filter(p -> p.getGender() == GenderType.MALE).count();
+		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
 		
 		// Who exists already
 		Set<String> existingfullnames = new HashSet<>(unitManager.getPeople().stream()
@@ -414,20 +414,21 @@ public final class SettlementBuilder {
 
 		// Fill up the settlement by creating more people
 		while (settlement.getNumCitizens() < targetPopulation) {
+			
 			// Choose the next gender based on the current ratio of M/F
-//			GenderType gender;
-//			if (males < targetMales) {
-//				gender = GenderType.MALE;
-//				males++;
-//			}
-//			else {
-//				gender = GenderType.FEMALE;
-//			}
-
-			GenderType gender = GenderType.MALE;
-			int rand = RandomUtil.getRandomInt(1);
-			if (rand == 1)
+			GenderType gender;
+			if (males < targetMales) {
+				gender = GenderType.MALE;
+				males++;
+			}
+			else {
 				gender = GenderType.FEMALE;
+			}
+
+//			GenderType gender = GenderType.MALE;
+//			int rand = RandomUtil.getRandomInt(1);
+//			if (rand == 1)
+//				gender = GenderType.FEMALE;
 			
 			// This is random and may change on each call
 			String country = sponsor.getRandomCountry();
@@ -493,21 +494,32 @@ public final class SettlementBuilder {
 					sponsor = raFactory.getItem(m.getSponsorCode());
 				}
 	
+				// Get person's gender or randomly determine it if not configured.
+				GenderType gender = m.getGender();
+
+				if (gender == null) {
+					gender = GenderType.FEMALE;
+					if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
+						gender = GenderType.MALE;
+					}
+				}
+				
+				// Choose the next gender based on the current ratio of M/F
+//				int rand = RandomUtil.getRandomInt(1);
+//				if (rand == 0) {
+//					gender = GenderType.MALE;
+//				}
+//				else {
+//					gender = GenderType.FEMALE;
+//				}
+				
 				// Check name
 				String name = m.getName();
 				if (existingfullnames.contains(name)) {
 					// Should not happen so a cheap fix in place
 					logger.warning("Person already called " + name + ".");
 					
-					// Choose the next gender based on the current ratio of M/F
-					GenderType gender;
-					int rand = RandomUtil.getRandomInt(1);
-					if (rand == 0) {
-						gender = GenderType.MALE;
-					}
-					else {
-						gender = GenderType.FEMALE;
-					}
+
 
 					// This is random and may change on each call
 					String country = sponsor.getRandomCountry();
@@ -516,15 +528,6 @@ public final class SettlementBuilder {
 					
 				}
 				existingfullnames.add(name);
-
-				// Get person's gender or randomly determine it if not configured.
-				GenderType gender = m.getGender();
-				if (gender == null) {
-					gender = GenderType.FEMALE;
-					if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
-						gender = GenderType.MALE;
-					}
-				}
 
 				// Get person's age
 				int age = 0;

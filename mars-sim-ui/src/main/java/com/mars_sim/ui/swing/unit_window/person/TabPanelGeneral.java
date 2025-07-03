@@ -75,7 +75,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		String birthTxt = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
-			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
 			Integer.toString(person.getAge())); //$NON-NLS-1$
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
 		
