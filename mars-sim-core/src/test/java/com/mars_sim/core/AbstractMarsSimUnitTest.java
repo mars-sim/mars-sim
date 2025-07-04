@@ -17,6 +17,7 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
+import com.mars_sim.core.person.NationSpec;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -45,6 +46,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	
 	private static final String TEST_COUNTRY = "Norway";
 	
+	protected NationSpec country;
+	   
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
 	protected Simulation sim;
@@ -66,6 +69,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    // Create new simulation instance.
 	    simConfig = SimulationConfig.loadConfig();
 	    
+	    
 	    sim = Simulation.instance();
 	    sim.testRun();
 
@@ -83,7 +87,10 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
 	    							 sim.getWeather(), unitManager);
 	    
-	    surface = unitManager.getMarsSurface();		
+	    surface = unitManager.getMarsSurface();	
+	    
+		country = new NationSpecConfig(getConfig()).getItem(TEST_COUNTRY);
+		   
 	}
 
 	public Simulation getSim() {
@@ -92,6 +99,10 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	protected SimulationConfig getConfig() {
 		return simConfig;
+	}
+	
+	protected NationSpec getNationSpec() {
+		return country;
 	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {

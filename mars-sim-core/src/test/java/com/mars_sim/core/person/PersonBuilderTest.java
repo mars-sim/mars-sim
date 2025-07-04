@@ -17,9 +17,7 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
 
     public void testBasic() {
         var home = buildSettlement();
-        NationSpecConfig nsc = new NationSpecConfig(getConfig());
-        var country = nsc.getItem(TEST_COUNTRY);
-        
+   
         Person p = Person.create(TEST_NAME, home, GenderType.MALE)
         		.setCountry(country)
         		.build();
@@ -33,8 +31,6 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
 
     public void testOptional() {
         var home = buildSettlement();
-        NationSpecConfig nsc = new NationSpecConfig(getConfig());
-        var country = nsc.getItem(TEST_COUNTRY);
 
         AuthorityFactory af = simConfig.getReportingAuthorityFactory();
         var ra = af.getItem(TEST_RA);
@@ -53,8 +49,6 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
 
     public void testAttributes() {
         var home = buildSettlement();
-        NationSpecConfig nsc = new NationSpecConfig(getConfig());
-        var country = nsc.getItem(TEST_COUNTRY);
         
         Map<NaturalAttributeType, Integer> attrs = new HashMap<>();
         attrs.put(NaturalAttributeType.AGILITY, 20);
@@ -73,9 +67,7 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
     
     public void testSkills() {
         var home = buildSettlement();
-        NationSpecConfig nsc = new NationSpecConfig(getConfig());
-        var country = nsc.getItem(TEST_COUNTRY);
-        
+
         Map<SkillType, Integer> attrs = new HashMap<>();
         attrs.put(SkillType.BIOLOGY, 20);
         attrs.put(SkillType.MECHANICS, 44);

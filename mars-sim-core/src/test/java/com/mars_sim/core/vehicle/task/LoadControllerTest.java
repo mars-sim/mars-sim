@@ -18,6 +18,7 @@ import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.GenderType;
+import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -42,7 +43,6 @@ extends TestCase {
 	private static final String SMALL_HAMMER = "small hammer";
 	private static final String FIRE_EXTINGUSHER = "fire extinguisher";
 	private static final String PIPE_WRENCH = "pipe wrench";
-
 
 	private Settlement settlement = null;
 	private UnitManager unitManager;
@@ -70,7 +70,9 @@ extends TestCase {
 
 		unitManager.addUnit(vehicle);
 
-		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();
+		person = Person.create("Jim Loader", settlement, GenderType.MALE)
+				.setCountry(new NationSpecConfig(config).getItem("Norway"))
+				.build();
 		
 		settlement.addACitizen(person);
 	
