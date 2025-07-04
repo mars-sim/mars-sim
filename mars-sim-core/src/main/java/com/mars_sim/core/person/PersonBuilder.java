@@ -289,6 +289,7 @@ public class PersonBuilder {
 		if (country != null) {
 			ethnicity = country.getPopulation();
 		}
+		
 		if (attributeMap == null) {
 			attributeMap = buildDefaultAttributes();
 		}

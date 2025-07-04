@@ -17,6 +17,7 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
+import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -42,12 +43,15 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	protected static final double MSOLS_PER_EXECUTE = 0.1D;
 	
+	private static final String TEST_COUNTRY = "Norway";
+	
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
 	protected Simulation sim;
 	protected SimulationConfig simConfig;
 	private int pulseID = 1;
 
+	
 	public AbstractMarsSimUnitTest() {
 		super();
 	}
@@ -209,12 +213,17 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public Person buildPerson(String name, Settlement settlement, JobType job,
 					Building place, FunctionType activity) {
 		
+		NationSpecConfig nsc = new NationSpecConfig(getConfig());
+        var country = nsc.getItem(TEST_COUNTRY);
+        
 		GenderType gender = GenderType.MALE;
 		int rand = RandomUtil.getRandomInt(1);
 		if (rand == 1)
 			gender = GenderType.FEMALE;
+			
 		
 		Person person = Person.create(name, settlement, gender)
+				.setCountry(country)
 				.build();
 		
 		person.setJob(job, "Test");

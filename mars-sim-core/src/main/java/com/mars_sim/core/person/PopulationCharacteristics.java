@@ -42,7 +42,10 @@ public class PopulationCharacteristics{
 
     /**
   	 * Computes a person's age.
-  	 */
+  	 * 
+     * @param gender
+     * @return
+     */
   	public double getRandomAge(GenderType gender) {
   
   		double mediaAge = 0;
