@@ -163,10 +163,10 @@ public final class RandomUtil {
 	/**
 	 * Compute the gaussian random double number.
 	 * 
-	 * @param center the mean (where the average values will cluster around)of the random number with one variance
-	 * @param fraction the fraction of the mean
-	 * @param variance the variance of the gaussian distribution
-	 * @return
+	 * @param center - the mean (where the average values will cluster around)of the random number with one variance
+	 * @param fraction - the fraction of the mean
+	 * @param variance - the spread of the gaussian distribution
+	 * @return a positive-only random double number.
 	 */
 	public static double computeGaussianWithLimit(double center, double fraction, double variance) {
 		double delay = 0;

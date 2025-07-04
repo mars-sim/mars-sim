@@ -280,9 +280,11 @@ public class PersonBuilder {
 	}
 	
 	public Person build() {
-		if (age <= 0) {
-			age = RandomUtil.getRandomInt(21, 65);
-		}
+		
+//		if (age <= 0) {
+//			age = RandomUtil.getRandomInt(21, 65);
+//		}
+		
 		PopulationCharacteristics ethnicity = null;
 		if (country != null) {
 			ethnicity = country.getPopulation();
@@ -291,6 +293,8 @@ public class PersonBuilder {
 			attributeMap = buildDefaultAttributes();
 		}
 				
+		age = (int) ethnicity.getRandomAge(gender);
+		
 		Person p = new Person(name, settlement, gender, age, ethnicity, attributeMap);
 
 		applyPersonality(p);

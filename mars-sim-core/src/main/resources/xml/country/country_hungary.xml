@@ -7,7 +7,14 @@
 		 <population value="9.967308"/>
 		 <GDP-growth value="4.58"/>
 	</economics-data>
-	
+ 	
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="41.5" median-age-female="45.5" 	
+				average-male-height="176" average-female-height="162"
+	            average-male-weight="88.5" average-female-weight="71.1"/>
+		
     <first-name-list>
         <first-name value="Bence" gender="male" />
         <first-name value="Máté" gender="male" />

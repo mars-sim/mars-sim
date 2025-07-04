@@ -8,6 +8,13 @@
 		 <GDP-growth value="1.55"/>
 	</economics-data>
 	
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="38.9" median-age-female="40.0" 	
+				average-male-height="178" average-female-height="165"
+	            average-male-weight="85.2" average-female-weight="69.1"/>
+		
     <first-name-list>
         <first-name value="Gabriel" gender="male" />
         <first-name value="Leo" gender="male" />

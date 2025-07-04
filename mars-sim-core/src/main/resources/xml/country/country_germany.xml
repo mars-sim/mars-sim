@@ -7,9 +7,14 @@
 		 <population value="83,369,843"/>
 		 <GDP-growth value="1.79"/>
 	</economics-data>
-    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
-    <characteristics average-male-height="180" average-female-height="166"
+	
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="46.5" median-age-female="49.1" 	
+    			average-male-height="180" average-female-height="166"
 	            average-male-weight="88.7" average-female-weight="71.7"/>	
+	            
     <first-name-list>
         <!-- Extracted from https://en.wikipedia.org/wiki/German_name -->
 

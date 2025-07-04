@@ -7,9 +7,14 @@
 		 <population value="144.713,314"/>
 		 <GDP-growth value="-2.07"/>
 	</economics-data>
-		<!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
-    <characteristics average-male-height="176" average-female-height="164"
+	
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="37.5" median-age-female="43.2" 
+    			average-male-height="176" average-female-height="164"
 	            average-male-weight="80.3" average-female-weight="72.2"/>
+	            
     <first-name-list>
         <!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality -->
 

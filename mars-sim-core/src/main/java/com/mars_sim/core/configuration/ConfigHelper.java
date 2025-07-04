@@ -34,6 +34,8 @@ import com.mars_sim.core.time.EventSchedule;
  */
 public class ConfigHelper {
 
+	private static final String MALE_AGE = "median-age-male";
+	private static final String FEMALE_AGE = "median-age-female";
 	private static final String MALE_HEIGHT = "average-male-height";
 	private static final String FEMALE_HEIGHT = "average-female-height";
 	private static final String MALE_WEIGHT = "average-male-weight";
@@ -238,10 +240,12 @@ public class ConfigHelper {
 	 */
     public static PopulationCharacteristics parsePopulation(Element el) {
 		return new PopulationCharacteristics(
-								getAttributeDouble(el, MALE_HEIGHT),
-								getAttributeDouble(el, FEMALE_HEIGHT),
-								getAttributeDouble(el, MALE_WEIGHT),
-								getAttributeDouble(el, FEMALE_WEIGHT));
+					getAttributeDouble(el, MALE_AGE),
+					getAttributeDouble(el, FEMALE_AGE),
+					getAttributeDouble(el, MALE_HEIGHT),
+					getAttributeDouble(el, FEMALE_HEIGHT),
+					getAttributeDouble(el, MALE_WEIGHT),
+					getAttributeDouble(el, FEMALE_WEIGHT));
     }
 
 		/**

@@ -7,8 +7,12 @@
 		 <population value="215.313498"/>
 		 <GDP-growth value="2.9"/>
 	</economics-data>
-	<!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
-    <characteristics average-male-height="175" average-female-height="162"
+	
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="33.3" median-age-female="36.1" 	
+				average-male-height="175" average-female-height="162"
 	            average-male-weight="80.7" average-female-weight="70.3"/>
 
     <first-name-list>

@@ -663,6 +663,13 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	
+	public double computePopulationAverageAge() {
+		return citizens.stream()
+				.mapToInt(p -> p.getAge())
+                .average()
+                .orElse(0.0);
+	}
+	
 	/**
 	 * Gets the number of males of a settlement.
 	 *

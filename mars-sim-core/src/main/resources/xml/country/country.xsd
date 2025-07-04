@@ -46,6 +46,8 @@
 
     <xs:element name="characteristics">
         <xs:complexType>
+	        <xs:attribute name="median-age-male" type="xs:string"/>
+    	    <xs:attribute name="median-age-female" type="xs:string"/>
             <xs:attribute name="average-male-height" type="xs:string"/>
             <xs:attribute name="average-female-height" type="xs:string"/>
             <xs:attribute name="average-male-weight" type="xs:string"/>

@@ -13,23 +13,62 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class PopulationCharacteristics{
     
-    private double averageWeight;
-    private double averageHeight;
+    private double maleAge;
+    private double femaleAge;
+    private double averageAge;
+    
     private double maleHeight;
     private double maleWeight;
     private double femaleHeight;
     private double femaleWeight;
+    private double averageWeight;
+    private double averageHeight;
 
-    public PopulationCharacteristics(double maleHeight, double femaleHeight,
-                                      double maleWeight, double femaleWeight) {
+    public PopulationCharacteristics(double maleAge, double femaleAge,
+    							double maleHeight, double femaleHeight,
+    							double maleWeight, double femaleWeight) {
+    	this.maleAge = maleAge;
+        this.femaleAge = femaleAge;
+    	this.averageAge = (maleAge + femaleAge)/2D;
+        
         this.maleHeight = maleHeight;
         this.maleWeight = maleWeight;
         this.femaleHeight = femaleHeight;
         this.femaleWeight = femaleWeight;
     	this.averageHeight = (maleHeight + femaleHeight)/2D;
         this.averageWeight = (maleWeight + femaleWeight)/2D;
+        
     }
 
+    /**
+  	 * Computes a person's age.
+  	 */
+  	public double getRandomAge(GenderType gender) {
+  
+  		double mediaAge = 0;
+  		if (gender == GenderType.MALE)
+  			mediaAge = maleAge;
+  		else
+  			mediaAge = femaleAge;
+  		
+  		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
+  		// Attempt to compute age with gaussian curve
+  		// double tempAge = 10 + RandomUtil.getGaussianDouble() * age / 13.5;
+ 
+  		// Note: computeGaussianWithLimit(double center, double fraction, double variance)
+  		double tempAge = RandomUtil.computeGaussianWithLimit(mediaAge, .5, .1);
+		
+  		if (tempAge > 65) {
+  			tempAge = 65;
+		}
+		else if (tempAge < 18) {
+			tempAge = 18;
+		}
+  		
+  		return tempAge;
+  	}
+  	
+  	
     public double getRandomHeight(GenderType gender) {
 
 		double dadHeight = maleHeight + RandomUtil.getGaussianDouble() * maleHeight / 7D;
@@ -82,4 +121,9 @@ public class PopulationCharacteristics{
     public double getAverageWeight() {
         return averageWeight;
     }
+    
+    public double getAverageAge() {
+        return averageAge;
+    }
+
 }

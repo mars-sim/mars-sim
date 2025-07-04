@@ -10,9 +10,14 @@
 		 <GDP-growth value="2.1"/>
 	</economics-data> 
 		
-    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
-    <characteristics average-male-height="173" average-female-height="160"
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="41.5" median-age-female="43.1" 
+    			average-male-height="173" average-female-height="160"
 	            average-male-weight="75.0" average-female-weight="60.9"/>
+	            
+	            
     <first-name-list>
         <!-- Derived from 
 			https://kidadl.com/baby-names/inspiration/top-taiwanese-names-for-your-baby-that-youll-love -->

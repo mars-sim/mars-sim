@@ -8,8 +8,11 @@
 		 <GDP-growth value="8.74"/>
 	</economics-data>
 	
-    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
-    <characteristics average-male-height="170" average-female-height="158"
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="33.0" median-age-female="27.9" 
+    			average-male-height="170" average-female-height="158"
 	            average-male-weight="80.9" average-female-weight="73.6"/>
     <first-name-list>
 		<!-- https://studentsoftheworld.info/penpals/stats.php?Pays=SAU -->

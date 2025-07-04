@@ -34,11 +34,15 @@ public class TabPanelCitizen extends TabPanel{
 	private int populationCitizensCache;
 	private int populationCapacityCache;
 	private int populationIndoorCache;
+
+	private double populationAgeCache;
+
 	
 	private String genderRatioCache;
 	
 	private Settlement settlement;
 
+	private JLabel populationAgeLabel;
 	private JLabel populationCitizensLabel;
 	private JLabel populationCapacityLabel;
 	private JLabel populationIndoorLabel;
@@ -67,7 +71,7 @@ public class TabPanelCitizen extends TabPanel{
 	@Override
 	protected void buildUI(JPanel content) {
 		// Prepare count spring layout panel.
-		AttributePanel countPanel = new AttributePanel(4);
+		AttributePanel countPanel = new AttributePanel(5);
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create associate label
@@ -89,6 +93,10 @@ public class TabPanelCitizen extends TabPanel{
 		genderRatioLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.gender"),
 		   		genderRatioCache, null);
 
+		populationAgeCache = settlement.computePopulationAverageAge();
+		populationAgeLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.age"),
+				Double.toString(Math.round(populationAgeCache * 10.0)/10.0), null);
+		
 		
 		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {
 			@Override
@@ -134,6 +142,13 @@ public class TabPanelCitizen extends TabPanel{
 			genderRatioLabel.setText(genderRatioCache);
 		}
 
+		double age = Math.round(settlement.computePopulationAverageAge() * 10.0)/10.0;
+		// Update capacity
+		if (populationAgeCache != age) {
+			populationAgeCache = age;
+			populationAgeLabel.setText(populationAgeCache + "");
+		}
+		
 		// Update population list
 		populationList.update();
 	}

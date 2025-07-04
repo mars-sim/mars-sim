@@ -8,9 +8,13 @@
 		 <GDP-growth value="3.4"/>
 	</economics-data>
 	
-    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
-    <characteristics average-male-height="178" average-female-height="165"
+	<!-- Taken from 
+  	  	https://en.wikipedia.org/wiki/List_of_countries_by_median_age
+    	https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics median-age-male="40.6" median-age-female="42.9" 	
+    			average-male-height="178" average-female-height="165"
 	            average-male-weight="87.3" average-female-weight="72.4"/>	
+	            
     <first-name-list>
         <!-- http://www.babynamewizard.com/name-list/canadian-boys-names-most-popular-names-for-boys-in-canada-quebec- -->
         <first-name value="William" gender="male" />

@@ -85,6 +85,8 @@
 	<!ATTLIST gender-male-percentage value CDATA #REQUIRED>
 
 	<!ELEMENT characteristics EMPTY>
+	<!ATTLIST characteristics median-age-male CDATA #REQUIRED> 
+	<!ATTLIST characteristics median-age-female CDATA #REQUIRED>
 	<!ATTLIST characteristics average-male-height CDATA #REQUIRED>
 	<!ATTLIST characteristics average-female-height CDATA #REQUIRED>
 	<!ATTLIST characteristics average-male-weight CDATA #REQUIRED>
@@ -131,7 +133,7 @@
 		Note: this is in contrast with the value of 700 to 900 mL CO2 exhaled
 			due to norminal activity from https://www.globe.gov/explore-science/scientists-blog/archived-posts/sciblog/index.html_p=183.html
 
-		// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the built-up.
+		// Assume the EVA Suit has pump system to vent out all CO2 to prevent the built-up.
 		// The breath rate is 12 to 25 per minute.
 		// Size of breath is 500 mL.
 		// Percent CO2 exhaled is 4%.
@@ -215,7 +217,8 @@
 	</person-attributes>
 
 	<!-- Average characteristics -->
-    <characteristics average-male-height="176.5" average-female-height="162.5"
+    <characteristics median-age-male="40.0" median-age-female="41.0"
+    			average-male-height="176.5" average-female-height="162.5"
 	            average-male-weight="72" average-female-weight="65"/>
 
 	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->
