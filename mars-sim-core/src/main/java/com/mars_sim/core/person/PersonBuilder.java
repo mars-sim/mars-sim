@@ -281,10 +281,6 @@ public class PersonBuilder {
 	
 	public Person build() {
 		
-//		if (age <= 0) {
-//			age = RandomUtil.getRandomInt(21, 65);
-//		}
-		
 		PopulationCharacteristics ethnicity = null;
 		if (country != null) {
 			ethnicity = country.getPopulation();

@@ -205,37 +205,27 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
 		super.setDescription(EARTHLING);
-
 		// Create a prior training profile
 		generatePriorTraining();
 		// Construct the PersonAttributeManager instance
 		attributes = new NaturalAttributeManager(initialAttrs);
-
 		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
 		mind = new Mind(this);
-
 		// Set the person's status of death
 		isBuried = false;
-
 		// Add this person as a citizen
 		settlement.addACitizen(this);
-
 		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
 		calculateBirthDate(currentEarthTime, age);
-
-
 		// Create favorites
 		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
-
 		// Create preferences
 		preference = new Preference(this);
-		
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap(ethnicity);
-
 		// Create circadian clock
 		circadian = new CircadianClock(this);
 		// Create physical condition
@@ -247,20 +237,16 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Create the role
 		role = new Role(this);
 		// Create shift schedule
-		shiftSlot = settlement.getShiftManager().allocationShift(this);
-		
+		shiftSlot = settlement.getShiftManager().allocationShift(this);	
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
 		// Create the EVA hours map
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-
-
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
 		eqmInventory.setResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
-		
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
 	}

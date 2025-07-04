@@ -1,11 +1,13 @@
 /*
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @date 2023-06-22
+ * @date 2025-07-04
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -22,7 +25,6 @@ import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -56,18 +58,39 @@ public class TabPanelFavorite extends TabPanelTable {
 
 	@Override
 	protected JPanel createInfoPanel() {
-		// Prepare SpringLayout for info panel.
-		AttributePanel infoPanel = new AttributePanel(2);
-
-		Favorite fav = person.getFavorite();
-		infoPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
-
-		String dishes = fav.getFavoriteDishes().stream().collect(Collectors.joining("<br>", "<html>", "</html>"));
-		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dishes"), dishes, null);
 		
-		return infoPanel;
+		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
+		
+		// Prepare SpringLayout for info panel.
+		AttributePanel activityPanel = new AttributePanel(1);
+		mainPanel.add(activityPanel, BorderLayout.NORTH);
+		
+		Favorite fav = person.getFavorite();
+		activityPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
+
+		JPanel titledPanel = new JPanel(new FlowLayout());
+	
+		addBorder(titledPanel, Msg.getString("TabPanelFavorite.dishes"));
+		
+		mainPanel.add(titledPanel, BorderLayout.CENTER);
+				
+		String dishes = fav.getFavoriteDishes().stream().collect(Collectors.joining(", "));//<br>", "<html>", "</html>"));
+	
+		createTA(titledPanel).append(" " + dishes);
+		
+		return mainPanel;
 	}
 
+	private JTextArea createTA(JPanel panel) {
+		JTextArea ta = new JTextArea();
+		ta.setEditable(false);
+		ta.setColumns(35);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		panel.add(ta);
+		return ta;
+	}
+	
 	@Override
 	protected TableModel createModel() {
   PreferenceTableModel tableModel;
@@ -79,7 +102,7 @@ public class TabPanelFavorite extends TabPanelTable {
 	protected void setColumnDetails(TableColumnModel model) {
 		model.getColumn(0).setPreferredWidth(150);
 		model.getColumn(1).setPreferredWidth(30);
-		model.getColumn(1).setCellRenderer(new NumberCellRenderer());
+//		model.getColumn(1).setCellRenderer(new NumberCellRenderer());
 	}
 
 	/**
