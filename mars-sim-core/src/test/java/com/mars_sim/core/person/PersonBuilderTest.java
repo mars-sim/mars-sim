@@ -1,6 +1,6 @@
 package com.mars_sim.core.person;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
@@ -19,7 +19,6 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
         var home = buildSettlement();
    
         Person p = Person.create(TEST_NAME, home, GenderType.MALE)
-        		.setCountry(country)
         		.build();
 
         assertNotNull("Person created", p);
@@ -35,6 +34,9 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
         AuthorityFactory af = simConfig.getReportingAuthorityFactory();
         var ra = af.getItem(TEST_RA);
         
+        	    
+		var country = new NationSpecConfig(getConfig()).getItem("Norway");
+        
         Person p = Person.create(TEST_NAME, home, GenderType.FEMALE)
                         .setAge(30)
                         .setCountry(country)
@@ -42,21 +44,21 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
 
         assertNotNull("Person created", p);
         assertEquals("Person name", TEST_NAME, p.getName());
-        assertEquals("Person gender", GenderType.MALE, p.getGender());
+        assertEquals("Person gender", GenderType.FEMALE, p.getGender());
         assertEquals("Person country", TEST_COUNTRY, p.getCountry());
+        assertEquals("Fixed age", 30, p.getAge());
         assertEquals("Person Sponsor", TEST_RA, p.getReportingAuthority().getName());
     }
 
     public void testAttributes() {
         var home = buildSettlement();
         
-        Map<NaturalAttributeType, Integer> attrs = new HashMap<>();
+        Map<NaturalAttributeType, Integer> attrs = new EnumMap<>(NaturalAttributeType.class);
         attrs.put(NaturalAttributeType.AGILITY, 20);
         attrs.put(NaturalAttributeType.DISCIPLINE, 44);
         attrs.put(NaturalAttributeType.SPIRITUALITY, 78);
 
         Person p = Person.create(TEST_NAME, home, GenderType.MALE)
-        		.setCountry(country)
         		.setAttribute(attrs)
         		.build();
         
@@ -68,13 +70,12 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
     public void testSkills() {
         var home = buildSettlement();
 
-        Map<SkillType, Integer> attrs = new HashMap<>();
+        Map<SkillType, Integer> attrs = new EnumMap<>(SkillType.class);
         attrs.put(SkillType.BIOLOGY, 20);
         attrs.put(SkillType.MECHANICS, 44);
         attrs.put(SkillType.MATHEMATICS, 78);
 
         Person p = Person.create(TEST_NAME, home, GenderType.MALE)
-        		.setCountry(country)
         		.setSkill(attrs)
         		.build();
         
