@@ -230,6 +230,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		circadian = new CircadianClock(this);
 		// Create physical condition
 		condition = new PhysicalCondition(this);
+		// Initialize field data in PhysicalCondition
+		condition.initialize();
 		// Initialize field data in circadian clock
 		circadian.initialize();
 		// Create job history

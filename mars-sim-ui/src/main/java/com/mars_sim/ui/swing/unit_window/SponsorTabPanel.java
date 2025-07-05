@@ -182,6 +182,12 @@ public class SponsorTabPanel extends TabPanel {
 				.collect(Collectors.joining("\n")));
 	}
 	
+	/*
+	 * Creates a text area.
+	 * 
+	 * @param panel
+	 * @return
+	 */
 	private JTextArea createTA(JPanel panel) {
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);

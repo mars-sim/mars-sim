@@ -311,6 +311,12 @@ public class CircadianClock implements Serializable {
 			sleepCycleMap.put(a1, e1);
 			sleepCycleMap.put(a2, e2);
 		}
+		
+		
+		// Update the personal appetite
+		person.getPhysicalCondition().updateAppetite();
+		// Update personal max energy
+		person.getPhysicalCondition().updateMaxEnergy();
 	}
 
 	/**

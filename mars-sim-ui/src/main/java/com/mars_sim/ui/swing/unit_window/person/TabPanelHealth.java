@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelHealth.java
- * @date 2024-07-21
+ * @date 2025-07-04
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.person;
@@ -25,8 +25,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -74,7 +76,7 @@ extends TabPanel {
 		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
 	private static final String KJ = " kJ";
-	
+
 	private int fatigueCache;
 	private int thirstCache;
 	private int hungerCache;
@@ -113,10 +115,8 @@ extends TabPanel {
 	private JLabel maxDailyEnergyLabel;
 	private JLabel bodyMassDevLabel;
 	
-	/** The sleep hour text field. */	
-	private JLabel sleepTF;
-	private JLabel bedTF;
-
+	private JLabel bedLocationLabel;
+	private JTextArea sleepTimeTA;
 
 	private RadiationTableModel radiationTableModel;
 	private SleepExerciseTableModel sleepExerciseTableModel;
@@ -153,6 +153,22 @@ extends TabPanel {
 		circadianClock = person.getCircadianClock();
 	}
 
+	/*
+	 * Creates a text area.
+	 * 
+	 * @param panel
+	 * @return
+	 */
+	private JTextArea createTA(JPanel panel) {
+		JTextArea ta = new JTextArea();
+		ta.setEditable(false);
+		ta.setColumns(35);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		panel.add(ta);
+		return ta;
+	}
+	
 	@Override
 	protected void buildUI(JPanel content) {
         DoseHistory[] doseLimits;
@@ -174,7 +190,7 @@ extends TabPanel {
 		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.fatigue"),
 										DECIMAL_MSOLS.format(fatigueCache), null);
 		
-		maxDailyEnergy = (int)(condition.getPersonalMaxDailyEnergy());
+		maxDailyEnergy = (int)(condition.getPersonalMaxEnergy());
 		maxDailyEnergyLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.maxDailyEnergy"),
 										maxDailyEnergy + KJ);
 						
@@ -210,7 +226,7 @@ extends TabPanel {
 		muscleTorLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.tolerance"),
 				StyleManager.DECIMAL_PLACES1.format(muscleTor));	
 		
-		bodyMassDev = Math.round(condition.getPersonalMaxDailyEnergy()*10.0)/10.0;
+		bodyMassDev = Math.round(condition.getPersonalMaxEnergy()*10.0)/10.0;
 		bodyMassDevLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.bodyMassDev"),
 				StyleManager.DECIMAL_PLACES1.format(bodyMassDev));
 		
@@ -233,35 +249,31 @@ extends TabPanel {
 		ghrelinTCache = (int)(circadianClock.getGhrelinT());
 		ghrelinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin.threshold"),
 										DECIMAL_MSOLS.format(ghrelinTCache), null);	
-		
-		
-		// Prepare SpringLayout for info panel.
-		JPanel springPanel = new JPanel(new SpringLayout());
-		northPanel.add(springPanel);
-		
-		// Prepare sleep hour name label
-		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelHealth.sleepTime") + " :", SwingConstants.RIGHT); //$NON-NLS-1$
-		sleepHrLabel.setFont(StyleManager.getLabelFont());
-		springPanel.add(sleepHrLabel);
-		
-		// Prepare sleep time TF
-		StringBuilder text = updateSleepTime();		
-		sleepTF = new JLabel(text.toString());
 
-		springPanel.add(sleepTF);
-		sleepTF.setToolTipText("3 best times to go to bed [msol (weight)]"); //$NON-NLS-1$
-			
-		JLabel bedLabel = new JLabel("Bed :", SwingConstants.RIGHT); //$NON-NLS-1$
+		
+		// Prepare panel for bed .
+		JPanel bedPanel = new JPanel();
+		bedPanel.setLayout(new BoxLayout(bedPanel, BoxLayout.X_AXIS));
+        
+		northPanel.add(bedPanel);
+		
+		JLabel bedLabel = new JLabel("Bed : ", SwingConstants.RIGHT); //$NON-NLS-1$
 		bedLabel.setFont(StyleManager.getLabelFont());
-		springPanel.add(bedLabel);
-		bedTF = new JLabel("");
-		springPanel.add(bedTF);
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(springPanel,
-		                                2, 2, //rows, cols
-		                                10, 10,        //initX, initY
-		                                5, 3);       //xPad, yPad
+		bedPanel.add(bedLabel);
+		bedLocationLabel = new JLabel("");
+		bedLocationLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		bedPanel.add(bedLocationLabel);
+		
+		// Prepare sleep time text area
+		JPanel titledPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		northPanel.add(titledPanel);
+		addBorder(titledPanel, Msg.getString("TabPanelHealth.sleepTime"));
+		
+		String sleepTime = updateSleepTime().toString();
+	
+		sleepTimeTA = createTA(titledPanel);
+		sleepTimeTA.setToolTipText("The 3 best times to go to bed [msol (weight)]"); //$NON-NLS-1$
+		sleepTimeTA.append(" " + sleepTime);
 	
 		content.add(northPanel, BorderLayout.NORTH);	
 		
@@ -689,7 +701,7 @@ extends TabPanel {
 			appetiteLabel.setText(StyleManager.DECIMAL_PLACES1.format(appetite0));
 		}
 		
-		int maxDailyEnergy0 = (int)(condition.getPersonalMaxDailyEnergy());
+		int maxDailyEnergy0 = (int)(condition.getPersonalMaxEnergy());
 		if (maxDailyEnergy != maxDailyEnergy0) {
 			maxDailyEnergy = maxDailyEnergy0;
 			maxDailyEnergyLabel.setText(maxDailyEnergy0 + KJ);
@@ -704,15 +716,15 @@ extends TabPanel {
 		// Update sleep time TF
 		StringBuilder text = updateSleepTime();
 
-		if (!sleepTF.getText().equalsIgnoreCase(text.toString()))
-			sleepTF.setText(text.toString());
+		if (!sleepTimeTA.getText().equalsIgnoreCase(text.toString()))
+			sleepTimeTA.setText(" " + text.toString());
 	
 		String bedText = "";
 		var allocatedBed = person.getBed();
 		if (allocatedBed != null) {
 			bedText = allocatedBed.getSpotDescription();
 		}
- 		bedTF.setText(bedText);
+ 		bedLocationLabel.setText(bedText);
 		
 		// Update sleep time table model
 		sleepExerciseTableModel.update(circadianClock);

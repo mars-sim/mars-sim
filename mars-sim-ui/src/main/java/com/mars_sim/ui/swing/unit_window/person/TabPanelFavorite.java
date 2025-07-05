@@ -81,6 +81,12 @@ public class TabPanelFavorite extends TabPanelTable {
 		return mainPanel;
 	}
 
+	/**
+	 * Creates a text area.
+	 * 
+	 * @param panel
+	 * @return
+	 */
 	private JTextArea createTA(JPanel panel) {
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
