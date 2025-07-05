@@ -232,7 +232,6 @@ public class ExploreSite extends EVAOperation {
 		
 		if (hasSpecimenContainer()) {
 
-//			double siteTime = ((Exploration)person.getMission()).getSiteTime();
 			double chance = rocksToBeCollected / 250;
 			
 			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
@@ -256,7 +255,6 @@ public class ExploreSite extends EVAOperation {
 								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 					}
 					else {
-						//mass = cap;
 						double excess = box.storeAmountResource(rockId, cap);
 						mission.recordResourceCollected(rockId, cap);
 						double collected = cap - excess;

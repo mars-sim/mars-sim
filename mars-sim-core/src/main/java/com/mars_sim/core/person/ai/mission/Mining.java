@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -20,16 +19,15 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.MineSite;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -87,12 +85,8 @@ public class Mining extends EVAMission
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
 
-	
-	private ExploredLocation miningSite;
-	private LightUtilityVehicle luv;
-	
-	private Map<AmountResource, Double> detectedMinerals;
-	private Map<AmountResource, Double> totalExcavatedMinerals;
+	private MiningObjective objective;
+
 
 	/**
 	 * Constructor
@@ -106,54 +100,23 @@ public class Mining extends EVAMission
 		super(MissionType.MINING, startingPerson, null, MINING_SITE, MineSite.LIGHT_LEVEL);
 
 		if (!isDone()) {
-			// Initialize data members.
-			detectedMinerals = new HashMap<>(1);
-			totalExcavatedMinerals = new HashMap<>(1);
-			
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
 				return;
-
-			int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
-			int buffer = (int)(numMembers * 1.5);
-			int newContainerNum = Math.max(buffer, NUMBER_OF_LARGE_BAGS);
-			
-			setEVAEquipment(EquipmentType.LARGE_BAG, newContainerNum);
 			
 			Settlement s = getStartingSettlement();
 			
 			// Determine mining site.
-			if (hasVehicle()) {
-				miningSite = determineBestMiningSite(getRover(), s);
-				if (miningSite == null) {
-					logger.severe(startingPerson, "Mining site could not be determined.");
-					endMission(MINING_SITE_NOT_BE_DETERMINED);
-					return;
-				}
-				miningSite.setReserved(true);
-
-				addNavpoint(miningSite.getLocation(), "a mining site");
-				
-				setupDetectedMinerals();
+			var miningSite = determineBestMiningSite(getRover(), s);
+			if (miningSite == null) {
+				logger.severe(startingPerson, "Mining site could not be determined.");
+				endMission(MINING_SITE_NOT_BE_DETERMINED);
+				return;
 			}
 
-			// Add home settlement
-			addNavpoint(s);
+			var luv = reserveLightUtilityVehicle();
 
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(CANNOT_LOAD_RESOURCES);
-			}
-
-			if (!isDone()) {
-				// Reserve light utility vehicle.
-				luv = reserveLightUtilityVehicle();
-				if (luv == null) {
-					endMission(LUV_NOT_AVAILABLE);
-					return;
-				}
-				setInitialPhase(needsReview);
-			}
+			prepMining(luv, miningSite, needsReview);
 		}
 	}
 
@@ -170,12 +133,14 @@ public class Mining extends EVAMission
 
 		// Use RoverMission constructor.,  
 		super(MissionType.MINING, (Worker) members.toArray()[0], rover, MINING_SITE, MineSite.LIGHT_LEVEL);
+		addMembers(members, false);
 
+		prepMining(luv, miningSite, false);
+	}
+	
+	private void prepMining(LightUtilityVehicle l, ExploredLocation miningSite, boolean needsReview) {
 		// Initialize data members.
-		this.miningSite = miningSite;
 		miningSite.setReserved(true);
-		detectedMinerals = new HashMap<>(1);
-		totalExcavatedMinerals = new HashMap<>(1);
 		
 		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
 		int buffer = (int)(numMembers * 1.5);
@@ -183,12 +148,8 @@ public class Mining extends EVAMission
 		
 		setEVAEquipment(EquipmentType.LARGE_BAG, newContainerNum);
 
-		addMembers(members, false);
-
 		// Add mining site nav point.
 		addNavpoint(miningSite.getLocation(), "a mining site");
-
-		setupDetectedMinerals();
 		
 		// Add home settlement
 		Settlement s = getStartingSettlement();
@@ -200,17 +161,19 @@ public class Mining extends EVAMission
 		}
 
 		// Reserve light utility vehicle.
-		this.luv = luv;
-		if (luv == null) {
+		if (l == null) {
 			logger.warning("Light utility vehicle not available.");
 			endMission(LUV_NOT_AVAILABLE);
-		} else {
-			claimVehicle(luv);
-		}
+			return;
+		} 
+
+		claimVehicle(l);
 
 		// Set initial mission phase.
-		setInitialPhase(false);
+		setInitialPhase(needsReview);
 
+		objective = new MiningObjective(l, miningSite);
+		addObjective(objective);
 	}
 
 	/**
@@ -278,8 +241,7 @@ public class Mining extends EVAMission
 
 			Settlement settlement = getStartingSettlement();
 
-			getRover().setTowedVehicle(luv);
-			luv.setTowingVehicle(getRover());
+			var luv = attachLUV(true);
 			settlement.removeVicinityParkedVehicle(luv);
 
 			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
@@ -314,9 +276,8 @@ public class Mining extends EVAMission
 		// Unload towed light utility vehicle.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
 			Settlement settlement = getStartingSettlement();
-			
-			getRover().setTowedVehicle(null);
-			luv.setTowingVehicle(null);
+
+			var luv = attachLUV(false);
 			settlement.removeVicinityParkedVehicle(luv);
 			luv.findNewParkingLoc();
 
@@ -351,31 +312,13 @@ public class Mining extends EVAMission
 			return false;
 		}
 		
-		// Detach towed light utility vehicle if necessary.
-		if (getRover().getTowedVehicle() != null) {
-			getRover().setTowedVehicle(null);
-			luv.setTowingVehicle(null);
-		}
+		var luv = attachLUV(false);
 
 		// Determine if no one can start the mine site or collect resources tasks.	
 		boolean canDo = false;
-		boolean itsMe = false;
 		for (Worker tempMember : getMembers()) {
-			if (MineSite.canMineSite(tempMember, getRover())) {
-				// If one person is unfit and can't get out of the airlock, 
-				// it's okay. Do NOT stop others from doing EVA.
-				canDo = canDo || true;
-			}
-			if (canCollectExcavatedMinerals(tempMember)) {
-				
-				if (person.equals(tempMember)) {
-					itsMe = true;
-				}
-				
-				// If one person is unfit and can't get out of the airlock, 
-				// it's okay. Do NOT stop others from doing EVA.
-				canDo = canDo || true;
-			}
+			Person p = (Person) tempMember;
+			canDo = canDo || canDoEVA(p, rover);
 		}
 
 		// Nobody can do anything so stop
@@ -384,17 +327,36 @@ public class Mining extends EVAMission
 			return false;
 		}
 
-		if (itsMe) {
-			AmountResource mineralToCollect = getMineralToCollect(person);
-			assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
+		if (canCollectExcavatedMinerals(person)) {
+			int mineralToCollect = getMineralToCollect(person);
+			assignTask(person, new CollectMinedMinerals(person, objective, getRover(), mineralToCollect));
 		}
 		else {
-			assignTask(person, new MineSite(person, miningSite.getLocation(), getRover(), luv));
+			assignTask(person, new MineSite(person, objective, getRover()));
 		}
 
 		return true;
 	}
 
+	/**
+	 * Attach/deattach the LIV from the Rover
+	 * @param attach
+	 * @return
+	 */
+	private LightUtilityVehicle attachLUV(boolean attach) {
+		LightUtilityVehicle luv = objective.getLUV();
+		if (attach) {
+			Rover rover = getRover();
+			rover.setTowedVehicle(luv);
+			luv.setTowingVehicle(rover);
+		}
+		else if (luv.getTowingVehicle() != null) {
+			getRover().setTowedVehicle(null);
+			luv.setTowingVehicle(null);
+		}
+
+		return luv;
+	}
 
 	/**
 	 * Closes down the mining activities
@@ -402,6 +364,8 @@ public class Mining extends EVAMission
 	@Override
 	protected void endEVATasks() {
 		super.endEVATasks();
+
+		var miningSite = objective.getSite();
 			
 		double remainingMass = miningSite.getRemainingMass();
 		if (remainingMass < 100)
@@ -409,27 +373,9 @@ public class Mining extends EVAMission
 			miningSite.setMinable(false);
 
 		// Attach light utility vehicle for towing.
-		Rover rover = getRover();
-		if (!luv.equals(rover.getTowedVehicle())) {
-			rover.setTowedVehicle(luv);
-			luv.setTowingVehicle(rover);
-		}
+		attachLUV(true);
 	}
 
-	private void setupDetectedMinerals() {
-		Map<String, Double> concs = miningSite.getEstimatedMineralConcentrations();
-		double remainingMass = miningSite.getRemainingMass();
-
-		Iterator<String> i = concs.keySet().iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-			AmountResource resource = ResourceUtil.findAmountResource(name);
-			double percent = concs.get(name);
-			detectedMinerals.put(resource, remainingMass * percent / 100);
-			
-			logger.info(getName() + " detected " + Math.round(remainingMass * 100.0)/100.0 + " kg " + resource.getName());
-		}
-	}
 	
 	/**
 	 * Checks if a person can collect minerals from the excavation pile.
@@ -437,54 +383,49 @@ public class Mining extends EVAMission
 	 * @param member the member collecting.
 	 * @return true if can collect minerals.
 	 */
-	private boolean canCollectExcavatedMinerals(Worker member) {
-		boolean result = false;
+	private boolean canCollectExcavatedMinerals(Person member) {
+		return objective.getMineralStats().entrySet().stream()
+					.filter(e -> e.getValue().getAvailable() > MINIMUM_COLLECT_AMOUNT)
+					.anyMatch(e -> canCollectMinerals(member, getRover(), e.getKey()));
+	}
 
-		Iterator<AmountResource> i = detectedMinerals.keySet().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = i.next();
-			if ((detectedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
-					&& canCollectMinerals(member, getRover(), resource)) {
-				result = true;
-			}
+	/**
+	 * Can this person do an EVA
+	 * @param p
+	 * @param rover
+	 * @return
+	 */
+	private boolean canDoEVA(Person p, Rover rover) {
+		
+		// Check if person can exit the rover.
+		if (!ExitAirlock.canExitAirlock(p, rover.getAirlock()))
+			return false;
+
+		// TODO this logic must be somewhere else in EVA Mission class???
+		if (!isEnoughSunlightForEVA()) {
+			return false;
 		}
+		
+		// Check if person's medical condition will not allow task.
+		if (p.getPerformanceRating() < .2D)
+			return false;
 
-		return result;
+		return p.isSuperUnfit();
 	}
 
 	/**
 	 * Checks if a person can perform a CollectMinedMinerals task.
 	 * 
 	 * @param member      the member to perform the task
-	 * @param rover       the rover the person will EVA from
 	 * @param mineralType the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	private  boolean canCollectMinerals(Worker member, Rover rover, AmountResource mineralType) {
-		if (member instanceof Robot) {
-			return false;
-		}
-		var person = (Person) member;
-
-		// Check if person can exit the rover.
-		if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
-			return false;
-
-		if (!isEnoughSunlightForEVA()) {
-			return false;
-		}
-		
-		// Check if person's medical condition will not allow task.
-		if (person.getPerformanceRating() < .2D)
-			return false;
-
-		if (person.isSuperUnfit())
-			return false;
+	private  boolean canCollectMinerals(Person member, Rover rover, int mineralType) {
 		
 		// Checks if available bags with remaining capacity for resource.
 		Container bag = ContainerUtil.findLeastFullContainer(rover,
 															EquipmentType.LARGE_BAG,
-															mineralType.getID());
+															mineralType);
 		boolean bagAvailable = (bag != null);
 
 		// Check if bag and full EVA suit can be carried by person or is too heavy.
@@ -493,13 +434,13 @@ public class Mining extends EVAMission
 			carryMass += bag.getBaseMass();
 		}
 
-		EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
+		EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(member);
 		if (suit != null) {
 			carryMass += suit.getMass();
 			carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.OXYGEN_ID);
 			carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.WATER_ID);
 		}
-		double carryCapacity = person.getCarryingCapacity();
+		double carryCapacity = member.getCarryingCapacity();
 		boolean canCarryEquipment = (carryCapacity >= carryMass);
 
 		return (bagAvailable && canCarryEquipment);
@@ -511,24 +452,22 @@ public class Mining extends EVAMission
 	 * @param person the person collecting.
 	 * @return mineral
 	 */
-	private AmountResource getMineralToCollect(Person person) {
-		AmountResource result = null;
-		double largestAmount = 0D;
-
-		Iterator<AmountResource> i = detectedMinerals.keySet().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = i.next();
-			if ((detectedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
-					&& canCollectMinerals(person, getRover(), resource)) {
-				double amount = detectedMinerals.get(resource);
-				if (amount > largestAmount) {
-					result = resource;
-					largestAmount = amount;
-				}
+	private int getMineralToCollect(Person person) {
+		var candidates = objective.getMineralStats().entrySet().stream()
+					.filter(e -> e.getValue().getAvailable() > MINIMUM_COLLECT_AMOUNT)
+					.filter(e -> canCollectMinerals(person, getRover(), e.getKey()))
+					.toList();
+		
+		int selected = -1;
+		double largest = 0;
+		for(var e : candidates) {
+			if ((e.getValue().getAvailable() > largest) ||
+					(selected == -1)) {
+				largest = e.getValue().getAvailable();
+				selected = e.getKey();
 			}
 		}
-
-		return result;
+		return selected;
 	}
 
 	/**
@@ -653,25 +592,15 @@ public class Mining extends EVAMission
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
-	/**
-	 * Gets the mission mining site.
-	 * 
-	 * @return mining site.
-	 */
-	public ExploredLocation getMiningSite() {
-		return miningSite;
-	}
 
 	@Override
 	protected void endMission(MissionStatus endStatus) {
-		super.endMission(endStatus);
+		if (objective != null) {
+			objective.getSite().setReserved(false);
+			releaseVehicle(objective.getLUV());
+		}
 
-		if (miningSite != null) {
-			miningSite.setReserved(false);
-		}
-		if (luv != null) {
-			releaseVehicle(luv);
-		}
+		super.endMission(endStatus);
 	}
 
 	/**
@@ -681,8 +610,7 @@ public class Mining extends EVAMission
 	 */
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
 		for(Vehicle vehicle : getStartingSettlement().getParkedGaragedVehicles()) {
-			if (vehicle.getVehicleType() == VehicleType.LUV) {
-				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
+			if (vehicle instanceof LightUtilityVehicle luvTemp) {
 				if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
 					claimVehicle(luvTemp);
@@ -692,82 +620,6 @@ public class Mining extends EVAMission
 		}
 
 		return null;
-	}
-
-	/**
-	 * Gets the mission's light utility vehicle.
-	 * 
-	 * @return light utility vehicle.
-	 */
-	public LightUtilityVehicle getLightUtilityVehicle() {
-		return luv;
-	}
-
-	/**
-	 * Gets the amount of a mineral currently excavated.
-	 * 
-	 * @param mineral the mineral resource.
-	 * @return amount (kg)
-	 */
-	public double getMineralExcavationAmount(AmountResource mineral) {
-		return detectedMinerals.getOrDefault(mineral, 0D);
-	}
-
-	/**
-	 * Gets the total amount of a mineral that has been excavated so far.
-	 * 
-	 * @param mineral the mineral resource.
-	 * @return amount (kg)
-	 */
-	public double getTotalMineralExcavatedAmount(AmountResource mineral) {
-		return totalExcavatedMinerals.getOrDefault(mineral, 0D);
-	}
-
-	/**
-	 * Excavates an amount of a mineral.
-	 * 
-	 * @param mineral the mineral resource.
-	 * @param amount  the amount (kg)
-	 */
-	public void excavateMineral(AmountResource mineral, double amount) {
-		double currentExcavated = amount;
-		if (detectedMinerals.containsKey(mineral)) {
-			currentExcavated += detectedMinerals.get(mineral);
-		}
-		detectedMinerals.put(mineral, currentExcavated);
-
-		double totalExcavated = amount;
-		if (totalExcavatedMinerals.containsKey(mineral)) {
-			totalExcavated += totalExcavatedMinerals.get(mineral);
-		}
-		totalExcavatedMinerals.put(mineral, totalExcavated);
-
-		fireMissionUpdate(MissionEventType.EXCAVATE_MINERALS_EVENT);
-	}
-
-	/**
-	 * Collects an amount of a mineral.
-	 * 
-	 * @param mineral the mineral resource.
-	 * @param amount  the amount (kg)
-	 * @throws Exception if error collecting mineral.
-	 */
-	public void collectMineral(AmountResource mineral, double amount) {
-		double currentExcavated = 0D;
-		if (detectedMinerals.containsKey(mineral)) {
-			currentExcavated = detectedMinerals.get(mineral);
-		}
-		if (currentExcavated >= amount) {
-			// Record the excavated amount
-			detectedMinerals.put(mineral, (currentExcavated - amount));
-			// Reduce the mass at the site
-			getMiningSite().excavateMass((currentExcavated - amount));	
-		
-		} else {
-			throw new IllegalStateException(
-					mineral.getName() + " amount: " + amount + " more than currently excavated.");
-		}
-		fireMissionUpdate(MissionEventType.COLLECT_MINERALS_EVENT);
 	}
 
 	@Override
@@ -782,7 +634,7 @@ public class Mining extends EVAMission
 	
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {
-		return getMiningSiteValue(miningSite, reviewerSettlement);
+		return getMiningSiteValue(objective.getSite(), reviewerSettlement);
 	}
 
 	@Override

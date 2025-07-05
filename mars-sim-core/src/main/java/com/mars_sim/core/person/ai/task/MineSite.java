@@ -6,23 +6,20 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -60,7 +57,7 @@ public class MineSite extends EVAOperation {
 	public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
 
 	// Data members
-	private Coordinates site;
+	private MiningObjective objectives;
 	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
 
@@ -68,20 +65,18 @@ public class MineSite extends EVAOperation {
 	 * Constructor.
 	 *
 	 * @param person the person performing the task.
-	 * @param site   the explored site to mine.
+	 * @param objective   the objectives of the mining
 	 * @param rover  the rover used for the EVA operation.
-	 * @param luv    the light utility vehicle used for mining.
-	 * @param d 
 	 */
-	public MineSite(Person person, Coordinates site, Rover rover, LightUtilityVehicle luv) {
+	public MineSite(Person person, MiningObjective objective, Rover rover) {
 
 		// Use EVAOperation parent constructor.
 		super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, MINING);
 		setMinimumSunlight(LIGHT_LEVEL);
 
 		// Initialize data members.
-		this.site = site;
-		this.luv = luv;
+		this.objectives = objective;
+		this.luv = objective.getLUV();
 		operatingLUV = false;
 
 		if (shouldEndEVAOperation()) {
@@ -149,17 +144,12 @@ public class MineSite extends EVAOperation {
 		// to the rover.
 		if (addTimeOnSite(time)) {
 			// End operating light utility vehicle.
-			if (person != null && ((Crewable)luv).isCrewmember(person)) {
+			if (person != null && luv.isCrewmember(person)) {
 				luv.removePerson(person);
 				luv.setOperator(null);
 				operatingLUV = false;
 
-			} else if (robot != null && ((Crewable)luv).isRobotCrewmember(robot)) {
-				luv.removeRobot(robot);
-				luv.setOperator(null);
-				operatingLUV = false;
 			}
-
 			checkLocation("Time on site expired.");
 		}
 	
@@ -180,7 +170,7 @@ public class MineSite extends EVAOperation {
 				luv.setOperator(person);
 
 				operatingLUV = true;
-				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // $NON-NLS-1$
+				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
 			} else {
 				logger.info(person, " could not operate " + luv.getName());
 			}
@@ -205,23 +195,29 @@ public class MineSite extends EVAOperation {
 	 * @throws Exception if error excavating minerals.
 	 */
 	private void excavateMinerals(double time) {
-
-		Map<String, Integer> minerals = surfaceFeatures.getMineralMap()
-				.getAllMineralConcentrations(site);
-		Iterator<String> i = minerals.keySet().iterator();
-		while (i.hasNext()) {
-			String mineralName = i.next();
-			double amountExcavated = (operatingLUV ? LUV_EXCAVATION_RATE 
+		int skill = getEffectiveSkillLevel();
+		double extractionRate = (operatingLUV ? LUV_EXCAVATION_RATE 
 									: HAND_EXCAVATION_RATE) * time;
-			double mineralConcentration = minerals.get(mineralName);
-			
-			logger.info(person, 20_000L, "conc: " + mineralConcentration);
-			
-			amountExcavated *= mineralConcentration / 100D;
-			amountExcavated *= getEffectiveSkillLevel();
+		if (skill == 0)
+			extractionRate /= 2D;
+		else if (skill > 1)
+			extractionRate += (.2D * skill);
 
-			((Mining) worker.getMission()).excavateMineral(
-					ResourceUtil.findAmountResource(mineralName), amountExcavated);
+		var site = objectives.getSite();
+		Map<String, Integer> minerals = surfaceFeatures.getMineralMap()
+				.getAllMineralConcentrations(site.getLocation());
+		for(var e : minerals.entrySet()) {
+
+			double mineralConcentration = e.getValue();
+			double reserve = site.getRemainingMass();
+			double certainty = site.getDegreeCertainty(e.getKey());
+			double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
+
+			double amountExcavated = variance * reserve * extractionRate * mineralConcentration;
+
+			int mineralId = ResourceUtil.findIDbyAmountResourceName(e.getKey());
+
+			objectives.extractedMineral(mineralId, amountExcavated);
 		}
 	}
 

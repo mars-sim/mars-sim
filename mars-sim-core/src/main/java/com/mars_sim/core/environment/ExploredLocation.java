@@ -14,10 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -139,6 +141,15 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 		return estimatedMineralConcentrations;
 	}
 
+	/**
+	 * Get teh estimated amount of each mineral at the site based on the Mass and mineral concentration
+	 * @return
+	 */
+	public Map<Integer,Double> getEstimatedMineralAmounts() {
+		return estimatedMineralConcentrations.entrySet().stream()
+				.collect(Collectors.toMap(e -> ResourceUtil.findIDbyAmountResourceName(e.getKey()),
+									v -> (remainingMass * v.getValue())/100D));
+	}
 	/**
 	 * Gets the number of times the mineral concentration estimation has been
 	 * improved.

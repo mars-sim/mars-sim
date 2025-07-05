@@ -52,6 +52,7 @@ import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
+import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Delivery;
@@ -80,6 +81,7 @@ import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ExplorationPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
+import com.mars_sim.ui.swing.tool.mission.objectives.MiningPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -342,12 +344,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		String tradeMissionName = Trade.class.getName();
 		customInfoPanels.put(tradeMissionName, tradePanel);
 		missionCustomPane.add(tradePanel, tradeMissionName);
-
-		// Create custom mining mission panel.
-		MissionCustomInfoPanel miningPanel = new MiningMissionCustomInfoPanel(desktop);
-		String miningMissionName = Mining.class.getName();
-		customInfoPanels.put(miningMissionName, miningPanel);
-		missionCustomPane.add(miningPanel, miningMissionName);
 
 		// Create custom construction mission panel.
 		MissionCustomInfoPanel constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
@@ -664,6 +660,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					case CollectResourceObjective cro -> new CollectResourcePanel(cro);
 					case FieldStudyObjectives fso -> new FieldStudyPanel(fso, desktop);
 					case ExplorationObjective eo -> new ExplorationPanel(eo);
+					case MiningObjective mo -> new MiningPanel(mo, desktop);
 
 					default -> null;
 				};
