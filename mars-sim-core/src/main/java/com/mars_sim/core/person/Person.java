@@ -542,11 +542,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 *
 	 */
 	private void calculateBirthDate(LocalDateTime earthLocalTime, int initialAge) {
-		int daysPast = (initialAge * 365) + RandomUtil.getRandomInt(0,364);
-		birthDate = earthLocalTime.minusDays(daysPast).toLocalDate();
+		int daysPast = RandomUtil.getRandomInt(0,364);
+		birthDate = earthLocalTime.minusYears(initialAge).minusDays(daysPast).toLocalDate();
 
 		// Calculate the year
-		// Set the age
+		// Set the ag4
 		age = updateAge(earthLocalTime);
 
 		// Calculate next birthday
