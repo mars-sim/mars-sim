@@ -17,8 +17,6 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
-import com.mars_sim.core.person.NationSpec;
-import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -43,10 +41,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	protected static final double BUILDING_WIDTH = 9D;
 
 	protected static final double MSOLS_PER_EXECUTE = 0.1D;
-	
-	private static final String TEST_COUNTRY = "Norway";
-	
-	protected NationSpec country;
 	   
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
@@ -87,10 +81,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
 	    							 sim.getWeather(), unitManager);
 	    
-	    surface = unitManager.getMarsSurface();	
-	    
-		country = new NationSpecConfig(getConfig()).getItem(TEST_COUNTRY);
-		   
+	    surface = unitManager.getMarsSurface();			   
 	}
 
 	public Simulation getSim() {
@@ -99,10 +90,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	protected SimulationConfig getConfig() {
 		return simConfig;
-	}
-	
-	protected NationSpec getNationSpec() {
-		return country;
 	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
@@ -223,9 +210,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	public Person buildPerson(String name, Settlement settlement, JobType job,
 					Building place, FunctionType activity) {
-		
-		NationSpecConfig nsc = new NationSpecConfig(getConfig());
-        var country = nsc.getItem(TEST_COUNTRY);
         
 		GenderType gender = GenderType.MALE;
 		int rand = RandomUtil.getRandomInt(1);
@@ -234,7 +218,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 			
 		
 		Person person = Person.create(name, settlement, gender)
-				.setCountry(country)
 				.build();
 		
 		person.setJob(job, "Test");

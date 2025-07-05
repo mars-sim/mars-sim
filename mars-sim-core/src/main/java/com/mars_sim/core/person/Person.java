@@ -205,6 +205,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
 		super.setDescription(EARTHLING);
+		this.gender = gender;
+
 		// Create a prior training profile
 		generatePriorTraining();
 		// Construct the PersonAttributeManager instance
@@ -540,11 +542,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 *
 	 */
 	private void calculateBirthDate(LocalDateTime earthLocalTime, int initialAge) {
-		int daysPast = (initialAge * 365) + RandomUtil.getRandomInt(0,364);
-		birthDate = earthLocalTime.minusDays(daysPast).toLocalDate();
+		int daysPast = RandomUtil.getRandomInt(0,364);
+		birthDate = earthLocalTime.minusYears(initialAge).minusDays(daysPast).toLocalDate();
 
 		// Calculate the year
-		// Set the age
+		// Set the ag4
 		age = updateAge(earthLocalTime);
 
 		// Calculate next birthday
@@ -983,12 +985,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			return !getMind().getTaskManager().getTask().isEffortDriven();
 		return true;
 	}
-    		
-	public String getTaskPhase() {
-		if (getMind().getTaskManager().getPhase() != null)
-			return getMind().getTaskManager().getPhase().getName();
-		return "";
-	}
 
 	@Override
 	public Mission getMission() {
@@ -1189,15 +1185,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return
 	 */
 	public EVASuit getSuit() {
-		return getInventorySuit();
-	}
-
-	/**
-	 * Gets the EVA suit instance the person has in inventory.
-	 *
-	 * @return
-	 */
-	public EVASuit getInventorySuit() {
 		return (EVASuit) getSuitSet().stream().findAny().orElse(null);
 	}
 
@@ -1851,33 +1838,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return false;
 	}
 
-	/**
-	 * Puts off the garment and the thermal bottle. (UNUSED)
-	 * 
-	 * DO NOT DELETE THIS YET
-	 * 
-	 * @param person
-	 * @param entity
-	 */
-	public void putOff(Person person, Entity entity) {
-		EquipmentOwner housing = null;
-
-		boolean inS = person.isInSettlement();
-		
-		if (inS)
-			housing = ((Building)entity).getSettlement();
-		else
-			housing = (Vehicle)entity;
-		
-		// Remove pressure suit and put on garment
-		if (person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
-	}
-	
 	/**
 	 * Rescues the person from the rover in settlement vicinity.
 	 * 

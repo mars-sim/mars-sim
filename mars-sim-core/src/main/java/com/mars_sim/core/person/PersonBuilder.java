@@ -285,12 +285,20 @@ public class PersonBuilder {
 		if (country != null) {
 			ethnicity = country.getPopulation();
 		}
+
+		// Predefined age overrides any calculation
+		if (age <= 0) {
+			if (ethnicity != null) {
+				age = (int) ethnicity.getRandomAge(gender);
+			}
+			else {
+				age = RandomUtil.getRandomInt(21, 65);
+			}
+		}
 		
 		if (attributeMap == null) {
 			attributeMap = buildDefaultAttributes();
 		}
-				
-		age = (int) ethnicity.getRandomAge(gender);
 		
 		Person p = new Person(name, settlement, gender, age, ethnicity, attributeMap);
 

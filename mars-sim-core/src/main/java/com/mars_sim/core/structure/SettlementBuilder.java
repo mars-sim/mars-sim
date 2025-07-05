@@ -424,11 +424,6 @@ public final class SettlementBuilder {
 			else {
 				gender = GenderType.FEMALE;
 			}
-
-//			GenderType gender = GenderType.MALE;
-//			int rand = RandomUtil.getRandomInt(1);
-//			if (rand == 1)
-//				gender = GenderType.FEMALE;
 			
 			// This is random and may change on each call
 			String country = sponsor.getRandomCountry();
@@ -504,22 +499,11 @@ public final class SettlementBuilder {
 					}
 				}
 				
-				// Choose the next gender based on the current ratio of M/F
-//				int rand = RandomUtil.getRandomInt(1);
-//				if (rand == 0) {
-//					gender = GenderType.MALE;
-//				}
-//				else {
-//					gender = GenderType.FEMALE;
-//				}
-				
 				// Check name
 				String name = m.getName();
 				if (existingfullnames.contains(name)) {
 					// Should not happen so a cheap fix in place
 					logger.warning("Person already called " + name + ".");
-					
-
 
 					// This is random and may change on each call
 					String country = sponsor.getRandomCountry();

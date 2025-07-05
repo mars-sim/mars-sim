@@ -17,7 +17,6 @@ import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.WalkingSteps.WalkStep;
 import com.mars_sim.core.structure.MockSettlement;
@@ -58,10 +57,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
-		
+		Person person = buildPerson("Walker", settlement);		
         BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(-6D, 0.5D);
@@ -93,10 +89,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
-;
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -128,9 +121,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
         assertNotNull("Perons s in start building", person.getBuildingLocation());
@@ -149,41 +140,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         assertEquals(0, walkingSteps.getWalkingStepsList().size()); 
     }
-    
-//	/**
-//     * Test constructing walking steps from building interior to building 
-//     * (with quarters) interior with no valid walking path between them and no airlocks.
-//     */
-//    public void testWalkingStepsBuildingToQuartersNoPath() {
-//
-//        Settlement settlement = buildSettlement();
-//
-//        BuildingManager buildingManager = settlement.getBuildingManager();
-//
-//        LocalPosition target = new LocalPosition(-12D, 0D);
-//        
-//        Building building0 = buildBuilding(buildingManager, LOCAL_POSITION1, 0D, 0); 
-//        Building building1 = buildAccommodation(buildingManager, target, 270D, 1);
-//
-//        buildingManager.setupBuildingFunctionsMap();
-//
-//		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
-
-//
-//        BuildingManager.addToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
-//        assertNotNull(walkingSteps);
-//
-//        assertFalse(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsNumber()); 
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsList().size()); 
-//    }
-    
+ 
 	/**
      * Test constructing walking steps from building interior to building interior with no
      * valid walking path between them and no airlocks.
@@ -201,9 +158,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         assertFalse("Target is not in the target building", LocalAreaUtil.isPositionWithinLocalBoundedObject(target, building1));
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
         assertNotNull("Person is in building", person.getBuildingLocation());
@@ -236,9 +191,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building1 = buildEVA(buildingManager, target, 270D, 1);
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
         assertNotNull("Person in start building", person.getBuildingLocation());
@@ -287,9 +240,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
         
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -333,9 +284,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
 		
         BuildingManager.addToBuilding(person, building0);
@@ -366,9 +315,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -418,9 +365,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         person.transfer(rover);
 
@@ -477,9 +422,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -531,9 +474,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
         
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -563,9 +504,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		LocalPosition parked2 = new LocalPosition(-50D, 20D);
         Rover rover2 = buildRover(settlement, "Test Rover 2", parked2);
         
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
 		person.transfer(rover1);
 		
@@ -617,9 +556,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         person.setPosition(new LocalPosition(4D, 4D));
         BuildingManager.addToBuilding(person, garage.getBuilding());
@@ -663,9 +600,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         garage.addVehicle(rover);
         buildingManager.setupBuildingFunctionsMap();
         
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         person.setPosition(LocalPosition.DEFAULT_POSITION);
         person.transfer(rover);
@@ -707,9 +642,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
 		person.transfer(surface);
 
@@ -755,9 +688,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
 
-        Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+        Person person = buildPerson("Walker", settlement);
 
         person.transfer(surface);
         
@@ -785,9 +716,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Rover rover = buildRover(settlement, "Test Rover", parkedPosition);
         rover.transfer(surface);
         
-		Person person = Person.create("Walker", settlement, GenderType.MALE)
-				.setCountry(country)
-				.build();
+		Person person = buildPerson("Walker", settlement);
 
         person.setPosition(new LocalPosition(20D,15D));
         person.transfer(surface);
