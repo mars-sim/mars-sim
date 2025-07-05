@@ -51,7 +51,7 @@ public class StudyCommand extends AbstractPersonCommand {
 		// If expert offer the option to create a study
 		if ((pristudy == null)
 			&& context.getRoles().contains(ConversationRole.EXPERT)
-			&& context.getInput("Create Primary Study (Y/N)").equalsIgnoreCase("Y")) {
+			&& context.getBooleanInput("Create Primary Study")) {
 			
 			// Create primary study
 			pristudy = ProposeScientificStudy.createStudy(person);

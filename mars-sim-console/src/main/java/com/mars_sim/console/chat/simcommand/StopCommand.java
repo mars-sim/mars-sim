@@ -21,10 +21,8 @@ public class StopCommand extends ChatCommand {
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input) {
-		String toSave = context.getInput("Stop the simulation (Y/N)?");
-        
-        if ("Y".equalsIgnoreCase(toSave)) {
+	public boolean execute(Conversation context, String input) {        
+        if (context.getBooleanInput("Stop the simulation")) {
             context.println("Stopping the Simulation...");
             Simulation sim = context.getSim();
         	sim.endSimulation(); 

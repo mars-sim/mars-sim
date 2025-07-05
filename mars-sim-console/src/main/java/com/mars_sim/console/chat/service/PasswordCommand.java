@@ -34,8 +34,7 @@ public class PasswordCommand extends ChatCommand {
 			targetUserName = input;
 		}
 		
-		String toExit = context.getInput("Change the password for " + targetUserName + " (Y/N)?");
-        if ("Y".equalsIgnoreCase(toExit)) {
+        if (context.getBooleanInput("Change the password for " + targetUserName)) {
         	Credentials cred = sshConv.getService().getCredentials();
         	
         	// Changing current user then have to confirm current password

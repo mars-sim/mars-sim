@@ -85,8 +85,7 @@ public class WeatherCommand extends AbstractSettlementCommand {
 		// Expert can create a Dust Storm
 		if ((ds == null) && context.getRoles().contains(ConversationRole.EXPERT)) {
 			// Offer the option to create a Dust Storm
-			String change = context.getInput("Create a new Dust Storm (Y/N)?");
-			if ("Y".equalsIgnoreCase(change)) {
+			if (context.getBooleanInput("Create a new Dust Storm")) {
 				List<String> options = Arrays.stream(DustStormType.values())
 												.map(DustStormType::getName).toList();
 				int choice = CommandHelper.getOptionInput(context, options, "Which type of storm?");

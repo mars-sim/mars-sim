@@ -36,9 +36,9 @@ public class RadiationCommand extends AbstractSettlementCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
-		boolean baseLineRad = "Y".equalsIgnoreCase(context.getInput("Create baseline Radiation (Y/N)"));
-		boolean gcrRad = "Y".equalsIgnoreCase(context.getInput("Create GCR Radiation (Y/N)"));
-		boolean sepRad = "Y".equalsIgnoreCase(context.getInput("Create SEP Radiation (Y/N)"));
+		boolean baseLineRad = context.getBooleanInput("Create baseline Radiation");
+		boolean gcrRad = context.getBooleanInput("Create GCR Radiation");
+		boolean sepRad = context.getBooleanInput("Create SEP Radiation");
 
 		if (baseLineRad || gcrRad || sepRad) {
 			RadiationStatus newStatus = new RadiationStatus(baseLineRad, gcrRad, sepRad);

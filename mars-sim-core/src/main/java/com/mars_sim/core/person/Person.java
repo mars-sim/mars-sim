@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
@@ -1132,7 +1131,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Gets the age of this person.
+	 * Gets the age of this person in years
 	 *
 	 * @return
 	 */

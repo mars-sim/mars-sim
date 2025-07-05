@@ -9,7 +9,6 @@ package com.mars_sim.console.chat.simcommand.unit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
@@ -87,10 +86,9 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 			List<Malfunctionable> smartEqm = eo.getEquipmentSet().stream()
 										.filter(Malfunctionable.class::isInstance)
 										.map(Malfunctionable.class::cast)
-										.collect(Collectors.toList());
+										.toList();
 
-			if (!smartEqm.isEmpty() && 
-				"Y".equalsIgnoreCase(context.getInput("Use a contained Equipment: Y/N"))) {
+			if (!smartEqm.isEmpty() && context.getBooleanInput("Use a contained Equipment")) {
 					// Pick Equipment
 				owner = pickSelection(context, "equipment in " + source.getName(), smartEqm);
 			}
