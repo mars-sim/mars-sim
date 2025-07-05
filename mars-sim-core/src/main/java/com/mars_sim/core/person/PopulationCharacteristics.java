@@ -59,7 +59,7 @@ public class PopulationCharacteristics{
   		// double tempAge = 10 + RandomUtil.getGaussianDouble() * age / 13.5;
  
   		// Note: computeGaussianWithLimit(double center, double fraction, double variance)
-  		double tempAge = RandomUtil.computeGaussianWithLimit(mediaAge, .5, .1);
+  		double tempAge = RandomUtil.computeGaussianWithLimit(mediaAge - 5, .5, .25);
 		
   		if (tempAge > 65) {
   			tempAge = 65;

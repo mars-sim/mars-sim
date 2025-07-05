@@ -1,13 +1,12 @@
 /*
  * Mars Simulation Project
  * SponsorTabPanel.java
- * @date 2023-05-31
+ * @date 2025-07-04
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -99,11 +98,18 @@ public class SponsorTabPanel extends TabPanel {
 			agencyLabel = new JLabel(icon);
 		}
 		else {
+			
 			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyShortName));
-			agencyLabel = new JLabel(new ImageIcon(img));
+			
+			int originalWidth = img.getWidth(null);
+			int originalHeight = img.getHeight(null);
+			int newWidth = 250; // Desired width
+			int newHeight = (int) ((double) originalHeight / originalWidth * newWidth);
+			
+			Image newImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+			agencyLabel = new JLabel(new ImageIcon(newImg));
 		}
 
-		agencyLabel.setSize(new Dimension(256, 256));
 		iconPanel.add(agencyLabel);
 		
 		// Prepare info name panel.
@@ -176,10 +182,16 @@ public class SponsorTabPanel extends TabPanel {
 				.collect(Collectors.joining("\n")));
 	}
 	
+	/*
+	 * Creates a text area.
+	 * 
+	 * @param panel
+	 * @return
+	 */
 	private JTextArea createTA(JPanel panel) {
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
-		ta.setColumns(42);
+		ta.setColumns(35);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);
 		panel.add(ta);
