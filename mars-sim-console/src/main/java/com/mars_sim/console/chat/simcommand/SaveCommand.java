@@ -28,10 +28,8 @@ public class SaveCommand extends ChatCommand {
 
 
 	@Override
-	public boolean execute(Conversation context, String input) {
-		String toSave = context.getInput("Save simulation (Y/N)?");
-	
-        if ("Y".equalsIgnoreCase(toSave)) {
+	public boolean execute(Conversation context, String input) {	
+        if (context.getBooleanInput("Save simulation")) {
             context.println("Saving Simulation...");
 
 			status = "NotCompleted";

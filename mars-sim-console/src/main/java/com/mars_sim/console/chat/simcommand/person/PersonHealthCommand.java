@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
@@ -87,16 +86,14 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 											 person.getCircadianClock().getSurplusLeptin()));
 			
 			List<String> probs = pc.getProblems().stream().map(hp -> hp.getComplaint().getType().getName())
-												 .collect(Collectors.toList());
+												 .toList();
 			responseText.appendNumberedList("Problems", probs);
 			
 			context.println(responseText.getOutput());
 			
 			// If expert then maybe change values
-			if (isExpert) {
-				String change = context.getInput("Change values (Y/N)?");
-		        
-		        if ("Y".equalsIgnoreCase(change)) {
+			if (isExpert) {		        
+		        if (context.getBooleanInput("Change value")) {
 		        	changeCondition(context, person, pc);
 		        }
 		        else {
@@ -165,7 +162,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 		// Choose one
 		List<Complaint> complaints = new ArrayList<>(SimulationConfig.instance().getMedicalConfiguration().getComplaintList());
 		Collections.sort(complaints, Comparator.comparing(Complaint::getType));
-		List<String> problems = complaints.stream().map(c -> c.getType().getName()).collect(Collectors.toList());
+		List<String> problems = complaints.stream().map(c -> c.getType().getName()).toList();
 		int choice = CommandHelper.getOptionInput(context, problems, "Choose a new Complaint");
 		if (choice <= 0) {
 			return;
@@ -202,8 +199,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 		}
 
-		String toSave = context.getInput("Caused death (Y/N)?");
-		if ("Y".equalsIgnoreCase(toSave)) {
+		if (context.getBooleanInput("Caused death")) {
 			context.println(person + " is now dead.");
 			person.getPhysicalCondition().recordDead(problem, true, "Act of God");
 		}
