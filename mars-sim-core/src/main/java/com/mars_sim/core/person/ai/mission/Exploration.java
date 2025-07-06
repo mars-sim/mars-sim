@@ -49,6 +49,15 @@ public class Exploration extends EVAMission
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Exploration.class.getName());
 
+	/** Number of specimen containers required for the mission. */
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
+	/** Amount of time to explore a site. */
+	private static final double STANDARD_TIME_PER_SITE = 500.0;
+	
+	/** Exploration Site */
+	private static final String EXPLORATION_SITE = "Exploration Site ";
+
+	
 	/** Mission Type enum. */
 	public static final MissionType MISSION_TYPE = MissionType.EXPLORATION;
 
@@ -56,28 +65,21 @@ public class Exploration extends EVAMission
 	private static final MissionPhase EXPLORE_SITE = new MissionPhase("Mission.phase.exploreSite");
 	private static final MissionStatus NO_EXPLORATION_SITES = new MissionStatus("Mission.status.noExplorationSites");
 
-	/** Exploration Site */
-	private static final String EXPLORATION_SITE = "Exploration Site ";
-
-	/** Number of specimen containers required for the mission. */
-	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
-	/** Amount of time to explore a site. */
-	private static final double STANDARD_TIME_PER_SITE = 500.0;
-	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
-	
 
 	private double currentSiteTime;
-	private ExploredLocation currentSite;
-
-	private ExplorationObjective objective;
-	/** The set of sites to be claimed by this mission. */
-	private Set<ExploredLocation> claimedSites = new HashSet<>();
 	
 	/** The current exploration site. */
+	private ExploredLocation currentSite;
+	/** An objective for exploring a site during a mission. */
+	private ExplorationObjective objective;
 
 	/** Manager of the explorations at the home Settlement */
 	private ExplorationManager explorationMgr;
+	
+	/** The set of sites to be claimed by this mission. */
+	private Set<ExploredLocation> claimedSites = new HashSet<>();
+	
 
 	/**
 	 * Constructor.
