@@ -359,11 +359,8 @@ public class Exploration extends EVAMission
 		
 		else {
 			limit = range / 2D;
-
-			// Use the confidence score to limit the range
-			double dist = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 			
-			currentLocation = determineFirstSiteCoordinate(dist);
+			currentLocation = determineFirstSiteCoordinate(limit);
 			
 			if (currentLocation != null) {
 				// Creates an initial explored site in SurfaceFeatures
@@ -442,7 +439,7 @@ public class Exploration extends EVAMission
 	 */
 	private Coordinates determineFirstSiteCoordinate(double limit) {
 		// Get a random site that is one of the closest
-		return explorationMgr.getUnexploredDeclaredSite(true, limit);
+		return explorationMgr.getUnexploredLocalSites(true, limit);
 	}
 	
 	/**

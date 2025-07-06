@@ -147,10 +147,8 @@ public class ExplorationManager implements Serializable {
 	 * @param skill
 	 * @return
 	 */
-	public Coordinates getUnexploredDeclaredSite(boolean closest, double limit) {
-		
-		double newRange = limit;
-		
+	public Coordinates getUnexploredLocalSites(boolean closest, double limit) {
+				
 		if (limit == -1) {		
 			return getNextClosestMineralLoc(limit);
 		}
@@ -160,25 +158,27 @@ public class ExplorationManager implements Serializable {
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		for (var c : nearbyMineralLocations.entrySet()) {
 			// If an undeclared location
-			if (declaredMineralLocations.stream().noneMatch(e -> e.getCoordinates().equals(c.getKey()))) {
-				double distance = c.getValue();
-				double prob = 0;
-				double delta = newRange - distance + 100;
-				if (delta > 0) {
-					continue;
-				}
-					
-				if (closest) {		
-					prob = delta * delta / newRange / newRange;
-				}
-				else {
-					prob = delta / newRange;
-				}
+			var declared = declaredMineralLocations.stream()
+						.filter(e -> e.getCoordinates().equals(c.getKey()))
+						.findAny().orElse(null);
+			if ((declared != null) && declared.isExplored()) {
+				continue;
+			}
+			
+			double distance = c.getValue();
+			double prob = 0;
+			double delta = limit - distance + 100;
 				
-				if (distance >= MineralMap.MIN_DISTANCE && prob > 0) {
-					// Fill up the weight map
-					weightedMap.put(c.getKey(), prob);
-				}
+			if (closest) {		
+				prob = delta * delta / limit / limit;
+			}
+			else {
+				prob = delta / limit;
+			}
+			
+			if (distance >= MineralMap.MIN_DISTANCE && prob > 0) {
+				// Fill up the weight map
+				weightedMap.put(c.getKey(), prob);
 			}
 		}
 
