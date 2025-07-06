@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -85,11 +86,14 @@ public class EntityLabel extends JPanel {
         this.subject = subject;
         if (subject == null) {
             label.setText("");
+            label.setToolTipText(null);
             detailButton.setVisible(false);
             mapButton.setVisible(false);
         }
         else {
             label.setText(subject.getName());
+            var entityType = Conversion.split(subject.getClass().getSimpleName());
+            label.setToolTipText(entityType);
             detailButton.setVisible(true);
             mapButton.setVisible((subject instanceof MobileUnit) || (subject instanceof FixedUnit));
         }

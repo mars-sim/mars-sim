@@ -1,66 +1,19 @@
-/**
+/*
  * Mars Simulation Project
  * Conversion.java
- * @date 2021-12-22
+ * @date 2025-07-05
  * @author Manny Kung
  */
 package com.mars_sim.core.tool;
 
-public class Conversion {
+public final class Conversion {
 
-	public Conversion() {
-	}
-	
-		// Convert nameStr down into an array
-		// Create new String at each whitespace
-
-		// At each word, 
-		// Do this: String word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase()
-
-		// Convert the array back to one single String
-
-	/**
-	 * Checks if the initial of the string is a vowel
-	 * 
-	 * @param word
-	 * @return true/false
-	 */
-	public static boolean isVowel(String word) {
-        return word.toLowerCase().startsWith("a") || word.toLowerCase().startsWith("e")
-                || word.toLowerCase().startsWith("i") || word.toLowerCase().startsWith("o")
-                || word.toLowerCase().startsWith("u");
+	private Conversion() {
+		// Prevent creation
 	}
 
 	/**
-	 * Sets the first word to lower case.
-	 * Note: Exception given to the word 'EVA'
-	 * 
-	 * @param input the word
-	 * @return modified word
-	 */
-	public static String setFirstWordLowercase(String input) {
-		if (input != null) {
-			StringBuilder titleCase = new StringBuilder();
-			boolean nextTitleCase = true;
-
-			for (char c : input.toCharArray()) {
-				if (Character.isSpaceChar(c) || c == '/') {
-					nextTitleCase = true;
-				} else if (nextTitleCase) {
-					c = Character.toLowerCase(c);
-					nextTitleCase = false;
-				}
-
-				titleCase.append(c);
-			}
-
-			return titleCase.toString().replace("eVA", "EVA");
-		} else
-			return null;
-	}
-
-	/**
-	 * Capitalizes the first letter of each word in the input phase
+	 * Capitalizes the first letter of each word in the input phase.
 	 * 
 	 * @param input The input phase
 	 * @return The modified phase
@@ -151,26 +104,7 @@ public class Conversion {
 			return null;
 	}
 
-	
-	/**
-	 * Is this character an integer ?
-	 * 
-	 * @param s
-	 * @param radix
-	 * @return
-	 */
-	public static boolean isInteger(String s, int radix) {
-	    if(s.isEmpty()) return false;
-	    for(int i = 0; i < s.length(); i++) {
-	        if(i == 0 && s.charAt(i) == '-') {
-	            if(s.length() == 1) return false;
-	            else continue;
-	        }
-	        if(Character.digit(s.charAt(i),radix) < 0) return false;
-	    }
-	    return true;
-	}
-	
+
 	/**
 	 * <p>
 	 * Checks if a String is whitespace, empty ("") or null.
@@ -203,20 +137,37 @@ public class Conversion {
 	}
 
 	/**
-	 * Maps a number to an alphabet
-	 *
-	 * @param a number
-	 * @return a String
+	 * Trims a string to a length and suffix with ...
+	 * 
+	 * @param source
+	 * @param length
+	 * @return
 	 */
-	public static String getCharForNumber(int i) {
-		// Do note delete. Will use it
-		// NOTE: i must be > 1, if i = 0, return null
-		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
-	}
-
 	public static String trim(String source, int length) {
 		if (source.length() > length)
 			source = source.substring(0, length-3) + "...";
 		return source;
 	}
+
+	/**
+	 * Splits the seed into separate words on a capital boundary.
+	 * 
+	 * @param seed
+	 * @return
+	 */
+    public static String split(String seed) {
+		StringBuilder result = new StringBuilder();
+
+		boolean lastIsUpper = true;
+		for(var c : seed.toCharArray()) {
+			boolean isUpper = Character.isUpperCase(c);
+			if (!lastIsUpper && isUpper) {
+				result.append(' ');
+			}
+			result.append(c);
+			lastIsUpper = isUpper;
+		}
+
+        return result.toString();
+    }
 }

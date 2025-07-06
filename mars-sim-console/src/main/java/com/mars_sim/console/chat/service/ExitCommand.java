@@ -25,10 +25,8 @@ public class ExitCommand extends ChatCommand {
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input) {
-	String toExit = context.getInput("Exit the console session (Y/N)?");
-        
-        if ("Y".equalsIgnoreCase(toExit)) {
+	public boolean execute(Conversation context, String input) {        
+        if (context.getBooleanInput("Exit the console session")) {
             context.println("Exiting...");
 			context.setCompleted();
         }

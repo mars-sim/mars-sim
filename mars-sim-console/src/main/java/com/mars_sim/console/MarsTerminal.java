@@ -12,6 +12,8 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Taskbar;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -188,9 +190,19 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-		ImageIcon icon = new ImageIcon(getClass().getResource(ICON_IMAGE));
-		frame.setIconImage(iconToImage(icon));
+		String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+		if (os.contains("mac")) {
+			final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+			Image image = defaultToolkit.getImage(getClass().getResource(ICON_IMAGE));
+			final Taskbar taskbar = Taskbar.getTaskbar();
 
+			taskbar.setIconImage(image);
+		}
+		else {
+			ImageIcon icon = new ImageIcon(getClass().getResource(ICON_IMAGE));
+			frame.setIconImage(iconToImage(icon));
+		}
+		
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Help");
         menu.setMnemonic(KeyEvent.VK_H);

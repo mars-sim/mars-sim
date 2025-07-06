@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
@@ -205,41 +204,35 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
 		super.setDescription(EARTHLING);
+		this.gender = gender;
 
 		// Create a prior training profile
 		generatePriorTraining();
 		// Construct the PersonAttributeManager instance
 		attributes = new NaturalAttributeManager(initialAttrs);
-
 		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
 		mind = new Mind(this);
-
 		// Set the person's status of death
 		isBuried = false;
-
 		// Add this person as a citizen
 		settlement.addACitizen(this);
-
 		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
 		calculateBirthDate(currentEarthTime, age);
-
-
 		// Create favorites
 		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
-
 		// Create preferences
 		preference = new Preference(this);
-		
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap(ethnicity);
-
 		// Create circadian clock
 		circadian = new CircadianClock(this);
 		// Create physical condition
 		condition = new PhysicalCondition(this);
+		// Initialize field data in PhysicalCondition
+		condition.initialize();
 		// Initialize field data in circadian clock
 		circadian.initialize();
 		// Create job history
@@ -247,20 +240,16 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Create the role
 		role = new Role(this);
 		// Create shift schedule
-		shiftSlot = settlement.getShiftManager().allocationShift(this);
-		
+		shiftSlot = settlement.getShiftManager().allocationShift(this);	
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
 		// Create the EVA hours map
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-
-
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
 		eqmInventory.setResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
-		
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
 	}
@@ -552,11 +541,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 *
 	 */
 	private void calculateBirthDate(LocalDateTime earthLocalTime, int initialAge) {
-		int daysPast = (initialAge * 365) + RandomUtil.getRandomInt(0,364);
-		birthDate = earthLocalTime.minusDays(daysPast).toLocalDate();
+		int daysPast = RandomUtil.getRandomInt(0,364);
+		birthDate = earthLocalTime.minusYears(initialAge).minusDays(daysPast).toLocalDate();
 
 		// Calculate the year
-		// Set the age
+		// Set the ag4
 		age = updateAge(earthLocalTime);
 
 		// Calculate next birthday
@@ -995,12 +984,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			return !getMind().getTaskManager().getTask().isEffortDriven();
 		return true;
 	}
-    		
-	public String getTaskPhase() {
-		if (getMind().getTaskManager().getPhase() != null)
-			return getMind().getTaskManager().getPhase().getName();
-		return "";
-	}
 
 	@Override
 	public Mission getMission() {
@@ -1148,7 +1131,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Gets the age of this person.
+	 * Gets the age of this person in years
 	 *
 	 * @return
 	 */
@@ -1201,15 +1184,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return
 	 */
 	public EVASuit getSuit() {
-		return getInventorySuit();
-	}
-
-	/**
-	 * Gets the EVA suit instance the person has in inventory.
-	 *
-	 * @return
-	 */
-	public EVASuit getInventorySuit() {
 		return (EVASuit) getSuitSet().stream().findAny().orElse(null);
 	}
 
@@ -1863,33 +1837,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return false;
 	}
 
-	/**
-	 * Puts off the garment and the thermal bottle. (UNUSED)
-	 * 
-	 * DO NOT DELETE THIS YET
-	 * 
-	 * @param person
-	 * @param entity
-	 */
-	public void putOff(Person person, Entity entity) {
-		EquipmentOwner housing = null;
-
-		boolean inS = person.isInSettlement();
-		
-		if (inS)
-			housing = ((Building)entity).getSettlement();
-		else
-			housing = (Vehicle)entity;
-		
-		// Remove pressure suit and put on garment
-		if (person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
-	}
-	
 	/**
 	 * Rescues the person from the rover in settlement vicinity.
 	 * 

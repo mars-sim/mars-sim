@@ -99,7 +99,7 @@ public class PhysicalCondition implements Serializable {
 	/** Performance modifier for energy. */
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
-	private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
+	private static final double STANDARD_DAILY_ENERGY_INTAKE = 10100D;
 	/** The average kJ of a 1kg food. Assume each meal has 0.1550 kg and has 2525 kJ. */
 	public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
 	// Note: 1kg of food has ~16290 kJ 
@@ -166,7 +166,7 @@ public class PhysicalCondition implements Serializable {
 	private double performance;
 	/** Person's energy level [in kJ] */
 	private double kJoules;
-	/** Person's food appetite (0.0 to 1.0) */
+	/** Person's food appetite (o to 1) */
 	private double appetite;
 	
 	/** The time it takes to prebreathe the air mixture in the EVA suit. */
@@ -176,7 +176,7 @@ public class PhysicalCondition implements Serializable {
 	
 	private double dehydrationStartTime;
 	/** Person's max daily energy in kJ */
-	private double personalMaxDailyEnergy = MAX_DAILY_ENERGY_INTAKE;
+	private double personalMaxEnergy = STANDARD_DAILY_ENERGY_INTAKE;
 	/** Person's Body Mass Deviation */
 	private double bodyMassDeviation;
 	/** Person's Body Mass Index (BMI) */
@@ -267,8 +267,6 @@ public class PhysicalCondition implements Serializable {
 		muscleHealth = 50D; // muscle health index; 50 being the average
 		muscleSoreness = RandomUtil.getRandomRegressionInteger(20); // muscle soreness
 
-		personalMaxDailyEnergy = MAX_DAILY_ENERGY_INTAKE;
-
 		double height = person.getHeight();
 		double heightSquared = height*height/100/100;
 		double defaultHeight = personConfig.getDefaultPhysicalChars().getAverageHeight();
@@ -344,13 +342,13 @@ public class PhysicalCondition implements Serializable {
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
 	 */
-	private void initialize() {
+	void initialize() {
 		// Set up the initial values for each physical health index
 		initializeHealthIndices();
-		// Derive personal max energy
-		updateMaxEnergy();
 		// Derive the personal appetite
 		updateAppetite();
+		// Derive personal max energy
+		updateMaxEnergy();
 		// Set up the initial values for health risks
 		initializeHealthRisks();
 	}
@@ -358,30 +356,40 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Updates the personal max energy.
 	 */
-	private void updateMaxEnergy() {
-		// Assume that after age 35, metabolism slows down
-		int ageFactor = 35 - person.getAge();
-		// Get mass factor 
-		double massFactor = person.getBaseMass() - personConfig.getDefaultPhysicalChars().getAverageWeight();
-		// Get eating pref 
-		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
-		// Derive the personal max energy
-		personalMaxDailyEnergy = personalMaxDailyEnergy + 2 * ageFactor + 10 * (massFactor + eatingPref);
+	void updateMaxEnergy() {
+		// Update personal max energy
+		personalMaxEnergy = Math.max(STANDARD_DAILY_ENERGY_INTAKE / 2, Math.min(STANDARD_DAILY_ENERGY_INTAKE * 2, personalMaxEnergy * (1 + appetite)));
 	}
 	
 	/**
 	 * Updates the personal appetite.
 	 */
-	private void updateAppetite() {
+	void updateAppetite() {
+		// Assume that after age 35, metabolism slows down
+		int ageFactor = 35 - person.getAge();
+		// Get mass factor 
+		double averageWeight = personConfig.getDefaultPhysicalChars().getAverageWeight();
+		// Get mass factor 
+		double massFactor = (person.getBaseMass() - averageWeight) / averageWeight;
+		// Get the leptin level
+		double leptinLevel = circadian.getLeptin();
+		// Get the Ghrelin level
+		double GhrelinLevel = circadian.getGhrelin();
+		
+		double mod = (GhrelinLevel - leptinLevel)/200.0;
+		// Get eating pref 
+		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta)/10.0;
 		// Derive the appetite
-		appetite = personalMaxDailyEnergy / MAX_DAILY_ENERGY_INTAKE;
+		appetite = Math.min(35.0, ageFactor)/70.0 + massFactor + eatingPref + mod;
+		// Limit to between 0 and 1
+		appetite = Math.max(0, Math.min(1, appetite));
 	}
 	
 	/**
-	 * Gets the personal max daily energy.
+	 * Gets the personal max energy.
 	 */
-	public double getPersonalMaxDailyEnergy() {
-		return personalMaxDailyEnergy;
+	public double getPersonalMaxEnergy() {
+		return personalMaxEnergy;
 	}
 	
 	/**
@@ -407,12 +415,19 @@ public class PhysicalCondition implements Serializable {
 		if (alive) {
 			
 			double time = pulse.getElapsed();
-
+			
 			// Check once a day only
-			if (pulse.isNewSol()) {
-
+			if (pulse.isNewSol()) {		
+//				int solOfMonth = pulse.getMarsTime().getSolOfMonth();
+//				if (solOfMonth == 1 || solOfMonth == 8 || solOfMonth == 15 || solOfMonth == 22 || solOfMonth == 29) {
+					// Update the personal appetite
+					updateAppetite();
+					// Update personal max energy
+					updateMaxEnergy();
+//				}
 				// Update the entropy in muscles
 				entropy(time * -20);
+			
 			}
 			
 			// Check once per msol (millisol integer)
@@ -627,7 +642,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param time the amount of time (millisols).
 	 */
 	public void reduceEnergy(double time) {
-		double xdelta = time * MAX_DAILY_ENERGY_INTAKE / 1000D;
+		double xdelta = time * STANDARD_DAILY_ENERGY_INTAKE / 1000D;
 
 		// Changing this to a more linear reduction of energy.
 		// We may want to change it back to exponential. - Scott
@@ -673,10 +688,10 @@ public class PhysicalCondition implements Serializable {
 		// Each meal (0.155 kg = 0.62 kg daily / a total of 4 meals) has an average of 2525 kJ
 
 		// Note: FOOD_COMPOSITION_ENERGY_RATIO = 16290
-		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite / ENERGY_FACTOR;
+		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO * (.75 + .75 * appetite) / ENERGY_FACTOR;
 
 		if (hunger <= 0)
-			kJoules = personalMaxDailyEnergy;
+			kJoules = personalMaxEnergy;
 		else if (kJoules > 19_000) {
 			kJoules += xdelta * .035;
 		} else if (kJoules > 17_000) {
@@ -710,8 +725,8 @@ public class PhysicalCondition implements Serializable {
 
 		circadian.eatFood(xdelta / 1000D);
 
-		if (kJoules > personalMaxDailyEnergy * 1.25) {
-			kJoules = personalMaxDailyEnergy * 1.25;
+		if (kJoules > personalMaxEnergy) {
+			kJoules = personalMaxEnergy;
 		}
 		
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
@@ -871,7 +886,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param hungerAdded
 	 */
 	public void increaseHunger(double hungerAdded) {
-		double h = hunger + hungerAdded;
+		double h = hunger + hungerAdded * (appetite * .75 + .75);
 		if (h > MAX_HUNGER)
 			h = MAX_HUNGER;
 

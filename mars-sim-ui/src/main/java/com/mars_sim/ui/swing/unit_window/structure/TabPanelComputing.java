@@ -127,11 +127,11 @@ public class TabPanelComputing extends TabPanelTable {
 	@Override
 	protected void setColumnDetails(TableColumnModel columns) {
 		columns.getColumn(0).setPreferredWidth(90);
-		columns.getColumn(1).setPreferredWidth(27);
-		columns.getColumn(2).setPreferredWidth(27);
+		columns.getColumn(1).setPreferredWidth(24);
+		columns.getColumn(2).setPreferredWidth(24);
 		columns.getColumn(3).setPreferredWidth(33);
 		columns.getColumn(4).setPreferredWidth(30);
-		columns.getColumn(5).setPreferredWidth(60);
+		columns.getColumn(5).setPreferredWidth(65);
 		columns.getColumn(6).setPreferredWidth(33);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();

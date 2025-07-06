@@ -15,6 +15,7 @@ import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -68,6 +69,7 @@ public class MainWindow
 	public static final int HEIGHT_STATUS_BAR = 25;
 	
 	/** Icon image filename for frame */
+    private static final String ICON_IMAGE = "/icons/lander_hab64.png";
 	public static final String LANDER_91_PNG = "lander_hab91.png";
 	public static final String LANDER_64_PNG = "lander_hab64.png";
 	public static final String LANDER_16 = "lander16";
@@ -364,7 +366,17 @@ public class MainWindow
 
 		changeTitle(false);
 
-		frame.setIconImage(getIconImage());
+		String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+		if (os.contains("mac")) {
+			final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+			Image image = defaultToolkit.getImage(getClass().getResource(ICON_IMAGE));
+			final Taskbar taskbar = Taskbar.getTaskbar();
+			taskbar.setIconImage(image);
+		}
+		else {
+			frame.setIconImage(getIconImage());
+		}
+		
 
 		// Set up the main pane
 		JPanel mainPane = new JPanel(new BorderLayout());

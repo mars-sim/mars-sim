@@ -35,10 +35,8 @@ public class ObjectiveCommand extends AbstractSettlementCommand {
 		ObjectiveType objective = settlement.getObjective();
 		double objLevel = settlement.getObjectiveLevel(objective);
         context.println("The current settlement objective is " + objective + " with level " + objLevel); 
-
-		String change = context.getInput("Change (Y/N)?");
         
-        if ("Y".equalsIgnoreCase(change)) {
+        if (context.getBooleanInput("Change")) {
         	int id = 1;
         	for (ObjectiveType iterable_element : ObjectiveType.values()) {
 				context.println(" #" + id++ + " - " + iterable_element.toString());
@@ -48,7 +46,7 @@ public class ObjectiveCommand extends AbstractSettlementCommand {
             	ObjectiveType newObj = ObjectiveType.values()[choosen-1];
 
                 int newLevel = context.getIntInput("Enter the level [1..3]");
-                newLevel = Math.min(3, Math.max(1, newLevel));
+                newLevel = Math.clamp(newLevel, 1, 3);
                 context.println("New objective is " + newObj + " with level " + newLevel); 
             	settlement.setObjective(newObj,  newLevel);
             }
