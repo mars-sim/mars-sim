@@ -1497,6 +1497,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		buffer.append(Conversion.getOneLetterInitial(missionType.getName().replace("with", "").trim()))
 			  .append("-")
 			  .append(solSortieString)
+			  .append("-")
 			  .append(getAssociatedSettlement().getSettlementCode())
 			  .append('-')
 			  .append(identifier);

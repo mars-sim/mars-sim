@@ -78,12 +78,12 @@ public class MissionManager implements Serializable {
 	synchronized String computeSolSortieString() {
 		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
 		int id = 1;
-		if (solCache != missionSol && sortieID != 1) {
+		if (solCache != missionSol) {
 			solCache = missionSol;
 			sortieID = 0;
 		}
 		
-		id = sortieID++;
+		id = ++sortieID;
 		identifier++;
 		
 		solSortieString = missionSol + "-" + String.format("%03d", id);

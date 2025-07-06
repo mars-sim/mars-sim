@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FieldStudyMeta.java
- * @date 2022-07-14
+ * @date 2025-07-06
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission.meta;
@@ -29,7 +29,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 							RoleType.SCIENCE_SPECIALIST, RoleType.COMMANDER,
 							RoleType.SUB_COMMANDER);
 	private static final String STUDY_BASE = "study";
-	private static final double WEIGHT = 10D;
+	private static final int WEIGHT = 20;
 	private ScienceType science;
 
 	public FieldStudyMeta(MissionType type, Set<JobType> preferredLeaderJob,

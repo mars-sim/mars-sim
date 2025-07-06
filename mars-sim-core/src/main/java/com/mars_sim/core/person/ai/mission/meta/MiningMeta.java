@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MiningMeta.java
- * @date 2022-07-14
+ * @date 2025-07-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission.meta;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExplorationMeta.java
- * @date 2022-07-14
+ * @date 2025-07-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission.meta;
@@ -29,9 +29,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 	private static final int MAX = 200;
 	
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 4;
+	public static final int MIN_STARTING_SOL = 2;
 
-	private static final double VALUE = 20D;
+	private static final double VALUE = 10D;
 
 	ExplorationMeta() {
 		super(MissionType.EXPLORATION, 

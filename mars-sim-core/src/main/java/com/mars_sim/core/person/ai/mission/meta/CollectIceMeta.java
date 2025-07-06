@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIceMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-07-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission.meta;
@@ -24,10 +24,10 @@ import com.mars_sim.core.structure.Settlement;
 public class CollectIceMeta extends AbstractMetaMission {
 
 
-	private static final int VALUE = 1000;
+	private static final int VALUE = 2000;
 
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 4;
+	public static final int MIN_STARTING_SOL = 3;
 	
 	CollectIceMeta() {
 		super(MissionType.COLLECT_ICE, Set.of(JobType.CHEMIST, JobType.BOTANIST, JobType.CHEF));
