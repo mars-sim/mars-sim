@@ -4,6 +4,7 @@ package com.mars_sim.core.structure;
 import java.util.Collections;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 
 public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
@@ -25,12 +26,32 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
 
         assertNotNull("New RoI created", newRoI);
         assertEquals("New ROI coordinates", siteLocn, newRoI.getCoordinates());
-        assertEquals("New RoI settlement", s, newRoI.getSettlement());
+        assertNull("New RoI settlement", newRoI.getSettlement());
         assertFalse("New RoI not claimed", newRoI.isClaimed());
         assertEquals("Declared locations", 1, eMgr.getDeclaredLocations().size());
 
-        newRoI.setClaimed(true);
+        newRoI.setClaimed(s);
         assertTrue("New RoI claimed", newRoI.isClaimed());
+
+    }
+
+     public void testCreateUnclaimedARegionOfInterest() {
+        var locn = new Coordinates("10N", "10E");
+
+        // Find a random location within 20K with minerals
+        var sf = getSim().getSurfaceFeatures();
+        var mm = sf.getMineralMap();
+        RandomMineralFactory.createLocalConcentration(mm, locn);
+        var found = mm.findRandomMineralLocation(locn, 20, Collections.emptyList());
+
+        // Create a site 1KM from the base, no settlemetn as unclaimed
+        var siteLocn = found.getKey();
+        var newRoI = sf.createARegionOfInterest(siteLocn, 100);
+
+        assertNotNull("New RoI created", newRoI);
+        assertEquals("New ROI coordinates", siteLocn, newRoI.getCoordinates());
+        assertNull("New RoI has no settlement", newRoI.getSettlement());
+        assertFalse("New RoI not claimed", newRoI.isClaimed());
     }
 
     public void testStatistics() {
@@ -39,31 +60,34 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         var eMgr = new ExplorationManager(s);
 
         // Find a random location within 20K with minerals
-        var mm = getSim().getSurfaceFeatures().getMineralMap();
+        var sf = getSim().getSurfaceFeatures();
+        var mm = sf.getMineralMap();
         RandomMineralFactory.createLocalConcentration(mm, s.getCoordinates());
 
         var place = eMgr.acquireNearbyMineralLocation(100);
-        eMgr.createARegionOfInterest(place, 100);
+        var l = eMgr.createARegionOfInterest(place, 100);
+        l.setClaimed(s);
         var dist1 = place.getDistance(s.getCoordinates());
 
         place = eMgr.acquireNearbyMineralLocation(100);
-        var newRoI2 = eMgr.createARegionOfInterest(place, 100);
-        newRoI2.setClaimed(true);
+        sf.createARegionOfInterest(place, 100);
         var dist2 = place.getDistance(s.getCoordinates());
 
         assertEquals("Nearby locations", 2, eMgr.getNearbyMineralLocations().size());
-        assertEquals("Declared locations", 2, eMgr.getDeclaredLocations().size());
+        assertEquals("Declared locations at settlement", 1, eMgr.getDeclaredLocations().size());
+
+        assertEquals("All locatinos", 2, sf.getAllPossibleRegionOfInterestLocations().size());
 
         var claimedStats = eMgr.getStatistics(ExplorationManager.CLAIMED_STAT);
-        assertEquals("Claimed mean", dist2, claimedStats.mean());
+        assertEquals("Claimed mean", dist1, claimedStats.mean());
 
         var unclaimedStats = eMgr.getStatistics(ExplorationManager.UNCLAIMED_STAT);
-        assertEquals("Unclaimed mean", dist1, unclaimedStats.mean());
+        assertEquals("Unclaimed mean", dist2, unclaimedStats.mean());
 
         var siteStats = eMgr.getStatistics(ExplorationManager.SITE_STAT);
         assertEquals("Site mean", (dist1 + dist2)/2, siteStats.mean(), 0.00001);
 
-        assertEquals("Number of Declared", 2, eMgr.numDeclaredLocation());
+        assertEquals("Number of Declared", 1, eMgr.getDeclaredLocations().size());
         assertEquals("Number of Claimed", 1, eMgr.numDeclaredLocation(true));
         assertEquals("Number of Unclaimed", 1, eMgr.numDeclaredLocation(false));
 

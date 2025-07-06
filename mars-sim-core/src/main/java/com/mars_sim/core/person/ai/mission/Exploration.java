@@ -352,7 +352,7 @@ public class Exploration extends EVAMission
 		ExploredLocation el = null;
 		
 		// Find mature sites to explore
-		List<Coordinates> outstandingSites = findCandidateSitesToClaim(startingLocation);
+		List<Coordinates> outstandingSites = findClaimedCandidateSites(startingLocation);
 		if (!outstandingSites.isEmpty()) {
 			currentLocation = outstandingSites.remove(0);
 		}
@@ -442,7 +442,7 @@ public class Exploration extends EVAMission
 	 */
 	private Coordinates determineFirstSiteCoordinate(double limit) {
 		// Get a random site that is one of the closest
-		return explorationMgr.getARandomNearbyMineralLocation(true, limit);
+		return explorationMgr.getUnexploredDeclaredSite(true, limit);
 	}
 	
 	/**
@@ -450,7 +450,7 @@ public class Exploration extends EVAMission
 	 * 
 	 * @return
 	 */
-	private List<Coordinates> findCandidateSitesToClaim(Coordinates startingLoc) {
+	private List<Coordinates> findClaimedCandidateSites(Coordinates startingLoc) {
 
 		Settlement home = getStartingSettlement();
 

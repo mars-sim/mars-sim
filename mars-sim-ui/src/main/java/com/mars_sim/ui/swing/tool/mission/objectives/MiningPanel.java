@@ -51,6 +51,7 @@ public class MiningPanel extends JPanel
 
 		// Set the layout.
 		setLayout(new BorderLayout());
+		setName(objective.getName());
 
 		// Create LUV panel.
 		var detailsPane = new AttributePanel();
@@ -58,7 +59,8 @@ public class MiningPanel extends JPanel
 
 		// Create LUV label.
 		detailsPane.addLabelledItem("Light Utility Vehicle", new EntityLabel(objective.getLUV(), desktop));
-		detailsPane.addRow("Initial Mineral", StyleManager.DECIMAL_KG.format(objective.getSite().getRemainingMass()));
+		detailsPane.addRow("Certainty",
+						StyleManager.DECIMAL1_PERC.format(objective.getSite().getAverageCertainty()));
 
 		// Create excavation table.
 		excavationTableModel = new MineralTableModel(objective.getMineralStats());

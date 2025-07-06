@@ -40,10 +40,10 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	private static final int AVERAGE_RESERVE_MASS = 10_000;
 	
 	public static final int IMPROVEMENT_THRESHOLD = 1000;
+
+	private static final double MINING_THRESHOLD = 100D;
 	
 	// Private members.
-	private boolean minable;
-	private boolean claimed;
 	private boolean explored;
 	private boolean reserved;
 	private int numEstimationImprovement;
@@ -70,11 +70,12 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	 * @param the                            settlement the exploring mission is
 	 *                                       from.
 	 */
-	ExploredLocation(Coordinates location, int estimationImprovement, Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+	ExploredLocation(Coordinates location, int estimationImprovement,
+					Map<String, Double> estimatedMineralConcentrations,
+					Settlement settlement) {
 		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
-		minable = true;
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
@@ -88,7 +89,7 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 		totalMass = reserve;
 		remainingMass = totalMass;
 		
-		logger.info(settlement, location.getFormattedString() 
+		logger.info(location.getFormattedString() 
 			+ " has estimated reserve of " + (int)totalMass + " kg. % Minerals: "
 			+  estimatedMineralConcentrations);
 	}
@@ -262,18 +263,10 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	
 	/**
 	 * Increments the estimation improvement.
+	 * @param delta the Amount to increase the estimates
 	 */
-	public void incrementNumImprovement() {
-		numEstimationImprovement++;
-	}
-
-	/**
-	 * Sets if this site is still minable or not .
-	 *
-	 * @param value true if minable.
-	 */
-	public void setMinable(boolean value) {
-		this.minable = value;
+	public void incrementNumImprovement(int delta) {
+		numEstimationImprovement += delta;
 	}
 
 	/**
@@ -282,7 +275,7 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	 * @return true if minable.
 	 */
 	public boolean isMinable() {
-		return minable;
+		return remainingMass > MINING_THRESHOLD;
 	}
 
 	/**
@@ -290,8 +283,8 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	 *
 	 * @param value true if claimed.
 	 */
-	public void setClaimed(boolean value) {
-		this.claimed = value;
+	public void setClaimed(Settlement owner) {
+		this.settlement = owner;
 	}
 
 	/**
@@ -300,7 +293,7 @@ public class ExploredLocation implements Serializable, SurfacePOI {
 	 * @return true if claimed.
 	 */
 	public boolean isClaimed() {
-		return claimed;
+		return settlement != null;
 	}
 	
 	/**

@@ -670,6 +670,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					objectivesPane.setMinimumSize(dim);
 					objectivesPane.setPreferredSize(dim);
 	 				objectivesPane.addTab(newPanel.getName(), newPanel);
+					objectivesPane.setSelectedComponent(newPanel);
 					clearLegacy = true;
 				}
 			}

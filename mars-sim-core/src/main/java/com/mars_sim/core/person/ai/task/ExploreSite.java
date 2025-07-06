@@ -207,7 +207,7 @@ public class ExploreSite extends EVAOperation {
 			// Checks if the site has been claimed
 			if (!site.isClaimed()
 				&& site.isCertaintyAverageOver50()) {
-					site.setClaimed(true);
+					site.setClaimed(worker.getAssociatedSettlement());
 			}
 		}
 		
@@ -338,7 +338,7 @@ public class ExploreSite extends EVAOperation {
 		}
 		
 		// Add to site mineral concentration estimation improvement number.
-		site.incrementNumImprovement();
+		site.incrementNumImprovement(1);
 	}
 
 	/**

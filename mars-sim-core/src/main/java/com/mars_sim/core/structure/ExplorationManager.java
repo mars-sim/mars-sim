@@ -103,7 +103,7 @@ public class ExplorationManager implements Serializable {
 
 		for(var c : nearbyMineralLocations.entrySet()) {
 			double dist = c.getValue();
-			if (!surfaceFeatures.isDeclaredARegionOfInterest(c.getKey(), base, false)
+			if ((surfaceFeatures.isDeclaredLocation(c.getKey()) == null)
 			    && (shortestDist >= dist)) {
 				shortestDist = dist;
 				chosen = c.getKey();
@@ -119,16 +119,7 @@ public class ExplorationManager implements Serializable {
 	public Set<Coordinates> getNearbyMineralLocations() {
 		return nearbyMineralLocations.keySet();
 	}
-	
-	/**
-	 * Gets the number of nearby potential mineral location.
-	 * 
-	 * @return
-	 */
-	public int numNearbyMineralLocations() {
-		return nearbyMineralLocations.size();
-	}
-	
+
 	/**
 	 * Gets one of the existing nearby mineral location that has not been declared yet.
 	 *
@@ -156,7 +147,7 @@ public class ExplorationManager implements Serializable {
 	 * @param skill
 	 * @return
 	 */
-	public Coordinates getARandomNearbyMineralLocation(boolean closest, double limit) {
+	public Coordinates getUnexploredDeclaredSite(boolean closest, double limit) {
 		
 		double newRange = limit;
 		
@@ -211,22 +202,14 @@ public class ExplorationManager implements Serializable {
 	 */
 	public int numDeclaredLocation(boolean isClaimed) {	
 		int num = 0;
+		Settlement match = (isClaimed ? base : null);
 		for (Coordinates c: nearbyMineralLocations.keySet()) {
-			if (surfaceFeatures.isDeclaredARegionOfInterest(c, base, isClaimed))
+			if (surfaceFeatures.isDeclaredARegionOfInterest(c, match))
 				num++;
 		}
 		return num;
 	}
-	
-	/**
-	 * Returns number of locations being claimed or not being claimed as a Region Of Interest (ROI).
-	 * 
-	 * @return
-	 */
-	public int numDeclaredLocation() {	
-		return declaredMineralLocations.size();
-	}
-	
+
 	/**
 	 * Returns list of declared locations of Region Of Interest (ROI).
 	 * 
@@ -255,13 +238,13 @@ public class ExplorationManager implements Serializable {
                     break;
                 
                 case CLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredARegionOfInterest(c, base, true)) {
+                    if (surfaceFeatures.isDeclaredARegionOfInterest(c, base)) {
                         list.add(locn);
                     }
                     break;
                 
                 case UNCLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredARegionOfInterest(c, base, false)) {
+                    if (surfaceFeatures.isDeclaredARegionOfInterest(c, null)) {
                         list.add(locn);
                     }
                     break;
@@ -299,7 +282,7 @@ public class ExplorationManager implements Serializable {
 	 * @return ExploredLocation
 	 */
 	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
-		ExploredLocation el = surfaceFeatures.createARegionOfInterest(siteLocation, base, skill);
+		ExploredLocation el = surfaceFeatures.createARegionOfInterest(siteLocation, skill);
 		if (el != null) {
 			declaredMineralLocations.add(el);
 			return el;

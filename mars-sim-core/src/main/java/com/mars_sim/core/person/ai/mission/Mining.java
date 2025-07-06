@@ -365,13 +365,6 @@ public class Mining extends EVAMission
 	protected void endEVATasks() {
 		super.endEVATasks();
 
-		var miningSite = objective.getSite();
-			
-		double remainingMass = miningSite.getRemainingMass();
-		if (remainingMass < 100)
-			// Mark site as mined.
-			miningSite.setMinable(false);
-
 		// Attach light utility vehicle for towing.
 		attachLUV(true);
 	}
@@ -477,7 +470,7 @@ public class Mining extends EVAMission
 	 * @param homeSettlement the mission home settlement.
 	 * @return best explored location for mining, or null if none found.
 	 */
-	public static ExploredLocation determineBestMiningSite(Rover rover, Settlement homeSettlement) {
+	private static ExploredLocation determineBestMiningSite(Rover rover, Settlement homeSettlement) {
 
 		ExploredLocation result = null;
 		double bestValue = 0D;
@@ -495,9 +488,9 @@ public class Mining extends EVAMission
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
-				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
+				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
-					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
+					&& homeSettlement.equals(site.getSettlement())
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
 						double value = getMiningSiteValue(site, homeSettlement);
 						if (value > bestValue) {
