@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Conversion.java
- * @date 2021-12-22
+ * @date 2025-07-05
  * @author Manny Kung
  */
 package com.mars_sim.core.tool;
@@ -13,7 +13,7 @@ public final class Conversion {
 	}
 
 	/**
-	 * Capitalizes the first letter of each word in the input phase
+	 * Capitalizes the first letter of each word in the input phase.
 	 * 
 	 * @param input The input phase
 	 * @return The modified phase
@@ -137,7 +137,8 @@ public final class Conversion {
 	}
 
 	/**
-	 * Trim a string to a length and suffix with ...
+	 * Trims a string to a length and suffix with ...
+	 * 
 	 * @param source
 	 * @param length
 	 * @return
@@ -149,7 +150,8 @@ public final class Conversion {
 	}
 
 	/**
-	 * Split the seed into seperate words on a Capitla boundary
+	 * Splits the seed into separate words on a capital boundary.
+	 * 
 	 * @param seed
 	 * @return
 	 */

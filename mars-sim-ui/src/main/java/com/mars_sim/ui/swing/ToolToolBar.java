@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToolToolBar.java
- * @date 2023-04-02
+ * @date 2025-07-05
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
@@ -33,6 +33,7 @@ import javax.swing.border.EmptyBorder;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
@@ -115,26 +116,26 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	}
 
 	/** 
-	 * Prepares tool buttons 
+	 * Prepares tool buttons.
 	 */
 	private void prepareToolButtons() {
 
-		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$ //$NON-NLS-2$
-		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-
-		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-
+		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$
+		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-1$
+		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-1$
 
 		addSeparator(new Dimension(20, 20));
 
 		// Add Tools buttons
-		addToolButton(NavigatorWindow.NAME, null, NavigatorWindow.ICON); //$NON-NLS-
-		addToolButton(SearchWindow.NAME, null, SearchWindow.ICON); //$NON-NLS-1$
-		addToolButton(TimeWindow.NAME, null, TimeWindow.ICON); //$NON-NLS-1$
-		addToolButton(MonitorWindow.NAME, null, MonitorWindow.ICON); //$NON-NLS-1$
-		addToolButton(MissionWindow.NAME, null, MissionWindow.ICON); //$NON-NLS-1$
-		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON); //$NON-NLS-1$
-		addToolButton(ScienceWindow.NAME, null, ScienceWindow.ICON); //$NON-NLS-1$
-		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON); //$NON-NLS-1$
-		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON); //$NON-NLS-1$
+		addToolButton(NavigatorWindow.NAME, NavigatorWindow.ICON);
+		addToolButton(SearchWindow.NAME, SearchWindow.ICON);
+		addToolButton(TimeWindow.NAME, TimeWindow.ICON);
+		addToolButton(MonitorWindow.NAME, MonitorWindow.ICON);
+		addToolButton(MissionWindow.NAME, MissionWindow.ICON);
+		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
+		addToolButton(ScienceWindow.NAME, ScienceWindow.ICON);
+		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
+		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 
 		addToolButton(OrbitViewer.NAME, "Open Orbit Viewer", OrbitViewer.ICON);
 		
@@ -168,20 +169,21 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * Adds a tool bar button.
 	 * 
 	 * @param toolName
+	 * @param iconKey
+	 */
+	private void addToolButton(String toolName, String iconKey) {
+		addToolButton(toolName, null, ImageLoader.getIconByName(iconKey));
+	}
+	
+	/**
+	 * Adds a tool bar button.
+	 * 
+	 * @param toolName
 	 * @param tooltip
 	 * @param iconKey
 	 */
 	private void addToolButton(String toolName, String tooltip, String iconKey) {
-		JButton toolButton = new JButton(ImageLoader.getIconByName(iconKey));
-		toolButton.setActionCommand(toolName);
-		toolButton.setPreferredSize(new Dimension(30, 30));
-		toolButton.setMaximumSize(new Dimension(30, 30));
-		if (tooltip == null) {
-			tooltip = toolName;
-		}
-		toolButton.setToolTipText(tooltip);
-		toolButton.addActionListener(this);
-		add(toolButton);
+		addToolButton(toolName, tooltip, ImageLoader.getIconByName(iconKey));
 	}
 
 	/**
@@ -197,7 +199,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		toolButton.setPreferredSize(new Dimension(30, 30));
 		toolButton.setMaximumSize(new Dimension(30, 30));
 		if (tooltip == null) {
-			tooltip = toolName;
+			tooltip = Conversion.capitalize(toolName.replace("_", " "));
 		}
 		toolButton.setToolTipText(tooltip);
 		toolButton.addActionListener(this);
