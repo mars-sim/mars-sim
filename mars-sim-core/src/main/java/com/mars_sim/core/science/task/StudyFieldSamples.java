@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -125,7 +125,7 @@ public class StudyFieldSamples extends LabTask {
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
-		ExploredLocation site = determineExplorationSite();
+		MineralSite site = determineExplorationSite();
 		if (site != null) {
 			double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
 			if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
@@ -144,10 +144,10 @@ public class StudyFieldSamples extends LabTask {
 	 * 
 	 * @return exploration site or null if none.
 	 */
-	private ExploredLocation determineExplorationSite() {
+	private MineralSite determineExplorationSite() {
 
 		// Try to use an exploration mission site.
-		ExploredLocation result = getExplorationMissionSite();
+		MineralSite result = getExplorationMissionSite();
 
 		// Try to use a site explored previously by the settlement.
 		if (result == null) {
@@ -163,8 +163,8 @@ public class StudyFieldSamples extends LabTask {
 	 * 
 	 * @return exploration site or null if none.
 	 */
-	private ExploredLocation getExplorationMissionSite() {
-		ExploredLocation result = null;
+	private MineralSite getExplorationMissionSite() {
+		MineralSite result = null;
 
 		Mission mission = person.getMind().getMission();
 		if (mission instanceof Exploration explorationMission) {
@@ -184,11 +184,11 @@ public class StudyFieldSamples extends LabTask {
 	 * 
 	 * @return exploration site or null if none.
 	 */
-	private ExploredLocation getSettlementExploredSite() {
+	private MineralSite getSettlementExploredSite() {
 		Settlement settlement = person.getAssociatedSettlement();
 		if (settlement != null) {
 			var allExploredLocations = surfaceFeatures.getAllPossibleRegionOfInterestLocations();
-			List<ExploredLocation> settlementExploredLocations = allExploredLocations.stream()
+			List<MineralSite> settlementExploredLocations = allExploredLocations.stream()
 						.filter(l -> (settlement.equals(l.getSettlement()) && l.isMinable() && !l.isReserved()))
 						.toList();
 

@@ -16,13 +16,13 @@ import java.util.Set;
 
 import javax.swing.Icon;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.ImageLoader;
 
-public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
+public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	implements FilteredMapLayer {
 
 	/**
@@ -30,9 +30,9 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
 	 */
 	private class SiteHotspot extends MapHotspot {
 
-		private ExploredLocation site;
+		private MineralSite site;
 
-		protected SiteHotspot(IntPoint center, ExploredLocation site) {
+		protected SiteHotspot(IntPoint center, MineralSite site) {
 			super(center, 5);
 			this.site = site;
 		}
@@ -66,7 +66,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconSelected;
-	private ExploredLocation selectedSite;
+	private MineralSite selectedSite;
 	private SurfaceFeatures surfaceFeatures;
 	private Set<String> filters = new HashSet<>();
 
@@ -95,7 +95,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
 	 * 
 	 * @param selectedSite the selected site.
 	 */
-	public void setSelectedSite(ExploredLocation selectedSite) {
+	public void setSelectedSite(MineralSite selectedSite) {
 		this.selectedSite = selectedSite;
 	}
 
@@ -105,7 +105,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
      * @param arcAngle Angle of the viewpoint
      * @return
      */
-    protected List<ExploredLocation> getFeatures(Coordinates center, double arcAngle) {
+    protected List<MineralSite> getFeatures(Coordinates center, double arcAngle) {
 		return surfaceFeatures.getAllPossibleRegionOfInterestLocations();
 	}
 	
@@ -118,7 +118,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<ExploredLocation>
 	 * @return Return a site hotspot is visible
      */
 	@Override
-    protected MapHotspot displayFeature(ExploredLocation site, IntPoint location, Graphics2D g, boolean isColourful) {
+    protected MapHotspot displayFeature(MineralSite site, IntPoint location, Graphics2D g, boolean isColourful) {
 		Icon siteIcon = null;
 
 		// Work out the precendence of the site to select the icon

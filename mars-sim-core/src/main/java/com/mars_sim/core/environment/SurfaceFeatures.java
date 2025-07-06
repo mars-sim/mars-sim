@@ -85,7 +85,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private final ReentrantLock sunlightLock = new ReentrantLock(true);
 
 	/** The set of locations that have been declared as Region of Interest (ROI). */
-	private List<ExploredLocation> regionOfInterestLocations;
+	private List<MineralSite> regionOfInterestLocations;
 
 	/**
 	 * Constructor.
@@ -528,18 +528,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @param location		the location coordinates.
 	 * @param skill			the skill
-	 * @param settlement    the settlement staking the claim on this location
 	 * @return the explored location
 	 */
-	public synchronized ExploredLocation declareRegionOfInterest(Coordinates location,
-			int skill, Settlement settlement) {
+	public synchronized MineralSite declareRegionOfInterest(Coordinates location,
+			int skill) {
 		
-		if (location == null) {
-			logger.info(settlement, "location is null.");
-			return null;
-		}
-		
-		ExploredLocation result = null;
+		MineralSite result = null;
 				
 		Map<String, Double> initialMineralEstimations = new HashMap<>();		
 		double totalConc = 0;
@@ -573,7 +567,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (totalConc > 0) {
 						
-			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement);
+			result = new MineralSite(location, skill, initialMineralEstimations, null);
 			
 			regionOfInterestLocations.add(result);
 		}
@@ -587,11 +581,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param siteLocation
 	 * @return
 	 */
-	public boolean isDeclaredARegionOfInterest(Coordinates coord, Settlement settlement, boolean isClaimed) {
-		for (ExploredLocation el: regionOfInterestLocations) {
+	public boolean isDeclaredARegionOfInterest(Coordinates coord, Settlement settlement) {
+		for (MineralSite el: regionOfInterestLocations) {
 			if (el.getLocation().equals(coord)
-				&& el.isClaimed() == isClaimed
-				&& el.getSettlement().equals(settlement)) {
+				&& (((settlement != null) && settlement.equals(el.getSettlement()))
+					|| ((settlement == null) && (el.getSettlement() == null)))) {
 				return true;
 			}
 		}
@@ -600,18 +594,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Check if a location already been declared/considered as a Region Of Interest (ROI) by a settlement with a specified claimed status.
+	 * Check if a location already been declared/considered as a Region Of Interest (ROI).
 	 * 
 	 * @param coord
-	 * @param settlement
-	 * @param isClaimed
 	 * @return
 	 */
-	private ExploredLocation checkDeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
+	public MineralSite isDeclaredLocation(Coordinates coord) {
 		return regionOfInterestLocations.stream()
-				  .filter(e -> e.getCoordinates().equals(coord)
-						  && e.isClaimed() == isClaimed
-						  && e.getSettlement().equals(settlement))
+				  .filter(e -> e.getCoordinates().equals(coord))
 				  .findFirst()
 				  .orElse(null);
 	}
@@ -625,14 +615,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, Settlement settlement, int skill) {
+	public MineralSite createARegionOfInterest(Coordinates siteLocation, int skill) {
 
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		ExploredLocation el = checkDeclaredLocation(siteLocation, settlement, false);
+		MineralSite el = isDeclaredLocation(siteLocation);
 		if (el == null) {
 			// If it hasn't been claimed yet, then claim it
-			el = declareRegionOfInterest(siteLocation,
-					skill, settlement);
+			el = declareRegionOfInterest(siteLocation, skill);
 		}
 		
 		return el;
@@ -643,7 +632,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @return list of explored locations.
 	 */
-	public List<ExploredLocation> getAllPossibleRegionOfInterestLocations() {
+	public List<MineralSite> getAllPossibleRegionOfInterestLocations() {
 		return regionOfInterestLocations;
 	}
 

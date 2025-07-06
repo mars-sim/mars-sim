@@ -9,7 +9,7 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Map;
 import java.util.logging.Level;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -59,7 +59,7 @@ public class ExploreSite extends EVAOperation {
 	private double rocksToBeCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	
 	private Exploration mission;
-	private ExploredLocation site;
+	private MineralSite site;
 	private Rover rover;
 
 	/**
@@ -70,7 +70,7 @@ public class ExploreSite extends EVAOperation {
 	 * @param rover  the mission rover.
 	 * @throws exception if error creating task.
 	 */
-	public ExploreSite(Person person, ExploredLocation site, Rover rover, Exploration mission) {
+	public ExploreSite(Person person, MineralSite site, Rover rover, Exploration mission) {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), EXPLORING);
 
@@ -207,7 +207,7 @@ public class ExploreSite extends EVAOperation {
 			// Checks if the site has been claimed
 			if (!site.isClaimed()
 				&& site.isCertaintyAverageOver50()) {
-					site.setClaimed(true);
+					site.setClaimed(worker.getAssociatedSettlement());
 			}
 		}
 		
@@ -232,7 +232,6 @@ public class ExploreSite extends EVAOperation {
 		
 		if (hasSpecimenContainer()) {
 
-//			double siteTime = ((Exploration)person.getMission()).getSiteTime();
 			double chance = rocksToBeCollected / 250;
 			
 			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
@@ -256,7 +255,6 @@ public class ExploreSite extends EVAOperation {
 								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 					}
 					else {
-						//mass = cap;
 						double excess = box.storeAmountResource(rockId, cap);
 						mission.recordResourceCollected(rockId, cap);
 						double collected = cap - excess;
@@ -312,7 +310,7 @@ public class ExploreSite extends EVAOperation {
 	 * @param site
 	 * @param skill
 	 */
-	public static void improveSiteEstimates(ExploredLocation site, double skill) {
+	public static void improveSiteEstimates(MineralSite site, double skill) {
 
 		int imp = site.getNumEstimationImprovement();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
@@ -340,7 +338,7 @@ public class ExploreSite extends EVAOperation {
 		}
 		
 		// Add to site mineral concentration estimation improvement number.
-		site.incrementNumImprovement();
+		site.incrementNumImprovement(1);
 	}
 
 	/**

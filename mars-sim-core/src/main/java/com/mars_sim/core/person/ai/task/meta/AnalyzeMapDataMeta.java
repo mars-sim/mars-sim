@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -82,15 +82,15 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 	
 		int numNearby = nearbySites.size();
 		
-		Set<ExploredLocation> minableLocs = eMgr.getDeclaredLocations()
+		Set<MineralSite> minableLocs = eMgr.getDeclaredLocations()
 				.stream()
 				.filter(el -> el != null && el.isMinable())
 				.collect(Collectors.toSet());
 
 		int numUnimproved = 0;
-		for (ExploredLocation el: minableLocs) {
+		for (MineralSite el: minableLocs) {
 			int est = el.getNumEstimationImprovement();
-			numUnimproved += ExploredLocation.IMPROVEMENT_THRESHOLD - est;
+			numUnimproved += MineralSite.IMPROVEMENT_THRESHOLD - est;
 		}
 				
 		int num = minableLocs.size();
