@@ -89,7 +89,10 @@ public class ExploredCommand extends ChatCommand {
 				context.println("Possible site found at " + newLocn.getFormattedString() + " distance of " + found.getValue());
 				MineralSite newSite = surface.declareRegionOfInterest(newLocn, 1);
 
-				if (context.getInput("Claim the new site").equalsIgnoreCase("Y")) {
+				if (newSite == null) {
+					context.println("Site did not have engouh monerals");
+				}
+				else if (context.getBooleanInput("Claim the new site")) {
 					newSite.setClaimed(filter);
 
 					//set Explored
@@ -106,8 +109,7 @@ public class ExploredCommand extends ChatCommand {
 				context.println("No minerals within " + searchRange + "km of " + searchBase.getFormattedString());
 			}
 
-			// TODO use new getBooleanInput
-			addSite = context.getInput("Add Another site").equalsIgnoreCase("Y");
+			addSite = context.getBooleanInput("Add Another site");
 		}
 
 		// Display new locations

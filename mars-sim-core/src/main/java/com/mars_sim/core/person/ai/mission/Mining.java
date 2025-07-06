@@ -312,7 +312,7 @@ public class Mining extends EVAMission
 			return false;
 		}
 		
-		var luv = attachLUV(false);
+		attachLUV(false);
 
 		// Determine if no one can start the mine site or collect resources tasks.	
 		boolean canDo = false;
@@ -403,7 +403,7 @@ public class Mining extends EVAMission
 		if (p.getPerformanceRating() < .2D)
 			return false;
 
-		return p.isSuperUnfit();
+		return !p.isSuperUnfit();
 	}
 
 	/**
