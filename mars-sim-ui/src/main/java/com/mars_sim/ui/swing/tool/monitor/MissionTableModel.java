@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionTableModel.java
- * @date 2022-07-28
+ * @date 2025-07-06
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -49,8 +49,8 @@ public class MissionTableModel extends AbstractMonitorModel
 	private static final int DATE_RETURNED = 2;
 	/** Starting member column. */
 	private static final int STARTING_MEMBER = 3;
-	/** Name ID column. */
-	private static final int TYPE_ID = 4;
+	/** Mission String column. */
+	private static final int MISSION_STRING = 4;
 	/** Description column. */
 	private static final int DESIGNATION = 5;
 	/** Phase column. */
@@ -95,7 +95,7 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS[DATE_EMBARKED] = new ColumnSpec(Msg.getString("MissionTableModel.column.embarked"), MarsTime.class);
 		COLUMNS[DATE_RETURNED] = new ColumnSpec(Msg.getString("MissionTableModel.column.returned"), MarsTime.class);
 		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("MissionTableModel.column.name"), String.class);
-		COLUMNS[TYPE_ID] = new ColumnSpec(Msg.getString("MissionTableModel.column.typeID"), String.class);
+		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("MissionTableModel.column.missionString"), String.class);
 		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("MissionTableModel.column.designation"), String.class);
 		COLUMNS[PHASE] = new ColumnSpec(Msg.getString("MissionTableModel.column.phase"), String.class);
 		COLUMNS[STARTING_SETTLEMENT] = new ColumnSpec(Msg.getString("MissionTableModel.column.startingSettlement"), String.class);
@@ -244,7 +244,7 @@ public class MissionTableModel extends AbstractMonitorModel
 			int column0 = switch (eventType) {
 				case VEHICLE_EVENT -> VEHICLE;
 				case STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
-				case TYPE_ID_EVENT -> TYPE_ID;
+				case MISSION_STRING_EVENT -> MISSION_STRING;
 				case DESIGNATION_EVENT ->DESIGNATION;
 				case ADD_MEMBER_EVENT, REMOVE_MEMBER_EVENT -> MEMBER_NUM;
 				case DATE_EVENT -> DATE_FILED;
@@ -319,7 +319,7 @@ public class MissionTableModel extends AbstractMonitorModel
 				result = mission.getStartingPerson().getName();
 				break;
 
-			case TYPE_ID:
+			case MISSION_STRING:
 				result = mission.getName();
 				break;
 

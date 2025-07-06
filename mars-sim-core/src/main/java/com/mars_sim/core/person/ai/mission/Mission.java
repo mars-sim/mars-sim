@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mission.java
- * @date 2022-09-03
+ * @date 2025-07-06
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
@@ -65,7 +65,7 @@ public interface Mission extends Entity {
 	Settlement getAssociatedSettlement();
 
     /**
-	 * Mission designation code. Only defined once mission has started.
+	 * Gets the mission designation string. Defined only after the mission has been approved and commenced.
 	 */
 	String getFullMissionDesignation();
 

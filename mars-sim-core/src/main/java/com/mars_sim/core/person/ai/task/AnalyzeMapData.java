@@ -202,7 +202,7 @@ public class AnalyzeMapData extends Task {
      */
     protected double performMappedPhase(double time) {
     	if (getPhase() == null) {
-			throw new IllegalArgumentException("The analyzing task phase is null");
+			throw new IllegalArgumentException("The AnalyzeMapData phase is null");
     	} else if (DISCOVERING.equals(getPhase())) {
 			return discoveringPhase(time);
     	} else if (ANALYZING.equals(getPhase())) {
@@ -248,7 +248,7 @@ public class AnalyzeMapData extends Task {
 	     			MineralSite el = eMgr.createARegionOfInterest(aSite, skill);
 		         			
 	     			if (el != null) {
-	     				logger.info(person, 20_000, "Analyzed map data and zoned up the first new ROI at " +  aSite.getFormattedString() + ".");
+	     				logger.info(person, 20_000, "Zoned up the first new ROI at " +  aSite.getFormattedString() + ".");
 	     			}
 	     		}
 	     		else {
@@ -273,10 +273,10 @@ public class AnalyzeMapData extends Task {
          			MineralSite loc = eMgr.createARegionOfInterest(aSite, skill);
     	         			
          			if (loc != null) {
-         				logger.info(person, 20_000, "Analyzed map data and zoned up a new ROI at " +  aSite.getFormattedString() + ".");
+         				logger.info(person, 20_000, "Zoned up a new ROI at " +  aSite.getFormattedString() + ".");
          			}
          			else {
-             			logger.info(person, 20_000, "Analyzed map data and could not zone up a ROI.");
+             			logger.info(person, 20_000, "Could not zone up a ROI.");
          			}
          		}
          		else {

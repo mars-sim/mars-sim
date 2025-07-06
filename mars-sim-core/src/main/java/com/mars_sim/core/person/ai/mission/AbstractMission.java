@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractMission.java
- * @date 2023-07-02
+ * @date 2025-07-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -119,10 +119,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private boolean done = false;
 	private boolean aborted = false;
 	
-	/** The Name of this mission. */
-	private String missionName;
-	/** The sol mission identifier string */
+	/** The mission string. */
 	private String missionString;
+	/** The sol sortie string */
+	private String solSortieString;
 	/** The mission designation string. */
 	private String missionDesignationString = "";
 	/** The description of the current phase of operation. */
@@ -178,10 +178,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected AbstractMission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
 
-		this.missionString = missionManager.getMissionString();
+		this.solSortieString = missionManager.computeSolSortieString();
 		this.identifier = missionManager.getIdentifier();
 		
-		this.missionName = missionType.getName() + " " + missionString;
+		this.missionString = missionType.getName() + " " + solSortieString;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 
@@ -214,16 +214,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 //			String article = "a ";
 
-			String missionStr = missionName;
-
-			if (!missionStr.toLowerCase().contains("mission"))
-				missionStr = missionName + " mission";
+//			String missionStr = missionString;
+//
+//			if (!missionStr.toLowerCase().contains("mission"))
+//				missionStr = missionString + " mission";
 
 //			if(Conversion.isVowel(missionName))
 //				article = "an ";
 
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + missionStr + appendStr);
+					"Began organizing " + missionString + appendStr);
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -294,7 +294,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return missionName;
+		return missionString;
 	}
 
 	/**
@@ -331,7 +331,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
-			logger.log(member, Level.FINER, 0, "Just got added to " + missionName + ".");
+			logger.log(member, Level.FINER, 0, "Just got added to " + missionString + ".");
 		}
 	}
 
@@ -364,7 +364,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// Creating mission joining event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
-				message, missionName, member.getName(), 
+				message, missionString, member.getName(), 
 				container, member.getAssociatedSettlement().getName(), coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
@@ -462,7 +462,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public final String getName() {
-		return missionName;
+		return missionString;
 	}
 
 	/**
@@ -472,7 +472,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
     public void setName(String newName) {
-		this.missionName = newName;
+		this.missionString = newName;
     }
 
 	/**
@@ -1496,9 +1496,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(Conversion.getOneLetterInitial(missionType.getName().replace("with", "").trim()))
 			  .append("-")
+			  .append(solSortieString)
 			  .append(getAssociatedSettlement().getSettlementCode())
 			  .append('-')
-			  .append(missionString);
+			  .append(identifier);
+		
 		missionDesignationString = buffer.toString();
 
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, missionDesignationString);
@@ -1572,7 +1574,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		AbstractMission m = (AbstractMission) obj;
-		return this.missionString == m.missionString;
+		return this.solSortieString == m.solSortieString;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainDetailPanel.java
- * @date 2024-07-12
+ * @date 2025-07-06
  * @author Scott Davis
  */
 
@@ -57,7 +57,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.person.ai.mission.EmergencySupply;
-import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
@@ -745,7 +744,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 			// Update UI based on mission event type.
 			switch(type) {
-			case TYPE_EVENT, TYPE_ID_EVENT ->
+			case TYPE_EVENT, MISSION_STRING_EVENT ->
 				typeTextField.setText(mission.getName());
 		
 			case DESIGNATION_EVENT -> {

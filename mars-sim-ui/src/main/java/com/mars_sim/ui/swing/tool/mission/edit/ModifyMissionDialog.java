@@ -114,6 +114,9 @@ public class ModifyMissionDialog extends ModalInternalFrame {
 	 * Commits the modification of the mission.
 	 */
 	private void modifyMission() {
+		// Note: should check the new name against existing names. If found being used, 
+		// should not allow it to proceed.
+		
 		// Set the mission description.
 		mission.setName(editPane.descriptionField.getText());
 		

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionManager.java
- * @date 2023-08-17
+ * @date 2025-07-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -42,8 +42,12 @@ public class MissionManager implements Serializable {
 
 	/** The mission identifier. */
 	private int identifier;
+	/** The mission sortie id. Note it goes back to 1 at the start of each sol. */
+	private int sortieID;
 	/** The sol cache. */	
 	private int solCache;
+	/** The sol sortie string. */		
+	private String solSortieString;
 	
 	/** The mission listeners. */
 	private transient List<MissionManagerListener> listeners;
@@ -66,23 +70,36 @@ public class MissionManager implements Serializable {
 	}
 
 	/**
-	 * Gets the mission string. Must be synchronised to prevent duplicate identifiers 
+	 * Gets the sol sortie string. Must be synchronised to prevent duplicate identifiers 
 	 * being assigned via different threads.
 	 *
 	 * @return
 	 */
-	synchronized String getMissionString() {
+	synchronized String computeSolSortieString() {
 		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
 		int id = 1;
-		if (solCache != missionSol) {
+		if (solCache != missionSol && sortieID != 1) {
 			solCache = missionSol;
-			identifier = 1;
+			sortieID = 0;
 		}
-		else
-			id = identifier++;
-		return missionSol + "-" + String.format("%03d", id);
+		
+		id = sortieID++;
+		identifier++;
+		
+		solSortieString = missionSol + "-" + String.format("%03d", id);
+		
+		return solSortieString;
 	}
 
+	/**
+	 * Gets the sortie id.
+	 *
+	 * @return
+	 */
+	public int getSortieID() {
+		return sortieID;
+	}
+	
 	/**
 	 * Gets the identifier.
 	 *

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionEventType.java
- * @date 2021-06-20
+ * @date 2025-07-06
  * @author stpa
  */
 package com.mars_sim.core.person.ai.mission;
@@ -13,7 +13,7 @@ public enum MissionEventType {
 	NAME_EVENT					("name"),
 	TYPE_EVENT					("type"),
 	DESCRIPTION_EVENT			("description"),
-	TYPE_ID_EVENT				("typeID"),
+	MISSION_STRING_EVENT		("mission string"),
 	DESIGNATION_EVENT			("designation"),
 	PHASE_EVENT					("phase"),
 	PHASE_DESCRIPTION_EVENT		("phase description"),
