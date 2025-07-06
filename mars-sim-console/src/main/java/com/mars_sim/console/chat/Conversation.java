@@ -142,7 +142,7 @@ public class Conversation implements UserOutbound {
     private void getInput() {
     	String prompt = current.getPrompt(this) + " > ";
     	String input = getInput(prompt);
-    	if (input.length() > 0) {
+    	if (!input.isEmpty()) {
 			options = null; // Remove any auto complete options once user executes
 			
 			// Update history
@@ -321,5 +321,14 @@ public class Conversation implements UserOutbound {
 			}
 		}
 		return newLevel;
+	}
+
+	/**
+	 * Get a boolean response to a question
+	 * @param prompt
+	 * @return
+	 */
+	public boolean getBooleanInput(String prompt) {
+		return "Y".equalsIgnoreCase(getInput(prompt + " (Y/N)"));
 	}
 }
