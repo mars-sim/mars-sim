@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -68,11 +68,11 @@ public class Exploration extends EVAMission
 	
 
 	private double currentSiteTime;
-	private ExploredLocation currentSite;
+	private MineralSite currentSite;
 
 	private ExplorationObjective objective;
 	/** The set of sites to be claimed by this mission. */
-	private Set<ExploredLocation> claimedSites = new HashSet<>();
+	private Set<MineralSite> claimedSites = new HashSet<>();
 	
 	/** The current exploration site. */
 
@@ -214,10 +214,10 @@ public class Exploration extends EVAMission
 	 *
 	 * @return
 	 */
-	private ExploredLocation retrieveASiteToClaim() {
+	private MineralSite retrieveASiteToClaim() {
 		
 		Coordinates current = getCurrentMissionLocation();
-		for (ExploredLocation e: claimedSites) {
+		for (MineralSite e: claimedSites) {
 			if (e.getLocation().equals(current))
 				return e;
 		}
@@ -286,9 +286,9 @@ public class Exploration extends EVAMission
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	private ExploredLocation declareARegionOfInterest(Coordinates siteLocation, int skill) {
+	private MineralSite declareARegionOfInterest(Coordinates siteLocation, int skill) {
 		
-		ExploredLocation el = explorationMgr.createARegionOfInterest(siteLocation, skill);
+		MineralSite el = explorationMgr.createARegionOfInterest(siteLocation, skill);
 		
 		if (el != null)
 			claimedSites.add(el);
@@ -349,7 +349,7 @@ public class Exploration extends EVAMission
 		// Determine the first exploration site.
 		Coordinates startingLocation = getCurrentMissionLocation();
 		Coordinates currentLocation = null;
-		ExploredLocation el = null;
+		MineralSite el = null;
 		
 		// Find mature sites to explore
 		List<Coordinates> outstandingSites = findClaimedCandidateSites(startingLocation);
@@ -462,7 +462,7 @@ public class Exploration extends EVAMission
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
-				.map(ExploredLocation::getLocation)
+				.map(MineralSite::getLocation)
 				.toList();
 		
 		if (!candidateLocs.isEmpty()) {
@@ -502,7 +502,7 @@ public class Exploration extends EVAMission
 	 *
 	 * @return list of explored sites.
 	 */
-	public Set<ExploredLocation> getExploredSites() {
+	public Set<MineralSite> getExploredSites() {
 		return claimedSites;
 	}
 
@@ -527,7 +527,7 @@ public class Exploration extends EVAMission
 
 		int count = 0;
 		double siteValue = 0D;
-		for (ExploredLocation el : claimedSites) {
+		for (MineralSite el : claimedSites) {
 			count++;
 			siteValue += Mining.getMiningSiteValue(el, reviewerSettlement);
 		}

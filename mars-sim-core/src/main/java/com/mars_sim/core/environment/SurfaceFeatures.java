@@ -85,7 +85,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private final ReentrantLock sunlightLock = new ReentrantLock(true);
 
 	/** The set of locations that have been declared as Region of Interest (ROI). */
-	private List<ExploredLocation> regionOfInterestLocations;
+	private List<MineralSite> regionOfInterestLocations;
 
 	/**
 	 * Constructor.
@@ -530,10 +530,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param skill			the skill
 	 * @return the explored location
 	 */
-	public synchronized ExploredLocation declareRegionOfInterest(Coordinates location,
+	public synchronized MineralSite declareRegionOfInterest(Coordinates location,
 			int skill) {
 		
-		ExploredLocation result = null;
+		MineralSite result = null;
 				
 		Map<String, Double> initialMineralEstimations = new HashMap<>();		
 		double totalConc = 0;
@@ -567,7 +567,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (totalConc > 0) {
 						
-			result = new ExploredLocation(location, skill, initialMineralEstimations, null);
+			result = new MineralSite(location, skill, initialMineralEstimations, null);
 			
 			regionOfInterestLocations.add(result);
 		}
@@ -582,7 +582,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean isDeclaredARegionOfInterest(Coordinates coord, Settlement settlement) {
-		for (ExploredLocation el: regionOfInterestLocations) {
+		for (MineralSite el: regionOfInterestLocations) {
 			if (el.getLocation().equals(coord)
 				&& (((settlement != null) && settlement.equals(el.getSettlement()))
 					|| ((settlement == null) && (el.getSettlement() == null)))) {
@@ -599,7 +599,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param coord
 	 * @return
 	 */
-	public ExploredLocation isDeclaredLocation(Coordinates coord) {
+	public MineralSite isDeclaredLocation(Coordinates coord) {
 		return regionOfInterestLocations.stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
 				  .findFirst()
@@ -615,10 +615,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
+	public MineralSite createARegionOfInterest(Coordinates siteLocation, int skill) {
 
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		ExploredLocation el = isDeclaredLocation(siteLocation);
+		MineralSite el = isDeclaredLocation(siteLocation);
 		if (el == null) {
 			// If it hasn't been claimed yet, then claim it
 			el = declareRegionOfInterest(siteLocation, skill);
@@ -632,7 +632,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @return list of explored locations.
 	 */
-	public List<ExploredLocation> getAllPossibleRegionOfInterestLocations() {
+	public List<MineralSite> getAllPossibleRegionOfInterestLocations() {
 		return regionOfInterestLocations;
 	}
 

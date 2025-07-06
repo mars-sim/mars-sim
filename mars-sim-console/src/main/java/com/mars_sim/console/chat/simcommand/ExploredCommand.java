@@ -16,7 +16,7 @@ import java.util.Optional;
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Mining;
@@ -87,7 +87,7 @@ public class ExploredCommand extends ChatCommand {
 			if (found != null) {
 				var newLocn = found.getKey();
 				context.println("Possible site found at " + newLocn.getFormattedString() + " distance of " + found.getValue());
-				ExploredLocation newSite = surface.declareRegionOfInterest(newLocn, 1);
+				MineralSite newSite = surface.declareRegionOfInterest(newLocn, 1);
 
 				if (context.getInput("Claim the new site").equalsIgnoreCase("Y")) {
 					newSite.setClaimed(filter);
@@ -138,7 +138,7 @@ public class ExploredCommand extends ChatCommand {
 		response.appendTableHeading("Location", CommandHelper.COORDINATE_WIDTH,
 									"Settlement", 20, 
 									"Status *", 8 , "Reviews", "Highest");
-		for (ExploredLocation s : locations) {
+		for (MineralSite s : locations) {
 			String mineral = "";
 
 			// Create summary of minerals

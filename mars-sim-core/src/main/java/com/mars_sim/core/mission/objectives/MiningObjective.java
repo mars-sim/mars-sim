@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
@@ -49,14 +49,14 @@ public class MiningObjective implements MissionObjective {
 	private Map<Integer, MineralStats> minerals;
 
     private LightUtilityVehicle luv;
-    private ExploredLocation site;
+    private MineralSite site;
 
 
     /**
      * Constructor.
      * @param detectedMinerals 
      */
-    public MiningObjective(LightUtilityVehicle luv, ExploredLocation miningSite) {
+    public MiningObjective(LightUtilityVehicle luv, MineralSite miningSite) {
         this.luv = luv;
         this.site = miningSite;
         this.minerals = new HashMap<>();
@@ -96,7 +96,7 @@ public class MiningObjective implements MissionObjective {
      * Where is the mining focussed.
      * @return
      */
-    public ExploredLocation getSite() {
+    public MineralSite getSite() {
         return site;
     }
 

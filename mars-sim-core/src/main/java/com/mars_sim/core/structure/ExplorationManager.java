@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -54,7 +54,7 @@ public class ExplorationManager implements Serializable {
 	/** A set of nearby mineral locations. */
 	private Map<Coordinates, Double> nearbyMineralLocations = new HashMap<>();
 	/** A list of nearby mineral locations. */
-	private Set<ExploredLocation> declaredMineralLocations = new HashSet<>();
+	private Set<MineralSite> declaredMineralLocations = new HashSet<>();
 
     private Settlement base;
     
@@ -128,7 +128,7 @@ public class ExplorationManager implements Serializable {
 	public Coordinates getExistingNearbyMineralLocation() {
 
 		for (Coordinates c : nearbyMineralLocations.keySet()) {
-			for (ExploredLocation el : declaredMineralLocations) {
+			for (MineralSite el : declaredMineralLocations) {
 				if (!c.equals(el.getLocation())) {
 					return c;
 				}
@@ -215,7 +215,7 @@ public class ExplorationManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Set<ExploredLocation> getDeclaredLocations() {	
+	public Set<MineralSite> getDeclaredLocations() {	
 		return declaredMineralLocations;
 	}
 
@@ -281,8 +281,8 @@ public class ExplorationManager implements Serializable {
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
-		ExploredLocation el = surfaceFeatures.createARegionOfInterest(siteLocation, skill);
+	public MineralSite createARegionOfInterest(Coordinates siteLocation, int skill) {
+		MineralSite el = surfaceFeatures.createARegionOfInterest(siteLocation, skill);
 		if (el != null) {
 			declaredMineralLocations.add(el);
 			return el;

@@ -13,7 +13,7 @@ import java.util.Set;
 
 import com.mars_sim.core.computing.ComputingJob;
 import com.mars_sim.core.computing.ComputingLoadType;
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -64,7 +64,7 @@ public class AnalyzeMapData extends Task {
 	private ComputingJob compute;
 	
 	/** The selected explored location for this session. */
-	private ExploredLocation exploredLoc;
+	private MineralSite exploredLoc;
 	
 
 	/**
@@ -107,7 +107,7 @@ public class AnalyzeMapData extends Task {
     	}
     	else {
 
-    		Set<ExploredLocation> locROIs = eMgr.getDeclaredLocations();
+    		Set<MineralSite> locROIs = eMgr.getDeclaredLocations();
 
     		numROIs = locROIs.size();
     		
@@ -128,7 +128,7 @@ public class AnalyzeMapData extends Task {
     		
     		else {
     			double rand = RandomUtil.getRandomDouble(Mining.MATURE_ESTIMATE_NUM * 1.5);
-    			List<ExploredLocation> sitesToimprove = locROIs.stream()
+    			List<MineralSite> sitesToimprove = locROIs.stream()
     	    			.filter(el -> el != null && el.getNumEstimationImprovement() < rand)
     	    			.toList();
     			
@@ -245,7 +245,7 @@ public class AnalyzeMapData extends Task {
 	
 	     		if (aSite != null) {
 		         	// Creates an initial explored site in SurfaceFeatures
-	     			ExploredLocation el = eMgr.createARegionOfInterest(aSite, skill);
+	     			MineralSite el = eMgr.createARegionOfInterest(aSite, skill);
 		         			
 	     			if (el != null) {
 	     				logger.info(person, 20_000, "Analyzed map data and zoned up the first new ROI at " +  aSite.getFormattedString() + ".");
@@ -270,7 +270,7 @@ public class AnalyzeMapData extends Task {
      			
          		if (aSite != null) {
     	         	// Creates an initial explored site in SurfaceFeatures
-         			ExploredLocation loc = eMgr.createARegionOfInterest(aSite, skill);
+         			MineralSite loc = eMgr.createARegionOfInterest(aSite, skill);
     	         			
          			if (loc != null) {
          				logger.info(person, 20_000, "Analyzed map data and zoned up a new ROI at " +  aSite.getFormattedString() + ".");

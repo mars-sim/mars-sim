@@ -17,7 +17,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -77,7 +77,7 @@ class MissionDataBean {
 	
 	private Coordinates[] explorationSites;
 	
-	private ExploredLocation miningSite;
+	private MineralSite miningSite;
     
     private ConstructionSite constructionSite;
     private ConstructionStageInfo constructionStageInfo;
@@ -536,7 +536,7 @@ class MissionDataBean {
 	 * 
 	 * @return mining site.
 	 */
-	protected ExploredLocation getMiningSite() {
+	protected MineralSite getMiningSite() {
 		return miningSite;
 	}
 
@@ -545,7 +545,7 @@ class MissionDataBean {
 	 * 
 	 * @param miningSite the mining site.
 	 */
-	protected void setMiningSite(ExploredLocation miningSite) {
+	protected void setMiningSite(MineralSite miningSite) {
 		this.miningSite = miningSite;
 	}
 

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EVASuit;
@@ -20,11 +20,11 @@ import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.objectives.MiningObjective;
+import com.mars_sim.core.mission.task.CollectMinedMinerals;
+import com.mars_sim.core.mission.task.MineSite;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
-import com.mars_sim.core.person.ai.task.MineSite;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -128,7 +128,7 @@ public class Mining extends EVAMission
 	 * @param rover              the rover to use.
 	 * @param description        the mission's description.
 	 */
-	public Mining(Collection<Worker> members, ExploredLocation miningSite,
+	public Mining(Collection<Worker> members, MineralSite miningSite,
 			Rover rover, LightUtilityVehicle luv) {
 
 		// Use RoverMission constructor.,  
@@ -138,7 +138,7 @@ public class Mining extends EVAMission
 		prepMining(luv, miningSite, false);
 	}
 	
-	private void prepMining(LightUtilityVehicle l, ExploredLocation miningSite, boolean needsReview) {
+	private void prepMining(LightUtilityVehicle l, MineralSite miningSite, boolean needsReview) {
 		// Initialize data members.
 		miningSite.setReserved(true);
 		
@@ -470,9 +470,9 @@ public class Mining extends EVAMission
 	 * @param homeSettlement the mission home settlement.
 	 * @return best explored location for mining, or null if none found.
 	 */
-	private static ExploredLocation determineBestMiningSite(Rover rover, Settlement homeSettlement) {
+	private static MineralSite determineBestMiningSite(Rover rover, Settlement homeSettlement) {
 
-		ExploredLocation result = null;
+		MineralSite result = null;
 		double bestValue = 0D;
 
 		try {
@@ -484,7 +484,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
+			for(MineralSite site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
@@ -526,7 +526,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for (ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
+			for (MineralSite site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
@@ -552,7 +552,7 @@ public class Mining extends EVAMission
 	 * @return estimated value of the minerals at the site (VP).
 	 * @throws MissionException if error determining the value.
 	 */
-	public static double getMiningSiteValue(ExploredLocation site, Settlement settlement) {
+	public static double getMiningSiteValue(MineralSite site, Settlement settlement) {
 
 		double result = 0D;
 

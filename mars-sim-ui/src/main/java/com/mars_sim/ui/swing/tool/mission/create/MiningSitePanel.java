@@ -32,7 +32,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
@@ -72,7 +72,7 @@ public class MiningSitePanel extends WizardPanel {
 	private JLabel longitudeLabel;
 	private JLabel latitudeLabel;
 	private JLabel errorMessageLabel;
-	private ExploredLocation selectedSite;
+	private MineralSite selectedSite;
 	private DefaultTableModel concentrationTableModel;
 
 	private SurfaceFeatures surfaceFeatures;
@@ -291,7 +291,7 @@ public class MiningSitePanel extends WizardPanel {
 	 * 
 	 * @param site the site to mine.
 	 */
-	private void selectMiningSite(ExploredLocation site) {
+	private void selectMiningSite(MineralSite site) {
 		selectedSite = site;
 		exploredSiteLayer.setSelectedSite(site);
 
@@ -373,12 +373,12 @@ public class MiningSitePanel extends WizardPanel {
 			Coordinates clickedPosition = center.convertRectIntToSpherical(xValue, yValue,
 								mapPane.getMap().getRho());
 
-			ExploredLocation closestSite = null;
+			MineralSite closestSite = null;
 			double closestRange = Double.MAX_VALUE;
 
-			Iterator<ExploredLocation> i = surfaceFeatures.getAllPossibleRegionOfInterestLocations().iterator();
+			Iterator<MineralSite> i = surfaceFeatures.getAllPossibleRegionOfInterestLocations().iterator();
 			while (i.hasNext()) {
-				ExploredLocation site = i.next();
+				MineralSite site = i.next();
 				if (!site.isReserved() && site.isMinable() && site.isClaimed() && site.isExplored()) {
 					double clickRange = site.getLocation().getDistance(clickedPosition);
 					if ((clickRange <= CLICK_RANGE) && (clickRange < closestRange)) {
