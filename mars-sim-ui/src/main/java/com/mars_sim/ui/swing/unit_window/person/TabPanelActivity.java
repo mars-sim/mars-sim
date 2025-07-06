@@ -8,16 +8,11 @@ package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,7 +23,6 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.CacheCreator;
@@ -38,14 +32,13 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
@@ -56,32 +49,22 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * activities
  */
 @SuppressWarnings("serial")
-public class TabPanelActivity extends TabPanel implements ActionListener {
-
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TabPanelActivity.class.getName());
+public class TabPanelActivity extends TabPanel {
 
 	private static final int MAX_LABEL = 30;
 	
 	private static final String TASK_ICON = "task";
-
-	private static final String EXTRA = "...";
 	
 	private static final String HTML = "<html>";
 	private static final String END_HTML = "</html>";
 
 	/** data cache */
-	private String missionTextCache = "";
-	/** data cache */
 	private String missionPhaseCache = "";
 
-	private JLabel missionTextArea;
-	private JLabel missionPhaseTextArea;
-	private JLabel missionScoreTextArea;
+	private EntityLabel missionLabel;
+	private JLabel missionPhase;
+	private JLabel missionScore;
 	private JLabel taskScoreTextArea;
-
-	private JButton monitorButton;
-	private JButton missionButton;
 
 	private Worker worker;
 
@@ -92,6 +75,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	
 	private JTextArea pendingTasks;
 
+
 	/**
 	 * Constructor.
 	 *
@@ -101,9 +85,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	public TabPanelActivity(Worker unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelActivity.title"), //-NLS-1$
 			ImageLoader.getIconByName(TASK_ICON),	
-			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelActivity.title"), //-NLS-1$
 			desktop
 		);
 
@@ -114,11 +98,11 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	protected void buildUI(JPanel content) {
 
 		JPanel topPanel = new JPanel(new BorderLayout());
-		content.add(topPanel, BorderLayout.NORTH);
+		content.add(topPanel, BorderLayout.CENTER);
 
 		// Create a task main panel
 		JPanel taskMainPanel = createTaskPanel();
-		topPanel.add(taskMainPanel, BorderLayout.SOUTH);		
+		topPanel.add(taskMainPanel, BorderLayout.CENTER);		
 
 		// Create a pending task panel
 		JPanel pendingTaskPanel = new JPanel(new BorderLayout(1, 3));
@@ -126,24 +110,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		pendingTaskPanel.add(pendingTasks, BorderLayout.CENTER);
 		addBorder(pendingTaskPanel, "Pending Task");
 		taskMainPanel.add(pendingTaskPanel, BorderLayout.SOUTH);
-		
-		// Prepare mission button panel.
-		JPanel missionButtonPanel = new JPanel(new FlowLayout());
-		topPanel.add(missionButtonPanel, BorderLayout.CENTER);
-
-		// Prepare mission tool button.
-		missionButton = new JButton(ImageLoader.getIconByName(MissionWindow.ICON)); //$NON-NLS-1$
-		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission"));
-		missionButton.addActionListener(this);
-		missionButtonPanel.add(missionButton);
-
-		// Prepare mission monitor button
-		monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor"));
-		monitorButton.addActionListener(this);
-		missionButtonPanel.add(monitorButton);
 		
 		// Create a mission main panel
 		JPanel missionMainPanel = createMissionPanel();
@@ -165,11 +131,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		missionMainPanel.add(missionSubPanel, BorderLayout.NORTH);
 
 		// Prepare attribute panel
-		AttributePanel missionAttributePanel = new AttributePanel(3);
+		AttributePanel missionAttributePanel = new AttributePanel();
 		missionSubPanel.add(missionAttributePanel, BorderLayout.NORTH);
-		missionTextArea = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionDesc"), ""); //$NON-NLS-1$
-		missionPhaseTextArea = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionPhase"), ""); //$NON-NLS-1$
-		missionScoreTextArea = missionAttributePanel.addRow("Best Score", "");
+		missionLabel = new EntityLabel(getDesktop());
+		missionAttributePanel.addLabelledItem(Msg.getString("TabPanelActivity.missionDesc"), missionLabel);
+		missionPhase = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionPhase"), ""); //$NON-NLS-1$
+		missionScore = missionAttributePanel.addRow("Best Score", "");
 
 		missionCacheModel = new MissionCacheModel();
 		JPanel missionCachePanel = new JPanel(new BorderLayout(1, 3));
@@ -261,34 +228,25 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			selected = ((PersonTaskManager)taskManager).getSelectedMission();
 			
 			if (selected != null) {
-				missionScoreTextArea.setText(Math.round(selected.getScore().getScore() * 100.0)/100.0 + "");
+				missionScore.setText(Math.round(selected.getScore().getScore() * 100.0)/100.0 + "");
 			}
 			
 			missionCacheModel.update(worker);
 		}
 
-		String newMissionText = "";
 		String newMissionPhase = "";
 
 		// Update mission text area if necessary.
-		if (mission != null)
-			newMissionText = mission.getName();
-		if (mission != null)
+		if (mission != null) {
 			newMissionPhase = mission.getPhaseDescription();
-
-		if (!missionTextCache.equals(newMissionText)) {
-			missionTextCache = newMissionText;
-			updateLabel(missionTextArea, newMissionText);
 		}
+
+		missionLabel.setEntity(mission);
 
 		if (!missionPhaseCache.equals(newMissionPhase)) {
 			missionPhaseCache = newMissionPhase;
-			updateLabel(missionPhaseTextArea, newMissionPhase);
+			missionPhase.setText(Conversion.trim(newMissionPhase, MAX_LABEL));
 		}
-		
-		// Update mission and monitor buttons.
-		missionButton.setEnabled(mission != null);
-		monitorButton.setEnabled(mission != null);
 
 		boolean addLine = false;
 		StringBuilder prefix = new StringBuilder();
@@ -333,37 +291,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		}
 
-		updateLabel(taskScoreTextArea, scoreLabel);
+		taskScoreTextArea.setText(Conversion.trim(scoreLabel, MAX_LABEL));
 		taskScoreTextArea.setToolTipText(scoreTooltip);
-	}
-
-	private static void updateLabel(JLabel label, String text) {
-		if (text.length() > MAX_LABEL) {
-			text = text.substring(0, MAX_LABEL - EXTRA.length()) + EXTRA;
-		}
-		label.setText(text);
-	}
-
-	/**
-	 * Action event occurs.
-	 *
-	 * @param event {@link ActionEvent} the action event
-	 */
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		Object source = event.getSource();		
-		Mission mission = worker.getMission();
-		if (mission != null) {
-			if (source == missionButton) {
-				getDesktop().showDetails(mission);
-			} else if (source == monitorButton) {
-				try {
-					getDesktop().addModel(new PersonTableModel(mission));
-				} catch (Exception e) {
-					logger.severe("PersonTableModel cannot be added.");
-				}
-			}
-		}
 	}
 
 	@SuppressWarnings("serial")

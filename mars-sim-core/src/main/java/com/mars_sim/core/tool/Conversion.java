@@ -144,7 +144,7 @@ public final class Conversion {
 	 * @return
 	 */
 	public static String trim(String source, int length) {
-		if (source.length() > length)
+		if ((source != null) && (source.length() > length))
 			source = source.substring(0, length-3) + "...";
 		return source;
 	}

@@ -22,23 +22,23 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityListLauncher;
 
 /**
@@ -52,20 +52,15 @@ extends TabPanel {
 
 	private static final String FLAG_MISSION ="mission";
 	
-	private JTextArea missionTextArea;
-	private JTextArea missionPhaseTextArea;
 	private DefaultListModel<Worker> memberListModel;
-	private JList<Worker> memberList;
-	private JButton missionButton;
+	
 	private JButton monitorButton;
 
 	// Cache
-	private String missionCache = null;
-	private String missionPhaseCache = null;
+	private String phaseCache = null;
 	private Collection<Worker> memberCache;
-
-	/** The Vehicle instance. */
-	private Vehicle vehicle;
+	private EntityLabel missionLabel;
+	private JLabel missionPhase;
 
 	/**
 	 * Constructor.
@@ -76,63 +71,26 @@ extends TabPanel {
 	public TabPanelMission(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelMission.title"), //-NLS-1$
 			ImageLoader.getIconByName(FLAG_MISSION),
-			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelMission.title"), //-NLS-1$
 			vehicle, desktop
 		);
-
-      this.vehicle = vehicle;
-
 	}
 
 	@Override
 	protected void buildUI(JPanel topContentPanel) {
-
-		Mission mission = vehicle.getMission();
+  JList<Worker> memberList;
 
 		// Prepare mission top panel
-		JPanel missionTopPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-		missionTopPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		var missionTopPanel = new AttributePanel();
 		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
 		// Prepare mission panel
-		JPanel missionNamePanel = new JPanel(new BorderLayout(0, 0));
-		missionNamePanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		missionTopPanel.add(missionNamePanel);
-
-		JLabel missionNameLabel = new JLabel(
-				Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(missionNameLabel);
-		missionNamePanel.add(missionNameLabel, BorderLayout.NORTH);
-
+		missionLabel = new EntityLabel(getDesktop());
+		missionTopPanel.addLabelledItem("Name", missionLabel);
 		
-		// Prepare mission name area
-		if (mission != null) missionCache = mission.getName();
-		missionTextArea = new JTextArea(2, 20);
-		if (missionCache != null) missionTextArea.setText(missionCache);
-		missionTextArea.setLineWrap(true);
-		missionTextArea.setEditable(false);
-		missionNamePanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
-
-		// Prepare mission phase panel
-		JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
-		missionPhasePanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		missionTopPanel.add(missionPhasePanel);
-
-		// Prepare mission phase label
-		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(missionPhaseLabel);
-		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
-		missionTopPanel.add(missionPhasePanel);
-		
-		// Prepare mission phase text area
-		if (mission != null) missionPhaseCache = mission.getPhaseDescription();
-		missionPhaseTextArea = new JTextArea(2, 20);
-		if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
-		missionPhaseTextArea.setLineWrap(true);
-		missionPhaseTextArea.setEditable(false);
-		missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
+		missionPhase = missionTopPanel.addRow(Msg.getString("TabPanelMission.missionPhase"), "");
 
 		// Prepare mission bottom panel
 		JPanel missionBottomPanel = new JPanel(new BorderLayout(0, 0));
@@ -155,41 +113,21 @@ extends TabPanel {
 
 		// Create member list model
 		memberListModel = new DefaultListModel<>();
-		if (mission != null) memberCache = mission.getMembers();
-		else memberCache = new ConcurrentLinkedQueue<>();
-		Iterator<Worker> i = memberCache.iterator();
-		while (i.hasNext()) memberListModel.addElement(i.next());
 
 		// Create member list
 		memberList = new JList<>(memberListModel);
-		// memberList.addMouseListener(this);
 		memberList.addMouseListener(new EntityListLauncher(getDesktop()));
 		memberScrollPanel.setViewportView(memberList);
 
-		JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 5));
 		memberListPanel.add(buttonPanel);
-
-		Unit unit = getUnit();
-		
-		// Create mission tool button
-		missionButton = new JButton(ImageLoader.getIconByName(MissionWindow.ICON)); 
-		missionButton.setMargin(new Insets(2, 2, 2, 2));
-		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
-		missionButton.addActionListener(e -> {
-				Mission m = ((Vehicle) unit).getMission();
-				if (m != null) {
-					getDesktop().showDetails(m);
-				}
-		});
-		missionButton.setEnabled(mission != null);
-		buttonPanel.add(missionButton);
 
 		// Create member monitor button
 		monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(2, 2, 2, 2));
 		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(e -> {
-				Mission m = ((Vehicle) unit).getMission();
+				Mission m = ((Vehicle) getUnit()).getMission();
 				if (m != null) {
 					try {
 						getDesktop().addModel(new PersonTableModel(m));
@@ -198,8 +136,9 @@ extends TabPanel {
 					}
 				}
 		});
-		monitorButton.setEnabled(mission != null);
 		buttonPanel.add(monitorButton);
+
+		update();
 	}
 
 	/**
@@ -210,24 +149,22 @@ extends TabPanel {
 		Vehicle vehicle = (Vehicle) getUnit();
 		Mission mission = vehicle.getMission();
 
+		missionLabel.setEntity(mission);
+
+		String newPhase = null;
 		if (mission != null) {
-		    missionCache = mission.getName();
+		    newPhase = mission.getPhaseDescription();
+			if (newPhase.equals(phaseCache)) {
+				newPhase = null;
+			}
 		}
-		else {
-		    missionCache = null;
-		}
-		if (!missionTextArea.getText().equals(missionCache)) {
-			missionTextArea.setText(missionCache);
+		else if (phaseCache != null) {
+		    newPhase = "";
 		}
 
-		if (mission != null) {
-		    missionPhaseCache = mission.getPhaseDescription();
-		}
-		else {
-		    missionPhaseCache = null;
-		}
-		if (!missionPhaseTextArea.getText().equals(missionPhaseCache)) {
-			missionPhaseTextArea.setText(missionPhaseCache);
+		if (newPhase != null) {
+			phaseCache = newPhase;
+			missionPhase.setText(Conversion.trim(phaseCache, 24));
 		}
 
 		// Update member list
@@ -248,20 +185,6 @@ extends TabPanel {
 		}
 
 		// Update mission and monitor buttons.
-		missionButton.setEnabled(mission != null);
 		monitorButton.setEnabled(mission != null);
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		missionTextArea = null;
-		missionPhaseTextArea = null;
-		memberListModel = null;
-		memberList = null;
-		missionButton = null;
-		monitorButton = null;
-		memberCache = null;
 	}
 }

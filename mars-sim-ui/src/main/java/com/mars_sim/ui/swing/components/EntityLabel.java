@@ -38,7 +38,7 @@ public class EntityLabel extends JPanel {
     private JLabel label;
     private JButton detailButton;
     private JButton mapButton;
-    private Entity subject;
+    private Entity entity;
 
     /**
      * Constructor for creating an EntityLabel with a specific entity.
@@ -64,14 +64,14 @@ public class EntityLabel extends JPanel {
 
         detailButton = new JButton(DETAILS); 
         detailButton.setToolTipText(Msg.getString("EntityLabel.details"));
-        detailButton.addActionListener(e -> uiContext.showDetails(subject));
+        detailButton.addActionListener(e -> uiContext.showDetails(entity));
         detailButton.setVisible(false);
         add(detailButton);
 
         // Some entities have a physical location
         mapButton = new JButton(LOCATE); 
         mapButton.setToolTipText(Msg.getString("EntityLabel.locate"));
-        mapButton.addActionListener(e -> MapSelector.displayOnMap(uiContext, subject));
+        mapButton.addActionListener(e -> MapSelector.displayOnMap(uiContext, entity));
 
         mapButton.setVisible(false);
         add(mapButton);
@@ -83,20 +83,22 @@ public class EntityLabel extends JPanel {
      * @param subject the entity to display.
      */
     public void setEntity(Entity subject) {
-        this.subject = subject;
         if (subject == null) {
-            label.setText("");
-            label.setToolTipText(null);
-            detailButton.setVisible(false);
-            mapButton.setVisible(false);
+            if (entity != null) {
+                label.setText("");
+                label.setToolTipText(null);
+                detailButton.setVisible(false);
+                mapButton.setVisible(false);
+            }
         }
-        else {
+        else if (!subject.equals(entity)) {
             label.setText(subject.getName());
             var entityType = Conversion.split(subject.getClass().getSimpleName());
             label.setToolTipText(entityType);
             detailButton.setVisible(true);
             mapButton.setVisible((subject instanceof MobileUnit) || (subject instanceof FixedUnit));
         }
-    }
 
+        this.entity = subject;
+    }
 }
