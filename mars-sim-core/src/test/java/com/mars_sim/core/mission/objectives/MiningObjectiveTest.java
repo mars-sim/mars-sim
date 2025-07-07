@@ -18,7 +18,7 @@ public class MiningObjectiveTest extends AbstractMarsSimUnitTest {
                     100000, Collections.emptyList());
 
         // Give big skill to handle small conc
-        var site = sf.declareRegionOfInterest(potentials.getKey(), 10);
+        var site = sf.declareROI(potentials.getKey(), 10);
 
         LightUtilityVehicle l = null;
 		var obj = new MiningObjective(l, site);

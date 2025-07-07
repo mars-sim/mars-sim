@@ -530,7 +530,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param skill			the skill
 	 * @return the explored location
 	 */
-	public synchronized MineralSite declareRegionOfInterest(Coordinates location,
+	public synchronized MineralSite declareROI(Coordinates location,
 			int skill) {
 		
 		MineralSite result = null;
@@ -581,7 +581,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param siteLocation
 	 * @return
 	 */
-	public boolean isDeclaredARegionOfInterest(Coordinates coord, Settlement settlement) {
+	public boolean isDeclaredAROI(Coordinates coord, Settlement settlement) {
 		for (MineralSite el: regionOfInterestLocations) {
 			if (el.getLocation().equals(coord)
 				&& (((settlement != null) && settlement.equals(el.getSettlement()))
@@ -594,12 +594,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Check if a location already been declared/considered as a Region Of Interest (ROI).
+	 * Gets a location already been declared/considered as a Region Of Interest (ROI).
 	 * 
 	 * @param coord
 	 * @return
 	 */
-	public MineralSite isDeclaredLocation(Coordinates coord) {
+	public MineralSite getDeclaredROI(Coordinates coord) {
 		return regionOfInterestLocations.stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
 				  .findFirst()
@@ -615,13 +615,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	public MineralSite createARegionOfInterest(Coordinates siteLocation, int skill) {
+	public MineralSite createROI(Coordinates siteLocation, int skill) {
 
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		MineralSite el = isDeclaredLocation(siteLocation);
+		MineralSite el = getDeclaredROI(siteLocation);
 		if (el == null) {
 			// If it hasn't been claimed yet, then claim it
-			el = declareRegionOfInterest(siteLocation, skill);
+			el = declareROI(siteLocation, skill);
 		}
 		
 		return el;

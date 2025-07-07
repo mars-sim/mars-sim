@@ -68,6 +68,7 @@ public class Exploration extends EVAMission
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 
 	private double currentSiteTime;
+	
 	private MineralSite currentSite;
 
 	private ExplorationObjective objective;
@@ -453,7 +454,7 @@ public class Exploration extends EVAMission
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = explorationMgr.getDeclaredLocations()
+		List<Coordinates> candidateLocs = explorationMgr.getDeclaredLROIs()
 				//surfaceFeatures.getAllPossibleRegionOfInterestLocations()
 				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 

@@ -133,13 +133,13 @@ public class StructuredResponse {
 	/**
 	 * Adds a table heading and prepares for table. The number of heading strings defines how many
 	 * columns the table contains. Table must have at least 2 columns including the 1st fixed one.
-	 * The headings columns contains String to define the columns; if a String is followed by an integer
-	 * then the int specifies the width of that column.
+	 * The headings columns contains String to define the columns; 
+	 * if a String is followed by an integer, then the int specifies the width of that column.
 	 *  
-	 * @param wrapContents Wrap the conents of the cells to fit in the column width
+	 * @param wrapContents Wrap the contents of the cells to fit in the column width
 	 * @param heading1 1st column heading
 	 * @param width Width of 1st column
-	 * @param headings A variab le list of heading defining the columns
+	 * @param headings A variable list of heading defining the columns
 	 */
 	public void appendTableHeading(boolean wrapContents, String heading1, int width, Object ... headings) {
 		List<Integer> widths = new ArrayList<>();
@@ -179,13 +179,13 @@ public class StructuredResponse {
 		// Save widths
 		columnsWidth = Ints.toArray(widths);
 		buffer.append(System.lineSeparator());
-		buffer.append(StringUtils.repeat('-', tableWidth));
+		buffer.append(' ' + StringUtils.repeat('-', tableWidth));
 		buffer.append(System.lineSeparator());
 
 	}
 
 	/**
-	 * Adds a table row with a list of values. The total numebr of values must equals the
+	 * Adds a table row with a list of values. The total number of values must equals the
 	 * number of columns previously defined in {@link #appendTableHeading(String, int, Object...)}
 	 * 
 	 * @param label Label for the entry

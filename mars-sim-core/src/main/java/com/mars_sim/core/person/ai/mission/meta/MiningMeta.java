@@ -28,7 +28,9 @@ public class MiningMeta extends AbstractMetaMission {
 	
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
-
+	/** The multiplier factor. */
+	private static final double FACTOR = 5.0;
+	
     MiningMeta() {
     	super(MissionType.MINING, Set.of(JobType.AREOLOGIST, JobType.ENGINEER));
     }
@@ -87,7 +89,7 @@ public class MiningMeta extends AbstractMetaMission {
 				if (rover != null) {
 					// Find best mining site.
 					missionProbability.addModifier("miningmaturity",
-										Mining.getMatureMiningSitesTotalScore(rover, settlement));
+										Mining.getMatureMiningSitesTotalScore(rover, settlement) * FACTOR);
 				}
 
 	            // Crowding modifier

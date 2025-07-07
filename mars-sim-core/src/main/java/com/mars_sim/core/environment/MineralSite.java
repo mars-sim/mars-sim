@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MineralSite.java
- * @date 2024-07-23
+ * @date 2025-07-06
  * @author Scott Davis
  */
 
@@ -237,11 +237,11 @@ public class MineralSite implements Serializable, SurfacePOI {
 	}
 	
 	/**
-	 * Checks if the average certainty is above 50 %.
+	 * Checks if the average certainty is above a certain percentage.
 	 * 
 	 * @return
 	 */
-	public boolean isCertaintyAverageOver50() {
+	public boolean isCertaintyAverageOver(int percent) {
 		if (!degreeCertainty.isEmpty()) {
 			double sum = 0;
 			double numMinerals = 0;
@@ -254,7 +254,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 			double average = 0; 
 			if (numMinerals > 0)
 				average = sum / numMinerals;
-			if (average > 50) {
+			if (average > percent) {
 				return true;
 			}
 		}
@@ -263,6 +263,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 	
 	/**
 	 * Increments the estimation improvement.
+	 * 
 	 * @param delta the Amount to increase the estimates
 	 */
 	public void incrementNumImprovement(int delta) {

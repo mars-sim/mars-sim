@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploredCommand.java
- * @date 2022-07-07
+ * @date 2025-07-06
  * @author Barry Evans
  */
 
@@ -87,7 +87,7 @@ public class ExploredCommand extends ChatCommand {
 			if (found != null) {
 				var newLocn = found.getKey();
 				context.println("Possible site found at " + newLocn.getFormattedString() + " distance of " + found.getValue());
-				MineralSite newSite = surface.declareRegionOfInterest(newLocn, 1);
+				MineralSite newSite = surface.declareROI(newLocn, 1);
 
 				if (newSite == null) {
 					context.println("Site did not have engouh monerals");
@@ -137,9 +137,14 @@ public class ExploredCommand extends ChatCommand {
 		}
 		
 		StructuredResponse response = new StructuredResponse();
+		
+		response.appendText("");
+		response.appendText(" A total of " + locations.size() + " mineral sites have been identified.");
+		response.appendText("");
+		
 		response.appendTableHeading("Location", CommandHelper.COORDINATE_WIDTH,
-									"Settlement", 20, 
-									"Status *", 8 , "Reviews", "Highest");
+									"Settlement", 18, 
+									"Status*", "Reviews", "Mineral with highest %");
 		for (MineralSite s : locations) {
 			String mineral = "";
 
@@ -147,9 +152,9 @@ public class ExploredCommand extends ChatCommand {
 			Optional<Entry<String, Double>> highest = s.getEstimatedMineralConcentrations().entrySet().stream()
 								.max(Comparator.comparing(Entry::getValue));
 			if (highest.isPresent())
-				mineral = String.format("%s - %.2f", highest.get().getKey(), highest.get().getValue());
+				mineral = String.format("%s - %.1f", highest.get().getKey(), highest.get().getValue());
 			
-			String status = (s.isMinable() ? "M" : "-") + (s.isReserved() ? "R" : "-") + (s.isExplored() ? "E" : "-");
+			String status = (s.isMinable() ? "M" : "-") +  (s.isExplored() ? "E" : "-") + (s.isClaimed() ? "C" : "-") +(s.isReserved() ? "R" : "-") + "  ";
 			Settlement owner = s.getSettlement();
 			response.appendTableRow(s.getLocation().getFormattedString(),
 									(owner != null ? owner.getName() : ""),
@@ -158,7 +163,8 @@ public class ExploredCommand extends ChatCommand {
 									mineral);
 		}
 
-		response.appendText("* - 'M' = Minable, 'R' = Reserved, 'E' = Explored");
+		response.appendText(" Note *: 'M' = Minable, 'E' = Explored, 'C' = Claimed, 'R' = Reserved");
+		
 		context.println(response.getOutput());
 	}
 }

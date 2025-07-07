@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapData.java
- * @date 2024-07-23
+ * @date 2025-07-06
  * @author Manny Kung
  */
 
@@ -64,7 +64,7 @@ public class AnalyzeMapData extends Task {
 	private ComputingJob compute;
 	
 	/** The selected explored location for this session. */
-	private MineralSite exploredLoc;
+	private MineralSite site;
 	
 
 	/**
@@ -107,7 +107,7 @@ public class AnalyzeMapData extends Task {
     	}
     	else {
 
-    		Set<MineralSite> locROIs = eMgr.getDeclaredLocations();
+    		Set<MineralSite> locROIs = eMgr.getDeclaredLROIs();
 
     		numROIs = locROIs.size();
     		
@@ -123,7 +123,7 @@ public class AnalyzeMapData extends Task {
     		} 
     		
     		else if (numROIs == 1) {
-    			exploredLoc = new ArrayList<>(locROIs).get(0);
+    			site = new ArrayList<>(locROIs).get(0);
     		}
     		
     		else {
@@ -143,7 +143,7 @@ public class AnalyzeMapData extends Task {
     			}
     			
     			else if (num > 0) {
-    				exploredLoc = RandomUtil.getRandomElement(sitesToimprove);
+    				site = RandomUtil.getRandomElement(sitesToimprove);
     				
     				// Set task phase to analyzing
         	    	addPhase(ANALYZING);
@@ -154,7 +154,7 @@ public class AnalyzeMapData extends Task {
 
     		}
     		
-    		if (exploredLoc == null) {
+    		if (site == null) {
     			
     	       	// Set task phase to discovering
     	    	addPhase(DISCOVERING);
@@ -163,7 +163,7 @@ public class AnalyzeMapData extends Task {
     			return;
     		}
 
-    		double certainty = exploredLoc.getAverageCertainty() / 100.0;
+    		double certainty = site.getAverageCertainty() / 100.0;
     		
     		// The higher the numImprovement, the more difficult the numerical solution, and 
     		// the more the computing resources needed to do the refinement.		
@@ -183,7 +183,7 @@ public class AnalyzeMapData extends Task {
     	    	addPhase(DISCOVERING);
     	        setPhase(DISCOVERING);
     		}
-            else if (!exploredLoc.isEmpty()) {
+            else if (!site.isEmpty()) {
     	       	// Add task phases
     	    	addPhase(ANALYZING);
     	        setPhase(ANALYZING);
@@ -324,7 +324,7 @@ public class AnalyzeMapData extends Task {
      */
     private double analyzingPhase(double time) {
  
-    	if (exploredLoc == null) {
+    	if (site == null) {
     		endTask();
     	}
     	
@@ -366,10 +366,10 @@ public class AnalyzeMapData extends Task {
 		if (probability > .75)
 			probability = .75;
 				
-		if ((exploredLoc.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
+		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 		
 			// Improve the mineral concentration estimation
-			ExploreSite.improveSiteEstimates(exploredLoc, compositeSkill);
+			ExploreSite.improveSiteEstimates(site, compositeSkill);
 		}
 	}
 
@@ -379,7 +379,7 @@ public class AnalyzeMapData extends Task {
 	 */
 	@Override
 	public void destroy() {
-		exploredLoc = null;
+		site = null;
 		super.destroy();
 	}
 }

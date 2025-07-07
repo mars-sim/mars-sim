@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExplorationManager.java
- * @date 2024-12-07
+ * @date 2025-07-06
  * @author Barry Evans
  */
 package com.mars_sim.core.structure;
@@ -53,8 +53,8 @@ public class ExplorationManager implements Serializable {
 
 	/** A set of nearby mineral locations. */
 	private Map<Coordinates, Double> nearbyMineralLocations = new HashMap<>();
-	/** A list of nearby mineral locations. */
-	private Set<MineralSite> declaredMineralLocations = new HashSet<>();
+	/** A list of declared Regions of Interest (ROIs) for mineral exploration. */
+	private Set<MineralSite> declaredROIs = new HashSet<>();
 
     private Settlement base;
     
@@ -103,7 +103,7 @@ public class ExplorationManager implements Serializable {
 
 		for(var c : nearbyMineralLocations.entrySet()) {
 			double dist = c.getValue();
-			if ((surfaceFeatures.isDeclaredLocation(c.getKey()) == null)
+			if ((surfaceFeatures.getDeclaredROI(c.getKey()) == null)
 			    && (shortestDist >= dist)) {
 				shortestDist = dist;
 				chosen = c.getKey();
@@ -128,7 +128,7 @@ public class ExplorationManager implements Serializable {
 	public Coordinates getExistingNearbyMineralLocation() {
 
 		for (Coordinates c : nearbyMineralLocations.keySet()) {
-			for (MineralSite el : declaredMineralLocations) {
+			for (MineralSite el : declaredROIs) {
 				if (!c.equals(el.getLocation())) {
 					return c;
 				}
@@ -158,7 +158,7 @@ public class ExplorationManager implements Serializable {
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		for (var c : nearbyMineralLocations.entrySet()) {
 			// If an undeclared location
-			var declared = declaredMineralLocations.stream()
+			var declared = declaredROIs.stream()
 						.filter(e -> e.getCoordinates().equals(c.getKey()))
 						.findAny().orElse(null);
 			if ((declared != null) && declared.isExplored()) {
@@ -204,7 +204,7 @@ public class ExplorationManager implements Serializable {
 		int num = 0;
 		Settlement match = (isClaimed ? base : null);
 		for (Coordinates c: nearbyMineralLocations.keySet()) {
-			if (surfaceFeatures.isDeclaredARegionOfInterest(c, match))
+			if (surfaceFeatures.isDeclaredAROI(c, match))
 				num++;
 		}
 		return num;
@@ -215,15 +215,15 @@ public class ExplorationManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Set<MineralSite> getDeclaredLocations() {	
-		return declaredMineralLocations;
+	public Set<MineralSite> getDeclaredLROIs() {	
+		return declaredROIs;
 	}
 
     
 	/**
 	 * Computes the mineral sites statistics.
 	 * 
-	 * @param status The type of statistics to requet
+	 * @param status The type of statistics to request
 	 * @return
 	 */
 	public ExploredStats getStatistics(int status) {
@@ -238,13 +238,13 @@ public class ExplorationManager implements Serializable {
                     break;
                 
                 case CLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredARegionOfInterest(c, base)) {
+                    if (surfaceFeatures.isDeclaredAROI(c, base)) {
                         list.add(locn);
                     }
                     break;
                 
                 case UNCLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredARegionOfInterest(c, null)) {
+                    if (surfaceFeatures.isDeclaredAROI(c, null)) {
                         list.add(locn);
                     }
                     break;
@@ -282,9 +282,9 @@ public class ExplorationManager implements Serializable {
 	 * @return ExploredLocation
 	 */
 	public MineralSite createARegionOfInterest(Coordinates siteLocation, int skill) {
-		MineralSite el = surfaceFeatures.createARegionOfInterest(siteLocation, skill);
+		MineralSite el = surfaceFeatures.createROI(siteLocation, skill);
 		if (el != null) {
-			declaredMineralLocations.add(el);
+			declaredROIs.add(el);
 			return el;
 		}
 		return null;

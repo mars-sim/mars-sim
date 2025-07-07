@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapDataMeta.java
- * @date 2024-07-23
+ * @date 2025-07-06
  * @author Manny Kung
  */
 
@@ -32,7 +32,10 @@ import com.mars_sim.core.tool.Msg;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final double VALUE = 0.15D;
+	private static final double UNIMPROVED_FACTOR = 0.75;
+	private static final double CLAIM_FACTOR = 1.25;
+	private static final double POTENTIAL_FACTOR = 1.2;
+	private static final double MAX = 2000;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -82,41 +85,36 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 	
 		int numNearby = nearbySites.size();
 		
-		Set<MineralSite> minableLocs = eMgr.getDeclaredLocations()
+		Set<MineralSite> minableLocs = eMgr.getDeclaredLROIs()
 				.stream()
 				.filter(el -> el != null && el.isMinable())
 				.collect(Collectors.toSet());
 
-		int numUnimproved = 0;
-		for (MineralSite el: minableLocs) {
-			int est = el.getNumEstimationImprovement();
-			numUnimproved += MineralSite.IMPROVEMENT_THRESHOLD - est;
+		int unimprovedScore = 0;
+		double certainty = 0.0;
+		for (MineralSite s: minableLocs) {
+			int est = s.getNumEstimationImprovement();
+			unimprovedScore += MineralSite.IMPROVEMENT_THRESHOLD - est;
+			certainty += s.getAverageCertainty();
 		}
-				
-		int num = minableLocs.size();
-		if (num == 0)
-			num = 1;
+	
+		if (!minableLocs.isEmpty())
+			certainty = certainty/minableLocs.size();
 		
-		int numPotential = 100 - numNearby;
+		int uncertainty = (int)(100 - certainty) + 1;
 		
-		if (100 - numNearby <= 0) {
-			numPotential = 0;
-		}
+		int potentialScore = numNearby;
 
-		double unclaimedScore = 200D;
-		
-		if (unclaimedSites > 0) {
-			unclaimedScore = unclaimedScore / unclaimedSites * (1.0 + (int)Math.ceil(unclaimedSites / 5D));
-		}
+		double unclaimedScore = uncertainty * (1.0 + (int)Math.ceil(unclaimedSites / 5D));
 			
-		var result = new RatingScore("mapdata.unclaimed", unclaimedScore);
+		var result = new RatingScore("mapdata.uncertainty", CLAIM_FACTOR * unclaimedScore);
 		
-		result.addBase("mapdata.unimproved", VALUE * numUnimproved / num);
+		result.addBase("mapdata.unimproved", Math.min(MAX, UNIMPROVED_FACTOR * unimprovedScore));
 		
-		result.addBase("mapdata.potential", numPotential);
+		result.addBase("mapdata.potential", POTENTIAL_FACTOR * potentialScore);
 
 		result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
-
+		
         result = assessPersonSuitability(result, person);
 
         return createTaskJobs(result);

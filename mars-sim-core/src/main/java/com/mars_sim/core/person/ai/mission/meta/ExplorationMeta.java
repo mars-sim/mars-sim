@@ -31,7 +31,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 2;
 
-	private static final double VALUE = 10D;
+	private static final double VALUE = 20D;
 
 	ExplorationMeta() {
 		super(MissionType.EXPLORATION, 
