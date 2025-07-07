@@ -8,9 +8,7 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +16,6 @@ import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -126,9 +123,6 @@ public class Exploration extends EVAMission
 				endMission(NO_EXPLORATION_SITES);
 				return;
 			}
-
-			// Update the number of determined sites
-			numSites = sitesToClaim.size();
 			
 			initializeExplorationSites(sitesToClaim);
 
@@ -222,11 +216,8 @@ public class Exploration extends EVAMission
 			if (e.getLocation().equals(current))
 				return e;
 		}
-		
-		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
-		
-	
-		return declareARegionOfInterest(current, 2);
+		logger.severe(this, "Cannot find Mineral site for " + current.getFormattedString());
+		return null;
 	}
 
 	/**
@@ -250,6 +241,10 @@ public class Exploration extends EVAMission
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
 			currentSite = retrieveASiteToClaim();
+			if (currentSite == null) {
+				abortMission("Inmvalid exploration site");
+				return false;
+			}
 		}
 		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
@@ -277,24 +272,6 @@ public class Exploration extends EVAMission
 		
 		currentSiteTime = 0D;
 		currentSite = null;
-	}
-
-	/**
-	 * Creates a brand new site at a given location and
-	 * estimate its mineral concentrations.
-	 * 
-	 * @param siteLocation
-	 * @param skill
-	 * @return ExploredLocation
-	 */
-	private MineralSite declareARegionOfInterest(Coordinates siteLocation, int skill) {
-		
-		MineralSite el = explorationMgr.createARegionOfInterest(siteLocation, skill);
-		
-		if (el != null)
-			claimedSites.add(el);
-		
-		return el;
 	}
 
 	@Override
@@ -333,14 +310,10 @@ public class Exploration extends EVAMission
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
 	private List<Coordinates> determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
-		// Calculate the confidence score for determining the distance
-		// The longer it stays on Mars, the higher the confidence
-		int confidence = 2 * (1 + (int)RandomUtil.getRandomDouble(getMarsTime().getMissionSol()));
 
-		List<Coordinates> unorderedSites = new ArrayList<>();
+		List<Coordinates> selectedLocns = new ArrayList<>();
 
 		// Determining the actual traveling range.
-		double limit = 0;
 		double range = roverRange;
 		double timeRange = getTripTimeRange(numSites, tripTimeLimit, getAverageVehicleSpeedForOperators());
 		if (timeRange < range) {
@@ -349,151 +322,80 @@ public class Exploration extends EVAMission
 
 		// Determine the first exploration site.
 		Coordinates startingLocation = getCurrentMissionLocation();
-		Coordinates currentLocation = null;
-		MineralSite el = null;
 		
 		// Find mature sites to explore
-		List<Coordinates> outstandingSites = findClaimedCandidateSites(startingLocation);
-		if (!outstandingSites.isEmpty()) {
-			currentLocation = outstandingSites.remove(0);
-		}
-		
-		else {
-			limit = range / 2D;
-			
-			currentLocation = determineFirstSiteCoordinate(limit);
-			
-			if (currentLocation != null) {
-				// Creates an initial explored site in SurfaceFeatures
-				el = declareARegionOfInterest(currentLocation, areologySkill);
-			}
-		}
-	
-		if (currentLocation != null) {
-			unorderedSites.add(currentLocation);
-		}
-		else {
-			if (el == null) {
-				logger.info(getStartingSettlement(), 10_000L, "Unable to pinpoint a good site. Need to further analyze maps.");
-			}
-			else {
-				logger.info(getStartingSettlement(), 10_000L, "Could not determine first exploration site.");
-			}
-			return unorderedSites;
-		}
+		List<MineralSite> knownSites = findClaimedCandidateSites();
+		Coordinates currentLocation = startingLocation;
 
 		// Determine remaining exploration sites.
-		double siteDistance = startingLocation.getDistance(currentLocation);
-		double remainingRange = (range / 2D) - siteDistance;
+		double remainingRange = range;
+		double returnDist = currentLocation.getDistance(startingLocation);
 
 		// Add in some existing ones first
-		while ((unorderedSites.size() < numSites)  && (remainingRange > 1D)
-				&& !outstandingSites.isEmpty()) {
+		while ((selectedLocns.size() < numSites)
+				&& (remainingRange > returnDist)
+				&& !knownSites.isEmpty()) {
 			// Take the next one off the front
-			Coordinates nextLocation = outstandingSites.remove(0);
-			unorderedSites.add(nextLocation);
+			var site = knownSites.remove(0);
+			claimedSites.add(site);
+
+			// Calc what distance is left
+			Coordinates nextLocation = site.getCoordinates();
+			selectedLocns.add(nextLocation);
 			remainingRange -= nextLocation.getDistance(currentLocation);
 			currentLocation = nextLocation;
+			returnDist = currentLocation.getDistance(startingLocation);
 		}
 
-		// Pick some new ones
-		while ((unorderedSites.size() < numSites) && (remainingRange > 1D)) {
-			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-			
-			limit = range / 4D;
-			
-			double distance = RandomUtil.getRandomDouble(confidence, (int)limit);
-			
-			Coordinates newLocation = currentLocation.getNewLocation(direction, distance);
-			unorderedSites.add(newLocation);
-			
-			currentLocation = newLocation;
-			remainingRange -= distance;
-		}
+		// Pick some new ones if still space but limit the attempts
+		int unplannedAttempts = 10;
+		while ((selectedLocns.size() < numSites)
+				&& (remainingRange > returnDist)
+				&& (unplannedAttempts-- > 0)) {
+			// Find minerals near base
+			var unplannedLimit = (remainingRange - returnDist) / 2D;
+			var newLocn = explorationMgr.getUnexploredLocalSites(false, unplannedLimit);
 
-		List<Coordinates> sites = null;
-
-		if (unorderedSites.size() > 1) {
-			double unorderedSitesTotalDistance = getTotalDistance(startingLocation, unorderedSites);
-
-			// Try to reorder sites for shortest distance.
-			List<Coordinates> orderedSites = getMinimalPath(startingLocation, unorderedSites);
-
-			double orderedSitesTotalDistance = getTotalDistance(startingLocation, orderedSites);
-
-			if (orderedSitesTotalDistance < unorderedSitesTotalDistance) {
-				sites = orderedSites;
-			} else {
-				sites = unorderedSites;
+			// Check not in the current list
+			if (selectedLocns.contains(newLocn)) {
+				continue;
 			}
-		} else {
-			sites = unorderedSites;
+
+			// Is it good enough to create MineralSite
+			var el = explorationMgr.createARegionOfInterest(newLocn, areologySkill);
+			if (el != null) {
+				claimedSites.add(el);
+
+				// Add to the list
+				selectedLocns.add(newLocn);
+				remainingRange -= newLocn.getDistance(currentLocation);
+				currentLocation = newLocn;
+				returnDist = currentLocation.getDistance(startingLocation);
+			}
 		}
 
-		return sites;
-	}
-
-	/**
-	 * Determine the first exploration site.
-	 *
-	 * @return first exploration site or null if none.
-	 */
-	private Coordinates determineFirstSiteCoordinate(double limit) {
-		// Get a random site that is one of the closest
-		return explorationMgr.getUnexploredLocalSites(true, limit);
+		return getMinimalPath(startingLocation, selectedLocns);
 	}
 	
 	/**
-	 * Gets a list of candidate site coordinates for a settlement. Filter for those that needs estimation improvement.
+	 * Gets a list of candidate MineralSites known to a settlement.
+	 * Filter for those that needs estimation improvement.
 	 * 
 	 * @return
 	 */
-	private List<Coordinates> findClaimedCandidateSites(Coordinates startingLoc) {
+	private List<MineralSite> findClaimedCandidateSites() {
 
 		Settlement home = getStartingSettlement();
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = explorationMgr.getDeclaredLROIs()
-				//surfaceFeatures.getAllPossibleRegionOfInterestLocations()
+		return explorationMgr.getDeclaredLROIs()
 				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
-				.map(MineralSite::getLocation)
 				.toList();
-		
-		if (!candidateLocs.isEmpty()) {
-			return getMinimalPath(startingLoc, candidateLocs);
-		}
-		
-		return Collections.emptyList();
 	}
-
-	/**
-	 * Gets the total distances of going to all sites.
-	 * 
-	 * @param startingLoc
-	 * @param sites
-	 * @return
-	 */
-	private static double getTotalDistance(Coordinates startingLoc, List<Coordinates> sites) {
-		double result = 0D;
-
-		Coordinates currentLoc = startingLoc;
-		Iterator<Coordinates> i = sites.iterator();
-		while (i.hasNext()) {
-			Coordinates site = i.next();
-			result += currentLoc.getDistance(site);
-			currentLoc = site;
-		}
-
-		// Add return trip to starting loc.
-		result += currentLoc.getDistance(startingLoc);
-
-		return result;
-	}
-	
 
 	/**
 	 * Gets a list of sites explored by the mission so far.
