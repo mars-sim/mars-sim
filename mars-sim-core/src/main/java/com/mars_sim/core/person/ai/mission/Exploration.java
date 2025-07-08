@@ -357,7 +357,7 @@ public class Exploration extends EVAMission
 			var newLocn = explorationMgr.getUnexploredLocalSites(false, unplannedLimit);
 
 			// Check not in the current list
-			if (selectedLocns.contains(newLocn)) {
+			if ((newLocn == null) || selectedLocns.contains(newLocn)) {
 				continue;
 			}
 
