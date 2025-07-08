@@ -20,8 +20,13 @@ import com.mars_sim.core.vehicle.LightUtilityVehicle;
  */
 public class MiningObjective implements MissionObjective {
 
-    public static class MineralStats implements Serializable {
-        double detected;
+    private static final long serialVersionUID = 1L;
+
+	public static class MineralStats implements Serializable {
+		
+        private static final long serialVersionUID = 1L;
+        
+		double detected;
         double extracted;
         double collected;
 

@@ -37,8 +37,8 @@
 	<!-- Other Gas Resources -->
 	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand=".15" />
 	
-	<resource name="Methane" type="compound" phase="gas" life-support="true" demand=".15" />
-	<resource name="Methanol" type="compound" phase="liquid" life-support="true" >Methanol CH3OH
+	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="1.5" />
+	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand=".5" >Methanol CH3OH
 	  can be used as a fuel source, solvent, pesticide, or 
 	  a chemical feedstock for production of a range of important industrial
 	  chemicals such as polyester. It appears as a colorless fairly volatile 

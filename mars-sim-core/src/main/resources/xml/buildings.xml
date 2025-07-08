@@ -136,7 +136,8 @@
 
 	<!ELEMENT storage (resource-capacity*, resource-initial*)>
 	<!ATTLIST storage capacity CDATA #REQUIRED>
-	<!ELEMENT resource-storage EMPTY>
+	
+	<!ELEMENT resource-capacity EMPTY>
 	<!ATTLIST resource-capacity type CDATA #REQUIRED>
 	<!ATTLIST resource-capacity amount CDATA #REQUIRED>
 	<!ELEMENT resource-initial EMPTY>
@@ -360,7 +361,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Melt Ice" number-modules="40" />
 				<process-engine name="Filter Brine Water" number-modules="20" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
@@ -731,7 +732,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
-				<process-engine name="Melt Ice" number-modules="40" />
+				<process-engine name="Melt Ice" number-modules="80" />
 				<process-engine name="Filter Brine Water" number-modules="40" />
 						
 				<activity>
@@ -1462,7 +1463,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="60"/>	
+				<process-engine name="Melt Ice" number-modules="120"/>	
 				<process-engine name="Filter Brine Water" number-modules="60"/>						
 			</resource-processing>
 			
@@ -3324,7 +3325,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Melt Ice" number-modules="60" />
 				<process-engine name="Filter Brine Water" number-modules="20" />
 								
 				<activity>

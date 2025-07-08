@@ -34,6 +34,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 /**
  * A panel for displaying mining mission information.
  */
+@SuppressWarnings("serial")
 public class MiningPanel extends JPanel
 		implements MissionListener, UnitListener {
 
