@@ -18,17 +18,17 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         RandomMineralFactory.createLocalConcentration(mm, s.getCoordinates());
         var found = mm.findRandomMineralLocation(s.getCoordinates(), 20, Collections.emptyList());
 
-        assertTrue("No declared locations", eMgr.getDeclaredLROIs().isEmpty());
+        assertTrue("No declared locations", eMgr.getDeclaredROIs().isEmpty());
 
         // Create a site 1KM from the base
         var siteLocn = found.getKey();
-        var newRoI = eMgr.createARegionOfInterest(siteLocn, 100);
+        var newRoI = eMgr.createROI(siteLocn, 100);
 
         assertNotNull("New RoI created", newRoI);
         assertEquals("New ROI coordinates", siteLocn, newRoI.getCoordinates());
         assertNull("New RoI settlement", newRoI.getSettlement());
         assertFalse("New RoI not claimed", newRoI.isClaimed());
-        assertEquals("Declared locations", 1, eMgr.getDeclaredLROIs().size());
+        assertEquals("Declared locations", 1, eMgr.getDeclaredROIs().size());
 
         newRoI.setClaimed(s);
         assertTrue("New RoI claimed", newRoI.isClaimed());
@@ -65,7 +65,7 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         RandomMineralFactory.createLocalConcentration(mm, s.getCoordinates());
 
         var place = eMgr.acquireNearbyMineralLocation(100);
-        var l = eMgr.createARegionOfInterest(place, 100);
+        var l = eMgr.createROI(place, 100);
         l.setClaimed(s);
         var dist1 = place.getDistance(s.getCoordinates());
 
@@ -74,7 +74,7 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         var dist2 = place.getDistance(s.getCoordinates());
 
         assertEquals("Nearby locations", 2, eMgr.getNearbyMineralLocations().size());
-        assertEquals("Declared locations at settlement", 1, eMgr.getDeclaredLROIs().size());
+        assertEquals("Declared locations at settlement", 1, eMgr.getDeclaredROIs().size());
 
         assertEquals("All locatinos", 2, sf.getAllPossibleRegionOfInterestLocations().size());
 
@@ -87,9 +87,9 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         var siteStats = eMgr.getStatistics(ExplorationManager.SITE_STAT);
         assertEquals("Site mean", (dist1 + dist2)/2, siteStats.mean(), 0.00001);
 
-        assertEquals("Number of Declared", 1, eMgr.getDeclaredLROIs().size());
-        assertEquals("Number of Claimed", 1, eMgr.numDeclaredLocation(true));
-        assertEquals("Number of Unclaimed", 1, eMgr.numDeclaredLocation(false));
+        assertEquals("Number of Declared", 1, eMgr.getDeclaredROIs().size());
+        assertEquals("Number of Claimed", 1, eMgr.numDeclaredROIs(true));
+        assertEquals("Number of Unclaimed", 1, eMgr.numDeclaredROIs(false));
 
     }
 }

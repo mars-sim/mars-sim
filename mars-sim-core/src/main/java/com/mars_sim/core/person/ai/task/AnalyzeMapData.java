@@ -107,7 +107,7 @@ public class AnalyzeMapData extends Task {
     	}
     	else {
 
-    		Set<MineralSite> locROIs = eMgr.getDeclaredLROIs();
+    		Set<MineralSite> locROIs = eMgr.getDeclaredROIs();
 
     		numROIs = locROIs.size();
     		
@@ -245,7 +245,7 @@ public class AnalyzeMapData extends Task {
 	
 	     		if (aSite != null) {
 		         	// Creates an initial explored site in SurfaceFeatures
-	     			MineralSite el = eMgr.createARegionOfInterest(aSite, skill);
+	     			MineralSite el = eMgr.createROI(aSite, skill);
 		         			
 	     			if (el != null) {
 	     				logger.info(person, 20_000, "Zoned up the first new ROI at " +  aSite.getFormattedString() + ".");
@@ -260,7 +260,7 @@ public class AnalyzeMapData extends Task {
      			
      			if (rand == 0) {
      				// Pick one of the existing nearby mineral location that's not a ROI yet.
-     				aSite = eMgr.getExistingNearbyMineralLocation();
+     				aSite = eMgr.getExistingNearbyMineralLocNotFromROIs();
      			}
      			
      			else {
@@ -270,7 +270,7 @@ public class AnalyzeMapData extends Task {
      			
          		if (aSite != null) {
     	         	// Creates an initial explored site in SurfaceFeatures
-         			MineralSite loc = eMgr.createARegionOfInterest(aSite, skill);
+         			MineralSite loc = eMgr.createROI(aSite, skill);
     	         			
          			if (loc != null) {
          				logger.info(person, 20_000, "Zoned up a new ROI at " +  aSite.getFormattedString() + ".");

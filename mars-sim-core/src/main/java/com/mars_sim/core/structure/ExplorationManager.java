@@ -121,14 +121,15 @@ public class ExplorationManager implements Serializable {
 	}
 
 	/**
-	 * Gets one of the existing nearby mineral location that has not been declared yet.
+	 * Gets one of the existing nearby mineral location that has NOT been put on the declared ROIs list.
 	 *
 	 * @return
 	 */
-	public Coordinates getExistingNearbyMineralLocation() {
+	public Coordinates getExistingNearbyMineralLocNotFromROIs() {
 
 		for (Coordinates c : nearbyMineralLocations.keySet()) {
 			for (MineralSite el : declaredROIs) {
+				// Not an ROI
 				if (!c.equals(el.getLocation())) {
 					return c;
 				}
@@ -200,11 +201,11 @@ public class ExplorationManager implements Serializable {
 	 * @param isClaimed
 	 * @return
 	 */
-	public int numDeclaredLocation(boolean isClaimed) {	
+	public int numDeclaredROIs(boolean isClaimed) {	
 		int num = 0;
 		Settlement match = (isClaimed ? base : null);
 		for (Coordinates c: nearbyMineralLocations.keySet()) {
-			if (surfaceFeatures.isDeclaredAROI(c, match))
+			if (surfaceFeatures.isDeclaredROI(c, match))
 				num++;
 		}
 		return num;
@@ -215,7 +216,7 @@ public class ExplorationManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Set<MineralSite> getDeclaredLROIs() {	
+	public Set<MineralSite> getDeclaredROIs() {	
 		return declaredROIs;
 	}
 
@@ -238,13 +239,13 @@ public class ExplorationManager implements Serializable {
                     break;
                 
                 case CLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredAROI(c, base)) {
+                    if (surfaceFeatures.isDeclaredROI(c, base)) {
                         list.add(locn);
                     }
                     break;
                 
                 case UNCLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredAROI(c, null)) {
+                    if (surfaceFeatures.isDeclaredROI(c, null)) {
                         list.add(locn);
                     }
                     break;
@@ -281,7 +282,7 @@ public class ExplorationManager implements Serializable {
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	public MineralSite createARegionOfInterest(Coordinates siteLocation, int skill) {
+	public MineralSite createROI(Coordinates siteLocation, int skill) {
 		MineralSite el = surfaceFeatures.createROI(siteLocation, skill);
 		if (el != null) {
 			declaredROIs.add(el);

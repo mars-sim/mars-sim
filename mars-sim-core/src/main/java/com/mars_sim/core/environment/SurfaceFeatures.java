@@ -581,7 +581,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param siteLocation
 	 * @return
 	 */
-	public boolean isDeclaredAROI(Coordinates coord, Settlement settlement) {
+	public boolean isDeclaredROI(Coordinates coord, Settlement settlement) {
 		for (MineralSite el: regionOfInterestLocations) {
 			if (el.getLocation().equals(coord)
 				&& (((settlement != null) && settlement.equals(el.getSettlement()))

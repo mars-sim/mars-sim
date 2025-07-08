@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -362,7 +363,7 @@ public class Exploration extends EVAMission
 			}
 
 			// Is it good enough to create MineralSite
-			var el = explorationMgr.createARegionOfInterest(newLocn, areologySkill);
+			var el = explorationMgr.createROI(newLocn, areologySkill);
 			if (el != null) {
 				claimedSites.add(el);
 
@@ -389,12 +390,12 @@ public class Exploration extends EVAMission
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		return explorationMgr.getDeclaredLROIs()
+		return explorationMgr.getDeclaredROIs()
 				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
-				.toList();
+				.collect(Collectors.toList());
 	}
 
 	/**

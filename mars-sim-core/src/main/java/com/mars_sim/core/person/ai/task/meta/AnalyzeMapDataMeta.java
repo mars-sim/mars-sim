@@ -79,13 +79,13 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		}
 		
 		var eMgr = person.getAssociatedSettlement().getExplorations();
-		int unclaimedSites = eMgr.numDeclaredLocation(false);
+		int unclaimedSites = eMgr.numDeclaredROIs(false);
 			
 		Set<Coordinates> nearbySites = eMgr.getNearbyMineralLocations();	
 	
 		int numNearby = nearbySites.size();
 		
-		Set<MineralSite> minableLocs = eMgr.getDeclaredLROIs()
+		Set<MineralSite> minableLocs = eMgr.getDeclaredROIs()
 				.stream()
 				.filter(el -> el != null && el.isMinable())
 				.collect(Collectors.toSet());

@@ -241,16 +241,16 @@ public class TabPanelMissions extends TabPanel {
 		var unclaimed = eMgr.getStatistics(ExplorationManager.UNCLAIMED_STAT);
 		
 		siteLabel.setText(Integer.toString(eMgr.getNearbyMineralLocations().size()));
-		numROIsLabel.setText(Integer.toString(eMgr.getDeclaredLROIs().size()));
+		numROIsLabel.setText(Integer.toString(eMgr.getDeclaredROIs().size()));
 		siteMeanLabel.setText(StyleManager.DECIMAL_KM.format(site.mean()));
 		siteSDevLabel.setText(StyleManager.DECIMAL_KM.format(site.sd()));
 		
-		claimedSiteLabel.setText(eMgr.numDeclaredLocation(true) + "");
+		claimedSiteLabel.setText(eMgr.numDeclaredROIs(true) + "");
 		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed.mean()));
 		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed.sd()));
 		
 		
-		unclaimedSiteLabel.setText(eMgr.numDeclaredLocation(false) + "");		
+		unclaimedSiteLabel.setText(eMgr.numDeclaredROIs(false) + "");		
 		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.mean()));
 		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.sd()));
 		
