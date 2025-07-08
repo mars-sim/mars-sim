@@ -201,109 +201,115 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		else {
 			ImageIcon icon = new ImageIcon(getClass().getResource(ICON_IMAGE));
 			frame.setIconImage(iconToImage(icon));
+			
+			
+	        JMenuBar menuBar = new JMenuBar();
+	        JMenu menu = new JMenu("Help");
+	        menu.setMnemonic(KeyEvent.VK_H);
+	
+	        JMenu sizeMenu = new JMenu("Term Size");
+	        menu.add(sizeMenu);
+	
+	        JMenu heightMenu = new JMenu("Height");
+	        sizeMenu.add(heightMenu);
+	
+	        JMenuItem h0 = new JMenuItem("600");
+	        h0.addActionListener(e -> setHeight(600));
+	        heightMenu.add(h0);
+	
+	        JMenuItem h1 = new JMenuItem("768");
+	        h1.addActionListener(e -> setHeight(768));
+	        heightMenu.add(h1);
+	
+	        JMenuItem h2 = new JMenuItem("900");
+	        h2.addActionListener(e -> setHeight(900));
+	        heightMenu.add(h2);
+	
+	        JMenuItem h3 = new JMenuItem("1050");
+	        h3.addActionListener(e -> setHeight(1050));
+	        heightMenu.add(h3);
+	
+	        JMenuItem h4 = new JMenuItem("1200");
+	        h4.addActionListener(e -> setHeight(1200));
+	        heightMenu.add(h4);
+	
+	        JMenu widthMenu = new JMenu("Width");
+	        sizeMenu.add(widthMenu);
+	
+	        JMenuItem w0 = new JMenuItem("800");
+	        w0.addActionListener(e -> setWidth(800));
+	        widthMenu.add(w0);
+	
+	        JMenuItem w1 = new JMenuItem("1024");
+	        w1.addActionListener(e -> setWidth(1024));
+	        widthMenu.add(w1);
+	
+	        JMenuItem w2 = new JMenuItem("1280");
+	        w2.addActionListener(e -> setWidth(1280));
+	        widthMenu.add(w2);
+	
+	        JMenuItem w3 = new JMenuItem("1366");
+	        w3.addActionListener(e -> setWidth(1366));
+	        widthMenu.add(w3);
+	
+	        JMenuItem w4 = new JMenuItem("1440");
+	        w4.addActionListener(e -> setWidth(1440));
+	        widthMenu.add(w4);
+	
+	        JMenuItem w5 = new JMenuItem("1600");
+	        w5.addActionListener(e -> setWidth(1600));
+	        widthMenu.add(w5);
+	
+	        JMenuItem w6 = new JMenuItem("1920");
+	        w6.addActionListener(e -> setWidth(1920));
+	        widthMenu.add(w6);
+	
+	        JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
+	
+	        pauseItem.addActionListener(e -> {
+	
+	           	if (masterClock == null) {
+	        		masterClock = Simulation.instance().getMasterClock();
+	        	}
+	
+	        	if (masterClock != null) {
+	
+	        		if (masterClock.isPaused()) {
+	        			masterClock.setPaused(false, false);	
+	        			printf(System.lineSeparator() + System.lineSeparator());
+						printf("                      [ Simulation Unpaused ]");
+						printf(System.lineSeparator() + System.lineSeparator());      			
+						logger.config("                            [ Simulation Unpaused by Console ]");
+						println("Unpaused the simulation.");
+	           			
+	        		}
+	        		else {
+	        			masterClock.setPaused(true, false);
+						printf(System.lineSeparator() + System.lineSeparator());
+						printf("                       [ Simulation Paused ]");
+						printf(System.lineSeparator() + System.lineSeparator());
+						logger.config("                            [ Simulation Paused by Console ]");
+	        			println("Paused the simulation.");
+	        		}
+	        		
+	        	}
+	        });
+	        
+	        menu.add(pauseItem);
+	
+	        JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_C);
+	        clearItem.addActionListener(e -> clearScreen(this));
+	        menu.add(clearItem);
+	
+	        JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
+	        menuItem.addActionListener(e -> openAboutDialog());
+	        menu.add(menuItem);
+	
+	        menuBar.add(menu);
+	        		
+	        frame.setJMenuBar(menuBar);
 		}
-		
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Help");
-        menu.setMnemonic(KeyEvent.VK_H);
-
-        JMenu sizeMenu = new JMenu("Term Size");
-        menu.add(sizeMenu);
-
-        JMenu heightMenu = new JMenu("Height");
-        sizeMenu.add(heightMenu);
-
-        JMenuItem h0 = new JMenuItem("600");
-        h0.addActionListener(e -> setHeight(600));
-        heightMenu.add(h0);
-
-        JMenuItem h1 = new JMenuItem("768");
-        h1.addActionListener(e -> setHeight(768));
-        heightMenu.add(h1);
-
-        JMenuItem h2 = new JMenuItem("900");
-        h2.addActionListener(e -> setHeight(900));
-        heightMenu.add(h2);
-
-        JMenuItem h3 = new JMenuItem("1050");
-        h3.addActionListener(e -> setHeight(1050));
-        heightMenu.add(h3);
-
-        JMenuItem h4 = new JMenuItem("1200");
-        h4.addActionListener(e -> setHeight(1200));
-        heightMenu.add(h4);
-
-        JMenu widthMenu = new JMenu("Width");
-        sizeMenu.add(widthMenu);
-
-        JMenuItem w0 = new JMenuItem("800");
-        w0.addActionListener(e -> setWidth(800));
-        widthMenu.add(w0);
-
-        JMenuItem w1 = new JMenuItem("1024");
-        w1.addActionListener(e -> setWidth(1024));
-        widthMenu.add(w1);
-
-        JMenuItem w2 = new JMenuItem("1280");
-        w2.addActionListener(e -> setWidth(1280));
-        widthMenu.add(w2);
-
-        JMenuItem w3 = new JMenuItem("1366");
-        w3.addActionListener(e -> setWidth(1366));
-        widthMenu.add(w3);
-
-        JMenuItem w4 = new JMenuItem("1440");
-        w4.addActionListener(e -> setWidth(1440));
-        widthMenu.add(w4);
-
-        JMenuItem w5 = new JMenuItem("1600");
-        w5.addActionListener(e -> setWidth(1600));
-        widthMenu.add(w5);
-
-        JMenuItem w6 = new JMenuItem("1920");
-        w6.addActionListener(e -> setWidth(1920));
-        widthMenu.add(w6);
-
-        JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
-
-        pauseItem.addActionListener(e -> {
-
-           	if (masterClock == null) {
-        		masterClock = Simulation.instance().getMasterClock();
-        	}
-
-        	if (masterClock != null) {
-
-				if (masterClock.isPaused()) {
-					masterClock.setPaused(false, false);
-					printf(System.lineSeparator() + System.lineSeparator());
-					printf("                      [ Simulation Unpaused ]");
-					printf(System.lineSeparator() + System.lineSeparator());
-					logger.config("                            [ Simulation Paused ]");
-				}
-				else {
-					masterClock.setPaused(true, false);
-					printf(System.lineSeparator() + System.lineSeparator());
-					printf("                       [ Simulation Paused ]");
-					printf(System.lineSeparator() + System.lineSeparator());
-					logger.config("                            [ Simulation Paused ]");
-				}
-        	}
-        });
-        menu.add(pauseItem);
-
-        JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_C);
-        clearItem.addActionListener(e -> clearScreen(this));
-        menu.add(clearItem);
-
-        JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
-        menuItem.addActionListener(e -> openAboutDialog());
-        menu.add(menuItem);
-
-        menuBar.add(menu);
-        		
-        frame.setJMenuBar(menuBar);
-
+		        
         frame.setVisible(true);
     }
     
