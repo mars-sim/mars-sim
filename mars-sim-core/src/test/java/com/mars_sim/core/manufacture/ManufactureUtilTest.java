@@ -85,7 +85,7 @@ public class ManufactureUtilTest extends AbstractMarsSimUnitTest {
         assertTrue("Salvage on low skill found", found.contains(selection));
 
         // Add Lifting to increase potential
-        Set<Tooling> withLifting = Set.of(getConfig().getManufactureConfiguration().getTooling("Lifting"));
+        Set<Tooling> withLifting = Set.of(getConfig().getManufactureConfiguration().getTooling(ManufactureConfig.LIFTING));
         var fullFound = ManufactureUtil.getSalvageProcessesForTechSkillLevel(selection.getTechLevelRequired(),
                     selection.getSkillLevelRequired(), withLifting);
         assertTrue("More Salvage with lifting", fullFound.size() > found.size());

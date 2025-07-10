@@ -83,7 +83,7 @@ class BarChartTab extends MonitorTab {
 		}
 
 		/**
-		 * Get the number of series displayed in chart. This is the number of
+		 * Gets the number of series displayed in chart. This is the number of
 		 * columns mapped in the table model.
 		 *
 		 * @return Number of series supported.
@@ -103,7 +103,7 @@ class BarChartTab extends MonitorTab {
 		}
 
 		/**
-		 * Return the list of displayed categories.
+		 * Returns the list of displayed categories.
 		 *
 		 * @return List of String that represent Unit names.
 		 */
@@ -139,8 +139,9 @@ class BarChartTab extends MonitorTab {
 		}
 
 		/**
-		 * Get an individual value of a series and category. The Series is
+		 * Gets an individual value of a series and category. The Series is
 		 * mapped onto a column, the category is mapped onto a row.
+		 * 
 		 * @param category Category value.
 		 * @param series Series index.
 		 * @return Numeric value of the model cell.
@@ -151,8 +152,9 @@ class BarChartTab extends MonitorTab {
 		}
 
 		/**
-		 * Redefine the columns mapped into this dataset. Each column maps
+		 * Redefines the columns mapped into this dataset. Each column maps
 		 * onto a different Series in the model.
+		 * 
 		 * @param newcolumns Indexes in the source model.
 		 */
 		public void setColumns(int [] newcolumns) {
@@ -229,10 +231,11 @@ class BarChartTab extends MonitorTab {
 		}
 
 		/**
-		 * Specify the model to monitor. This class will attach itself as
+		 * Specifies the model to monitor. This class will attach itself as
 		 * a listener. If a model is already attached, this one will be
 		 * detached before this.
 		 * This action triggers the reloading of the categories.
+		 * 
 		 * @param newModel New table model to monitor.
 		 */
 		 public void setModel(TableModel newModel) {
@@ -282,7 +285,8 @@ class BarChartTab extends MonitorTab {
 	private JFreeChart chart = null;
 
 	/**
-	 * Create a PieChart view that displays the data in a particular column.
+	 * Creates a PieChart view that displays the data in a particular column.
+	 * 
 	 * @param model Data source.
 	 * @param columns Indexes of columns to display.
 	 */

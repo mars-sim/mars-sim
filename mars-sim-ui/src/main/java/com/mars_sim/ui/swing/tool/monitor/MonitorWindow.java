@@ -119,6 +119,7 @@ public class MonitorWindow extends ToolWindow
 	/** The Tab showing historical events. */
 	private EventTab eventsTab;
 
+	private JButton buttonProps;
 	private JButton buttonPie;
 	private JButton buttonBar;
 	private JButton buttonRemoveTab;
@@ -279,7 +280,7 @@ public class MonitorWindow extends ToolWindow
 	 * Adds the bottom bar.
 	 */
 	private void addBottomBar() {
-		JButton buttonProps;
+//		JButton buttonProps;
 		// Prepare row count label
 		rowCount = new JLabel("  ");
 		rowCount.setPreferredSize(new Dimension(120, STATUS_HEIGHT));
@@ -586,14 +587,14 @@ public class MonitorWindow extends ToolWindow
 		
 		super.setTitle(TITLE + " - " + title);
 		
-		// Disable all buttons
+		boolean enableRemove = !selectedTab.isMandatory();
 		boolean enableMap = selectedTab.isNavigatable();
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();
 		boolean enableSettlement = false;
-
 		boolean enableBar = false;
 		boolean enablePie = false;
+		
 		if (selectedTab instanceof TableTab tt) {
 			enableBar = true;
 			enablePie = true;
@@ -627,12 +628,13 @@ public class MonitorWindow extends ToolWindow
 		
 		// Set the opaqueness of the settlement box
 		setSettlementBox(!enableSettlement);
-		buttonRemoveTab.setEnabled(!selectedTab.isMandatory());
+		buttonRemoveTab.setEnabled(enableRemove);
 		buttonBar.setEnabled(enableBar);
 		buttonPie.setEnabled(enablePie);
 		buttonMap.setEnabled(enableMap);
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
+		buttonProps.setEnabled(!enableRemove);
 		
 		if (tabTableModel instanceof PersonTableModel) {
 			choosePanel.setVisible(true);
@@ -718,7 +720,7 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * Remove selected tab
+	 * Removes selected tab.
 	 */
 	private void removeSelectedTab() {
 		MonitorTab selected = getSelectedTab();

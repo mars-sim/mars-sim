@@ -48,8 +48,12 @@ public class ManufactureConfig {
 	private static final String ITEM_NAME = "item-name";
 	private static final String TYPE = "type";
 	private static final String PART_SALVAGE = "part-salvage";
+	
+	public static final String PRINTER = "3D printer";
+	public static final String LIFTING = "Lifting";
+	
 
-	// Process broken down by techlevel; this are accumulative
+	// Process broken down by tech level; this are accumulative
 	private List<List<ManufactureProcessInfo>> manuByTechLevel;
 	private List<List<SalvageProcessInfo>> salvageByTechLevel;
 	
@@ -93,7 +97,8 @@ public class ManufactureConfig {
 	}
 
 	/**
-	 * Find a specified tooling by name.
+	 * Finds a specified tooling by name.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -154,7 +159,7 @@ public class ManufactureConfig {
 
 			// Backfill approach
 			if ((processTime > 0) && (toolName == null)) {
-				toolName = "3D printer";
+				toolName = PRINTER;
 			}
 			if (toolName != null) {
 				tool = getTooling(toolName);
@@ -193,7 +198,7 @@ public class ManufactureConfig {
 			if (!alternateResourceMap.isEmpty()) {
 				// Create a list for the original resources from alternateResourceMap
 				String processName = process.getName();
-				for(var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList).entrySet()) {
+				for (var newInputItems : ConfigHelper.getAlternateInputsList(alternateResourceMap, inputList).entrySet()) {
 					
 					// Write the modified input resource list into a new process with the replacement name
 					String altProcessName = processName + WITH_PREFIX + newInputItems.getKey();
@@ -211,8 +216,9 @@ public class ManufactureConfig {
 	}
 	
 	/**
-	 * Create a list of supported Processes according to the techlevel starting at zero.
-	 * This is an accumulation, e.g. level 2 contains level 1 etc etc
+	 * Creates a list of supported Processes according to the tech level starting at zero.
+	 * This is an accumulation, e.g. level 2 contains level 1 etc etc.
+	 * 
 	 * @param <T> The type of the process info.
 	 * @param process
 	 * @return
@@ -294,7 +300,7 @@ public class ManufactureConfig {
 
 			Tooling tool = null;
 			if (itemT == ItemType.VEHICLE) {
-				tool = getTooling("Lifting");
+				tool = getTooling(LIFTING);
 			}
 
 

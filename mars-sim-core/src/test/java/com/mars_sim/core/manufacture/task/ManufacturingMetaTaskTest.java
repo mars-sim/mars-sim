@@ -1,6 +1,7 @@
 package com.mars_sim.core.manufacture.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufacturingManagerTest;
 import com.mars_sim.core.tool.RandomUtil;
@@ -101,7 +102,7 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
 
         // Check how many printers are available
         var manuConfig = getConfig().getManufactureConfiguration();
-        var printers = manuConfig.getTooling("3d printer");
+        var printers = manuConfig.getTooling(ManufactureConfig.PRINTER);
         var capacity = m.getToolDetails().get(printers).getCapacity();
         assertTrue("Multiple 3D printers", capacity > 1);
 

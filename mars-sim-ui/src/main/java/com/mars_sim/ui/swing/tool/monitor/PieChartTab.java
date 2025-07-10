@@ -99,7 +99,7 @@ class PieChartTab extends MonitorTab {
 
 
         		// Add category values and categories.
-        		for(int i = 0; i < rows; i++) {
+        		for (int i = 0; i < rows; i++) {
 
                     Object catValue = model.getValueAt(i, column);
         			String category = null;
@@ -131,7 +131,7 @@ class PieChartTab extends MonitorTab {
 
 
         /**
-         * Set the column that is displayed in the Pie chart. It results in
+         * Sets the column that is displayed in the Pie chart. It results in
          * the values being recalculated.
          *
          * @param column New column index in the table model.
@@ -143,10 +143,11 @@ class PieChartTab extends MonitorTab {
         }
 
         /**
-         * Specify the model to monitor. This class will attach itself as
+         * Specifies the model to monitor. This class will attach itself as
          * a listener. If a model is already attached, this one will be
          * detached before this.
          * This action triggers the reloading of the categories.
+         * 
          * @param newModel New table model to monitor.
          */
         public void setModel(TableModel newModel) {
@@ -265,7 +266,7 @@ class PieChartTab extends MonitorTab {
     private ChartPanel chartpanel = null;
 
     /**
-     * Create a PieChart view that displays the data in a particular column.
+     * Creates a PieChart view that displays the data in a particular column.
      *
      * @param model Data source.
      * @param column Index of the column to collate.
@@ -323,7 +324,7 @@ class PieChartTab extends MonitorTab {
     }
 
     /**
-     * Display the properties dialog that allows the data displayed to be
+     * Displays the properties dialog that allows the data displayed to be
      * configured.
      *
      * @param desktop main window of simulation.
@@ -338,7 +339,7 @@ class PieChartTab extends MonitorTab {
     }
 
     /**
-     * Define which column is used to generate the Pie data set.
+     * Defines which column is used to generate the Pie data set.
      *
      * @param column New column index in table model.
      */

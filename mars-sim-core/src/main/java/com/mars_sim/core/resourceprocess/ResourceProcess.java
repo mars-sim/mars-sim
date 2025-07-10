@@ -117,7 +117,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 	/**
 	 * Checks if the process has required inputs.
-	 * This is not a live instaneous check, but a check of the last time the process was run.
+	 * This is not a live instantaneous check, but a check of the last time the process was run.
 	 *
 	 * @return true if process has inputs
 	 */
@@ -223,7 +223,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
-	 * Get the specification of this process
+	 * Gets the specification of this process.
+	 * 
 	 * @return
 	 */
 	public ResourceProcessSpec getSpec() {
@@ -231,7 +232,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
-	 * What is the minumum processing time for this process
+	 * Gets the minimum processing time for this process.
+	 * 
 	 * @return Value in mSol
 	 */
 	public int getProcessTime() {

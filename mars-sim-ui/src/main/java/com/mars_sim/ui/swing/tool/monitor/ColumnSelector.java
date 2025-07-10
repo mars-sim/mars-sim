@@ -46,6 +46,7 @@ extends ModalInternalFrame {
 	/**
 	 * Constructs the dialog with a title and columns extracted from the
 	 * specified model.
+	 * 
 	 * @param desktop MainDesktopPane the owner of the dialog.
 	 * @param model Model driving the columns.
 	 * @param bar Display selection for a Bar chart.
@@ -143,7 +144,8 @@ extends ModalInternalFrame {
 	}
 
 	/**
-	 * Create a column selector popup for use with a Bar chart.
+	 * Creates a column selector popup for use with a Bar chart.
+	 * 
 	 * @param window Parent frame.
 	 * @param model Model containing columns.
 	 * @return Array of column indexes to display.
@@ -164,7 +166,8 @@ extends ModalInternalFrame {
 	}
 
 	/**
-	 * Create a column selector popup for a Pie chart.
+	 * Creates a column selector popup for a Pie chart.
+	 * 
 	 * @param window Parent frame.
 	 * @param model Model containing columns.
 	 * @return Column index to use as category.
@@ -231,7 +234,8 @@ extends ModalInternalFrame {
 
 	/**
 	 * Is the class specified suitable to be displayed as a category dataset.
-	 * This is basically any non-numerical class
+	 * This is basically any non-numerical class.
+	 * 
 	 * @param columnClass The Class of the data in the column.
 	 * @return Is the class a category
 	 */

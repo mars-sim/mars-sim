@@ -57,7 +57,7 @@ public class ResourceProcessConfig {
 	}
 
 	/**
-	 * Parses the specific Processing 
+	 * Parses the specific process.
 	 * 
 	 * @param resourceProcessingElement
 	 */
@@ -99,7 +99,7 @@ public class ResourceProcessConfig {
 	}
 
 	/**
-	 * Finds a Building spec according to the name.
+	 * Finds the resource process spec according to the name.
 	 * 
 	 * @param buildingType
 	 * @return
@@ -113,7 +113,8 @@ public class ResourceProcessConfig {
 	}
 
 	/**
-	 * Get all the configured Resource process specifications.
+	 * Gets all the configured resource process specifications.
+	 * 
 	 * @return
 	 */
 	public Collection<ResourceProcessSpec> getProcessSpecs() {
