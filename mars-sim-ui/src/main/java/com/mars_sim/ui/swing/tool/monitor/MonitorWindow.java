@@ -697,7 +697,7 @@ public class MonitorWindow extends ToolWindow
 	void displayDetails() {
 		MonitorTab selected = getSelectedTab();
 		if (selected instanceof TableTab tt) {
-			for(Object row : tt.getSelection()) {
+			for (Object row : tt.getSelection()) {
 				if (row instanceof Entity ent) {
 					desktop.showDetails(ent);
 				}

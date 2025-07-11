@@ -49,7 +49,7 @@ extends ModalInternalFrame {
 	 * 
 	 * @param desktop MainDesktopPane the owner of the dialog.
 	 * @param model Model driving the columns.
-	 * @param bar Display selection for a Bar chart.
+	 * @param bar True if it's for a Bar chart. False if it's for a Pie chart.
 	 */
 	public ColumnSelector(MainDesktopPane desktop, MonitorModel model, boolean bar) {
 		// Use ModalInternalFrame constructor
@@ -139,7 +139,7 @@ extends ModalInternalFrame {
         setModal(true);
         moveToFront();
 	    //setVisible(true);
-		//pack();
+		pack();
 
 	}
 
@@ -193,9 +193,10 @@ extends ModalInternalFrame {
 	}
 
 	/**
-	 * Return the list of selected columns. The return is the index value
+	 * Returns the list of selected columns. The return is the index value
 	 * as described by the associated table model. The return array maybe
 	 * zero or more depending on selection and mode.
+	 * 
 	 * @return Array of TableColumn indexes of selection.
 	 */
 	public int[] getSelectedColumns() {
@@ -216,9 +217,10 @@ extends ModalInternalFrame {
 	}
 
 	/**
-	 * Return the selected columns. The return is the index value
+	 * Returns the selected columns. The return is the index value
 	 * as described by the associated table model. The return array maybe
 	 * zero or more depending on selection and mode.
+	 * 
 	 * @return TableColumn index of selection.
 	 */
 	public int getSelectedColumn() {
@@ -233,7 +235,7 @@ extends ModalInternalFrame {
 	}
 
 	/**
-	 * Is the class specified suitable to be displayed as a category dataset.
+	 * Is the class specified suitable to be displayed as a category dataset ?
 	 * This is basically any non-numerical class.
 	 * 
 	 * @param columnClass The Class of the data in the column.

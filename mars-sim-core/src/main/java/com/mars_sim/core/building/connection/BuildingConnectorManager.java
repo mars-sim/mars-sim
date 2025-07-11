@@ -344,13 +344,14 @@ public class BuildingConnectorManager implements Serializable {
 			else {
 				// if (validPartialConnectors.size() is not > 0
 				throw new IllegalStateException(
-						"Missing/Invalid PartialBuildingConnector(s)."
-						+ "  partialBuildingConnectorList: " + partialBuildingConnectorList.size()
+						"Missing/Invalid PartialBuildingConnector(s) regarding "
+						+ partialConnector.building.getName()
+						+ " [templateID: " + ((Building)partialConnector.building).getTemplateID() 
+						+ "] in " + settlement.getName()
+						+ ".  partialBuildingConnectorList: " + partialBuildingConnectorList.size()
 						+ "  validPartialConnectors: " + validPartialConnectors.size()
 //						+ "  " + partialConnector.building.getBuildingType() 
-						+ "  regarding " + partialConnector.building.getName()
-						+ " (templateID: " + ((Building)partialConnector.building).getTemplateID() 
-						+ ") in " + settlement.getName() + ".");
+						 + ".");
 			}
 		}
 	}
