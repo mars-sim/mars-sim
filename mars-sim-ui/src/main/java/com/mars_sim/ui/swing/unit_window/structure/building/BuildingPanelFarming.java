@@ -71,7 +71,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private static SimLogger logger = SimLogger.getLogger(BuildingPanelFarming.class.getName());
 
 	private static final String PLANT_ICON = "plant";
-	private static final String G_M2_DAY = " g/m\u00b2/day";
+	private static final String KG_M2 = " kg/m\u00b2";
 	private static final String HTML = "<html>";
 	private static final String END_HTML = "</html>";
 	private static final String CROP_NAME = "&emsp;&nbsp;Crop Name:&emsp;";
@@ -503,8 +503,8 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			.append(CROP_NAME).append(cs.getName())
 			.append(CATEGORY).append(cs.getCropCategory().getName())
 			.append(GROWING_DAYS).append(cs.getGrowingSols())
-			.append(EDIBLE_MASS).append(cs.getEdibleBiomass()).append(G_M2_DAY)
-			.append(INEDIBLE_MASS).append(cs.getInedibleBiomass()).append(G_M2_DAY)
+			.append(EDIBLE_MASS).append(cs.getEdibleBiomass()).append(KG_M2)
+			.append(INEDIBLE_MASS).append(cs.getInedibleBiomass()).append(KG_M2)
 			.append(WATER_CONTENT).append(100 * cs.getEdibleWaterContent()).append(PERCENT)
 			.append(PAR_REQUIRED).append(cs.getDailyPAR()).append(MOL_M2_DAY)
 			.append(END_HTML);

@@ -109,7 +109,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Gets the length the crop is in the ground and growing in mass
+	 * Gets the length the crop is in the ground and growing in mass.
+	 * 
 	 * @return
 	 */
 	public double getInGroundSols() {

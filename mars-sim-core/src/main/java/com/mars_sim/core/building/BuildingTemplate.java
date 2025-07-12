@@ -196,7 +196,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		 * Constructor 2.
 		 * 
 		 * @param id        the unique id of the building being connected to.
-		 * @param hatchFace the face of the hatch .
+		 * @param hatchFace the face of the hatch.
 		 */
 		private BuildingConnectionTemplate(String id, String hatchFace) {
 			this.id = id;

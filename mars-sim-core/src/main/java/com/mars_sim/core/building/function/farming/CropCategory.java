@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Represents a category of crop. It contains a list of phases that the crop goes through
- * as well as otehr characteristics of the crop.
+ * as well as other characteristics of the crop.
  */
 public class CropCategory implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -44,12 +44,13 @@ public class CropCategory implements Serializable {
 			throw new IllegalArgumentException(name + " must have a finished phase");
 		}
 
-		// Ingound percentage is total minus Planting and harvestting
+		// In-gound percentage is total minus planting and harvesting
 		inGroundPercentage = 100D - (harvestPhase.getPercentGrowth() + plantPhase.getCumulativePercentGrowth());
 	}	
 
 	/**
-	 * Name of the category
+	 * Gets the name of the category.
+	 * 
 	 * @return
 	 */
 	public String getName() {
@@ -57,7 +58,8 @@ public class CropCategory implements Serializable {
 	}
 
 	/**
-	 * Get the description of the crop category.
+	 * Gets the description of the crop category.
+	 * 
 	 * @return
 	 */
 	public String getDescription() {
@@ -65,7 +67,8 @@ public class CropCategory implements Serializable {
 	}
 
 	/**
-	 * Crop category needs light to grow.
+	 * Does it needs light to grow ?
+	 * 
 	 * @return
 	 */
 	public boolean needsLight() {
@@ -73,7 +76,8 @@ public class CropCategory implements Serializable {
 	}
 
 	/**
-	 * What percentage of the cycle is in the ground increasing mass
+	 * What percentage of the cycle is in the ground increasing mass ?
+	 * 
 	 * @return
 	 */
     public double getInGroundPercentage() {
@@ -81,7 +85,8 @@ public class CropCategory implements Serializable {
     }
 
 	/**
-	 * What are the phases of this crop category.
+	 * What are the phases of this crop category ?
+	 * 
 	 * @return
 	 */
 	public List<Phase> getPhases() {

@@ -45,7 +45,9 @@ public class SplashWindow extends JComponent {
 			"Underground Oasis in Martian Lava Tube. Marstopia Design Contest",
 			"Light enters through trough-shaped ports. Team SEArch+/Apis Cor",
 			"Internal view of Mars Habitat. Hassell + Eckersley O’Callaghan",
-			"Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net"
+			"Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net",
+			"Agridome for growing food on Mars. Mars Society. 2020", 
+			"Cyanobacteria help detoxify the environment on Mars. Astronomy Magazine. 2023"
 	};
 	
 	private static String[] FILE_NAME = {
@@ -54,7 +56,9 @@ public class SplashWindow extends JComponent {
 			"Underground_Oasis_Martian_Lava_Tube.jpg",
 			"3D_printed_habitat.jpg",
 			"Interior_home.jpg",
-			"greenhouse_lady.jpg"
+			"greenhouse_lady.jpg",
+			"MSC-AgriDomes-on-Mars.jpg",
+			"Cyanobacteria_terraforming.jpg"
 	};
 	
 	/** The font for displaying {@link #MSP_STRING}. */
@@ -87,8 +91,6 @@ public class SplashWindow extends JComponent {
 	
 	/** The font for displaying {@link #AUTHOR_STRING}. */
 	private final Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
-
-
 
 	private Image splashImage;
 	private int w;
@@ -198,15 +200,6 @@ public class SplashWindow extends JComponent {
 	}
 	
 	public void destroy() {
-//		titleFont = null;
-//		titleMetrics = null;
-//		versionStringFont = null;
-//		versionMetrics = null;
-//		versionStringFont1 = null;
-//		versionMetrics1 = null;
-//		buildStringFont = null;
-//		buildMetrics = null;
-//		authorStringFont = null;
 		splashImage = null;
 	}
 }

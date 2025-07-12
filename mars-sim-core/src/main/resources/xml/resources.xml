@@ -106,6 +106,7 @@
 -->
 
 <!-- Crop Produce -->
+	<resource name="Basil" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Blueberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Cabbage" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Carrot" type="crop" phase="solid" edible="true"></resource>
@@ -115,13 +116,16 @@
 	
 	<resource name="Cranberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Cucumber" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Dandelion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Garlic" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Ginger" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Green Bell Pepper" type="crop" phase="solid" edible="true"></resource>
 	
 	<resource name="Kidney Bean" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Lettuce" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Microgreens" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Morel Mushroom" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Parsley" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Peanut" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Peas" type="crop" phase="solid" edible="true"></resource>
 	

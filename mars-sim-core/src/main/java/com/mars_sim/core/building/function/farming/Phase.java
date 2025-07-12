@@ -34,7 +34,8 @@ public class Phase implements Serializable {
 	}
 
 	/**
-	 * See of this phase is one of the special pre-defined types
+	 * Get the associated pre-defined phase type.
+	 * 
 	 * @param phaseName
 	 * @return
 	 */
@@ -53,7 +54,8 @@ public class Phase implements Serializable {
 	}
 
 	/**
-	 * The unique name of the phase
+	 * Gets the unique name of the phase.
+	 * 
 	 * @return
 	 */
 	public String getName() {
@@ -61,7 +63,8 @@ public class Phase implements Serializable {
 	}
 
 	/**
-	 * The manual work required to complete this phase.
+	 * Gets the manual work required to complete this phase.
+	 * 
 	 * @return
 	 */
 	public double getWorkRequired() {
@@ -69,7 +72,8 @@ public class Phase implements Serializable {
 	}
 
 	/**
-	 * The percent growth at this phase.
+	 * Gets the percent growth at this phase.
+	 * 
 	 * @return
 	 */
 	public double getPercentGrowth() {
@@ -77,7 +81,8 @@ public class Phase implements Serializable {
 	}
 
 	/**
-	 * The cumulative percent growth by the end of this phase.
+	 * Gets the cumulative percent growth by the end of this phase.
+	 * 
 	 * @return
 	 */
 	public double getCumulativePercentGrowth() {
@@ -85,7 +90,8 @@ public class Phase implements Serializable {
 	}	
 
 	/**
-	 * Associated Phase type
+	 * Gets the the Phase type.
+	 * 
 	 * @return
 	 */
 	public PhaseType getPhaseType() {

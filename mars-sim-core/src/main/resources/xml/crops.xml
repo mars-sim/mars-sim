@@ -10,7 +10,7 @@
 	<!ELEMENT watt-to-photon-conversion-ratio EMPTY>
 	<!ATTLIST watt-to-photon-conversion-ratio value CDATA #REQUIRED>
 
-	<!ELEMENT category-list (crop*)>
+	<!ELEMENT category-list (category*)>
 	<!ELEMENT category (phase*)>
 	<!ATTLIST category name CDATA #REQUIRED>
 	<!ATTLIST category description CDATA #REQUIRED>
@@ -82,6 +82,9 @@
 	<!-- see http://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->
     <!-- Default: 4.568 on Mar [in u mol / m2 /s / (W m^2)] (vs. 4.609 on Earth-->
 	<watt-to-photon-conversion-ratio value="4.568" />
+
+
+	<!-- Phenological growth stages of various crop categories -->
 
 	<category-list>
 		<category name="Roots" description="Roots are the underground part of a plant that absorbs water and minerals from the soil.">	
@@ -206,12 +209,15 @@
 			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
 			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
-		<category name="Flowers" description="Flowers are the seed-bearing part of a plant, consisting of reproductive organs that are typically surrounded by brightly colored petals and a green calyx.">
+		<category name="Flowers" description="For flowers that do NOT have seeds. Flowers can be considered the seed-bearing part of a plant, consisting of reproductive organs that are typically surrounded by brightly colored petals and a green calyx.">
 			<phase name="Incubation" work-required="1" growth-perc="0" />
 			<phase name="Planting" work-required="0.5" growth-perc="1" />
 			<phase name="Germination" work-required="1" growth-perc="5" />
-			<phase name="Growing" work-required="1" growth-perc="79" />
-			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Seedling Development" work-required="1" growth-perc="10" />
+			<phase name="Vegetative Growth" work-required="1" growth-perc="44" />
+			<phase name="Budding" work-required="1" growth-perc="15" />
+			<phase name="Flowering" work-required="1" growth-perc="10" />
+			<phase name="Ripening" work-required="1" growth-perc="10" />
 			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
 			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
@@ -219,18 +225,22 @@
 				needs-light="false">
 			<phase name="Incubation" work-required="1" growth-perc="0" />
 			<phase name="Planting" work-required="0.5" growth-perc="1" />
-			<phase name="Germination" work-required="1" growth-perc="5" />
-			<phase name="Growing" work-required="1" growth-perc="79" />
-			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Spore Germination" work-required="1" growth-perc="5" />
+			<phase name="Mycelium Formation" work-required="1" growth-perc="79" />
+			<phase name="Fruiting Body Development" work-required="1" growth-perc="10" />
 			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
 			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
-		<category name="Seeds" description="Seeds are the part of a flowering plant that typically contains an embryo and is capable of developing into a new plant.">
-			<phase name="Incubation" work-required="1" growth-perc="0" />
+		<category name="Seeds" description="For flowers that DO have seeds. Seeds are the part of a flowering plant that typically contains an embryo and is capable of developing into a new plant.">
+		<phase name="Incubation" work-required="1" growth-perc="0" />
 			<phase name="Planting" work-required="0.5" growth-perc="1" />
 			<phase name="Germination" work-required="1" growth-perc="5" />
-			<phase name="Growing" work-required="1" growth-perc="79" />
-			<phase name="Maturation" work-required="1" growth-perc="10" />
+			<phase name="Seedling Development" work-required="1" growth-perc="25" />
+			<phase name="Vegetative Growth" work-required="1" growth-perc="45" />
+			<phase name="Flowering" work-required="1" growth-perc="10" />						
+			<phase name="Seed Head Development" work-required="1" growth-perc="4" />
+			<phase name="Seed Growing" work-required="1" growth-perc="4" />
+			<phase name="Dispersing Seeds" work-required="1" growth-perc="1" />
 			<phase name="Harvesting" work-required="0.5" growth-perc="5" />
 			<phase name="Finished" work-required="0.5" growth-perc="0" />
 		</category>
@@ -238,45 +248,112 @@
 
 	<crop-list>
 
-<!--	Note : see Reference 7
+		<!-- Note : see Reference 7
 
 			growing-sols : # of sols
 			crop-category : the type of crop
-			edible-biomass : [ gram / m^2 / day ]
+			edible-biomass : [ kg / m^2 / year ]
 			edible-water-content : in proportion of 1 (1 is 100%)
-			inedible-biomass :  [ gram / m^2 / day ]
-			daily-PAR : [ mol / m^2 / day ]; Note: not umol / m^2 / s
--->
+			inedible-biomass :  [ kg / m^2 / year ]
+			daily-PAR : [ mol / m^2 / day ]; Note: not umol / m^2 / s	
+			
+			In general, PAR levels are highest during the summer at mid-day, reaching values of 2,000 to 3,000
+	    	millimoles per square meter.
+	    	 	
+	    	1 t/h or 1 tonnes per hectare ->  0.1 kilogram per square meter.
+ 			Conversely, 1 kilogram per square meter -> 10 tonnes per hectare.
+	    	
+	   		1 tonne per acre is approximately equal to 0.2471 kilograms per square meter.
+	   		1 kg / m2 -> 4.0469 t per acre
 
-		<!-- https://www.researchgate.net/publication/262910301_Phenological_growth_stages_of_edible_asparagus_Asparagus_officinalis_Codification_and_description_according_to_the_BBCH_scale -->
+			1 tonne per hectare (t/ha) is equivalent to 0.446 US tons per acre
+			
+			life-cycle : perennial/annual/biennials
+			1. A perennial is a plant that lives for more than two years, as opposed to 
+			2. annuals, which complete their life cycle in one year, and 
+			3. biennials, which bloom in their second year and die.
+			
+			Perennials can be categorized into woody plants and herbaceous perennials.
+			Woody plants include trees and shrubs, while herbaceous perennials grow 
+			and bloom during spring and summer, die back in fall and winter, and 
+			return in the spring from their rootstock.
+		-->
 
+		<!-- Future additions : 
+			1. asparagus, basil, hops, ...
+		-->
+		
+		<!-- https://www.researchgate.net/publication/262910301_Phenological_growth_stages_of_edible_asparagus_Asparagus_officinalis_Codification_and_description_according_to_the_BBCH_scale 
+		-->
 
+		<crop name="Basil" growing-sols="27" crop-category="leaves" life-cycle="biennial"
+	    	edible-biomass="1.1" edible-water-content=".2" inedible-biomass="0.2" daily-PAR="17.28" />
 
-	   	<crop name="Blueberry" growing-sols="200" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="14" edible-water-content=".87" inedible-biomass="200" daily-PAR="25.92" />
+		<!-- 
+			Grown in a floating hydroponic system, basil had a crop cycle of 27 days.
+			Shoot FW yield : 1.1 kg / m2
+			Root FW 9 g/m2)
+		-->
+
+	   	<crop name="Blueberry" growing-sols="300" crop-category="fruits" life-cycle="perennial"
+	    	edible-biomass="1.5" edible-water-content=".87" inedible-biomass="4.5" daily-PAR="25.92" />
 	    	
 	    <!-- 
-	    	Assume this blueberry variant takes half the time (600 days -> 200 days)
+			Assume 15 t/ha -> 1.5 kg/m²
+			
+	    	Assume this blueberry variant takes half the time (600 days -> 300 days)
 	    	
-	    	http://www.nasa.gov/pdf/190544main_SFN_Appendices.pdf
+	    	average yields of mature blueberry plantings range from 7 to 10 tons per acre for early-season 
+	    	cultivars such as ‘Duke’, and even greater in many mid- and late-season cultivars such as ‘Liberty’, ‘Legacy’, ‘Elliott’, and ‘Aurora’.
+
+	    	
 	    	http://blueberries.ces.ncsu.edu/wp-content/uploads/2012/10/evaluating-the-profitability-of-blueberry-production.pdf
+	    	
+	    	The expected yield pattern over the 20-year life of the planting for various
+			assumptions of soil quality and irrigation. The irrigated planting on good blueberry soil reaches a peak
+			production of 8,000 pounds per acre  in the seventh through ninth years or 3,000 pounds per acre higher
+			than a similar planting without irrigation. Peak yields are projected to be lower on marginal soils reaching
+			a maximum yield of 6,000 pounds per acre on an irrigated planting, which is double the yield of a planting
+			without irrigation. 
+
+			8,000 pounds per acre -> 0.897 kg/m2
+	    	
 	    	http://homeguides.sfgate.com/long-blueberry-plants-produce-60750.html
-	    	A blueberry bush is at least 2 or 3 years old before it is mature and established enough to bear fruit.
-	    	6k - 8k per acre or ~10-14k per hectare
-	    	The irrigated planting on good blueberry soil reaches a peak
-			production of 8,000 pounds per acre
 
 	    	http://www.offthegridnews.com/survival-gardening-2/4-perennial-berries-you-can-plant-once-and-enjoy-for-a-lifetime/
 
-	    	For blueberries to thrive, three conditions must be met: adequate water, weather that is not blazingly hot,
+	    	For blueberries to thrive, three conditions must be met: adequate water, weather that is not blazingly hot,	
 	    	and the right soil. You may have heard that blueberries require acidic soil, and this is not an exaggeration.
 	    	They thrive in a pH around four.
+	    	
 	    -->
+	    
 
 
 		<crop name="Cabbage" growing-sols="85" crop-category="leaves"  life-cycle="annual"
-	    	edible-biomass="75.78" edible-water-content=".92" inedible-biomass="6.74" daily-PAR="17.28" />
+	    	edible-biomass="5" edible-water-content=".92" inedible-biomass=".5" daily-PAR="17.28" />
 		<!--
+			assuming 50 t/ha/yr -> 5 kg/m²/yr
+			assuming all 70 is edible biomass		
+			
+			The average cabbage yield is 30-70 tons per hectare
+			
+			
+			https://www.fao.org/land-water/databases-and-software/crop-information/cabbage/en/
+			
+			Under rainfed conditions, yields of 25 to 35 ton/ha fresh heads are normal, with a maximum of
+			about 50 ton/ha when sprayed and well-fertilized. Under ideal climatic conditions and good 
+			irrigation and crop management, yields can be as high as 85 ton/ha. 
+			
+			The utilization efficiency for harvested yield (Ey) for heads is about 12 to 20 kg/m3.
+
+			The average water content of cabbage heads is about 90 percent, with a high vitamin B, C 
+			and calcium and phosphorous content. Smaller heads of poor quality are produced when the 
+			crop is grown under limited water supply, particularly during the later part of the 
+			growing period.
+
+
+
 		http://www.ehow.com/facts_7732455_life-cycle-cabbage-plant.html
 
 		Growing Environment
@@ -286,10 +363,13 @@
 		-->
 
 		<crop name="Carrot"	growing-sols="75" crop-category="roots" life-cycle="biennial"
-	    	edible-biomass="40"	edible-water-content=".88" inedible-biomass="59.87" daily-PAR="32.4"
+	    	edible-biomass="12"	edible-water-content=".88" inedible-biomass="59.87" daily-PAR="32.4"
 	    	/>
 
 		<!--
+			
+		Assume 120 t/ha -> 12 kg/sqm
+			
 		https://www.revistas.ufg.br/pat/article/download/42449/22580
 		31 T to 120 T/ha
 
@@ -299,18 +379,35 @@
 		-->
 
 		<crop name="Celery" growing-sols="75" crop-category="stems" life-cycle="biennial"
-	    	edible-biomass="103.27" edible-water-content=".90" inedible-biomass="11.47" daily-PAR="17.28" />
+	    	edible-biomass="3.5" edible-water-content=".90" inedible-biomass="0.5" daily-PAR="17.28" />
 
-	    <!-- Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf -->
+	    <!-- 
+			
+			Assume 35 t/ha -> 3.5 kg/sqm
+			
+			Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf 
+	    
+	    
+	    Generally, the plants grown for stalks are ready to be harvested 3-4 months after planting, 
+	    by the time they have reached the preferable marketable size. An average-good yield for 
+	    fresh market celery crops is around 20-35 tonnes per hectare (8-14 t/acre).
+	    
+ 		This yield range represents the biomass of celery at harvest, focusing on the stalks, 
+ 		which are the primary part harvested.
+	    
+	    -->
 
 		<crop name="Cilantro" growing-sols="30" crop-category="herbs" life-cycle="annual"
-	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="1.0" daily-PAR="34.56" 
+	    	edible-biomass="2.5" edible-water-content=".76" inedible-biomass="0.5" daily-PAR="34.56" 
 	    	seed-name="Coriander" />
 	    <!-- https://rennieorchards.com/is-cilantro-perennial/
+	    
+	    Annual coastal production average from 8 to 11 tonnes per acres (18 to 25 t/ha)
+	    
 		-->
 
 		<crop name="Corn" growing-sols="65" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
+	    	edible-biomass="0.83" edible-water-content=".76" inedible-biomass="3.0" daily-PAR="34.56" />
 
 		<!--
 		http://lib.dr.iastate.edu/cgi/viewcontent.cgi?article=4354&context=etd
@@ -347,8 +444,11 @@
  		-->
 
 	   	<crop name="Cranberry" growing-sols="150" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="11" edible-water-content=".87" inedible-biomass="100" daily-PAR="25.92" />
+	    	edible-biomass="1.12" edible-water-content=".87" inedible-biomass="10" daily-PAR="25.92" />
 	    	<!-- 
+				
+			11.2 tonnes/hectare
+			
 	    	Assume this cranberry variant takes half the time (300 days -> 150 days)
 	    	
 	    	http://www.umass.edu/cranberry/downloads/Homeowner's%20fact%20sheet%202010.pdf
@@ -362,8 +462,12 @@
 	    	-->
 
 	   	<crop name="Cucumber" growing-sols="60" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="40"	edible-water-content=".90" inedible-biomass="10" daily-PAR="25.92" />
+	    	edible-biomass="1.8" edible-water-content=".90" inedible-biomass="18" daily-PAR="25.92" />
 	    	<!--
+				
+			18,000 kg/ha -> 1.8 kg/m2
+			
+			
 	    	http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
 	    	http://teca.fao.org/sites/default/files/technology_files/High%20yielding%20vegetable%20varieties.pdf
 
@@ -371,14 +475,90 @@
 	    	-->
 
 
+		<crop name="Dandelion" growing-sols="90" crop-category="flowers" life-cycle="perennial"
+	    	edible-biomass="40" edible-water-content=".4" inedible-biomass="20" daily-PAR="25" />
+	    	
+	    <!--	
+			Note: Harvest dandelion at 90 sols before seed-bearing phase because seeds are invasive and spread.
+			
+			use 'flowers', instead of 'seeds' as crop category since we do not intend to harvest seeds as food
+			
+			Dandelion is a perennial plant. It is a hardy perennial that is grown as an annual for its foliage 
+			and as a biennial for its roots.
+			
+ 			The plant has a strong, deep taproot that allows it to persist over the winter.
+ 			
+ 			Dandelion is a short-lived perennial that will grow just about anywhere, regardless of soil conditions.
+ 			
+ 			The plant is also described as a perennial with a stout taproot, is abundant everywhere but 
+ 			prefers chalks and loamy soils above pH 7.0.
+ 
+			A flower head can produce up to 400 seeds but the average is 180. A plant may have
+			a total of 2,000 to 12,000 seeds (Salisbury, 1961; Stevens, 1932), or even 23,456
+			seeds (Stewart-Wade et al., 2002). The average seed number per plant is 2,720
+			(Pawlowski et al., 1970). The 1,000 seed weight is given as 0.583 g (Bostock, 1978)
+			and 0.620-0.640 g (Stevens, 1932). Seed weight may vary with the time of year it is
+			produced. 
+			
+			The time from flowering to seed ripening takes about 9-12 days. At least 7
+			days must elapse before seeds are likely to be viable. Ripe seed gave 90%
+			germination but cut down flowering stems did not produce any viable seed (Gill,
+			1938). 
+ 
+	    	https://cals.cornell.edu/weed-science/weed-profiles/dandelion
+	    	  	
+	    	Seed weight: 0.34 mg (seeds produced in summer) to 0.54 mg (seeds produced in spring) (Martinkova et al. 2011, 
+	    	Doisy et al. 2014, Milberg et al. 2000, Werle et al. 2014); 0.6 mg (Bostock 1978).
+	    	
+	    	Seeds will germinate at temperatures from 41 to 95 °F (5 to 35 °C), but percentage germination and speed of 
+	    	germination are reduced at temperatures above 68 °F (20 °C) (Luo and Cardina 2012, Washitani 1984).  
+	    	Germination is highest at alternating day/night temperatures of 59/41 °F (15/5 °C) and 77/59 °F (25/15 °C), 
+	    	and reduced at 95/77 °F (35/25 °C) (Luo and Cardina 2012).
+	    	
+	    	Seed longevity: Seeds can last 1-5 years in the soil, but in normal agricultural conditions, only a few 
+	    	survive to the next season (Stewart-Wade et al. 2002).  The overwhelming majority of seedlings come from 
+	    	recently dispersed seeds (Hacault & Van Acker 2006).
+
+			Seeds are killed by storage at 27 °C with 80% humidity.
+
+			Emergence depth:  Emergence is not affected by depth between 0 and 0.8” (2 cm) but declines at progressively 
+			greater depths.  No emergence occurs from seeds below 3” (8 cm).  Emergence from small root fragments can 
+			occur from 2-4” (5-10 cm) of soil (Stewart-Wade et al. 2002). 
+			
+			Photosynthetic pathway:  C3 (Stewart-Wade et al. 2002).
+			
+			Response to shade:  Dandelion is shade tolerant (Stewart-Wade et al. 2002) and will grow even under 
+			competitive crops like potato.
+			
+			Time from emergence to reproduction: Dandelions that have formed a strong taproot and 20 leaves (some of 
+			which may have subsequently died) are usually ready to flower (Stewart-Wade et al. 2002).  Peak flowering 
+			begins in mid-spring and continues for 2 to 6 weeks (Doll 2006, Honek et al. 2005), but can continue 
+			throughout the year with a secondary peak in fall (Gray et al. 1973, Mann and Cavers 1979).  
+			
+			A few seeds may become viable as early as 3 days after the flowers wither and close, but most are not 
+			viable until 6-8 days after flowering in the summer or about 10 days after flowering in the spring or 
+			fall (Martinkova et al. 2011).
+			
+			The roots are used in medicine as a tonic and for their diuretic properties. Dandelion plants release 
+			ethylene, a chemical that can affect the growth of neighbouring plants. The plant can carry economically 
+			important viruses some of which are seed borne. Nematodes can infest it too.
+			
+	    -->
+    
+	    
 	    <crop name="Garlic" growing-sols="85" crop-category="bulbs" life-cycle="annual"
-	    	edible-biomass="9.41" edible-water-content=".59" inedible-biomass="0.5" daily-PAR="17.28" />
+	    	edible-biomass="1.0" edible-water-content=".59" inedible-biomass="1.0" daily-PAR="17.28" />
 
 	    	<!--
-	    		4494-6495 kg/hectare from http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
-	    		or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space,
+	    		
+	    		4 to 10 tonnes per hectare
+	    		
+	    		
+	    		http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
+	    		
+	    		4494-6495 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space,
 
-	    		garlic about 6 to 10 tonnes/ha from https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
+	    		Garlic about 6 to 10 tonnes/ha from https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
 	    		8T/ha = 8000 kg/ha or 800 g/m2
 	    		800/85 = 9.41 g/m2/d
 
@@ -390,9 +570,17 @@
 
 
 	     <crop name="Ginger" growing-sols="90" crop-category="roots" life-cycle="annual"
-	    	edible-biomass="18" edible-water-content=".12" inedible-biomass="2" daily-PAR="17.28" />
+	    	edible-biomass="6.192" edible-water-content=".12" inedible-biomass="2" daily-PAR="17.28" />
 	   
-	    <!--     	
+	    <!--     
+			A yield of 43 tonnes per hectare * 144%	  = 61.92
+				
+			In agricultural studies, ginger rhizome yields have been reported to reach up to 43 tonnes per hectare 
+			under optimized nutrient management conditions.  
+			In containerized production systems, experiments showed that medium-sized containers (3.9 gal) resulted 
+			in a 44% higher rhizome yield for ginger compared to large containers (13.3 gal), highlighting the
+			importance of container volume and planting density in optimizing yield.
+				
 	    	Assume this ginger variant takes half the time (180 days -> 90 days)
 	    	
 	    	http://faostat.fao.org/site/339/default.aspx
@@ -414,9 +602,18 @@
 
 
 		<crop name="Green Bell Pepper" growing-sols= "40" crop-category="fruits" life-cycle="annual"
-			edible-biomass= "50" edible-water-content= ".45" inedible-biomass="20" daily-PAR="25.92" />
+			edible-biomass= "15.0" edible-water-content= ".45" inedible-biomass="45" daily-PAR="25.92" />
 
-			<!-- Bell peppers, a tropical or sub-tropical vegetable, can easily be grown in warm-weather
+			<!-- 
+				
+			Assume 150 t/h -> 1.5 g/m2 as edible biomass
+				
+			One source mentions that an approximate target yield for introductory growers would be 23 kg/m².
+						
+			Potential yields of over 150 tonnes per hectare are possible in perfect conditions. 
+			You need to have the perfect sandy loam soil and the perfect weather conditions of about 20 to 30°C.
+			
+			Bell peppers, a tropical or sub-tropical vegetable, can easily be grown in warm-weather
 			climates or in cooler climates where temperatures in the summer get seasonably warm and remain
 		 	warmer than 50 degrees every night.
 
@@ -429,10 +626,16 @@
 
 
 	    <crop name="Spring Onion" growing-sols="70" crop-category="bulbs" life-cycle="perennial"
-	    	edible-biomass="81.82" edible-water-content=".89" inedible-biomass="10.0" daily-PAR="17.28" />
+	    	edible-biomass="10.42" edible-water-content=".89" inedible-biomass="10.0" daily-PAR="17.28" />
 
-	   		<!-- 1. Harvest between 70-90 days
-	   			Ref : http://www.veggiegardener.com/veggies/green-onions/
+	   		<!-- 
+				
+			 A record-breaking onion harvest of 104.2 tons per hectare using a polymicrobial bio-fertilizer 
+			and an average yield increase from 55 tons per hectare to 104.2 tons per hectare .	
+				
+				
+			Harvest between 70-90 days
+	   		http://www.veggiegardener.com/veggies/green-onions/
 
 			scallions, leeks, spring onions, green onion
 
@@ -443,9 +646,15 @@
 
 
 	    <crop name="Kidney bean" growing-sols="43" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="11.11" edible-water-content=".10" inedible-biomass="150.0" daily-PAR="25.92" />
+	    	edible-biomass="0.3198" edible-water-content=".10" inedible-biomass="150.0" daily-PAR="25.92" />
 
 		<!--
+			
+			3198.17 kg/ha -> 0.319817kg/m
+			
+			The greatest yield achieved was 3198.17 kg/ha with the best nitrogen application of 45 kg of 
+			active ingredient nitrogen per hectare and the best planting density of 15×104 - 20×104 plants/ha.
+			
 			Assume this kidney bean variant takes half the time (85 days -> 43 days)
 			
 			https://interiordr.com/kidney-bean/
@@ -456,21 +665,51 @@
 			featuring a pine nut shape and is consumed dry as well as tender. -->
 
 	    <crop name="Lettuce" growing-sols="28" crop-category="leaves" life-cycle="annual"
-	    	edible-biomass="35" edible-water-content=".95" inedible-biomass="5" daily-PAR="17.28" />
+	    	edible-biomass="4" edible-water-content=".95" inedible-biomass=".5" daily-PAR="17.28" />
 	    	
-	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
+	    	<!-- 
+				
+			Experienced lettuce farmers in suitable climates can achieve yields of 20-40 tonnes per hectare	
+				
+			http://www.ba.ars.usda.gov/hb66/lettuce.pdf
 	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
 	    	10 kg / week yield for greenhouse
 
 	    	Grown as a hardy annual, Lettuce (Lactuca sativa) is an annual plant of the daisy family, Asteraceae.
 	    	-->
 
+		<crop name="Microgreens" growing-sols="15" crop-category="leaves" life-cycle="biennial"
+	    	edible-biomass="1.5" edible-water-content=".6" inedible-biomass="0.06" daily-PAR="17.28" />
 
-		<crop name="Morel Mushroom" growing-sols="15" crop-category="fungi" life-cycle="annual"
-	    	edible-biomass="35" edible-water-content=".35" inedible-biomass="2" daily-PAR="5" />
+		<!-- 
+			If produced hydroponically or semi-hydroponically with very short growing cycles 
+			(usually 10–20 days following plantlets emergence [Lee et al. Citation2004]
+		-->
+
+		<crop name="Morel Mushroom" growing-sols="140" crop-category="fungi" life-cycle="annual"
+	    	edible-biomass="10" edible-water-content=".35" inedible-biomass="10" daily-PAR="5" />
 	    	
-	    	<!-- Mushrooms provide essential nutrients, including vitamin D and vitamin B-6.
+	    	<!-- 
+				
+			Assume 10 kg/sqm; 90% edible 
+				
+			https://www.mushroomoffice.com/energy-costs-mushroom/
+				
+            The biomass yield of morel mushrooms is not directly mentioned in the provided context. However, 
+            it is noted that Jacob and Karsten Kirk, twin brothers from Copenhagen, have developed a method 
+            to reliably cultivate morels indoors, year-round, in a climate-controlled environment. They have 
+            grown about 150 kilograms (330 pounds) of morels using their system, with a yield of about 
+            4.2 kilograms over a 22-week cycle, which translates to about 10 kilograms per square meter 
+            (or 20 pounds per square meter) per year.
+				
+			The highest biomass yield of Morel mushrooms, as reported in the context, varies depending on the 
+			cultivation method and substrate used. In liquid culture, biomass production ranged from 9.3 to 11.1 g/L 
+			for yellow morels and from 9.4 to 14.2 g/L for black morels.
+				
+				
+			Mushrooms provide essential nutrients, including vitamin D and vitamin B-6.
 	    	Morel Mushroom is also called MORCHELLA.
+	    	
 	    	https://www.sciencenews.org/article/morel-mushroom-may-grow-crop-its-own?mode=magazine&context=189396
 	    	Strands of the thick-footed morel fungus serve as a highway for...six times as dense...common soil bacteria.
 
@@ -479,11 +718,429 @@
 	    	https://www.youtube.com/watch?v=z41Wy5ZF4O8
 	      	-->
 
-	  <crop name="White Mustard" growing-sols="41" crop-category="leaves" life-cycle="annual"
-	    	edible-biomass="66.67" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56"
+		<crop name="Parsley" growing-sols="80" crop-category="flowers" life-cycle="perennial"
+	    	edible-biomass="17" edible-water-content=".4" inedible-biomass="3.4" daily-PAR="25" />
+	    	 	
+	    <!--
+			
+			170 t/ha 
+			
+			Parsley is ready for harvest when the leaves are vibrant and full-sized, typically 
+			starting 70-90 days after planting. Look for firm, green leaves on stems that have 
+			branched out. It’s best to harvest in the morning when the plant’s essential oils 
+			are strongest.
+	    	
+	    	Regularly trimming parsley can encourage bushier growth. Ensure the plant receives 
+	    	at least 6 hours of sunlight daily and maintain consistent soil moisture without 
+	    	waterlogging.
+	    	
+	    	Research has shown that the yield of parsley leaves can range from 57.40 to 166.52 t/ha.
+	    	
+			-->
+
+
+	    <crop name="Peanut" growing-sols="52" crop-category="legumes" life-cycle="annual"
+	    	edible-biomass="0.1" edible-water-content=".056" inedible-biomass="1.0" daily-PAR="32.4" />
+
+	    	<!--
+				
+			1 Mg / ha 
+				
+	    	Assume this peanut variant takes half the time (104 days -> 52 days)
+	    	
+	    	For high yields and superior quality, peanuts require a moderate growing period (110 to 120 days) 
+	    	with a steady, rather high temperature and a moderate, uniformly distributed supply of moisture. 
+	    	The growing season should be long, warm and moist, and the harvest season should be dry.
+
+			http://www.softschools.com/facts/plants/peanuts_facts/950/
+
+			Seedlings
+			Seeds germinate in about seven to 14 days. Seedlings grow slowly and steadily for a month. 
+			Production improves if you gradually mound loose soil around the base of the plant during this phase, 
+			when the nuts develop.
+
+			A top layer of loose soil will promote and easier growth and harvest for the plants. Between 
+			30 and 40 days after planting, peanut plants will begin to blossom.
+
+			Plants
+			Peanut plant blossoms are small and yellow, resembling the flowers of the pea plant. After 
+			pollination and	fertilization, the peg takes 10 days to bend down and penetrate the soil. 
+			
+			About a week later, the tip of the peg begins to enlarge and the pod and kernel begin to develop. 
+			
+			Another nine or 10 weeks will pass before the pods are ready to harvest.
+	    	-->
+
+	    <crop name="Peas" growing-sols="75" crop-category="legumes" life-cycle="annual"
+	    	edible-biomass="1.4" edible-water-content=".79" inedible-biomass="2.8" daily-PAR="25.92" />
+			
+			<!-- 
+				0.68 to 1.36 tonnes per hectare
+				1,500 to 3,000 pounds per acre translating to 
+				0.7 to 1.4 kilograms per square meter.
+				
+				https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
+
+	    <crop name="Potato" growing-sols="75" crop-category="tubers" life-cycle="annual"
+	    	edible-biomass="2.5" edible-water-content=".79" inedible-biomass="5.0" daily-PAR="34.56" />
+
+	    	<!--
+			 
+			In India, the average potato yield per hectare is around 20-25 tons.
+				
+	    	Assume this potato variant takes 3/4 of the time (100 days -> 75 days)
+	    	
+	    	Crops like potatoes have a high edible yield (about 80%), while most plants average between 35% and 50% edible mass.
+	    	
+	    	
+	    	A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
+
+			White Sweet Potato tubers contains root cells and grow on rhizomes, Potato, Solanum tuberosum,
+			are in the Solanaceae or nightshade Family, is not related to the sweet potato,
+
+			Potato is more related to the tomato, pepper and eggplant than Sweet Potato.
+
+			Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons.
+			The tubers form at the distal end of the stolon and/or along the stolon itself.
+			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant.
+
+			To recap, sweet potato is a root tuber, potato is a stem tuber.
+
+			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
+			Root tubers do not have these attributes. Both are considered vegetables.
+
+	    	-->
+
+	     <crop name="Quinoa" growing-sols="90" crop-category="grains" life-cycle="annual"
+	    	edible-biomass="0.5" edible-water-content=".12" inedible-biomass="1" daily-PAR="69.12" />
+	    	
+	    	<!-- 
+				
+			Quinoa by definition is seed only. No need of using seed-name="Quinoa" 	
+				
+			0.20926 kg/m²
+				
+			Under irrigated conditions, quinoa can produce up to 1850 kg of grains per hectare with 50 kg of nitrogen 
+			per hectare, while under rainfed conditions, it produces around 670 kg of grains per hectare with 
+			15 kg of nitrogen per hectare.
+			
+ 			Additionally, in a study conducted in Tunisia, the seeds productivity of five quinoa cultivars 
+ 			2092.6 kg/ha under full irrigation,	
+
+			http://en.wiki2.org/wiki/Quinoa
+	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
+	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
+	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
+	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
+
+	    	https://www.groworganic.com/pv-org-quinoa.html
+	    	Life Cycle	Annual
+	    	Planting Time	Spring, Summer
+			Approximate Harvest Time	Late Summer, Early Fall
+			Ideal Soil Temperature	65-75°F
+			Germination Requirements	Warmth
+			Days to Maturity	90 - 120 Days
+			Sun Requirements	Full Sun
+			Growth Habit	Upright
+			Starting Location	Direct Sow
+			Plant Family	Amaranthaceae (Goosefoot)
+			Soil pH	6.1 - 7.0
+	    	-->
+
+
+		<crop name="Radish" growing-sols="25" crop-category="roots" life-cycle="annual"
+	    	edible-biomass="5.0" edible-water-content=".35" inedible-biomass="7.0" daily-PAR="15" />
+
+		<!-- The yield range of 15-20 tons per acre for daikon radishes, this translates to approximately
+		 37-50 tonnes per hectare (since 1 acre is approximately 0.4047 hectares).-->
+		
+		
+	  	<crop name="Red Beet" growing-sols="42" crop-category="roots" life-cycle="annual"
+	    	edible-biomass="2.5" edible-water-content=".75" inedible-biomass="3" daily-PAR="34.56" />
+
+		<!-- 
+			
+			Beetroot (which includes red beets) can yield about 20-25 t/ha in 120 days.
+ 			This figure refers to the root yield, but it can be used as a general indicator of biomass yield.
+ 
+			15.7-22.4 T/ha from http://anrcatalog.ucanr.edu/pdf/8096.pdf
+			
+			(22.4-15.7)*100/2/42 = 7.9762 g/m2/d
+
+		Categorized as an annual, they grow quickly in the cooler temperatures of early Spring and late Fall.
+		Once they are fully grown, they can be harvested, thus ending their lifecycle.
+
+		If temperatures become too hot, your beets will begin to bolt. This simply means that your Beetroot
+		plants will no longer send it's energy to produce it's roots, instead it will produce seeds.
+		 -->
+
+
+	    <crop name="Rice" growing-sols="100" crop-category="grains" life-cycle="annual"
+	    	edible-biomass="1.2" edible-water-content=".12" inedible-biomass="6.0" daily-PAR="34.56" />
+		<!-- 
+			
+			The average yield of rice (seeds) per hectare is 3 - 6 tons. In some countries like Australia 
+			and in Egypt, the yield can increase to an amazing 10 - 12 tons or more per hectare.
+			
+			rick husks : 0.9 t/ha
+			rice straws : 4.5 t/ha
+			
+			The rice biomass yield, specifically referring to rice husks and straws, can be estimated 
+			based on the average harvest of 4.5 metric tons per hectare (t/ha) of rice. From this, 
+			approximately 900 kg of rice husks and 4,500 kg of rice straws are produced per hectare.		
+			
+			Rice straws are the stems and leaves of the rice plant that remain after the grains are harvested, 
+			while rice husks are the outer protective layers of the rice grains that are removed during milling.
+ 
+ 			The actual rice that we consume is the grain that is inside the husk, which is processed to remove 
+ 			the husk and other layers to produce the edible rice.
+ 
+			http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf
+			stages breakdown
+
+			http://ricepedia.org/rice-as-a-plant/growth-phases
+
+		-->
+
+	    <crop name="Sesame" growing-sols="50" crop-category="seeds" life-cycle="annual"
+	    	edible-biomass="0.35" edible-water-content=".4" inedible-biomass="1.5" daily-PAR="17.28"
+			seed-name="Sesame Seed"/>
+			
+	    <!--
+	    	
+	    	The global average seed yield for sesame is approximately 500 to 600 kg per hectare. 
+	    	
+	    	However, yields can be higher, sometimes reaching up to 3.5 tonnes per hectare.
+	    	
+	    	https://www.researchgate.net/publication/265308920_GROWTH_AND_DEVELOPMENT_OF_SESAME
+	    	
+	    	Assume this sesame variant takes half the time (100 days -> 50 days)
+	    		    	
+	    	http://en.wiki2.org/wiki/Sesame
+	    	~50 to 80 seeds per capsule
+	    	7.2 Metric Ton/hectare
+
+	    	Sesamum plants are a genus of half hardy annual herbs that reach from 30 to 90 cm in height.
+
+			They bloom in the summer carrying tubular flowers of violet, pink or white.
+
+	    	Sesame seeds contain around 50% of a highly unsaturated oil (oleic and linoleic acids predominate)
+	    	and 20 to 25% protein. The oil, which rarely goes rancid due to the presence of phenolic material,
+	    	is used in the manufacture of margarine, cooking fats, soaps, and paints and is used as a
+	    	lubricant and illuminant. In India, it is used as a ghee substitute and is the basis of scented
+	    	oils used in perfumery. The residue left after extraction is a valuable animal feed.
+
+	    	Throughout the world sesame seeds are used in food in a wide range of savory dishes and sweet
+	    -->
+
+
+	    <crop name="Soybean" growing-sols="47" crop-category="legumes" life-cycle="annual"
+	    	edible-biomass=".35" edible-water-content=".10" inedible-biomass=".2" daily-PAR="34.56" />
+
+	    	<!--
+				
+				The yield of soybean biomass is typically around 2.5 to 3.5 tonnes per hectare (t/ha) 
+				under irrigation.
+				
+	    		Assume this Soybean variant takes half the time (93 days -> 47 days)
+	    		
+	    	-->
+
+
+	   	<crop name="Strawberry" growing-sols="45" crop-category="fruits" life-cycle="annual"
+	    	edible-biomass="12.5" edible-water-content=".92" inedible-biomass="10" daily-PAR="25.92" />
+	    	
+	    	<!-- 
+				
+			17.5-30 tonnes per hectare (t/ha) for a well-managed orchard.
+			 	
+			A Japanese grower achieved a yield of 12.5kg of strawberries per square meter using a hydroponic lifting system 	
+			 	
+			http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
+	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
+
+	    	Annual/perennial :
+
+	    	From zone 7 southward, strawberries can be planted in fall.
+
+	    	In Florida and other warm, humid coastal areas, many are grown as cool weather annuals.
+
+	    	Like most hardy perennials, strawberries die back in winter and start growing vigorously as the soil warms in spring.
+	    	After bearing fruit (as early as February in Florida, or June farther north), many types of strawberries produce
+	    	numerous runners with baby plants at the tips.
+
+	    	Those runners often root themselves nearby yet remain attached to
+	    	the mother plant. These types of strawberries produce more fruit if you clip off most of the runners,
+	    	allowing each plant to produce no more than 3 daughter plants each summer.
+
+	    	(Some varieties of strawberries
+	    	produce few to no runners.)
+	    	 -->
+
+	   <crop name="Sugarcane" growing-sols="180" crop-category="grasses" life-cycle="perennial"
+	    	edible-biomass="7.367" edible-water-content=".75" inedible-biomass="2.0" daily-PAR="34.56" />
+	    	
+	    	<!-- CANE, SUGAR AND THE ENVIRONMENT from http://www.fao.org/docrep/005/x4988e/x4988e01.htm
+	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants.
+	    	The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
+	    	The protein and fat content of both beets and cane is almost nil.
+	    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%)
+
+	    	65.2 T/ha from http://sugarcanecrop.com/introduction/
+
+	    	Settle on (65.2 + 200)/2 T/ha, = 73.666
+
+	    	Phases from  http://sugarcanecrop.com/crop_growth_phases/germination_establishment_phase/
+	    	1. Germination/Establishment
+	    	2. Tillering
+	    	3. Grand Growth
+	    	4. Ripening, Maturation
+
+			4 varieties of sugarcane plants are available and numerous cultivars.
+
+			Harvesting and Replanting
+			Sugarcane is harvested once per year. The plants are maintained for three years and will achieve
+			three harvests before the field is replanted. When plants are 3 years old, production begins to
+			decline, the sugar level decreases and the plants become more prone to pests or disease.
+
+			The old plants are simply plowed under and new seed canes are planted
+
+	    	-->
+
+
+	    <crop name="Sweet Potato" growing-sols="90" crop-category="tubers" life-cycle="annual"
+	    	edible-biomass="2.899" edible-water-content=".79" inedible-biomass="3" daily-PAR="34.56" />
+
+		<!-- 
+			
+			Alamura variety produced an above-ground biomass of 28.99 t ha−1 at 150 days after planting (DAP).
+			
+			Assume this sweet potato variant takes 3/4 of the time (120 days -> 90 days)
+			
+			A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf
+
+			https://ask.extension.org/questions/216966
+			Sweet Potato tubers only contain root cells and grow on rhizomes.
+			In order to grow a new sweet potato plant, part of the root cap must be present to have Sweet potatoes
+			Sweet Potato are commonly misnamed yams in the United States.
+
+			Potato is not related to the Sweet potato because Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons.
+			The tubers form at the distal end of the stolon and/or along the stolon itself.
+			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant.
+
+			To recap, sweet potato is a root tuber, potato is a stem tuber.
+
+			http://www.biology.lifeeasy.org/3344/difference-between-root-tuber-and-stem-tuber
+
+			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
+			Root tubers do not have these attributes. Both are considered vegetables.
+
+			Lifecycle: Annual
+			Hardiness: Tender Annual
+
+		-->
+
+		<crop name="Swiss Chard" growing-sols="17" crop-category="leaves" life-cycle="biennial"
+	    	edible-biomass="2" edible-water-content=".92" inedible-biomass="0.1" daily-PAR="17.28" />
+
+		<!-- 
+			
+			Grown hydroponically, Swiss chard a reached the growth stage suitable for harvest 17 days after sowing, 
+			It has 2 kg / m2
+			
+			
+			"Swiss Chard is a beet grown for its edible leaves" from http://anrcatalog.ucanr.edu/pdf/8096.pdf
+
+		"short vegetation period, ready for harvest in about 60 to 70 days after planting (Swiader et al.,1992)"
+		from http://www.ccsenet.org/journal/index.php/jas/article/viewFile/5603/6223
+
+		"spring growing (61.74 t · ha-1) in comparison to the autumn season (30.64 t · ha-1)"
+		 (61.74+30.64)/2*100/65 = 71.06
+
+		 kale, Swiss chard, and onion, examples of biennial plant types
+
+		-->
+
+	    <crop name="Taro" growing-sols="100" crop-category="corms" life-cycle="perennial"
+	    	edible-biomass="1.26" edible-water-content=".706" inedible-biomass=".5" daily-PAR="34.56" />
+
+		<!--  
+			Assume this taro variant takes half the time (200 days -> 100 days)
+		
+			Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
+			http://www.harvesttotable.com/2010/03/taro/
+			Taro is a perennial herbaceous plant that grows from 3 to 6 feet tall. Its leaves are light green,
+			elongated, and heart shaped similar to an elephant’s ear. Tubers are spherical and about the size
+			of a tennis ball often covered with brownish skin and hairs; the flesh is pinkish purple, beige or white.
+			Taro requires seven months of hot weather to mature.
+
+			https://naldc.nal.usda.gov/download/295/PDF
+
+			https://en.wikipedia.org/wiki/Taro
+			"The global average yield is 6.2 tones/hectare but varies according to the region.
+			In Asia, average yields reach 12.6 tones/hectare."
+
+			9400 kg/ha /200 day = 47 kg/ha/d = 4.7 g/m2/d
+
+			ave monthly solar rad : 16.8MJ/m2
+
+			https://www.healthaliciousness.com/nutritionfacts/nutrition-comparison.php?o=11518&t=11519&h=&s=100&e=100&r=100
+			percent of water 70.6%, 63.8%
+
+			73.47 g of 104 g H20 http://www.healthbenefitstimes.com/taro/
+
+			http://www.nutrition-and-you.com/taro.html
+
+			phenological growth,
+			1. https://www.researchgate.net/publication/272030000_A_phenological_scale_for_the_development_of_Gladiolus
+			2. http://revistas.inia.es/index.php/sjar/article/view/7340/2514
+		-->
+
+	    <crop name="Tomato" growing-sols="80" crop-category="fruits" life-cycle="perennial"
+	    	edible-biomass="10" edible-water-content=".948" inedible-biomass="15" daily-PAR="32.4" />
+	    	<!-- 
+				
+			In outdoor farming, yields on stalked crops are on average 60-100 tonnes per hectare 
+			(53.553 - 89.255 lbs per acre), while determinate varieties typically yield 
+			30-50 tonnes per hectare (26.776 - 44.627 lbs per acre).
+				
+			http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
+	    	484 MT/ha for earth greenhouse
+	    	but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
+
+	    	It is a perennial in its native habitat, although often grown outdoors in temperate climates as an annual.
+	    	-->
+
+		<crop name="Wheat" growing-sols="80" crop-category="grains" life-cycle="annual"
+	    	edible-biomass="1.6519" edible-water-content=".12" inedible-biomass="1.6" daily-PAR="69.12" />
+			<!-- 
+				The world record wheat yield is 16.519 tonnes per hectare.
+				
+				Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
+
+	  <crop name="White Mustard" growing-sols="41" crop-category="seeds" life-cycle="annual"
+	    	edible-biomass="0.204" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56"
 	    	seed-name="Mustard Seed" />
 
 		<!--
+			The biomass yield of white mustard, specifically Sinapis alba, has been reported to 
+			range between 1.33-2.04 Mg ha−1.
+			
+ 			This is equivalent to 1.33-2.04 tonnes per hectare (t/ha).
+			
+			https://en.wikipedia.org/wiki/White_mustard
+			
+			White mustard is commonly used as a cover and green manure crop in Europe (between the UK and Ukraine).
+			
+			A large number of varieties exist, mainly differing in lateness of flowering and resistance against 
+			white beet-cyst nematode (Heterodera schachtii). Since it is a SBCN-resistant crop, it is
+			able to reduce nematode populations by preventing growth of young nematodes.
+			
+			
+			White mustard can be used in biodiesel production as feedstock and is used as alternative fuel. 
+			
+			More applications of white mustard include being used as a binding agent in meat processing, a lubricant for lighting, and in traditional medicine for its antiviral properties
+			
 			Assume this white mustard variant takes half the time (82.5 days -> 41 days)
 		
 			~82.5 day from https://www.hort.purdue.edu/newcrop/afcm/mustard.html
@@ -526,295 +1183,8 @@
 
 		 -->
 
-	    <crop name="Peanut" growing-sols="52" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="6" edible-water-content=".056" inedible-biomass="18" daily-PAR="32.4" />
-
-	    	<!--
-	    	Assume this peanut variant takes half the time (104 days -> 52 days)
-	    	
-	    	For high yields and superior quality, peanuts require a moderate growing period (110 to 120 days) with a steady,
-	    	rather high temperature and a moderate, uniformly distributed supply of moisture. The growing season should be long,
-	    	warm and moist, and the harvest season should be dry.
-
-			http://www.softschools.com/facts/plants/peanuts_facts/950/
-
-			Seedlings
-			Seeds germinate in about seven to 14 days. Seedlings grow slowly and steadily for a month. Production improves if
-			you gradually mound loose soil around the base of the plant during this phase, when the nuts develop.
-
-			A top layer of loose soil will promote and easier growth and harvest for the plants. Between 30 and 40 days after
-			planting, peanut plants will begin to blossom.
-
-			Plants
-			Peanut plant blossoms are small and yellow, resembling the flowers of the pea plant. After pollination and
-			fertilization, the peg takes 10 days to bend down and penetrate the soil. About a week later, the tip of the peg
-			begins to enlarge and the pod and kernel begin to develop. Another nine or 10 weeks will pass before the pods
-			are ready to harvest.
-	    	-->
-
-	    <crop name="Peas" growing-sols="75" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="12.20" edible-water-content=".79" inedible-biomass="161.00" daily-PAR="25.92" />
-			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
-
-	    <crop name="Potato" growing-sols="75" crop-category="tubers" life-cycle="annual"
-	    	edible-biomass="35" edible-water-content=".79" inedible-biomass="15" daily-PAR="34.56" />
-
-	    	<!-- 
-	    	Assume this potato variant takes 3/4 of the time (100 days -> 75 days)
-	    	
-	    	A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
-
-			White Sweet Potato tubers contains root cells and grow on rhizomes, Potato, Solanum tuberosum,
-			are in the Solanaceae or nightshade Family, is not related to the sweet potato,
-
-			Potato is more related to the tomato, pepper and eggplant than Sweet Potato.
-
-			Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons.
-			The tubers form at the distal end of the stolon and/or along the stolon itself.
-			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant.
-
-			To recap, sweet potato is a root tuber, potato is a stem tuber.
-
-			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
-			Root tubers do not have these attributes. Both are considered vegetables.
-
-	    	-->
-
-	     <crop name="Quinoa" growing-sols="90" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="5" edible-water-content=".12" inedible-biomass="38" daily-PAR="69.12" />
-	    	
-	    	<!-- http://en.wiki2.org/wiki/Quinoa
-	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
-	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
-	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
-	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
-
-	    	https://www.groworganic.com/pv-org-quinoa.html
-	    	Life Cycle	Annual
-	    	Planting Time	Spring, Summer
-			Approximate Harvest Time	Late Summer, Early Fall
-			Ideal Soil Temperature	65-75°F
-			Germination Requirements	Warmth
-			Days to Maturity	90 - 120 Days
-			Sun Requirements	Full Sun
-			Growth Habit	Upright
-			Starting Location	Direct Sow
-			Plant Family	Amaranthaceae (Goosefoot)
-			Soil pH	6.1 - 7.0
-	    	-->
-
-
-		<crop name="Radish" growing-sols="25" crop-category="roots" life-cycle="annual"
-	    	edible-biomass="10" edible-water-content=".35" inedible-biomass="7" daily-PAR="15" />
-
-	  	<crop name="Red Beet" growing-sols="42" crop-category="roots" life-cycle="annual"
-	    	edible-biomass="7.98" edible-water-content=".75" inedible-biomass="3" daily-PAR="34.56" />
-
-		<!-- 15.7-22.4 T/ha from http://anrcatalog.ucanr.edu/pdf/8096.pdf
-			(22.4-15.7)*100/2/42 = 7.9762 g/m2/d
-
-		Categorized as an annual, they grow quickly in the cooler temperatures of early Spring and late Fall.
-		Once they are fully grown, they can be harvested, thus ending their lifecycle.
-
-		If temperatures become too hot, your beets will begin to bolt. This simply means that your Beetroot
-		plants will no longer send it's energy to produce it's roots, instead it will produce seeds.
-		 -->
-
-
-	    <crop name="Rice" growing-sols="100" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="10.3" edible-water-content=".12" inedible-biomass="38" daily-PAR="34.56" />
-		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf
-
-		http://ricepedia.org/rice-as-a-plant/growth-phases
-
-		-->
-
-	    <crop name="Sesame" growing-sols="50" crop-category="flowers" life-cycle="annual"
-	    	edible-biomass="7.2" edible-water-content=".4" inedible-biomass="15.0" daily-PAR="17.28"
-			seed-name="Sesame Seed"/>
-	    	<!--
-	    	
-	    	Assume this sesame variant takes half the time (100 days -> 50 days)
-	    		    	
-	    	http://en.wiki2.org/wiki/Sesame
-	    	~50 to 80 seeds per capsule
-	    	7.2 Metric Ton/hectare
-
-	    	Sesamum plants are a genus of half hardy annual herbs that reach from 30 to 90 cm in height.
-
-			They bloom in the summer carrying tubular flowers of violet, pink or white.
-
-	    	Sesame seeds contain around 50% of a highly unsaturated oil (oleic and linoleic acids predominate)
-	    	and 20 to 25% protein. The oil, which rarely goes rancid due to the presence of phenolic material,
-	    	is used in the manufacture of margarine, cooking fats, soaps, and paints and is used as a
-	    	lubricant and illuminant. In India, it is used as a ghee substitute and is the basis of scented
-	    	oils used in perfumery. The residue left after extraction is a valuable animal feed.
-
-	    	Throughout the world sesame seeds are used in food in a wide range of savory dishes and sweet
-	    	confections.
-	    	-->
-
-
-	    <crop name="Soybean" growing-sols="47" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="10" edible-water-content=".10" inedible-biomass="13" daily-PAR="34.56" />
-
-	    	<!--
-	    	Assume this Soybean variant takes half the time (93 days -> 47 days)
-	    	-->
-
-
-	   	<crop name="Strawberry" growing-sols="45" crop-category="fruits" life-cycle="annual"
-	    	edible-biomass="60" edible-water-content=".92" inedible-biomass="20" daily-PAR="25.92" />
-	    	
-	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
-	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
-
-	    	Annual/perennial :
-
-	    	From zone 7 southward, strawberries can be planted in fall.
-
-	    	In Florida and other warm, humid coastal areas, many are grown as cool weather annuals.
-
-	    	Like most hardy perennials, strawberries die back in winter and start growing vigorously as the soil warms in spring.
-	    	After bearing fruit (as early as February in Florida, or June farther north), many types of strawberries produce
-	    	numerous runners with baby plants at the tips.
-
-	    	Those runners often root themselves nearby yet remain attached to
-	    	the mother plant. These types of strawberries produce more fruit if you clip off most of the runners,
-	    	allowing each plant to produce no more than 3 daughter plants each summer.
-
-	    	(Some varieties of strawberries
-	    	produce few to no runners.)
-	    	 -->
-
-	   <crop name="Sugarcane" growing-sols="180" crop-category="grasses" life-cycle="perennial"
-	    	edible-biomass="73.67" edible-water-content=".75" inedible-biomass="20" daily-PAR="34.56" />
-	    	
-	    	<!-- CANE, SUGAR AND THE ENVIRONMENT from http://www.fao.org/docrep/005/x4988e/x4988e01.htm
-	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants.
-	    	The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
-	    	The protein and fat content of both beets and cane is almost nil.
-	    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%)
-
-	    	65.2 T/ha from http://sugarcanecrop.com/introduction/
-
-	    	Settle on (65.2 + 200)/2 T/ha, = 73.666
-
-	    	Phases from  http://sugarcanecrop.com/crop_growth_phases/germination_establishment_phase/
-	    	1. Germination/Establishment
-	    	2. Tillering
-	    	3. Grand Growth
-	    	4. Ripening, Maturation
-
-			4 varieties of sugarcane plants are available and numerous cultivars.
-
-			Harvesting and Replanting
-			Sugarcane is harvested once per year. The plants are maintained for three years and will achieve
-			three harvests before the field is replanted. When plants are 3 years old, production begins to
-			decline, the sugar level decreases and the plants become more prone to pests or disease.
-
-			The old plants are simply plowed under and new seed canes are planted
-
-	    	-->
-
-
-	    <crop name="Sweet Potato" growing-sols="90" crop-category="tubers" life-cycle="annual"
-	    	edible-biomass="25" edible-water-content=".79" inedible-biomass="10" daily-PAR="34.56" />
-
-		<!-- 
-			Assume this sweet potato variant takes 3/4 of the time (120 days -> 90 days)
-			
-			A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf
-
-			https://ask.extension.org/questions/216966
-			Sweet Potato tubers only contain root cells and grow on rhizomes.
-			In order to grow a new sweet potato plant, part of the root cap must be present to have Sweet potatoes
-			Sweet Potato are commonly misnamed yams in the United States.
-
-			Potato is not related to the Sweet potato because Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons.
-			The tubers form at the distal end of the stolon and/or along the stolon itself.
-			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant.
-
-			To recap, sweet potato is a root tuber, potato is a stem tuber.
-
-			http://www.biology.lifeeasy.org/3344/difference-between-root-tuber-and-stem-tuber
-
-			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
-			Root tubers do not have these attributes. Both are considered vegetables.
-
-			Lifecycle: Annual
-			Hardiness: Tender Annual
-
-		-->
-
-		<crop name="Swiss Chard" growing-sols="65" crop-category="leaves" life-cycle="biennial"
-	    	edible-biomass="71.06" edible-water-content=".92" inedible-biomass="37.69" daily-PAR="17.28" />
-
-		<!-- "Swiss Chard is a beet grown for its edible leaves" from http://anrcatalog.ucanr.edu/pdf/8096.pdf
-
-		"short vegetation period, ready for harvest in about 60 to 70 days after planting (Swiader et al.,1992)"
-		from http://www.ccsenet.org/journal/index.php/jas/article/viewFile/5603/6223
-
-		"spring growing (61.74 t · ha-1) in comparison to the autumn season (30.64 t · ha-1)"
-		 (61.74+30.64)/2*100/65 = 71.06
-
-		 previously edible-biomass="87.50" edible-water-content=".92" inedible-biomass="37.69"
-
-		 kale, Swiss chard, and onion, examples of biennial plant types
-
-		-->
-
-	    <crop name="Taro" growing-sols="100" crop-category="corms" life-cycle="perennial"
-	    	edible-biomass="4.7" edible-water-content=".706" inedible-biomass=".05" daily-PAR="34.56" />
-
-		<!--  
-			Assume this taro variant takes half the time (200 days -> 100 days)
-		
-			Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
-			http://www.harvesttotable.com/2010/03/taro/
-			Taro is a perennial herbaceous plant that grows from 3 to 6 feet tall. Its leaves are light green,
-			elongated, and heart shaped similar to an elephant’s ear. Tubers are spherical and about the size
-			of a tennis ball often covered with brownish skin and hairs; the flesh is pinkish purple, beige or white.
-			Taro requires seven months of hot weather to mature.
-
-			https://naldc.nal.usda.gov/download/295/PDF
-
-			https://en.wikipedia.org/wiki/Taro
-			"The global average yield is 6.2 tones/hectare but varies according to the region.
-			In Asia, average yields reach 12.6 tones/hectare."
-
-			9400 kg/ha /200 day = 47 kg/ha/d = 4.7 g/m2/d
-
-			ave monthly solar rad : 16.8MJ/m2
-
-			https://www.healthaliciousness.com/nutritionfacts/nutrition-comparison.php?o=11518&t=11519&h=&s=100&e=100&r=100
-			percent of water 70.6%, 63.8%
-
-			73.47 g of 104 g H20 http://www.healthbenefitstimes.com/taro/
-
-			http://www.nutrition-and-you.com/taro.html
-
-			phenological growth,
-			1. https://www.researchgate.net/publication/272030000_A_phenological_scale_for_the_development_of_Gladiolus
-			2. http://revistas.inia.es/index.php/sjar/article/view/7340/2514
-		-->
-
-	    <crop name="Tomato" growing-sols="80" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="17" edible-water-content=".948" inedible-biomass="20" daily-PAR="32.4" />
-	    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
-	    	 484 MT/ha for earth greenhouse
-	    	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
-
-	    	 It is a perennial in its native habitat, although often grown outdoors in temperate climates as an annual.
-	    	-->
-
-		<crop name="Wheat" growing-sols="80" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="13" edible-water-content=".12" inedible-biomass="26" daily-PAR="69.12" />
-			<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
-
-
 	    <crop name="White Onion" growing-sols="75" crop-category="bulbs" life-cycle="biennial"
-	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28" />
+	    	edible-biomass="3.0" edible-water-content=".89" inedible-biomass="1.0" daily-PAR="17.28" />
 	    	
 	    	<!-- 
 	    		Assume this White Onion variant takes half the time (150 days -> 75 days)
@@ -831,13 +1201,16 @@
 			-->
 
 	    <crop name="Yam" growing-sols="100" crop-category="tubers" life-cycle="annual"
-	    	edible-biomass="12.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
+	    	edible-biomass="2.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
 
 			<!-- 
+				For example, white yam typically yields 10–15 tonnes per hectare, while water yam can yield 
+				16–25 tonnes per hectare under optimal conditions.
+				
 				Assume this Yam variant takes half the time (200 days -> 100 days)
 			
 				https://harvestchoice.org/sites/default/files/images/thumbnails/data/yams_y_3.png
-			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d
+			    ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d
 
 			Yams (Dioscorea spp.) are annual or perennial vines and climbers with annual or perennial underground tubers.
 

@@ -41,14 +41,16 @@
 
 		<dish name="Steamed Brown Rice" oil="0.05" salt="0.01">
 			<ingredient name="Brown Rice" proportion="0.4"/>
-			<ingredient name="Spring Onion" proportion="0.2"/>
+			<ingredient name="Spring Onion" proportion="0.15"/>
 			<ingredient name="Celery" proportion="0.2"/>
+			<ingredient name="White Mustard" proportion="0.05"/>
 		</dish>
 
 		<dish name="Sauteed Swiss Chard Fried Rice" oil="0.1" salt="0.01">
 			<ingredient name="White Rice" proportion="0.4"/>
 			<ingredient name="Swiss Chard" proportion="0.2"/>
-			<ingredient name="White Onion" proportion="0.1"/>
+			<ingredient name="White Onion" proportion="0.05"/>
+			<ingredient name="Basil" proportion="0.05"/>
 			<ingredient name="Lettuce" proportion="0.09"/>
 			<ingredient name="Garlic" proportion="0.01"/>
 			<ingredient name="Leaves" proportion="0.1"/>
@@ -69,6 +71,14 @@
 			<ingredient name="Rice Vinegar" proportion="0.01"/>
 		</dish>
 
+		<dish name="Fresh Microgreens Salad" oil="0.05" salt="0.01">
+			<ingredient name="Microgreens" proportion="0.4"/>
+			<ingredient name="Lettuce" proportion="0.2"/>
+			<ingredient name="Cabbage" proportion="0.09"/>
+			<ingredient name="Basil" proportion="0.1"/>
+			<ingredient name="Rice Vinegar" proportion="0.01"/>
+		</dish>
+		
 		<dish name="Bean Sprout Garlic Stir Fry" oil="0.1" salt="0.01">
 			<ingredient name="Soy Sprout" proportion="0.5"/>
 			<ingredient name="Garlic" proportion="0.2"/>
@@ -90,7 +100,8 @@
 			<ingredient name="Veggie Patty" proportion="0.4"/>
 			<ingredient name="Wheat Bread" proportion="0.15"/>
 			<ingredient name="Lettuce" proportion="0.1"/>
-			<ingredient name="Tomato" proportion="0.1"/>
+			<ingredient name="Tomato" proportion="0.05"/>
+			<ingredient name="Microgreens" proportion="0.05"/>
 			<ingredient name="Peanut Butter" proportion="0.05"/>
 		</dish>
 
@@ -106,7 +117,8 @@
 			<ingredient name="Potato" proportion="0.1"/>
 			<ingredient name="Peas" proportion="0.1"/>
 			<ingredient name="Tomato" proportion="0.1"/>
-			<ingredient name="Green Bell Pepper" proportion="0.15"/>
+			<ingredient name="Dandelion" proportion="0.05"/>
+			<ingredient name="Green Bell Pepper" proportion="0.1"/>
 		</dish>
 
 		<dish name="Spaghetti" oil="0.05" salt="0.01">
@@ -129,7 +141,8 @@
 			<ingredient name="Ginger" proportion="0.1"/>
 			<ingredient name="Rice Vinegar" proportion="0.045"/>
 			<ingredient name="Soy Sprout" proportion="0.2"/>
-			<ingredient name="Leaves" proportion="0.2"/>
+			<ingredient name="Dandelion" proportion="0.05"/>
+			<ingredient name="Leaves" proportion="0.15"/>
 			<ingredient name="Miso" proportion="0.005"/>
 		</dish>
 
@@ -138,8 +151,9 @@
 			<ingredient name="Green Bell Pepper" proportion="0.1"/>
 			<ingredient name="Tomato" proportion="0.05"/>
 			<ingredient name="White Onion" proportion="0.1"/>
+			<ingredient name="Dandelion" proportion="0.05"/>
 			<ingredient name="Morel Mushroom" proportion="0.05"/>
-			<ingredient name="Leaves" proportion="0.2"/>
+			<ingredient name="Leaves" proportion="0.15"/>
 		</dish>
 
 		<dish name="Spring Pasta with Fried Morels" oil="0.05" salt="0.01">
@@ -193,6 +207,7 @@
 		<dish name="Garlic Bread" oil="0.15" salt="0.01">
 			<ingredient name="White Bread" proportion="0.45"/>
 			<ingredient name="Garlic" proportion="0.05"/>
+			<ingredient name="Parsley" proportion="0.05"/>
 		</dish>
 
 		<dish name="French Fries" oil="0.25" salt="0.01">
@@ -208,6 +223,7 @@
 		<dish name="Baked Potatoes" oil="0.05" salt="0.005">
 			<ingredient name="Potato" proportion="0.475"/>
 			<ingredient name="Spring Onion" proportion="0.025"/>
+			<ingredient name="Leaves" proportion="0.05"/>
 		</dish>
 
 		<dish name="Taro Chips" oil="0.15" salt="0.01">
@@ -239,6 +255,7 @@
 			<ingredient name="Carrot" proportion="0.125"/>
 			<ingredient name="Celery" proportion="0.125"/>
 			<ingredient name="Water" proportion="0.25"/>
+			<ingredient name="Microgreens" proportion="0.25"/>			
 		</dish>
 		
 		<dish name="Ginger Sesame Tofu" oil="0.02" salt="0.005">
@@ -248,7 +265,7 @@
 			<ingredient name="soy sauce" proportion="0.03"/>
 			<ingredient name="carrot" proportion="0.1"/>
 			<ingredient name="leaves" proportion="0.075"/>
-			<ingredient name="garlic oil" proportion="0.025"/>
+			<ingredient name="Dandelion" proportion="0.025"/>
 		</dish>
 		
 		<dish name="Ginger Sesame Tempeh" oil="0.02" salt="0.005">
@@ -258,7 +275,7 @@
 			<ingredient name="soy sauce" proportion="0.03"/>
 			<ingredient name="carrot" proportion="0.1"/>
 			<ingredient name="leaves" proportion="0.075"/>
-			<ingredient name="garlic oil" proportion="0.025"/>
+			<ingredient name="White Mustard" proportion="0.025"/>
 		</dish>
 		
 		<dish name="Okara and Veggies" oil="0.01" salt="0.005">
@@ -269,6 +286,16 @@
 			<ingredient name="celery" proportion="0.05"/>
 			<ingredient name="leaves" proportion="0.05"/>
 			<ingredient name="garlic" proportion="0.02"/>
+		</dish>
+		
+		<dish name="Veggie Bowls with Microgreens" oil="0.01" salt="0.005">
+			<ingredient name="Microgreens" proportion="0.25"/>
+			<ingredient name="carrot" proportion="0.05"/>
+			<ingredient name="spring onion" proportion="0.05"/>
+			<ingredient name="soy sauce" proportion="0.03"/>
+			<ingredient name="celery" proportion="0.05"/>
+			<ingredient name="leaves" proportion="0.05"/>
+			<ingredient name="peas" proportion="0.02"/>
 		</dish>
 		
 		<!--  SOUP BELOW
@@ -309,7 +336,7 @@
 			<ingredient name="Cinnamon" proportion="0.1"/>
 		</dish>
 		<dish name="Granola">
-			<ingredient name="Granola Bar" proportion="0.3"/>
+			<ingredient name="Granola bar" proportion="0.3"/>
 			<ingredient name="Sesame Milk" proportion="0.2"/>
 			<ingredient name="Honey" proportion="0.1"/>
 		</dish>
@@ -325,9 +352,15 @@
 			<ingredient name="Blueberry muffin" proportion="0.5"/>
 		</dish>
 		<dish name="Yogurt Parfait">
-			<ingredient name="Granola Bar" proportion="0.2"/>
+			<ingredient name="Granola bar" proportion="0.2"/>
 			<ingredient name="Blueberry" proportion="0.3"/>
 			<ingredient name="Cranberry" proportion="0.3"/>
+		</dish>
+		<dish name="Basil Pesto">
+			<ingredient name="Basil" proportion="0.2"/>
+			<ingredient name="Garlic" proportion="0.15"/>
+			<ingredient name="Leaves" proportion="0.15"/>
+			<ingredient name="Sesame" proportion="0.3"/>
 		</dish>
 	</dessert-list>
 

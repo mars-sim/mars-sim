@@ -74,6 +74,7 @@ public class Dining extends Function {
 
     /**
      * Gets the dining capacity of the building.
+     * 
      * @return capacity.
      */
     public int getDiningCapacity() {

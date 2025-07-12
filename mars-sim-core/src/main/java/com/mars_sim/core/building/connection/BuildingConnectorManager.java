@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @date 2023-07-22
+ * @date 2025-07-11
  * @author Scott Davis
  */
 package com.mars_sim.core.building.connection;
@@ -334,10 +334,11 @@ public class BuildingConnectorManager implements Serializable {
 				} 
 				
 				else {
-					throw new IllegalStateException("Unable to find building connection for "
-							+ partialConnector.building.getBuildingType() 
-							+ " (buildingID: " + partialConnector.building.getName()
-							+ ") in " + settlement.getName());
+					throw new IllegalStateException("bestFitConnector is null. Unable to find building connection for "
+							+ partialConnector.building.getName() 
+							+ " [templateID: " + ((Building)partialConnector.building).getTemplateID()
+							+ "  buildingID: " + partialConnector.building.getName()
+							+ "] in " + settlement.getName() + ". ");
 				}
 			}
 			
@@ -347,8 +348,10 @@ public class BuildingConnectorManager implements Serializable {
 						"Missing/Invalid PartialBuildingConnector(s) regarding "
 						+ partialConnector.building.getName()
 						+ " [templateID: " + ((Building)partialConnector.building).getTemplateID() 
-						+ "] in " + settlement.getName()
-						+ ".  partialBuildingConnectorList: " + partialBuildingConnectorList.size()
+						+ "  buildingID: " + partialConnector.building.getName()
+						+ "] in " + settlement.getName() + ". "
+						+ " partialConnectorLoc: " + partialConnectorLoc
+						+ " partialBuildingConnectorList: " + partialBuildingConnectorList.size()
 						+ "  validPartialConnectors: " + validPartialConnectors.size()
 //						+ "  " + partialConnector.building.getBuildingType() 
 						 + ".");

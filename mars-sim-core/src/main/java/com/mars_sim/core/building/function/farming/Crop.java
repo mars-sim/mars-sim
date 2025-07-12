@@ -141,25 +141,31 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The string reference for mushroom */
 	private static final String MUSHROOM = "mushroom";
 
+	
+	/** The current work time required [in millisols]. */
+	private boolean isTenderRequired = false;
+	
 	/** The crop identifier (unique only within a greenhouse). */
 	private int identifier;
+	
 	/** The total amount of light received by this crop. */
 	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
 	private double massRatio;
 	/** The maximum possible harvest for this crop [in kg]. */
 	private double maxHarvest;
+	/** The daily harvest quota for crop [in kg/per sol]. */
+	private double dailyHarvestQuota;
+	/** The daily harvest for crop [in kg/per sol]. */
+	private double dailyCollcted;
+	/** The maximum possible harvest per harvest day or this crop [in kg / per sol]. */
+	private double harvestPerHarvestDay;
+	/** The total amount harvested [in kg]. */
+	private double totalCollected;
 	/** The required work time in current phase [in millisols]. */
 	private double currentPhaseWorkRequired = 0;
-	/** The current work time required [in millisols]. */
-	private boolean isTenderRequired = false;
+
 	private double currentTenderWorkRequired = RandomUtil.getRandomDouble(0, 10);
-	/** The daily harvest for crop [in kg/per sol]. */
-	private double dailyHarvestQuota;
-	private double dailyHarvest;
-	private double maxDailyHarvest;
-	/** The total amount harvested [in kg]. */
-	private double totalHarvest;
 	/** The growing phase time completed thus far [in millisols]. */
 	private double growingTimeCompleted;
 	/** Percentage of growing completed */
@@ -172,8 +178,6 @@ public class Crop implements Comparable<Crop>, Entity {
 	private double lightingPower = 0;
 	/** The health condition factor of the crop. 1 = excellent. 0 = worst*/
 	private double healthCondition = 1;
-
-
 	/** The disease index of a crop. */
 	private double diseaseIndex = 0;
 	/** The cache for co2. */
@@ -193,6 +197,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** Current phase of crop. */
 	private Phase currentPhase;
 
+	/** The phase prior to harvesting phase. */
+	private Phase preHarvestPhase;
+	
 	private Farming farm;
 	private Building building;
 
@@ -223,25 +230,34 @@ public class Crop implements Comparable<Crop>, Entity {
 		building = farm.getBuilding();
 
 		int totalSols = cropSpec.getGrowingSols(); 
-		double growingDays = cropSpec.getInGroundSols();
+//		double growingDays = cropSpec.getInGroundSols();
 		var category = cropSpec.getCropCategory();
 
-		// Note edible-biomass is [ gram / m^2 / day ]
-		double edibleBiomassKG = cropSpec.getEdibleBiomass()/1000D;
-		double dailyMassIncrease = edibleBiomassKG * growingArea;
-		maxHarvest = dailyMassIncrease * growingDays;
+		// 5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space,
+		
+		// 1000 kg/ha = .1 kg/m2 = 100 g /m2
 
+		// Note : edible-biomass is [ kg / m^2 ]
+		double edibleBiomass = cropSpec.getEdibleBiomass();
+		// Note : maxHarvest is kg
+		maxHarvest = edibleBiomass * growingArea;
 		// Daily harvest quota is based on maturation & harvest phases
-		var harvestDays = (category.getPhase(PhaseType.HARVESTING).getPercentGrowth()
-				* totalSols) / 100D;
-		maxDailyHarvest = maxHarvest / harvestDays;
-		dailyHarvestQuota = maxDailyHarvest;
-
+		var harvestDays = category.getPhase(PhaseType.HARVESTING).getPercentGrowth()  / 100D * totalSols;
+		
+		harvestPerHarvestDay = maxHarvest / harvestDays;	
+		// e.g. 10 kg / 5 days = 2 kg
+		
+		dailyHarvestQuota = harvestPerHarvestDay;
+		
 		if (cropSpec.getSeedID() > 0) {
 			massRatio = 1;
 		}
 
 		Phase startingPhase = null;
+		
+		int numPhases = category.getPhases().size();
+		preHarvestPhase = category.getPhases().get(numPhases - 3);
+		
 		if (!isStartup) {
 			// if this is not a grown crop at the start of the sim, start from the beginning
 			startingPhase = category.getPhases().get(0);
@@ -285,7 +301,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// Fast track through the phases
 			var phases = category.getPhases();
 			startingPhase = null;
-			for(Phase phase : phases) {
+			for (Phase phase : phases) {
 				if (phase.getCumulativePercentGrowth() > percentageGrowth) {
 					startingPhase = phase;
 					break;
@@ -298,7 +314,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			currentPhaseWorkRequired = 1000D * startingPhase.getWorkRequired();
 					
-			// Future: how to allow crops such as cilantro to be harvested early to collect leaves, 
+			// Future: how to allow crops such as cilantro, dandelion to be harvested early to collect leaves, 
 			// instead of waiting for seeds (coriander) to be matured ?
 
 		}
@@ -327,7 +343,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 
 	/**
-	 * Mark the crop as finished growing
+	 * Marks the crop as finished growing.
+	 * 
 	 * @param isWaste The crop is waste
 	 */
 	private void finishCrop(boolean isWaste) {
@@ -406,21 +423,21 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 	
 	/**
-	 * Gets the details of the daily harvest
+	 * Gets the details of the daily harvest.
 	 *
 	 * @return harvested and the estimated maximum
 	 */
 	public ValueMax getDailyHarvest() {
-		return new ValueMax(dailyHarvest, dailyHarvestQuota);
+		return new ValueMax(dailyCollcted, dailyHarvestQuota);
 	}
 
 	/**
-	 * Gets the details of the harvest
+	 * Gets the details of the harvest.
 	 *
 	 * @return harvested and the estimated maximum
 	 */
 	public ValueMax getHarvest() {
-		return new ValueMax(totalHarvest, maxHarvest);
+		return new ValueMax(totalCollected, maxHarvest);
 	}
 
 	/**
@@ -461,12 +478,12 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * Gets the priority score for this crop based on the phase.
 	 */
 	public double getTendingScore() {
-		double score = 0;
+		double score = 0.1;
 		if (currentTenderWorkRequired > POSITIVE_ENTROPY) {
 			score = (int)Math.floor(currentTenderWorkRequired / 15); 
 		}
 		return switch(currentPhase.getPhaseType()) {
-			case HARVESTING -> score * 3;
+			case HARVESTING -> score * 10;
 			case PLANTING -> score * 1;
 			case INCUBATION -> score * 1.5;
 			default -> score * 2;
@@ -613,14 +630,20 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		// Only do phases that need manual work
 		PhaseType phaseType = currentPhase.getPhaseType();
-		switch (phaseType) {
-		case MATURATION, HARVESTING:
+		
+		boolean shouldHarvest = currentPhase.getName().equals(preHarvestPhase.getName())
+				|| phaseType == PhaseType.MATURATION
+				|| phaseType == PhaseType.HARVESTING;
+		
+		if (shouldHarvest) {
+		
 			// at the maturation or harvesting phase
 			currentPhaseWorkRequired -= workTime;
 
-			// Set the harvest multiplier; not as effecient during maturation
-			double phaseModifier = (phaseType == PhaseType.HARVESTING ? 10D : 2D);
-			double modifiedHarvest = phaseModifier * dailyHarvestQuota * (workTime / 1000D);
+			// Set the harvest multiplier; not as efficient during maturation
+			double phaseModifier = (phaseType == PhaseType.HARVESTING ? 10 : .2);
+			
+			double modifiedHarvest = phaseModifier * dailyHarvestQuota * workTime/1000;
 
 			// Store the crop harvest
 			if (modifiedHarvest > 0) {
@@ -630,39 +653,44 @@ public class Crop implements Comparable<Crop>, Entity {
 			// End of harvest effort
 			if (currentPhaseWorkRequired <= 0) {
 				// Don't end until there is nothing left ?
-				if (totalHarvest >= maxHarvest) {
-					logger.info(this, 4_000, 
-							"Harvested a total of "
-								+ Math.round(totalHarvest * 100.0) / 100.0 + " kg. during "
-								+ phaseType);
+				if (totalCollected >= maxHarvest) {
+					double tHarvest = Math.round(totalCollected * 1000.0) / 1000.0;
+					if (tHarvest > 0)
+						logger.info(this, 4_000, 
+							"maxHarvest: " + Math.round(maxHarvest * 1000.0) / 1000.0 + " kg "
+							+ " Harvested a total of "
+								+ Math.round(tHarvest * 1000.0) / 1000.0 + " kg during "
+								+ currentPhase.toString().toLowerCase() + " phase.");
 
 					// Sets the phase to FINISHED
 					finishCrop(false);
 
 					//  Check to see if a botany lab is available
-					if (worker instanceof Person && !farm.checkBotanyLab())
-						logger.warning(worker,
+					if (worker instanceof Person p && !farm.checkBotanyLab())
+						logger.warning(p,
 								"Can't find an available lab bench to work on its tissue culture.");
 				}
+				else {
+					double mHarvest = Math.round(modifiedHarvest * 1000.0) / 1000.0;
+					if (mHarvest > 0)
+						logger.info(this, 4_000, 
+							"dailyHarvestQuota: " + Math.round(dailyHarvestQuota * 1000.0) / 1000.0 + " kg "
+							+ " Harvesting "
+								+ mHarvest + " kg during "
+								+ currentPhase.toString().toLowerCase() + " phase.");
+				}
 			}
-			break;
-
-		case FINISHED:
-			// Shouldn't be here
-			break;
-
-		default:
+		}
+			
+		if (phaseType != PhaseType.HARVESTING) {
 			// at a particular growing phase (NOT including the harvesting phase)
 			currentPhaseWorkRequired -= modTime;
 
 			if (currentPhaseWorkRequired < 0) {
 				currentPhaseWorkRequired = 0D;
 			}
-			break;
 		}
-
-		// Safety check
-		if ((currentPhase.getPhaseType() == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
+		else if (percentageGrowth > 115D)  {
 			logger.fine(this, "At " + percentageGrowth
 					   + "% of growth, setting the phase to FINISHED.");
 			finishCrop(false);
@@ -688,12 +716,17 @@ public class Crop implements Comparable<Crop>, Entity {
 		int cropID = cropSpec.getCropID();
 
 		// Check not over collecting. What is the max remaining
-		double remaining = Math.min((maxHarvest - totalHarvest),
-									(dailyHarvestQuota - dailyHarvest));
+		double remaining = Math.min((maxHarvest - totalCollected),
+									(dailyHarvestQuota - dailyCollcted));
 		harvestMass = Math.min(harvestMass, remaining);
-		totalHarvest += harvestMass;
-		dailyHarvest += harvestMass;
+		totalCollected += harvestMass;
+		dailyCollcted += harvestMass;
 
+		if (dailyCollcted > 0)
+			logger.info(this, 4_000, "totalCollected: " + Math.round(totalCollected * 1000.0) / 1000.0
+						+ "  dailyCollcted: " + Math.round(dailyCollcted * 1000.0) / 1000.0);
+
+		
 		// Deposit main outputs
 		if ((seedID > 0) && harvestMass * massRatio > 0) {
 			store(harvestMass * massRatio, seedID);
@@ -757,7 +790,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			double growingTime = cropSpec.getGrowingSols() * 1000D;
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 			
-			// Move crop forard if the phase has a time aspect
+			// Move crop growth phase forward if the phase has a time aspect
 			if (percentageGrowth > currentPhase.getCumulativePercentGrowth()) {
 				// Advance onto the next phase
 				advancePhase();
@@ -769,8 +802,11 @@ public class Crop implements Comparable<Crop>, Entity {
 													solarIrradiance,
 													greyFilterRate,
 													temperatureModifier);
+			
+//			logger.info(this, 4_000, "harvestModifier: " + Math.round(harvestModifier * 1000.0) / 1000.0);
+			
 			// Add to the daily harvest.
-			dailyHarvestQuota = maxDailyHarvest * harvestModifier;
+			dailyHarvestQuota = harvestPerHarvestDay * harvestModifier;
 
 			// Checks on crop health
 			trackHealth();
@@ -795,7 +831,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// every time
 			// Reset the daily work counter currentPhaseWorkCompleted back to zero
 			cumulativeDailyPAR = 0;
-			dailyHarvest = 0D;
+			dailyCollcted = 0D;
 		}
 
 		return false;

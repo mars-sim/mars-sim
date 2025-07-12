@@ -1155,6 +1155,10 @@ public class Farming extends Function {
 			// need special care
 			if (c.getHealthCondition() < .5)
 				cropsNeedingTending++;
+			
+			if (c.getPhase().getPhaseType() == PhaseType.HARVESTING)
+				cropsNeedingTending++;
+			
 		}
 		cropsNeedingTending += numCrops2Plant;
 
