@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.mission.task;
 
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
@@ -19,6 +19,8 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.CollectResourcesMission;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
+import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -95,7 +97,7 @@ public class CollectResources extends EVAOperation {
 		setMinimumSunlight(LIGHT_LEVEL);
 		
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
 	      	return;
 		}
 
@@ -229,10 +231,10 @@ public class CollectResources extends EVAOperation {
 		Container container = person.findContainer(containerType, false, resourceType);
 		if (container == null) {
 			if (resourceType == ResourceUtil.ICE_ID) {
-				checkLocation("No container available for ice.");
+				endEVA("No container available for ice.");
 			}
 			else if (resourceType == ResourceUtil.REGOLITH_ID) {
-				checkLocation("No container available for regolith.");
+				endEVA("No container available for regolith.");
 			}
 			return time;
 		}
@@ -240,7 +242,7 @@ public class CollectResources extends EVAOperation {
 		double remainCap = container.getAmountResourceRemainingCapacity(resourceType);
 		if (remainCap <= 0.01) {
 			remainCap = 0;
-			checkLocation("Container capacity maxed out.");
+			endEVA("Container capacity maxed out.");
 		}
 		
 		double collectedAtThisSite = mission.getCollectedAtCurrentSite();
@@ -248,7 +250,7 @@ public class CollectResources extends EVAOperation {
 		double remainingSamplesNeeded = targettedAmount - collectedAtThisSite;
 		if (remainingSamplesNeeded <= 0.01) {
 			remainingSamplesNeeded = 0;
-			checkLocation("No more samples needed.");
+			endEVA("No more samples needed.");
 		}
 		
 		double sampleLimit = Math.min(remainingSamplesNeeded, remainCap);
@@ -284,7 +286,7 @@ public class CollectResources extends EVAOperation {
 		} 
 		else {
 			container.storeAmountResource(resourceType, sampleLimit);
-			checkLocation("Samples collected exceeded set limits.");
+			endEVA("Samples collected exceeded set limits.");
 		}
 		return 0;
 	}
