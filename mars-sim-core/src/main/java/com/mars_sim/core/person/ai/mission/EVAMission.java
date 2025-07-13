@@ -187,7 +187,7 @@ abstract class EVAMission extends RoverMission {
 			if (member instanceof Person person) {
 				Task task = person.getMind().getTaskManager().getTask();
 				if (task instanceof EVAOperation eo) {
-					eo.endEVA();
+					eo.requestEndEVA();
 				}
 			}
 		}

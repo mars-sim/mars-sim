@@ -279,19 +279,27 @@ public class ExplorationManager implements Serializable {
 		var el = surfaceFeatures.createROI(siteLocation, skill);
 		if (el != null) {
 			// Record this site locally
-			var p = interestingLocns.stream()
-						.filter(s -> s.locn.equals(siteLocation))
-						.findAny().orElse(null);
-			if (p == null) {
-				// Odd as all potential Coordinates shoudl be known
-				p = new Prospect(siteLocation, 10D);
-				interestingLocns.add(p);
-			}
+			var p = findProspect(siteLocation);
+
 			p.site = el;
 		}
 		return el;
 	}
 	
+	private Prospect findProspect(Coordinates siteLocation) {
+		var p = interestingLocns.stream()
+					.filter(s -> s.locn.equals(siteLocation))
+					.findAny().orElse(null);
+		if (p == null) {
+			// Odd as all potential Coordinates shoudl be known
+			var distance = base.getCoordinates().getDistance(siteLocation);
+			p = new Prospect(siteLocation, distance);
+			interestingLocns.add(p);
+		}
+
+		return p;
+	}
+
 	/**
 	 * Checks if there are any mineral locations within rover/mission range.
 	 * Note: Called by getTotalMineralValue()
@@ -405,5 +413,7 @@ public class ExplorationManager implements Serializable {
 	 */
     public void claimSite(MineralSite newSite) {
 		newSite.setClaimed(base.getReportingAuthority());
+		var p = findProspect(newSite.getCoordinates());
+		p.site = newSite;
     }	
 }

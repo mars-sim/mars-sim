@@ -116,10 +116,9 @@ public class ExploreSite extends EVAOperation {
 	 * Checks if a person can explore a site.
 	 *
 	 * @param member the member
-	 * @param rover  the rover
 	 * @return true if person can explore a site.
 	 */
-	public static boolean canExploreSite(Worker member, Rover rover) {
+	public static boolean canExploreSite(Worker member) {
 
 		if (member instanceof Person person) {
 
@@ -172,11 +171,6 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
-		if (site == null) {
-			logger.severe(person, 5_000, "Site unavailable.");
-			endTask();
-		}
-		
 		if (checkReadiness(time) > 0)
 			return time;
 
@@ -184,7 +178,7 @@ public class ExploreSite extends EVAOperation {
 		((Exploration)person.getMission()).addSiteTime(time);
 		
 		if (totalCollected > AVERAGE_ROCK_COLLECTED_SITE) {
-			checkLocation("Rocks collected exceeded set average.");
+			endEVA("Rocks collected exceeded set average.");
 			return time;
 		}
 
@@ -264,20 +258,16 @@ public class ExploreSite extends EVAOperation {
 						mission.recordResourceCollected(rockId, cap);
 						double collected = cap - excess;
 						totalCollected += collected;
-						logger.info(person, 10_000, "Specimen box full. Collected " + Math.round(collected * 100.0)/100.0 
-								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + ".");
-						endTask();
+						endEVA("Specimen box full.");
 					}
 				}
 				else {
-					logger.info(person, 10_000, "No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
-					endTask();
+					endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
 				}
 			}
 		}
 		else {
-			logger.info(person, 10_000, "No specimen box available.");
-			endTask();
+			endEVA("No specimen boxes available.");
 		}
 	}
 

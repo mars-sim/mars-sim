@@ -147,15 +147,6 @@ public class EquipmentInventory
 	public Set<Equipment> getContainerSet() {
 		return Collections.unmodifiableSet(containerSet);
 	}
-
-	/**
-	 * Gets the container set.
-	 *
-	 * @return
-	 */
-	public Set<Equipment> getContainerCopySet() {
-		return Set.copyOf(containerSet);
-	}
 	
 	/**
 	 * Gets the EVA suit set.
@@ -179,10 +170,8 @@ public class EquipmentInventory
 			if (suitSet.isEmpty())
 				return false;
 		}
-		else if (containerSet.isEmpty())
-			return false;
-		
-		return true;
+
+		return containerSet.stream().anyMatch(e -> e.getEquipmentType() == type);
 	}
 
 	/**

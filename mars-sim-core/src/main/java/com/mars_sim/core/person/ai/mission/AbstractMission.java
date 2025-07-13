@@ -823,7 +823,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// If task is physical effort driven and person too ill, do not assign task.
 		Task currentTask = person.getMind().getTaskManager().getTask();
 
-		if (currentTask != null) {
+		if ((currentTask != null) && !currentTask.isDone()) {
 
 			if (currentTask.getName().equals(task.getName())){
 	      		logger.info(person, 4_000, "Already doing '" + currentTask.getName() + "' as of this moment.");

@@ -251,7 +251,7 @@ public class Exploration extends EVAMission
 		objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
 
 		// If person can explore the site, start that task.
-		if (ExploreSite.canExploreSite(person, getRover())) {
+		if (ExploreSite.canExploreSite(person)) {
 			assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
 		}
 
