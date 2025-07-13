@@ -224,27 +224,28 @@ public class ExplorationManager implements Serializable {
 	public ExploredStats getStatistics(int status) {
 		List<Double> list = new ArrayList<>();
 		for (var e : interestingLocns) {
-
-            switch(status) {
-                case SITE_STAT: 
-                    list.add(e.distance);
-                    break;
-                
-                case CLAIMED_STAT:
-                    if ((e.site != null) && e.site.getOwner().equals(base.getReportingAuthority())) {
-                        list.add(e.distance);
-                    }
-                    break;
-                
-                case UNCLAIMED_STAT:
-                    if ((e.site != null) && !e.site.isClaimed()) {
-                        list.add(e.distance);
-                    }
-                    break;
-                
-                default:
-                    break;
-            }	
+			if (e.site != null) {
+				switch(status) {
+					case SITE_STAT: 
+						list.add(e.distance);
+						break;
+					
+					case CLAIMED_STAT:
+						if (e.site.isClaimed() && e.site.getOwner().equals(base.getReportingAuthority())) {
+							list.add(e.distance);
+						}
+						break;
+					
+					case UNCLAIMED_STAT:
+						if (!e.site.isClaimed()) {
+							list.add(e.distance);
+						}
+						break;
+					
+					default:
+						break;
+				}
+			}	
 		}
 		
 	    double mean = 0.0;
