@@ -9,11 +9,13 @@ package com.mars_sim.core.structure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -35,6 +37,20 @@ public class ExplorationManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**
+	 * Represents a propspective site
+	 */
+	private static class Prospect implements Serializable {
+		Coordinates locn;
+		double distance;
+		MineralSite site;
+
+		Prospect(Coordinates locn, double distance) {
+			this.locn = locn;
+			this.distance = distance;
+		}
+	}
+
+	/**
      * This is the statistics output for a category of explored locations.
      */
     public record ExploredStats(double mean, double sd) {}
@@ -51,10 +67,8 @@ public class ExplorationManager implements Serializable {
     public static final int UNCLAIMED_STAT = 1;
     public static final int SITE_STAT = 2;
 
-	/** A set of nearby mineral locations. */
-	private Map<Coordinates, Double> nearbyMineralLocations = new HashMap<>();
-	/** A list of declared Regions of Interest (ROIs) for mineral exploration. */
-	private Set<MineralSite> declaredROIs = new HashSet<>();
+	/** A collection of Prospective locations. */
+	private Set<Prospect> interestingLocns = new HashSet<>();
 
     private Settlement base;
     
@@ -73,8 +87,10 @@ public class ExplorationManager implements Serializable {
 	 */
 	public Coordinates acquireNearbyMineralLocation(double limit) {
 		
+		var existing = getNearbyMineralLocations();
+
 		var pair = surfaceFeatures.getMineralMap().
-				findRandomMineralLocation(base.getCoordinates(), limit + extraKM, nearbyMineralLocations.keySet());
+				findRandomMineralLocation(base.getCoordinates(), limit + extraKM, existing);
 		
 		if (pair == null) {
 			logger.warning(base, "No nearby mineral locations found within " + Math.round(limit + extraKM) + " km.");
@@ -82,14 +98,14 @@ public class ExplorationManager implements Serializable {
 			return null;
 		}
 		
-		nearbyMineralLocations.put(pair.getKey(), pair.getValue());
+		interestingLocns.add(new Prospect(pair.getKey(), pair.getValue()));
 		
 		return pair.getKey();
 	}
 	
     
 	/**
-	 * Gets the next closest mineral location.
+	 * Gets the next closest mineral location that is not a declared site.
 	 * 
 	 * @param limit
 	 * @return
@@ -97,27 +113,20 @@ public class ExplorationManager implements Serializable {
 	public Coordinates getNextClosestMineralLoc(double limit) {
 		
 		acquireNearbyMineralLocation(limit);
-				
-		double shortestDist = 1000;
-		Coordinates chosen = null;
-
-		for(var c : nearbyMineralLocations.entrySet()) {
-			double dist = c.getValue();
-			if ((surfaceFeatures.getDeclaredROI(c.getKey()) == null)
-			    && (shortestDist >= dist)) {
-				shortestDist = dist;
-				chosen = c.getKey();
-			}
-		}	
 		
-		return chosen;
+		var closest = interestingLocns.stream()
+					.filter(c -> c.site == null)
+					.min(Comparator.comparing(p -> p.distance))
+					.orElse(null);
+		return (closest != null ? closest.locn : null);
 	}
 	
 	/**
 	 * Gets a set of nearby potential mineral locations.
 	 */
 	public Set<Coordinates> getNearbyMineralLocations() {
-		return nearbyMineralLocations.keySet();
+		return interestingLocns.stream().map(m -> m.locn).collect(Collectors.toSet());
+
 	}
 
 	/**
@@ -126,17 +135,12 @@ public class ExplorationManager implements Serializable {
 	 * @return
 	 */
 	public Coordinates getExistingNearbyMineralLocNotFromROIs() {
-
-		for (Coordinates c : nearbyMineralLocations.keySet()) {
-			for (MineralSite el : declaredROIs) {
-				// Not an ROI
-				if (!c.equals(el.getLocation())) {
-					return c;
-				}
-			}
-		}
+		var unDeclared = interestingLocns.stream()
+							.filter(p -> p.site == null)
+							.toList();
+		var selected = RandomUtil.getRandomElement(unDeclared);
 		
-		return null;
+		return (selected != null ? selected.locn : null);
 	}
     
 	
@@ -149,24 +153,15 @@ public class ExplorationManager implements Serializable {
 	 * @return
 	 */
 	public Coordinates getUnexploredLocalSites(boolean closest, double limit) {
-				
-		if (limit == -1) {		
-			return getNextClosestMineralLoc(limit);
-		}
-		
-		logger.info(base, "nearbyMineralLocations: " + nearbyMineralLocations.size());
 		
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
-		for (var c : nearbyMineralLocations.entrySet()) {
+		for (var c : interestingLocns) {
 			// If an undeclared location
-			var declared = declaredROIs.stream()
-						.filter(e -> e.getCoordinates().equals(c.getKey()))
-						.findAny().orElse(null);
-			if ((declared != null) && declared.isExplored()) {
+			if ((c.site != null) && c.site.isExplored()) {
 				continue;
 			}
 			
-			double distance = c.getValue();
+			double distance = c.distance;
 			double prob = 0;
 			double delta = limit - distance + 100;
 				
@@ -179,7 +174,7 @@ public class ExplorationManager implements Serializable {
 			
 			if (distance >= MineralMap.MIN_DISTANCE && prob > 0) {
 				// Fill up the weight map
-				weightedMap.put(c.getKey(), prob);
+				weightedMap.put(c.locn, prob);
 			}
 		}
 
@@ -201,23 +196,22 @@ public class ExplorationManager implements Serializable {
 	 * @param isClaimed
 	 * @return
 	 */
-	public int numDeclaredROIs(boolean isClaimed) {	
-		int num = 0;
-		Settlement match = (isClaimed ? base : null);
-		for (Coordinates c: nearbyMineralLocations.keySet()) {
-			if (surfaceFeatures.isDeclaredROI(c, match))
-				num++;
-		}
-		return num;
+	public int numDeclaredROIs(boolean isClaimed) {
+		return (int) interestingLocns.stream()
+				.filter(i -> (i.site != null) && (i.site.isClaimed() == isClaimed))
+				.count();
 	}
 
-	/**
+	/**null
 	 * Returns list of declared locations of Region Of Interest (ROI).
 	 * 
 	 * @return
 	 */
 	public Set<MineralSite> getDeclaredROIs() {	
-		return declaredROIs;
+		return interestingLocns.stream()
+					.filter(f -> f.site != null)
+					.map(p -> p.site)
+					.collect(Collectors.toSet());
 	}
 
     
@@ -229,30 +223,29 @@ public class ExplorationManager implements Serializable {
 	 */
 	public ExploredStats getStatistics(int status) {
 		List<Double> list = new ArrayList<>();
-		for (var e : nearbyMineralLocations.entrySet()) {
-			Coordinates c = e.getKey();	
-            var locn = e.getValue();
-
-            switch(status) {
-                case SITE_STAT: 
-                    list.add(locn);
-                    break;
-                
-                case CLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredROI(c, base)) {
-                        list.add(locn);
-                    }
-                    break;
-                
-                case UNCLAIMED_STAT:
-                    if (surfaceFeatures.isDeclaredROI(c, null)) {
-                        list.add(locn);
-                    }
-                    break;
-                
-                default:
-                    break;
-            }	
+		for (var e : interestingLocns) {
+			if (e.site != null) {
+				switch(status) {
+					case SITE_STAT: 
+						list.add(e.distance);
+						break;
+					
+					case CLAIMED_STAT:
+						if (e.site.isClaimed() && e.site.getOwner().equals(base.getReportingAuthority())) {
+							list.add(e.distance);
+						}
+						break;
+					
+					case UNCLAIMED_STAT:
+						if (!e.site.isClaimed()) {
+							list.add(e.distance);
+						}
+						break;
+					
+					default:
+						break;
+				}
+			}	
 		}
 		
 	    double mean = 0.0;
@@ -283,14 +276,30 @@ public class ExplorationManager implements Serializable {
 	 * @return ExploredLocation
 	 */
 	public MineralSite createROI(Coordinates siteLocation, int skill) {
-		MineralSite el = surfaceFeatures.createROI(siteLocation, skill);
+		var el = surfaceFeatures.createROI(siteLocation, skill);
 		if (el != null) {
-			declaredROIs.add(el);
-			return el;
+			// Record this site locally
+			var p = findProspect(siteLocation);
+
+			p.site = el;
 		}
-		return null;
+		return el;
 	}
 	
+	private Prospect findProspect(Coordinates siteLocation) {
+		var p = interestingLocns.stream()
+					.filter(s -> s.locn.equals(siteLocation))
+					.findAny().orElse(null);
+		if (p == null) {
+			// Odd as all potential Coordinates shoudl be known
+			var distance = base.getCoordinates().getDistance(siteLocation);
+			p = new Prospect(siteLocation, distance);
+			interestingLocns.add(p);
+		}
+
+		return p;
+	}
+
 	/**
 	 * Checks if there are any mineral locations within rover/mission range.
 	 * Note: Called by getTotalMineralValue()
@@ -310,8 +319,8 @@ public class ExplorationManager implements Serializable {
 
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
-		for (var c : nearbyMineralLocations.entrySet()) {
-			double distance = c.getValue();
+		for (var c : interestingLocns) {
+			double distance = c.distance;
 			double prob = 0;
 			double delta = range - distance + 100;
 			if (delta > 0) {
@@ -320,7 +329,7 @@ public class ExplorationManager implements Serializable {
 			
 			if (distance >= MineralMap.MIN_DISTANCE && prob > 0) {
 				// Fill up the weight map
-				weightedMap.put(c.getKey(), prob);
+				weightedMap.put(c.locn, prob);
 			}
 		}
 		
@@ -397,5 +406,14 @@ public class ExplorationManager implements Serializable {
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
-	
+
+	/**
+	 * Claim an existing site to be owner by this settlement
+	 * @param newSite
+	 */
+    public void claimSite(MineralSite newSite) {
+		newSite.setClaimed(base.getReportingAuthority());
+		var p = findProspect(newSite.getCoordinates());
+		p.site = newSite;
+    }	
 }

@@ -20,12 +20,10 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -42,7 +40,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
-import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.robot.Robot;
@@ -276,20 +273,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
 	}
 
-	private void endSubTask() {
-		// For sub task
-		if (subTask != null) {
-			subTask.endTask();
-		}
-	}
-
-	public void endSubTask2() {
-		// For sub task 2
-		if (subTask != null) {
-			subTask.endSubTask();
-		}
-	}
-
 	/**
 	 * Ends a task because an internal condition is wrong.
 	 * 
@@ -308,7 +291,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @see #clearDown()
 	 */
-	public final void endTask() {
+	public void endTask() {
 		// Check we haven't been here already ??
 		if (!done) {
 			// Set done to true first to catch any re-calls
@@ -485,6 +468,22 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected boolean getCreateEvents() {
 		return createEvents;
+	}
+
+	/**
+	 * This is a helper method to produce a String for the state of this Task.
+	 * Note the stroing may be long as it is the task name followed by the phase.
+	 * @return
+	 */
+	public String getStatus() {
+		String result = getName();
+		if (done) {
+			result += " (Done)";
+		}
+		else if (phase != null) {
+			result += " (" + phase.getName() +")";
+		}
+		return result;
 	}
 
 	/**
@@ -734,41 +733,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the probability modifier for a task if person needs to go to a new
-	 * building.
-	 * 
-	 * @param person      the person to perform the task.
-	 * @param newBuilding the building the person is to go to.
-	 * @return probability modifier
-	 * @throws BuildingException if current or new building doesn't have life
-	 *                           support function.
-	 */
-	protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) {
-		double modifier = 1D;
-
-		Building currentBuilding = BuildingManager.getBuilding(person);
-
-		if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
-
-			// Increase probability if current building is overcrowded.
-			LifeSupport currentLS = currentBuilding.getLifeSupport();
-			int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
-			if (currentOverCrowding > 0) {
-				modifier *= ((double) currentOverCrowding + 2);
-			}
-
-			// Decrease probability if new building is overcrowded.
-			LifeSupport newLS = newBuilding.getLifeSupport();
-			int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
-			if (newOverCrowding > 0) {
-				modifier /= ((double) newOverCrowding + 2);
-			}
-		}
-
-		return modifier;
-	}
-
-	/**
 	 * Gets the effective skill level a worker has at this task.
 	 * 
 	 * @return effective skill level
@@ -854,42 +818,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
 			result += (teachingModifier + learningModifier) / 100D;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the probability modifier for a person performing a task based on his/her
-	 * relationships with the people in the room the task is to be performed in.
-	 * 
-	 * @param person   the person to check for.
-	 * @param building the building the person will need to be in for the task.
-	 * @return probability modifier
-	 */
-	protected static double getRelationshipModifier(Person person, Building building) {
-		double result = 1D;
-
-		if ((person == null) || (building == null)) {
-			throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
-		} else {
-			if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				LifeSupport lifeSupport = building.getLifeSupport();
-				double totalOpinion = 0D;
-				Iterator<Person> i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					Person occupant = i.next();
-					if (person != occupant) {
-						totalOpinion += ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
-					}
-				}
-
-				if (totalOpinion >= 0D) {
-					result *= (1D + totalOpinion);
-				} else {
-					result /= (1D - totalOpinion);
-				}
-			}
 		}
 
 		return result;

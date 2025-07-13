@@ -14,8 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.computing.ComputingJob;
 import com.mars_sim.core.computing.ComputingLoadType;
@@ -23,6 +25,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
+import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -311,11 +314,77 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		if (researcher.isInSettlement()) {
 			Building labBuilding = ((Research) lab).getBuilding();
 			if (labBuilding != null) {
-				result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);
-				result *= Task.getRelationshipModifier(researcher, labBuilding);
+				result *= getCrowdingProbabilityModifier(researcher, labBuilding);
+				result *= getRelationshipModifier(researcher, labBuilding);
 			}
 		}
 		return result;
+	}
+
+	
+	/**
+	 * Gets the probability modifier for a person performing a task based on his/her
+	 * relationships with the people in the room the task is to be performed in.
+	 * 
+	 * @param person   the person to check for.
+	 * @param building the building the person will need to be in for the task.
+	 * @return probability modifier
+	 */
+	private static double getRelationshipModifier(Person person, Building building) {
+		double result = 1D;
+
+		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+			LifeSupport lifeSupport = building.getLifeSupport();
+			double totalOpinion = 0D;
+			for(Person occupant : lifeSupport.getOccupants()) {
+				if (person != occupant) {
+					totalOpinion += ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
+				}
+			}
+
+			if (totalOpinion >= 0D) {
+				result *= (1D + totalOpinion);
+			} else {
+				result /= (1D - totalOpinion);
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets the probability modifier for a task if person needs to go to a new
+	 * building.
+	 * 
+	 * @param person      the person to perform the task.
+	 * @param newBuilding the building the person is to go to.
+	 * @return probability modifier
+	 * @throws BuildingException if current or new building doesn't have life
+	 *                           support function.
+	 */
+	private static double getCrowdingProbabilityModifier(Person person, Building newBuilding) {
+		double modifier = 1D;
+
+		Building currentBuilding = BuildingManager.getBuilding(person);
+
+		if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
+
+			// Increase probability if current building is overcrowded.
+			LifeSupport currentLS = currentBuilding.getLifeSupport();
+			int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
+			if (currentOverCrowding > 0) {
+				modifier *= ((double) currentOverCrowding + 2);
+			}
+
+			// Decrease probability if new building is overcrowded.
+			LifeSupport newLS = newBuilding.getLifeSupport();
+			int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
+			if (newOverCrowding > 0) {
+				modifier /= ((double) newOverCrowding + 2);
+			}
+		}
+
+		return modifier;
 	}
 
 	/**

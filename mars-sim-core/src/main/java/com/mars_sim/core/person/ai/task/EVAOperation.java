@@ -80,7 +80,7 @@ public abstract class EVAOperation extends Task {
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 
 	// Data members
-	private boolean endEVA;
+	private boolean endEVARequested;
 	private double timeOnSiteRemaining;
 	private LocalPosition outsideSitePos;
 
@@ -219,10 +219,10 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
-	 * Checks if EVA should end.
+	 * Request any current EVA is ended at the next opportunity
 	 */
-	public void endEVA() {
-		endEVA = true;
+	public void requestEndEVA() {
+		endEVARequested = true;
 	}
 
 	/**
@@ -415,7 +415,7 @@ public abstract class EVAOperation extends Task {
 		boolean result = false;
 
 		// Check end EVA flag.
-		if (endEVA)
+		if (endEVARequested)
 			return true;
 
 		// Check for sunlight
@@ -476,27 +476,27 @@ public abstract class EVAOperation extends Task {
 	public double checkReadiness(double time) {
 		// Task duration has expired
 		if (isDone()) {
-			checkLocation("Task duration ended.");
+			endEVA("Task duration ended.");
 			return time;
 		}
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
-			checkLocation("Radiation detected.");
+			endEVA("Radiation detected.");
 			return time;
 		}
 		// Check fitness
 		if (person.isSuperUnfit()) {
-			abortEVA("Super Unfit.");
+			endEVA("Super Unfit.");
 			return time;
 		}
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
-			checkLocation("EVA ended prematurely.");
+			endEVA("EVA ended prematurely.");
 			return time;
 		}
         // Check time on site
 		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
+			endEVA("Time on site expired.");
 			return time;
 		}		
 		
@@ -505,12 +505,13 @@ public abstract class EVAOperation extends Task {
 	
 	/**
 	 * Checks to see if the person is supposed to be outside. This is used to abort an EVA.
-	 * Any call to this method that relates to a problem should be replaced with {@link #abortEVA(String)}
+	 * Any call to this method that relates to a problem should be replaced with {@link #endEVA(String)}
 	 * 
 	 * @param reason
+	 * @deprecated Use {@link #endEVA(String)}
 	 */
 	protected void checkLocation(String reason) {
-		abortEVA(reason);
+		endEVA(reason);
 	}
 
 	/**
@@ -518,9 +519,9 @@ public abstract class EVAOperation extends Task {
 	 * 
 	 * @param reason Reason for ending.
 	 */
-	protected void abortEVA(String reason) {
+	protected void endEVA(String reason) {
 		if (reason != null) {
- 			logger.info(worker, 20_000, "Aborted '" + getName() + "': " + reason);
+ 			logger.info(worker, 20_000, "Ending EVA '" + getName() + "': " + reason);
 		}
 		
 		if (person.isOutside()) {
@@ -528,6 +529,20 @@ public abstract class EVAOperation extends Task {
 		}
     	else
         	endTask();
+	}
+
+	/**
+	 * THis is a safe check method; it intercepts end task calls when the Worker is still outside.
+	 * In this case the endEVA method is called.
+	 */
+	@Override
+	public void endTask() {		
+		if (person.isOutside()) {
+			logger.warning(worker, "End task called when on EVA");
+            endEVA("Premature endTask");
+		}
+    	else
+        	super.endTask();
 	}
 	
 	/**

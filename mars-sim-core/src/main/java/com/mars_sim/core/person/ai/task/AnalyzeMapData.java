@@ -16,6 +16,7 @@ import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.task.ExploreSite;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;

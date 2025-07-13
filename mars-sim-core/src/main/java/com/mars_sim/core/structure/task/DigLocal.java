@@ -106,7 +106,7 @@ public abstract class DigLocal extends EVAOperation {
 
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
-        	abortEVA("Not in a settlement to start a DigLocal Task.");
+        	endEVA("Not in a settlement to start a DigLocal Task.");
 			return;
         }
 
@@ -116,7 +116,7 @@ public abstract class DigLocal extends EVAOperation {
      	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
-	    		abortEVA("No available walkable airlock for egress.");
+	    		endEVA("No available walkable airlock for egress.");
 				return;
 	        }
      	}
@@ -124,7 +124,7 @@ public abstract class DigLocal extends EVAOperation {
         // Take container for collecting resource.
         // If container are not available, end task.
         if (collectContainer() == null) {
-        	abortEVA("No " + containerType.name() + " for " + resourceName + " are available.");
+        	endEVA("No " + containerType.name() + " for " + resourceName + " are available.");
         	return;
         }
 
@@ -135,7 +135,7 @@ public abstract class DigLocal extends EVAOperation {
 	        	setOutsideSiteLocation(diggingLoc);
 	        }
 	        else {
-	        	abortEVA("No digging location.");
+	        	endEVA("No digging location.");
 	        	return;
 	        }
         }
@@ -143,7 +143,7 @@ public abstract class DigLocal extends EVAOperation {
         if (dropOffLoc == null) {
         	dropOffLoc = determineBinLocation();
 	        if (dropOffLoc == null) {
-				abortEVA("No storage bin.");
+				endEVA("No storage bin.");
 	        	return;
 	        }
         }
@@ -270,7 +270,7 @@ public abstract class DigLocal extends EVAOperation {
         }
         else if (!person.isOnDuty()) {
 			// Duty has ended so abort digging
-			abortEVA("End of work shift.");
+			endEVA("End of work shift.");
 		}
 		else {
         	// Reset this holder
@@ -299,17 +299,17 @@ public abstract class DigLocal extends EVAOperation {
 				setPhase(WALK_TO_BIN);
 			}
 			else
-				checkLocation("Found no resources.");
+				endEVA("Found no resources.");
 			return time;
 		}
 			
      	if (person.isInSettlement()) {
-			abortEVA("Person still in settlement.");
+			endEVA("Person still in settlement.");
      		return time;
      	}
 
         if (container == null) {
-        	abortEVA("Found no " + containerType.getName() + " for " + resourceName + ".");
+        	endEVA("Found no " + containerType.getName() + " for " + resourceName + ".");
         	return time;
         }
         
@@ -390,17 +390,12 @@ public abstract class DigLocal extends EVAOperation {
 			int rand = RandomUtil.getRandomInt(10);
 			
 			// Reassign as the other 3 types of regoliths
-			if (rand == 8) {			
-				newResourceID = ResourceUtil.REGOLITHB_ID;
-			}
-			else if (rand == 9) {						
-				newResourceID = ResourceUtil.REGOLITHC_ID;
-			}
-			else if (rand == 10) {					
-				newResourceID = ResourceUtil.REGOLITHD_ID;
-			}
-			else
-				newResourceID = resourceID;
+			newResourceID = switch (rand) {
+				case 8 -> ResourceUtil.REGOLITHB_ID;
+				case 9 -> ResourceUtil.REGOLITHC_ID;
+				case 10 -> ResourceUtil.REGOLITHD_ID;
+				default -> resourceID;
+			};
 		}
 		else if (resourceID == ResourceUtil.ICE_ID) {
 			newResourceID = resourceID;
@@ -429,11 +424,11 @@ public abstract class DigLocal extends EVAOperation {
             	boolean successful = container.transfer(person);
             	if (!successful) {
             		container = null;
-                	abortEVA("Strangely unable to transfer an empty container for " + resourceName + ".");
+                	endEVA("Strangely unable to transfer an empty container for " + resourceName + ".");
                 }
 	        }
 	        else {
-	        	abortEVA("Unable to find an empty container in the inventory for " + resourceName + ".");
+	        	endEVA("Unable to find an empty container in the inventory for " + resourceName + ".");
 	        }
         }
         return container;
@@ -481,7 +476,7 @@ public abstract class DigLocal extends EVAOperation {
 
 		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), MAX_DROPOFF_DISTANCE);
 		if (p == null) {
-			abortEVA("No suitable drop-off location near " + b + ".");
+			endEVA("No suitable drop-off location near " + b + ".");
 		}
 		return p;
     }

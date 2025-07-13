@@ -8,9 +8,6 @@
 package com.mars_sim.console.chat.simcommand.vehicle;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
@@ -54,15 +51,13 @@ public class VehicleCrewCommand extends ChatCommand {
 			people = members.stream()
 							.filter(Person.class::isInstance)
 							.map(p -> (Person) p)
-							.collect(Collectors.toList());
+							.toList();
 			robots = members.stream()
 					.filter(Robot.class::isInstance)
 					.map(r -> (Robot) r)
-					.collect(Collectors.toList());
+					.toList();
 		}
-		else if (source instanceof Crewable) {
-			Crewable bus = (Crewable) source;
-
+		else if (source instanceof Crewable bus) {
 			people = bus.getCrew();
 			robots = bus.getRobotCrew();
 		}
@@ -74,18 +69,12 @@ public class VehicleCrewCommand extends ChatCommand {
 			StructuredResponse response = new StructuredResponse();
 	
 			if (people != null) {
-				Map<String, List<Worker>> pmap = people.stream()
-						.collect(Collectors.groupingBy(Person::getTaskDescription, Collectors.toList()));
-				outputTasks(response, "People", pmap);
+				outputTasks(response, "People", people);
 			}
 			
-			if (robots != null) {
-				Map<String, List<Worker>> rmap = robots.stream()
-						.collect(Collectors.groupingBy(Robot::getTaskDescription, Collectors.toList()));
-				if (!rmap.isEmpty()) {
-					response.appendBlankLine();
-					outputTasks(response, "Robots", rmap);
-				}
+			if (robots != null && !robots.isEmpty()) {
+				response.appendBlankLine();
+				outputTasks(response, "Robots", robots);
 			}
 			
 			context.println(response.getOutput());
@@ -93,23 +82,16 @@ public class VehicleCrewCommand extends ChatCommand {
 		return true;
 	}
 	
-	private static void outputTasks(StructuredResponse response, String name, Map<String, List<Worker>> tasks) {
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "OnBoard", name, CommandHelper.PERSON_WIDTH);
-		for (Map.Entry<String, List<Worker>> entry : tasks.entrySet()) {
-			String task = entry.getKey();
-			List<Worker> plist = entry.getValue();
-			String tableGroup = null;
+	private static void outputTasks(StructuredResponse response, String name, Collection<? extends Worker> workers) {
+		response.appendTableHeading(name, CommandHelper.PERSON_WIDTH, "OnBoard", "Task", -CommandHelper.TASK_WIDTH);
+		for (var p : workers) {
+			String taskDesc = "";
+			var task = p.getTaskManager().getTask();
 			if (task != null) {
-				tableGroup = task;
-			} else {
-				tableGroup = "None";
+				taskDesc = task.getStatus();
 			}
 
-			// Add the rows for each person
-			for (Worker p : plist) {
-				response.appendTableRow(tableGroup, p.isInVehicle(), p.getName());
-				tableGroup = ""; // Reset table subgroup
-			}
+			response.appendTableRow(p.getName(), p.isInVehicle(), taskDesc);
 		}
 	}
 

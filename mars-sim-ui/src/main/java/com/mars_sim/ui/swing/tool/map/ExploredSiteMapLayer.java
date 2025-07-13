@@ -43,7 +43,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 							+ "<br>Explored: " + site.isExplored()
 							+ "<br>Minable: " + site.isMinable()
 							+ "<br>Reserved: " + site.isReserved();
-			var owner = site.getSettlement();
+			var owner = site.getOwner();
 			if (owner != null) {
 				tooltip += "<br>Owner: " + owner.getName();
 			}

@@ -19,9 +19,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.RandomMineralFactory;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -92,7 +90,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @throws Exception when error in creating surface features.
 	 */
-	public SurfaceFeatures(MasterClock mc, OrbitInfo oi, Weather w) {
+	public SurfaceFeatures(OrbitInfo oi, Weather w) {
 		orbitInfo = oi;
 		weather = w;
 		w.setSurfaceFeatures(this);
@@ -567,30 +565,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (totalConc > 0) {
 						
-			result = new MineralSite(location, skill, initialMineralEstimations, null);
+			result = new MineralSite(location, skill, initialMineralEstimations);
 			
 			regionOfInterestLocations.add(result);
 		}
 		
 		return result;
-	}
-
-	/**
-	 * Has this site been declared as a region of interest with a specified claimed status ?
-	 *
-	 * @param siteLocation
-	 * @return
-	 */
-	public boolean isDeclaredROI(Coordinates coord, Settlement settlement) {
-		for (MineralSite el: regionOfInterestLocations) {
-			if (el.getLocation().equals(coord)
-				&& (((settlement != null) && settlement.equals(el.getSettlement()))
-					|| ((settlement == null) && (el.getSettlement() == null)))) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 	
 	/**

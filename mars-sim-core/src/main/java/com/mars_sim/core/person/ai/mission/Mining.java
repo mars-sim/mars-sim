@@ -474,6 +474,7 @@ public class Mining extends EVAMission
 
 		MineralSite result = null;
 		double bestValue = 0D;
+		var authority = homeSettlement.getReportingAuthority();
 
 		try {
 			double roverRange = rover.getEstimatedRange();
@@ -489,8 +490,8 @@ public class Mining extends EVAMission
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
 				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
-					// Only mine from sites explored from home settlement.
-					&& homeSettlement.equals(site.getSettlement())
+					// Only mine from sites explored from home authority.
+					&& authority.equals(site.getOwner())
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
 						double value = getMiningSiteValue(site, homeSettlement);
 						if (value > bestValue) {
@@ -526,12 +527,13 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
+			var authority = homeSettlement.getReportingAuthority();
 			for (MineralSite site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
-					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
+					&& (site.getOwner() == null || authority.equals(site.getOwner()))
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
 						double value = getMiningSiteValue(site, homeSettlement);
 						total += value;
