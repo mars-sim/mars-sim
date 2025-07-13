@@ -31,7 +31,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Category", DishCategory.SIDE, rice.getCategory());
 
         var ingredients = rice.getIngredientList();
-        assertEquals("Ingregients", 2, ingredients.size());
+        assertEquals("Ingredients", 3, ingredients.size());
     }
 
     public void testDessertDish() {
@@ -47,7 +47,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Category", DishCategory.DESSERT, dish.getCategory());
 
         var ingredients = dish.getIngredientList();
-        assertEquals("Ingregients", 2, ingredients.size());
+        assertEquals("Ingredients", 2, ingredients.size());
         assertEquals("Ingredient 0", "Strawberry", ingredients.get(0).getName());
         assertEquals("Ingredient 1", "Sugar", ingredients.get(1).getName());
     }
@@ -65,7 +65,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Category", DishCategory.MAIN, mainDish.getCategory());
 
         var ingredients = mainDish.getIngredientList();
-        assertEquals("Ingregients", 5, ingredients.size());
+        assertEquals("Ingredients", 5, ingredients.size());
         assertTrue("Ingredient 0 mandatory", ingredients.get(0).isMandatory());
         assertTrue("Ingredient 1 mandatory", ingredients.get(1).isMandatory());
         assertTrue("Ingredient 2 mandatory", ingredients.get(2).isMandatory());

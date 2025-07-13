@@ -157,10 +157,10 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The daily harvest quota for crop [in kg/per sol]. */
 	private double dailyHarvestQuota;
 	/** The daily harvest for crop [in kg/per sol]. */
-	private double dailyCollcted;
+	private double dailyCollected;
 	/** The maximum possible harvest per harvest day or this crop [in kg / per sol]. */
 	private double harvestPerHarvestDay;
-	/** The total amount harvested [in kg]. */
+	/** The total amount harvested collected [in kg]. */
 	private double totalCollected;
 	/** The required work time in current phase [in millisols]. */
 	private double currentPhaseWorkRequired = 0;
@@ -428,7 +428,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @return harvested and the estimated maximum
 	 */
 	public ValueMax getDailyHarvest() {
-		return new ValueMax(dailyCollcted, dailyHarvestQuota);
+		return new ValueMax(dailyCollected, dailyHarvestQuota);
 	}
 
 	/**
@@ -674,9 +674,12 @@ public class Crop implements Comparable<Crop>, Entity {
 					double mHarvest = Math.round(modifiedHarvest * 1000.0) / 1000.0;
 					if (mHarvest > 0)
 						logger.info(this, 4_000, 
-							"dailyHarvestQuota: " + Math.round(dailyHarvestQuota * 1000.0) / 1000.0 + " kg "
-							+ " Harvesting "
-								+ mHarvest + " kg during "
+							"maxHarvest: " +  Math.round(maxHarvest * 1000.0) / 1000.0  + 
+							" totalCollected: " +  Math.round(totalCollected * 1000.0) / 1000.0  +
+							" dailyCollected: " +  Math.round(dailyCollected * 1000.0) / 1000.0  +
+							" harvestPerHarvestDay: " +  Math.round(harvestPerHarvestDay * 1000.0) / 1000.0  +	
+							" dailyHarvestQuota: " + Math.round(dailyHarvestQuota * 1000.0) / 1000.0 +
+							" Harvesting " + mHarvest + " kg during "
 								+ currentPhase.toString().toLowerCase() + " phase.");
 				}
 			}
@@ -717,14 +720,14 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		// Check not over collecting. What is the max remaining
 		double remaining = Math.min((maxHarvest - totalCollected),
-									(dailyHarvestQuota - dailyCollcted));
+									(dailyHarvestQuota - dailyCollected));
 		harvestMass = Math.min(harvestMass, remaining);
 		totalCollected += harvestMass;
-		dailyCollcted += harvestMass;
+		dailyCollected += harvestMass;
 
-		if (dailyCollcted > 0)
+		if (dailyCollected > 0)
 			logger.info(this, 4_000, "totalCollected: " + Math.round(totalCollected * 1000.0) / 1000.0
-						+ "  dailyCollcted: " + Math.round(dailyCollcted * 1000.0) / 1000.0);
+						+ "  dailyCollected: " + Math.round(dailyCollected * 1000.0) / 1000.0);
 
 		
 		// Deposit main outputs
@@ -831,7 +834,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// every time
 			// Reset the daily work counter currentPhaseWorkCompleted back to zero
 			cumulativeDailyPAR = 0;
-			dailyCollcted = 0D;
+			dailyCollected = 0D;
 		}
 
 		return false;
