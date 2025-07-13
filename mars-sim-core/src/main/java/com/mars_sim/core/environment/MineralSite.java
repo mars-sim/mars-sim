@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -50,7 +50,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 	private double totalMass;
 	private double remainingMass;
 	
-	private Settlement settlement;
+	private Authority owner;
 	private Coordinates location;
 	
 	private Map<String, Double> estimatedMineralConcentrations;
@@ -67,15 +67,11 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 * @param estimationImprovement			 The number times the estimates have been improved
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
 	 *                                       estimated concentrations (0% -100%)
-	 * @param the                            settlement the exploring mission is
-	 *                                       from.
 	 */
 	MineralSite(Coordinates location, int estimationImprovement,
-					Map<String, Double> estimatedMineralConcentrations,
-					Settlement settlement) {
+					Map<String, Double> estimatedMineralConcentrations) {
 		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
-		this.settlement = settlement;
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
@@ -196,7 +192,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 
 				// Make a change
 				if (newCertainty > 0) {
-					logger.info(settlement, location.getFormattedString()
+					logger.info(owner, location.getFormattedString()
 								+ " Degree of estimation certainty improved on " 
 								+ aMineral + ": " + Math.round(newCertainty * 10.0)/10.0 + " %");
 			
@@ -284,8 +280,8 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 *
 	 * @param value true if claimed.
 	 */
-	public void setClaimed(Settlement owner) {
-		this.settlement = owner;
+	public void setClaimed(Authority owner) {
+		this.owner = owner;
 	}
 
 	/**
@@ -294,7 +290,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 * @return true if claimed.
 	 */
 	public boolean isClaimed() {
-		return settlement != null;
+		return owner != null;
 	}
 	
 	/**
@@ -334,12 +330,12 @@ public class MineralSite implements Serializable, SurfacePOI {
 	}
 
 	/**
-	 * The settlement that explored this site. This may be null if it is 
+	 * The owner that explored this site. This may be null if it is 
 	 * an unclaimed location.
 	 *
 	 * @return settlement
 	 */
-	public Settlement getSettlement() {
-		return settlement;
+	public Authority getOwner() {
+		return owner;
 	}
 }

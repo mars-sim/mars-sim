@@ -296,7 +296,7 @@ public class Simulation implements ClockListener, Serializable {
 		weather = new Weather(masterClock, orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
+		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
 	}
 		
 	/**
@@ -328,7 +328,7 @@ public class Simulation implements ClockListener, Serializable {
 		weather = new Weather(masterClock, orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
+		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
 		
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
@@ -428,7 +428,7 @@ public class Simulation implements ClockListener, Serializable {
 		weather = new Weather(masterClock, orbitInfo);
 
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
+		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
 
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();

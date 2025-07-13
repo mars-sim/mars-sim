@@ -180,21 +180,19 @@ public class StudyFieldSamples extends LabTask {
 
 	/**
 	 * Gets an exploration site that was previously explored by the person's
-	 * settlement.
+	 * authority.
 	 * 
 	 * @return exploration site or null if none.
 	 */
 	private MineralSite getSettlementExploredSite() {
-		Settlement settlement = person.getAssociatedSettlement();
-		if (settlement != null) {
-			var allExploredLocations = surfaceFeatures.getAllPossibleRegionOfInterestLocations();
-			List<MineralSite> settlementExploredLocations = allExploredLocations.stream()
-						.filter(l -> (settlement.equals(l.getSettlement()) && l.isMinable() && !l.isReserved()))
-						.toList();
+		var owner = person.getAssociatedSettlement().getReportingAuthority();
 
-			return RandomUtil.getRandomElement(settlementExploredLocations);
-		}
+		var allExploredLocations = surfaceFeatures.getAllPossibleRegionOfInterestLocations();
+		List<MineralSite> settlementExploredLocations = allExploredLocations.stream()
+					.filter(l -> (owner.equals(l.getOwner()) && l.isMinable() && !l.isReserved()))
+					.toList();
 
-		return null;
+		return RandomUtil.getRandomElement(settlementExploredLocations);
+
 	}
 }

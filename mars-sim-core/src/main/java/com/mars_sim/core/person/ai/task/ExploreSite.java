@@ -122,10 +122,6 @@ public class ExploreSite extends EVAOperation {
 
 		if (member instanceof Person person) {
 
-			// Check if person can exit the rover.
-			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
-				return false;
-
 			if (EVAOperation.isGettingDark(person)) {
 				logger.fine(person, "Ended exploring site due to getting dark.");
 				return false;
@@ -214,7 +210,7 @@ public class ExploreSite extends EVAOperation {
 
 				// Checks if the site has been claimed
 				if (!site.isClaimed()) {
-					site.setClaimed(worker.getAssociatedSettlement());
+					worker.getAssociatedSettlement().getExplorations().claimSite(site);
 				}
 			}
 		}
@@ -295,7 +291,7 @@ public class ExploreSite extends EVAOperation {
 
 		int numImprovement = site.getNumEstimationImprovement();
 		
-		int onSiteBonus = 2;
+		double onSiteBonus = 2D;
 		
 		double siteTime = ((Exploration)person.getMission()).getCurrentSiteTime();
 			

@@ -66,19 +66,18 @@ public class ExploredCommand extends ChatCommand {
 	}
 
 	private void addExploredLocation(Conversation context, Settlement filter, SurfaceFeatures surface) {
+		// Get location for centre of search
+		Coordinates searchBase = null;
+		if (filter != null) {
+			searchBase = filter.getCoordinates();
+			context.println("Will base the search at " + filter.getName());
+		}
+		else {
+			searchBase = CommandHelper.getCoordinates("Set a search Location", context);
+		}
 
 		boolean addSite = true;
 		while(addSite) {
-			// Get location and check concentration
-			Coordinates searchBase = null;
-			if (filter != null) {
-				searchBase = filter.getCoordinates();
-				context.println("Will base the search at " + filter.getName());
-			}
-			else {
-				searchBase = CommandHelper.getCoordinates("Set a search Location", context);
-			}
-
 			int searchRange = 100;
 
 			// Check the location has minerals
@@ -90,10 +89,10 @@ public class ExploredCommand extends ChatCommand {
 				MineralSite newSite = surface.declareROI(newLocn, 1);
 
 				if (newSite == null) {
-					context.println("Site did not have engouh monerals");
+					context.println("Site did not have enough monerals");
 				}
-				else if (context.getBooleanInput("Claim the new site")) {
-					newSite.setClaimed(filter);
+				else if ((filter != null) && context.getBooleanInput("Claim the new site")) {
+					filter.getExplorations().claimSite(newSite);
 
 					//set Explored
 					var explored = CommandHelper.getOptionInput(context, EXPLORE_OPTIONS, "Level of exploration");
@@ -130,9 +129,9 @@ public class ExploredCommand extends ChatCommand {
 		// Filter the list if in a Settlement
 		if (filter != null) {
 			// Filter to settlement
-			final Settlement sFilter = filter;
+			final var sFilter = filter.getReportingAuthority();
 			locations = locations.stream()
-								.filter(s -> (s.getSettlement() == null) || sFilter.equals(s.getSettlement()))
+								.filter(s -> (s.getOwner() == null) || sFilter.equals(s.getOwner()))
 								.toList();
 		}
 		
@@ -143,7 +142,7 @@ public class ExploredCommand extends ChatCommand {
 		response.appendText("");
 		
 		response.appendTableHeading("Location", CommandHelper.COORDINATE_WIDTH,
-									"Settlement", 18, 
+									"Authority", 18, 
 									"Status*", "Reviews", "Mineral with highest %");
 		for (MineralSite s : locations) {
 			String mineral = "";
@@ -155,7 +154,7 @@ public class ExploredCommand extends ChatCommand {
 				mineral = String.format("%s - %.1f", highest.get().getKey(), highest.get().getValue());
 			
 			String status = (s.isMinable() ? "M" : "-") +  (s.isExplored() ? "E" : "-") + (s.isClaimed() ? "C" : "-") +(s.isReserved() ? "R" : "-") + "  ";
-			Settlement owner = s.getSettlement();
+			var owner = s.getOwner();
 			response.appendTableRow(s.getLocation().getFormattedString(),
 									(owner != null ? owner.getName() : ""),
 									status,

@@ -26,11 +26,11 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
 
         assertNotNull("New RoI created", newRoI);
         assertEquals("New ROI coordinates", siteLocn, newRoI.getCoordinates());
-        assertNull("New RoI settlement", newRoI.getSettlement());
+        assertNull("New RoI settlement", newRoI.getOwner());
         assertFalse("New RoI not claimed", newRoI.isClaimed());
         assertEquals("Declared locations", 1, eMgr.getDeclaredROIs().size());
 
-        newRoI.setClaimed(s);
+        newRoI.setClaimed(s.getReportingAuthority());
         assertTrue("New RoI claimed", newRoI.isClaimed());
 
     }
@@ -50,12 +50,12 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
 
         assertNotNull("New RoI created", newRoI);
         assertEquals("New ROI coordinates", siteLocn, newRoI.getCoordinates());
-        assertNull("New RoI has no settlement", newRoI.getSettlement());
+        assertNull("New RoI has no settlement", newRoI.getOwner());
         assertFalse("New RoI not claimed", newRoI.isClaimed());
     }
 
     public void testStatistics() {
-        var s = buildSettlement();
+        var s = buildSettlement("Test", false, Coordinates.getRandomLocation());
 
         var eMgr = new ExplorationManager(s);
 
@@ -66,7 +66,7 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
 
         var place = eMgr.acquireNearbyMineralLocation(100);
         var l = eMgr.createROI(place, 100);
-        l.setClaimed(s);
+        eMgr.claimSite(l);
         var dist1 = place.getDistance(s.getCoordinates());
 
         place = eMgr.acquireNearbyMineralLocation(100);

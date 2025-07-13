@@ -180,7 +180,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 	
 	protected Settlement buildSettlement(String name, boolean needGoods, Coordinates locn) {
-		Settlement settlement = new MockSettlement(name, needGoods, locn);
+		var auth = getConfig().getReportingAuthorityFactory().getItem("NASA");
+		Settlement settlement = new MockSettlement(name, needGoods, locn, auth);
 		unitManager.addUnit(settlement);
 
 		return settlement;

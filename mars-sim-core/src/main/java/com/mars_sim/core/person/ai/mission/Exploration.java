@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -330,14 +329,15 @@ public class Exploration extends EVAMission
 
 		// Determine remaining exploration sites.
 		double remainingRange = range;
-		double returnDist = currentLocation.getDistance(startingLocation);
+		double returnDist = 0D;
 
 		// Add in some existing ones first
+		int knownId = 0;
 		while ((selectedLocns.size() < numSites)
 				&& (remainingRange > returnDist)
-				&& !knownSites.isEmpty()) {
+				&& (knownId < knownSites.size())) {
 			// Take the next one off the front
-			var site = knownSites.remove(0);
+			var site = knownSites.get(knownId++);
 			claimedSites.add(site);
 
 			// Calc what distance is left
@@ -386,7 +386,7 @@ public class Exploration extends EVAMission
 	 */
 	private List<MineralSite> findClaimedCandidateSites() {
 
-		Settlement home = getStartingSettlement();
+		var home = getStartingSettlement().getReportingAuthority();
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
@@ -394,8 +394,8 @@ public class Exploration extends EVAMission
 				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
-				.filter(s -> home.equals(s.getSettlement()))
-				.collect(Collectors.toList());
+				.filter(s -> home.equals(s.getOwner()))
+				.toList();
 	}
 
 	/**
