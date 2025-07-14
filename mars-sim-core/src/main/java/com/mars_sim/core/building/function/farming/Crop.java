@@ -654,12 +654,12 @@ public class Crop implements Comparable<Crop>, Entity {
 			if (currentPhaseWorkRequired <= 0) {
 				// Don't end until there is nothing left ?
 				if (totalCollected >= maxHarvest) {
-					double tHarvest = Math.round(totalCollected * 1000.0) / 1000.0;
+					double tHarvest = Math.round(totalCollected * 100.0) / 100.0;
 					if (tHarvest > 0)
 						logger.info(this, 4_000, 
-							"maxHarvest: " + Math.round(maxHarvest * 1000.0) / 1000.0 + " kg "
+							"maxHarvest: " + Math.round(maxHarvest * 100.0) / 100.0 + " kg "
 							+ " Harvested a total of "
-								+ Math.round(tHarvest * 1000.0) / 1000.0 + " kg during "
+								+ Math.round(tHarvest * 100.0) / 100.0 + " kg during "
 								+ currentPhase.toString().toLowerCase() + " phase.");
 
 					// Sets the phase to FINISHED
@@ -671,14 +671,14 @@ public class Crop implements Comparable<Crop>, Entity {
 								"Can't find an available lab bench to work on its tissue culture.");
 				}
 				else {
-					double mHarvest = Math.round(modifiedHarvest * 1000.0) / 1000.0;
+					double mHarvest = Math.round(modifiedHarvest * 100.0) / 100.0;
 					if (mHarvest > 0)
 						logger.info(this, 4_000, 
-							"maxHarvest: " +  Math.round(maxHarvest * 1000.0) / 1000.0  + 
-							" totalCollected: " +  Math.round(totalCollected * 1000.0) / 1000.0  +
-							" dailyCollected: " +  Math.round(dailyCollected * 1000.0) / 1000.0  +
-							" harvestPerHarvestDay: " +  Math.round(harvestPerHarvestDay * 1000.0) / 1000.0  +	
-							" dailyHarvestQuota: " + Math.round(dailyHarvestQuota * 1000.0) / 1000.0 +
+							"maxHarvest: " +  Math.round(maxHarvest * 100.0) / 100.0  + 
+							" totalCollected: " +  Math.round(totalCollected * 100.0) / 100.0  +
+							" dailyCollected: " +  Math.round(dailyCollected * 100.0) / 100.0  +
+							" harvestPerHarvestDay: " +  Math.round(harvestPerHarvestDay * 100.0) / 100.0  +	
+							" dailyHarvestQuota: " + Math.round(dailyHarvestQuota * 100.0) / 100.0 +
 							" Harvesting " + mHarvest + " kg during "
 								+ currentPhase.toString().toLowerCase() + " phase.");
 				}
@@ -726,8 +726,8 @@ public class Crop implements Comparable<Crop>, Entity {
 		dailyCollected += harvestMass;
 
 		if (dailyCollected > 0)
-			logger.info(this, 4_000, "totalCollected: " + Math.round(totalCollected * 1000.0) / 1000.0
-						+ "  dailyCollected: " + Math.round(dailyCollected * 1000.0) / 1000.0);
+			logger.info(this, 20_000, "totalCollected: " + Math.round(totalCollected * 100.0) / 100.0
+						+ "  dailyCollected: " + Math.round(dailyCollected * 100.0) / 100.0);
 
 		
 		// Deposit main outputs

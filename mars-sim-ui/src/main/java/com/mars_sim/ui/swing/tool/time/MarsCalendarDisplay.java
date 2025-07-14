@@ -30,7 +30,7 @@ public class MarsCalendarDisplay extends JComponent {
 	public static final int X_OFFSET = 10;
 	public static final int Y_OFFSET = 10;
 	public static final int BOX_WIDTH = 160;
-	public static final int BOX_LENGTH = 105;
+	public static final int BOX_LENGTH = 125;
 	
 	/** The Sol of month cache. */
 	private int solOfMonthCache;
@@ -81,8 +81,8 @@ public class MarsCalendarDisplay extends JComponent {
 
 		// Set component size
 		setPreferredSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
-		setMaximumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
-		setMinimumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
+//		setMaximumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
+//		setMinimumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
 		setAlignmentX(LEFT_ALIGNMENT);
 		setAlignmentY(CENTER_ALIGNMENT);
 		

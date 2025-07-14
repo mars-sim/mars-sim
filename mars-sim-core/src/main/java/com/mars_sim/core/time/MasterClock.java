@@ -542,7 +542,7 @@ public class MasterClock implements Serializable {
 				if (nextPulseTime < minMilliSolPerPulse)
 					nextPulseTime = minMilliSolPerPulse;
 				// Adjust the time pulses and get the deviation
-				nextPulseDeviation = adjustPulseWidth();
+				nextPulseDeviation = computePulseDev();
 			}
 		
 			if (nextPulseDeviation > -2.0 ||  nextPulseDeviation < 2.0) {
@@ -604,7 +604,7 @@ public class MasterClock implements Serializable {
 	 * 
 	 * @return deviation of the next pulse width from the optimal pulse in ratio
 	 */
-	private double adjustPulseWidth() {
+	private double computePulseDev() {
 		
 		double nextPulse = nextPulseTime;
 		double optPulse = optMilliSolPerPulse;
@@ -1141,7 +1141,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the next pulse deviation.
+	 * Gets the percentage of deviation between the optimal pulse width and the next pulse width.
 	 *
 	 * @return
 	 */

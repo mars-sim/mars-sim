@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TimeWindow.java
- * @date 2024-09-06
+ * @date 2025-07-13
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -50,16 +51,15 @@ public class TimeWindow extends ToolWindow {
 
 	public static final String NAME = "time";
 	public static final String ICON = "time";
-	public static final String TITLE = Msg.getString("TimeWindow.title");
+	public static final String TITLE = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
-	public static final int WIDTH = 350;
-	public static final int HEIGHT = 590;
+	public static final int WIDTH = 300;
+	public static final int HEIGHT = 650;
 	
-	/** Tool name. */
-	public final String DESIRED = "x (Desired : ";
-	public final String X_CLOSE_P = "x)";
-	public final String AVERAGE = " (Average : ";
-	public final String CLOSE_P = ")";
+	// Label Strings
+	public final String X_END = " x";
+	public final String DESIRE_TR = "Desired TR";
+	public final String AVERAGE_TPS = "Average TPS";
 
 	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
@@ -75,10 +75,11 @@ public class TimeWindow extends ToolWindow {
 	/** the pulse deviation label string */
 	private final String PULSE_DEVIATION = "Pulse Deviation";
 	/** the optimal pulse label string */
-	private final String OPTIMAL = " (Optimal : ";
+	private final String OPTIMAL = "Optimal Pulse Width";
 	/** the reference pulse label string */
-	private final String REFERENCE = " (Ref : ";
-	
+	private final String REF_PULSE_TIME = "Ref Pulse Width";
+	/** the time ratio string */
+	private final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
 	/** the execution time unit */
 	private final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
@@ -103,8 +104,6 @@ public class TimeWindow extends ToolWindow {
 	private JSpinner cpuSpinner;
 	/** label for Martian time. */
 	private JLabel martianTimeLabel;
-	/** label for Earth time. */
-//	private JLabel earthTimeLabel;
 	/** label for areocentric longitude. */
 	private JLabel lonLabel;
 	/** label for Northern hemisphere season. */
@@ -115,16 +114,24 @@ public class TimeWindow extends ToolWindow {
 	private JLabel uptimeLabel;
 	/** label for pulses per second label. */
 	private JLabel ticksPerSecLabel;
+	/** label for pulses per second label. */
+	private JLabel averageTPSLabel;
 	/** label for actual time ratio. */
 	private JLabel actualTRLabel;
+	/** label for desire time ratio. */
+	private JLabel desireTRLabel;
 	/** label for pulse deviation percent. */
 	private JLabel pulseDeviationLabel;
+	/** label for optimal Pulse Width. */
+	private JLabel optimalPulseLabel;
 	/** label for execution time. */
 	private JLabel execTimeLabel;
 	/** label for sleep time. */
 	private JLabel sleepTimeLabel;
-	/** label for mars simulation time. */
-	private JLabel marsPulseLabel;
+	/** label for next pulse width. */
+	private JLabel nextPulseLabel;
+	/** label for ref pulse width. */
+	private JLabel refPulseLabel;
 	/** label for time compression. */
 	private JLabel realTimeClockLabel;
 
@@ -154,24 +161,9 @@ public class TimeWindow extends ToolWindow {
 		orbitInfo = sim.getOrbitInfo();
 		
 		// Get content pane
-		JPanel mainPane = new JPanel(new BorderLayout());
+		JPanel mainPane = new JPanel();//new BoxLayout(mainPane, BoxLayout.Y_AXIS));//new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
-
-//		// Create Earth time panel
-//		JPanel earthTimePane = new JPanel(new BorderLayout());
-//		mainPane.add(earthTimePane, BorderLayout.NORTH);
-//		
-//		// Create Earth time label
-//		earthTimeLabel = new JLabel();
-//		earthTimeLabel.setHorizontalAlignment(JLabel.CENTER);
-//		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
-////		earthTimeLabel.setFont(arialFont);
-////		earthTimeLabel.setForeground(new Color(0, 69, 165));
-//		earthTimeLabel.setText("");
-//		earthTimeLabel.setToolTipText("Earth Timestamp in Greenwich Mean Time (GMT)");
-//		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
-//		earthTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.earthTime")));
 
 		// Create Martian time panel
 		JPanel martianTimePane = new JPanel(new BorderLayout());
@@ -181,12 +173,10 @@ public class TimeWindow extends ToolWindow {
 		martianTimeLabel = new JLabel();
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
-//		martianTimeLabel.setFont(arialFont);
-//		martianTimeLabel.setForeground(new Color(135, 100, 39));
 		martianTimeLabel.setText("");
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
-		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
+		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime"))); //$NON-NLS-1$
 
 		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiButton.setAlignmentX(.5f);
@@ -199,8 +189,8 @@ public class TimeWindow extends ToolWindow {
 		martianTimePane.add(linkPane, BorderLayout.EAST);
 		
 		// Create Martian month panel
-		JPanel martianMonthPane = new JPanel(new BorderLayout());//new FlowLayout(FlowLayout.CENTER));
-		martianMonthPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianMonth")));
+		JPanel martianMonthPane = new JPanel(new BorderLayout());
+		martianMonthPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianMonth"))); //$NON-NLS-1$
 		mainPane.add(martianMonthPane, BorderLayout.CENTER);
 		
 		// Create Martian calendar label panel
@@ -216,30 +206,31 @@ public class TimeWindow extends ToolWindow {
 		weeksolLabel = labelPane.addTextField("Weeksol", wd, null);
 
 		// Create Martian calendar month panel
-		JPanel calendarMonthPane = new JPanel(new BorderLayout());
-		calendarMonthPane.setAlignmentX(SwingConstants.CENTER);
-		calendarMonthPane.setAlignmentY(SwingConstants.CENTER);
-//		calendarMonthPane.setPreferredSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 5));
-//		calendarMonthPane.setMaximumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 5));
-//		calendarMonthPane.setMinimumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 5));
-		martianMonthPane.add(calendarMonthPane, BorderLayout.CENTER);
-		
+		JPanel calendarPane = new JPanel();//new BorderLayout());
+		calendarPane.setLayout(new BoxLayout(calendarPane, BoxLayout.Y_AXIS));
+//		calendarPane.setPreferredSize(new Dimension(-1, -1));
+		calendarPane.setAlignmentX(SwingConstants.CENTER);
+		calendarPane.setAlignmentY(SwingConstants.CENTER);
+		martianMonthPane.add(calendarPane, BorderLayout.CENTER);
+
 		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		innerCalendarPane.setAlignmentX(SwingConstants.CENTER);
 		innerCalendarPane.setAlignmentY(SwingConstants.CENTER);
-
+	
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
+//		calendarDisplay.setPreferredSize(new Dimension(-1, -1));
 		innerCalendarPane.add(calendarDisplay);
-		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
-		
+		calendarPane.add(innerCalendarPane, BorderLayout.CENTER);
+
+
 		JPanel seasonPane = new JPanel(new BorderLayout());
 		mainPane.add(seasonPane, BorderLayout.SOUTH);
 
 		// Create Martian hemisphere panel
 		AttributePanel hemiPane = new AttributePanel(3);
 		seasonPane.add(hemiPane, BorderLayout.NORTH);		
-		hemiPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianSeasons")));
+		hemiPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianSeasons"))); //$NON-NLS-1$
 
 		String str =
 				"<html>&#8201;Earth (days) vs Mars (sols)" +
@@ -255,9 +246,9 @@ public class TimeWindow extends ToolWindow {
 //		&#8194; En tab space
 //		&#8195; Em tab space
 		
-		northernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.northernHemisphere"),
+		northernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.northernHemisphere"), //$NON-NLS-1$
 													"", null);
-		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"),
+		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"), //$NON-NLS-1$
 													"", null);
 		// Create areocentric longitude header label
 		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
@@ -275,20 +266,35 @@ public class TimeWindow extends ToolWindow {
 		southPane.add(tickPane, BorderLayout.NORTH);
 		
 		// Create param panel
-		AttributePanel paramPane = new AttributePanel(9);
-		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam")));
+		AttributePanel paramPane = new AttributePanel(13);
+		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
 
 		southPane.add(paramPane, BorderLayout.CENTER);
 
-		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", null);
-		execTimeLabel = paramPane.addTextField(EXEC, "", null);
-		sleepTimeLabel = paramPane.addTextField(SLEEP_TIME, "", null);
-		marsPulseLabel = paramPane.addTextField(NEXT_PULSE_TIME, "", null);
-		pulseDeviationLabel = paramPane.addTextField(PULSE_DEVIATION, "", null);
-		actualTRLabel = paramPane.addTextField(Msg.getString("TimeWindow.actualTRHeader"), "",
-									"Master clock's actual time ratio");
-		realTimeClockLabel = paramPane.addTextField(Msg.getString("TimeWindow.rtc"), "", null);
-		uptimeLabel = paramPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", null);
+		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", //$NON-NLS-1$
+				"The current ticks per sec");
+		averageTPSLabel = paramPane.addTextField(AVERAGE_TPS, "", 
+				"The average ticks per sec");
+		execTimeLabel = paramPane.addTextField(EXEC, "", 
+				"The last execution time of a tick");
+		sleepTimeLabel = paramPane.addTextField(SLEEP_TIME, "", 
+				"The sleep time of the last tick");
+		refPulseLabel = paramPane.addTextField(REF_PULSE_TIME, "", 
+				"How much the reference pulse width is");
+		optimalPulseLabel = paramPane.addTextField(OPTIMAL, "", 
+				"How much the optimal pulse width is");
+		pulseDeviationLabel = paramPane.addTextField(PULSE_DEVIATION, "", 
+				"The percentage of deviation between the optimal pulse width and the next pulse width");
+		nextPulseLabel = paramPane.addTextField(NEXT_PULSE_TIME, "", 
+				"How much the next pulse width will be");
+		actualTRLabel = paramPane.addTextField(ACTUAL_TIME_RATIO, "",
+				"Master clock's actual time ratio");
+		desireTRLabel = paramPane.addTextField(DESIRE_TR, "",
+				"Master clock's desire time ratio");
+		realTimeClockLabel = paramPane.addTextField(Msg.getString("TimeWindow.rtc"), "", 
+				"The amount of simulation time at the passing of each second of the real time"); //$NON-NLS-1$
+		uptimeLabel = paramPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", 
+				"The amount of real time the simulation has been running"); //$NON-NLS-1$
 	
 
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -378,30 +384,36 @@ public class TimeWindow extends ToolWindow {
 		double optPulse = masterClock.getOptPulseTime();
 		double refPulse = masterClock.getReferencePulse();
 		
-		StringBuilder pulseText = new StringBuilder();
-		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulse))
-			  .append(REFERENCE)
-			  .append(StyleManager.DECIMAL_PLACES4.format(refPulse))
-			  .append(CLOSE_P);
-		marsPulseLabel.setText(pulseText.toString());
+		StringBuilder refPulseText = new StringBuilder();
+		refPulseText.append(StyleManager.DECIMAL_PLACES4.format(refPulse));
+		refPulseLabel.setText(refPulseText.toString());
 
+		StringBuilder pulseText = new StringBuilder();
+		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulse));
+		nextPulseLabel.setText(pulseText.toString());
+		
 		// Update pulse deviation label
 		double percent = masterClock.getNextPulseDeviation() * 100;
 		StringBuilder pulseDevText = new StringBuilder();
-		pulseDevText.append(StyleManager.DECIMAL1_PERC.format(percent))
-			  .append(OPTIMAL)
-			  .append(StyleManager.DECIMAL_PLACES4.format(optPulse))
-			  .append(CLOSE_P);
+		pulseDevText.append(StyleManager.DECIMAL1_PERC.format(percent));
 		pulseDeviationLabel.setText(pulseDevText.toString());
 		
+		StringBuilder optimalText = new StringBuilder();
+		optimalText.append(StyleManager.DECIMAL_PLACES4.format(optPulse));
+		optimalPulseLabel.setText(optimalText.toString());
+		
 		// Update actual TR label
-		StringBuilder trText = new StringBuilder();
-		trText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getActualTR()))
-			  .append(DESIRED)
-			  .append(masterClock.getDesiredTR())
-			  .append(X_CLOSE_P);
-		actualTRLabel.setText(trText.toString());
-
+		StringBuilder atrText = new StringBuilder();
+		atrText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getActualTR()))
+			  .append(X_END);
+		
+		StringBuilder dtrText = new StringBuilder();
+		dtrText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getDesiredTR()))
+			  .append(X_END);
+			  
+		actualTRLabel.setText(atrText.toString());
+		desireTRLabel.setText(dtrText.toString());
+		
 		// Update real time clock (RTC) or time compression label
 		realTimeClockLabel.setText(ClockUtils.getRTCString(masterClock.getActualTR()));
 	}
@@ -491,19 +503,17 @@ public class TimeWindow extends ToolWindow {
 		String ts = mTime.getDateTimeStamp() + " " + MarsTimeFormat.getSolOfWeekName(mTime) + UMT;
 		martianTimeLabel.setText(ts);
 
-//		ts = mc.getEarthTime().format(DATE_TIME_FORMATTER);
-//		earthTimeLabel.setText(ts);
-
 		// Update average TPS label
-		double ave = mc.getAveragePulsesPerSecond();
-		StringBuilder tpsText = new StringBuilder();
-		tpsText.append(StyleManager.DECIMAL_PLACES2.format(mc.getCurrentPulsesPerSecond()))
-			  .append(AVERAGE)
-			  .append(StyleManager.DECIMAL_PLACES2.format(ave))
-			  .append(CLOSE_P);
-		
-		ticksPerSecLabel.setText(tpsText.toString());
+		double atps = mc.getAveragePulsesPerSecond();
+		StringBuilder atpsText = new StringBuilder();
+		atpsText.append(StyleManager.DECIMAL_PLACES2.format(atps));
+		averageTPSLabel.setText(atpsText.toString());
 
+		double ctps = mc.getCurrentPulsesPerSecond();
+		StringBuilder ctpsText = new StringBuilder();
+		ctpsText.append(StyleManager.DECIMAL_PLACES2.format(ctps));
+		ticksPerSecLabel.setText(ctpsText.toString());
+		
 		uptimeLabel.setText(mc.getUpTimer().getUptime());
 	}
 
@@ -540,10 +550,12 @@ public class TimeWindow extends ToolWindow {
 		uptimeLabel = null;
 		ticksPerSecLabel = null;
 		actualTRLabel = null;
+		desireTRLabel = null;
 		pulseDeviationLabel = null;
 		execTimeLabel = null;
 		sleepTimeLabel = null;
-		marsPulseLabel = null;
+		nextPulseLabel = null;
+		refPulseLabel = null;
 		realTimeClockLabel = null;
 		monthLabel = null;
 		weeksolLabel = null;		
