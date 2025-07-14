@@ -476,9 +476,20 @@
 
 
 		<crop name="Dandelion" growing-sols="90" crop-category="flowers" life-cycle="perennial"
-	    	edible-biomass="40" edible-water-content=".4" inedible-biomass="20" daily-PAR="25" />
+	    	edible-biomass="1.11" edible-water-content=".4" inedible-biomass="0.1" daily-PAR="25" />
 	    	
 	    <!--	
+			In future, separate the dandelion roots from dandelion leaves
+			
+			But now, assume their combined biomass yield is triple that of the root, thus .37 * 3 = 1.11
+			
+			Studies have shown that under experimental field conditions, the fresh root yield of wild Russian 
+			dandelion (Taraxacum koksaghyz) ranged from 1.3 to 1.9 metric tons per hectare in one trial and 
+			2.2 to 3.7 metric tons per hectare in another trial
+			 
+			The fresh root yield would range from approximately 0.13 to 0.19 kg/m² in the first trial and 
+			0.22 to 0.37 kg/m² in the second trial.
+			  
 			Note: Harvest dandelion at 90 sols before seed-bearing phase because seeds are invasive and spread.
 			
 			use 'flowers', instead of 'seeds' as crop category since we do not intend to harvest seeds as food
@@ -630,9 +641,15 @@
 
 	   		<!-- 
 				
-			 A record-breaking onion harvest of 104.2 tons per hectare using a polymicrobial bio-fertilizer 
+			The average onion yield was reported as 8.82 kg/m² for the Cometa hybrid and 6.57 kg/m² 
+			for the Red Mech hybrid.
+	
+			A record-breaking onion harvest of 104.2 tons per hectare using a polymicrobial bio-fertilizer 
 			and an average yield increase from 55 tons per hectare to 104.2 tons per hectare .	
 				
+
+			General agricultural practices suggest that spring onions typically take about 60 to 80 days 
+			to mature from sowing to harvest.
 				
 			Harvest between 70-90 days
 	   		http://www.veggiegardener.com/veggies/green-onions/
@@ -719,7 +736,7 @@
 	      	-->
 
 		<crop name="Parsley" growing-sols="80" crop-category="flowers" life-cycle="perennial"
-	    	edible-biomass="17" edible-water-content=".4" inedible-biomass="3.4" daily-PAR="25" />
+	    	edible-biomass="16.652" edible-water-content=".4" inedible-biomass="3.4" daily-PAR="25" />
 	    	 	
 	    <!--
 			
@@ -739,12 +756,20 @@
 			-->
 
 
-	    <crop name="Peanut" growing-sols="52" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="0.1" edible-water-content=".056" inedible-biomass="1.0" daily-PAR="32.4" />
+	    <crop name="Peanut" growing-sols="100" crop-category="legumes" life-cycle="annual"
+	    	edible-biomass="100" edible-water-content=".056" inedible-biomass="1.0" daily-PAR="32.4" />
 
 	    	<!--
 				
 			1 Mg / ha 
+				
+			In general, dry biomass per unit surface in forest ecosystems typically ranges between 10 and 100 kg/m², 
+			with Pacific and tropical forest communities reaching higher values than temperate and boreal forests.
+
+			Peanuts typically take between 120 to 160 days to harvest, depending on the variety and growing conditions.
+
+ 			For boiling types, the harvest time is generally 90 to 110 days after planting, while roasting varieties 
+ 			require 130 to 150 days.
 				
 	    	Assume this peanut variant takes half the time (104 days -> 52 days)
 	    	
@@ -812,9 +837,16 @@
 	    	-->
 
 	     <crop name="Quinoa" growing-sols="90" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="0.5" edible-water-content=".12" inedible-biomass="1" daily-PAR="69.12" />
+	    	edible-biomass="0.55" edible-water-content=".12" inedible-biomass="1" daily-PAR="69.12" />
 	    	
 	    	<!-- 
+
+			Yield levels in Northern Europe are normally 1-2 T/HA, but with potentially higher yields as 
+			demonstrated in plot trials
+
+			Nitrogen fertilization in quinoa is an unsolved issue; the literature data show great variability 
+			in results, ranging from very low application (30 kg of N and production of 5.5 tons of grains per ha−1
+			to high application (175 kg ha−1 with 4.2 tons of grains per ha−1 
 				
 			Quinoa by definition is seed only. No need of using seed-name="Quinoa" 	
 				
