@@ -381,7 +381,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- This building is capable of storing the following resources. -->
 				<!-- capacity: the building's default capacity (kg) for
 				     all the resources. -->
-			<storage stock-capacity="50000">
+			<storage stock-capacity="100000">
 
 				<!-- The building's storage capacity for oxygen. -->
 				<!-- resource: the specific resources that the building may

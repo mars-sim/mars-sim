@@ -44,7 +44,7 @@ extends TestCase {
 	public void testLoading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
-		inv.setCapacity(resource, CAPACITY_AMOUNT);
+		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		
 		assertEquals("No excess on 1st load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, inv.getAmountResourceStored(resource));
@@ -64,7 +64,7 @@ extends TestCase {
 	public void testOverloading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
-		inv.setCapacity(resource, CAPACITY_AMOUNT);
+		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		
 		assertEquals("No excess on capacity load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 
@@ -79,7 +79,7 @@ extends TestCase {
 	public void testUnsupported() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
-		inv.setCapacity(resource, CAPACITY_AMOUNT);
+		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 
 		int unprovisioned = ResourceUtil.OXYGEN_ID;
 
@@ -98,7 +98,7 @@ extends TestCase {
 	public void testUnloading()  {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
-		inv.setCapacity(resource, CAPACITY_AMOUNT);
+		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT);
 
@@ -121,9 +121,9 @@ extends TestCase {
 	public void testMultiples()  {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
-		inv.setCapacity(resource, CAPACITY_AMOUNT);
+		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		int resource2  = ResourceUtil.OXYGEN_ID;
-		inv.setCapacity(resource2, 100D);
+		inv.setSpecificCapacity(resource2, 100D);
 
 		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getAmountResourceRemainingCapacity(resource));
 		assertEquals("Remaining capacity 2nd resource", 100D, inv.getAmountResourceRemainingCapacity(resource2));

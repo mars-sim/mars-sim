@@ -249,7 +249,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
-		eqmInventory.setResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
+		eqmInventory.setSpecificResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
 	}

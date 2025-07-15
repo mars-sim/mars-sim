@@ -60,17 +60,32 @@ public class Storage extends Function {
 		// Set the specific capacities of resources from this building.
 		inv.setResourceCapacityMap(resourceCapacities, true);
 		
-		// Get the stock/general/cargo capacity
+		// Get the stock/general/cargo capacity of this building
 		double stockCapacity = spec.getStockCapacity();
-		// set the stock/general/cargo capacity to this building.
-		inv.setCargoCapacity(stockCapacity);
+		
+		// Add the stock/general/cargo capacity of this building to its owner
+		inv.addCargoCapacity(stockCapacity);
 
+		// Account for the capacity of specific resources available for each building
+		Map<Integer, Double> capResources = buildingConfig.getStorageCapacities(building.getBuildingType());	
 		// Account for the initial specific resources available for each building
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
-		// Add initial resources to this building.
+		
+		double totalAmount = 0;
+		
+		// Add initial resources for this building.
 		for (Entry<Integer, Double> i : initialResources.entrySet()) {
+
 			double initialAmount = i.getValue();
+			totalAmount += initialAmount;
 			int resourceId = i.getKey();
+			
+			if (!capResources.containsKey(resourceId)) {
+				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
+				logger.warning(building, 
+						"Lacking specific storage capacity for " + resourceName + ".");
+			}
+			
 			// Stores this resource in this building.
 			double excess = inv.storeAmountResource(resourceId, initialAmount);
 			if (excess > 0D) {
@@ -81,7 +96,24 @@ public class Storage extends Function {
 						+ " storage space. " + (initialAmount - excess) + " kg stored. "
 						);
 			}
+		}	
+
+		double totalcap = 0;
+		
+		// Calculate total capacities of specific resources in this building.
+		for (Entry<Integer, Double> i : capResources.entrySet()) {
+			double amount = i.getValue();
+			totalcap += amount;		
 		}
+
+		if (stockCapacity < totalAmount)
+			logger.warning(building, 
+				"Lacking " + Math.round((totalAmount - stockCapacity)*100.0)/100.0 + " kg ");
+
+		logger.info(building, "Total Initial Specific Amount Resource: " + Math.round(totalAmount*100.0)/100.0 + " kg "
+				+ " Total Specific Capacity: " + Math.round(totalcap*100.0)/100.0 + " kg "
+				+ " Stock Capacity: " + Math.round(stockCapacity*100.0)/100.0 + " kg ");
+	
 	}
 
 	/**
@@ -178,7 +210,7 @@ public class Storage extends Function {
 		while (j.hasNext()) {
 			Integer resource = j.next();
 			double storageCapacityAmount = resourceCapacities.get(resource);
-			getBuilding().getSettlement().getEquipmentInventory().removeCapacity(resource, storageCapacityAmount);
+			getBuilding().getSettlement().getEquipmentInventory().removeSpecificCapacity(resource, storageCapacityAmount);
 		}
 	}
 

@@ -473,7 +473,7 @@ extends TestCase {
 		EquipmentInventory inv = target.getEquipmentInventory();
 		
 		for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
-			inv.setResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
+			inv.setSpecificResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
 		}
 	}
 

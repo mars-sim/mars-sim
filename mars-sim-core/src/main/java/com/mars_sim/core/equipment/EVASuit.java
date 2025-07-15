@@ -200,9 +200,9 @@ public class EVASuit extends Equipment
 		microInventory = new MicroInventory(this, CAPACITY);
 
 		// Set capacity for each resource
-		microInventory.setCapacity(ResourceUtil.OXYGEN_ID, OXYGEN_CAPACITY);
-		microInventory.setCapacity(ResourceUtil.WATER_ID, WATER_CAPACITY);
-		microInventory.setCapacity(ResourceUtil.CO2_ID, CO2_CAPACITY);
+		microInventory.setSpecificCapacity(ResourceUtil.OXYGEN_ID, OXYGEN_CAPACITY);
+		microInventory.setSpecificCapacity(ResourceUtil.WATER_ID, WATER_CAPACITY);
+		microInventory.setSpecificCapacity(ResourceUtil.CO2_ID, CO2_CAPACITY);
 		
 		// Sets the base mass of the bag.
 		setBaseMass(getEmptyMass());

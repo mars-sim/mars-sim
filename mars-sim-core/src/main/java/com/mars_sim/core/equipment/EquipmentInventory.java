@@ -230,13 +230,13 @@ public class EquipmentInventory
 			}
 			else {
 				logger.warning(owner, 60_000L, "No capacity to hold " + equipment.getName()
-								+ ": cargoCapacity = " + cargoCapacity 
-								+ ", container name = " + containerName
-								+ ", totalStored = " + totalStored 
-								+ ", microInvMass = " + microInvMass
-								+ ", containerMass = " + containerMass 
-								+ ", suitMass = " + suitMass
-								+ ", equipmentMass = " + equipment.getMass() 
+								+ " - cargoCapacity: " + cargoCapacity 
+								+ ", container name: " + containerName
+								+ ", totalStored: " + totalStored 
+								+ ", microInvMass: " + microInvMass
+								+ ", containerMass: " + containerMass 
+								+ ", suitMass: " + suitMass
+								+ ", equipmentMass: " + equipment.getMass() 
 								+ ".");
 				return false;
 			}
@@ -326,7 +326,7 @@ public class EquipmentInventory
 		if (!microInventory.isResourceSupported(resource)) {
 			// Since cargoCapacity is changing dynamically,
 			// does it mean one must constantly update the capacity of this amount resource ?
-			microInventory.setCapacity(resource, cargoCapacity);
+			microInventory.setSpecificCapacity(resource, cargoCapacity);
 		}
 		return microInventory.storeAmountResource(resource, quantity);
 	}
@@ -343,7 +343,7 @@ public class EquipmentInventory
 	}
 	
 	/**
-	 * Gets the capacity of a particular amount resource.
+	 * Gets the specific capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -641,19 +641,19 @@ public class EquipmentInventory
 	 */
 	public void addResourceCapacity(int resource, double capacity) {
 		if (ResourceUtil.findAmountResource(resource) != null) {
-			microInventory.addCapacity(resource, capacity);
+			microInventory.addSpecificCapacity(resource, capacity);
 		}
 	}
 
 	/**
-	 * Sets the resource capacity.
+	 * Sets a specific resource capacity.
 	 *
 	 * @param resource
 	 * @param capacity
 	 */
-	public void setResourceCapacity(int resource, double capacity) {
+	public void setSpecificResourceCapacity(int resource, double capacity) {
 		if (ResourceUtil.findAmountResource(resource) != null) {
-			microInventory.setCapacity(resource, capacity);
+			microInventory.setSpecificCapacity(resource, capacity);
 		}
 	}
 
@@ -676,10 +676,10 @@ public class EquipmentInventory
 		for (Entry<Integer, Double> v : capacities.entrySet()) {
 			Integer foundResource = v.getKey();
 			if (toAdd) {
-				microInventory.addCapacity(foundResource, v.getValue());
+				microInventory.addSpecificCapacity(foundResource, v.getValue());
 			}
 			else {
-				microInventory.setCapacity(foundResource, v.getValue());
+				microInventory.setSpecificCapacity(foundResource, v.getValue());
 			}
 		}
 	}
@@ -695,23 +695,34 @@ public class EquipmentInventory
 	}
 	
 	/**
-	 * Adds the capacity of a particular resource.
+	 * Adds the cargo/general/shared capacity.
+	 *
+	 * @param value
+	 */
+	public void addCargoCapacity(double value) {
+		cargoCapacity += value;
+ 		microInventory.addSharedCapacity(cargoCapacity);
+	}
+	
+	
+	/**
+	 * Adds the specific capacity of a particular resource.
 	 *
 	 * @param resource
 	 * @param capacity
 	 */
-	public void addCapacity(int resource, double capacity) {
-		microInventory.addCapacity(resource, capacity);
+	public void addSpecificCapacity(int resource, double capacity) {
+		microInventory.addSpecificCapacity(resource, capacity);
 	}
 
 	/**
-	 * Removes the capacity of a particular resource.
+	 * Removes the specific capacity of a particular resource.
 	 *
 	 * @param resource
 	 * @param capacity
 	 */
-	public void removeCapacity(int resource, double capacity) {
-		microInventory.removeCapacity(resource, capacity);
+	public void removeSpecificCapacity(int resource, double capacity) {
+		microInventory.removeSpecificCapacity(resource, capacity);
 	}
 
 	/**
