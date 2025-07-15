@@ -18,6 +18,7 @@ import com.mars_sim.core.map.location.LocalPosition;
  */
 public class FunctionSpec {
 	// Name of the standard capacity property
+	public static final String STOCK_CAPACITY = "stock-capacity";
 	public static final String CAPACITY = "capacity";
 	private static final String AREA = "area";
 	private static final String DEPTH = "depth";
@@ -71,6 +72,13 @@ public class FunctionSpec {
 		return getIntegerProperty(CAPACITY);
 	}
 
+	/**
+	 * Gets the value of the stock capacity property.
+	 */
+	public int getStockCapacity() {
+		return getIntegerProperty(STOCK_CAPACITY);
+	}
+	
 	/**
 	 * Gets the value of the standard area property.
 	 */

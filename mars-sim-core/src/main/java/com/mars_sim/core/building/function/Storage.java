@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Storage.java
- * @date 2022-07-30
+ * @date 2025-07-15
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function;
@@ -61,9 +61,9 @@ public class Storage extends Function {
 		inv.setResourceCapacityMap(resourceCapacities, true);
 		
 		// Get the stock/general/cargo capacity
-		double stockCapacity = spec.getCapacity();
-		// Add the stock/general/cargo capacity to this building.
-		inv.addCargoCapacity(stockCapacity);
+		double stockCapacity = spec.getStockCapacity();
+		// set the stock/general/cargo capacity to this building.
+		inv.setCargoCapacity(stockCapacity);
 
 		// Account for the initial specific resources available for each building
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());

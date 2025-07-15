@@ -17,7 +17,7 @@ public class MockBuilding extends Building {
 		if (lifeSupportSpec == null) {
 			
 			lifeSupportSpec = new FunctionSpec(FunctionType.LIFE_SUPPORT, Map.of(BuildingConfig.POWER_REQUIRED, 1D,
-													  FunctionSpec.CAPACITY, 10),
+													  FunctionSpec.STOCK_CAPACITY, 10),
 														null);
 		}
 		return lifeSupportSpec;

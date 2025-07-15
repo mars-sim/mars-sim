@@ -25,7 +25,7 @@ public class MockSettlement extends Settlement {
 		super(name, locn);
 					
         // Set inventory total mass capacity.
-		getEquipmentInventory().addCargoCapacity(Double.MAX_VALUE);
+		getEquipmentInventory().setCargoCapacity(Double.MAX_VALUE);
 
 		initialiseEssentials(needGoods, Collections.emptyList());
 

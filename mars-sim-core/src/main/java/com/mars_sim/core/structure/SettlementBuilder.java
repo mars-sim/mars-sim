@@ -252,7 +252,7 @@ public final class SettlementBuilder {
 		
 		Settlement.initializeStatics();
 		
-		settlement.initializeDataNInstances();
+		settlement.initializeData();
 		
 		unitManager.addUnit(settlement);
 

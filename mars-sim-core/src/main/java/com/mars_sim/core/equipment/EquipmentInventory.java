@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentInventory.java
- * @date 2023-07-30
+ * @date 2025-07-15
  * @author Barry Evans
  */
 
@@ -63,11 +63,13 @@ public class EquipmentInventory
 		suitSet = new UnitSet<>();
 		containerSet = new UnitSet<>();
 		
+		// Create microInventory instance
+		microInventory = new MicroInventory(owner, cargoCapacity);
+		
+		///////////// EXPERIMENTAL ONLY /////////////
+		
 		// Create the amount resource bin set
 		amountResourceBinSet = new HashSet<>();
-		
-		//////////////////////////////////////////////
-		// Temporary Use only 
 		
 		var baskets = BinFactory.findBinMap(owner, amountResourceBinSet, BinType.BASKET);
 		var crates = BinFactory.findBinMap(owner, amountResourceBinSet, BinType.CRATE);
@@ -75,9 +77,6 @@ public class EquipmentInventory
 		amountResourceBinSet.add(baskets);
 		amountResourceBinSet.add(crates);
 		//////////////////////////////////////////////
-		
-		// Create microInventory instance
-		microInventory = new MicroInventory(owner, cargoCapacity);
 	}
 
 	/**
@@ -671,12 +670,12 @@ public class EquipmentInventory
 	 * Sets the resource capacities.
 	 * 
 	 * @param capacities
-	 * @param add Should these be added to the current values (or else it should be set to the current value)
+	 * @param add True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
 	 */
-	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean add) {
+	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean toAdd) {
 		for (Entry<Integer, Double> v : capacities.entrySet()) {
 			Integer foundResource = v.getKey();
-			if (add) {
+			if (toAdd) {
 				microInventory.addCapacity(foundResource, v.getValue());
 			}
 			else {
@@ -686,15 +685,15 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds to the cargo/general/shared capacity.
+	 * Sets the cargo/general/shared capacity.
 	 *
 	 * @param value
 	 */
-	public void addCargoCapacity(double value) {
-		cargoCapacity += value;
-		microInventory.setSharedCapacity(cargoCapacity);
+	public void setCargoCapacity(double value) {
+		cargoCapacity = value;
+ 		microInventory.setSharedCapacity(cargoCapacity);
 	}
-
+	
 	/**
 	 * Adds the capacity of a particular resource.
 	 *

@@ -10,7 +10,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 
 /**
- * This enum class is used for distinguishing between various types of binn
+ * This enum class is used for distinguishing between various types of bins.
  */
 public enum BinType {
 	

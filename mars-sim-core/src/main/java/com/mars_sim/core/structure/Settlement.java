@@ -476,7 +476,7 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Initializes field data, class and maps.
 	 */
-	public void initializeDataNInstances() {
+	public void initializeData() {
 		// Get the elevation and terrain gradient factor
 		terrainProfile = terrainElevation.getTerrainProfile(location);
 
