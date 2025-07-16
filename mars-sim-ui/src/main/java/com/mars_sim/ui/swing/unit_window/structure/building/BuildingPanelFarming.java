@@ -37,6 +37,7 @@ import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -312,17 +313,26 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
         cropTable.setComponentPopupMenu(popupMenu);
 		
 		TableColumnModel cropColumns = cropTable.getColumnModel();
-		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(4);
-		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(40);
-		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(1);
+		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(25);
+		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(40);
 		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(15);
 		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageTableCellRenderer(true));
-		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(16);
+		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(10);
 		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(new NumberCellRenderer());
-		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(30);
-		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(20);
+		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(10);
 		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(new NumberCellRenderer());
-
+		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(25);
+	
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(centerRenderer);
+		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(centerRenderer);
+		
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		cropColumns.getColumn(CropTableModel.HARVEST).setCellRenderer(rightRenderer);
+		
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		
 		tableScrollPanel.setViewportView(cropTable);

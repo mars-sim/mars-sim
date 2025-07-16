@@ -39,6 +39,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
@@ -366,12 +367,30 @@ public class MainWindow
 
 		changeTitle(false);
 
-		String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-		if (os.contains("mac")) {
+//		String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+//		if (os.contains("mac")) {
+		if (SystemInfo.isMacOS) {
 			final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
 			Image image = defaultToolkit.getImage(getClass().getResource(ICON_DIR + LANDER_91_PNG));
 			final Taskbar taskbar = Taskbar.getTaskbar();
 			taskbar.setIconImage(image);
+			
+			// Move the menu bar out of the main window to the top of the screen
+			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+			
+			// Change the appearance of window title bars
+	        // 	 Possible values:
+	        //   - "system": use current macOS appearance (light or dark)
+	        //   - "NSAppearanceNameAqua": use light appearance
+	        //   - "NSAppearanceNameDarkAqua": use dark appearance
+	        // Note: Must be set on main thread and before AWT/Swing is initialized;
+	        //       Setting it on AWT thread does not work)
+//	        System.setProperty( "apple.awt.application.appearance", "system" );
+			
+//			if (SystemInfo.isMacFullWindowContentSupported) {
+//			    frame.getRootPane().putClientProperty( "apple.awt.fullWindowContent", true );
+//			    frame.getRootPane().putClientProperty( "apple.awt.transparentTitleBar", true );
+//			}
 		}
 		else {
 			frame.setIconImage(getIconImage());

@@ -46,7 +46,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	private static final String UNIT_NAME = "unitname";
 	private static final String SELECTED_TAB = "selected_tab";
 
-	public static final int WIDTH = 530;
+	public static final int WIDTH = 550;
 	public static final int HEIGHT = 620;
 	public static final int STATUS_HEIGHT = 60;
 	
