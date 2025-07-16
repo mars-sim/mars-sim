@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelThermal.java
- * @date 2024-07-03
+ * @date 2025-07-15
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -312,7 +312,7 @@ public class TabPanelThermal extends TabPanelTable {
 	public void update() {
 
 		double heat = thermalSystem.getTotalHeatGen();
-		if (totHeatGenCache != heat) {
+		if (Math.abs(totHeatGenCache - heat) > .3) {
 			totHeatGenCache = heat;
 			totHeatGenLabel.setText(
 					StyleManager.DECIMAL_KW.format(heat)
@@ -320,7 +320,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 
 		double heatLoad = thermalSystem.getTotalHeatReq();
-		if (totHeatLoadCache != heatLoad) {
+		if (Math.abs(totHeatLoadCache - heatLoad) > .3) {
 			totHeatLoadCache = heatLoad;
 			totHeatLoadLabel.setText(
 					StyleManager.DECIMAL_KW.format(heatLoad)
@@ -328,7 +328,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 		
 		double heatGenElectric = thermalSystem.getHeatGenElectric();
-		if (heatGenElectricCache != heatGenElectric) {
+		if (Math.abs(heatGenElectricCache - heatGenElectric) > .3) {
 			heatGenElectricCache = heatGenElectric;
 			heatGenElectricLabel.setText(
 					StyleManager.DECIMAL_KW.format(heatGenElectric)
@@ -336,7 +336,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 		
 		double heatGenFuel = thermalSystem.getHeatGenFuel();
-		if (heatGenFuelCache != heatGenFuel) {
+		if (Math.abs(heatGenFuelCache - heatGenFuel) > .3) {
 			heatGenFuelCache = heatGenFuel;
 			heatGenFuelLabel.setText(
 					StyleManager.DECIMAL_KW.format(heatGenFuel)
@@ -344,7 +344,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 		
 		double heatGenNuclear = thermalSystem.getHeatGenNuclear();
-		if (heatGenNuclearCache != heatGenNuclear) {
+		if (Math.abs(heatGenNuclearCache - heatGenNuclear) > .3) {
 			heatGenNuclearCache = heatGenNuclear;
 			heatGenNuclearLabel.setText(
 					StyleManager.DECIMAL_KW.format(heatGenNuclear)
@@ -352,7 +352,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 		
 		double heatGenSolar = thermalSystem.getHeatGenSolar();
-		if (heatGenSolarCache != heatGenSolar) {
+		if (Math.abs(heatGenSolarCache - heatGenSolar) > .3) {
 			heatGenSolarCache = heatGenSolar;
 			heatGenSolarLabel.setText(
 					StyleManager.DECIMAL_KW.format(heatGenSolar)
@@ -361,7 +361,7 @@ public class TabPanelThermal extends TabPanelTable {
 		
 		
 		double power = thermalSystem.getTotalPowerGen(); 
-		if (powerGenCache != power) {
+		if (Math.abs(powerGenCache - power) > .3) {
 			powerGenCache = power;
 			powerGenLabel.setText(
 					StyleManager.DECIMAL_KW.format(power)
@@ -369,7 +369,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 
 		double eheat = getAverageEfficiencyElectricHeat()*100D;
-		if (effEHeatCache != eheat) {
+		if (Math.abs(effEHeatCache - eheat) > .1) {
 			effEHeatCache = eheat;
 			electricEffTF.setText(
 					StyleManager.DECIMAL_PERC.format(eheat)
@@ -377,7 +377,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 
 		double esheat = getAverageEfficiencySolarHeating()*100D;
-		if (effSHeatCache != esheat) {
+		if (Math.abs(effSHeatCache - esheat) > .1) {
 			effSHeatCache = esheat;
 			solarEffTF.setText(
 					StyleManager.DECIMAL_PERC.format(esheat)

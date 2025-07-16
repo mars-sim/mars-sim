@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @date 2024-06-28
+ * @date 2025-07-15
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -138,7 +138,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Prepare power used tf.
 		powerLoadCache = powerGrid.getRequiredPower();
 		// Prepare the power usage percent
-		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0;
+		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0 ;
 		
 		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
 				StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
@@ -293,7 +293,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Update power used TF.
 		double req = powerGrid.getRequiredPower();
 
-		if (powerGenCache != gen || powerLoadCache != req) {
+		if (Math.abs(powerGenCache - gen) > .4 || Math.abs(powerLoadCache - req) > .4) {
 			powerGenCache = gen;
 			powerLoadCache = req;
 			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0;
@@ -310,7 +310,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
 		
-		if (energyCapacityCache != cap || energyStoredCache != store) {
+		if (Math.abs(energyCapacityCache - cap) > .4 || Math.abs(energyStoredCache - store) > .4) {
 			energyCapacityCache = cap;
 			energyStoredCache = store;
 			percentEnergyUsage = Math.round(energyStoredCache / energyCapacityCache * 100 * 10.0)/10.0;
@@ -325,7 +325,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 
 		// Update solar cell efficiency TF
 		double eff = getAverageEfficiency();
-		if (solarCellEfficiencyCache != eff) {
+		if (Math.abs(solarCellEfficiencyCache - eff) > .4) {
 			solarCellEfficiencyCache = eff;
 			solarCellEfficiencyTF.setText(StyleManager.DECIMAL1_PERC.format(eff * 100D));
 		}
