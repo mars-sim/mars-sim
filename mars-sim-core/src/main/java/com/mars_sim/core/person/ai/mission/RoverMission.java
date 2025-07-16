@@ -1051,7 +1051,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = rover.getAmountResourceCapacity(ResourceUtil.FOOD_ID);
+		double foodCapacity = rover.getSpecificCapacity(ResourceUtil.FOOD_ID);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -1059,7 +1059,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = rover.getAmountResourceCapacity(ResourceUtil.WATER_ID);
+		double waterCapacity = rover.getSpecificCapacity(ResourceUtil.WATER_ID);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
@@ -1067,7 +1067,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = rover.getAmountResourceCapacity(ResourceUtil.OXYGEN_ID);
+		double oxygenCapacity = rover.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;

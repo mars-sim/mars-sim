@@ -1381,8 +1381,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
-		return eqmInventory.getAmountResourceCapacity(resource);
+	public double getSpecificCapacity(int resource) {
+		return eqmInventory.getSpecificCapacity(resource);
 	}
 
 	/**

@@ -140,11 +140,11 @@ public class MicroInventory implements Serializable {
 	}
 	
 	/**
-     * Gets the specific/stock capacity of this amount resource that this container can hold.
+     * Gets the specific capacity of this amount resource that this container can hold.
      *
      * @return capacity (kg).
      */
-    public double getCapacity(int resource) {
+    public double getSpecificCapacity(int resource) {
 		AmountStored s = specificAmountStorage.get(resource);
 		if (s != null) {
 			return s.capacity;

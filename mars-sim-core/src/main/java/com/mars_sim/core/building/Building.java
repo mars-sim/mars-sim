@@ -1497,8 +1497,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
-		return getAssociatedSettlement().getAmountResourceCapacity(resource);
+	public double getSpecificCapacity(int resource) {
+		return getAssociatedSettlement().getSpecificCapacity(resource);
 	}
 
 	/**

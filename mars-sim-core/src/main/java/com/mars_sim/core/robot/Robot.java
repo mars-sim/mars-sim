@@ -639,8 +639,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
-		return eqmInventory.getAmountResourceCapacity(resource);
+	public double getSpecificCapacity(int resource) {
+		return eqmInventory.getSpecificCapacity(resource);
 	}
 
 	/**

@@ -265,16 +265,15 @@ public class EVASuit extends Equipment
 
 
 	/**
-	 * Gets the capacity of a particular amount resource.
+	 * Gets the specific capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
-		// Note: this method is different from
-		// Equipment's getAmountResourceCapacity
-		return microInventory.getCapacity(resource);
+	public double getSpecificCapacity(int resource) {
+		// Note: this method is different from Equipment's getAmountResourceCapacity
+		return microInventory.getSpecificCapacity(resource);
 	}
 
 	/**

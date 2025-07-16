@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @date 2023-06-10
+ * @date 2025-07-15
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window;
@@ -387,7 +387,7 @@ public class InventoryTabPanel extends TabPanel {
 			
 			for (AmountResource resource : arItems) {
 				stored.put(resource, holder.getAllAmountResourceStored(resource.getID()));
-				cap.put(resource, holder.getAmountResourceCapacity(resource.getID()));
+				cap.put(resource, holder.getSpecificCapacity(resource.getID()));
 			}
         }
 

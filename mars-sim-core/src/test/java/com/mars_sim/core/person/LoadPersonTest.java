@@ -51,7 +51,7 @@ public class LoadPersonTest extends AbstractMarsSimUnitTest {
 		
 		double amount = 1D;
 		
-		double cap = person.getAmountResourceCapacity(ResourceUtil.FOOD_ID);
+		double cap = person.getSpecificCapacity(ResourceUtil.FOOD_ID);
 		System.out.println(person + " has a capacity of " + cap + " kg for food.");
 		
 		double remain0 = person.getAmountResourceRemainingCapacity(ResourceUtil.FOOD_ID);

@@ -2007,8 +2007,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
-		return eqmInventory.getAmountResourceCapacity(resource);
+	public double getSpecificCapacity(int resource) {
+		return eqmInventory.getSpecificCapacity(resource);
 	}
 
 	/**

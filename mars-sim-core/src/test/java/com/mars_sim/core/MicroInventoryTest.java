@@ -88,7 +88,7 @@ extends TestCase {
 
 		assertEquals("Excess on unprovisioned", CAPACITY_AMOUNT, inv.storeAmountResource(unprovisioned, CAPACITY_AMOUNT));
 		assertEquals("Remaining on unprovisioned", 0D, inv.getAmountResourceRemainingCapacity(unprovisioned));
-		assertEquals("Capacity on unprovisioned", 0D, inv.getCapacity(unprovisioned));
+		assertEquals("Capacity on unprovisioned", 0D, inv.getSpecificCapacity(unprovisioned));
 
 	}
 	

@@ -194,7 +194,7 @@ public class Storage extends Function {
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double storageCapacityAmount = resourceCapacities.get(resource);
-			double totalStorageCapacityAmount = getBuilding().getSettlement().getAmountResourceCapacity(resource);
+			double totalStorageCapacityAmount = getBuilding().getSettlement().getSpecificCapacity(resource);
 			double remainingStorageCapacityAmount = totalStorageCapacityAmount - storageCapacityAmount;
 			double totalStoredAmount = getBuilding().getSettlement().getAmountResourceStored(resource);
 			if (remainingStorageCapacityAmount < totalStoredAmount) {

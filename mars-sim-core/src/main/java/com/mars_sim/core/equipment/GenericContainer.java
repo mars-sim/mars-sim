@@ -261,7 +261,7 @@ class GenericContainer extends Equipment implements Container {
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
+	public double getSpecificCapacity(int resource) {
 		if (((resourceHeld == -1) && canStore(resource)) || (resource == resourceHeld)) {
 			return totalCapacity;
 		}

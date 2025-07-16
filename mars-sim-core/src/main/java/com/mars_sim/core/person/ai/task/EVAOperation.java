@@ -560,7 +560,7 @@ public abstract class EVAOperation extends Task {
 
 		try {
 			// Check if EVA suit is at 15% of its oxygen capacity.
-			double oxygenCap = suit.getAmountResourceCapacity(ResourceUtil.OXYGEN_ID);
+			double oxygenCap = suit.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
 			double oxygen = suit.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (oxygen <= (oxygenCap * .2D)) {
 				logger.log(person, Level.WARNING, 20_000,
@@ -570,7 +570,7 @@ public abstract class EVAOperation extends Task {
 			}
 
 			// Check if EVA suit is at 15% of its water capacity.
-			double waterCap = suit.getAmountResourceCapacity(ResourceUtil.WATER_ID);
+			double waterCap = suit.getSpecificCapacity(ResourceUtil.WATER_ID);
 			double water = suit.getAmountResourceStored(ResourceUtil.WATER_ID);
 			if (water <= (waterCap * .10D)) {
 				logger.log(person, Level.WARNING, 20_000,

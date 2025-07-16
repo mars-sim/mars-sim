@@ -1393,14 +1393,14 @@ class AmountResourceGood extends Good {
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {
 				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
-					double fuelDemand = v.getAmountResourceCapacity(getID());
+					double fuelDemand = v.getSpecificCapacity(getID());
 					demand += fuelDemand * transFactor * METHANOL_VALUE_MODIFIER;
 				}
 			} break;
 		
 			case ResourceUtil.METHANE_ID: {
 				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
-					double fuelDemand = v.getAmountResourceCapacity(getID());
+					double fuelDemand = v.getSpecificCapacity(getID());
 					demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER / 5;
 				}
 			} break;

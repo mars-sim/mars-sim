@@ -88,7 +88,7 @@ public class Kit extends Equipment
 	}
 
 	@Override
-	public double getAmountResourceCapacity(int resource) {
+	public double getSpecificCapacity(int resource) {
 		return 0;
 	}
 

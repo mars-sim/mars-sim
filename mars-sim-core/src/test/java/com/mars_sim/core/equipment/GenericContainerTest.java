@@ -62,7 +62,7 @@ extends TestCase {
 		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
 		assertEquals("EMpty capacity", bagCap,
-						c.getAmountResourceCapacity(rockID));
+						c.getSpecificCapacity(rockID));
 		assertEquals("Remaining capacity", bagCap,
 				c.getAmountResourceRemainingCapacity(rockID));
 		

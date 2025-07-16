@@ -129,6 +129,6 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		return String.format(RESOURCE_FORMAT, 
 				ResourceUtil.findAmountResourceName(resourceID),
 				holder.getAmountResourceStored(resourceID),
-				holder.getAmountResourceCapacity(resourceID));
+				holder.getSpecificCapacity(resourceID));
 	}
 }

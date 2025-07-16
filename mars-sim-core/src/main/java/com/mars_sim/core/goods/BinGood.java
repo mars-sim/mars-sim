@@ -161,7 +161,7 @@ public class BinGood extends Good {
 		// Scan resources that can be held in this Container
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (BinFactory.getBinTypeForResource(resource.getID()) == binType) {
-				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
+				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
 
 				double resourceDemand = owner.getDemandValueWithID(resource.getID());
 

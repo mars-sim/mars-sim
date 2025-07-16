@@ -349,8 +349,8 @@ public class EquipmentInventory
 	 * @return capacity
 	 */
 	@Override
-	public double getAmountResourceCapacity(int resource) {
-		return microInventory.getCapacity(resource);
+	public double getSpecificCapacity(int resource) {
+		return microInventory.getSpecificCapacity(resource);
 	}
 
 	/**
@@ -362,7 +362,7 @@ public class EquipmentInventory
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
 
-		double cap = microInventory.getCapacity(resource);
+		double cap = microInventory.getSpecificCapacity(resource);
 		double stored = microInventory.getAmountResourceStored(resource);
 
 		// Note: it should not include the general capacity,
@@ -381,7 +381,7 @@ public class EquipmentInventory
 	 */
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
 		
-		double cap = microInventory.getCapacity(resource);
+		double cap = microInventory.getSpecificCapacity(resource);
 		double stored = microInventory.getAmountResourceStored(resource);
 		
 		return (cap > stored);

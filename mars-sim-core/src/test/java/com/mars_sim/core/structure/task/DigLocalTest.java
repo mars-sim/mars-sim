@@ -133,7 +133,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         assertTrue("Task is EVA", task.isEVA());
 
         // Fill capacity
-        s.storeAmountResource(ResourceUtil.ICE_ID, s.getAmountResourceCapacity(ResourceUtil.ICE_ID));
+        s.storeAmountResource(ResourceUtil.ICE_ID, s.getSpecificCapacity(ResourceUtil.ICE_ID));
         tasks = mt.getSettlementTasks(s);
         assertTrue("No Tasks when no capacity", tasks.isEmpty());
     }

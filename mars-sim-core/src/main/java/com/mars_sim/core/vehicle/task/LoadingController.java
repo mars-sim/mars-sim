@@ -133,7 +133,7 @@ public class LoadingController implements Serializable {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
 		for (Integer resourceId : ids) {
 			double amountLoaded = vehicle.getAmountResourceStored(resourceId);
-			double capacity = vehicle.getAmountResourceCapacity(resourceId);
+			double capacity = vehicle.getSpecificCapacity(resourceId);
 			double amountRequired = resources.get(resourceId).doubleValue();
 			if (capacity < amountRequired) {
 				// So the vehicle can not handle the Manifest volume

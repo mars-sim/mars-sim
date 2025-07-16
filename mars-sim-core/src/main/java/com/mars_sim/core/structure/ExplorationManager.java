@@ -37,9 +37,10 @@ public class ExplorationManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**
-	 * Represents a propspective site
+	 * Represents a prospective site
 	 */
 	private static class Prospect implements Serializable {
+		private static final long serialVersionUID = 1L;
 		Coordinates locn;
 		double distance;
 		MineralSite site;

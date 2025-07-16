@@ -312,12 +312,12 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
         cropTable.setComponentPopupMenu(popupMenu);
 		
 		TableColumnModel cropColumns = cropTable.getColumnModel();
-		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(5);
+		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(4);
 		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(40);
 		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(30);
 		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(15);
 		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageTableCellRenderer(true));
-		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(20);
+		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(16);
 		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(new NumberCellRenderer());
 		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(30);
 		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(20);

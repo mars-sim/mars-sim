@@ -604,7 +604,7 @@ public class EmergencySupply extends RoverMission {
 			if (resource.equals(ResourceUtil.METHANOL_ID)) {
 				Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
 				while (i.hasNext()) {
-					double fuelDemand = i.next().getAmountResourceCapacity(resource);
+					double fuelDemand = i.next().getSpecificCapacity(resource);
 					result += fuelDemand * VEHICLE_FUEL_REMAINING_MODIFIER;
 				}
 			}

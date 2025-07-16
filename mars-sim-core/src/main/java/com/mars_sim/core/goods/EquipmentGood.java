@@ -300,7 +300,7 @@ public class EquipmentGood extends Good {
 		// Scan resources that can be held in this Container
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
-				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
+				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
 
 				double resourceDemand = owner.getDemandValueWithID(resource.getID());
 

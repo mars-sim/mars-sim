@@ -69,7 +69,7 @@ public class BuildingPanelStorage extends TabPanelTable {
 
 				available.put(name, holder.getAllAmountResourceStored(id));
 				
-				settlementStorage.put(name, holder.getAmountResourceCapacity(id));
+				settlementStorage.put(name, holder.getSpecificCapacity(id));
 			}
 			
 			Collections.sort(nameList);
