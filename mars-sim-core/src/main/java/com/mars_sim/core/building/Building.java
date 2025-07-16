@@ -1502,16 +1502,27 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource.
+	 * Obtains the remaining combined storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
-		return getAssociatedSettlement().getAmountResourceRemainingCapacity(resource);
+	public double getRemainingCombinedCapacity(int resource) {
+		return getAssociatedSettlement().getRemainingCombinedCapacity(resource);
 	}
 
+	/**
+	 * Obtains the remaining specific storage space of a particular amount resource.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingSpecificCapacity(int resource) {
+		return getAssociatedSettlement().getRemainingSpecificCapacity(resource);
+	}
+	
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
 	 * 

@@ -1113,7 +1113,7 @@ public class Settlement extends Unit implements Temporal,
 			logger.log(this, Level.WARNING, 10_000,
 					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
-		else if (getAmountResourceRemainingCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		else if (getRemainingCombinedCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(true);
 			double r = getGreyWaterFilteringRate();
@@ -2920,16 +2920,29 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource.
+	 * Obtains the combined capacity of remaining storage space for storing an amount resource.
+	 * @apiNote This includes the stock capacity
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCombinedCapacity(int resource) {
+		return eqmInventory.getRemainingCombinedCapacity(resource);
+	}
+
+	/**
+	 * Obtains the specific capacity of remaining storage space for storing an amount resource.
+     * @apiNote This includes the stock capacity
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.getAmountResourceRemainingCapacity(resource);
+	public double getRemainingSpecificCapacity(int resource) {
+		return eqmInventory.getRemainingCombinedCapacity(resource);
 	}
-
+			
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
 	 * 
@@ -3340,5 +3353,4 @@ public class Settlement extends Unit implements Temporal,
 		
 		scientificAchievement = null;
 	}
-
 }

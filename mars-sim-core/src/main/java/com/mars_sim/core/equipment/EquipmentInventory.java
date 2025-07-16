@@ -106,6 +106,15 @@ public class EquipmentInventory
 	}
 	
 	/**
+	 * Prints the micro inventory stored mass.
+	 *
+	 * @return mass [kg]
+	 */
+	public void printMicroInventoryStoredMass() {
+		microInventory.printStoredMass();
+	}
+	
+	/**
 	 * Gets the modified mass for a container. Useful when accounting for pushing a wheelbarrow, 
 	 * instead of carrying a wheelbarrow.
 	 * 
@@ -354,23 +363,31 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource.
+	 * Obtains the specific capacity of remaining storage space for storing an amount resource.
+	 * @apiNote This includes the stock capacity
 	 *
 	 * @param resource
 	 * @return remaining capacity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
+	public double getRemainingSpecificCapacity(int resource) {
+		return microInventory.getRemainingSpecificCapacity(resource);
 
-		double cap = microInventory.getSpecificCapacity(resource);
-		double stored = microInventory.getAmountResourceStored(resource);
+		// Warning : May also needs to account for the amount resources inside equipment
+	}
+	
+	/**
+	 * Obtains the combined capacity of remaining storage space for storing an amount resource.
+	 * @apiNote This includes the stock capacity
+	 *
+	 * @param resource
+	 * @return remaining capacity
+	 */
+	@Override
+	public double getRemainingCombinedCapacity(int resource) {
+		return microInventory.getRemainingCombinedCapacity(resource);
 
-		// Note: it should not include the general capacity,
-		// aka cargo capacity, getRemainingCargoCapacity(), 
-		// since cargo capacity can be shared and can be
-		// misleading.
-		
-		return cap - stored;
+		// Warning : May also needs to account for the amount resources inside equipment
 	}
 
 	/**
@@ -385,6 +402,8 @@ public class EquipmentInventory
 		double stored = microInventory.getAmountResourceStored(resource);
 		
 		return (cap > stored);
+		
+		// Warning : May also needs to account for the amount resources inside equipment
 	}
 	
 	/**
@@ -634,18 +653,6 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds resource capacity.
-	 *
-	 * @param resource
-	 * @param capacity
-	 */
-	public void addResourceCapacity(int resource, double capacity) {
-		if (ResourceUtil.findAmountResource(resource) != null) {
-			microInventory.addSpecificCapacity(resource, capacity);
-		}
-	}
-
-	/**
 	 * Sets a specific resource capacity.
 	 *
 	 * @param resource
@@ -691,7 +698,7 @@ public class EquipmentInventory
 	 */
 	public void setCargoCapacity(double value) {
 		cargoCapacity = value;
- 		microInventory.setSharedCapacity(cargoCapacity);
+ 		microInventory.setStockCapacity(cargoCapacity);
 	}
 	
 	/**
@@ -701,8 +708,9 @@ public class EquipmentInventory
 	 */
 	public void addCargoCapacity(double value) {
 		cargoCapacity += value;
- 		microInventory.addSharedCapacity(cargoCapacity);
+ 		microInventory.addStockCapacity(cargoCapacity);
 	}
+	
 	
 	
 	/**

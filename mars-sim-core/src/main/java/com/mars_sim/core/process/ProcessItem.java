@@ -78,7 +78,7 @@ public class ProcessItem implements Serializable {
 
 				// Produce amount resources.
 				outputId = id;
-				double capacity = settlement.getAmountResourceRemainingCapacity(outputId);
+				double capacity = settlement.getRemainingCombinedCapacity(outputId);
 				if (outputAmount> capacity) {
 					double overAmount = amount - capacity;
 					logger.severe(settlement, "Process " + context.getName() + " Not enough storage capacity to store " 

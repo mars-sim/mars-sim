@@ -109,7 +109,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 				
 				if (box != null) {	
 					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
-					double cap = box.getAmountResourceRemainingCapacity(rockId);
+					double cap = box.getRemainingCombinedCapacity(rockId);
 					if (mass <= cap) {
 						double excess = box.storeAmountResource(rockId, mass);
 						totalCollected += mass - excess;

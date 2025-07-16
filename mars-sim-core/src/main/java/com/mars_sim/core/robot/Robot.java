@@ -520,7 +520,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			return 0;
 		return result;
 	}
-
+	
 	/**
 	 * Get the capacity the robot can carry
 	 *
@@ -644,16 +644,27 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining combined capacity of storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.getAmountResourceRemainingCapacity(resource);
+	public double getRemainingCombinedCapacity(int resource) {
+		return eqmInventory.getRemainingCombinedCapacity(resource);
 	}
 
+	/**
+	 * Obtains the remaining specific capacity of storage space of a particular amount resource.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingSpecificCapacity(int resource) {
+		return eqmInventory.getRemainingSpecificCapacity(resource);
+	}
+	
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
 	 * 

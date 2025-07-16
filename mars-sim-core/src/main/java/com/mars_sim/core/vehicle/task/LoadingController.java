@@ -349,7 +349,7 @@ public class LoadingController implements Serializable {
 			}
 
 			// Check remaining capacity in vehicle inventory.
-			double remainingCapacity = vehicle.getAmountResourceRemainingCapacity(resource);
+			double remainingCapacity = vehicle.getRemainingCombinedCapacity(resource);
 			if (remainingCapacity < amountToLoad) {
 				if (remainingCapacity < SMALLEST_RESOURCE_LOAD) {
 					// Nothing left for this type so stop loading this resource

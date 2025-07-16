@@ -369,7 +369,7 @@ public final class SettlementBuilder {
 		for (Entry<AmountResource, Double> value : resourceMap.entrySet()) {
 			AmountResource resource = value.getKey();
 			double amount = value.getValue();
-			double capacity = settlement.getAmountResourceRemainingCapacity(resource.getID());
+			double capacity = settlement.getRemainingCombinedCapacity(resource.getID());
 			if (amount > capacity)
 				amount = capacity;
 			settlement.storeAmountResource(resource.getID(), amount);

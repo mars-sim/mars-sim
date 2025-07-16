@@ -222,13 +222,13 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource.
+	 * Obtains the combined capacity of the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
+	public double getRemainingCombinedCapacity(int resource) {
 		if ((resourceHeld == -1) && canStore(resource)) {
 			return totalCapacity;
 		}
@@ -238,6 +238,18 @@ class GenericContainer extends Equipment implements Container {
 
 		return 0;
 	}
+	
+	/**
+	 * Obtains the specific capacity of the remaining storage space of a particular amount resource.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingSpecificCapacity(int resource) {
+		return getRemainingCombinedCapacity(resource);
+	}
+	
 
 	/**
 	 * Does it have unused space or capacity for a particular resource ?

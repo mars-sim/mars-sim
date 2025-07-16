@@ -841,7 +841,7 @@ public class BuildingManager implements Serializable {
 					.collect(Collectors.toSet());
 
 		if (bldgSet.isEmpty()) {
-			logger.warning(person, "No habitable buildings available in zone 0.");
+//			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
 		
@@ -880,7 +880,7 @@ public class BuildingManager implements Serializable {
 					.collect(Collectors.toSet());
 
 		if (bldgSet.isEmpty()) {
-			logger.warning(person, "No habitable buildings available in zone 0.");
+//			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
 				

@@ -117,10 +117,10 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
     public void testIceMetaTask() {
         var s = buildSettlement("Ice");
         var mt = new DigLocalIceMeta();
+        
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
         EVAOperationTest.prepareForEva(this, p);
-
 
         var tasks = mt.getSettlementTasks(s);
         assertTrue("No Tasks when no container", tasks.isEmpty());
@@ -130,11 +130,15 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         tasks = mt.getSettlementTasks(s);
         assertFalse("Tasks found", tasks.isEmpty());
         var task = tasks.get(0);
+ 
         assertTrue("Task is EVA", task.isEVA());
 
+        double cap = s.getSpecificCapacity(ResourceUtil.ICE_ID);
+        assertTrue("Capacity is zero", cap == 0.0);
+        
         // Fill capacity
-        s.storeAmountResource(ResourceUtil.ICE_ID, s.getSpecificCapacity(ResourceUtil.ICE_ID));
+        s.storeAmountResource(ResourceUtil.ICE_ID, 5);
         tasks = mt.getSettlementTasks(s);
-        assertTrue("No Tasks when no capacity", tasks.isEmpty());
+        assertFalse("Has Tasks even if no capacity", tasks.isEmpty());
     }
 }

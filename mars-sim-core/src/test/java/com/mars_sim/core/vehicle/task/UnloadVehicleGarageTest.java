@@ -22,7 +22,11 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
         v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
-        assertGreaterThan("Initial stored mass", 0D, v.getStoredMass());
+        
+        double mass = v.getStoredMass();
+        System.out.println("mass: " + mass);
+        
+        assertGreaterThan("Initial stored mass", 0D, mass);
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN, g.getBuilding(), FunctionType.VEHICLE_MAINTENANCE);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
@@ -33,7 +37,10 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
-        assertEquals("Final stored mass", 0D, v.getStoredMass());
+        
+        mass = v.getStoredMass();
+        System.out.println("mass: " + mass);
+        assertEquals("Final stored mass", 0.0, mass);
         assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.OXYGEN_ID)));
         assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.FOOD_ID)));
         assertEquals("Garments unloaded", ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.garmentID));

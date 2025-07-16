@@ -244,7 +244,7 @@ public class ExploreSite extends EVAOperation {
 				
 				if (box != null) {
 					double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
-					double cap = box.getAmountResourceRemainingCapacity(rockId);
+					double cap = box.getRemainingCombinedCapacity(rockId);
 					if (mass <= cap) {
 						double excess = box.storeAmountResource(rockId, mass);
 						mission.recordResourceCollected(rockId, mass);

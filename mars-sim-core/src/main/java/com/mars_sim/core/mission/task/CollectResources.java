@@ -239,7 +239,7 @@ public class CollectResources extends EVAOperation {
 			return time;
 		}
 
-		double remainCap = container.getAmountResourceRemainingCapacity(resourceType);
+		double remainCap = container.getRemainingCombinedCapacity(resourceType);
 		if (remainCap <= 0.01) {
 			remainCap = 0;
 			endEVA("Container capacity maxed out.");

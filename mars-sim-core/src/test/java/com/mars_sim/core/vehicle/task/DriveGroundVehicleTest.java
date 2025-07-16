@@ -33,13 +33,10 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         String name = "Test Driver";
         var p = buildPerson(name, s, JobType.PILOT);
         p.transfer(v);
-
     
         var targetDir = new Direction(0.1);
         Coordinates dest = v.getCoordinates().getNewLocation(targetDir, DIST);
-        var task = new DriveGroundVehicle(p, v, dest, getSim().getMasterClock().getMarsTime(),
-                                    0D);
-        
+        var task = new DriveGroundVehicle(p, v, dest, getSim().getMasterClock().getMarsTime(), 0D);
         
         assertFalse("Task created", task.isDone());
         assertEquals(name, p, v.getOperator());
@@ -61,7 +58,6 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         // Drive the rest
         executeTask(p, task, 25);
         
-
         // Drive the rest
         executeTaskUntilPhase(p, task, 100);
 //        executeTask(p, task, 30);
@@ -69,8 +65,7 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
 //        assertEquals("Vehicle at destination", dest, v.getCoordinates());
 //        assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
 
-        assertTrue("Task complete", task.isDone());
-        
+        assertTrue("Task complete", task.isDone());   
     }
 
     public void testDriveVehicleNoFuel() {

@@ -126,11 +126,12 @@ public final class UnloadHelper {
     		if (amount > amountUnloading) {
     			amount = amountUnloading;
     		}
-    		double capacity = dest.getAmountResourceRemainingCapacity(id);
+    		double capacity = dest.getRemainingSpecificCapacity(id);
+
     		if (capacity < amount) {
     			amount = capacity;
     		}
-    		
+
     		// Transfer the amount resource from vehicle to settlement
     		source.retrieveAmountResource(id, amount);
     		dest.storeAmountResource(id, amount);
@@ -193,7 +194,7 @@ public final class UnloadHelper {
 		// Note: only unloading amount resources at the moment.
         for(int resource : rh.getAmountResourceIDs()) {
             double amount = rh.getAmountResourceStored(resource);
-            double capacity = settlement.getAmountResourceRemainingCapacity(resource);
+            double capacity = settlement.getRemainingCombinedCapacity(resource);
             if (amount > capacity) {
                 amount = capacity;
             }
@@ -239,8 +240,10 @@ public final class UnloadHelper {
      */
     public static double unloadInventory(Vehicle vehicle, Settlement settlement, double amountUnloading) {
 		amountUnloading = unloadItems(vehicle, settlement, amountUnloading);
+//		System.out.println("amountUnloading: " + amountUnloading);
 		if (amountUnloading > 0) {
 			amountUnloading = unloadResources(vehicle, settlement, amountUnloading);
+//			System.out.println("amountUnloading: " + amountUnloading);
 			if (amountUnloading > 0) {
 				amountUnloading = unloadEquipment(vehicle, settlement, amountUnloading);
 			}

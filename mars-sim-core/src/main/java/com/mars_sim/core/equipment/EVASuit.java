@@ -505,7 +505,7 @@ public class EVASuit extends Equipment
 	 * @return Suit is fully loaded with resource
 	 */
 	private boolean loadResource(ResourceHolder source, int resourceId) {
-		double needed = getAmountResourceRemainingCapacity(resourceId);
+		double needed = getRemainingCombinedCapacity(resourceId);
 		if (needed > 0D) {
 			double shortfall = source.retrieveAmountResource(resourceId, needed);
 			double taken = needed - shortfall;
@@ -610,16 +610,27 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource.
+	 * Obtains the remaining combined capacity of storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
-		return microInventory.getAmountResourceRemainingCapacity(resource);
+	public double getRemainingCombinedCapacity(int resource) {
+		return microInventory.getRemainingCombinedCapacity(resource);
 	}
 
+	/**
+	 * Obtains the remaining specific capacity of storage space of a particular amount resource.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingSpecificCapacity(int resource) {
+		return microInventory.getRemainingSpecificCapacity(resource);
+	}
+	
 	/**
 	 * Gets a list of all stored amount resources.
 	 *

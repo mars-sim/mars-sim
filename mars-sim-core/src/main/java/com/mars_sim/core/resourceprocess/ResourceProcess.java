@@ -389,7 +389,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 						double maxRate = getBaseFullOutputRate(resource);
 						double resourceRate = maxRate * newProdLevel;
 						double required = resourceRate * accumulatedTime;
-						double remainingCap = host.getAmountResourceRemainingCapacity(resource);
+						double remainingCap = host.getRemainingCombinedCapacity(resource);
 						
 						// Store the right amount
 						if (remainingCap > SMALL_AMOUNT) {

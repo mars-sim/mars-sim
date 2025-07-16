@@ -61,13 +61,21 @@ public interface ResourceHolder extends Entity {
 	double getSpecificCapacity(int resource);
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the combined capacity of remaining storage space for a particular amount resource
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
-	double getAmountResourceRemainingCapacity(int resource);
+	double getRemainingCombinedCapacity(int resource);
 
+	/**
+	 * Obtains the specific capacity of the remaining storage space of a particular amount resource
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	double getRemainingSpecificCapacity(int resource);
+	
 	/**
 	 * Gets the total capacity of resource that this container can hold.
 	 *

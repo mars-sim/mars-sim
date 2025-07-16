@@ -186,7 +186,7 @@ extends Task {
                 double sourceAmount = source.getAmountResourceStored(resourceID);
                 if (sourceAmount > 0D) {
 	                // Move resource in container to top inventory if possible.
-	                double topRemainingCapacity = parent.getAmountResourceRemainingCapacity(resourceID);
+	                double topRemainingCapacity = parent.getRemainingCombinedCapacity(resourceID);
 	                if (useTopInventory && (topRemainingCapacity >= 0D)) {
                         double loadAmount = transferResource(c, sourceAmount, resourceID,
                                                              topRemainingCapacity,
@@ -208,7 +208,7 @@ extends Task {
 	                        if (otherUnit != source) { // && otherUnit instanceof Container) {
 	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
-	                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
+	                                double otherRemainingCapacity = otherUnit.getRemainingCombinedCapacity(resourceID);
 	                                if (otherRemainingCapacity >= 0D) {
                                         double loadAmount = transferResource(c, sourceAmount, resourceID,
                                                                              remainingAmountLoading,

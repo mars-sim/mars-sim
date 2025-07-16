@@ -1386,14 +1386,25 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource.
+	 * Obtains the remaining combined capacity of storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.getAmountResourceRemainingCapacity(resource);
+	public double getRemainingCombinedCapacity(int resource) {
+		return eqmInventory.getRemainingCombinedCapacity(resource);
+	}
+
+	/**
+	 * Obtains the remaining specific capacity of storage space of a particular amount resource.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingSpecificCapacity(int resource) {
+		return eqmInventory.getRemainingSpecificCapacity(resource);
 	}
 
 	/**

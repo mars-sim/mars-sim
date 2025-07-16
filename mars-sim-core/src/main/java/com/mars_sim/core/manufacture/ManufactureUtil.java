@@ -181,7 +181,7 @@ public final class ManufactureUtil {
 				int id = item.getId();
 				double amount = item.getAmount();
 				if (isOutput) {
-					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(id);
+					double remainingCapacity = settlement.getRemainingCombinedCapacity(id);
 					if (amount > remainingCapacity) {
 						amount = remainingCapacity;
 					}

@@ -168,7 +168,7 @@ public final class FoodProductionUtil {
 	        int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
 			if (isOutput) {
-				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(id);
+				double remainingCapacity = settlement.getRemainingCombinedCapacity(id);
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
@@ -267,7 +267,7 @@ public final class FoodProductionUtil {
 		while (j.hasNext()) {
 			ProcessItem item = j.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
+				double capacity = settlement.getRemainingCombinedCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
 				if (item.getAmount() > capacity)
 					return false;
 			}

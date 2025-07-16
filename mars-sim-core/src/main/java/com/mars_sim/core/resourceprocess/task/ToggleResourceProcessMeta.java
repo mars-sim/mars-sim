@@ -386,7 +386,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			else {
 				// For outputs: 
 				// Gets the remaining amount of this resource
-				double remain = settlement.getAmountResourceRemainingCapacity(resource);
+				double remain = settlement.getRemainingCombinedCapacity(resource);
 
 				if (remain == 0.0)
 					return 0;

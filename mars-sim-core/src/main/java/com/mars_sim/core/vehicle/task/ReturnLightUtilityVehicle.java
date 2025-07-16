@@ -221,7 +221,7 @@ public class ReturnLightUtilityVehicle extends Task {
 		// Unload all amount resources.
 		for(int id : luv.getAmountResourceIDs()) {
 			double amount = luv.getAmountResourceStored(id);
-			if (eo.getSpecificCapacity(id) >= amount) {
+			if (eo.getRemainingSpecificCapacity(id) >= amount) {
 				luv.retrieveAmountResource(id, amount);
 				eo.storeAmountResource(id, amount);
 			} else {
