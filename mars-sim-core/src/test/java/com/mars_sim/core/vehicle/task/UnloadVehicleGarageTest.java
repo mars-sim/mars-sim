@@ -24,7 +24,7 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
         
         double mass = v.getStoredMass();
-        System.out.println("mass: " + mass);
+//        System.out.println("mass: " + mass);
         
         assertGreaterThan("Initial stored mass", 0D, mass);
 
@@ -39,7 +39,8 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         executeTaskUntilPhase(p, task, 1000);
         
         mass = v.getStoredMass();
-        System.out.println("mass: " + mass);
+//        System.out.println("mass: " + mass);
+        
         assertEquals("Final stored mass", 0.0, mass);
         assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.OXYGEN_ID)));
         assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.FOOD_ID)));

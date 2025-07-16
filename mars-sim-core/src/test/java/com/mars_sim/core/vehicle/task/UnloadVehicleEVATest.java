@@ -12,7 +12,7 @@ import com.mars_sim.core.vehicle.StatusType;
 
 public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
     private static final int ITEM_AMOUNT = 10;
-    private static final int RESOURCE_AMOUNT = 10;
+    private static final double RESOURCE_AMOUNT = 10;
 
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
@@ -23,11 +23,11 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
         
-        double stored = v.getStoredMass();
+        double mass = v.getStoredMass();
         // 10 + 10 + .5 * 10 = 25.0
-//        System.out.println("stored: " + stored);
+//        System.out.println("mass: " + mass);
         
-        assertGreaterThan("Initial stored mass", 0D, stored);
+        assertGreaterThan("Initial stored mass", 0D, mass);
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
@@ -41,28 +41,36 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         // Move onsite
         EVAOperationTest.executeEVAWalk(this, eva, task);
 
+        double storedO2Settlement0 = s.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+//        System.out.println("storedO2Settlement0: " + storedO2Settlement0);
+        
+        double storedO2Person = p.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+//        System.out.println("storedO2Person: " + storedO2Person);
+        
+        double storedO2Vehicle = v.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+//        System.out.println("storedO2Vehicle: " + storedO2Vehicle);
+        
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 3000);
         
-        stored = v.getStoredMass();
-        System.out.println("stored: " + stored);
+        mass = v.getStoredMass();
+//        System.out.println("mass: " + mass);
         
-        assertEquals("Final stored mass", 0D, stored);
+        assertEquals("Final stored mass", 0D, mass);
         assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 
-        // Oxygen has some from EVA suit as well
-        double storedO2 = s.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
-        System.out.println("storedO2: " + storedO2);
+        double storedO2Settlement1 = s.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+//        System.out.println("storedO2Settlement1: " + storedO2Settlement1); 
         
-        assertLessThan("Oxygen unloaded", RESOURCE_AMOUNT, storedO2);
+        assertLessThan("Oxygen unloaded", storedO2Settlement0 + RESOURCE_AMOUNT, storedO2Settlement1);
         
         double storedFood = s.getAmountResourceStored(ResourceUtil.FOOD_ID);
-        System.out.println("storedFood: " + storedFood);
+//        System.out.println("storedFood: " + storedFood);
         
-        assertEquals("Food unloaded", 0.0, storedFood);
+        assertEquals("Food unloaded", RESOURCE_AMOUNT, storedFood);
         
         int storedGarment = s.getItemResourceStored(ItemResourceUtil.garmentID);
-        System.out.println("storedGarment: " + storedGarment);
+//        System.out.println("storedGarment: " + storedGarment);
         
         assertEquals("Garments unloaded", ITEM_AMOUNT, storedGarment);
 
