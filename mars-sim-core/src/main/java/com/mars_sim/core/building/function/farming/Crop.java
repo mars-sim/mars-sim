@@ -38,7 +38,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	 */
 	private static double wattToPhotonConversionRatio;
 	/**
-	 * The converted value of the watt to photon conversion ratio on Mars as defined
+	 * The converted value of the watt to photon conversion ratio on Mars 
+	 * (the time factor is in terms of millisols, instead of seconds) as defined
 	 * in crops.xml [in umol /m^2 /millisols /(Wm^-2)].
 	 */
 	private static double conversionFactor;
@@ -59,6 +60,13 @@ public class Crop implements Comparable<Crop>, Entity {
 	private static final int O2_FACTOR = 4;
 	private static final int CO2_FACTOR = 5;
 
+	/** 
+	 * The range of wavelengths that corresponds to about 45% of the energy of 
+	 * solar radiation is the 400-700 nm range, which is commonly referred to 
+	 * as the photosynthetically active radiation (PAR) range. 
+	 */
+	private static final double PAR_RANGE = .45;
+	
 	private static final double CHECK_PERIOD = 20D; // Check advancement 10 times per day
 	
 	/** The modifier for the work time on a crop. */
@@ -875,7 +883,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param solarIrradiance
 	 */
 	private void computeLight(ClockPulse pulse, double solarIrradiance) {
-		double time = pulse.getElapsed();
+		double elapsed = pulse.getElapsed();
 		double lightModifier = 0;
 
 		double dailyPARRequired = cropSpec.getDailyPAR();
@@ -913,20 +921,20 @@ public class Crop implements Comparable<Crop>, Entity {
 				if (msol >= sunrise) {
 					int rand = RandomUtil.getRandomInt(1000);
 					if (rand * sunInterval < msol)
-						calculateLamp(msol, dailyLightIntegral, time, solarIrradiance, dailyPARRequired);
+						calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, dailyPARRequired, sunInterval);
 				}
 				else {
 					// Less likely to turn on
 					int rand = RandomUtil.getRandomInt(1000);
 					if (rand * sunInterval > msol)
-						calculateLamp(msol, dailyLightIntegral, time, solarIrradiance, dailyPARRequired);
+						calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, dailyPARRequired, sunInterval);
 				}	
 			}
 			else {
 				// Less likely to turn on
 				int rand = RandomUtil.getRandomInt(1000);
 				if (rand * sunInterval > msol)
-					calculateLamp(msol, dailyLightIntegral, time, solarIrradiance, dailyPARRequired);
+					calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, dailyPARRequired, sunInterval);
 			}
 		}
 		else {		
@@ -942,7 +950,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		// check for the passing of each day
 		int newSol = pulse.getMarsTime().getMissionSol();
 		// the crop has memory of the past lighting condition
-		lightModifier = dailyPARCumulative / (dailyPARRequired + .0001) * 1000D / ( time  + .0001);
+		lightModifier = dailyPARCumulative / (dailyPARRequired + .0001) * 1000D / ( elapsed  + .0001);
 		// Future: If too much light, the crop's health may suffer unless a person comes
 		// to intervene
 		if (newSol == 1) {
@@ -954,15 +962,39 @@ public class Crop implements Comparable<Crop>, Entity {
 		adjustEnvironmentFactor(lightModifier, LIGHT_FACTOR);
 	}
 
-	
-	private void calculateLamp(double msol, double dailyLightIntegral, double time, double solarIrradiance, double dailyPARRequired) {
+	/**
+	 * Calculates the amount of power needed for lighting.
+	 * 
+	 * @param dailyLightIntegral
+	 * @param timeInterval time elapsed in millisols
+	 * @param solarIrradiance
+	 * @param dailyPARRequired
+	 * @param sunInterval the availability of sunlight in millisols
+	 */
+	private void calculateLamp(double dailyLightIntegral, double timeInterval, 
+			double solarIrradiance, double dailyPARRequired, double sunInterval) {
 
-		double deltaPAROutstanding = dailyLightIntegral * (time / 1000D) * growingArea;
-		// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] /
-		// [millisols /day] * m^2
-		double deltakW = deltaPAROutstanding / time / conversionFactor;
-		// [kW] = [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols] = [W
-		// /u] * u * k/10e-3 = [kW]; since 1 u = 10e-6
+		// Calculate how much PAR needed for this interval of time for this crop
+		// mol / m^2 / day * msol / 1000  * m^2 * 1000 / msol
+		// mol needed = mol per day * (timeInterval / 1000) * growingArea * (1000 / sunInterval)
+		// Note: sunInterval always 'compresses' the time window for the crop to receive sunlight
+		double deltaPAROutstanding = dailyLightIntegral * timeInterval * growingArea  / sunInterval;
+
+		
+		// On Earth, 1 W/m² ≈ 4.609 μmol/m²/s comes from the Plant Growth Chamber Handbook (chapter 1, radiation; 
+		// https://www.controlledenvironments.org/wp-content/uploads/sites/6/2017/06/Ch01.pdf)
+		// 1/4.609 > 0.2169668
+		
+		// On Mars, 1 W/m² ≈ 4.568 μmol/m²/s
+		// 1/4.568 > 0.2189141856
+		
+		// Since only about 45% of the energy of solar radiation is actually in the 400 - 700 nm range, 
+		// the conversion of TOTAL solar radiation to PAR is ~2.0556, rather than 4.568.
+		// .45 * 4.568 = 2.0556
+		// 1/2.0556 > 0.4864759681
+		
+		// Calculate the kW needed 
+		double deltakW = deltaPAROutstanding / conversionFactor / PAR_RANGE;
 		
 		// Future: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
 		// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
@@ -987,7 +1019,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// Turn on the lamps
 			turnOnLighting(supplykW);
 			
-			double deltaPARSupplied = supplykW * time * conversionFactor / growingArea; // in mol / m2
+			double deltaPARSupplied = supplykW * timeInterval * conversionFactor / growingArea; // in mol / m2
 			// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 			// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
 			
@@ -995,7 +1027,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// Calculate instantaneous PAR from solar irradiance
 			double uPAR = wattToPhotonConversionRatio * solarIrradiance;
 			// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
-			double intervalPAR = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
+			double intervalPAR = uPAR / 1_000_000D * timeInterval * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 
 			// Gets the effectivePAR
 			effectivePAR = deltaPARSupplied + intervalPAR;

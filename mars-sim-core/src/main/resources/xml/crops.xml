@@ -79,8 +79,8 @@
 
 	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for
 	     calculating the instantaneous PAR in Crop.java -->
-	<!-- see http://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->
-    <!-- Default: 4.568 on Mar [in u mol / m2 /s / (W m^2)] (vs. 4.609 on Earth-->
+	<!-- see https://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->
+    <!-- Default: 4.568 on Mars in the unit of [(umol/s/m^2) / (W/m^2)] vs. 4.609 on Earth -->
 	<watt-to-photon-conversion-ratio value="4.568" />
 
 
@@ -250,12 +250,40 @@
 
 		<!-- Note : see Reference 7
 
+			Photosynthetically Active Radiation (PAR) refers to the range of light wavelengths between 
+			400 and 700 nanometers (nm) that are used by plants for photosynthesis.
+			
+ 			This range corresponds to the visible light spectrum, which includes blue, green, and red 
+ 			wavelengths.
+ 			
+ 			PAR is measured in units such as micromoles of quanta per second per square meter [µmol / s / m^2].
+ 			
 			growing-sols : # of sols
 			crop-category : the type of crop
 			edible-biomass : [ kg / m^2 / year ]
 			edible-water-content : in proportion of 1 (1 is 100%)
 			inedible-biomass :  [ kg / m^2 / year ]
 			daily-PAR : [ mol / m^2 / day ], not [ umol / m^2 / s ]	
+			
+			On Earth, 1 W/m² ≈ 4.609 μmol/m²/s comes from the Plant Growth Chamber Handbook (chapter 1, radiation; 
+			https://www.controlledenvironments.org/wp-content/uploads/sites/6/2017/06/Ch01.pdf)
+			1/4.609 > 0.2169668
+			
+			On Mars, 1 W/m² ≈ 4.568 μmol/m²/s
+			1/4.568 > 0.2189141856
+				
+			Since only about 45% of the energy of solar radiation is actually in the 400 - 700 nm range, 
+			the conversion of TOTAL solar radiation to PAR is ~2.0556, rather than 4.568.
+			.45 * 4.568 = 2.0556
+			1/2.0556 > 0.4864759681
+			
+			1 µmol of photons in the PAR range is approximately equivalent to 0.275 joules (J) of energy.
+ 
+ 			To convert this to watts, you would divide by the time in seconds. Therefore, 1 µmol/s 
+ 			(micromole per second) is approximately 0.275 W.
+			
+			
+			
 			
 			In general, PAR levels are highest during the summer at mid-day, reaching values of 2,000 to 3,000
 	    	millimoles per square meter.

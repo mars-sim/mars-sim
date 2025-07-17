@@ -260,7 +260,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
         };
         
 		cropTable.setAutoCreateRowSorter(true);
-		
+	
 		cropTable.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mousePressed(MouseEvent e) {
@@ -317,16 +317,16 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
         cropTable.setComponentPopupMenu(popupMenu);
 		
 		TableColumnModel cropColumns = cropTable.getColumnModel();
-		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(1);
-		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(25);
-		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(40);
-		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(15);
-		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageTableCellRenderer(true));
-		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(10);
+		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(10);
+		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(80);
+		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(110);
+		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(50);
 		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(new NumberCellRenderer());
-		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(10);
+		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(55);
+		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageTableCellRenderer(true));
+		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(50);
 		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(new NumberCellRenderer());
-		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(25);
+		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(65);
 	
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -338,6 +338,8 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropColumns.getColumn(CropTableModel.HARVEST).setCellRenderer(rightRenderer);
 		
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
+		
+		cropTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
 		tableScrollPanel.setViewportView(cropTable);
 
@@ -667,7 +669,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		@Override
 		public Object getValueAt(int row, int column) {
 			int num = crops.size();
-			if (row > num)
+			if (row >= num)
 				return null;
 			
 			Crop crop = crops.get(row);
@@ -687,7 +689,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				case PHASE:
 					return currentPhase.getName();
 				case GROWTH: 
-					return Math.round(crop.getPercentGrowth() * 100.0)/100.0;
+					return Math.round(crop.getPercentGrowth() * 10.0)/10.0;
 				case AREA: 
 					return Math.round(crop.getGrowingArea() * 10.0)/10.0;
 				case WORK:
