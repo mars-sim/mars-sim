@@ -120,10 +120,10 @@ public class StyleManager {
     public static final String SYSTEM = "Default System";
     
     public static final String LIGHT = "Flat Light";
-    public static final String LIGHT_BLUE = LIGHT + " - Blue";
-    public static final String LIGHT_GREEN = LIGHT + " - Green";
     public static final String LIGHT_RED = LIGHT + " - Red";
-    public static final String MUD_ORANGE = LIGHT + " - Mud Orange";
+    public static final String LIGHT_GREEN = LIGHT + " - Green";
+    public static final String LIGHT_BLUE = LIGHT + " - Blue";
+    public static final String LIGHT_ORANGE = LIGHT + " - Orange";
     public static final String LIGHT_OWL = "Light Owl";
     public static final String SOLARIZED_LIGHT = "Solarized Light";
     
@@ -134,7 +134,7 @@ public class StyleManager {
     public static final String SOLARIZED_DARK = "Solarized Dark";
     
     private static final String [] LAF_LIGHT_STYLES = {
-    		SYSTEM, LIGHT_BLUE, LIGHT_GREEN, MUD_ORANGE, LIGHT_RED, LIGHT_OWL, SOLARIZED_LIGHT};
+    		SYSTEM, LIGHT_RED, LIGHT_GREEN, LIGHT_BLUE, LIGHT_ORANGE, LIGHT_OWL, SOLARIZED_LIGHT};
     
     private static final String [] LAF_DARK_STYLES = {
     		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK};

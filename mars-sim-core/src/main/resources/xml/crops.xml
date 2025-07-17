@@ -249,6 +249,8 @@
 	<crop-list>
 
 		<!-- Note : see Reference 7
+		
+			photosynthetic photon flux (PPF) for the (400-700) nm waveband was in umol / m^2 / s."
 
 			Photosynthetically Active Radiation (PAR) refers to the range of light wavelengths between 
 			400 and 700 nanometers (nm) that are used by plants for photosynthesis.

@@ -315,7 +315,7 @@ public class LocationTabPanel extends TabPanel {
 			bannerText.setGlowColor(Color.lightGray);
 			bannerText.setLcdColor(LcdColor.DARKGREEN_LCD);			
 		}
-		else if (theme.equalsIgnoreCase(StyleManager.MUD_ORANGE)
+		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_ORANGE)
 				|| theme.equalsIgnoreCase(StyleManager.SOLARIZED_LIGHT)) {
 			bannerText.setGlowColor(Color.ORANGE);
 			bannerText.setLcdColor(LcdColor.AMBER_LCD);			

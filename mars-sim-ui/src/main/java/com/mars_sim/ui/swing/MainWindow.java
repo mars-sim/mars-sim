@@ -109,7 +109,7 @@ public class MainWindow
 	private MainDesktopPane desktop;
 
 	/** WebSwitch for the control of play or pause the simulation */
-	private JToggleButton pauseSwitch;
+	private JToggleButton playPauseSwitch;
 
 	private Dimension selectedSize;
 
@@ -479,10 +479,10 @@ public class MainWindow
 		panel.add(speedPanel, BorderLayout.EAST);
 		
 		// Add the decrease speed button
-		JButton decreaseSpeed = new JButton();
+		JButton decreaseSpeed = new JButton("\u23EA");
 		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
 		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
-		decreaseSpeed.setIcon(DECREASE_ICON);
+//		decreaseSpeed.setIcon(DECREASE_ICON);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 		
 		decreaseSpeed.addActionListener(e -> {
@@ -494,10 +494,10 @@ public class MainWindow
 		// Create pause switch
 		createPauseSwitch();
 
-		JButton increaseSpeed = new JButton();
+		JButton increaseSpeed = new JButton("\u23E9");
 		increaseSpeed.setPreferredSize(new Dimension(30, 30));
 		increaseSpeed.setMaximumSize(new Dimension(30, 30));
-		increaseSpeed.setIcon(INCREASE_ICON);
+//		increaseSpeed.setIcon(INCREASE_ICON);
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
 		increaseSpeed.addActionListener(e -> {
@@ -508,7 +508,7 @@ public class MainWindow
 		
 		// Add the increase speed button
 		speedPanel.add(decreaseSpeed);//, BorderLayout.WEST);
-		speedPanel.add(pauseSwitch);//, BorderLayout.CENTER);
+		speedPanel.add(playPauseSwitch);//, BorderLayout.CENTER);
 		speedPanel.add(increaseSpeed);//, BorderLayout.EAST);
 		toolBar.add(panel);
 		
@@ -518,21 +518,22 @@ public class MainWindow
 	 * Creates the pause button.
 	 */
 	private void createPauseSwitch() {
-		pauseSwitch = new JToggleButton(PAUSE_ICON);
-		pauseSwitch.setPreferredSize(new Dimension(30, 30));
-		pauseSwitch.setMaximumSize(new Dimension(30, 30));
-		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
-		pauseSwitch.setSelected(false);
-		pauseSwitch.addActionListener(e -> {
-				boolean isSel = pauseSwitch.isSelected();
+		playPauseSwitch = new JToggleButton("\u23E8");//PAUSE_ICON);
+		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
+		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
+		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
+		playPauseSwitch.setSelected(false);
+		playPauseSwitch.addActionListener(e -> {
+				boolean isSel = playPauseSwitch.isSelected();
 				if (isSel) {
-					pauseSwitch.setIcon(PLAY_ICON);
+					playPauseSwitch.setText("\u23F5");//.setIcon(PLAY_ICON);
 				}
 				else {
-					pauseSwitch.setIcon(PAUSE_ICON);
+					playPauseSwitch.setText("\u23F8");//.setIcon(PAUSE_ICON);
 				}		
 				masterClock.setPaused(isSel, false);	
 			});
+		playPauseSwitch.setText("\u23F8");
 	}
 
 	/**
@@ -774,8 +775,8 @@ public class MainWindow
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
 		// Make sure the Pause button is synch'ed with the MasterClock state.
-		if (isPaused != pauseSwitch.isSelected()) {
-			pauseSwitch.setSelected(isPaused);
+		if (isPaused != playPauseSwitch.isSelected()) {
+			playPauseSwitch.setSelected(isPaused);
 		}
 	}
 
@@ -845,7 +846,7 @@ public class MainWindow
 		splashWindow = null;
 		interactiveTerm.destroy();
 		interactiveTerm = null;
-		pauseSwitch = null;
+		playPauseSwitch = null;
 		selectedSize = null;
 		sim = null;
 		masterClock = null;
