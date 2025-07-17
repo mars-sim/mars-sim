@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Farming.java
- * @date 2023-08-25
+ * @date 2025-07-16
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function.farming;
@@ -910,14 +910,14 @@ public class Farming extends Function {
 
 		for (Crop crop : cropList) {
 			var phaseType = crop.getPhase().getPhaseType();
-			
+		
 			// Tailor the lighting according to the phase type the crop is at
 			powerRequired += switch (phaseType) {
 				// More power is needed for illumination and crop monitoring
-				case PLANTING, INCUBATION -> powerGrowingCrop/2D;
-				case GERMINATION -> powerGrowingCrop/10D;
-				case HARVESTING, FINISHED -> powerGrowingCrop/5D;
-				default -> crop.getLightingPower();
+				case PLANTING, INCUBATION -> crop.getLightingPower()/10; //powerGrowingCrop/2D;
+				case GERMINATION -> crop.getLightingPower()/2;
+				case HARVESTING, FINISHED -> crop.getLightingPower()*.75;
+				default -> crop.getLightingPower() * 1.1;
 			};
 		}
 

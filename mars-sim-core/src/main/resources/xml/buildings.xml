@@ -994,7 +994,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.6" yloc="-1" />
 					<activity-spot xloc="-1.6" yloc="-3" />
 					<activity-spot xloc="-1.6" yloc="-5" />
-					<activity-spot xloc="-1.6" yloc="-7" />
+					<activity-spot xloc="-1.6" yloc="2" />
+					
+					<activity-spot xloc="4.3" yloc="0" />
+					<activity-spot xloc="4.3" yloc="-2" />
+					<activity-spot xloc="4.3" yloc="-4" />
+					<activity-spot xloc="4.3" yloc="-6" />
+					<activity-spot xloc="4.3" yloc="2" />
+					
+					<activity-spot xloc="-4.3" yloc="0" />
+					<activity-spot xloc="-4.3" yloc="-2" />
+					<activity-spot xloc="-4.3" yloc="-4" />
+					<activity-spot xloc="-4.3" yloc="-6" />
+					<activity-spot xloc="-4.3" yloc="2" />
 				</activity>
 			</farming>
 

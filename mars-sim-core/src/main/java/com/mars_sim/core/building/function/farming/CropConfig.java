@@ -49,6 +49,7 @@ public class CropConfig {
 	private static final String PHASE = "phase";
 	private static final String WORK_REQUIRED = "work-required";
 	private static final String GROWTH_PERC = "growth-perc";
+	private static final String NEEDS_LIGHT = "needs-light";
 
 
 	/** The conversion rate. */
@@ -118,7 +119,7 @@ public class CropConfig {
 		for (Element c : categories) {
 			String name = c.getAttributeValue(NAME);
 			String description = c.getAttributeValue(DESCRIPTION);
-			boolean needsLight = ConfigHelper.getOptionalAttributeBool(c, "needs-light", true);
+			boolean needsLight = ConfigHelper.getOptionalAttributeBool(c, NEEDS_LIGHT, true);
 
 			List<Phase> phases = new ArrayList<>();
 			List<Element> phaseNodes = c.getChildren(PHASE);

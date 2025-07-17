@@ -89,6 +89,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
 	
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
+    public static final DecimalFormat DECIMAL2_KW = new DecimalFormat("#,##0.00 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
     public static final DecimalFormat DECIMAL2_KWH = new DecimalFormat("#,##0.00 kWh");
     public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");

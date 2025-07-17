@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @date 2023-08-25
+ * @date 2025-07-16
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -114,7 +114,10 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private double totalAreaCache;
 	/** The cache value for the remaining area in this greenhouse. */
 	private double remainingAreaCache;
+	/** The cache value for lighting (kW) in this greenhouse. */
+	private double lightingCache;
 	
+	private JLabel lightingLabel;
 	private JLabel radLabel;
 	private JLabel farmerLabel;
 	private JLabel cropsLabel;
@@ -125,8 +128,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private JLabel co2Label;
 	private JLabel workTimeLabel;
 	
-	private JLabel totalAreaLabel;
-	private JLabel remainingAreaLabel;
+	private JLabel areaUsageLabel;
 
 	private JComboBox<CropSpec> comboBox;
 	private ListModel listModel;
@@ -191,23 +193,25 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		farmerLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numFarmers.title"),
 				                 Integer.toString(farmersCache), "# of active gardeners tending the greenhouse");
 
-		totalAreaCache = farm.getGrowingArea();
-		totalAreaLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.area.total"),
-				StyleManager.DECIMAL_M2.format(totalAreaCache),
-			 	Msg.getString("BuildingPanelFarming.area.total.tooltip"));
+		lightingCache = farm.getCombinedPowerLoad();
+		lightingLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.lighting"),
+				StyleManager.DECIMAL2_KW.format(lightingCache),
+			 	Msg.getString("BuildingPanelFarming.lighting.tooltip"));
 		
 		// Prepare crops label
 		cropsCache = farm.getCrops().size();
 		cropsLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numCrops.title"),
 							   Integer.toString(cropsCache), null);
 
+		// Calculate the area usage
 		remainingAreaCache = farm.getRemainingArea();
-		remainingAreaLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.area.remaining"),
-				StyleManager.DECIMAL_M2.format(remainingAreaCache),
-			 	Msg.getString("BuildingPanelFarming.area.remaining.tooltip"));
+		totalAreaCache = farm.getGrowingArea();
+		areaUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.areaUsage") ,
+				StyleManager.DECIMAL1_PERC.format((totalAreaCache-remainingAreaCache)/totalAreaCache*100.0),
+			 	Msg.getString("BuildingPanelFarming.areaUsage.tooltip"));
 		
 
-		// Update the cumulative work time
+		// Compute the cumulative work time
 		workTimeCache = farm.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
 									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
@@ -437,60 +441,63 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			cropsLabel.setText(String.valueOf(crops));
 		}
 
+		// Update lighting label 
+		double lighting = farm.getCombinedPowerLoad();
+		if (Math.abs(lightingCache - lighting) > .04) {
+			lightingCache = lighting;
+			lightingLabel.setText(StyleManager.DECIMAL2_KW.format(lighting));
+		}
+		
 		// Update solar irradiance label
 		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
-		if (radCache != rad) {
+		if (Math.abs(radCache - rad) > 1) {
 			radCache = rad;
 			radLabel.setText(DECIMAL_W_M2.format(rad));
 		}
 
 		// Update the average water usage
 		double newWater = farm.computeUsage(ResourceUtil.WATER_ID);
-		if (waterUsageCache != newWater) {
+		if (Math.abs(waterUsageCache - newWater) > .4) {
 			waterUsageCache = newWater;
 			waterLabel.setText(DECIMAL_KG_SOL.format(newWater));
 		}
 
 		// Update the average O2 generated
 		double newO2 = farm.computeUsage(ResourceUtil.OXYGEN_ID);
-		if (o2Cache != newO2) {
+		if (Math.abs(o2Cache - newO2) > .4) {
 			o2Cache = newO2;
 			o2Label.setText(DECIMAL_KG_SOL.format(newO2));
 		}
 
 		// Update the average CO2 consumed
 		double newCo2 = farm.computeUsage(ResourceUtil.CO2_ID);
-		if (co2Cache != newCo2) {
+		if (Math.abs(co2Cache - newCo2) > .4) {
 			co2Cache = newCo2;
 			co2Label.setText(DECIMAL_KG_SOL.format(newCo2));
 		}
 
 		// Update the average grey water usage
 		double newGreyWater = farm.computeUsage(ResourceUtil.GREY_WATER_ID);
-		if (greyWaterUsageCache != newGreyWater) {
+		if (Math.abs(greyWaterUsageCache - newGreyWater) > .4) {
 			greyWaterUsageCache = newGreyWater;
 			greyWaterLabel.setText(DECIMAL_KG_SOL.format(newGreyWater));
 		}
 		
 		// Update the cumulative work time
 		double workTime = farm.getCumulativeWorkTime()/1000.0;
-		if (workTimeCache != workTime) {
+		if (Math.abs(workTimeCache - workTime) > .4) {
 			workTimeCache = workTime;
 			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}
 		
-		// Update the total growing area
-		double totalArea = farm.getGrowingArea();
-		if (totalAreaCache != totalArea) {
-			totalAreaCache = totalArea;
-			totalAreaLabel.setText(StyleManager.DECIMAL_M2.format(totalArea));
-		}
 		
-		// Update the remaining growing area
+		// Update the area usage
 		double remainingArea = farm.getRemainingArea();
-		if (remainingAreaCache != remainingArea) {
+		double totalArea = farm.getGrowingArea();
+		if (Math.abs(remainingAreaCache - remainingArea) > .4 || Math.abs(totalAreaCache - totalArea) > .4) {
 			remainingAreaCache = remainingArea;
-			remainingAreaLabel.setText(StyleManager.DECIMAL_M2.format(remainingArea));
+			totalAreaCache = totalArea;
+			areaUsageLabel.setText(StyleManager.DECIMAL1_PERC.format((totalArea-remainingArea)/totalArea*100.0));
 		}
 		
 		// Update crop table.
@@ -659,7 +666,10 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		
 		@Override
 		public Object getValueAt(int row, int column) {
-
+			int num = crops.size();
+			if (row > num)
+				return null;
+			
 			Crop crop = crops.get(row);
 			var currentPhase = crop.getPhase();
 
@@ -743,9 +753,8 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		o2Label = null;
 		co2Label = null;
 		workTimeLabel = null;
-		totalAreaLabel = null;
-		remainingAreaLabel = null;
-		
+		areaUsageLabel = null;
+	
 		comboBox = null;
 		listModel = null;
 		cropTableModel = null;

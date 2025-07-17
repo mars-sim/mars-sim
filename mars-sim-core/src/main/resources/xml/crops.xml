@@ -255,7 +255,7 @@
 			edible-biomass : [ kg / m^2 / year ]
 			edible-water-content : in proportion of 1 (1 is 100%)
 			inedible-biomass :  [ kg / m^2 / year ]
-			daily-PAR : [ mol / m^2 / day ]; Note: not umol / m^2 / s	
+			daily-PAR : [ mol / m^2 / day ], not [ umol / m^2 / s ]	
 			
 			In general, PAR levels are highest during the summer at mid-day, reaching values of 2,000 to 3,000
 	    	millimoles per square meter.
