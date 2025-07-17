@@ -53,7 +53,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final String POPULATION = " Pop: ";
 	private static final String WHITESPACES_2 = " ";
 	private static final String CLOSE_PARENT = ") ";
-	private static final String WITHIN_BLDG = " Building: (";
+	private static final String WITHIN_BLDG = " Building: ";
 	private static final String SETTLEMENT_MAP = " Map: ";
 	private static final String PIXEL_MAP = " Window: (";
 
@@ -150,7 +150,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
-			sb.append(WITHIN_BLDG).append(pos.getShortFormat()).append(CLOSE_PARENT);
+			sb.append(WITHIN_BLDG).append(pos.getShortFormat());
 			buildingXYLabel.setText(sb.toString());
 		}
 	}

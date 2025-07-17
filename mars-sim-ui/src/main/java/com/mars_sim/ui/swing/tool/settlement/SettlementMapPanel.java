@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
@@ -294,7 +295,8 @@ public class SettlementMapPanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
-				if (evt.isPopupTrigger()) {
+				// Note that SwingUtilities.isRightMouseButton() is needed for macOS to detect right mouse button (Ctrl + left button) 
+				if (evt.isPopupTrigger() || SwingUtilities.isRightMouseButton(evt)) {
 					setCursor(new Cursor(Cursor.HAND_CURSOR));
 					doPop(evt);
 				}
