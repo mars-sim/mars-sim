@@ -137,32 +137,38 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 
-		addToolButton(OrbitViewer.NAME, "Open Orbit Viewer", OrbitViewer.ICON);
+		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
+		
+		// Add guide button
+		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
+		
+		// Add wiki button
+		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
 		
 		// Everything after this is on the right hand side
 		add(Box.createHorizontalGlue()); 
+
+		addSeparator(new Dimension(20, 20));
 
 		earthDate = createTextLabel("Greenwich Mean Time (GMT) for Earth");
 		add(earthDate);
 			
 		addSeparator();
+		
 		missionSol = createTextLabel("Simulation Sol Count");
 		add(missionSol);
+		
 		addSeparator();
+		
 		marsTime = createTextLabel("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
 		add(marsTime);
+		
 		addSeparator();
 
-		calendarPane = setupCalendarPanel(masterClock.getMarsTime());	
-		addToolButton(MARSCAL, "Open Mars Calendar", "schedule");
+		calendarPane = setupCalendarPanel(masterClock.getMarsTime());		
+		addToolButton(MARSCAL, "Mars Calendar", "schedule");
 
 		addSeparator(new Dimension(20, 20));
-
-		// Add guide button
-		addToolButton(DISPLAY_HELP, "View Help tool", GuideWindow.guideIcon);
-		
-		// Add wiki button
-		addToolButton(MAIN_WIKI, "View mars-sim wiki", GuideWindow.wikiIcon);
 	}
     
 	/**

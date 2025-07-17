@@ -10,10 +10,12 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
@@ -412,6 +414,9 @@ public class MainWindow
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 
+		// Create speed buttons
+		createSpeedButtons(toolToolbar);
+		
 		// Add toolToolbar to mainPane
 		contentPane.add(toolToolbar, BorderLayout.NORTH);
 
@@ -445,9 +450,6 @@ public class MainWindow
 		// Create the status bar
 		JStatusBar statusBar = new JStatusBar(1, 1, HEIGHT_STATUS_BAR);
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
-	
-		// Create speed buttons
-		createSpeedButtons(statusBar);
 
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
@@ -470,12 +472,16 @@ public class MainWindow
 		}
 	}
 
-	private void createSpeedButtons(JStatusBar statusBar) {
+	private void createSpeedButtons(ToolToolBar toolBar) {
 		
-		JPanel speedPanel = new JPanel(new BorderLayout());
+		JPanel panel = new JPanel(new BorderLayout());
+		JPanel speedPanel = new JPanel(new GridLayout(1, 3));
+		panel.add(speedPanel, BorderLayout.EAST);
 		
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton();
+		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
+		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
 		decreaseSpeed.setIcon(DECREASE_ICON);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 		
@@ -489,6 +495,8 @@ public class MainWindow
 		createPauseSwitch();
 
 		JButton increaseSpeed = new JButton();
+		increaseSpeed.setPreferredSize(new Dimension(30, 30));
+		increaseSpeed.setMaximumSize(new Dimension(30, 30));
 		increaseSpeed.setIcon(INCREASE_ICON);
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
@@ -499,10 +507,10 @@ public class MainWindow
 		});
 		
 		// Add the increase speed button
-		speedPanel.add(decreaseSpeed, BorderLayout.WEST);
-		speedPanel.add(pauseSwitch, BorderLayout.CENTER);
-		speedPanel.add(increaseSpeed, BorderLayout.EAST);
-		statusBar.addLeftComponent(speedPanel, false);
+		speedPanel.add(decreaseSpeed);//, BorderLayout.WEST);
+		speedPanel.add(pauseSwitch);//, BorderLayout.CENTER);
+		speedPanel.add(increaseSpeed);//, BorderLayout.EAST);
+		toolBar.add(panel);
 		
 	}
 
@@ -511,6 +519,8 @@ public class MainWindow
 	 */
 	private void createPauseSwitch() {
 		pauseSwitch = new JToggleButton(PAUSE_ICON);
+		pauseSwitch.setPreferredSize(new Dimension(30, 30));
+		pauseSwitch.setMaximumSize(new Dimension(30, 30));
 		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
 		pauseSwitch.setSelected(false);
 		pauseSwitch.addActionListener(e -> {

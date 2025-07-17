@@ -123,7 +123,7 @@ public class StyleManager {
     public static final String LIGHT_BLUE = LIGHT + " - Blue";
     public static final String LIGHT_GREEN = LIGHT + " - Green";
     public static final String LIGHT_RED = LIGHT + " - Red";
-    public static final String LIGHT_ORANGE = LIGHT + " - Orange";
+    public static final String MUD_ORANGE = LIGHT + " - Mud Orange";
     public static final String LIGHT_OWL = "Light Owl";
     public static final String SOLARIZED_LIGHT = "Solarized Light";
     
@@ -134,7 +134,7 @@ public class StyleManager {
     public static final String SOLARIZED_DARK = "Solarized Dark";
     
     private static final String [] LAF_LIGHT_STYLES = {
-    		SYSTEM, LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, LIGHT_OWL, SOLARIZED_LIGHT};
+    		SYSTEM, LIGHT_BLUE, LIGHT_GREEN, MUD_ORANGE, LIGHT_RED, LIGHT_OWL, SOLARIZED_LIGHT};
     
     private static final String [] LAF_DARK_STYLES = {
     		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK};
@@ -171,6 +171,8 @@ public class StyleManager {
 
     private static Map<String,Properties> styles = new HashMap<>();
 
+    public static boolean isLightTheme;
+    
     // Creates the built-in defaults.
     static {
         // Default Font
@@ -267,46 +269,53 @@ public class StyleManager {
         try {
             switch(lafName) {
                 case LIGHT: 
+                	isLightTheme = true;
                     lafClass = FlatLightLaf.class.getName();
                     break;
 	
                 case SOLARIZED_LIGHT:
+                	isLightTheme = true;
                 	lafClass = FlatMTSolarizedLightIJTheme.class.getName();
                 	FlatMTSolarizedLightIJTheme.setup();
                     break;
                     
                 case LIGHT_OWL:
+                	isLightTheme = true;
 	                lafClass = FlatMTLightOwlIJTheme.class.getName();
 	                FlatMTLightOwlIJTheme.setup();
 	                break;
                 
                 case DARK:
+                	isLightTheme = false;
                     lafClass = FlatDarkLaf.class.getName();
                     break;
                     
                 case HIBERBEE_DARK:
+                	isLightTheme = false;
                     lafClass = FlatHiberbeeDarkIJTheme.class.getName();
                     FlatHiberbeeDarkIJTheme.setup();
                     break;
 
                 case MONOKAI_DARK:
+                	isLightTheme = false;
 	                lafClass = FlatMTMonokaiProIJTheme.class.getName();
 	                FlatMTMonokaiProIJTheme.setup();
 	                break;
 	                
                 case NIGHT_OWL:
+                	isLightTheme = false;
 	                lafClass = FlatMTNightOwlIJTheme.class.getName();
 	                FlatMTNightOwlIJTheme.setup();
 	                break;
 	                
                 case SOLARIZED_DARK:
+                	isLightTheme = false;
                 	lafClass = FlatMTSolarizedDarkIJTheme.class.getName();
                 	FlatMTSolarizedDarkIJTheme.setup();
                     break;
                     
-
-                    
                 case SYSTEM:
+                	isLightTheme = true;
                     lafClass = UIManager.getSystemLookAndFeelClassName();
                     accentColor = null;   // No accent colouring for system
                     break;
