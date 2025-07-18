@@ -203,8 +203,8 @@ public class BuildingConnectorManager implements Serializable {
 					}
 					else if (bFacing == 90) {
 						if (hatchFace.equalsIgnoreCase("north")) {
-							// verifying
-							connectionFacing = 90;
+							// verified as good
+							connectionFacing = 0;
 							// building face is 90, going north is +ve width
 							connectionXLoc = halfW;
 							connectionYLoc = 0;
