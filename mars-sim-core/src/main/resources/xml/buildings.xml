@@ -785,19 +785,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end for Central Hub Type A -->
 
-	<building type="Life Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="-1"
+	<building type="Life Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="1000">
-		<description> Life Core A is a small utility hub with laundry, washer and shower capability.
+		<description> Life Core A is an utility hub acts as a hallway with amenities such as 
+			with laundry, washer and shower capability.
 		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2" />
+		<power-required base-power="1.0" base-power-down-power="0.1" />
 
 		<functions>		
 			<life-support capacity="8" power-required="0.4">
 				<activity>
-					<activity-spot xloc="1" yloc="1" />
-					<activity-spot xloc="-1" yloc="1" />
-					<activity-spot xloc="1" yloc="-1" />
-					<activity-spot xloc="-1" yloc="-1" />
+					<activity-spot xloc="-1.0" yloc="1.0" />
+					<activity-spot xloc="0.0" yloc="1.0" />
+					<activity-spot xloc="1.0" yloc="1.0" />
+					
+					<activity-spot xloc="-1.0" yloc="0.0" />			
+					<activity-spot xloc="1.0" yloc="0.0" />
+					
+					<activity-spot xloc="-1.0" yloc="-1.0" />
+					<activity-spot xloc="0.0" yloc="-1.0" />
+					<activity-spot xloc="1.0" yloc="-1.0" />										
 				</activity>
 			</life-support>
 			
@@ -809,8 +816,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="0.0" yloc="0.0" />
-					<activity-spot xloc="0.0" yloc="0.0" />
+					<activity-spot xloc="-2.0" yloc="0.0" />
+					<activity-spot xloc="2.0" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="14000">
@@ -838,19 +845,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end of Life Core A -->
 
-	<building type="Half Core A" width="3.0" length="6.0" north-south-alignment="width" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="550">
-		<description> Life Core A is a small utility hub with laundry, washer and shower capability.
+	<building type="Half Core A" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
+		<description> Half Core A is an utility hallway.
 		</description>
-		<power-required base-power="1.0" base-power-down-power="0.1" />
+		<power-required base-power="0.5" base-power-down-power="0.05" />
 
 		<functions>		
 			<life-support capacity="6" power-required="0.3">
 				<activity>
-					<activity-spot xloc="1" yloc="1" />
-					<activity-spot xloc="-1" yloc="1" />
-					<activity-spot xloc="1" yloc="-1" />
-					<activity-spot xloc="-1" yloc="-1" />
+					<activity-spot xloc=".75" yloc="-2.5" />
+					<activity-spot xloc=".75" yloc="-1.5" />
+					<activity-spot xloc=".75" yloc="-0.5" />
+					<activity-spot xloc="-.75" yloc="0.5" />
+					<activity-spot xloc="-.75" yloc="1.5" />
+					<activity-spot xloc="-.75" yloc="2.5" />
 				</activity>
 			</life-support>
 			
@@ -860,9 +869,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-storage capacity="5" discharge-rate="1.5"/>
 	
-			<robotic-station capacity="1">
+			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="0.0" yloc="0.0" />
+					<activity-spot xloc="-1.25" yloc="0.0" />
+					<activity-spot xloc="1.25" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="7000">
