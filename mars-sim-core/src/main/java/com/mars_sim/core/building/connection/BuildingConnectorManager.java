@@ -240,16 +240,17 @@ public class BuildingConnectorManager implements Serializable {
 							connectionYLoc = 0;
 						}
 						else if (hatchFace.equalsIgnoreCase("east")) {
-							// verified as good
+							// verified as good 
 							connectionFacing = 90;
 							// building face is 270, going west is -ve length
 							connectionXLoc = 0;
 							connectionYLoc = - halfL;
 						}
 						else if (hatchFace.equalsIgnoreCase("south")) {
+							// verified as good
 							connectionFacing = 0;
-							// building face is 270, going south is +ve width
-							connectionXLoc = halfW;
+							// building face is 270, going south is -ve width
+							connectionXLoc = - halfW;
 							connectionYLoc = 0;
 						}
 						else if (hatchFace.equalsIgnoreCase("west")) {
@@ -345,15 +346,16 @@ public class BuildingConnectorManager implements Serializable {
 			else {
 				// if (validPartialConnectors.size() is not > 0
 				throw new IllegalStateException(
-						"Missing/Invalid PartialBuildingConnector(s) regarding "
+						settlement.getName() + " - Missing/Invalid PartialBuildingConnector(s). "
 						+ partialConnector.building.getName()
 						+ " [templateID: " + ((Building)partialConnector.building).getTemplateID() 
-						+ "  buildingID: " + partialConnector.building.getName()
-						+ "] in " + settlement.getName() + ". "
-						+ " partialConnectorLoc: " + partialConnectorLoc
-						+ " partialBuildingConnectorList: " + partialBuildingConnectorList.size()
+						+ "  building name: " + partialConnector.building.getName()
+						+ "  pos: " + partialConnector.pos
+						+ "  facing: " + partialConnector.facing
+						+ "  connectToBuilding: " + partialConnector.connectToBuilding
+						+ "]  partialConnectorLoc: " + partialConnectorLoc
+						+ "  List size: " + partialBuildingConnectorList.size()
 						+ "  validPartialConnectors: " + validPartialConnectors.size()
-//						+ "  " + partialConnector.building.getBuildingType() 
 						 + ".");
 			}
 		}
