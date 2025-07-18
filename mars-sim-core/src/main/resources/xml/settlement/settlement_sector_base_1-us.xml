@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1-US" default-population="48" description="Sector base 1 for NASA"
-		number-of-robots="24" sponsor="NASA">
+        name="Sector Base 1-US" default-population="100" description="Sector base 1 for NASA"
+		number-of-robots="100" sponsor="NASA">
 
 	<!-- row 0: 000 to 099 -->
 	
@@ -62,14 +62,42 @@
             <connection id="007" hatch-facing="east" />
         </connection-list>
     </building>        
-
-    <building id="007" type="life Core A" xloc="-49.5" yloc="0.0" facing="0.0">
+  
+    <building id="007" type="Compact Quarters" xloc="-51.0" yloc="0.0" facing="90.0">
         <connection-list>
             <connection id="006" hatch-facing="west" />
-            <connection id="107" hatch-facing="north" />
+            <connection id="008" hatch-facing="east" />
         </connection-list>
     </building>
     
+    <building id="008" type="Compact Quarters" xloc="-60.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="007" hatch-facing="west" />
+            <connection id="009" hatch-facing="east" />
+        </connection-list>
+    </building>      
+    
+    <building id="009" type="life Core A" xloc="-67.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="011" hatch-facing="south" />
+            <connection id="008" hatch-facing="west" />
+            <connection id="010" hatch-facing="east" />
+            <connection id="109" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="010" type="Loading Dock Garage" xloc="-79.5" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="009" hatch-facing="west" />
+        </connection-list>
+    </building>
+ 
+    <building id="011" type="EVA Airlock" xloc="-67.5" yloc="-6.0" facing="270.0">
+        <connection-list>
+            <connection id="009" hatch-facing="south" />
+        </connection-list>
+    </building>
+   
     
     <!-- Row 1: 102 to 199 -->
     <building id="102" type="life Core A" xloc="-7.5" yloc="6.0" facing="0.0">
@@ -113,21 +141,45 @@
         </connection-list>
     </building>
 
-
-    <building id="107" type="life Core A" xloc="-49.5" yloc="6.0" facing="0.0">
+  <building id="107" type="Inflatable Greenhouse" xloc="-51.0" yloc="6.0" facing="90.0">
         <connection-list>
-            <connection id="007" hatch-facing="south" />
             <connection id="106" hatch-facing="west" />
+            <connection id="108" hatch-facing="east" />
             <connection id="207" hatch-facing="north" />
         </connection-list>
     </building>
     
-    <!-- Row 2 : 202 to 299 -->
+    <building id="108" type="Inflatable Greenhouse" xloc="-60.0" yloc="6.0" facing="90.0">
+        <connection-list>
+            <connection id="107" hatch-facing="west" />
+            <connection id="109" hatch-facing="east" />
+            <connection id="208" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="109" type="life Core A" xloc="-67.5" yloc="6.0" facing="0.0">
+        <connection-list>
+            <connection id="009" hatch-facing="south" />
+            <connection id="108" hatch-facing="west" />
+            <connection id="209" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    
+    <!-- Row 2 : 202 to 299 --> 	
+ 
+    <building id="201" type="EVA Airlock" xloc="-1.5" yloc="12.0" facing="0.0">
+        <connection-list>
+            <connection id="202" hatch-facing="east" />
+        </connection-list>
+    </building>    	
     	
      <building id="202" type="life Core A" xloc="-7.5" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="102" hatch-facing="south" />
+            <connection id="201" hatch-facing="west" />
             <connection id="203" hatch-facing="east" />
+            <connection id="302" hatch-facing="north" />
         </connection-list>
     </building>
     
@@ -137,6 +189,7 @@
             <connection id="103" hatch-facing="south" />
             <connection id="202" hatch-facing="west" />
             <connection id="204" hatch-facing="east" />
+            <connection id="303" hatch-facing="north" />
         </connection-list>
     </building>
 
@@ -145,14 +198,16 @@
             <connection id="104" hatch-facing="south" />
             <connection id="203" hatch-facing="west" />
             <connection id="205" hatch-facing="east" />
+            <connection id="304" hatch-facing="north" />           
         </connection-list>
     </building>
     
-    <building id="205" type="Algae Pond" xloc="-33.0" yloc="12.0" facing="90.0">
+    <building id="205" type="Fish Farm" xloc="-33.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="105" hatch-facing="south" />
             <connection id="204" hatch-facing="west" />
             <connection id="206" hatch-facing="east" />
+            <connection id="305" hatch-facing="north" />
         </connection-list>
     </building>
     
@@ -161,18 +216,280 @@
             <connection id="106" hatch-facing="south" />
             <connection id="205" hatch-facing="west" />
             <connection id="207" hatch-facing="east" />
+            <connection id="306" hatch-facing="north" />
         </connection-list>
     </building>
 	
-	
-    <building id="207" type="life Core A" xloc="-49.5" yloc="12.0" facing="0.0">
+    <building id="207" type="Algae Pond" xloc="-51.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="107" hatch-facing="south" />
-           	<connection id="206" hatch-facing="west" />
+            <connection id="206" hatch-facing="west" />
+            <connection id="208" hatch-facing="east" />
+            <connection id="307" hatch-facing="north" />
         </connection-list>
     </building>
-        
+	
+    <building id="208" type="Algae Pond" xloc="-60.0" yloc="12.0" facing="90.0">
+        <connection-list>
+            <connection id="108" hatch-facing="south" />
+            <connection id="207" hatch-facing="west" />
+            <connection id="209" hatch-facing="east" />
+            <connection id="308" hatch-facing="north" />            
+        </connection-list>
+    </building>
+			
+    <building id="209" type="life Core A" xloc="-67.5" yloc="12.0" facing="0.0">
+        <connection-list>
+            <connection id="109" hatch-facing="south" />
+           	<connection id="208" hatch-facing="west" />
+            <connection id="309" hatch-facing="north" />          	
+        </connection-list>
+    </building>
 
+
+   <!-- Row 3 : 302 to 399 -->
+    	
+     <building id="302" type="life Core A" xloc="-7.5" yloc="18.0" facing="0.0">
+        <connection-list>
+            <connection id="202" hatch-facing="south" />
+            <connection id="303" hatch-facing="east" />
+            <connection id="402" hatch-facing="north" /> 
+        </connection-list>
+    </building>
+    
+
+    <building id="303" type="Inflatable Greenhouse" xloc="-15.0" yloc="18.0" facing="90.0">
+        <connection-list>
+            <connection id="203" hatch-facing="south" />
+            <connection id="302" hatch-facing="west" />
+            <connection id="304" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="304" type="Inflatable Greenhouse" xloc="-24.0" yloc="18.0" facing="90.0">
+        <connection-list>
+            <connection id="204" hatch-facing="south" />
+            <connection id="303" hatch-facing="west" />
+            <connection id="305" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="305" type="Inflatable Greenhouse" xloc="-33.0" yloc="18.0" facing="90.0">
+        <connection-list>
+            <connection id="205" hatch-facing="south" />
+            <connection id="304" hatch-facing="west" />
+            <connection id="306" hatch-facing="east" />
+            <connection id="405" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="306" type="Inflatable Greenhouse" xloc="-42.0" yloc="18.0" facing="90.0">
+        <connection-list>
+            <connection id="206" hatch-facing="south" />
+            <connection id="305" hatch-facing="west" />
+            <connection id="307" hatch-facing="east" />
+            <connection id="406" hatch-facing="north" />
+        </connection-list>
+    </building>
+	
+    <building id="307" type="Inflatable Greenhouse" xloc="-51.0" yloc="18.0" facing="90.0">
+        <connection-list>
+            <connection id="207" hatch-facing="south" />
+            <connection id="306" hatch-facing="west" />
+            <connection id="308" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="308" type="Inflatable Greenhouse" xloc="-60.0" yloc="18.0" facing="90.0">
+        <connection-list>
+            <connection id="208" hatch-facing="south" /> 
+            <connection id="307" hatch-facing="west" />
+            <connection id="309" hatch-facing="east" />  
+        </connection-list>
+    </building>
+		
+    <building id="309" type="life Core A" xloc="-67.5" yloc="18.0" facing="0.0">
+        <connection-list>
+            <connection id="209" hatch-facing="south" />
+           	<connection id="308" hatch-facing="west" />
+            <connection id="409" hatch-facing="north" />            	
+        </connection-list>
+    </building>
+    
+    
+  <!-- Row 4 : 402 to 499 -->
+    	
+     <building id="402" type="life Core A" xloc="-7.5" yloc="24.0" facing="0.0">
+        <connection-list>
+            <connection id="302" hatch-facing="south" />
+            <connection id="403" hatch-facing="east" />    
+        </connection-list>
+    </building>
+    
+
+    <building id="403" type="Compact Quarters" xloc="-15.0" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="402" hatch-facing="west" />
+            <connection id="404" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="404" type="Compact Quarters" xloc="-24.0" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="403" hatch-facing="west" />
+            <connection id="405" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="405" type="Inflatable Greenhouse" xloc="-33.0" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="305" hatch-facing="south" />
+            <connection id="404" hatch-facing="west" />
+            <connection id="406" hatch-facing="east" />
+            <connection id="505" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="406" type="Inflatable Greenhouse" xloc="-42.0" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="306" hatch-facing="south" />
+            <connection id="405" hatch-facing="west" />
+            <connection id="407" hatch-facing="east" />
+            <connection id="506" hatch-facing="north" />
+        </connection-list>
+    </building>
+	
+    <building id="407" type="Compact Quarters" xloc="-51.0" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="406" hatch-facing="west" />
+            <connection id="408" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="408" type="Compact Quarters" xloc="-60.0" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="407" hatch-facing="west" />
+            <connection id="409" hatch-facing="east" />
+        </connection-list>
+    </building>
+		
+    <building id="409" type="life Core A" xloc="-67.5" yloc="24.0" facing="0.0">
+        <connection-list>
+            <connection id="309" hatch-facing="south" />
+           	<connection id="408" hatch-facing="west" />
+            <connection id="410" hatch-facing="east" />
+            <connection id="411" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="410" type="Loading Dock Garage" xloc="-79.5" yloc="24.0" facing="90.0">
+        <connection-list>
+            <connection id="409" hatch-facing="west" />
+        </connection-list>
+    </building>
+   
+    <building id="411" type="EVA Airlock" xloc="-67.5" yloc="30.0" facing="90.0">
+        <connection-list>
+            <connection id="409" hatch-facing="south" />
+        </connection-list>
+    </building>
+   
+    
+   <!-- Row 5 : 505 to 599 -->
+    
+   <building id="505" type="Lounge" xloc="-33.0" yloc="30.5" facing="90.0">
+        <connection-list>
+            <connection id="405" hatch-facing="south" />
+            <connection id="506" hatch-facing="east" />
+            <connection id="605" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="506" type="Lounge" xloc="-42.0" yloc="30.5" facing="90.0">
+        <connection-list>
+            <connection id="406" hatch-facing="south" />
+            <connection id="505" hatch-facing="west" />
+            <connection id="606" hatch-facing="north" />
+        </connection-list>
+    </building>
+  
+  
+     <!-- Row 6 : 605 to 699 -->
+    
+   <building id="605" type="Laboratory" xloc="-33.0" yloc="37.5" facing="90.0">
+        <connection-list>
+            <connection id="505" hatch-facing="south" />
+            <connection id="606" hatch-facing="east" />
+            <connection id="705" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="606" type="Laboratory" xloc="-42.0" yloc="37.5" facing="90.0">
+        <connection-list>
+            <connection id="506" hatch-facing="south" />
+            <connection id="605" hatch-facing="west" />
+            <connection id="706" hatch-facing="north" />
+        </connection-list>
+    </building>
+  
+  
+     <!-- Row 7 : 705 to 799 -->
+    
+   <building id="705" type="Server Farm" xloc="-33.0" yloc="44.5" facing="0.0">
+        <connection-list>
+            <connection id="605" hatch-facing="south" />
+            <connection id="706" hatch-facing="east" />
+            <connection id="805" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="706" type="Server Farm" xloc="-42.0" yloc="44.5" facing="0.0">
+        <connection-list>
+            <connection id="606" hatch-facing="south" />
+            <connection id="705" hatch-facing="west" />
+            <connection id="806" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    
+     <!-- Row 8 : 805 to 899 -->
+    
+   <building id="805" type="Infirmary" xloc="-33.0" yloc="51.5" facing="90.0">
+        <connection-list>
+            <connection id="705" hatch-facing="south" />
+            <connection id="806" hatch-facing="east" />
+            <connection id="905" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="806" type="Command and Control" xloc="-42.0" yloc="51.5" facing="90.0">
+        <connection-list>
+            <connection id="706" hatch-facing="south" />
+            <connection id="805" hatch-facing="west" />
+            <connection id="906" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    
+     <!-- Row 9 : 905 to 999 -->
+    
+   <building id="905" type="Workshop" xloc="-33.0" yloc="58.5" facing="90.0">
+        <connection-list>
+            <connection id="805" hatch-facing="south" />
+            <connection id="906" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="906" type="Workshop" xloc="-42.0" yloc="58.5" facing="90.0">
+        <connection-list>
+            <connection id="806" hatch-facing="south" />
+            <connection id="905" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+      
+            
+        
    <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
     <building-package name="Storage Set 2"/>
@@ -203,16 +520,16 @@
     <robot name="Dewey Pro" type="GardenBot" model="Advanced"/>
     <robot name="Louie Pro" type="GardenBot" model="Advanced"/>
 
-    <equipment type="EVA Suit" number="120" />
+    <equipment type="EVA Suit" number="60" />
 
     <!-- Containers-->
-	<equipment type="barrel" number="720" />
-	<equipment type="bag" number="720" />
-	<equipment type="gas canister" number="720" />		
-	<equipment type="large bag" number="720" />
-	<equipment type="specimen box" number="720" />
-    <equipment type="thermal bottle" number="150" />	
- 	<equipment type="wheelbarrow" number="150" />
+	<equipment type="barrel" number="360" />
+	<equipment type="bag" number="360" />
+	<equipment type="gas canister" number="360" />		
+	<equipment type="large bag" number="360" />
+	<equipment type="specimen box" number="360" />
+    <equipment type="thermal bottle" number="100" />	
+ 	<equipment type="wheelbarrow" number="100" />
 
     <!-- Bins -->
 	<bin type="crate" number="40" />
