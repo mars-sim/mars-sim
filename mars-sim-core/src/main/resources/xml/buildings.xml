@@ -77,7 +77,7 @@
 	<!ELEMENT flyer-location EMPTY>
 	<!ATTLIST flyer-location xloc CDATA #REQUIRED>
 	<!ATTLIST flyer-location yloc CDATA #REQUIRED>	
-	<!ELEMENT life-support EMPTY>
+	<!ELEMENT life-support (activity?)>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
 	<!ELEMENT living-accommodation (activity)>
@@ -213,7 +213,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     Note that cooling demand was calculated separately based on this figure.  -->
 			<computation computing-unit="10.0" power-demand="1.0">
 				<activity>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="0.0" yloc="0.0" />
 				</activity>
 			</computation>
 
@@ -791,19 +791,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
-		<functions>
-			<computation computing-unit="2.0" power-demand="1.0">
+		<functions>		
+			<life-support capacity="8" power-required="0.4">
 				<activity>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="1" yloc="1" />
+					<activity-spot xloc="-1" yloc="1" />
+					<activity-spot xloc="1" yloc="-1" />
+					<activity-spot xloc="-1" yloc="-1" />
 				</activity>
-			</computation>			
-			<life-support capacity="8" power-required="0.4" />
+			</life-support>
 			
 			<power-generation>
 				<power-source type="Solar Power Source" power="10.0" />
 			</power-generation>
 			
-			<power-storage capacity="20" discharge-rate="1.25"/>
+			<power-storage capacity="10" discharge-rate="1.5"/>
 	
 			<robotic-station capacity="2">
 				<activity>
@@ -811,10 +813,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="0.0" />
 				</activity>
 			</robotic-station>
-			<storage stock-capacity="15000">
-				<resource-capacity type="water" amount="5000.0" />
-				<resource-capacity type="oxygen" amount="5000.0" />
-				<resource-capacity type="methane" amount="5000.0" />
+			<storage stock-capacity="14000">
+				<resource-capacity type="water" amount="4000.0" />
+				<resource-capacity type="oxygen" amount="4000.0" />
+				<resource-capacity type="methane" amount="4000.0" />
 				
 				<resource-capacity type="grey water" amount="1000.0" />				
 
@@ -836,6 +838,57 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end of Life Core A -->
 
+	<building type="Half Core A" width="3.0" length="6.0" north-south-alignment="width" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="550">
+		<description> Life Core A is a small utility hub with laundry, washer and shower capability.
+		</description>
+		<power-required base-power="1.0" base-power-down-power="0.1" />
+
+		<functions>		
+			<life-support capacity="6" power-required="0.3">
+				<activity>
+					<activity-spot xloc="1" yloc="1" />
+					<activity-spot xloc="-1" yloc="1" />
+					<activity-spot xloc="1" yloc="-1" />
+					<activity-spot xloc="-1" yloc="-1" />
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			
+			<power-storage capacity="5" discharge-rate="1.5"/>
+	
+			<robotic-station capacity="1">
+				<activity>
+					<activity-spot xloc="0.0" yloc="0.0" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="7000">
+				<resource-capacity type="water" amount="2000.0" />
+				<resource-capacity type="oxygen" amount="2000.0" />
+				<resource-capacity type="methane" amount="2000.0" />
+				
+				<resource-capacity type="grey water" amount="400.0" />				
+
+				<resource-capacity type="compost" amount="200.0" />
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="2.5" />
+				<heat-source type="Electric Heating" capacity="7.5" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="10.0" />
+			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor"/>
+				<process-engine name="Black Water Processor"/>
+			</waste-processing>				
+			
+		</functions>
+	</building>
+	<!-- end of Half Core A -->
 
 		
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
@@ -1356,8 +1409,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Convert Regolith to Ores with Sand" number-modules="40"/>
 				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="15"/>
 				<process-engine name="Process Regolith-B rich in Poly-Hydrated Sulfate" number-modules="15"/> 
-				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="15"/>
-				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="15"/>
+				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="02"/>
+				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="02"/>
 				
 				<!-- 10 processes for breaking down minerals -->
 				<process-engine name="Do Chalcopyrite Smelting" number-modules="5"/>
@@ -1594,7 +1647,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Thermionic Nuclear Power Source" 
 					modules="74" power="4.7" thermal-conversion="10.37" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="15"  discharge-rate="1.25"/>
+			<power-storage capacity="02"  discharge-rate="1.25"/>
 		</functions>
 	</building>
 		
@@ -2635,7 +2688,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Large Areothermal Well" width="10.0" length="15.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="15">
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="02">
 		<description>  The Large Areothermal Well is an geothermal energy production system
 			that features more advance geothermal flow path for ground loop design for
 			capturing heat and creating electricity.

@@ -3,7 +3,7 @@
     name="Trading Outpost" default-population="4" description="Base for a trading outpost"
     number-of-robots="4" sponsor="MS" objective="TRADE_CENTER">
     
-    <building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
+    <building id="00" type="Outpost Hub" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="-5.0" yloc="2.5" />
@@ -16,7 +16,7 @@
     <building id="1" type="Tunnel" length="3.0" xloc="-6.5"
         yloc="2.5" facing="270.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.5" />
+            <connection id="00" xloc="0.0" yloc="1.5" />
             <connection id="2" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
@@ -29,7 +29,7 @@
     <building id="3" type="Tunnel" length="3.0" xloc="-6.5"
         yloc="-2.5" facing="270.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.5" />
+            <connection id="00" xloc="0.0" yloc="1.5" />
             <connection id="4" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
@@ -42,7 +42,7 @@
     <building id="5" type="Tunnel" length="2.0" xloc="6.0"
         yloc="2.5" facing="90.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.0" />
+            <connection id="00" xloc="0.0" yloc="1.0" />
             <connection id="6" xloc="0.0" yloc="-1.0" />
         </connection-list>
     </building>
@@ -71,7 +71,7 @@
     <building id="9" type="Tunnel" length="2.0" xloc="6.0"
         yloc="-2.5" facing="90.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.0" />
+            <connection id="00" xloc="0.0" yloc="1.0" />
             <connection id="10" xloc="0.0" yloc="-1.0" />
         </connection-list>
     </building>
@@ -81,7 +81,7 @@
             <connection id="9" xloc="0.0" yloc="2.5" />
             <connection id="11" xloc="0.0" yloc="-2.5" />
             <connection id="6" xloc="2.5" yloc="0.0" />
-            <connection id="15" hatch-facing="south" />
+            <connection id="02" hatch-facing="south" />
         </connection-list>
     </building>
     <building id="11" type="Tunnel" length="2.0" xloc="13.0"
@@ -101,7 +101,7 @@
     <building id="13" type="Tunnel" length="4.0" xloc="0.0"
         yloc="-7.0" facing="0.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="2.0" />
+            <connection id="00" xloc="0.0" yloc="2.0" />
             <connection id="14" xloc="0.0" yloc="-2.0" />
         </connection-list>
     </building>
@@ -113,7 +113,7 @@
     </building>
 
     <!-- EVA Airlock is attached to the Storage Shed 1 -->
-    <building id="15" type="EVA Airlock" xloc="9.5" yloc="-8.0" facing="270.0">
+    <building id="02" type="EVA Airlock" xloc="9.5" yloc="-8.0" facing="270.0">
         <connection-list>
             <connection id="10" hatch-facing="north" />
         </connection-list>

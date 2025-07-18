@@ -1,0 +1,240 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+        name="Sector Base 1-US" default-population="48" description="Sector base 1 for NASA"
+		number-of-robots="24" sponsor="NASA">
+
+	<!-- row 0: 000 to 099 -->
+	
+    <!-- Lander habitat building is the main habitation in the Mars Direct
+        mission plan. -->
+    <building id="000" type="Lander Hab" xloc="0.0" yloc="0.0" facing="0.0">
+        <!-- List of all connections to other buildings (optional). -->
+        <connection-list>
+            <!-- Connection to another building. "id" is other building's ID. -->
+            <!-- X & Y locations are relative to this building, not in the settlement
+                locale. -->
+            <connection id="001" hatch-facing="west"  />
+            <connection id="002" hatch-facing="east"  />
+        </connection-list>
+    </building>
+
+    <!-- EVA Airlock is attached to the lander hab -->
+    <building id="001" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="000" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <!-- 4 Life Core A are attached to one another in a column -->
+    <building id="002" type="life Core A" xloc="-7.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="000" hatch-facing="west" />
+            <connection id="003" hatch-facing="east" />
+            <connection id="102" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <!-- Row 0 -->
+    <building id="003" type="Compact Quarters" xloc="-15.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="002" hatch-facing="west" />
+            <connection id="004" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="004" type="Compact Quarters" xloc="-24.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="003" hatch-facing="west" />
+            <connection id="005" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="005" type="Compact Quarters" xloc="-33.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="004" hatch-facing="west" />
+            <connection id="006" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="006" type="Compact Quarters" xloc="-42.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="005" hatch-facing="west" />
+            <connection id="007" hatch-facing="east" />
+        </connection-list>
+    </building>        
+
+    <building id="007" type="life Core A" xloc="-49.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="006" hatch-facing="west" />
+            <connection id="107" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    
+    <!-- Row 1: 102 to 199 -->
+    <building id="102" type="life Core A" xloc="-7.5" yloc="6.0" facing="0.0">
+        <connection-list>
+            <connection id="002" hatch-facing="south" />
+            <connection id="103" hatch-facing="east" />
+            <connection id="202" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+	<!-- Row 1 -->
+    <building id="103" type="Inflatable Greenhouse" xloc="-15.0" yloc="6.0" facing="90.0">
+        <connection-list>
+            <connection id="102" hatch-facing="west" />
+            <connection id="104" hatch-facing="east" />
+            <connection id="203" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="104" type="Inflatable Greenhouse" xloc="-24.0" yloc="6.0" facing="90.0">
+        <connection-list>
+            <connection id="103" hatch-facing="west" />
+            <connection id="105" hatch-facing="east" />
+            <connection id="204" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="105" type="Inflatable Greenhouse" xloc="-33.0" yloc="6.0" facing="90.0">
+        <connection-list>
+            <connection id="104" hatch-facing="west" />
+            <connection id="106" hatch-facing="east" />
+            <connection id="205" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="106" type="Inflatable Greenhouse" xloc="-42.0" yloc="6.0" facing="90.0">
+        <connection-list>
+            <connection id="105" hatch-facing="west" />
+            <connection id="107" hatch-facing="east" />
+            <connection id="206" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+
+    <building id="107" type="life Core A" xloc="-49.5" yloc="6.0" facing="0.0">
+        <connection-list>
+            <connection id="007" hatch-facing="south" />
+            <connection id="106" hatch-facing="west" />
+            <connection id="207" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <!-- Row 2 : 202 to 299 -->
+    	
+     <building id="202" type="life Core A" xloc="-7.5" yloc="12.0" facing="0.0">
+        <connection-list>
+            <connection id="102" hatch-facing="south" />
+            <connection id="203" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+
+    <building id="203" type="Fish Farm" xloc="-15.0" yloc="12.0" facing="90.0">
+        <connection-list>
+            <connection id="103" hatch-facing="south" />
+            <connection id="202" hatch-facing="west" />
+            <connection id="204" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="204" type="Fish Farm" xloc="-24.0" yloc="12.0" facing="90.0">
+        <connection-list>
+            <connection id="104" hatch-facing="south" />
+            <connection id="203" hatch-facing="west" />
+            <connection id="205" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="205" type="Algae Pond" xloc="-33.0" yloc="12.0" facing="90.0">
+        <connection-list>
+            <connection id="105" hatch-facing="south" />
+            <connection id="204" hatch-facing="west" />
+            <connection id="206" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="206" type="Algae Pond" xloc="-42.0" yloc="12.0" facing="90.0">
+        <connection-list>
+            <connection id="106" hatch-facing="south" />
+            <connection id="205" hatch-facing="west" />
+            <connection id="207" hatch-facing="east" />
+        </connection-list>
+    </building>
+	
+	
+    <building id="207" type="life Core A" xloc="-49.5" yloc="12.0" facing="0.0">
+        <connection-list>
+            <connection id="107" hatch-facing="south" />
+           	<connection id="206" hatch-facing="west" />
+        </connection-list>
+    </building>
+        
+
+   <!-- Building Packages -->
+    <building-package name="Storage Set 1"/>
+    <building-package name="Storage Set 2"/>
+   	<building-package name="ERV Set 1"/>
+   	<building-package name="ERV Set 2"/>
+   	<building-package name="ERV Set 3"/>
+   	<building-package name="ERV Set 4"/>    	  	
+   	<building-package name="Air Set 1 - 1x5"/>
+    <building-package name="Sabatier Set 1 - 1x5"/>
+	<building-package name="Syngas Set 1 - 1x3"/>
+	<building-package name="Solar Thermal Set 1 - 1x9"/>
+	<building-package name="Solar Set 1 - 1x9"/>
+	<building-package name="Wind Set 1 - 1x6"/>
+	<building-package name="Kilo Set 1 - 1x4"/>
+	<building-package name="MD1 Set 1 - 1x3"/>
+	<building-package name="MD4 Set 1 - 1x3"/>   	        
+      
+    <vehicle type="Explorer Rover" number="4" />
+    <vehicle type="Long Range Explorer" number="4" />
+    <vehicle type="Transport Rover" number="2" />
+    <vehicle type="Cargo Rover" number="4" />
+    <vehicle type="Light Utility Vehicle" number="8" />
+    <vehicle type="Delivery Drone" number="3" />
+    <vehicle type="Cargo Drone" number="3" />
+     
+    <!-- Robots -->
+    <robot name="Huey Pro" type="GardenBot" model="Advanced"/>
+    <robot name="Dewey Pro" type="GardenBot" model="Advanced"/>
+    <robot name="Louie Pro" type="GardenBot" model="Advanced"/>
+
+    <equipment type="EVA Suit" number="120" />
+
+    <!-- Containers-->
+	<equipment type="barrel" number="720" />
+	<equipment type="bag" number="720" />
+	<equipment type="gas canister" number="720" />		
+	<equipment type="large bag" number="720" />
+	<equipment type="specimen box" number="720" />
+    <equipment type="thermal bottle" number="150" />	
+ 	<equipment type="wheelbarrow" number="150" />
+
+    <!-- Bins -->
+	<bin type="crate" number="40" />
+	<bin type="basket" number="40" />
+	<bin type="pot" number="40" />
+		
+	<!-- Life Support Resources -->
+	<resource type="food" amount="20000" />
+	<resource type="water" amount="40000" />
+	<resource type="oxygen" amount="60000" />
+
+    <part type="biosensor" number="1" />
+    <part-package name="package 2" number="1" />
+    <part-package name="package 4" number="1" />
+
+    <!-- The resupply missions from Earth scheduled for this type of settlement. -->
+    <resupply>
+        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
+            <schedule firstSol="30" frequency="60" /> 
+        </resupply-mission>
+        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
+            <schedule firstSol="668"/>
+        </resupply-mission>
+    </resupply>
+</template>

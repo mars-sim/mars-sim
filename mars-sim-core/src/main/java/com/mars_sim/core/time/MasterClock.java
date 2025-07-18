@@ -1056,10 +1056,11 @@ public class MasterClock implements Serializable {
 		if (this.isPaused != value) {
 			this.isPaused = value;
 
-			if (!value) {
-				// Reset the last pulse time
-				timestampPulseStart();
-			}
+			// Q: why does it have to reset the last pulse since start() will call it also ?
+//			if (!value) {
+//				// Reset the last pulse time
+//				timestampPulseStart();
+//			}
 
 			if (isPaused) {
 				stop();

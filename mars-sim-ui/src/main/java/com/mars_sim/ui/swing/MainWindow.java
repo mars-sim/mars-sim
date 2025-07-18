@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2023-05-14
+ * @date 2025-07-17
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
@@ -78,10 +77,10 @@ public class MainWindow
 	public static final String LANDER_16 = "lander16";
 	
 	
-	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
-	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
-	private static final Icon DECREASE_ICON = ImageLoader.getIconByName("speed/decrease");
-	private static final Icon INCREASE_ICON = ImageLoader.getIconByName("speed/increase");
+//	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
+//	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
+//	private static final Icon DECREASE_ICON = ImageLoader.getIconByName("speed/decrease");
+//	private static final Icon INCREASE_ICON = ImageLoader.getIconByName("speed/increase");
 	
 	
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
@@ -346,6 +345,7 @@ public class MainWindow
 	/**
 	 * Initializes UI elements for the frame
 	 */
+	@SuppressWarnings("serial")
 	private void init() {
 
 		frame.addWindowListener(new WindowAdapter() {
@@ -364,7 +364,7 @@ public class MainWindow
 				logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
 			repaint();
 		});
-
+	
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		changeTitle(false);
@@ -413,9 +413,45 @@ public class MainWindow
 
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
-
+		toolToolbar.requestFocusInWindow();
+		
 		// Create speed buttons
 		createSpeedButtons(toolToolbar);
+		
+		// Set up key bindings for the Escape key
+//        KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+//        InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+//        ActionMap actionMap = getActionMap();
+//
+//        inputMap.put(escapeKeyStroke, "togglePause");
+//        actionMap.put("togglePause", new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	// Note: unable to obtain the focus of this button
+//
+////            	if (!playPauseSwitch.isFocusOwner() || !playPauseSwitch.isFocusable())
+////            		playPauseSwitch.requestFocusInWindow();
+////            	frame.toFront();
+//            	playPauseSwitch.requestFocusInWindow();
+//
+////            	boolean isSel = playPauseSwitch.isSelected();
+////				if (isSel) {
+////					playPauseSwitch.setText("\u23F5");//.setIcon(PLAY_ICON);
+////				}
+////				else {
+////					playPauseSwitch.setText("\u23F8");//.setIcon(PAUSE_ICON);
+////				}		
+//            	playPauseSwitch.doClick();
+////				masterClock.setPaused(isSel, false);	
+//            }
+//        });
+			
+//		//Make playPauseSwitch get the focus whenever frame is activated.
+//		frame.addWindowFocusListener(new WindowAdapter() {
+//		    public void windowGainedFocus(WindowEvent e) {
+//		    	playPauseSwitch.requestFocusInWindow();
+//		    }
+//		});
 		
 		// Add toolToolbar to mainPane
 		contentPane.add(toolToolbar, BorderLayout.NORTH);
@@ -522,7 +558,11 @@ public class MainWindow
 		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
 		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
 		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
-		playPauseSwitch.setSelected(false);
+//		playPauseSwitch.setSelected(false);
+		
+//		playPauseSwitch.setFocusable(true);
+//		playPauseSwitch.putClientProperty("togglePause", true);
+		
 		playPauseSwitch.addActionListener(e -> {
 				boolean isSel = playPauseSwitch.isSelected();
 				if (isSel) {
