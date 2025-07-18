@@ -1104,9 +1104,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	 */
 	private void computeWaterFertilizer(double compositeFactor, double time, double greyFilterRate) {
 		// Calculate water usage kg per sol
-		double waterRequired = compositeFactor * averageWaterNeeded;
-		if (waterRequired <= 0)
-			return;
+		double waterRequired = Math.max(0.005, compositeFactor * averageWaterNeeded);
+
 		// Determine the amount of grey water available.
 		double gw = building.getSettlement().getAmountResourceStored(ResourceUtil.GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
@@ -1142,8 +1141,8 @@ public class Crop implements Comparable<Crop>, Entity {
 				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
 
 				// Incur penalty if water is NOT available
-				// need to add .0001 in case waterRequired becomes zero
-				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .0001);
+				// Avoid divided by a very low waterRequired
+				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .005);
 			}
 
 			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(ResourceUtil.FERTILIZER_ID);
@@ -1155,7 +1154,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				// not enough fertilizer
 				fertilizerUsed = fertilizerAvailable;
 				// should incur penalty due to insufficient fertilizer
-				fertilizerModifier = fertilizerUsed / (fertilizerRequired + 0.0001);
+				fertilizerModifier = fertilizerUsed / (fertilizerRequired + 0.005);
 			} else {
 				// there's enough fertilizer
 				fertilizerModifier = 1D;
@@ -1186,13 +1185,15 @@ public class Crop implements Comparable<Crop>, Entity {
 		double co2Modifier = 0;
 
 		// A. During the night when light level is low
-		if (watt < 0) {
+		if (Math.round(watt * 10.0)/10.0 <= 0.1) {
 
-			double o2Required = compositeFactor * averageOxygenNeeded;
+			double o2Required = Math.max(0.005, compositeFactor * averageOxygenNeeded);
+	
 			double o2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
 
-			o2Modifier = o2Available / o2Required;
+			// Avoid divided by a very low o2Required
+			o2Modifier = o2Available / (o2Required + 0.005);
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
@@ -1209,14 +1210,15 @@ public class Crop implements Comparable<Crop>, Entity {
 			// B. During the day
 
 			// Determine harvest modifier by amount of carbon dioxide available.
-			double cO2Req = compositeFactor * averageCarbonDioxideNeeded;
+			double cO2Req = Math.max(0.005, compositeFactor * averageCarbonDioxideNeeded);
 			double cO2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
 			// Future: allow higher concentration of co2 to be pumped to increase the harvest
 			// modifier to the harvest.
 
-			co2Modifier = cO2Available / cO2Req;
+			// Avoid divided by a very low cO2Req
+			co2Modifier = cO2Available / (cO2Req + 0.005);
 
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
@@ -1297,11 +1299,11 @@ public class Crop implements Comparable<Crop>, Entity {
 			// needFactor ranges from growthFactor * 2.5 to growthFactor * 11
 		}
 
-		double compositeFactor = TUNING_FACTOR * needFactor * time / 1000.0;
+		double compositeFactor = Math.max(.1, TUNING_FACTOR * needFactor * time / 1000.0);
 		
-//		logger.info(this, 20_000, "watt: " + Math.round(watt * 100.0)/100.0
-//				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
-//				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
+		logger.info(this, 20_000, "watt: " + Math.round(watt * 100.0)/100.0
+				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
+				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
 		
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
 		computeWaterFertilizer(compositeFactor * WATER_MODIFIER, time, greyFilterRate);
