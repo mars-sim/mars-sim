@@ -52,22 +52,21 @@ public class Crop implements Comparable<Crop>, Entity {
 	
 	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.findIDbyItemResourceName("mushroom containment kit");
 
-	private static final int LIGHT_FACTOR = 0;
-	private static final int FERTILIZER_FACTOR = 1;
-	private static final int TEMPERATURE_FACTOR = 2;
-	
-	private static final int WATER_FACTOR = 3;
-	private static final int O2_FACTOR = 4;
-	private static final int CO2_FACTOR = 5;
+	private static final int LIGHT_INDEX = 0;
+	private static final int FERTILIZER_INDEX = 1;
+	private static final int TEMPERATURE_INDEX = 2;
+	private static final int WATER_INDEX = 3;
+	private static final int O2_INDEX = 4;
+	private static final int CO2_INDEX = 5;
 
 	/** 
 	 * The range of wavelengths that corresponds to about 45% of the energy of 
 	 * solar radiation is the 400-700 nm range, which is commonly referred to 
-	 * as the photosynthetically active radiation (PAR) range. 
+	 * as the photosynthetically active radiation (PAR) range 
 	 */
 	private static final double PAR_RANGE = .45;
 	
-	private static final double CHECK_PERIOD = 20D; // Check advancement 10 times per day
+	// private static final double CHECK_PERIOD = 20D; // Check advancement 10 times per day
 	
 	/** The modifier for the work time on a crop. */
 	private static final double WORK_TIME_FACTOR = 4000.0;
@@ -84,9 +83,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	public static final double POSITIVE_ENTROPY = 0;
 	
 	// Future: Move params into crops.xml and load from CropConfig
-	private static final double TUNING_FACTOR = 3.5;
-	private static final double GAS_MODIFIER = 1.5;
-	private static final double WATER_MODIFIER = 1.1;
+	private static final double TUNING_FACTOR = 0.5;
+	private static final double GAS_MODIFIER = 2.5;
+	private static final double WATER_MODIFIER = 0.25;
 
 	private static final int PETRI_DISH_ID = ItemResourceUtil.findIDbyItemResourceName("petri dish");
 
@@ -129,8 +128,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217 */
 	// public static final double MEAN_DAILY_PAR = 237.2217D ; // in [umol/m2/day]
 	
-	/** The wattage of a 400W high pressure sodium (HPS) lamp. */
-	private static final double KW_PER_HPS = .4;
+	/** The wattage of a 200W high pressure sodium (HPS) lamp. */
+	private static final double KW_PER_HPS = .2;
 	/** The lamp efficiency of the high pressure sodium (HPS) lamp. */
 	private static final double VISIBLE_RADIATION_HPS = 0.4;
 	/** The ballast loss of the high pressure sodium (HPS) lamp. */
@@ -162,7 +161,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	
 	
 	/** The total amount of light received by this crop. */
-	private double effectivePAR;
+//	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
 	private double massRatio;
 	/** The maximum possible harvest for this crop [in kg]. */
@@ -198,12 +197,12 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The cache for o2. */	
 	private double o2Cache = 0;
 	/** The time accumulated [in millisols] for each crop update call. */
-	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
+//	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 	/** The threshold for tracking a gas [in kg] */
 	private final double gasThreshold;
 	
 	/** The cache values of the past environment factors influencing the crop */
-	private double[] environmentalFactor = new double[CO2_FACTOR + 1];
+	private double[] environmentalFactor = new double[CO2_INDEX + 1];
 
 	private CropSpec cropSpec;
 
@@ -575,7 +574,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		int size = environmentalFactor.length;
 		boolean needsLight = cropSpec.needsLight();
 		for (int i=0; i< size; i++) {
-			if (!needsLight && (i == LIGHT_FACTOR)) {
+			if (!needsLight && (i == LIGHT_INDEX)) {
 					total = total + 1;  // Ignore environmental factor
 			}
 			else {
@@ -738,9 +737,9 @@ public class Crop implements Comparable<Crop>, Entity {
 		totalCollected += harvestMass;
 		dailyCollected += harvestMass;
 
-		if (dailyCollected > 0)
-			logger.info(this, 20_000, "totalCollected: " + Math.round(totalCollected * 100.0) / 100.0
-						+ "  dailyCollected: " + Math.round(dailyCollected * 100.0) / 100.0);
+//		if (dailyCollected > 0)
+//			logger.info(this, 20_000, "totalCollected: " + Math.round(totalCollected * 100.0) / 100.0
+//						+ "  dailyCollected: " + Math.round(dailyCollected * 100.0) / 100.0);
 
 		
 		// Deposit main outputs
@@ -856,6 +855,9 @@ public class Crop implements Comparable<Crop>, Entity {
 		return false;
 	}
 
+	/**
+	 * Resets the dailyPARCumulative back to zero at the end of each sol.
+	 */
 	public void resetPAR() {
 		dailyPARCumulative = 0;
 	}
@@ -881,11 +883,12 @@ public class Crop implements Comparable<Crop>, Entity {
 	 *
 	 * @param pulse
 	 * @param solarIrradiance
+	 * @param 
 	 */
-	private void computeLight(ClockPulse pulse, double solarIrradiance) {
+	private double computeLight(ClockPulse pulse, double solarIrradiance) {
 		double elapsed = pulse.getElapsed();
 		double lightModifier = 0;
-
+		double effectivePAR = 0;
 		double dailyPARRequired = cropSpec.getDailyPAR();
 		// period of time
 		// [mol /m^2] = [umol /m^2 /s] / u * [millisols] * [s /millisols]
@@ -893,18 +896,23 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		// Note : daily-PAR has the unit of [mol /m^2 /day], not [ umol / m^2 / s ]	
 		
-		// Gauge if there is enough sunlight. When enough PAR have been administered to the crop, HPS_LAMP will turn off.
+		// Gauge if there is enough sunlight. When enough PAR have been administered to the crop, 
+		// HPS_LAMP will turn off.
 		
 		// Future: what if the time zone of a settlement causes sunlight to shine at near
 		// the tail end of the currentMillisols time ?
 		
 		boolean isNewSol = pulse.isNewSol();
-		int sunInterval = 0;
-		if (isNewSol) {
+		int sunInterval = 1; // avoid divided by zero
+		if ((pulse.getMarsTime().getMissionSol() == 1 && pulse.getMarsTime().getMillisolInt() == 0 )
+				|| isNewSol) {
 			double[] sunTimes = Simulation.instance().getOrbitInfo().getSunTimes(building.getCoordinates());
 			sunrise = (int)sunTimes[0];
 			sunset = (int)sunTimes[1];
 			sunInterval = (int)sunTimes[2];
+			
+//			logger.info(building.getSettlement(), 10_000, "sunrise: " + sunrise 			
+//					+ " sunset: " + sunset + " sunInterval: " + sunInterval);
 		}
 		
 		double msol = pulse.getMarsTime().getMillisol();
@@ -912,39 +920,35 @@ public class Crop implements Comparable<Crop>, Entity {
 		// accumulation of all the PAR received during a day.
 		double dailyLightIntegral = dailyPARRequired - dailyPARCumulative; // [in mol / m^2 / day]
 		
-		if (dailyLightIntegral > 0) {
+		if (dailyLightIntegral > 0.4) {
 			double dayFraction = msol / 1000;
 			double lightFraction = dailyPARCumulative / dailyPARRequired;
 			
 			if (lightFraction < dayFraction) {
 				// More likely turn on
-				if (msol >= sunrise) {
+				if ((sunrise < sunset) && (msol > sunset)
+					|| (sunrise > sunset) && (msol < sunrise || msol > sunset)) {
 					int rand = RandomUtil.getRandomInt(1000);
-					if (rand * sunInterval < msol)
-						calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, dailyPARRequired, sunInterval);
+					if (rand * 1000.0 / sunInterval < msol)
+						effectivePAR = calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, sunInterval);
 				}
 				else {
 					// Less likely to turn on
 					int rand = RandomUtil.getRandomInt(1000);
-					if (rand * sunInterval > msol)
-						calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, dailyPARRequired, sunInterval);
+					if (rand * 1000.0 /sunInterval > msol)
+						effectivePAR = calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, sunInterval);
 				}	
 			}
 			else {
 				// Less likely to turn on
 				int rand = RandomUtil.getRandomInt(1000);
-				if (rand * sunInterval > msol)
-					calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, dailyPARRequired, sunInterval);
+				if (rand * 1000.0 / sunInterval > msol)
+					effectivePAR = calculateLamp(dailyLightIntegral, elapsed, solarIrradiance, sunInterval);
 			}
 		}
-		else {		
-			turnOffLighting();
-			
-//			logger.info(this, 20_000, "Off1: solarIrradiance: " + Math.round(solarIrradiance * 100.0)/100.0
-//					+ " Required: " + Math.round(dailyPARRequired * 100.0)/100.0
-//					+ " dli: " + Math.round(dailyLightIntegral * 100.0)/100.0
-//					+ " effective: " + Math.round(effectivePAR * 100.0)/100.0
-//					+ " cumulative: " + Math.round(dailyPARCumulative * 100.0)/100.0); 
+		else {
+			// Set dailyLightIntegral to zero to disable the lighting
+			effectivePAR = calculateLamp(0, elapsed, solarIrradiance, sunInterval);
 		}
 
 		// check for the passing of each day
@@ -959,7 +963,9 @@ public class Crop implements Comparable<Crop>, Entity {
 			lightModifier = 1;
 		}
 
-		adjustEnvironmentFactor(lightModifier, LIGHT_FACTOR);
+		adjustEnvironmentFactor(lightModifier, LIGHT_INDEX);
+		
+		return effectivePAR;
 	}
 
 	/**
@@ -970,94 +976,109 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param solarIrradiance
 	 * @param dailyPARRequired
 	 * @param sunInterval the availability of sunlight in millisols
+	 * @param 
 	 */
-	private void calculateLamp(double dailyLightIntegral, double timeInterval, 
-			double solarIrradiance, double dailyPARRequired, double sunInterval) {
+	private double calculateLamp(double dailyLightIntegral, double timeInterval, 
+			double solarIrradiance, int sunInterval) {
 
-		// Calculate how much PAR needed for this interval of time for this crop
-		// mol / m^2 / day * msol / 1000  * m^2 * 1000 / msol
-		// mol needed = mol per day * (timeInterval / 1000) * growingArea * (1000 / sunInterval)
-		// Note: sunInterval always 'compresses' the time window for the crop to receive sunlight
-		double deltaPAROutstanding = dailyLightIntegral * timeInterval * growingArea  / sunInterval;
-
+		// A. Provided by the sun
+		//
+		// Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
 		
-		// On Earth, 1 W/m² ≈ 4.609 μmol/m²/s comes from the Plant Growth Chamber Handbook (chapter 1, radiation; 
-		// https://www.controlledenvironments.org/wp-content/uploads/sites/6/2017/06/Ch01.pdf)
-		// 1/4.609 > 0.2169668
+		// Calculate instantaneous PAR from solar irradiance
+		double uPAR = wattToPhotonConversionRatio * PAR_RANGE * solarIrradiance;
 		
-		// On Mars, 1 W/m² ≈ 4.568 μmol/m²/s
-		// 1/4.568 > 0.2189141856
+		// Calculates the sunlight received within this time interval
+		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
+		double sunlightPAR = uPAR / 1_000_000D * timeInterval * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 		
-		// Since only about 45% of the energy of solar radiation is actually in the 400 - 700 nm range, 
-		// the conversion of TOTAL solar radiation to PAR is ~2.0556, rather than 4.568.
-		// .45 * 4.568 = 2.0556
-		// 1/2.0556 > 0.4864759681
+		double deltaPARSupplied = 0;
 		
-		// Calculate the kW needed 
-		double deltakW = deltaPAROutstanding / conversionFactor / PAR_RANGE;
-		
-		// Future: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
-		// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
-		// much PAR a food crop can absorb per frame.
-		
-		// Note 1 : PHYSIOLOGICAL_LIMIT minimize too many lights turned on and off too
-		// frequently
-		
-		// Note 2 : It serves to smooth out the instantaneous power demand over a period
-		// of time
-		
-		// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
-		int numLamp = (int) (Math.ceil(deltakW / COMBINED_LAMP_FACTOR));
-		double supplykW = 0;
-	
-		if (numLamp > 0) {
-			// Future: should also allow the use of LED_KIT for lighting
-			// For converting lumens to PAR/PPF, see
-			// http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
-			// Note: do NOT include any losses below
-			supplykW = numLamp * COMBINED_LAMP_FACTOR;
-			// Turn on the lamps
-			turnOnLighting(supplykW);
+		if (dailyLightIntegral <= 0.4) {
 			
-			double deltaPARSupplied = supplykW * timeInterval * conversionFactor / growingArea; // in mol / m2
-			// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
-			// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
-			
-			// Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
-			// Calculate instantaneous PAR from solar irradiance
-			double uPAR = wattToPhotonConversionRatio * solarIrradiance;
-			// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
-			double intervalPAR = uPAR / 1_000_000D * timeInterval * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
-
-			// Gets the effectivePAR
-			effectivePAR = deltaPARSupplied + intervalPAR;
-						
-			dailyPARCumulative += effectivePAR;
-			// [mol /m^2 /d]
-			
-//			logger.info(this, 20_000, "solar: " + Math.round(solarIrradiance * 100.0)/100.0			
-//					+ " numLamp: " + numLamp
-//					+ " supplykW: " + Math.round(supplykW * 100.0)/100.0
-//					+ " deltakW: " + Math.round(deltakW * 100.0)/100.0
-//					+ " dli: " + Math.round(dailyLightIntegral * 100.0)/100.0
-//					+ " Outstanding: " + Math.round(deltaPAROutstanding * 100.0)/100.0
-//					+ " Supplied: " + Math.round(deltaPARSupplied * 100.0)/100.0
-//					+ " Required: " + Math.round(dailyPARRequired * 100.0)/100.0
-//					+ " effective: " + Math.round(effectivePAR * 100.0)/100.0
-//					+ " interval: " + Math.round(intervalPAR * 100.0)/100.0
-//					+ " cumulative: " + Math.round(dailyPARCumulative * 100.0)/100.0); 
-		}
-		else {
 			turnOffLighting();
-				
-			logger.info(this, 20_000, 
-					"Off0: solarIrradiance: " + Math.round(solarIrradiance * 100.0)/100.0
-					+ " Required: " + Math.round(dailyPARRequired * 100.0)/100.0
-					+ " deltakW: " + Math.round(deltakW * 100.0)/100.0
-					+ " dli: " + Math.round(dailyLightIntegral * 100.0)/100.0
-					+ " effective: " + Math.round(effectivePAR * 100.0)/100.0
-					+ " cumulative: " + Math.round(dailyPARCumulative * 100.0)/100.0); 
+		
 		}
+		else {	
+			// B. Provided by the lamps
+			//
+			// Calculate how much PAR needed for this interval of time for this crop
+			// mol / m^2 / day * msol / 1000  * m^2 * 1000 / msol
+			// mol needed = mol per day * (timeInterval / 1000) * growingArea * (1000 / sunInterval)
+			// Note: sunInterval always 'compresses' the time window for the crop to receive sunlight
+			double deltaPAROutstanding = dailyLightIntegral * timeInterval * growingArea  / sunInterval / 1000.0;
+
+			// On Earth, 1 W/m² ≈ 4.609 μmol/m²/s comes from the Plant Growth Chamber Handbook (chapter 1, radiation; 
+			// https://www.controlledenvironments.org/wp-content/uploads/sites/6/2017/06/Ch01.pdf)
+			// 1/4.609 > 0.2169668
+			
+			// On Mars, 1 W/m² ≈ 4.568 μmol/m²/s
+			// 1/4.568 > 0.2189141856
+			
+			// Since only about 45% of the energy of solar radiation is actually in the 400 - 700 nm range, 
+			// the conversion of TOTAL solar radiation to PAR is ~2.0556, rather than 4.568.
+			// .45 * 4.568 = 2.0556
+			// 1/2.0556 > 0.4864759681
+			
+			// Calculate the kW needed 
+			double deltakW = deltaPAROutstanding / conversionFactor / PAR_RANGE;
+			
+			// Future: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
+			// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
+			// much PAR a food crop can absorb per frame.
+			
+			// Note 1 : PHYSIOLOGICAL_LIMIT minimize too many lights turned on and off too
+			// frequently
+			
+			// Note 2 : It serves to smooth out the instantaneous power demand over a period
+			// of time
+			
+			// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
+			int numLamp = (int) (Math.ceil(deltakW / COMBINED_LAMP_FACTOR));
+			double supplykW = 0;
+		
+			if (numLamp > 0) {
+				// Future: should also allow the use of LED_KIT for lighting
+				// For converting lumens to PAR/PPF, see
+				// http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
+				// Note: do NOT include any losses below
+				supplykW = numLamp * COMBINED_LAMP_FACTOR;
+				// Turn on the lamps
+				turnOnLighting(supplykW);
+				
+				deltaPARSupplied = supplykW * timeInterval * conversionFactor; // in mol / m2
+				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
+				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
+				
+//				logger.info(this, 0, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
+//				+ "  Outstanding: " + Math.round(deltaPAROutstanding * 100.0)/100.0
+//				+ "  numLamp: " + numLamp
+//				+ "  growingArea: " + growingArea
+//				+ "  supplykW: " + Math.round(supplykW * 100.0)/100.0
+//				+ "  supplied: " + Math.round(deltaPARSupplied * 100.0)/100.0); 
+			}
+			else {
+				
+				turnOffLighting();
+			}
+		}
+	
+		
+		// Gets the effectivePAR
+		double effectivePAR = deltaPARSupplied + sunlightPAR;
+		
+		dailyPARCumulative += effectivePAR;
+		
+//		logger.info(this, 20_000, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
+//		+ "  time: " + Math.round(timeInterval * 100.0)/100.0
+//		+ "  uPAR: " + Math.round(uPAR * 100.0)/100.0
+//		+ "  sunlightPAR: " + Math.round(sunlightPAR * 100.0)/100.0
+//		+ "  dli: " + Math.round(dailyLightIntegral * 100.0)/100.0
+//		+ "  Required: " + Math.round(cropSpec.getDailyPAR() * 100.0)/100.0
+//		+ "  effective: " + Math.round(effectivePAR * 100.0)/100.0
+//		+ "  cumulative: " + Math.round(dailyPARCumulative * 100.0)/100.0); 
+		
+		return effectivePAR;
 	}
 
 	/**
@@ -1144,11 +1165,11 @@ public class Crop implements Comparable<Crop>, Entity {
 				retrieve(fertilizerUsed, ResourceUtil.FERTILIZER_ID);
 			}
 
-			adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_FACTOR);
+			adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_INDEX);
 
 		}
 
-		adjustEnvironmentFactor(waterModifier, WATER_FACTOR);
+		adjustEnvironmentFactor(waterModifier, WATER_INDEX);
 
 	}
 	
@@ -1165,7 +1186,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		double co2Modifier = 0;
 
 		// A. During the night when light level is low
-		if (watt < 40) {
+		if (watt < 0) {
 
 			double o2Required = compositeFactor * averageOxygenNeeded;
 			double o2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
@@ -1177,7 +1198,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				o2Used = o2Available;
 			o2Cache = retrieveGas(o2Used, o2Cache, ResourceUtil.OXYGEN_ID);
 
-			adjustEnvironmentFactor(o2Modifier, O2_FACTOR);
+			adjustEnvironmentFactor(o2Modifier, O2_INDEX);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
@@ -1204,7 +1225,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
 
-			adjustEnvironmentFactor(co2Modifier, CO2_FACTOR);
+			adjustEnvironmentFactor(co2Modifier, CO2_INDEX);
 
 			// 6CO2 + 6H2O + sunlight -> C6H12O6 + 6O2
 			//
@@ -1247,22 +1268,24 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		double time = pulse.getElapsed();
 		
+		double effectivePAR = 0;
+		
 		// Tune the growthFactor according to the stage of a crop
 		double growthFactor = percentageGrowth/100.0;
 
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		if (cropSpec.needsLight()) {
-			computeLight(pulse, solarIrradiance);
+			effectivePAR = computeLight(pulse, solarIrradiance);
 		}
 		else {
-			adjustEnvironmentFactor(1D, LIGHT_FACTOR);
+			adjustEnvironmentFactor(1D, LIGHT_INDEX);
 		}
 
 		// STEP 2 : COMPUTE THE EFFECTS OF THE TEMPERATURE
-		adjustEnvironmentFactor(temperatureModifier, TEMPERATURE_FACTOR);
+		adjustEnvironmentFactor(temperatureModifier, TEMPERATURE_INDEX);
 
 		// STEP 3 : COMPUTE THE NEED FACTOR AND COMPOSITE FACTOR (BASED ON LIGHT AND GROWTH FACTOR)
-		double watt = effectivePAR / time / conversionFactor * growingArea * 1000;
+		double watt = effectivePAR / time / conversionFactor * 1_000_000 * PAR_RANGE;
 		// Note: effectivePAR already includes both sunlight and artificial light
 
 		// Note: needFactor aims to give a better modeling of the amount of water
@@ -1275,7 +1298,11 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 
 		double compositeFactor = TUNING_FACTOR * needFactor * time / 1000.0;
-
+		
+//		logger.info(this, 20_000, "watt: " + Math.round(watt * 100.0)/100.0
+//				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
+//				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
+		
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
 		computeWaterFertilizer(compositeFactor * WATER_MODIFIER, time, greyFilterRate);
 
@@ -1289,17 +1316,17 @@ public class Crop implements Comparable<Crop>, Entity {
 		PhaseType phaseType = currentPhase.getPhaseType();
 		// Note that light is the dominant environmental factor
 		if (phaseType == PhaseType.GERMINATION) {
-			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[LIGHT_FACTOR];
+			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[LIGHT_INDEX];
 		}
 		else if ((phaseType != PhaseType.PLANTING) && (phaseType != PhaseType.INCUBATION)) {
-			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environmentalFactor[LIGHT_FACTOR];
+			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environmentalFactor[LIGHT_INDEX];
 		}
 
-		harvestModifier = .25 * harvestModifier + .15 * harvestModifier * environmentalFactor[FERTILIZER_FACTOR]
-						+ .15 * harvestModifier * environmentalFactor[TEMPERATURE_FACTOR]
-						+ .15 * harvestModifier * environmentalFactor[WATER_FACTOR]
-						+ .15 * harvestModifier * environmentalFactor[O2_FACTOR]
-						+ .15 * harvestModifier * environmentalFactor[CO2_FACTOR];
+		harvestModifier = .25 * harvestModifier + .15 * harvestModifier * environmentalFactor[FERTILIZER_INDEX]
+						+ .15 * harvestModifier * environmentalFactor[TEMPERATURE_INDEX]
+						+ .15 * harvestModifier * environmentalFactor[WATER_INDEX]
+						+ .15 * harvestModifier * environmentalFactor[O2_INDEX]
+						+ .15 * harvestModifier * environmentalFactor[CO2_INDEX];
 
 		// NOTE 1: Use a better theoretical model for crop growth,
 		//         instead of an empirical model
