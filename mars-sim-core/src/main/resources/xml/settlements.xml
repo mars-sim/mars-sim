@@ -300,7 +300,7 @@
 		<template name="Hub Base"/>
 		
 		<!-- 1 Sector Base 1 template -->	
-		<template name="Sector Base 1-US"/>
+		<template name="Sector Base 1-MS"/>
 				
 		<!-- 1 trading outpost template -->			
 		<template name="Trading Outpost"/>

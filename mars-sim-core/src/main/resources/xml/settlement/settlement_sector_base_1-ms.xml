@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1-US" default-population="100" description="Sector base 1 for NASA"
-		number-of-robots="100" sponsor="NASA">
+        name="Sector Base 1-MS" default-population="96" description="Sector base 1 for Mars Society"
+		number-of-robots="48" sponsor="NASA">
 
 	<!-- row 0: 000 to 099 -->
 	
@@ -90,7 +90,7 @@
         <connection-list>
             <connection id="009" hatch-facing="west" />
         </connection-list>
-    </building>
+    </!building>
  
     <building id="011" type="EVA Airlock" xloc="-67.5" yloc="-6.0" facing="270.0">
         <connection-list>
@@ -386,7 +386,7 @@
         <connection-list>
             <connection id="409" hatch-facing="west" />
         </connection-list>
-    </building>
+    </!building>
    
     <building id="411" type="EVA Airlock" xloc="-67.5" yloc="30.0" facing="90.0">
         <connection-list>
@@ -486,8 +486,6 @@
             <connection id="905" hatch-facing="west" />
         </connection-list>
     </building>
-    
-      
             
         
    <!-- Building Packages -->
@@ -502,16 +500,16 @@
 	<building-package name="Syngas Set 1 - 1x3"/>
 	<building-package name="Solar Thermal Set 1 - 1x9"/>
 	<building-package name="Solar Set 1 - 1x9"/>
-	<building-package name="Wind Set 1 - 1x6"/>
+	<building-package name="Wind Set 1 - 1x9"/>
 	<building-package name="Kilo Set 1 - 1x4"/>
 	<building-package name="MD1 Set 1 - 1x3"/>
 	<building-package name="MD4 Set 1 - 1x3"/>   	        
       
-    <vehicle type="Explorer Rover" number="4" />
-    <vehicle type="Long Range Explorer" number="4" />
+    <vehicle type="Explorer Rover" number="3" />
+    <vehicle type="Long Range Explorer" number="2" />
     <vehicle type="Transport Rover" number="2" />
-    <vehicle type="Cargo Rover" number="4" />
-    <vehicle type="Light Utility Vehicle" number="8" />
+    <vehicle type="Cargo Rover" number="2" />
+    <vehicle type="Light Utility Vehicle" number="6" />
     <vehicle type="Delivery Drone" number="3" />
     <vehicle type="Cargo Drone" number="3" />
      
