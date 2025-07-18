@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Hub Base" shift-pattern="Standard 4 Shift" 
-        default-population="48" number-of-robots="20" sponsor="MS"
+        default-population="48" number-of-robots="24" sponsor="MS"
         description="Base With Central Hub">
 
     <!-- HUBS : 0 to 100, 200, 300, 400 -->   
@@ -399,7 +399,7 @@
 	<equipment type="gas canister" number="240" />		
 	<equipment type="large bag" number="240" />
 	<equipment type="specimen box" number="240" />
-    <equipment type="thermal bottle" number="48" />	
+    <equipment type="thermal bottle" number="64" />	
  	<equipment type="wheelbarrow" number="48" />
 
     <!-- Bins -->

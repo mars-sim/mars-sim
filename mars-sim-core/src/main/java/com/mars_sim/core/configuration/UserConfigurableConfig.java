@@ -350,7 +350,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Get the known items in this config. Must load all entites as this class uses lazy loading
+	 * Get the known items in this config. Must load all entities as this class uses lazy loading
 	 */
 	public Collection<T> getKnownItems() {
 		Set<String> keys = new HashSet<>(knownItems.keySet());

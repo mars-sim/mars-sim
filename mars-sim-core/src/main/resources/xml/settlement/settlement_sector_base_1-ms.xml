@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Sector Base 1-MS" default-population="96" description="Sector base 1 for Mars Society"
-		number-of-robots="48" sponsor="NASA">
+		number-of-robots="48" sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
 	
@@ -13,8 +13,8 @@
             <!-- Connection to another building. "id" is other building's ID. -->
             <!-- X & Y locations are relative to this building, not in the settlement
                 locale. -->
-            <connection id="001" hatch-facing="west"  />
-            <connection id="002" hatch-facing="east"  />
+            <connection id="001" hatch-facing="west" />
+            <connection id="002" hatch-facing="east" />
         </connection-list>
     </building>
 
@@ -90,7 +90,7 @@
         <connection-list>
             <connection id="009" hatch-facing="west" />
         </connection-list>
-    </!building>
+    </building>
  
     <building id="011" type="EVA Airlock" xloc="-67.5" yloc="-6.0" facing="270.0">
         <connection-list>
@@ -386,7 +386,7 @@
         <connection-list>
             <connection id="409" hatch-facing="west" />
         </connection-list>
-    </!building>
+    </building>
    
     <building id="411" type="EVA Airlock" xloc="-67.5" yloc="30.0" facing="90.0">
         <connection-list>
@@ -518,16 +518,16 @@
     <robot name="Dewey Pro" type="GardenBot" model="Advanced"/>
     <robot name="Louie Pro" type="GardenBot" model="Advanced"/>
 
-    <equipment type="EVA Suit" number="60" />
+    <equipment type="EVA Suit" number="120" />
 
     <!-- Containers-->
-	<equipment type="barrel" number="360" />
-	<equipment type="bag" number="360" />
-	<equipment type="gas canister" number="360" />		
-	<equipment type="large bag" number="360" />
-	<equipment type="specimen box" number="360" />
-    <equipment type="thermal bottle" number="100" />	
- 	<equipment type="wheelbarrow" number="100" />
+	<equipment type="barrel" number="320" />
+	<equipment type="bag" number="320" />
+	<equipment type="gas canister" number="320" />		
+	<equipment type="large bag" number="320" />
+	<equipment type="specimen box" number="320" />
+    <equipment type="thermal bottle" number="108" />	
+ 	<equipment type="wheelbarrow" number="96" />
 
     <!-- Bins -->
 	<bin type="crate" number="40" />
@@ -535,9 +535,9 @@
 	<bin type="pot" number="40" />
 		
 	<!-- Life Support Resources -->
-	<resource type="food" amount="20000" />
-	<resource type="water" amount="40000" />
-	<resource type="oxygen" amount="60000" />
+	<resource type="food" amount="8000" />
+	<resource type="water" amount="9600" />
+	<resource type="oxygen" amount="9600" />
 
     <part type="biosensor" number="1" />
     <part-package name="package 2" number="1" />
