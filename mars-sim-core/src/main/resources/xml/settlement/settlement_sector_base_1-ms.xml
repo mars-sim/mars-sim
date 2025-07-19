@@ -13,20 +13,27 @@
             <!-- Connection to another building. "id" is other building's ID. -->
             <!-- X & Y locations are relative to this building, not in the settlement
                 locale. -->
-            <connection id="001" hatch-facing="west" />
+            <!-- connection id="001" hatch-facing="west" /-->
             <connection id="002" hatch-facing="east" />
         </connection-list>
     </building>
 
     <!-- EVA Airlock is attached to the lander hab -->
-    <building id="001" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
+    <!-- building id="001" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
         <connection-list>
             <connection id="000" hatch-facing="east" />
+        </connection-list>
+    </building  -->
+    
+    <building id="001" type="EVA Airlock" xloc="-7.5" yloc="-6.0" facing="270.0">
+        <connection-list>
+            <connection id="002" hatch-facing="south" />
         </connection-list>
     </building>
 
     <building id="002" type="life Core A" xloc="-7.5" yloc="0.0" facing="0.0">
         <connection-list>
+            <connection id="001" hatch-facing="south" />
             <connection id="000" hatch-facing="west" />
             <connection id="003" hatch-facing="east" />
             <connection id="102" hatch-facing="north" />
@@ -94,24 +101,24 @@
     
     <building id="009" type="life Core A" xloc="-73.5" yloc="0.0" facing="0.0">
         <connection-list>
-            <!--  connection id="011" hatch-facing="south" /  -->
+            <connection id="011" hatch-facing="south" />
             <connection id="008" hatch-facing="west" />
-            <!--  connection id="010" hatch-facing="east" /-->
+            <connection id="010" hatch-facing="east" />
             <connection id="109" hatch-facing="north" />
         </connection-list>
     </building>
     
-    <!-- building id="010" type="Loading Dock Garage" xloc="-79.5" yloc="0.0" facing="90.0">
+    <building id="010" type="Loading Dock Garage" xloc="-85.5" yloc="0.0" facing="90.0">
         <connection-list>
             <connection id="009" hatch-facing="west" />
         </connection-list>
-    </building>  -->
+    </building>
  
-    <!--  building id="011" type="EVA Airlock" xloc="-67.5" yloc="-6.0" facing="270.0">
+    <building id="011" type="EVA Airlock" xloc="-73.5" yloc="-6.0" facing="270.0">
         <connection-list>
             <connection id="009" hatch-facing="south" />
         </connection-list>
-    </building>  -->
+    </building>
    
     
     <!-- Row 1: 102 to 199 -->
@@ -195,16 +202,16 @@
     
     <!-- Row 2 : 202 to 299 --> 	
  
-    <building id="201" type="EVA Airlock" xloc="-1.5" yloc="12.0" facing="0.0">
+    <!-- building id="201" type="EVA Airlock" xloc="-1.5" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="202" hatch-facing="east" />
         </connection-list>
-    </building>    	
+    </building -->    	
     	
      <building id="202" type="life Core A" xloc="-7.5" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="102" hatch-facing="south" />
-            <connection id="201" hatch-facing="west" />
+            <!-- connection id="201" hatch-facing="west" /-->
             <connection id="203" hatch-facing="east" />
             <connection id="302" hatch-facing="north" />
         </connection-list>
@@ -362,8 +369,15 @@
     
   <!-- Row 4 : 402 to 499 -->
     	
+  	<building id="401" type="EVA Airlock" xloc="-7.5" yloc="30.0" facing="90.0">
+        <connection-list>
+            <connection id="402" hatch-facing="south" />
+        </connection-list>
+    </building>
+        	
      <building id="402" type="life Core A" xloc="-7.5" yloc="24.0" facing="0.0">
         <connection-list>
+          	<connection id="401" hatch-facing="north" />
             <connection id="302" hatch-facing="south" />
             <connection id="403" hatch-facing="east" />    
         </connection-list>
@@ -434,22 +448,22 @@
         <connection-list>
             <connection id="309" hatch-facing="south" />
            	<connection id="408" hatch-facing="west" />
-            <!--  connection id="410" hatch-facing="east" / -->
-            <!-- connection id="411" hatch-facing="north" /  -->
+            <connection id="410" hatch-facing="east" />
+            <connection id="411" hatch-facing="north" />
         </connection-list>
     </building>
     
-    <!--building id="410" type="Loading Dock Garage" xloc="-79.5" yloc="24.0" facing="90.0">
+    <building id="410" type="Loading Dock Garage" xloc="-85.5" yloc="24.0" facing="90.0">
         <connection-list>
             <connection id="409" hatch-facing="west" />
         </connection-list>
-    </building   -->
+    </building>
    
-    <!-- building id="411" type="EVA Airlock" xloc="-67.5" yloc="30.0" facing="90.0">
+    <building id="411" type="EVA Airlock" xloc="-73.5" yloc="30.0" facing="90.0">
         <connection-list>
             <connection id="409" hatch-facing="south" />
         </connection-list>
-    </ building -->
+    </building>
    
     
    <!-- Row 5 : 504n5 to 599 -->
