@@ -202,7 +202,7 @@
 		<agenda name="Mineral Prospecting"
 				objective="Prospect mineral deposits and evaluate mineral compositions"
 				findings="Document the process and history of climate on Mars"
-				data="Analyze the wealth of mineral contents from the colleted soil data">
+				data="Analyze the wealth of mineral contents from the collected soil data">
 			<capability description="Analyze various signatures of minerals">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
