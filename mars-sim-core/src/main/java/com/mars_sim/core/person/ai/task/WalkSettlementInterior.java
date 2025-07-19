@@ -1,7 +1,7 @@
 /*
 `* Mars Simulation Project
  * WalkSettlementInterior.java
- * @date 2023-09-06
+ * @date 2025-07-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -26,6 +26,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A subtask for walking between two interior locations in a settlement. (Ex:
@@ -50,6 +51,7 @@ public class WalkSettlementInterior extends Task {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
+	public static final int NUM_ITERATION = 3;
 	private static final double VERY_SMALL_DISTANCE = .01D;
 	private static final double STRESS_MODIFIER = -.2D;
 //	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
@@ -105,14 +107,36 @@ public class WalkSettlementInterior extends Task {
 		}
 
 		try {
+			
+			// Note: use Breadth-First Search (BFS) or Dijkstra's algorithm to find shortest path
+			
+			// The choice depends on whether the graph is unweighted or weighted, respectively.
+			
+			// BFS is suitable for unweighted graphs and guarantees the shortest path in terms of 
+			// the number of edges.
+			
+			// Dijkstra’s algorithm is used for weighted graphs with non-negative weights, 
+			// ensuring the path with the minimum total weight is found.
+			
+			// Both algorithms maintain a parent map to reconstruct the path from the source to 
+			// the destination. 
+			
+			// The key difference lies in the data structure used: BFS uses a FIFO queue, 
+			// while Dijkstra uses a priority queue to prioritize nodes with the smallest distance.
+			
 			// Determine the walking path to the destination.
-			if (settlement != null)
-				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-					person.getPosition(), destinationBuilding, destPosition);
-	
+			if (settlement != null) {
+				
+				int iteration = RandomUtil.getRandomInt(2, NUM_ITERATION + 2);
+			
+				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(
+						iteration, startBuilding,
+						person.getPosition(), destinationBuilding, destPosition);
+			}
+			
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, 60_000L, "No walkable path from "
+				logger.warning(person, 30_000L, "No walkable path from "
 						+ person.getPosition() + " in "
 						+ startBuilding.getName() + " to "
 						+ destPosition + " in "
@@ -126,7 +150,7 @@ public class WalkSettlementInterior extends Task {
 			setPhase(WALKING);
 		
 		} catch (Exception ex) {
-			logger.severe(person, 60_000L, "Unable to walk. No valid interior path.", ex);
+			logger.severe(person, 30_000L, "Unable to walk. No valid interior path.", ex);
 			person.getMind().getTaskManager().clearAllTasks("No valid interior path");
 		}
 	}
@@ -172,13 +196,18 @@ public class WalkSettlementInterior extends Task {
 		
 		try {
 			// Determine the walking path to the destination.
-			if (settlement != null)
-				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
+			if (settlement != null) {
+				
+				int iteration = RandomUtil.getRandomInt(2, NUM_ITERATION + 2);
+				
+				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(
+						iteration, startBuilding,
 						robot.getPosition(), destinationBuilding, destPosition);
-	
+			}
+				
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(robot, 60_000L, "No walkable path from "
+				logger.warning(robot, 30_000L, "No walkable path from "
 						+ robot.getPosition() + " in "
 						+ startBuilding.getName() + " to "
 						+ destPosition + " in "
@@ -192,7 +221,7 @@ public class WalkSettlementInterior extends Task {
 			setPhase(WALKING);
 			
 		} catch (Exception ex) {
-			logger.severe(robot, 60_000L, "Unable to walk. No valid interior path.", ex);
+			logger.severe(robot, 30_000L, "Unable to walk. No valid interior path.", ex);
 			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path");
 		}			
 	}

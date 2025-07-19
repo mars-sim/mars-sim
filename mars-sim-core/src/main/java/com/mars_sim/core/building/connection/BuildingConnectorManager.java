@@ -24,7 +24,9 @@ import com.mars_sim.core.building.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.ai.task.WalkSettlementInterior;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class manages all building connectors at a settlement.
@@ -36,6 +38,8 @@ public class BuildingConnectorManager implements Serializable {
 
 	private static final SimLogger logger = SimLogger.getLogger(BuildingConnectorManager.class.getName());
 
+	private static final int NUM_ITERATION = WalkSettlementInterior.NUM_ITERATION;
+	
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
@@ -492,7 +496,9 @@ public class BuildingConnectorManager implements Serializable {
 			throw new IllegalArgumentException("Building arguments cannot be null");
 		}
 
-		InsideBuildingPath validPath = determineShortestPath(building1, building1.getPosition(),
+		int iteration = RandomUtil.getRandomInt(2, NUM_ITERATION + 2);
+		
+		InsideBuildingPath validPath = determineShortestPath(iteration, building1, building1.getPosition(),
 															building2, building2.getPosition());
 
 		if (validPath != null) {
@@ -508,13 +514,14 @@ public class BuildingConnectorManager implements Serializable {
 	/**
 	 * Determines the shortest building path between two locations in buildings.
 	 * 
+	 * @param iteration
 	 * @param startBuilding     the first building.
 	 * @param startPositionc the starting position in the first building.
 	 * @param endBuilding     the second building.
 	 * @param endPosition the ending position in the second building.
 	 * @return shortest path or null if no path found.
 	 */
-	public InsideBuildingPath determineShortestPath(Building startBuilding, LocalPosition startPosition,
+	public InsideBuildingPath determineShortestPath(int iteration, Building startBuilding, LocalPosition startPosition,
 			Building endBuilding, LocalPosition endPosition) {
 
 		BuildingLocation start = new BuildingLocation(startBuilding, startPosition);
@@ -526,7 +533,20 @@ public class BuildingConnectorManager implements Serializable {
 		InsideBuildingPath finalPath = null;
 		if (!startBuilding.equals(endBuilding)) {
 			// Check shortest path to target building from this building.
-			finalPath = determineShortestPath(startingPath, startBuilding, endBuilding, end);
+			finalPath = determineShortestPath(iteration, startingPath, startBuilding, endBuilding, end);
+			
+			iteration -= iteration;
+			// This limits the recursive call to a certain number and force it to pick one
+			if (iteration <= 0) {
+				// Iterate path index.
+				if (finalPath != null) {
+					finalPath.iteratePathLocation();
+					return finalPath;
+				}
+				else
+					return startingPath;
+			}
+		
 		} else {
 			finalPath = startingPath;
 			finalPath.addPathLocation(end);
@@ -543,13 +563,14 @@ public class BuildingConnectorManager implements Serializable {
 	/**
 	 * Recursive method to determine the shortest path between two buildings.
 	 * 
+	 * @param iteration
 	 * @param existingPath    the current path.
 	 * @param currentBuilding the current building.
 	 * @param targetBuilding  the target building.
 	 * @param endingLocation  the end building location.
 	 * @return shortest path or null if none found.
 	 */
-	private InsideBuildingPath determineShortestPath(InsideBuildingPath existingPath, Building currentBuilding,
+	private InsideBuildingPath determineShortestPath(int iteration, InsideBuildingPath existingPath, Building currentBuilding,
 			Building targetBuilding, BuildingLocation endingLocation) {
 
 		InsideBuildingPath result = null;
@@ -610,7 +631,19 @@ public class BuildingConnectorManager implements Serializable {
 
 				// Recursively call this method with new path and connection building.
 				// Note: how to avoid StackOverflow ?
-				bestPath = determineShortestPath(newPath, connectionBuilding, targetBuilding, endingLocation);
+				bestPath = determineShortestPath(iteration, newPath, connectionBuilding, targetBuilding, endingLocation);
+				
+				// This limits the recursive call to a certain number and force it to pick one
+				iteration -= iteration;
+				if (iteration <= 0) {
+					if (bestPath != null) {
+						if ((result == null) || (bestPath.getPathLength() < result.getPathLength())) {
+							return bestPath;
+						}
+						else
+							return newPath;
+					}
+				}
 			}
 
 			if (bestPath != null) {

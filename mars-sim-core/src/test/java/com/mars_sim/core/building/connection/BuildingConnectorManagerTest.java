@@ -15,6 +15,7 @@ import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.ai.task.WalkSettlementInterior;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
@@ -40,7 +41,7 @@ public class BuildingConnectorManagerTest extends TestCase {
     public void testConstructorNoBuildingTemplates() {        
         Settlement settlement = new MockSettlement();
 
-        List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>(0);
+        List<BuildingTemplate> buildingTemplates = new ArrayList<>(0);
 
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
         assertNotNull(manager);
@@ -158,7 +159,7 @@ public class BuildingConnectorManagerTest extends TestCase {
 
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
 
-        InsideBuildingPath path1 = manager.determineShortestPath(building0, new LocalPosition(0D, 0D),
+        InsideBuildingPath path1 = manager.determineShortestPath(WalkSettlementInterior.NUM_ITERATION, building0, new LocalPosition(0D, 0D),
         														 building0, new LocalPosition(4.5D, 0D));
         assertNotNull(path1);
         assertEquals(4.5D, path1.getPathLength(), SMALL_DELTA);
@@ -169,7 +170,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertEquals(0D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertTrue(path1.isEndOfPath());
 
-        InsideBuildingPath path2 = manager.determineShortestPath(building0, new LocalPosition(2D, -1D),
+        InsideBuildingPath path2 = manager.determineShortestPath(WalkSettlementInterior.NUM_ITERATION, building0, new LocalPosition(2D, -1D),
         														building2, new LocalPosition(-5D, 1D));
 
         // 2016-12-09 To pass maven test, change the code in getBuilding(int id) in BuildingManager to the non-java stream version
@@ -189,7 +190,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertEquals(1D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertTrue(path2.isEndOfPath());
 
-        InsideBuildingPath path3 = manager.determineShortestPath(building0, new LocalPosition(2D, -1D),
+        InsideBuildingPath path3 = manager.determineShortestPath(WalkSettlementInterior.NUM_ITERATION, building0, new LocalPosition(2D, -1D),
         														 building1, new LocalPosition(-10D, 1D));
         assertNotNull(path3);
         assertEquals(12.269055622550205D, path3.getPathLength(), SMALL_DELTA);

@@ -1362,7 +1362,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 		else {
 			if (!allowFail) {
-				logger.log(worker, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject + ".");
+				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
 				// Does it still need to call endTask() ?
 				endTask();
 			} else {

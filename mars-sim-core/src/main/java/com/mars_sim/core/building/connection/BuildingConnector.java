@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingConnector.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-07-18
  * @author Scott Davis
  */
 package com.mars_sim.core.building.connection;
@@ -64,6 +64,7 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
 
     /**
      * Gets the first connected building.
+     * 
      * @return building.
      */
     public Building getBuilding1() {
@@ -72,6 +73,7 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
 
     /**
      * Gets the second connected building.
+     * 
      * @return building.
      */
     public Building getBuilding2() {
@@ -79,7 +81,8 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     }
 
     /**
-     * The hatch connecting the first building.
+     * Gets the hatch connecting the first building.
+     * 
      * @return hatch.
      */
     public Hatch getHatch1() {
@@ -87,7 +90,8 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     }
 
     /**
-     * The hatch connecting the second building.
+     * Gets the hatch connecting the second building.
+     * 
      * @return hatch.
      */
     public Hatch getHatch2() {
@@ -96,6 +100,7 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
 
     /**
      * Checks if the two hatches are not at the same location for the connection.
+     * 
      * @return true if hatches are split.
      */
     public boolean isSplitConnection() {
@@ -144,7 +149,7 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
 	}
 	
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         building1 = null;

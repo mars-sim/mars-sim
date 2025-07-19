@@ -854,12 +854,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>		
 			<life-support capacity="6" power-required="0.3">
 				<activity>
-					<activity-spot xloc=".75" yloc="-2.5" />
-					<activity-spot xloc=".75" yloc="-1.5" />
-					<activity-spot xloc=".75" yloc="-0.5" />
-					<activity-spot xloc="-.75" yloc="0.5" />
-					<activity-spot xloc="-.75" yloc="1.5" />
-					<activity-spot xloc="-.75" yloc="2.5" />
+					<activity-spot xloc=".75" yloc="-2.35" />
+					<activity-spot xloc=".75" yloc="-1.35" />
+					<activity-spot xloc=".75" yloc="-0.35" />
+					<activity-spot xloc="-.75" yloc="0.35" />
+					<activity-spot xloc="-.75" yloc="1.35" />
+					<activity-spot xloc="-.75" yloc="2.35" />
 				</activity>
 			</life-support>
 			
@@ -899,6 +899,61 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 	<!-- end of Half Core A -->
+
+	<building type="Half Core B" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
+		<description> Half Core A is an utility hallway.
+		</description>
+		<power-required base-power="0.5" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="6" power-required="0.3">
+				<activity>
+					<activity-spot xloc=".75" yloc="-2.35" />
+					<activity-spot xloc=".75" yloc="-1.35" />
+					<activity-spot xloc=".75" yloc="-0.35" />
+					<activity-spot xloc="-.75" yloc="0.35" />
+					<activity-spot xloc="-.75" yloc="1.35" />
+					<activity-spot xloc="-.75" yloc="2.35" />
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			
+			<power-storage capacity="5" discharge-rate="1.5"/>
+	
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="-1.25" yloc="0.0" />
+					<activity-spot xloc="1.25" yloc="0.0" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="7000">
+				<resource-capacity type="water" amount="2000.0" />
+				<resource-capacity type="oxygen" amount="2000.0" />
+				<resource-capacity type="methane" amount="2000.0" />
+				
+				<resource-capacity type="grey water" amount="400.0" />				
+
+				<resource-capacity type="compost" amount="200.0" />
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="2.5" />
+				<heat-source type="Electric Heating" capacity="7.5" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="10.0" />
+			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor"/>
+				<process-engine name="Black Water Processor"/>
+			</waste-processing>				
+			
+		</functions>
+	</building>
+	<!-- end of Half Core B -->
 
 		
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
