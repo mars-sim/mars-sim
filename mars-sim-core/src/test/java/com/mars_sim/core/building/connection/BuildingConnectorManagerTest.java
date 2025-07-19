@@ -116,16 +116,10 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertNotNull(connections7);
         assertEquals(2, connections7.size());
 
-        BuildingConnector[] origConnections = new BuildingConnector[2];
-        connections.toArray(origConnections);
+        manager.removeAllConnectionsToBuilding(buildings.get(1));
+        assertTrue("Nothing to building 1", manager.getConnectionsToBuilding(buildings.get(1)).isEmpty());
+        assertEquals("Building 2 reduced", 1, manager.getConnectionsToBuilding(buildings.get(2)).size());
 
-        manager.removeBuildingConnection(origConnections[0]);
-
-        assertEquals(1, manager.getAllBuildingConnections().size());
-
-        manager.removeBuildingConnection(origConnections[1]);
-
-        assertEquals(0, manager.getAllBuildingConnections().size());
     }
 
     public void testShortestPathAdjacent() {

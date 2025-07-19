@@ -15,12 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingTemplate;
-import com.mars_sim.core.building.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -39,22 +39,15 @@ public class BuildingConnectorManager implements Serializable {
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
+	/**
+	 * Inner class for representing a partial building connector.
+	 */
+	private static record PartialBuildingConnector(Building building, LocalPosition pos, double facing,
+				Building connectToBuilding) {}
+
 	/** Enum representing the four different sides of a building. */
 	private enum BuildingSide {
-
-		FRONT("front"), BACK("back"), LEFT("left"), RIGHT("right");
-
-		private String name;
-
-		/** hidden constructor. */
-		private BuildingSide(String name) {
-			this.name = name;
-		}
-
-		@Override
-		public String toString() {
-			return this.name;
-		}
+		FRONT, BACK, LEFT, RIGHT
 	}
 
 	// Data members.
@@ -93,272 +86,227 @@ public class BuildingConnectorManager implements Serializable {
 
 		// Create partial building connector list from building connection templates.
 		List<PartialBuildingConnector> partialBuildingConnectorList = new ArrayList<>();
-		Iterator<BuildingTemplate> i = buildingTemplates.iterator();
-		while (i.hasNext()) {
-			BuildingTemplate buildingTemplate = i.next();
-			String buildingID = buildingTemplate.getID();
-			Building building = buildingManager.getBuildingByTemplateID(buildingID);
-			if (building == null) {
-				throw new IllegalStateException(
-						"On buildingTemplate " + buildingTemplate
-						+ "    buildingID " + buildingID 
-						+ " does not exist in settlement " + settlement.getName());
-			}
-
-			Iterator<BuildingConnectionTemplate> j = buildingTemplate.getBuildingConnectionTemplates().iterator();
-			while (j.hasNext()) {
-				BuildingConnectionTemplate connectionTemplate = j.next();
-				String connectionID = connectionTemplate.getID();
-				Building connectionBuilding = buildingManager.getBuildingByTemplateID(connectionID);
-				if (connectionBuilding == null) {
-					throw new IllegalStateException(
-							"On buildingTemplate " + buildingTemplate
-							+ "    buildingID " + buildingID 
-							+ "    connectionID " + connectionID 
-							+ " does not exist in settlement " + settlement.getName());
-				}
-
-				double connectionFacing = 0;		
-				double connectionXLoc = 0;
-				double connectionYLoc = 0;
-						
-				String hatchFace = connectionTemplate.getHatchFace();
-						
-				if (hatchFace != null) {
-					
-					int bFacing = (int)building.getFacing();	
-//					if (bFacing != 0) throw new IllegalStateException(
-//								"On buildingTemplate " + buildingTemplate + "  buildingID: " + buildingID + "  connectionID: " + connectionID 
-//								+ ", to use hatch-facing attribute, the building face must be zero in settlement " + settlement.getName());
-					
-					if (bFacing < 0D) {
-						bFacing += 360;
-					}
-	
-					if (bFacing > 360) {
-						bFacing -= 360;
-					}
-					
-					double halfL = building.getLength() / 2;
-					double halfW = building.getWidth() / 2;
-					
-					if (bFacing == 0) {
-						if (hatchFace.equalsIgnoreCase("north")) {
-							// verified as good
-							connectionFacing = 0;
-							connectionXLoc = 0;
-							// building face is 0, going north is +ve length 
-							connectionYLoc = halfL;
-						}
-						else if (hatchFace.equalsIgnoreCase("east")) {
-							// verified as good
-							connectionFacing = 90;
-							// building face is 0, going east is -ve wdith
-							connectionXLoc = - halfW;
-							connectionYLoc = 0;
-						}
-						else if (hatchFace.equalsIgnoreCase("south")) {
-							// verified as good
-							connectionFacing = 0;
-							connectionXLoc = 0;
-							// building face is 0, going south is -ve length
-							connectionYLoc = - halfL;
-						}
-						else if (hatchFace.equalsIgnoreCase("west")) {
-							// verified as good
-							connectionFacing = 90;
-							// building face is 0, going west is +ve width
-							connectionXLoc = halfW;
-							connectionYLoc = 0;
-						}
-					}
-					else if (bFacing == 180) {
-						if (hatchFace.equalsIgnoreCase("north")) {
-							// verified as good
-							connectionFacing = 0;
-							connectionXLoc = 0;
-							// building face is 180, going north is -ve length
-							connectionYLoc = - halfL;
-						}
-						else if (hatchFace.equalsIgnoreCase("east")) {
-							// verified as good
-							connectionFacing = 90;
-							// building face is 180, going east is +ve width
-							connectionXLoc = halfW;
-							connectionYLoc = 0;
-						}
-						else if (hatchFace.equalsIgnoreCase("south")) {
-							connectionFacing = 0;
-							connectionXLoc = 0;
-							// building face is 180, going south is +ve length
-							connectionYLoc = halfL;
-						}
-						else if (hatchFace.equalsIgnoreCase("west")) {
-							// verified as good
-							connectionFacing = 90;
-							// building face is 180, going west is -ve width
-							connectionXLoc = - halfW;
-							connectionYLoc = 0;
-						}
-					}
-					else if (bFacing == 90) {
-						if (hatchFace.equalsIgnoreCase("north")) {
-							// verified as good
-							connectionFacing = 0;
-							// building face is 90, going north is +ve width
-							connectionXLoc = halfW;
-							connectionYLoc = 0;
-						}
-						else if (hatchFace.equalsIgnoreCase("east")) {
-							// verified as good
-							connectionFacing = 90;
-							connectionXLoc = 0;
-							// building face is 90, going east is +ve length 
-							connectionYLoc = halfL;
-						}
-						else if (hatchFace.equalsIgnoreCase("south")) {
-							// verified as good
-							connectionFacing = 0;
-							// building face is 90, going south is -ve width
-							connectionXLoc = - halfW;
-							connectionYLoc = 0;
-						}
-						else if (hatchFace.equalsIgnoreCase("west")) {
-							// verified as good
-							connectionFacing = 90; // both 90 or 270 are fine
-							connectionXLoc = 0;
-							// building face is 90, going west is -ve length
-							connectionYLoc = - halfL;
-						}
-					}
-					else if (bFacing == 270) {
-						if (hatchFace.equalsIgnoreCase("north")) {
-							// verified as good
-							connectionFacing = 0;
-							// building face is 270, going north is -ve width
-							connectionXLoc = - halfW;
-							connectionYLoc = 0;
-						}
-						else if (hatchFace.equalsIgnoreCase("east")) {
-							// verified as good 
-							connectionFacing = 90;
-							// building face is 270, going west is -ve length
-							connectionXLoc = 0;
-							connectionYLoc = - halfL;
-						}
-						else if (hatchFace.equalsIgnoreCase("south")) {
-							// verified as good
-							connectionFacing = 0;
-							// building face is 270, going south is -ve width
-							connectionXLoc = - halfW;
-							connectionYLoc = 0;
-						}
-						else if (hatchFace.equalsIgnoreCase("west")) {
-							// verified as good
-							connectionFacing = 90; // both 90 or 270 are fine
-							connectionXLoc = 0;
-							// building face is 270, going west is +ve length
-							connectionYLoc = halfL;
-						}
-					}
-					connectionTemplate.setPosition(connectionXLoc, connectionYLoc);
-				}
-				
-				else {
-						
-					connectionXLoc = connectionTemplate.getPosition().getX();
-					connectionYLoc = connectionTemplate.getPosition().getY();
-
-					if (connectionXLoc == (building.getWidth() / 2D)) {
-						connectionFacing = building.getFacing() - 90D;
-					} else if (connectionXLoc == (building.getWidth() / -2D)) {
-						connectionFacing = building.getFacing() + 90D;
-					} else if (connectionYLoc == (building.getLength() / 2D)) {
-						connectionFacing = building.getFacing();
-					} else if (connectionYLoc == (building.getLength() / -2D)) {
-						connectionFacing = building.getFacing() + 180D;
-					}
-	
-					if (connectionFacing < 0D) {
-						connectionFacing += 360D;
-					}
-	
-					if (connectionFacing > 360D) {
-						connectionFacing -= 360D;
-					}
-				}
-				
-				LocalPosition connectionSettlementLoc = LocalAreaUtil.convert2SettlementPos(connectionTemplate.getPosition(), building);
-				
-				PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
-						connectionSettlementLoc, connectionFacing, connectionBuilding);
-				partialBuildingConnectorList.add(partialConnector);
-			}
+		for(var bt : buildingTemplates) {
+			partialBuildingConnectorList.addAll(processBuildTemplate(bt, buildingManager));
 		}
 
 		// Match up partial connectors to create building connectors.
 		while (!partialBuildingConnectorList.isEmpty()) {
-			PartialBuildingConnector partialConnector = partialBuildingConnectorList.get(0);
-			LocalPosition partialConnectorLoc = partialConnector.pos;
-			List<PartialBuildingConnector> validPartialConnectors = new ArrayList<>();
-			
-			for (int x = 1; x < partialBuildingConnectorList.size(); x++) {
-				PartialBuildingConnector potentialConnector = partialBuildingConnectorList.get(x);
-				if (potentialConnector.building.equals(partialConnector.connectToBuilding)
-						&& (potentialConnector.connectToBuilding.equals(partialConnector.building))) {
-					validPartialConnectors.add(potentialConnector);
-				}
-			}
+			PartialBuildingConnector partialConnector = partialBuildingConnectorList.remove(0);
+			PartialBuildingConnector foundMatch = findConnectorMatch(partialConnector, partialBuildingConnectorList);
 
-			if (!validPartialConnectors.isEmpty()) {
-				PartialBuildingConnector bestFitConnector = null;
-				double closestDistance = Double.MAX_VALUE;
-				Iterator<PartialBuildingConnector> j = validPartialConnectors.iterator();
-				while (j.hasNext()) {
-					PartialBuildingConnector validConnector = j.next();
-					double distance = partialConnectorLoc.getDistanceTo(validConnector.pos);
-					if (distance < closestDistance) {
-						bestFitConnector = validConnector;
-						closestDistance = distance;
-					}
-				}
-
-				if (bestFitConnector != null) {
-
+			if (foundMatch != null) {
 					BuildingConnector buildingConnector = new BuildingConnector(partialConnector.building,
 							partialConnector.pos, partialConnector.facing,
-							bestFitConnector.building, bestFitConnector.pos, 
-							bestFitConnector.facing);
+							foundMatch.building, foundMatch.pos, 
+							foundMatch.facing);
 					addBuildingConnection(buildingConnector);
-					partialBuildingConnectorList.remove(partialConnector);
-					partialBuildingConnectorList.remove(bestFitConnector);
-				} 
-				
-				else {
-					throw new IllegalStateException("bestFitConnector is null. Unable to find building connection for "
-							+ partialConnector.building.getName() 
-							+ " [templateID: " + partialConnector.building.getTemplateID()
-							+ "  buildingID: " + partialConnector.building.getName()
-							+ "] in " + settlement.getName() + ". ");
-				}
-			}
-			
+					partialBuildingConnectorList.remove(foundMatch);
+			} 
 			else {
-				// if (validPartialConnectors.size() is not > 0
 				throw new IllegalStateException(
 						settlement.getName() + " - Missing/Invalid PartialBuildingConnector(s). "
 						+ partialConnector.building.getName()
-						+ " [templateID: " + ((Building)partialConnector.building).getTemplateID() 
+						+ " [templateID: " + partialConnector.building.getTemplateID() 
 						+ "  building name: " + partialConnector.building.getName()
 						+ "  pos: " + partialConnector.pos
 						+ "  facing: " + partialConnector.facing
 						+ "  connectToBuilding: " + partialConnector.connectToBuilding
-						+ "]  partialConnectorLoc: " + partialConnectorLoc
+						+ "]  partialConnectorLoc: " + partialConnector.pos
 						+ "  List size: " + partialBuildingConnectorList.size()
-						+ "  validPartialConnectors: " + validPartialConnectors.size()
 						 + ".");
 			}
 		}
+	}
+
+	/**
+	 * Find the best match for a partial connector in the pool of unmatched connectors
+	 * @param seed
+	 * @param unmatched
+	 * @return
+	 */
+	private PartialBuildingConnector findConnectorMatch(PartialBuildingConnector seed,
+						List<PartialBuildingConnector> unmatched) {
+
+		LocalPosition partialConnectorLoc = seed.pos;
+
+		// Fitler current unmatched connectors to find those that match the seed
+		List<PartialBuildingConnector> validPartialConnectors = unmatched.stream()
+				.filter(pc -> pc.building.equals(seed.connectToBuilding)
+						&& pc.connectToBuilding.equals(seed.building))
+				.toList();
+
+		// Out of valid connector choose the nearest
+		PartialBuildingConnector bestFitConnector = null;
+		if (!validPartialConnectors.isEmpty()) {
+			double closestDistance = Double.MAX_VALUE;
+			for(PartialBuildingConnector validConnector : validPartialConnectors) {
+				double distance = partialConnectorLoc.getDistanceTo(validConnector.pos);
+				if (distance < closestDistance) {
+					bestFitConnector = validConnector;
+					closestDistance = distance;
+				}
+			}
+		}
+		return bestFitConnector;
+	}
+
+	/**
+	 * This processes a building template and creates a set of partial building connectors
+	 * in the correct relative position and reference the correct other Building
+	 * @param buildingTemplate
+	 * @param buildingManager
+	 * @return
+	 */
+	private Set<PartialBuildingConnector> processBuildTemplate(BuildingTemplate buildingTemplate,
+			BuildingManager buildingManager) {
+		Set<PartialBuildingConnector> partialBuildingConnectorList = new HashSet<>();
+
+		String buildingID = buildingTemplate.getID();
+		Building building = buildingManager.getBuildingByTemplateID(buildingID);
+		if (building == null) {
+			throw new IllegalStateException(
+					"On buildingTemplate " + buildingTemplate.getBuildingName()
+					+ "    buildingID " + buildingID 
+					+ " does not exist in settlement " + settlement.getName());
+		}
+		double halfL = building.getLength() / 2;
+		double halfW = building.getWidth() / 2;
+				
+		double bFacing = alignFacing(building.getFacing());	
+
+		for(var connectionTemplate : buildingTemplate.getBuildingConnectionTemplates()) {
+			Building connectionBuilding = buildingManager.getBuildingByTemplateID(connectionTemplate.getID());
+			if (connectionBuilding == null) {
+				throw new IllegalStateException(
+						"On buildingTemplate " + buildingTemplate
+						+ "    buildingID " + buildingID 
+						+ "    connectionID " + connectionTemplate.getID() 
+						+ " does not exist in settlement " + settlement.getName());
+			}
+
+			double connectionFacing = 0;		
+			LocalPosition connectionPosn = null;
+					
+			String hatchFace = connectionTemplate.getHatchFace();
+			if (hatchFace != null) {
+				if (bFacing == 0) {
+					if (hatchFace.equalsIgnoreCase("north")) {
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(0, halfL);
+					}
+					else if (hatchFace.equalsIgnoreCase("east")) {
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(-halfW, 0);
+					}
+					else if (hatchFace.equalsIgnoreCase("south")) {
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(0, -halfL);
+					}
+					else if (hatchFace.equalsIgnoreCase("west")) {
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(halfW, 0);
+					}
+				}
+				else if (bFacing == 90) {
+					if (hatchFace.equalsIgnoreCase("north")) {
+						// verified as good
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(halfW, 0);
+					}
+					else if (hatchFace.equalsIgnoreCase("east")) {
+						// verified as good
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(0, halfL);
+					}
+					else if (hatchFace.equalsIgnoreCase("south")) {
+						// verified as good
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(-halfW, 0);
+					}
+					else if (hatchFace.equalsIgnoreCase("west")) {
+						// verified as good
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(0, -halfL);
+					}
+				}
+				else if (bFacing == 180) {
+					if (hatchFace.equalsIgnoreCase("north")) {
+						// verified as 
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(0, -halfL);
+					}
+					else if (hatchFace.equalsIgnoreCase("east")) {
+						// verified as good
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(halfW, 0);
+					}
+					else if (hatchFace.equalsIgnoreCase("south")) {
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(0, halfL);
+					}
+					else if (hatchFace.equalsIgnoreCase("west")) {
+						// verified as good
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(-halfW, 0);
+					}
+				}
+				else if (bFacing == 270) {
+					if (hatchFace.equalsIgnoreCase("north")) {
+						// verified as good
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(-halfW, 0);
+					}
+					else if (hatchFace.equalsIgnoreCase("east")) {
+						// verified as good 
+						connectionFacing = 90;
+						connectionPosn = new LocalPosition(0, -halfL);
+					}
+					else if (hatchFace.equalsIgnoreCase("south")) {
+						// verified as good
+						connectionFacing = 0;
+						connectionPosn = new LocalPosition(halfW, 0);
+					}
+					else if (hatchFace.equalsIgnoreCase("west")) {
+						// verified as good
+						connectionFacing = 90; // both 90 or 270 are fine
+						connectionPosn = new LocalPosition(0, halfL);
+					}
+				}
+			}
+			else {		
+				connectionPosn = connectionTemplate.getPosition();
+				if (connectionPosn.getX() == halfW) {
+					connectionFacing = bFacing - 90D;
+				} else if (connectionPosn.getX()  == -halfW) {
+					connectionFacing = bFacing + 90D;
+				} else if (connectionPosn.getY()  == halfL) {
+					connectionFacing = bFacing;
+				} else if (connectionPosn.getY()  == -halfL) {
+					connectionFacing = bFacing + 180D;
+				}
+
+				connectionFacing = alignFacing(connectionFacing);
+			}
+			
+			LocalPosition connectionSettlementLoc = LocalAreaUtil.convert2SettlementPos(connectionPosn, building);
+			PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
+					connectionSettlementLoc, connectionFacing, connectionBuilding);
+			partialBuildingConnectorList.add(partialConnector);
+		}
+
+		return partialBuildingConnectorList;
+	}
+
+	private static double alignFacing(double facing) {
+		if (facing < 0D) {
+			facing += 360D;
+		}
+
+		if (facing > 360D) {
+			facing -= 360D;
+		}
+		return facing;
 	}
 
 	/**
@@ -408,7 +356,7 @@ public class BuildingConnectorManager implements Serializable {
 		Iterator<BuildingConnector> i = getConnectionsToBuilding(building).iterator();
 		while (i.hasNext()) {
 			BuildingConnector connector = i.next();
-			removeBuildingConnection(connector);
+			buildingConnections.remove(connector);
 		}
 	}
 
@@ -463,19 +411,9 @@ public class BuildingConnectorManager implements Serializable {
 	 * @return a set of building connectors.
 	 */
 	public Set<BuildingConnector> getConnectionsToBuilding(Building building) {
-
-		Set<BuildingConnector> result = new HashSet<>();
-
-		// TODO This can be optimised to use a Map<Set<<BuildingConnector>>>
-		Iterator<BuildingConnector> i = buildingConnections.iterator();
-		while (i.hasNext()) {
-			BuildingConnector connector = i.next();
-			if (building.equals(connector.getBuilding1()) || building.equals(connector.getBuilding2())) {
-				result.add(connector);
-			}
-		}
-
-		return result;
+		return buildingConnections.stream()
+				.filter(c -> building.equals(c.getBuilding1()) || building.equals(c.getBuilding2()))
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -669,14 +607,11 @@ public class BuildingConnectorManager implements Serializable {
 
 		double initialSecondX = 0D;
 		double initialSecondY = 0D;
-		if (side == BuildingSide.FRONT) {
-			initialSecondY += connectionRange;
-		} else if (side == BuildingSide.BACK) {
-			initialSecondY -= connectionRange;
-		} else if (side == BuildingSide.LEFT) {
-			initialSecondX += connectionRange;
-		} else if (side == BuildingSide.RIGHT) {
-			initialSecondX -= connectionRange;
+		switch(side) {
+			case FRONT -> initialSecondY += connectionRange;
+			case BACK -> initialSecondY -= connectionRange;
+			case LEFT -> initialSecondX += connectionRange;
+			case RIGHT -> initialSecondX -= connectionRange;
 		}
 
 		// Rotate second position by offset angle.
@@ -793,20 +728,14 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	private double determineHatchFacing(Building building, Point2D connectionPt) {
 
-		double result = 0D;
-
 		BuildingSide side = determineBuildingSide(building, connectionPt);
 
-		if (side == BuildingSide.FRONT) {
-			result = building.getFacing();
-		} else if (side == BuildingSide.BACK) {
-			result = building.getFacing() + 180D;
-		} else if (side == BuildingSide.LEFT) {
-			result = building.getFacing() + 270D;
-		} else if (side == BuildingSide.RIGHT) {
-			result = building.getFacing() + 90D;
-		}
-
+		double result = switch(side) {
+			case FRONT -> building.getFacing();
+			case BACK -> building.getFacing() + 180D;
+			case LEFT -> building.getFacing() + 270D;
+			case RIGHT -> building.getFacing() + 90D;
+		};
 		while (result >= 360D) {
 			result -= 360D;
 		}
@@ -859,35 +788,4 @@ public class BuildingConnectorManager implements Serializable {
 		buildingConnections = null;
 	}
 
-	/**
-	 * Inner class for representing a partial building connector.
-	 */
-	private class PartialBuildingConnector implements Serializable {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-		// Data members.
-		private double facing;
-
-		private LocalPosition pos;
-
-		private Building building;
-		private Building connectToBuilding;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param building          the building.
-		 * @param pos         		the Position relative to the settlement.
-		 * @param facing            the facing (degrees).
-		 * @param connectToBuilding the building to connect to.
-		 */
-		PartialBuildingConnector(Building building, LocalPosition pos, double facing,
-				Building connectToBuilding) {
-			this.building = building;
-			this.pos = pos;
-			this.facing = facing;
-			this.connectToBuilding = connectToBuilding;
-		}
-	}
 }

@@ -216,23 +216,16 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 			return hatchFace;
 		}
 		
-		public void setPosition(double x, double y) {
-			location = new LocalPosition(x, y);
-		}
-		
-		
 		@Override
 		public boolean equals(Object otherObject) {
 			boolean result = false;
 
-			if (otherObject instanceof BuildingConnectionTemplate) {
-				BuildingConnectionTemplate template = (BuildingConnectionTemplate) otherObject;
-				if ((id == template.id) 
-						&& location.equals(template.location)
-						&& hatchFace.equals(template.hatchFace)) {
-					result = true;
-				}
+			if (otherObject instanceof BuildingConnectionTemplate template && (id == template.id) 
+					&& location.equals(template.location)
+					&& hatchFace.equals(template.hatchFace)) {
+				result = true;
 			}
+			
 			return result;
 		}
 		
