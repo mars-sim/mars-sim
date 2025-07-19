@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1-MS" default-population="48" description="Sector base 1 for Mars Society"
-		number-of-robots="24" sponsor="MS">
+        name="Sector Base 1-MS" default-population="1" description="Sector base 1 for Mars Society"
+		number-of-robots="0" sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
 	

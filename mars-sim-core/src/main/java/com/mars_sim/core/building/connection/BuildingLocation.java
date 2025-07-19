@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingLocation.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-07-18
  * @author Scott Davis
  */
 package com.mars_sim.core.building.connection;
@@ -24,7 +24,8 @@ public class BuildingLocation implements Serializable, InsidePathLocation {
     private LocalPosition pos;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param building the building.
      * @param xLoc the X location
      * @param yLoc the Y location

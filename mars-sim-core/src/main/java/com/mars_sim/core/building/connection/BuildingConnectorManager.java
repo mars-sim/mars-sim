@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @date 2025-07-11
+ * @date 2025-07-18
  * @author Scott Davis
  */
 package com.mars_sim.core.building.connection;
@@ -532,20 +532,14 @@ public class BuildingConnectorManager implements Serializable {
 
 		InsideBuildingPath finalPath = null;
 		if (!startBuilding.equals(endBuilding)) {
-			// Check shortest path to target building from this building.
-			finalPath = determineShortestPath(iteration, startingPath, startBuilding, endBuilding, end);
 			
-			iteration -= iteration;
+//			iteration -= iteration;
+					
 			// This limits the recursive call to a certain number and force it to pick one
-			if (iteration <= 0) {
-				// Iterate path index.
-				if (finalPath != null) {
-					finalPath.iteratePathLocation();
-					return finalPath;
-				}
-				else
-					return startingPath;
-			}
+//			if (iteration >= 0) {
+				// Check shortest path to target building from this building.
+				finalPath = determineShortestPath(iteration, startingPath, startBuilding, endBuilding, end);			
+//			}
 		
 		} else {
 			finalPath = startingPath;
@@ -572,6 +566,8 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	private InsideBuildingPath determineShortestPath(int iteration, InsideBuildingPath existingPath, Building currentBuilding,
 			Building targetBuilding, BuildingLocation endingLocation) {
+		
+		iteration -= iteration;
 
 		InsideBuildingPath result = null;
 
@@ -629,20 +625,11 @@ public class BuildingConnectorManager implements Serializable {
 				// Add connection building to new path.
 				newPath.addPathLocation(connectionBuilding);
 
-				// Recursively call this method with new path and connection building.
-				// Note: how to avoid StackOverflow ?
-				bestPath = determineShortestPath(iteration, newPath, connectionBuilding, targetBuilding, endingLocation);
-				
 				// This limits the recursive call to a certain number and force it to pick one
-				iteration -= iteration;
-				if (iteration <= 0) {
-					if (bestPath != null) {
-						if ((result == null) || (bestPath.getPathLength() < result.getPathLength())) {
-							return bestPath;
-						}
-						else
-							return newPath;
-					}
+				if (iteration >= 0) {
+					// Recursively call this method with new path and connection building.
+					// Note: how to avoid StackOverflow ?
+					bestPath = determineShortestPath(iteration, newPath, connectionBuilding, targetBuilding, endingLocation);
 				}
 			}
 

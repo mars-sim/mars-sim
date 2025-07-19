@@ -23,7 +23,7 @@ public class InsideBuildingPath implements Serializable {
     private int nextLocationIndex;
     
     /**
-     * Constructor
+     * Constructor.
      */
     public InsideBuildingPath() {
         pathLocations = new CopyOnWriteArrayList<>();
