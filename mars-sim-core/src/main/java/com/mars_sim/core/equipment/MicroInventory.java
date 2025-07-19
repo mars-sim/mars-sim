@@ -243,8 +243,8 @@ public class MicroInventory implements Serializable {
 	public boolean isEmpty(int resource) {
 		AmountStored s = specificAmountStorage.get(resource);
 		StockAmountStored ss = stockAmountStorage.get(resource);
-		return (s == null) || (s.storedAmount == 0D)
-				|| (s == null) || (ss.storedAmount == 0D);
+		return (s == null && ss == null 
+				|| (s.storedAmount == 0D && ss.storedAmount == 0D));
 	}
 
 	/**
