@@ -81,6 +81,22 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     }
 
     /**
+     * Get the otehr end of the connection
+     * @return
+     */
+    public Building getOtherBuilding(Building building) {
+        if (building.equals(building1)) {
+            return building2;
+        }
+        else if (building.equals(building2)) {
+            return building1;
+        }
+        else {
+            throw new IllegalArgumentException("Building not part of this connector.");
+        }
+    }
+
+    /**
      * Gets the hatch connecting the first building.
      * 
      * @return hatch.
@@ -116,26 +132,23 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     @Override
     public boolean equals(Object other) {
 
-        boolean result = false;
-
         // Note: building 1 and building 2 can be reversed in equal connectors.
-        if (other instanceof BuildingConnector) {
-            BuildingConnector otherConnector = (BuildingConnector) other;
+        if (other instanceof BuildingConnector otherConnector) {
             if (building1.equals(otherConnector.getBuilding1()) &&
                     hatch1.equals(otherConnector.getHatch1()) &&
                     building2.equals(otherConnector.getBuilding2()) &&
                     hatch2.equals(otherConnector.getHatch2())) {
-                result = true;
+                return true;
             }
-            else if (building1.equals(otherConnector.getBuilding2()) &&
+            else {
+                return (building1.equals(otherConnector.getBuilding2()) &&
                     hatch1.equals(otherConnector.getHatch2()) &&
                     building2.equals(otherConnector.getBuilding1()) &&
-                    hatch2.equals(otherConnector.getHatch1())) {
-                result = true;
+                    hatch2.equals(otherConnector.getHatch1()));
             }
         }
 
-        return result;
+        return false;
     }
 
 	/**

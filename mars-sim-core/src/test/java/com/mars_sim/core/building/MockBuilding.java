@@ -24,10 +24,10 @@ public class MockBuilding extends Building {
 	}
 
     
-    public MockBuilding(Settlement owner, String name, int id, BoundedObject bounds,
+    public MockBuilding(Settlement owner, String name, String id, BoundedObject bounds,
 						String buildingType, BuildingCategory cat,
 						boolean needsLifeSupport)  {
-		super(owner, Integer.toString(id), 1, "Mock Building " + id, bounds, buildingType, cat);
+		super(owner, id, 1, name, bounds, buildingType, cat);
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 1D);
 		if (needsLifeSupport) {
@@ -35,8 +35,8 @@ public class MockBuilding extends Building {
 		}
 	}
 
-	public MockBuilding(Settlement owner, int id, BoundedObject bounds) {
-		super(owner, Integer.toString(id), 1, "Mock Building " + id, bounds, "Mock", BuildingCategory.LIVING);
+	public MockBuilding(Settlement owner, String id, BoundedObject bounds) {
+		super(owner, id, 1, "Mock Building " + id, bounds, "Mock", BuildingCategory.LIVING);
 	}
 }
 

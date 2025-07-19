@@ -114,12 +114,12 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, true);
 	}
 
-	private MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat,
+	protected MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat,
 								LocalPosition pos, double facing, boolean lifeSupport) {
 
 		int id = buildingManager.getNumBuildings();
 		String name = "B" + id;
-		var building0 = new MockBuilding(buildingManager.getSettlement(), name, id,
+		var building0 = new MockBuilding(buildingManager.getSettlement(), name, Integer.toString(id),
 										new BoundedObject(pos, BUILDING_WIDTH, BUILDING_LENGTH, facing),
 										type, cat, lifeSupport);
 	    buildingManager.addMockBuilding(building0);	
