@@ -15,6 +15,49 @@
 
 	<!-- Part package -->
 	<!-- name: the unique name of the package. -->
+		<part-package name="tech" >
+
+		<!-- Parts -->
+		<!-- type: the type of part (see parts.xml) -->
+		<!-- number: the number of parts. -->
+		<part type="logic board" number="25"/>
+		<part type="microcontroller" number="60" />
+		<part type="communications circuit board" number="6" />
+		<part type="navigation circuit board" number="4" />
+
+		<part type="methane fuel cell" number="200"/>
+		<part type="methane fuel cell stack" number="4"/>
+		<part type="methanol fuel cell" number="200"/>
+		<part type="methanol fuel cell stack" number="4"/>		
+
+		<part type="battery module" number="4" />
+		
+		<part type="SLS 3D Printer" number="4"/>
+
+		<part type="carbon dioxide laser" number="5"/>
+		<part type="helium neon laser" number="5"/>
+		<part type="optical lens" number="20"/>
+		<part type="optical prism" number="20"/>
+		
+		<part type="light emitting diode kit" number="20" />
+		<part type="light emitting diode bulb" number="50" />
+
+		<part type="transformer" number="5" />
+		<part type="power transistor" number="60" />
+
+		<part type="radio antenna" number="8" />
+		<part type="satellite dish" number="4" />
+
+		<part type="Stepper Motor" number="8"/>
+		<part type="Motor 5 kW" number="6" />
+		<part type="Motor 10 kW" number="4" />
+		<part type="Motor 30 kW" number="2" />
+		<part type="propeller" number="4"/>
+
+	</part-package>
+
+	
+	
 	<part-package name="package 1" >
 
 		<!-- Parts -->
