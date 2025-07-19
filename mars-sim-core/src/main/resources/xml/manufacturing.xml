@@ -1,6 +1,11 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE manufacturing-processes [
-	<!ELEMENT manufacturing-processes (process*, salvage*)>
+	<!ELEMENT manufacturing-processes (tooling, process*, salvage*)>
+	
+	<!ELEMENT tooling (tool*)>
+	<!ELEMENT tool EMPTY>
+	<!ATTLIST tool name CDATA #REQUIRED>
+	<!ATTLIST tool description CDATA #REQUIRED>
 	<!ELEMENT process (description?, inputs, outputs)>
 	<!ATTLIST process name CDATA #REQUIRED>
 	<!ATTLIST process tech CDATA #REQUIRED>
@@ -722,7 +727,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg plastic pipe. -->
-	<process name="Make plastic pipe" tech="1" skill="1" work-time="100" process-time="400" ttooling="3d printer"
+	<process name="Make plastic pipe" tech="1" skill="1" work-time="100" process-time="400" tooling="3d printer"
 			power-required=".1">
 		<inputs>
 			<resource name="Polyethylene" amount="10.0">
@@ -3621,6 +3626,5 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
 	</salvage>
-
 
 </manufacturing-processes>
