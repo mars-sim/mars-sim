@@ -20,6 +20,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 
 /**
  * This class is an class to provide an executable app that can generate files.
@@ -31,6 +32,9 @@ public class HelpRunner {
     private static final String SCOPE_ARG = "scope";
     private static final String ALL_SCOPE = "all";
 
+    // Note this is sync'ed swith SimualtionBuilder
+    private static final String CONFIG_ARG = "configdir"; 
+
     private static Logger logger = Logger.getLogger(HelpRunner.class.getName());
 
     /**
@@ -39,11 +43,12 @@ public class HelpRunner {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // Load config files
-        var config = SimulationConfig.loadConfig();
+
 
         // Setup commands
         Options options = new Options();
+        
+		options.addOption(CONFIG_ARG, true, "Directory for configurations");
         options.addOption(STYLE_ARG, true, "Defines the style of the output; default to HTML");
         options.addOption(OUTPUT_ARG, true, "Directory for generated files");
 		options.addOption(SCOPE_ARG, true, "List of types to generate; defaults to 'all'");
@@ -60,11 +65,15 @@ public class HelpRunner {
         }
 
         // Get details
+		if (line.hasOption(CONFIG_ARG)) {
+			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
+		}
         String outputDir = line.getOptionValue(OUTPUT_ARG, "'");
         String style = line.getOptionValue(STYLE_ARG, HelpContext.HTML_STYLE);
         String scope = line.getOptionValue(SCOPE_ARG, "all");
 
         // Build context and generate files
+        var config = SimulationConfig.loadConfig();
         var context = new HelpContext(config, style);
 		try {
 			File output = new File(outputDir);
