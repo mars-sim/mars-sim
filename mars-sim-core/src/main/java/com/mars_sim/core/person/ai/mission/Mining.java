@@ -9,8 +9,10 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.Container;
@@ -20,11 +22,11 @@ import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.objectives.MiningObjective;
+import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
 import com.mars_sim.core.mission.task.CollectMinedMinerals;
 import com.mars_sim.core.mission.task.MineSite;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -312,29 +314,20 @@ public class Mining extends EVAMission
 			return false;
 		}
 		
-		attachLUV(false);
+		if (person.isEVAFit()) {
+			attachLUV(false);
 
-		// Determine if no one can start the mine site or collect resources tasks.	
-		boolean canDo = false;
-		for (Worker tempMember : getMembers()) {
-			Person p = (Person) tempMember;
-			canDo = canDo || canDoEVA(p, rover);
+			// Is there extractable minerals ?
+			if (getExtractMineralsStream(person).findAny().isPresent()) {
+				int mineralToCollect = getMineralToCollect(person);
+				if (mineralToCollect > 0) {
+					assignTask(person, new CollectMinedMinerals(person, objective, getRover(), mineralToCollect));
+				}
+			}
+			else {
+				assignTask(person, new MineSite(person, objective, getRover()));
+			}	
 		}
-
-		// Nobody can do anything so stop
-		if (!canDo) {
-			logger.warning(getRover(), "No one can mine sites in " + getName() + ".");
-			return false;
-		}
-
-		if (canCollectExcavatedMinerals(person)) {
-			int mineralToCollect = getMineralToCollect(person);
-			assignTask(person, new CollectMinedMinerals(person, objective, getRover(), mineralToCollect));
-		}
-		else {
-			assignTask(person, new MineSite(person, objective, getRover()));
-		}
-
 		return true;
 	}
 
@@ -367,43 +360,6 @@ public class Mining extends EVAMission
 
 		// Attach light utility vehicle for towing.
 		attachLUV(true);
-	}
-
-	
-	/**
-	 * Checks if a person can collect minerals from the excavation pile.
-	 * 
-	 * @param member the member collecting.
-	 * @return true if can collect minerals.
-	 */
-	private boolean canCollectExcavatedMinerals(Person member) {
-		return objective.getMineralStats().entrySet().stream()
-					.filter(e -> e.getValue().getAvailable() > MINIMUM_COLLECT_AMOUNT)
-					.anyMatch(e -> canCollectMinerals(member, getRover(), e.getKey()));
-	}
-
-	/**
-	 * Can this person do an EVA
-	 * @param p
-	 * @param rover
-	 * @return
-	 */
-	private boolean canDoEVA(Person p, Rover rover) {
-		
-		// Check if person can exit the rover.
-		if (!ExitAirlock.canExitAirlock(p, rover.getAirlock()))
-			return false;
-
-		// TODO this logic must be somewhere else in EVA Mission class???
-		if (!isEnoughSunlightForEVA()) {
-			return false;
-		}
-		
-		// Check if person's medical condition will not allow task.
-		if (p.getPerformanceRating() < .2D)
-			return false;
-
-		return !p.isSuperUnfit();
 	}
 
 	/**
@@ -439,6 +395,12 @@ public class Mining extends EVAMission
 		return (bagAvailable && canCarryEquipment);
 	}
 
+	private Stream<Entry<Integer, MineralStats>> getExtractMineralsStream(Person p) {
+		return objective.getMineralStats().entrySet().stream()
+					.filter(e -> e.getValue().getAvailable() > MINIMUM_COLLECT_AMOUNT)
+					.filter(e -> canCollectMinerals(p, getRover(), e.getKey()));
+	}
+
 	/**
 	 * Gets the mineral resource to collect from the excavation pile.
 	 * 
@@ -446,10 +408,7 @@ public class Mining extends EVAMission
 	 * @return mineral
 	 */
 	private int getMineralToCollect(Person person) {
-		var candidates = objective.getMineralStats().entrySet().stream()
-					.filter(e -> e.getValue().getAvailable() > MINIMUM_COLLECT_AMOUNT)
-					.filter(e -> canCollectMinerals(person, getRover(), e.getKey()))
-					.toList();
+		var candidates = getExtractMineralsStream(person).toList();
 		
 		int selected = -1;
 		double largest = 0;
@@ -605,13 +564,14 @@ public class Mining extends EVAMission
 	 */
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
 		for(Vehicle vehicle : getStartingSettlement().getParkedGaragedVehicles()) {
-			if (vehicle instanceof LightUtilityVehicle luvTemp) {
-				if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
-						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
-					claimVehicle(luvTemp);
-					return luvTemp;
-				}
+			if (vehicle instanceof LightUtilityVehicle luvTemp
+					&& ((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
+					&& !luvTemp.isReserved()
+					&& (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
+				claimVehicle(luvTemp);
+				return luvTemp;
 			}
+			
 		}
 
 		return null;

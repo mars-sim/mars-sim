@@ -38,7 +38,6 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -61,7 +60,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	private static final String CREW_ICON = "people"; //$NON-NLS-1$
 
 	private MemberTableModel memberTableModel;
-	private JTable memberTable;
 
 	private JLabel crewNumTF;
 
@@ -92,6 +90,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	@Override
 	protected void buildUI(JPanel content) {
+        JTable memberTable;
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         
@@ -128,8 +127,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		content.add(memberScrollPane, BorderLayout.CENTER);
 
 		// Create member table model.
-		memberTableModel = new MemberTableModel();
-		if (mission != null)
+		Crewable vehicle = (Crewable) getUnit();
+		memberTableModel = new MemberTableModel(vehicle);
+		if ((mission != null) && vehicle.equals(mission.getVehicle()))
 			memberTableModel.setMission(mission);
 
 		// Create member table.
@@ -160,7 +160,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		Crewable crewable = (Crewable) vehicle;
 		Mission newMission = vehicle.getMission();
 		if ((mission == null) || !mission.equals(newMission)) {
-			if (newMission instanceof VehicleMission vm) {
+			if ((newMission instanceof VehicleMission vm) && vehicle.equals(vm.getVehicle())) {
 				mission = vm;
 			}
 			else {
@@ -200,8 +200,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	public void destroy() {
 		super.destroy();
 		
-		crewNumTF = null;
-		memberTable = null;
 		if (memberTableModel != null) {
 			memberTableModel.clearMembers();
 			memberTableModel = null;
@@ -216,13 +214,17 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		// Private members.
 		private VehicleMission mission;
 		private List<Worker> members;
+		private Crewable vehicle;
 
 		/**
 		 * Constructor.
 		 */
-		private MemberTableModel() {
+		private MemberTableModel(Crewable v) {
 			mission = null;
 			members = new ArrayList<>();
+			vehicle = v;
+
+			updateMembers();
 		}
 
 		/**
@@ -251,12 +253,11 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return Msg.getString("MainDetailPanel.column.name"); //$NON-NLS-1$
-			else if (columnIndex == 1)
-				return Msg.getString("MainDetailPanel.column.task"); //$NON-NLS-1$
-			else
-				return "Boarded";
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("MainDetailPanel.column.name");
+				case 1 -> Msg.getString("MainDetailPanel.column.task");
+				default -> "Boarded";
+};
 		}
 
 		/**
@@ -270,18 +271,14 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
 				Worker member = members.get(row);
-				if (column == 0)
-					return member.getName();
-				else if (column == 1)
-					return member.getTaskDescription();
-				else {
-					if (boarded(member))
-						return "Y";
-					else
-						return "N";
-				}
-			} else
-				return Msg.getString("unknown"); //$NON-NLS-1$
+				return switch (column) {
+					case 0 -> member.getName();
+					case 1 -> member.getTaskDescription();
+					default -> (boarded(member) ? "Y" : "N");
+  				};
+    
+			}
+			return null;
 		}
 
 		/**
@@ -292,8 +289,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		boolean boarded(Worker member) {
 			if (member.getUnitType() == UnitType.PERSON) {
-				Rover r = (Rover)mission.getVehicle();
-				return (r != null && r.isCrewmember((Person)member));
+				return (vehicle.isCrewmember((Person)member));
 			}
 			return false;
 		}
@@ -333,32 +329,31 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		/**
 		 * Updates mission members.
 		 */
-		void updateMembers() {
+		void updateMembers() { 
+			List<Worker> newList = null;
 			if (mission != null) {
-				List<Worker> newList = new ArrayList<>(mission.getMembers());
-
-				if (!members.equals(newList)) {
-					// Existing members, not in the new list then remove listener
-					members.stream()
-							.filter(m -> !newList.contains(m))
-							.forEach(mm -> mm.removeUnitListener(this));
-
-					// New members, not in the existing list then add listener
-					newList.stream()
-							.filter(m -> !members.contains(m))
-							.forEach(mm -> mm.addUnitListener(this));
-
-					// Replace the old member list with new one.
-					members = newList;
-
-					// Update this row
-					fireTableDataChanged();
-				}
+				newList = new ArrayList<>(mission.getMembers());
 			} else {
-				if (!members.isEmpty()) {
-					clearMembers();
-					fireTableDataChanged();
-				}
+				newList = new ArrayList<>(vehicle.getCrew());
+			}
+
+			if (!members.equals(newList)) {
+				final var fixedList = newList;
+				// Existing members, not in the new list then remove listener
+				members.stream()
+						.filter(m -> !fixedList.contains(m))
+						.forEach(mm -> mm.removeUnitListener(this));
+
+				// New members, not in the existing list then add listener
+				newList.stream()
+						.filter(m -> !members.contains(m))
+						.forEach(mm -> mm.addUnitListener(this));
+
+				// Replace the old member list with new one.
+				members = newList;
+
+				// Update this row
+				fireTableDataChanged();
 			}
 		}
 

@@ -46,9 +46,6 @@ public class CollectMinedMinerals extends EVAOperation {
 
 	public static final double COLLECTION_RATE = 0.3D;
 	
-	// Data members
-	protected int resourceType;
-	
 	/** The container type to use to collect resource. */
 	private EquipmentType containerType = EquipmentType.LARGE_BAG;
 	
@@ -98,7 +95,7 @@ public class CollectMinedMinerals extends EVAOperation {
 		else if (num > 1) {
 			// Return extra containers
 			for (int i=0; i<num-1; i++) {
-				Container container = person.findContainer(containerType, false, resourceType); 
+				Container container = person.findContainer(containerType, false, mineralType); 
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done)
@@ -126,7 +123,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	 */
 	private boolean takeContainer(Rover rover) {
 		
-		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, mineralType);
 
 		if (container != null) {
 			boolean success = container.transfer(person);
@@ -193,7 +190,7 @@ public class CollectMinedMinerals extends EVAOperation {
 			worker.storeAmountResource(mineralType, mineralsCollected);
 			
 			if ((maxAmount <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
-				checkLocation("Excavated minerals collected exceeded capacity.");
+				endEVA("Excavated minerals collected exceeded capacity.");
 			}
 	
 			// Check for an accident during the EVA operation.

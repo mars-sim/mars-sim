@@ -81,13 +81,8 @@ public class MineSite extends EVAOperation {
 		this.luv = objective.getLUV();
 		operatingLUV = false;
 
-		if (shouldEndEVAOperation()) {
-			checkLocation("EVA ended.");
-        	return;
-        }
-
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
 
@@ -152,7 +147,8 @@ public class MineSite extends EVAOperation {
 				operatingLUV = false;
 
 			}
-			checkLocation("Time on site expired.");
+			endEVA("Time on site expired.");
+			return 0;
 		}
 	
 		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
