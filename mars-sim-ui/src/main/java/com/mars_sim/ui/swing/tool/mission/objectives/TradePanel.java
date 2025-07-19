@@ -1,15 +1,14 @@
 /**
  * Mars Simulation Project
- * DeliveryMissionCustomInfoPanel.java
+ * TradePanel.java
  * @version 3.2.0 2021-06-20
- * @author Manny Kung
+ * @author Scott Davis
  */
-package com.mars_sim.ui.swing.tool.mission;
+package com.mars_sim.ui.swing.tool.mission.objectives;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,24 +16,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.goods.CommerceMission;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.person.ai.mission.Delivery;
-import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
+import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 
 
 /**
- * A panel for displaying trade mission information.
+ * A panel for displaying trade objectives
  */
 @SuppressWarnings("serial")
-public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
-
-	private final static int HEIGHT = 120;
+public class TradePanel extends JPanel implements MissionListener{
 	
 	// Data members.
-	private Delivery mission;
+	private TradeObjective objective;
 	private GoodsTableModel sellingGoodsTableModel;
 	private JLabel desiredGoodsProfitLabel;
 	private GoodsTableModel desiredGoodsTableModel;
@@ -43,10 +40,14 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 	/**
 	 * Constructor.
+	 * @param desktop 
 	 */
-	public DeliveryMissionCustomInfoPanel() {
+	public TradePanel(TradeObjective objective, MainDesktopPane desktop) {
 		// Use JPanel constructor
 		super();
+
+		setName(objective.getName());
+		this.objective = objective;
 
 		// Set the layout.
 		setLayout(new GridLayout(3, 1));
@@ -120,42 +121,31 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		boughtGoodsTableModel = new GoodsTableModel();
 		JTable boughtGoodsTable = new JTable(boughtGoodsTableModel);
 		boughtGoodsScrollPane.setViewportView(boughtGoodsTable);
+
+		// Update the tables
+		desiredGoodsTableModel.updateTable(objective.getDesiredBuy());
+		boughtGoodsTableModel.updateTable(objective.getBought());
+		sellingGoodsTableModel.updateTable(objective.getSell());
+		desiredGoodsProfitLabel.setText("Profit: " + objective.getDesiredProfit() + " VP");
+		updateBoughtGoodsProfit();
 	}
 
+
 	@Override
-	public void updateMissionEvent(MissionEvent e) {
+	public void missionUpdate(MissionEvent e) {
 		if (e.getType() == MissionEventType.BUY_LOAD_EVENT) {
-			boughtGoodsTableModel.updateTable(mission.getBuyLoad());
+			boughtGoodsTableModel.updateTable(objective.getBought());
+			sellingGoodsTableModel.updateTable(objective.getSell());
+
 			updateBoughtGoodsProfit();
 		}
-	}
-
-	@Override
-	public void updateMission(Mission newMission) {
-		if (newMission instanceof Delivery) {
-			this.mission = (Delivery) newMission;
-			sellingGoodsTableModel.updateTable(mission.getSellLoad());
-			desiredGoodsTableModel.updateTable(mission.getDesiredBuyLoad());
-			boughtGoodsTableModel.updateTable(mission.getBuyLoad());
-			updateDesiredGoodsProfit();
-			updateBoughtGoodsProfit();
-		}
-	}
-
-	/**
-	 * Updates the desired goods profit label.
-	 */
-	private void updateDesiredGoodsProfit() {
-		int profit = (int) mission.getDesiredProfit();
-		desiredGoodsProfitLabel.setText("Profit: " + profit + " VP");
 	}
 
 	/**
 	 * Updates the bought goods profit label.
 	 */
 	private void updateBoughtGoodsProfit() {
-		int profit = (int) mission.getProfit();
+		int profit = (int) objective.getProfit();
 		boughtGoodsProfitLabel.setText("Profit: " + profit + " VP");
 	}
-
 }

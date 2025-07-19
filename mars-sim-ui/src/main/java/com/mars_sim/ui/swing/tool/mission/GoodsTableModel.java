@@ -14,14 +14,12 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.Good;
 
 /**
  * Abstract model for a goods table.
  */
-abstract class GoodsTableModel
-	extends AbstractTableModel {
+public class GoodsTableModel extends AbstractTableModel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -86,15 +84,9 @@ abstract class GoodsTableModel
 	}
 
 	/**
-	 * Get the load data
-	 */
-	protected abstract Map<Good,Integer> getLoad(CommerceMission commerce);
-
-	/**
 	 * Updates the table data.
 	 */
-	protected void updateTable(CommerceMission commerce) {
-		Map<Good,Integer> load = getLoad(commerce);
+	public void updateTable(Map<Good,Integer> load) {
 		if (load != null) {
 			goodsMap = load;
 			goodsList = new ArrayList<>(goodsMap.keySet());

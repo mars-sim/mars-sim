@@ -269,8 +269,8 @@ class VehicleGood extends Good {
 
 			for (var pi : process.getInputList()) {
 				String iName = pi.getName();
-				int id = GoodsUtil.getGoodID(iName);
-				double value = owner.getGoodValuePoint(id);
+				var id = GoodsUtil.getGood(iName);
+				double value = owner.getGoodValuePoint(id.getID());
 				result += value;
 			}
 		}
