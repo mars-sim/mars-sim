@@ -1301,9 +1301,9 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		double compositeFactor = Math.max(.1, TUNING_FACTOR * needFactor * time / 1000.0);
 		
-		logger.info(this, 20_000, "watt: " + Math.round(watt * 100.0)/100.0
-				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
-				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
+//		logger.info(this, 20_000, "watt: " + Math.round(watt * 100.0)/100.0
+//				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
+//				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
 		
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
 		computeWaterFertilizer(compositeFactor * WATER_MODIFIER, time, greyFilterRate);

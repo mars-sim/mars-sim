@@ -183,7 +183,7 @@ public class MasterClock implements Serializable {
 		if (userTimeRatio > 0) {
 			if (userTimeRatio <= MID_TIME_RATIO) {
 				desiredTR = (int)MID_TIME_RATIO;
-				while (desiredTR < userTimeRatio) {
+				while (desiredTR > userTimeRatio) {
 					decreaseSpeed();
 				}
 			}
