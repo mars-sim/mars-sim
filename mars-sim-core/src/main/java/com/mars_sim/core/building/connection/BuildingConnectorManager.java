@@ -24,9 +24,7 @@ import com.mars_sim.core.building.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.ai.task.WalkSettlementInterior;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * This class manages all building connectors at a settlement.
@@ -37,8 +35,6 @@ public class BuildingConnectorManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final SimLogger logger = SimLogger.getLogger(BuildingConnectorManager.class.getName());
-
-	private static final int NUM_ITERATION = WalkSettlementInterior.NUM_ITERATION;
 	
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
@@ -341,7 +337,7 @@ public class BuildingConnectorManager implements Serializable {
 				else {
 					throw new IllegalStateException("bestFitConnector is null. Unable to find building connection for "
 							+ partialConnector.building.getName() 
-							+ " [templateID: " + ((Building)partialConnector.building).getTemplateID()
+							+ " [templateID: " + partialConnector.building.getTemplateID()
 							+ "  buildingID: " + partialConnector.building.getName()
 							+ "] in " + settlement.getName() + ". ");
 				}
@@ -470,6 +466,7 @@ public class BuildingConnectorManager implements Serializable {
 
 		Set<BuildingConnector> result = new HashSet<>();
 
+		// TODO This can be optimised to use a Map<Set<<BuildingConnector>>>
 		Iterator<BuildingConnector> i = buildingConnections.iterator();
 		while (i.hasNext()) {
 			BuildingConnector connector = i.next();
@@ -490,21 +487,12 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public boolean hasValidPath(Building building1, Building building2) {
 
-		boolean result = false;
+		BuildingLocation start = new BuildingLocation(building1, building1.getPosition());
+		BuildingLocation end = new BuildingLocation(building2, building2.getPosition());
+		var finder = new PathFinder(this, start, end);
 
-		if ((building1 == null) || (building2 == null)) {
-			throw new IllegalArgumentException("Building arguments cannot be null");
-		}
-
-		int iteration = RandomUtil.getRandomInt(2, NUM_ITERATION + 2);
-		
-		InsideBuildingPath validPath = determineShortestPath(iteration, building1, building1.getPosition(),
-															building2, building2.getPosition());
-
-		if (validPath != null) {
-			result = true;
-		}
-		else if (logger.isLoggable(Level.FINEST)) {
+		var result = finder.isValidRoute();
+		if (!result && logger.isLoggable(Level.FINEST)) {
 			logger.fine(building1, "Unable to find valid interior walking path to " + building2);
 		}
 
@@ -514,133 +502,23 @@ public class BuildingConnectorManager implements Serializable {
 	/**
 	 * Determines the shortest building path between two locations in buildings.
 	 * 
-	 * @param iteration
 	 * @param startBuilding     the first building.
 	 * @param startPositionc the starting position in the first building.
 	 * @param endBuilding     the second building.
 	 * @param endPosition the ending position in the second building.
 	 * @return shortest path or null if no path found.
 	 */
-	public InsideBuildingPath determineShortestPath(int iteration, Building startBuilding, LocalPosition startPosition,
+	public InsideBuildingPath determineShortestPath(Building startBuilding, LocalPosition startPosition,
 			Building endBuilding, LocalPosition endPosition) {
 
 		BuildingLocation start = new BuildingLocation(startBuilding, startPosition);
 		BuildingLocation end = new BuildingLocation(endBuilding, endPosition);
 
-		InsideBuildingPath startingPath = new InsideBuildingPath();
-		startingPath.addPathLocation(start);
-
-		InsideBuildingPath finalPath = null;
-		if (!startBuilding.equals(endBuilding)) {
-			
-//			iteration -= iteration;
-					
-			// This limits the recursive call to a certain number and force it to pick one
-//			if (iteration >= 0) {
-				// Check shortest path to target building from this building.
-				finalPath = determineShortestPath(iteration, startingPath, startBuilding, endBuilding, end);			
-//			}
-		
-		} else {
-			finalPath = startingPath;
-			finalPath.addPathLocation(end);
+		var finder = new PathFinder(this, start, end);
+		if (finder.isValidRoute()) {
+			return finder.toPath();
 		}
-
-		// Iterate path index.
-		if (finalPath != null) {
-			finalPath.iteratePathLocation();
-		}
-
-		return finalPath;
-	}
-
-	/**
-	 * Recursive method to determine the shortest path between two buildings.
-	 * 
-	 * @param iteration
-	 * @param existingPath    the current path.
-	 * @param currentBuilding the current building.
-	 * @param targetBuilding  the target building.
-	 * @param endingLocation  the end building location.
-	 * @return shortest path or null if none found.
-	 */
-	private InsideBuildingPath determineShortestPath(int iteration, InsideBuildingPath existingPath, Building currentBuilding,
-			Building targetBuilding, BuildingLocation endingLocation) {
-		
-		iteration -= iteration;
-
-		InsideBuildingPath result = null;
-
-		// Try each building connection from current building.
-		Iterator<BuildingConnector> i = getConnectionsToBuilding(currentBuilding).iterator();
-		while (i.hasNext()) {
-			BuildingConnector connector = i.next();
-
-			Building connectionBuilding = null;
-			Hatch nearHatch = null;
-			Hatch farHatch = null;
-			if (connector.getBuilding1().equals(currentBuilding)) {
-				connectionBuilding = connector.getBuilding2();
-				nearHatch = connector.getHatch1();
-				farHatch = connector.getHatch2();
-			} else {
-				connectionBuilding = connector.getBuilding1();
-				nearHatch = connector.getHatch2();
-				farHatch = connector.getHatch1();
-			}
-
-			// Make sure building or connection is not already in existing path.
-			boolean inExistingPath = existingPath.containsPathLocation(connectionBuilding);
-            if (existingPath.containsPathLocation(connector)) {
-				inExistingPath = true;
-			}
-			if (existingPath.containsPathLocation(nearHatch)) {
-				inExistingPath = true;
-			}
-			if (existingPath.containsPathLocation(farHatch)) {
-				inExistingPath = true;
-			}
-			if (inExistingPath) {
-				continue;
-			}
-
-			// Copy existing path to create new path.
-			InsideBuildingPath newPath = new InsideBuildingPath(existingPath);
-
-			// Add building connector to new path.
-			if (connector.isSplitConnection()) {
-				newPath.addPathLocation(nearHatch);
-				newPath.addPathLocation(connector);
-				newPath.addPathLocation(farHatch);
-			} else {
-				newPath.addPathLocation(connector);
-			}
-
-			InsideBuildingPath bestPath = null;
-			if (connectionBuilding.equals(targetBuilding)) {
-				// Add ending location within connection building.
-				newPath.addPathLocation(endingLocation);
-				bestPath = newPath;
-			} else {
-				// Add connection building to new path.
-				newPath.addPathLocation(connectionBuilding);
-
-				// This limits the recursive call to a certain number and force it to pick one
-				if (iteration >= 0) {
-					// Recursively call this method with new path and connection building.
-					// Note: how to avoid StackOverflow ?
-					bestPath = determineShortestPath(iteration, newPath, connectionBuilding, targetBuilding, endingLocation);
-				}
-			}
-
-			if (bestPath != null) {
-				if ((result == null) || (bestPath.getPathLength() < result.getPathLength())) {
-					result = bestPath;
-				}
-			}
-		}
-
-		return result;
+		return null;
 	}
 
 	/**
@@ -978,7 +856,6 @@ public class BuildingConnectorManager implements Serializable {
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
-		// buildingConnections.clear();
 		buildingConnections = null;
 	}
 

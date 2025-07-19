@@ -29,20 +29,7 @@ public class InsideBuildingPath implements Serializable {
         pathLocations = new CopyOnWriteArrayList<>();
         nextLocationIndex = 0;
     }
-    
-    /**
-     * Copy Constructor.
-     */
-    public InsideBuildingPath(InsideBuildingPath insideBuildingPath) {
-    	this();
-    	
-        Iterator<InsidePathLocation> i = insideBuildingPath.getPathLocations().iterator();
-        while (i.hasNext()) {
-        	addPathLocation(i.next());
-        }
-        
-        nextLocationIndex = insideBuildingPath.getNextLocationIndex();
-    }
+
     
     /**
      * Adds a new location object to the path.
@@ -89,7 +76,6 @@ public class InsideBuildingPath implements Serializable {
      */
     public List<InsidePathLocation> getRemainingPathLocations() {
         
-//        int size = pathLocations.size() - nextLocationIndex;
         List<InsidePathLocation> result = new CopyOnWriteArrayList<>();
         for (int x = nextLocationIndex; x < pathLocations.size(); x++) {
             result.add(pathLocations.get(x));

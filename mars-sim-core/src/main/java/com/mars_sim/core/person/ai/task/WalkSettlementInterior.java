@@ -51,15 +51,11 @@ public class WalkSettlementInterior extends Task {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	public static final int NUM_ITERATION = 3;
 	private static final double VERY_SMALL_DISTANCE = .01D;
 	private static final double STRESS_MODIFIER = -.2D;
-//	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The minimum pulse time for completing a task phase in this class.  */
-	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
-	
-	// Data members
-//	private double destZLoc;
+	private static double minPulseTime = 0;
+
 
 	private LocalPosition destPosition;
 	private Settlement settlement;
@@ -125,13 +121,9 @@ public class WalkSettlementInterior extends Task {
 			// while Dijkstra uses a priority queue to prioritize nodes with the smallest distance.
 			
 			// Determine the walking path to the destination.
-			if (settlement != null) {
-				
-				int iteration = RandomUtil.getRandomInt(2, NUM_ITERATION + 2);
-			
+			if (settlement != null) {			
 				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(
-						iteration, startBuilding,
-						person.getPosition(), destinationBuilding, destPosition);
+						startBuilding, person.getPosition(), destinationBuilding, destPosition);
 			}
 			
 			// If no valid walking path is found, end task.
@@ -196,12 +188,9 @@ public class WalkSettlementInterior extends Task {
 		
 		try {
 			// Determine the walking path to the destination.
-			if (settlement != null) {
-				
-				int iteration = RandomUtil.getRandomInt(2, NUM_ITERATION + 2);
-				
+			if (settlement != null) {				
 				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(
-						iteration, startBuilding,
+						startBuilding,
 						robot.getPosition(), destinationBuilding, destPosition);
 			}
 				
