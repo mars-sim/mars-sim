@@ -4,27 +4,13 @@
 		number-of-robots="84" sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
-	
-    <!-- Lander habitat building is the main habitation in the Mars Direct
-        mission plan. -->
-    <building id="000" type="Lander Hab" xloc="0.0" yloc="0.0" facing="0.0">
-        <!-- List of all connections to other buildings (optional). -->
+
+    <building id="000" type="Loading Dock Garage" xloc="4.5" yloc="0.0" facing="270.0">
         <connection-list>
-            <!-- Connection to another building. "id" is other building's ID. -->
-            <!-- X & Y locations are relative to this building, not in the settlement
-                locale. -->
-            <!-- connection id="001" hatch-facing="west" /-->
             <connection id="002" hatch-facing="east" />
         </connection-list>
     </building>
-
-    <!-- EVA Airlock is attached to the lander hab -->
-    <!-- building id="001" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
-        <connection-list>
-            <connection id="000" hatch-facing="east" />
-        </connection-list>
-    </building  -->
-    
+    	  
     <building id="001" type="EVA Airlock" xloc="-7.5" yloc="-6.0" facing="270.0">
         <connection-list>
             <connection id="002" hatch-facing="north" />
@@ -201,17 +187,17 @@
     
     
     <!-- Row 2 : 202 to 299 --> 	
- 
-    <!-- building id="201" type="EVA Airlock" xloc="-1.5" yloc="12.0" facing="0.0">
+
+    <building id="201" type="Lander Hab" xloc="0.0" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="202" hatch-facing="east" />
         </connection-list>
-    </building -->    	
-    	
+    </building>
+        	
      <building id="202" type="life Core A" xloc="-7.5" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="102" hatch-facing="south" />
-            <!-- connection id="201" hatch-facing="west" /-->
+            <connection id="201" hatch-facing="west" />
             <connection id="203" hatch-facing="east" />
             <connection id="302" hatch-facing="north" />
         </connection-list>
@@ -282,10 +268,17 @@
         <connection-list>
             <connection id="109" hatch-facing="south" />
            	<connection id="208" hatch-facing="west" />
+            <connection id="210" hatch-facing="east" />  
             <connection id="309" hatch-facing="north" />          	
         </connection-list>
     </building>
 
+    <building id="210" type="Machinery Hab" xloc="-81.0" yloc="12.0" facing="0.0">
+        <connection-list>
+            <connection id="209" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
 
    <!-- Row 3 : 302 to 399 -->
     	
@@ -368,7 +361,13 @@
     
     
   <!-- Row 4 : 402 to 499 -->
-    	
+      
+    <building id="400" type="Loading Dock Garage" xloc="4.5" yloc="24.0" facing="270.0">
+        <connection-list>
+            <connection id="402" hatch-facing="east" />
+        </connection-list>
+    </building>
+     	
   	<building id="401" type="EVA Airlock" xloc="-7.5" yloc="30.0" facing="90.0">
         <connection-list>
             <connection id="402" hatch-facing="south" />
@@ -377,9 +376,10 @@
         	
      <building id="402" type="life Core A" xloc="-7.5" yloc="24.0" facing="0.0">
         <connection-list>
-          	<connection id="401" hatch-facing="north" />
             <connection id="302" hatch-facing="south" />
-            <connection id="403" hatch-facing="east" />    
+            <connection id="400" hatch-facing="west" /> 
+            <connection id="403" hatch-facing="east" />   
+          	<connection id="401" hatch-facing="north" />
         </connection-list>
     </building>
     

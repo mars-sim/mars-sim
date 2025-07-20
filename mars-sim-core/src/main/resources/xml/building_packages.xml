@@ -22,109 +22,81 @@
 		<!-- type: the type of building (see buildings.xml) -->
 
 		<!-- Next to ERV-I -->
-		<standalone type="Ice Storage" xloc="50.0" yloc="13.0"
-	        facing="90.0" />
-   	    <standalone type="Ice Storage" xloc="55.0" yloc="13.0"
-	        facing="90.0" />    
+		<standalone type="Ice Storage" xloc="50.0" yloc="13.0" facing="90.0" />
+   	    <standalone type="Ice Storage" xloc="55.0" yloc="13.0" facing="90.0" />    
  	        		
 		<!-- Next to ERV-A -->
-		<standalone type="Fuel Storage" xloc="50.0" yloc="26.0"
-	        facing="90.0" />
-   	    <standalone type="Fuel Storage" xloc="55.0" yloc="26.0"
-	        facing="90.0" />
-   	    <standalone type="Gas Storage" xloc="60.0" yloc="26.0"
-	        facing="90.0" />  
-   	    <standalone type="Gas Storage" xloc="65.0" yloc="26.0"
-	        facing="90.0" />  
+		<standalone type="Fuel Storage" xloc="50.0" yloc="26.0" facing="90.0" />
+   	    <standalone type="Fuel Storage" xloc="55.0" yloc="26.0" facing="90.0" />
+   	    <standalone type="Gas Storage" xloc="60.0" yloc="26.0" facing="90.0" />  
+   	    <standalone type="Gas Storage" xloc="65.0" yloc="26.0" facing="90.0" />  
 	        	        	      
 	    <!-- Next to ERV-B -->    
-	    <standalone type="Regolith Storage" xloc="50.0" yloc="39.0"
-	        facing="90.0" />
-	    <standalone type="Sand Storage" xloc="55.0" yloc="39.0"
-	        facing="90.0" />
-	    <standalone type="Metal Storage" xloc="60.0" yloc="39.0"
-	        facing="90.0" />	  
-   	    <standalone type="Ore Storage" xloc="65.0" yloc="39.0"
-	        facing="90.0" />  	              
+	    <standalone type="Regolith Storage" xloc="50.0" yloc="39.0" facing="90.0" />
+	    <standalone type="Sand Storage" xloc="55.0" yloc="39.0" facing="90.0" />
+	    <standalone type="Metal Storage" xloc="60.0" yloc="39.0" facing="90.0" />	  
+   	    <standalone type="Ore Storage" xloc="65.0" yloc="39.0" facing="90.0" />  	              
 	        
 	    <!-- Next to ERV-C -->     
-	    <standalone type="Concrete Storage" xloc="50.0" yloc="52.0" 
-	        facing="90.0" />
-	    <standalone type="Cement Storage" xloc="55.0" yloc="52.0"
-	        facing="90.0" />
-	    <standalone type="Lime Storage" xloc="60.0" yloc="52.0"
-	        facing="90.0" />
-	    <standalone type="Chemical Storage" xloc="65.0" yloc="52.0"
-	        facing="90.0" />
+	    <standalone type="Concrete Storage" xloc="50.0" yloc="52.0" facing="90.0" />
+	    <standalone type="Cement Storage" xloc="55.0" yloc="52.0" facing="90.0" />
+	    <standalone type="Lime Storage" xloc="60.0" yloc="52.0" facing="90.0" />
+	    <standalone type="Chemical Storage" xloc="65.0" yloc="52.0" facing="90.0" />
 	        
 	</building-package>
 
 	<building-package name="Storage Set 2" >
 		
 		<!-- Next to ERV-I -->
-		<standalone type="Ice Storage" xloc="50.0" yloc="65.0"
-	        facing="90.0" />
-   	    <standalone type="Ice Storage" xloc="55.0" yloc="65.0"
-	        facing="90.0" />
+		<standalone type="Ice Storage" xloc="50.0" yloc="65.0" facing="90.0" />
+   	    <standalone type="Ice Storage" xloc="55.0" yloc="65.0" facing="90.0" />
 	        
 		<!-- Next to ERV-A -->
-		<standalone type="Fuel Storage" xloc="50.0" yloc="78.0"
-	        facing="90.0" />
-   	    <standalone type="Fuel Storage" xloc="55.0" yloc="78.0"
-	        facing="90.0" />    
-   	    <standalone type="Gas Storage" xloc="60.0" yloc="78.0"
-	        facing="90.0" />  
-   	    <standalone type="Gas Storage" xloc="65.0" yloc="78.0"
-	        facing="90.0" />  
+		<standalone type="Fuel Storage" xloc="50.0" yloc="78.0" facing="90.0" />
+   	    <standalone type="Fuel Storage" xloc="55.0" yloc="78.0" facing="90.0" />    
+   	    <standalone type="Gas Storage" xloc="60.0" yloc="78.0" facing="90.0" />  
+   	    <standalone type="Gas Storage" xloc="65.0" yloc="78.0" facing="90.0" />  
 	        	      
 	    <!-- Next to ERV-B -->    
-	    <standalone type="Regolith Storage" xloc="50.0" yloc="91.0"
-	        facing="90.0" />
-	    <standalone type="Sand Storage" xloc="55.0" yloc="91.0"
-	        facing="90.0" />
-	    <standalone type="Metal Storage" xloc="60.0" yloc="91.0"
-	        facing="90.0" />
-   	    <standalone type="Ore Storage" xloc="65.0" yloc="91.0"
-	        facing="90.0" />  	        
+	    <standalone type="Regolith Storage" xloc="50.0" yloc="91.0" facing="90.0" />
+	    <standalone type="Sand Storage" xloc="55.0" yloc="91.0" facing="90.0" />
+	    <standalone type="Metal Storage" xloc="60.0" yloc="91.0" facing="90.0" />
+   	    <standalone type="Ore Storage" xloc="65.0" yloc="91.0" facing="90.0" />  	        
 	        
 	    <!-- Next to ERV-C -->     
-	    <standalone type="Concrete Storage" xloc="50.0" yloc="104.0" 
-	        facing="90.0" />
-	    <standalone type="Cement Storage" xloc="55.0" yloc="104.0"
-	        facing="90.0" />
-	    <standalone type="Lime Storage" xloc="60.0" yloc="104.0"
-	        facing="90.0" />
-	    <standalone type="Chemical Storage" xloc="65.0" yloc="104.0"
-	        facing="90.0" />
+	    <standalone type="Concrete Storage" xloc="50.0" yloc="104.0" facing="90.0" />
+	    <standalone type="Cement Storage" xloc="55.0" yloc="104.0" facing="90.0" />
+	    <standalone type="Lime Storage" xloc="60.0" yloc="104.0" facing="90.0" />
+	    <standalone type="Chemical Storage" xloc="65.0" yloc="104.0" facing="90.0" />
 	        
 	</building-package>
 	
 	<building-package name="ERV Set 1" >
-	    <standalone type="ERV-I" xloc="36.0" yloc="13.0" facing="0.0" />
-	    <standalone type="ERV-A" xloc="36.0" yloc="26.0" facing="0.0" />
-	    <standalone type="ERV-B" xloc="36.0" yloc="39.0" facing="0.0" />
-	    <standalone type="ERV-C" xloc="36.0" yloc="52.0" facing="0.0" />
+	    <standalone type="ERV-I" xloc="90.0" yloc="13.0" facing="0.0" />
+	    <standalone type="ERV-A" xloc="90.0" yloc="26.0" facing="0.0" />
+	    <standalone type="ERV-B" xloc="90.0" yloc="39.0" facing="0.0" />
+	    <standalone type="ERV-C" xloc="90.0" yloc="52.0" facing="0.0" />
 	</building-package>
 	
 	<building-package name="ERV Set 2" >
-	    <standalone type="ERV-I" xloc="18.0" yloc="13.0" facing="0.0" />
-	    <standalone type="ERV-A" xloc="18.0" yloc="26.0" facing="0.0" />
-	    <standalone type="ERV-B" xloc="18.0" yloc="39.0" facing="0.0" />
-	    <standalone type="ERV-C" xloc="18.0" yloc="52.0" facing="0.0" />
+	    <standalone type="ERV-I" xloc="110.0" yloc="13.0" facing="0.0" />
+	    <standalone type="ERV-A" xloc="110.0" yloc="26.0" facing="0.0" />
+	    <standalone type="ERV-B" xloc="110.0" yloc="39.0" facing="0.0" />
+	    <standalone type="ERV-C" xloc="110.0" yloc="52.0" facing="0.0" />
 	</building-package>
 	
 	<building-package name="ERV Set 3" >
-	    <standalone type="ERV-I" xloc="36.0" yloc="65.0" facing="0.0" />
-	    <standalone type="ERV-A" xloc="36.0" yloc="78.0" facing="0.0" />
-	    <standalone type="ERV-B" xloc="36.0" yloc="91.0" facing="0.0" />
-	    <standalone type="ERV-C" xloc="36.0" yloc="104.0" facing="0.0" />
+	    <standalone type="ERV-I" xloc="90.0" yloc="65.0" facing="0.0" />
+	    <standalone type="ERV-A" xloc="90.0" yloc="78.0" facing="0.0" />
+	    <standalone type="ERV-B" xloc="90.0" yloc="91.0" facing="0.0" />
+	    <standalone type="ERV-C" xloc="90.0" yloc="104.0" facing="0.0" />
 	</building-package>
 	
 	<building-package name="ERV Set 4" >
-	    <standalone type="ERV-I" xloc="18.0" yloc="65.0" facing="0.0" />
-	    <standalone type="ERV-A" xloc="18.0" yloc="78.0" facing="0.0" />
-	    <standalone type="ERV-B" xloc="18.0" yloc="91.0" facing="0.0" />
-	    <standalone type="ERV-C" xloc="18.0" yloc="104.0" facing="0.0" />
+	    <standalone type="ERV-I" xloc="110.0" yloc="65.0" facing="0.0" />
+	    <standalone type="ERV-A" xloc="110.0" yloc="78.0" facing="0.0" />
+	    <standalone type="ERV-B" xloc="110.0" yloc="91.0" facing="0.0" />
+	    <standalone type="ERV-C" xloc="110.0" yloc="104.0" facing="0.0" />
 	</building-package>
 
 	<building-package name="Air Set 1 - 1x1" >

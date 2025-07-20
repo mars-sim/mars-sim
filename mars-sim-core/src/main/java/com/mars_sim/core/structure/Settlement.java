@@ -125,7 +125,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int ICE_PROB_FACTOR = 15;
+	private static final int ICE_PROB_FACTOR = 10;
 	private static final int REGOLITH_PROB_FACTOR = 10;
 	
 	private static final int MAX_PROB = 5000;
@@ -2451,9 +2451,9 @@ public class Settlement extends Unit implements Temporal,
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
-		logger.info("regolith: " + Math.round(result * 10D)/10D 
-				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
-				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
+//		logger.info("regolith: " + Math.round(result * 10D)/10D 
+//				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
+//				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
 		return result;
 	}
 
@@ -2507,9 +2507,9 @@ public class Settlement extends Unit implements Temporal,
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
-		logger.info("ice: " + Math.round(result * 10D)/10D 
-				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
-				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
+//		logger.info("ice: " + Math.round(result * 10D)/10D 
+//				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
+//				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
 		
 		return result;
 	}
