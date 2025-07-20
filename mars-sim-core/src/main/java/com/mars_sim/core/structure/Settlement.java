@@ -125,8 +125,8 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int ICE_PROB_FACTOR = 600;
-	private static final int REGOLITH_PROB_FACTOR = 150;
+	private static final int ICE_PROB_FACTOR = 15;
+	private static final int REGOLITH_PROB_FACTOR = 10;
 	
 	private static final int MAX_PROB = 5000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
@@ -2436,34 +2436,24 @@ public class Settlement extends Unit implements Temporal,
 		int pop = numCitizens;
 		int reserve = MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE;
 		
-		double totalSupply = (regolithAvailable + sandAvailable + concreteAvailable + cementAvailable) / pop;
-		double totalDemand = regolithDemand + sandDemand + cementDemand + concreteDemand ;
-		double diff = reserve - totalSupply;
-		
 		// Note: Derive the probability per pop (regardless the size of the settlement)
 		
-		if (diff > totalDemand) {
-			result = diff - totalDemand;
-		}
-		
-		else if (diff > 0) {
-			result = diff;
-		}
-
-		else {
-			result = totalDemand - diff;
-		}
+		double totalSupply = (regolithAvailable + sandAvailable + concreteAvailable + cementAvailable) / pop;
+		double totalDemand = regolithDemand + sandDemand + cementDemand + concreteDemand ;
+		double surplus = totalSupply - reserve - totalDemand;
 		
 		// Note: the lower the collection rate, the higher probability it needs to have to prompt
 		// settlers to go collect regolith more often to compensate the lack of its availability locally.
-		result *= (1 + result) * REGOLITH_PROB_FACTOR / regolithCollectionRate;
+		result = Math.max(1, 1 - surplus) * REGOLITH_PROB_FACTOR / regolithCollectionRate;
 		
 		if (result < 0)
 			result = 0;
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
-		logger.info("regolith: " + (int)result + " totalSupply: " + (int)totalSupply + " totalDemand: " + (int)totalDemand + " reserve: " + (int)totalDemand);
+		logger.info("regolith: " + Math.round(result * 10D)/10D 
+				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
+				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
 		return result;
 	}
 
@@ -2502,34 +2492,25 @@ public class Settlement extends Unit implements Temporal,
 		int pop = numCitizens;
 		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE;
 
-		double totalSupply = (iceSupply + waterSupply + brineWaterSupply) / pop;
-		double totalDemand = (iceDemand + waterDemand + brineWaterDemand);
-		double diff = reserve - totalSupply;
-		
 		// Note: Derive the probability per pop (regardless the size of the settlement)
 		
-		if (diff > totalDemand) {
-			result = diff - totalDemand;
-		}
-		
-		else if (diff > 0) {
-			result = diff;
-		}
-
-		else {
-			result = totalDemand - diff;
-		}
+		double totalSupply = (iceSupply + waterSupply + brineWaterSupply) / pop;
+		double totalDemand = (iceDemand + waterDemand + brineWaterDemand);
+		double surplus = totalSupply - reserve - totalDemand;
 		
 		// Note: the lower the collection rate, the higher probability it needs to have to prompt
 		// settlers to go collect ice more often to compensate the lack of its availability locally.
-		result *= (1 + result) * ICE_PROB_FACTOR / iceCollectionRate;
+		result = Math.max(1, 1 - surplus) * ICE_PROB_FACTOR / iceCollectionRate;
 		
 		if (result < 0)
 			result = 0;
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
-		logger.info("ice: " + (int)result + " totalSupply: " + (int)totalSupply + " totalDemand: " + (int)totalDemand + " reserve: " + (int)totalDemand);
+		logger.info("ice: " + Math.round(result * 10D)/10D 
+				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
+				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
+		
 		return result;
 	}
 

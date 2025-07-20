@@ -67,18 +67,12 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 
 		for (Map<K, Double> oneDay : dailyData) {
 			// Get metric for the day; there may not be any
-			double dailyTotal = 0;
+			double dailyTotal = 0.0;
 			if (oneDay.containsKey(metric)) {
 				dailyTotal = oneDay.get(metric);
 			}
 
-			// First entry is always today
-			if (numSols == 0) {
-				sum += ((dailyTotal/currentMsol) * 1_000D);
-			}
-			else {
-				sum += dailyTotal;
-			}
+			sum += dailyTotal;
 			numSols++;
 		}
 
@@ -86,6 +80,13 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 			// No data points
 			return 0;
 		}
+		
+		if (numSols == 1) {
+			// If there's only one sol of data ,
+			// then it's a partial sum
+			return sum * currentMillisol / 1_000;
+		}
+		
 		return sum / numSols;
 	}
 }

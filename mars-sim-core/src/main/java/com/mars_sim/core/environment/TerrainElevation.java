@@ -66,7 +66,7 @@ public class TerrainElevation implements Serializable {
 	 *
 	 * @param currentLocation  the coordinates of the current location
 	 * @param currentDirection the current direction (in radians)
-	 * @return terrain steepness angle (in radians)
+	 * @return terrain steepness angle (in radians) e.g. 180 deg is 3.14 rad
 	 */
 	public static double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
 		return determineTerrainSteepness(currentLocation, getMEGDRElevation(currentLocation), currentDirection);
@@ -196,6 +196,7 @@ public class TerrainElevation implements Serializable {
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
 
+		// elevation in km
 		double elevation = terrainProfile[0];
 		double steepness = terrainProfile[1];
 		double latitude = currentLocation.getLatitudeDouble();
@@ -205,26 +206,46 @@ public class TerrainElevation implements Serializable {
 
 		double rate = RATE;
 
-		// Note 1: Add seasonal variation for north and south hemisphere
-		// Note 2: The collection rate may be increased by relevant scientific studies
+		// Note 1: Investigate how to adjust for seasonal variation of finding ice for north and south hemisphere
+		// Note 2: The collection rate may be adjusted by relevant scientific studies
 
-		if (latitude < 60 && latitude > -60) {
+		// See https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013JE004482
+		
+		if (latitude < 50 && latitude > 40
+				|| latitude > -74 && latitude < -70) {
+			// At the edge of a region where impact exposures between 40-50°N are common
+			// Ice becomes stable beneath a desiccated layer poleward of some point in the mid-latitudes, currently around ±40–50°.
+			
 			// The steeper the slope, the harder it is to retrieve the ice deposit
-			rate *= (- 0.639 * elevation + 14.2492) / 20D + Math.abs(steepness) / 10D;
+			rate *= 0.4 * (24 - elevation) + Math.abs(steepness) / 3.14 * 4;
+		}
+		
+		else if (latitude < 65 && latitude > 50) {
+			// In the mid-latitudes, surface ice is present in impact craters, steep scarps and gullies.
+			
+			// The steeper the slope, the harder it is to retrieve the ice deposit
+			rate *= 0.1 * (24 - elevation) + Math.abs(steepness) / 3.14 * 4;
 		}
 
-		else if ((latitude >= 60 && latitude < 75)
-			|| (latitude <= -60 && latitude > -75)) {
-			rate *= RandomUtil.getRandomDouble(5) + Math.abs(elevation) / 2.0 + Math.abs(latitude) / 75.0 - Math.abs(steepness) / 10D;
+		else if ((latitude >= 65 && latitude < 75)
+			|| (latitude <= -65 && latitude > -75)) {
+			
+			rate *= 2 + RandomUtil.getRandomDouble(3) + Math.abs(24 - elevation) / 2.0 
+					+ Math.abs(latitude) / 75.0 - Math.abs(steepness) / 3.14 * 4;
 		}
 
 		else if ((latitude >= 75 && latitude <= 90)
 				|| (latitude <= -75 && latitude >= -90)) {
-				rate *= RandomUtil.getRandomDouble(10) + Math.abs(elevation) + Math.abs(latitude) / 75.0;
+			
+			// At latitudes near the poles, ice is present in glaciers.
+			
+			// Abundant ice is present beneath the permanent carbon dioxide ice cap at the Martian south pole.
+		
+			rate *= 5 + RandomUtil.getRandomDouble(5) + Math.abs(24 - elevation) + Math.abs(latitude) / 75.0;
 		}
 
-		if (rate > 200)
-			rate = 200;
+		if (rate > 100)
+			rate = 100;
 
 		if (rate < 1)
 			rate = 1;

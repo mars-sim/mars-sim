@@ -29,7 +29,7 @@ public abstract class DataLogger<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static int currentSol = 1;
-	protected static int currentMsol = 0;
+	protected static int currentMillisol = 0;
 	
 	private int maxSols = 7;
 	private int latestSol = 0;
@@ -48,7 +48,7 @@ public abstract class DataLogger<T> implements Serializable {
 	 */
 	public static void changeTime(MarsTime time) {
 		currentSol = time.getMissionSol();
-		currentMsol = time.getMillisolInt();
+		currentMillisol = time.getMillisolInt();
 	}
 	
 	/**

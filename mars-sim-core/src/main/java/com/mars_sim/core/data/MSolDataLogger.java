@@ -30,7 +30,7 @@ public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>> {
 	 * @param data Item to add.
 	 */
 	public void addDataPoint(T data) {
-		MSolDataItem<T> item = new MSolDataItem<T>(currentMsol, data);
+		MSolDataItem<T> item = new MSolDataItem<T>(currentMillisol, data);
 		super.addData(item);
 	}
 	

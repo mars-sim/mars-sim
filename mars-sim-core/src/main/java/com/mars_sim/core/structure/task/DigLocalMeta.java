@@ -97,7 +97,7 @@ public abstract class DigLocalMeta extends MetaTask
     		return Collections.emptyList();
         }
 
-        double base = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability);
+        double base = RandomUtil.getRandomDouble(collectionProbability / 5, collectionProbability);
         if (base <= 0) {
             return Collections.emptyList();
         }

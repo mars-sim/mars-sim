@@ -43,11 +43,11 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * in crops.xml [in umol /m^2 /millisols /(Wm^-2)].
 	 */
 	private static double conversionFactor;
-	/** The average water needed [in kg] */
+	/** The average water needed [in kg/sol/m^2) */
 	private static double averageWaterNeeded;
-	/** The average O2 needed [in kg] */
+	/** The average O2 needed [in kg/sol/m^2] */
 	private static double averageOxygenNeeded;
-	/** The average CO2 needed [in kg] */
+	/** The average CO2 needed [in kg/sol/m^2] */
 	private static double averageCarbonDioxideNeeded;
 	
 	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.findIDbyItemResourceName("mushroom containment kit");
@@ -1103,20 +1103,20 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param greyFilterRate
 	 */
 	private void computeWaterFertilizer(double compositeFactor, double time, double greyFilterRate) {
-		// Calculate water usage kg per sol
-		double waterRequired = Math.max(0.005, compositeFactor * averageWaterNeeded);
+		// Calculate water usage (kg * millisols / 1000 * square meter)
+		double waterReq = compositeFactor * averageWaterNeeded * growingArea * time / 1000;
 
 		// Determine the amount of grey water available.
-		double gw = building.getSettlement().getAmountResourceStored(ResourceUtil.GREY_WATER_ID);
-		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
+		double greyWaterStored = building.getSettlement().getAmountResourceStored(ResourceUtil.GREY_WATER_ID);
+		double greyWaterAvailable = Math.min(greyWaterStored * greyFilterRate * time, greyWaterStored);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
 		double waterModifier = 0;
 		double fertilizerModifier = 0;
 
 		// First water crops with grey water if it is available.
-		if (greyWaterAvailable >= waterRequired) {
-			greyWaterUsed = waterRequired;
+		if (greyWaterAvailable >= waterReq) {
+			greyWaterUsed = waterReq;
 			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
 			waterModifier = 1D;
 		}
@@ -1126,23 +1126,25 @@ public class Crop implements Comparable<Crop>, Entity {
 			greyWaterUsed = greyWaterAvailable;
 			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
 
-			waterRequired = waterRequired - greyWaterUsed;
-			double waterAvailable = building.getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID);
+			waterReq = waterReq - greyWaterUsed;
+			double waterStored = building.getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID);
 
-			if (waterAvailable >= waterRequired) {
-				waterUsed = waterRequired;
+			if (waterStored >= waterReq) {
+				waterUsed = waterReq;				
+//				logger.info(this, 20_000, "waterUsed: " + Math.round(waterUsed * 1000.0)/1000.0);
 				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
 
 				waterModifier = 1D;
 			}
 			else {
 				// not enough water
-				waterUsed = waterAvailable;
+				waterUsed = waterStored;
+//				logger.info(this, 20_000, "waterUsed: " + Math.round(waterUsed * 1000.0)/1000.0);
 				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
 
 				// Incur penalty if water is NOT available
 				// Avoid divided by a very low waterRequired
-				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .005);
+				waterModifier = (greyWaterUsed + waterUsed) / (waterReq + .005);
 			}
 
 			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(ResourceUtil.FERTILIZER_ID);
@@ -1177,8 +1179,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	 *
 	 * @param watt
 	 * @param compositeFactor
+	 * @param time
 	 */
-	private void computeGases(double watt, double compositeFactor) {
+	private void computeGases(double watt, double compositeFactor, double time) {
 		// Note: uPAR includes both sunlight and artificial light
 		// Calculate O2 and CO2 usage kg per sol
 		double o2Modifier = 0;
@@ -1187,7 +1190,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		// A. During the night when light level is low
 		if (Math.round(watt * 10.0)/10.0 <= 0.1) {
 
-			double o2Required = Math.max(0.005, compositeFactor * averageOxygenNeeded);
+			double o2Required = compositeFactor * averageOxygenNeeded * time * growingArea / 1000;
 	
 			double o2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
@@ -1210,7 +1213,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// B. During the day
 
 			// Determine harvest modifier by amount of carbon dioxide available.
-			double cO2Req = Math.max(0.005, compositeFactor * averageCarbonDioxideNeeded);
+			double cO2Req = compositeFactor * averageCarbonDioxideNeeded * time * growingArea / 1000;
 			double cO2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
@@ -1299,9 +1302,11 @@ public class Crop implements Comparable<Crop>, Entity {
 			// needFactor ranges from growthFactor * 2.5 to growthFactor * 11
 		}
 
-		double compositeFactor = Math.max(.1, TUNING_FACTOR * needFactor * time / 1000.0);
+		// Max at 7 
+		// Min at 0.0001
+		double compositeFactor = Math.min(7, Math.max(.0001, TUNING_FACTOR * needFactor));
 		
-//		logger.info(this, 20_000, "watt: " + Math.round(watt * 100.0)/100.0
+//		logger.info(this, 10_000, "watt: " + Math.round(watt * 100.0)/100.0
 //				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
 //				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
 		
@@ -1310,7 +1315,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		// STEP 5 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		// Note: computeGases takes up 25% of all cpu utilization
-		computeGases(watt, compositeFactor * GAS_MODIFIER);
+		computeGases(watt, compositeFactor * GAS_MODIFIER, time);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 
 		// STEP 6 : TUNE HARVEST MODIFIER

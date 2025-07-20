@@ -58,7 +58,7 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 	
 			// First entry is always today
 			if (numSols == 0) {
-				sum += ((dailyTotal/currentMsol) * 1_000D);
+				sum += ((dailyTotal/currentMillisol) * 1_000D);
 			}
 			else {
 				sum += dailyTotal;
@@ -86,7 +86,7 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 	
 			// First entry is always today
 			if (numSols == 0) {
-				sum += ((dailyTotal/currentMsol) * 1_000D);
+				sum += ((dailyTotal/currentMillisol) * 1_000D);
 			}
 			else {
 				sum += dailyTotal;
