@@ -549,8 +549,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Map<Integer, Number> resources = getRequiredResourcesToLoad();
 		Map<Integer, Integer> equipment = getRequiredEquipmentToLoad();
 		Settlement settlement = vehicle.getSettlement();
-		if (settlement == null)
+		if (settlement == null) {
+			logger.severe(vehicle, "Not at Settlement for loading");
 			return false;
+		}
 		
 		double tripTime = getEstimatedRemainingMissionTime(true);
 		if (tripTime == 0) {
@@ -2164,6 +2166,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (settlement != null) {
 			// This should never be null
 			settlement.getBuildingManager().addToGarage(vehicle);
+			settlement.addVicinityVehicle(vehicle); // Should this be needed ?
 		}
 		setPhase(nextPhase, (settlement != null ? settlement.getName() : "Unknown"));
 	}

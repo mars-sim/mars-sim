@@ -7,8 +7,8 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,10 +64,10 @@ public class Trade extends RoverMission  {
 	private TradeObjective objective;
 
 	private boolean outbound;
-	private boolean doNegotiation;
 
 	private NegotiateTrade negotiationTask;
 
+	private Person missionTrader;  // Should this be in the Objective to track who does the deal?
 
 	/**
 	 * Constructor. Started by TradeMeta
@@ -90,25 +90,22 @@ public class Trade extends RoverMission  {
 		}
 
 		outbound = true;
-		doNegotiation = true;
 
-		if (!isDone() && s != null) {
-			// Get trading settlement
-			Deal deal = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle());
-			if (deal == null) {
-				endMission(NO_TRADING_SETTLEMENT);
-				return;
-			}
-			var tradingSettlement = deal.getBuyer();
-			addNavpoint(tradingSettlement);
+		// Get trading settlement
+		Deal deal = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle());
+		if (deal == null) {
+			endMission(NO_TRADING_SETTLEMENT);
+			return;
+		}
+		var tradingSettlement = deal.getBuyer();
+		addNavpoint(tradingSettlement);
 
-			objective = new TradeObjective(tradingSettlement, deal.getBuyingLoad(), deal.getSellingLoad(), deal.getProfit());
-			addObjective(objective);
+		objective = new TradeObjective(tradingSettlement, deal.getBuyingLoad(), deal.getSellingLoad(), deal.getProfit());
+		addObjective(objective);
 
-			// Recruit additional members to mission.
-			if (!isDone() && !recruitMembersForMission(startingMember, MAX_MEMBERS)) {
-				return;
-			}
+		// Recruit additional members to mission.
+		if (!isDone() && !recruitMembersForMission(startingMember, MAX_MEMBERS)) {
+			return;
 		}
 
 		// Set initial phase
@@ -132,7 +129,6 @@ public class Trade extends RoverMission  {
 		super(MissionType.TRADE, (Worker) members.toArray()[0], rover);
 
 		outbound = true;
-		doNegotiation = false;
 
 		// Sets the mission capacity.
 		if (getMissionCapacity() > MAX_MEMBERS) {
@@ -145,8 +141,6 @@ public class Trade extends RoverMission  {
 		addMembers(members, false);
 
 		// Set trade goods.
-		// buyLoad = buyGoods;
-		// desiredBuyLoad = new HashMap<>(buyGoods);
 		var profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), tradingSettlement, buyGoods, sellGoods);
 		
 		objective = new TradeObjective(tradingSettlement, new HashMap<>(buyGoods), sellGoods, profit);
@@ -161,46 +155,54 @@ public class Trade extends RoverMission  {
 	 */
 	@Override
 	protected boolean determineNewPhase() {
+
+		if (super.determineNewPhase()) {
+			return true;
+		}
+
+		// for me to handle
 		var tradingSettlement = objective.getTradingVenue();
-
 		boolean handled = true;
-		if (!super.determineNewPhase()) {
-			if (TRAVELLING.equals(getPhase())) {
-				if (isCurrentNavpointSettlement()) {
-					startDisembarkingPhase(outbound ? TRADE_DISEMBARKING : DISEMBARKING);
+		var ph = getPhase();
+		if (TRAVELLING.equals(ph)) {
+			if (isCurrentNavpointSettlement()) {
+				if (outbound) {
+					// Outbound so at the trading Settlement
+					getVehicle().transfer(tradingSettlement); 
 				}
+				startDisembarkingPhase(outbound ? TRADE_DISEMBARKING : DISEMBARKING);
 			}
+		}
 
-			else if (TRADE_DISEMBARKING.equals(getPhase())) {
-				setPhase(TRADE_NEGOTIATING, tradingSettlement.getName());
-			}
+		else if (TRADE_DISEMBARKING.equals(ph)) {
+			setPhase(TRADE_NEGOTIATING, tradingSettlement.getName());
+		}
 
-			else if (TRADE_NEGOTIATING.equals(getPhase())) {
-				setPhase(UNLOAD_SOLD_GOODS, tradingSettlement.getName());
-			}
+		else if (TRADE_NEGOTIATING.equals(ph)) {
+			setPhase(UNLOAD_SOLD_GOODS, tradingSettlement.getName());
+		}
 
-			else if (UNLOAD_SOLD_GOODS.equals(getPhase())) {
-				// Check if vehicle can hold enough supplies for mission.
-				if (!isVehicleLoadable()) {
-					endMission(CANNOT_LOAD_RESOURCES);
-				}
-				else {
-					// Start the loading
-					prepareLoadingPlan(tradingSettlement);
-					setPhase(LOAD_BOUGHT_GOODS, tradingSettlement.getName());
-				}
-			}
-
-			else if (LOAD_BOUGHT_GOODS.equals(getPhase())) {
-				setPhase(TRADE_EMBARKING, tradingSettlement.getName());
-			}
-
-			else if (TRADE_EMBARKING.equals(getPhase())) {
-				startTravellingPhase();
+		else if (UNLOAD_SOLD_GOODS.equals(ph)) {
+			// Check if vehicle can hold enough supplies for mission.
+			if (!isVehicleLoadable()) {
+				endMission(CANNOT_LOAD_RESOURCES);
 			}
 			else {
-				handled = false;
+				// Start the loading
+				prepareLoadingPlan(tradingSettlement);
+				setPhase(LOAD_BOUGHT_GOODS, tradingSettlement.getName());
 			}
+		}
+
+		else if (LOAD_BOUGHT_GOODS.equals(ph)) {
+			setPhase(TRADE_EMBARKING, tradingSettlement.getName());
+		}
+
+		else if (TRADE_EMBARKING.equals(ph)) {
+			startTravellingPhase();
+		}
+		else {
+			handled = false;
 		}
 
 		return handled;
@@ -209,15 +211,17 @@ public class Trade extends RoverMission  {
 	@Override
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
-		if (TRADE_DISEMBARKING.equals(getPhase())) {
+
+		var ph = getPhase();
+		if (TRADE_DISEMBARKING.equals(ph)) {
 			performTradeDisembarkingPhase(member);
-		} else if (TRADE_NEGOTIATING.equals(getPhase())) {
+		} else if (TRADE_NEGOTIATING.equals(ph)) {
 			performTradeNegotiatingPhase(member);
-		} else if (UNLOAD_SOLD_GOODS.equals(getPhase())) {
-			performUnloadGoodsPhase(member);
-		} else if (LOAD_BOUGHT_GOODS.equals(getPhase())) {
-			performLoadGoodsPhase(member);
-		} else if (TRADE_EMBARKING.equals(getPhase())) {
+		} else if (UNLOAD_SOLD_GOODS.equals(ph)) {
+			performUnloadGoodsPhase();
+		} else if (LOAD_BOUGHT_GOODS.equals(ph)) {
+			performLoadGoodsPhase();
+		} else if (TRADE_EMBARKING.equals(ph)) {
 			computeTotalDistanceProposed();
 			performTradeEmbarkingPhase(member);
 		}
@@ -242,12 +246,8 @@ public class Trade extends RoverMission  {
 					
 					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
-					
 					if (canWalk) {
-						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
-						if (!canDo) {
-							logger.severe("Unable to start walking to building " + destinationBuilding);
-						}
+						assignTask(person, new Walk(person, walkingSteps));
 					}
 					else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
@@ -259,10 +259,7 @@ public class Trade extends RoverMission  {
 					boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
 					
 					if (canWalk) {
-						boolean canDo = assignTask(robot, new Walk(robot, walkingSteps));
-						if (!canDo) {
-							logger.severe("Unable to start walking to building " + destinationBuilding);
-						}
+						assignTask(robot, new Walk(robot, walkingSteps));
 					}
 					else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
@@ -286,40 +283,42 @@ public class Trade extends RoverMission  {
 	 * @param member the mission member performing the phase.
 	 */
 	private void performTradeNegotiatingPhase(Worker member) {
-		if (doNegotiation) {
-			if (member == getMissionTrader()) {
-				if (negotiationTask != null) {
-					if (negotiationTask.isDone()) {
-						var buyLoad = negotiationTask.getBuyLoad();
-						var profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), 
-											objective.getTradingVenue(), buyLoad, objective.getSell());
-						objective.updateBought(buyLoad, profit);
-
-						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-						setPhaseEnded(true);
+		if (member == getMissionTrader()) {
+			if (negotiationTask != null) {
+				if (negotiationTask.isDone()) {
+					var buyLoad = negotiationTask.getBuyLoad();
+					double profit = 0D;
+					if (buyLoad != null) {
+						profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), 
+										objective.getTradingVenue(), buyLoad, objective.getSell());
 					}
-				}
-
-				else {
-					Person settlementTrader = getSettlementTrader();
-
-					if (settlementTrader != null) {
-						if (member instanceof Person person) {
-							negotiationTask = new NegotiateTrade(objective.getTradingVenue(),
-																getStartingSettlement(), getRover(),
-																objective.getSell(), person, settlementTrader);
-							assignTask(person, negotiationTask);
-						}
+					else {
+						buyLoad = Collections.emptyMap();
 					}
-					else if (getPhaseDuration() > 1000D) {
-						objective.updateBought(new HashMap<>(), 0D);
-						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-						setPhaseEnded(true);
-					}
+					objective.updateBought(buyLoad, profit);
+
+					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					setPhaseEnded(true);
 				}
 			}
-		} else {
-			setPhaseEnded(true);
+
+			else {
+				Person settlementTrader = getSettlementBuyer();
+
+				if (settlementTrader != null) {
+					if (member instanceof Person person) {
+						negotiationTask = new NegotiateTrade(objective.getTradingVenue(),
+															getStartingSettlement(), getRover(),
+															objective.getSell(), person, settlementTrader);
+						assignTask(person, negotiationTask);
+					}
+				}
+				else if (getPhaseDuration() > 1000D) {
+					objective.updateBought(new HashMap<>(), 0D);
+					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					setPhaseEnded(true);
+				}
+			}
 		}
 
 		if (getPhaseEnded()) {
@@ -335,10 +334,8 @@ public class Trade extends RoverMission  {
 
 	/**
 	 * Perform the unload goods phase.
-	 *
-	 * @param member the mission member performing the phase.
 	 */
-	private void performUnloadGoodsPhase(Worker member) {
+	private void performUnloadGoodsPhase() {
 
 		// Unload towed vehicle (if necessary).
 		unloadTowedVehicle();
@@ -354,7 +351,7 @@ public class Trade extends RoverMission  {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performLoadGoodsPhase(Worker member) {
+	private void performLoadGoodsPhase() {
 
 		if (!isDone()) {
 			// Load towed vehicle (if necessary).
@@ -411,25 +408,7 @@ public class Trade extends RoverMission  {
 		if (!isDone() && !member.isInVehicle()) {
 
 			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
-
-			// Elect a new mission lead if the previous one was dead
-			if (member instanceof Person lead && lead.isDeclaredDead()) {
-				logger.info(lead, "No longer alive.");
-				int bestSkillLevel = 0;
-				for (Worker mm: getMembers()) {
-					if (mm instanceof Person p) {
-						int level = lead.getSkillManager().getSkillExp(SkillType.TRADING);
-						if (level > bestSkillLevel) {
-							bestSkillLevel = level;
-							lead = p;
-							setStartingMember(p);
-							break;
-						}
-					}
-				}
-			}
-			
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);			
 
 			// Question: is the trading settlement responsible
 			// for providing an EVA suit for each person
@@ -449,10 +428,7 @@ public class Trade extends RoverMission  {
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					// Walk back to the vehicle and be ready to embark and go home
 					if (canWalk) {
-						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
-						if (!canDo) {
-							logger.warning(person, "Unable to start walking to " + v + ".");
-						}
+						assignTask(person, new Walk(person, walkingSteps));
 					}
 
 					else {
@@ -483,32 +459,14 @@ public class Trade extends RoverMission  {
 	}
 
 	@Override
-	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
-
-		// Unload towed vehicle if any.
-//		if (!isDone() && (getRover().getTowedVehicle() != null)) {
-//			Vehicle towed = getRover().getTowedVehicle();
-//			towed.setReservedForMission(false);
-//			getRover().setTowedVehicle(null);
-//			towed.setTowingVehicle(null);
-//			disembarkSettlement.addParkedVehicle(towed);
-//			towed.findNewParkingLoc();
-//		}
-
-		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
-	}
-
-	@Override
 	protected void endMission(MissionStatus endStatus) {
 
 		// Unreserve any towed vehicles.
-		if (getRover() != null) {
-			if (getRover().getTowedVehicle() != null) {
-				Vehicle towed = getRover().getTowedVehicle();
-				towed.setReservedForMission(false);
-			}
+		if (getRover() != null && getRover().getTowedVehicle() != null) {
+			Vehicle towed = getRover().getTowedVehicle();
+			towed.setReservedForMission(false);
 		}
-
+		
 		super.endMission(endStatus);
 	}
 
@@ -533,16 +491,11 @@ public class Trade extends RoverMission  {
 				vehicleSource = objective.getTradingVenue();
 			}
 
-			Iterator<Vehicle> j = vehicleSource.getParkedGaragedVehicles().iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				boolean isEmpty = vehicle.isEmpty();
-				if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
-					if ((vehicle != getVehicle()) && !vehicle.isReserved() && isEmpty) {
-						result = vehicle;
-					}
-				}
-			}
+			result = vehicleSource.getParkedGaragedVehicles().stream()
+					.filter( v -> vehicleType.equalsIgnoreCase(v.getDescription())
+											&& (v != getVehicle())
+											&& !v.isReserved() && v.isEmpty())
+					.findAny().orElse(null);
 		}
 
 		return result;
@@ -601,22 +554,11 @@ public class Trade extends RoverMission  {
 	 * @return the trader.
 	 */
 	private Person getMissionTrader() {
-		Person bestTrader = null;
-		int bestTradeSkill = -1;
+		if (missionTrader == null) {
+			missionTrader = getBestTrader(getMembers(), Collections.emptyList());
 
-		Iterator<Worker> i = getMembers().iterator();
-		while (i.hasNext()) {
-			Worker member = i.next();
-			if (member instanceof Person person) {
-				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-				if (tradeSkill > bestTradeSkill) {
-					bestTradeSkill = tradeSkill;
-					bestTrader = person;
-				}
-			}
 		}
-
-		return bestTrader;
+		return missionTrader;
 	}
 
 	/**
@@ -624,18 +566,20 @@ public class Trade extends RoverMission  {
 	 *
 	 * @return the trader.
 	 */
-	private Person getSettlementTrader() {
+	private Person getSettlementBuyer() {
+		return getBestTrader(objective.getTradingVenue().getIndoorPeople(), getMembers());
+	}
+
+	private static Person getBestTrader(Collection<? extends Worker> potentials, Collection<? extends Worker> excluded) {
 		Person bestTrader = null;
 		int bestTradeSkill = -1;
 
-		var excluded = getMembers();
-
-		for(Person person : objective.getTradingVenue().getIndoorPeople()) {
-			if (!excluded.contains(person)) {
-				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+		for(var w : potentials) {
+			if (!excluded.contains(w) && w instanceof Person p) {
+				int tradeSkill = p.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 				if (tradeSkill > bestTradeSkill) {
 					bestTradeSkill = tradeSkill;
-					bestTrader = person;
+					bestTrader = p;
 				}
 			}
 		}

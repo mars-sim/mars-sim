@@ -129,8 +129,7 @@ public final class CommerceUtil {
 	private static boolean hasCurrentCommerceMission(Settlement settlement1, Settlement settlement2) {
 
 		for(Mission mission : missionManager.getMissions()) {
-			if (mission instanceof CommerceMission) {
-				CommerceMission tradeMission = (CommerceMission) mission;
+			if (mission instanceof CommerceMission tradeMission) {
 				Settlement startingSettlement = tradeMission.getStartingSettlement();
 				Settlement tradingSettlement = tradeMission.getTradingSettlement();
 				if ((startingSettlement.equals(settlement1) && tradingSettlement.equals(settlement2))
@@ -302,10 +301,7 @@ public final class CommerceUtil {
 			if (extraMass < massCapacity) {
 				costValue += buy.price() * amountToTrade;
 				massCapacity -= extraMass;
-				if (tradeList.containsKey(good)) {
-					amountToTrade += tradeList.get(good);
-				}
-				tradeList.put(good, amountToTrade);
+				tradeList.merge(good, amountToTrade, Integer::sum);
 						
 				// CHeck capacity
 				if ((massCapacity <= 0) || (maxBuyValue <= 0)) {
@@ -375,8 +371,7 @@ public final class CommerceUtil {
 			case ITEM_RESOURCE:
 				return settlement.getItemResourceStored(good.getID());
 			
-			case EQUIPMENT:
-			case CONTAINER:
+			case EQUIPMENT, CONTAINER:
 				return settlement.findNumEmptyContainersOfType(((EquipmentGood) good).getEquipmentType(), false);
 			
 			case VEHICLE:
@@ -433,7 +428,7 @@ public final class CommerceUtil {
 	 * @throws Exception if error getting the estimated mission cost.
 	 */
 	private static double getEstimatedMissionCost(Settlement startingSettlement, Vehicle delivery, double distance) {
-		Map<Good, Integer> neededResources = new HashMap<>(4);
+		Map<Good, Integer> neededResources = new HashMap<>();
 
 		// Get required fuel.
 		int fuelTypeID = delivery.getFuelTypeID();
@@ -517,13 +512,18 @@ public final class CommerceUtil {
 			// Determine the initial buy load based on goods that are profitable for the
 			// destination settlement to sell.
 			Shipment returnLoad = determineLoad(buyingSettlement, sellingSettlement, delivery, Double.POSITIVE_INFINITY);
-			double baseBuyLoadValue = returnLoad.getCostValue();
-			double buyLoadValue = baseBuyLoadValue / tradeModifier;
-			buyLoad = returnLoad.getLoad();
+			if (returnLoad != null) {
+				double baseBuyLoadValue = returnLoad.getCostValue();
+				double buyLoadValue = baseBuyLoadValue / tradeModifier;
+				buyLoad = returnLoad.getLoad();
 
-			// Update the credit value between the starting and destination settlements.
-			credit -= buyLoadValue;
-			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+				// Update the credit value between the starting and destination settlements.
+				credit -= buyLoadValue;
+				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+			}
+			else {
+				logger.warning(buyingSettlement, "No trade possible; deal rejected");
+			}
 		}
 
 		return buyLoad;

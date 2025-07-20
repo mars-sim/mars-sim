@@ -96,6 +96,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.CLOSEDOWN);
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
 	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);
+	private static final MissionPhase INIT_PHASE = new MissionPhase("initial", Stage.INITIAL);
 
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
@@ -114,7 +115,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected int identifier;
 	
 	/** Has the current phase ended? */
-	private boolean phaseEnded;
+	private boolean phaseEnded = false;
 	/** True if mission is completed. */
 	private boolean done = false;
 	private boolean aborted = false;
@@ -132,7 +133,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private MissionType missionType;
 
 	/** The current phase of the mission. */
-	private MissionPhase phase;
+	private MissionPhase phase = INIT_PHASE;
 	/** Time the phase started */
 	private MarsTime phaseStartTime;
 	/** Log of mission activity	 */
@@ -188,9 +189,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		missionStatus = new HashSet<>();
 		members = new UnitSet<>();
 		done = false;
-		phase = null;
 		phaseDescription = "";
-		phaseEnded = false;
 		missionCapacity = MAX_CAP;
 		
 		signUp = new UnitSet<>();
@@ -211,16 +210,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 				appendStr = "' with 1 other.";
 			else
 				appendStr = "' with " + n + " others.";
-
-//			String article = "a ";
-
-//			String missionStr = missionString;
-//
-//			if (!missionStr.toLowerCase().contains("mission"))
-//				missionStr = missionString + " mission";
-
-//			if(Conversion.isVowel(missionName))
-//				article = "an ";
 
 			logger.log(startingMember, Level.INFO, 0,
 					"Began organizing " + missionString + appendStr);
@@ -623,11 +612,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// Perform phase.
 		if (!done) {
-			// Check for issue #786
-			if (member.isInSettlement() && (phase.getStage() == Stage.ACTIVE) && (member instanceof Person)) {
-				logger.info(member, 60_000L, "Responsible for '" + phase.getName() + "' Mission Phase.");
-			}
-
 			performPhase(member);
 		}
 		return true;
@@ -651,7 +635,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			endMissionProblem(member, "Current phase null");
 		}
 
-		if (REVIEWING.equals(getPhase())) {
+		else if (REVIEWING.equals(getPhase())) {
 			requestReviewPhase(member);
 		}
 	}
@@ -952,7 +936,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null) {
 
 			if (currentTask.getName().equals(task.getName())) {
-//				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
 				// If the robot has been doing this task, 
 				// then there is no need of adding it.
 				return false;
