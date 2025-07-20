@@ -632,16 +632,6 @@ public class GoodsManager implements Serializable {
 		return marketMap.get(good).getPrice();
 	}
 	
-	/**
-	 * Gets the value point of a good.
-	 *
-	 * @param good the good to check.
-	 * @return value (VP)
-	 */
-	public double getGoodValuePoint(Good good) {
-		return getGoodValuePoint(good.getID());
-	}
-
 
 	/**
 	 * Gets the value point of a good.
@@ -918,7 +908,7 @@ public class GoodsManager implements Serializable {
 			// Sell goods where there is a good supply value
 			double buyPrice = getPrice(good);
 			if (buyPrice > 0D) {
-				/// Look up sell 10%
+				// Look up sell 10%
 				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
 
 				// Take Goods where I have ample in store

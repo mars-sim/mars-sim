@@ -15,5 +15,5 @@ public enum Stage {
 	ACTIVE,
 	CLOSEDOWN,
 	DONE,
-	ABORTED
+	ABORTED, INITIAL
 }

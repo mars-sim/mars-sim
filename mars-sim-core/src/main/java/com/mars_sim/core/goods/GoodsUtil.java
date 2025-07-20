@@ -125,7 +125,7 @@ public class GoodsUtil {
      * @return good for the vehicle type.
      */
     public static Good getVehicleGood(String vehicleType) {
-        if ((vehicleType == null) || vehicleType.trim().length() == 0) {
+        if ((vehicleType == null) || vehicleType.trim().isEmpty()) {
             logger.severe("vehicleType is NOT supposed to be blank or null.");
         }
 
@@ -284,20 +284,6 @@ public class GoodsUtil {
         }
 
         return null;
-    }
-    
-    /**
-     * Gets the good id.
-     * 
-     * @param name
-     * @return
-     */
-    public static int getGoodID(String name) {
-        Good good = getGood(name);
-        if (good != null)
-            return good.getID();
-
-        return -1;
     }
 
     /**

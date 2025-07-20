@@ -53,6 +53,7 @@ import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.mission.objectives.MiningObjective;
+import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Delivery;
@@ -81,6 +82,7 @@ import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ExplorationPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.MiningPanel;
+import com.mars_sim.ui.swing.tool.mission.objectives.TradePanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -338,11 +340,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		customInfoPanels.put(deliveryMissionName, deliveryPanel);
 		missionCustomPane.add(deliveryPanel, deliveryMissionName);
 
-		// Create custom trade mission panel.
-		MissionCustomInfoPanel tradePanel = new TradeMissionCustomInfoPanel();
-		String tradeMissionName = Trade.class.getName();
-		customInfoPanels.put(tradeMissionName, tradePanel);
-		missionCustomPane.add(tradePanel, tradeMissionName);
 
 		// Create custom construction mission panel.
 		MissionCustomInfoPanel constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
@@ -660,6 +657,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					case FieldStudyObjectives fso -> new FieldStudyPanel(fso, desktop);
 					case ExplorationObjective eo -> new ExplorationPanel(eo);
 					case MiningObjective mo -> new MiningPanel(mo, desktop);
+					case TradeObjective to -> new TradePanel(to, desktop);
 
 					default -> null;
 				};
