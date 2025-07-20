@@ -197,7 +197,7 @@ public class EVASuit extends Equipment
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
 		// Create MicroInventory instance
-		microInventory = new MicroInventory(this, CAPACITY);
+		microInventory = new MicroInventory(this, 1);
 
 		// Set capacity for each resource
 		microInventory.setSpecificCapacity(ResourceUtil.OXYGEN_ID, OXYGEN_CAPACITY);
@@ -505,7 +505,7 @@ public class EVASuit extends Equipment
 	 * @return Suit is fully loaded with resource
 	 */
 	private boolean loadResource(ResourceHolder source, int resourceId) {
-		double needed = getRemainingCombinedCapacity(resourceId);
+		double needed = getRemainingSpecificCapacity(resourceId);
 		if (needed > 0D) {
 			double shortfall = source.retrieveAmountResource(resourceId, needed);
 			double taken = needed - shortfall;

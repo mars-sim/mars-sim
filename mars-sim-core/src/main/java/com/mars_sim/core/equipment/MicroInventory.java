@@ -271,7 +271,7 @@ public class MicroInventory implements Serializable {
 			String name = ResourceUtil.findAmountResourceName(resource);
 			for (int i: ResourceUtil.getEssentialResources()) {
 				if (i == resource)
-					logger.warning(owner, 120_000L, "Specific Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+					logger.warning(owner, 60_000L, "Specific Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
 			}
 			
 			// Store excess as stock amount resource
