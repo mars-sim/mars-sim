@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.tool.RandomUtil;
+
 class SurfaceManagerTest {
 
     private class TestFeature implements SurfacePOI {
@@ -88,18 +90,24 @@ class SurfaceManagerTest {
     void testGetFeaturesPolarVertical() {
 
         var mgr = new SurfaceManager<TestFeature>();
-        int testPoints = 10;
+        int testBands = 10;
 
-        double phiUnit = Math.PI/testPoints;
-        var center = new Coordinates(0, 0D);
+        // Vettical range is PI but each test point create one below the pole
+        double phiPerBand = (Math.PI/2)/testBands;
+        var center = new Coordinates(0D, 0D);
+        mgr.addFeature(new TestFeature(center));
 
-        for(int i = 0; i < testPoints; i++) {
-            var locn = new Coordinates(i *phiUnit, center.getTheta());
+        for(int i = 1; i < testBands; i++) {
+            // Offset is middle of band
+            double offset = phiPerBand * ((double)i - 0.5);
+
+            // Create a test location one below center but random around the globe
+            var locn = new Coordinates(center.getPhi() + offset, RandomUtil.getRandomDouble(Math.PI));
             mgr.addFeature(new TestFeature(locn));
         }
 
-        for(int i = 0; i < testPoints/2; i++) {
-            var found = mgr.getFeatures(center, i * phiUnit);
+        for(int i = 0; i < testBands; i++) {
+            var found = mgr.getFeatures(center, i * phiPerBand);
             // Note: the line below always fails
             assertEquals("Slice #" + i, i+1, found.size());
         }
