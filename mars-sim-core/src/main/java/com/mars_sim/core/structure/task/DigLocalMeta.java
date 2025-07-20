@@ -64,7 +64,7 @@ public abstract class DigLocalMeta extends MetaTask
 	private static final int MAX_BASE = 1000;
 
 	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
-    private static final double MIN_CAPACITY = 0.25D; // Minumum capcity to trigger digging
+    private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
 
 	private EquipmentType containerType;
 

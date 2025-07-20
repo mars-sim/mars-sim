@@ -125,7 +125,10 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int MAX_PROB = 3000;
+	private static final int ICE_PROB_FACTOR = 600;
+	private static final int REGOLITH_PROB_FACTOR = 150;
+	
+	private static final int MAX_PROB = 5000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
 	private static final int MIN_SAND_RESERVE = 400; // per person
 	
@@ -133,8 +136,8 @@ public class Settlement extends Unit implements Temporal,
 	private static final int ICE_MAX = 4000;
 	private static final int WATER_MAX = 10_000;
 
-	private static final int MIN_WATER_RESERVE = 400; // per person
-	private static final int MIN_ICE_RESERVE = 400; // per person
+	private static final int MIN_WATER_RESERVE = 500; // per person
+	private static final int MIN_ICE_RESERVE = 500; // per person
 
 	/** The settlement sampling resources. */
 	private static final int[] samplingResources;
@@ -2423,32 +2426,44 @@ public class Settlement extends Unit implements Temporal,
 			cementDemand = 1;
 
 		double regolithAvailable = goodsManager.getSupplyValue(ResourceUtil.REGOLITH_ID);
-		regolithAvailable = regolithAvailable * regolithAvailable - 1;
 		
 		double sandAvailable = goodsManager.getSupplyValue(ResourceUtil.SAND_ID);
-		sandAvailable = sandAvailable * sandAvailable - 1;
+	
+		double concreteAvailable = goodsManager.getSupplyValue(ResourceUtil.CONCRETE_ID);
+		
+		double cementAvailable = goodsManager.getSupplyValue(ResourceUtil.CEMENT_ID);
 		
 		int pop = numCitizens;
-		int reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
+		int reserve = MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE;
 		
-		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand) {
-			result = reserve + regolithDemand + sandDemand - regolithAvailable - sandAvailable;
+		double totalSupply = (regolithAvailable + sandAvailable + concreteAvailable + cementAvailable) / pop;
+		double totalDemand = regolithDemand + sandDemand + cementDemand + concreteDemand ;
+		double diff = reserve - totalSupply;
+		
+		// Note: Derive the probability per pop (regardless the size of the settlement)
+		
+		if (diff > totalDemand) {
+			result = diff - totalDemand;
 		}
 		
-		else if (regolithAvailable + sandAvailable > reserve) {
-			result = reserve - regolithAvailable - sandAvailable;
+		else if (diff > 0) {
+			result = diff;
 		}
 
 		else {
-			result = 1.0 * reserve / pop ;
+			result = totalDemand - diff;
 		}
-
-		result = result + .5 * concreteDemand + .5 * cementDemand;
+		
+		// Note: the lower the collection rate, the higher probability it needs to have to prompt
+		// settlers to go collect regolith more often to compensate the lack of its availability locally.
+		result *= (1 + result) * REGOLITH_PROB_FACTOR / regolithCollectionRate;
 		
 		if (result < 0)
 			result = 0;
-		if (result > MAX_PROB)
+		else if (result > MAX_PROB)
 			result = MAX_PROB;
+		
+		logger.info("regolith: " + (int)result + " totalSupply: " + (int)totalSupply + " totalDemand: " + (int)totalDemand + " reserve: " + (int)totalDemand);
 		return result;
 	}
 
@@ -2485,32 +2500,36 @@ public class Settlement extends Unit implements Temporal,
 		double brineWaterSupply = goodsManager.getSupplyValue(ResourceUtil.BRINE_WATER_ID);
 		
 		int pop = numCitizens;
-		int reserve = (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop;
+		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE;
 
-		double totalSupply = iceSupply + waterSupply + brineWaterSupply;
-		double totalDemand = iceDemand + waterDemand + brineWaterDemand;
+		double totalSupply = (iceSupply + waterSupply + brineWaterSupply) / pop;
+		double totalDemand = (iceDemand + waterDemand + brineWaterDemand);
+		double diff = reserve - totalSupply;
 		
-		if (totalSupply > reserve + totalDemand) {
-			result = reserve + totalDemand - totalSupply;
+		// Note: Derive the probability per pop (regardless the size of the settlement)
+		
+		if (diff > totalDemand) {
+			result = diff - totalDemand;
 		}
 		
-		else if (totalSupply > reserve) {
-			result = reserve - totalSupply;
+		else if (diff > 0) {
+			result = diff;
 		}
 
-		// Prompt the collect ice mission to proceed more easily if water resource is
-		// dangerously low,
 		else {
-			// no change to missionProbability
-			result = 1.0 * reserve / pop;
+			result = totalDemand - diff;
 		}
+		
+		// Note: the lower the collection rate, the higher probability it needs to have to prompt
+		// settlers to go collect ice more often to compensate the lack of its availability locally.
+		result *= (1 + result) * ICE_PROB_FACTOR / iceCollectionRate;
 		
 		if (result < 0)
 			result = 0;
-		
-		if (result > MAX_PROB)
+		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
+		logger.info("ice: " + (int)result + " totalSupply: " + (int)totalSupply + " totalDemand: " + (int)totalDemand + " reserve: " + (int)totalDemand);
 		return result;
 	}
 

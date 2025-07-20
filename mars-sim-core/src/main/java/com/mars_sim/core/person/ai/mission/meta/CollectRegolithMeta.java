@@ -23,7 +23,7 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class CollectRegolithMeta extends AbstractMetaMission {
 
-	private static final int VALUE = 5000;
+	private static final int VALUE = 2500;
 
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
