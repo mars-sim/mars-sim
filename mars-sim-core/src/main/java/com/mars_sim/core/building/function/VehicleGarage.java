@@ -33,11 +33,15 @@ extends VehicleMaintenance {
 		// Call VehicleMaintenance constructor.
 		super(FunctionType.VEHICLE_MAINTENANCE, spec, building);
 
-		for (LocalPosition loc : buildingConfig.getParkingLocations(building.getBuildingType())) {
-			addParkingLocation(loc);
+		for (LocalPosition loc : buildingConfig.getRoverLocations(building.getBuildingType())) {
+			addRoverParkingLocation(loc);
 		}
 		
-		for (LocalPosition loc : buildingConfig.getDroneLocations(building.getBuildingType())) {
+		for (LocalPosition loc : buildingConfig.getUtilityLocations(building.getBuildingType())) {
+			addUilityVehicleParkingLocation(loc);
+		}
+	
+		for (LocalPosition loc : buildingConfig.getFlyerLocations(building.getBuildingType())) {
 			addFlyerLocation(loc);
 		}
 	}
@@ -53,7 +57,7 @@ extends VehicleMaintenance {
 		super(FunctionType.VEHICLE_MAINTENANCE, null, building);
 		
 		for (LocalPosition parkingLocation : parkingLocations) {
-			addParkingLocation(parkingLocation);
+			addRoverParkingLocation(parkingLocation);
 		}
 	}
 
@@ -83,15 +87,21 @@ extends VehicleMaintenance {
 			else {
 				VehicleGarage maintFunction = building.getVehicleParking();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += maintFunction.getVehicleCapacity() * wearModifier;
+				supply += maintFunction.getRoverCapacity() * wearModifier;
 			}
 		}
 
 		double vehicleCapacityValue = demand / (supply + 1D);
 
-		double vehicleCapacity = buildingConfig.getParkingLocations(buildingName).size()
-					+ buildingConfig.getDroneLocations(buildingName).size() + 1.0;
+		double roverCapacity = buildingConfig.getRoverLocations(buildingName).size()
+					+ buildingConfig.getRoverLocations(buildingName).size() + 1.0;
 
-		return vehicleCapacity * vehicleCapacityValue;
+		double luvCapacity = buildingConfig.getUtilityLocations(buildingName).size()
+				+ buildingConfig.getFlyerLocations(buildingName).size() + 1.0;
+		
+		double flyerCapacity = buildingConfig.getFlyerLocations(buildingName).size()
+				+ buildingConfig.getFlyerLocations(buildingName).size() + 1.0;
+		
+		return (roverCapacity + luvCapacity + flyerCapacity) * vehicleCapacityValue;
 	}
 }

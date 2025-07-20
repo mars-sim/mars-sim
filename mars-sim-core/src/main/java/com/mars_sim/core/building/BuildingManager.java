@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2023-06-15
+ * @date 2025-07-20
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -90,6 +90,7 @@ import com.mars_sim.core.tool.AlphanumComparator;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -986,10 +987,10 @@ public class BuildingManager implements Serializable {
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 		
-			if (vehicle instanceof Drone d) {
+			if (vehicle instanceof Flyer f) {
 				
-				if (garage.containsFlyer(d)) {
-					logger.info(vehicle, 60_000,
+				if (garage.containsFlyer(f)) {
+					logger.info(f, 60_000,
 							"Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
@@ -1009,17 +1010,17 @@ public class BuildingManager implements Serializable {
 					}
 					
 					if (garage.getAvailableFlyerCapacity() > 0 
-							&& garage.addFlyer((Flyer)vehicle)) {
+							&& garage.addFlyer(f)) {
 
-						logger.info(vehicle, 60_000,
+						logger.info(f, 60_000,
  							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
 					}
 				}
 			}
-			else {
-				if (garage.containsVehicle(vehicle)) {
-					logger.info(vehicle, 60_000,
+			else if (vehicle instanceof Rover r) {
+				if (garage.containsRover(r)) {
+					logger.info(r, 60_000,
 							"Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
@@ -1027,21 +1028,51 @@ public class BuildingManager implements Serializable {
 				else { 
 					boolean vacated = false;
 					
-					if (garage.getAvailableCapacity() == 0) {
+					if (garage.getAvailableRoverCapacity() == 0) {
 						// Try removing a non-reserved vehicle inside a garage		
-						for (Vehicle v: garage.getVehicles()) {
-							if (!vacated && !v.isReserved() && v.getMission() != null) {
-								if (garage.removeVehicle(v, true)) {
+						for (Rover rover: garage.getRovers()) {
+							if (!vacated && !rover.isReserved() && rover.getMission() != null) {
+								if (garage.removeRover(rover, true)) {
 									vacated = true;
 								}
 							}
 						}
 					}
 					
-					if ((garage.getAvailableCapacity() > 0)
-						&& garage.addVehicle(vehicle)) {
+					if ((garage.getAvailableRoverCapacity() > 0)
+						&& garage.addRover(r)) {
 
-						logger.info(vehicle, 60_000,
+						logger.info(r, 60_000,
+ 							   "Just stowed inside " + garageBuilding.getName() + ".");
+						return garageBuilding;
+					}
+				}
+			}
+			else if (vehicle instanceof LightUtilityVehicle luv) {
+				if (garage.containsUtilityVehicle(luv)) {
+					logger.info(luv, 60_000,
+							"Already inside " + garageBuilding.getName() + ".");
+
+					return garageBuilding;
+				}
+				else { 
+					boolean vacated = false;
+					
+					if (garage.getAvailableRoverCapacity() == 0) {
+						// Try removing a non-reserved vehicle inside a garage		
+						for (LightUtilityVehicle l: garage.getUtilityVehicles()) {
+							if (!vacated && !l.isReserved() && l.getMission() != null) {
+								if (garage.removeUtilityVehicle(l, true)) {
+									vacated = true;
+								}
+							}
+						}
+					}
+					
+					if ((garage.getAvailableRoverCapacity() > 0)
+						&& garage.addUtilityVehicle(luv)) {
+
+						logger.info(luv, 60_000,
  							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
 					}
@@ -1065,13 +1096,20 @@ public class BuildingManager implements Serializable {
 			return false;
 		}
 		
-		if (vehicle instanceof Flyer flyer) {
+		if (vehicle instanceof Rover rover) {
+			if (garage.getVehicleMaintenance().removeRover(rover, true)) {
+				return true;
+			}
+		}
+		else if (vehicle instanceof Flyer flyer) {
 			if (garage.getVehicleMaintenance().removeFlyer(flyer)) {
 				return true;
 			}
 		}
-		else if (garage.getVehicleMaintenance().removeVehicle(vehicle, true)) {
-			return true;
+		else if (vehicle instanceof LightUtilityVehicle luv) {
+			if (garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
+				return true;
+			}
 		}
 
 		return false;
@@ -1111,11 +1149,16 @@ public class BuildingManager implements Serializable {
 					return false;
 				}
 				
-				if (vehicle instanceof Drone d
+				if (vehicle instanceof Rover r
+						&& garage.containsRover(r)) {
+						return true;
+					}
+				else if (vehicle instanceof Drone d
 					&& garage.containsFlyer(d)) {
 					return true;
 				}
-				else if (garage.containsVehicle(vehicle)) {
+				else if (vehicle instanceof LightUtilityVehicle luv
+					&& garage.containsUtilityVehicle(luv)) {
 					return true;
 				}
 			}

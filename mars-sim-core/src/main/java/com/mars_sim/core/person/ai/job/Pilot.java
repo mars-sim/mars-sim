@@ -64,7 +64,7 @@ public class Pilot extends Job {
 		// Add contributions from all garage.
 		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
 		while (j.hasNext()) {
-			result += (double) j.next().getVehicleParking().getVehicleCapacity() / 2.5;
+			result += (double) j.next().getVehicleParking().getRoverCapacity() / 2.5;
 		}
 		
 		// Get number of associated vehicles at a settlement.

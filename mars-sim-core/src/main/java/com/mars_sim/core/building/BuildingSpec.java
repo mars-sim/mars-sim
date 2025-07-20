@@ -70,7 +70,8 @@ public class BuildingSpec {
 	private List<ResourceProcessEngine> wasteProcess = EMPTY_RESOURCE;
 
 	private Set<LocalPosition> beds;
-	private Set<LocalPosition> parking;
+	private Set<LocalPosition> roverParking;
+	private Set<LocalPosition> utilityParking;
 	private Set<LocalPosition> flyerParking;
 
 	private BuildingCategory category;
@@ -280,13 +281,22 @@ public class BuildingSpec {
 		this.beds = beds;
 	}
 	
-	public Set<LocalPosition> getParking() {
-		return parking;
+	public Set<LocalPosition> getRoverParking() {
+		return roverParking;
 	}
 
-	void setParking(Set<LocalPosition> parking) {
-		this.parking = Collections.unmodifiableSet(parking);
+	void setRoverParking(Set<LocalPosition> parking) {
+		this.roverParking = Collections.unmodifiableSet(parking);
 	}
+	
+	public Set<LocalPosition> getUtilityParking() {
+		return utilityParking;
+	}
+
+	void setUtilityParking(Set<LocalPosition> parking) {
+		this.utilityParking = Collections.unmodifiableSet(parking);
+	}
+	
 	
 	public Set<LocalPosition> getFlyerParking() {
 		return flyerParking;

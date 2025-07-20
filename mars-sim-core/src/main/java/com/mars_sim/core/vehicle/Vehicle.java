@@ -423,7 +423,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param position  Position of the parking relative to the Settlement
 	 * @param facing    (degrees from North clockwise).
 	 */
-	public void setFlyerLocation(LocalPosition position, double facing) {
+	public void setParkedFlyerLocation(LocalPosition position, double facing) {
 		// Set new parked location for the flyer.
 		setPosition(position);
 		this.facingParked = facing;
@@ -1344,10 +1344,14 @@ public abstract class Vehicle extends AbstractMobileUnit
 		for (Building garageBuilding : settlement.getBuildingManager().getGarages()) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 			if (garage != null) {
-				if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
+				
+				if (this instanceof Rover rover && garage.containsRover(rover)) {
 					return garageBuilding;
 				}
-				else if (garage.containsVehicle(this)) {
+				else if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
+					return garageBuilding;
+				}
+				else if (this instanceof LightUtilityVehicle luv && garage.containsUtilityVehicle(luv)) {
 					return garageBuilding;
 				}
 			}

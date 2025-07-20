@@ -83,8 +83,10 @@ public class BuildingConfig {
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "bed";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
-	private static final String PARKING_LOCATION = "parking-location";
-	private static final String FLYER_LOCATION = "flyer-location";
+	private static final String LOCATION = "location";
+	private static final String ROVER = "rover";
+	private static final String FLYER = "flyer";
+	private static final String UTILITY = "utility";
 	
 	private static final String WASTE_PROCESSING = "waste-processing";
 
@@ -263,13 +265,19 @@ public class BuildingConfig {
 
 		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
-			Set<LocalPosition> parking = parsePositions(vehicleElement, "parking", PARKING_LOCATION,
+			Set<LocalPosition> roverParking = parsePositions(vehicleElement, ROVER, LOCATION,
 												   width, length);
-			newSpec.setParking(parking);
+			newSpec.setRoverParking(roverParking);
 		}
 
 		if (vehicleElement != null) {
-			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, "flyerParking", FLYER_LOCATION,
+			Set<LocalPosition> utilityParking = parsePositions(vehicleElement, UTILITY, LOCATION,
+												   width, length);
+			newSpec.setUtilityParking(utilityParking);
+		}
+		
+		if (vehicleElement != null) {
+			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, FLYER, LOCATION,
 												   width, length);
 			newSpec.setFlyerParking(flyerParking);
 		}
@@ -649,24 +657,36 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Gets the relative location in the building of a parking location.
+	 * Gets the relative location in the building of a rover parking location.
 	 *
 	 * @param buildingType the type of the building.
 	 * @return Positions containing the relative X & Y position from the building
 	 *         center.
 	 */
-	public Set<LocalPosition> getParkingLocations(String buildingType) {
-		return getBuildingSpec(buildingType).getParking();
+	public Set<LocalPosition> getRoverLocations(String buildingType) {
+		return getBuildingSpec(buildingType).getRoverParking();
 	}
 
+
 	/**
-	 * Gets the relative location in the building of a drone location.
+	 * Gets the relative location in the building of a LUV parking location.
 	 *
 	 * @param buildingType the type of the building.
 	 * @return Positions containing the relative X & Y position from the building
 	 *         center.
 	 */
-	public Set<LocalPosition> getDroneLocations(String buildingType) {
+	public Set<LocalPosition> getUtilityLocations(String buildingType) {
+		return getBuildingSpec(buildingType).getUtilityParking();
+	}
+	
+	/**
+	 * Gets the relative location in the building of a flyer location.
+	 *
+	 * @param buildingType the type of the building.
+	 * @return Positions containing the relative X & Y position from the building
+	 *         center.
+	 */
+	public Set<LocalPosition> getFlyerLocations(String buildingType) {
 		return getBuildingSpec(buildingType).getFlyerParking();
 	}
 

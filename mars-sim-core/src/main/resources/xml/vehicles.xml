@@ -43,7 +43,7 @@
 	<!ATTLIST cargo total-capacity CDATA #REQUIRED>
 	<!ELEMENT capacity EMPTY>
 	<!ATTLIST capacity type CDATA #REQUIRED>
-	<!ATTLIST capacity value CDATA #REQUIRED>
+	<!ATTLIST capacity amount CDATA #REQUIRED>
 	<!ELEMENT part-attachment (part+)>
 	<!ATTLIST part-attachment number-slots CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>

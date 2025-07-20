@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @date 2024-06-09
+ * @date 2025-07-20
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function;
@@ -29,6 +29,8 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -44,10 +46,12 @@ public abstract class VehicleMaintenance extends Function {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMaintenance.class.getName());
 
-	protected List<VehicleLocation> parkingLocations;
+	protected List<RoverLocation> roverLocations;
+	protected List<UtilityVehicleLocation> luvLocations;
 	protected List<FlyerLocation> flyerLocations;
 	
-	private Collection<Vehicle> vehicles;
+	private Collection<Rover> rovers;
+	private Collection<LightUtilityVehicle> luvs;
 	private Collection<Flyer> flyers;
 	
 	/**
@@ -60,40 +64,69 @@ public abstract class VehicleMaintenance extends Function {
 		// Use Function constructor.
 		super(function,spec, building);
 
-		vehicles = new UnitSet<>();
+		rovers = new UnitSet<>();
+		luvs = new UnitSet<>();
 		flyers = new UnitSet<>();
 		
-		parkingLocations = new ArrayList<>();
+		roverLocations = new ArrayList<>();
+		luvLocations = new ArrayList<>();
 		flyerLocations = new ArrayList<>();
 	}
 
 	/**
-	 * Gets the number of vehicles the building can accommodate.
+	 * Gets the number of rovers the building can accommodate.
+	 * 
+	 * @return rover capacity
+	 */
+	public int getRoverCapacity() {
+		return roverLocations.size();
+	}
+
+	/**
+	 * Gets the current number of rovers in the building.
+	 * 
+	 * @return number of rover
+	 */
+	public int getCurrentRoverNumber() {
+		return rovers.size();
+	}
+
+	/**
+	 * How many available rover locations unoccupied does the garage have?
+	 * 
+	 * @param Available rover parking locations.
+	 */
+	public int getAvailableRoverCapacity() {
+		return roverLocations.size() - rovers.size();
+	}
+
+	/**
+	 * Gets the number of utility vehicles the building can accommodate.
 	 * 
 	 * @return vehicle capacity
 	 */
-	public int getVehicleCapacity() {
-		return parkingLocations.size();
+	public int getUtilityVehicleCapacity() {
+		return luvLocations.size();
 	}
 
 	/**
-	 * Gets the current number of vehicles in the building.
+	 * Gets the current number of utility vehicles in the building.
 	 * 
-	 * @return number of vehicles
+	 * @return number of luvs
 	 */
-	public int getCurrentVehicleNumber() {
-		return vehicles.size();
+	public int getCurrentUtilityVehicleNumber() {
+		return luvLocations.size();
 	}
 
 	/**
-	 * How many available locations unoccupied does the garage have?
+	 * How many available luv locations unoccupied does the garage have?
 	 * 
-	 * @param Available parking locations.
+	 * @param Available luv parking locations.
 	 */
-	public int getAvailableCapacity() {
-		return parkingLocations.size() - vehicles.size();
+	public int getAvailableUtilityVehicleCapacity() {
+		return luvLocations.size() - luvs.size();
 	}
-
+	
 	/**
 	 * Gets the number of flyers the building can accommodate.
 	 * 
@@ -120,7 +153,110 @@ public abstract class VehicleMaintenance extends Function {
 	public int getAvailableFlyerCapacity() {
 		return flyerLocations.size() - flyers.size();
 	}
+
+	/**
+	 * Adds vehicle to building if there's room for parking.
+	 * 
+	 * @param vehicle the vehicle to be added.
+	 * @return true if vehicle can be added.
+	 */
+	public boolean addRover(Rover rover) {
+
+		// Check if vehicle cannot be added to building.
+		if (rovers.contains(rover)) {
+			logger.log(rover, Level.INFO, 1000, 
+				"Already garaged in " + building + ".");
+			 return false;
+		}
+		
+		if (rovers.size() >= roverLocations.size()) {
+			logger.log(rover, Level.INFO, 1000,
+				building + " already full.");
+			return false;
+		}
+		
+		// Add rover to building.
+		if (rovers.add(rover)) {
 	
+			// Put vehicle in assigned parking location within building.
+			RoverLocation location = getEmptyRoverParkingLocation();
+			LocalPosition newLoc;
+			
+			if (location != null) {
+				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
+				location.parkVehicle(rover);
+				
+				// change the vehicle status
+				rover.setPrimaryStatus(StatusType.GARAGED);
+				// Update the vehicle's location state type
+				rover.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				
+				double newFacing = getBuilding().getFacing();
+				rover.setParkedLocation(newLoc, newFacing);
+		
+				logger.fine(rover, "Added to " + building.getName() 
+					+ " in " + building.getSettlement() + ".");
+
+				return true;
+			}
+		}
+		
+		// can't add the vehicle to a garage
+		return false;
+	}
+
+	
+	/**
+	 * Adds vehicle to building if there's room for parking.
+	 * 
+	 * @param vehicle the vehicle to be added.
+	 * @return true if vehicle can be added.
+	 */
+	public boolean addUtilityVehicle(LightUtilityVehicle luv) {
+	
+		// Check if vehicle cannot be added to building.
+		if (luvs.contains(luv)) {
+			logger.log(luv, Level.INFO, 1000, 
+				"Already garaged in " + building + ".");
+			 return false;
+		}
+		
+		if (luvs.size() >= roverLocations.size()) {
+			logger.log(luv, Level.INFO, 1000,
+				building + " already full.");
+			return false;
+		}
+		
+		// Add vehicle to building.
+		if (luvs.add(luv)) {
+	
+			// Put vehicle in assigned parking location within building.
+			UtilityVehicleLocation location = getEmptyUtilityVehicleParkingLocation();
+			LocalPosition newLoc;
+			
+			if (location != null) {
+				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
+				location.parkUtilityVehicle(luv);
+				
+				// change the vehicle status
+				luv.setPrimaryStatus(StatusType.GARAGED);
+				// Update the vehicle's location state type
+				luv.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				
+				double newFacing = getBuilding().getFacing();
+				luv.setParkedLocation(newLoc, newFacing);
+		
+				logger.fine(luv, "Added to " + building.getName() 
+					+ " in " + building.getSettlement() + ".");
+	
+				return true;
+			}
+		}
+		
+		// can't add the vehicle to a garage
+		return false;
+	}
+
 	/**
 	 * Adds flyer to building if there's room for parking.
 	 * 
@@ -158,7 +294,7 @@ public abstract class VehicleMaintenance extends Function {
 				flyer.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 				
 				double newFacing = getBuilding().getFacing();
-				flyer.setFlyerLocation(newLoc, newFacing);
+				flyer.setParkedFlyerLocation(newLoc, newFacing);
 		
 				logger.fine(flyer, "Added to " + building.getName() 
 					+ " in " + building.getSettlement() + ".");
@@ -169,79 +305,56 @@ public abstract class VehicleMaintenance extends Function {
 		
 		// can't add the flyer to a garage
 		return false;
-	}
-		
-	/**
-	 * Adds vehicle to building if there's room for parking.
-	 * 
-	 * @param vehicle the vehicle to be added.
-	 * @return true if vehicle can be added.
-	 */
-	public boolean addVehicle(Vehicle vehicle) {
-
-		// Check if vehicle cannot be added to building.
-		if (vehicles.contains(vehicle)) {
-			logger.log(vehicle, Level.INFO, 1000, 
-				"Ground vehicle already garaged in " + building + ".");
-			 return false;
-		}
-		
-		if (vehicles.size() >= parkingLocations.size()) {
-			logger.log(vehicle, Level.INFO, 1000,
-				building + " already full.");
-			return false;
-		}
-		
-		// Add vehicle to building.
-		if (vehicles.add(vehicle)) {
-	
-			// Put vehicle in assigned parking location within building.
-			VehicleLocation location = getEmptyParkingLocation();
-			LocalPosition newLoc;
-			
-			if (location != null) {
-				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
-				location.parkVehicle(vehicle);
-				
-				// change the vehicle status
-				vehicle.setPrimaryStatus(StatusType.GARAGED);
-				// Update the vehicle's location state type
-				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-				
-				double newFacing = getBuilding().getFacing();
-				vehicle.setParkedLocation(newLoc, newFacing);
-		
-				logger.fine(vehicle, "Added to " + building.getName() 
-					+ " in " + building.getSettlement() + ".");
-
-				return true;
-			}
-		}
-		
-		// can't add the vehicle to a garage
-		return false;
-	}
+	}	
 
 	/**
-	 * Remove vehicle from garage building.
+	 * Remove a rover from garage building.
 	 * 
-	 * @param vehicle the vehicle to be removed.
+	 * @param rover the rover to be removed.
 	 * @return true if successfully removed
 	 */
-	public boolean removeVehicle(Vehicle vehicle, boolean transferCrew) {
-		if (!containsVehicle(vehicle)) {
+	public boolean removeRover(Rover rover, boolean transferCrew) {
+		if (!containsRover(rover)) {
 			return false;
 		}
 
 		// Note: Check if using Collection.remove() below is safe
-		if (vehicles.remove(vehicle)) {
+		if (rovers.remove(rover)) {
 			
 			if (transferCrew)
-				relocateCrew(vehicle);
+				relocateCrew(rover);
 			 
-			parkInVicinity(vehicle);
+			parkInVicinity(rover);
 
-			logger.fine(vehicle, "Removed from " + building.getName() 
+			logger.fine(rover, "Removed from " + building.getName() 
+				+ " in " + building.getSettlement() + ".");
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Remove a utility vehicle from garage building.
+	 * 
+	 * @param vehicle the vehicle to be removed.
+	 * @return true if successfully removed
+	 */
+	public boolean removeUtilityVehicle(LightUtilityVehicle luv, boolean transferCrew) {
+		if (!containsUtilityVehicle(luv)) {
+			return false;
+		}
+
+		// Note: Check if using Collection.remove() below is safe
+		if (luvs.remove(luv)) {
+			
+			if (transferCrew)
+				relocateCrew(luv);
+			 
+			parkInVicinity(luv);
+
+			logger.fine(luv, "Removed from " + building.getName() 
 				+ " in " + building.getSettlement() + ".");
 			
 			return true;
@@ -330,18 +443,25 @@ public abstract class VehicleMaintenance extends Function {
 		// FUTURE: should be done in a task to relocate the vehicle by either a person
 		// or by AI that costs a minute amount of CUs.
 		
-		if (vehicle instanceof Drone d) {
+		if (vehicle instanceof Rover r) {
+			RoverLocation parkedLoc = getVehicleParkedLocation(r);
+			if (parkedLoc != null) {
+				parkedLoc.clearParking();
+			}
+		}
+		else if (vehicle instanceof Drone d) {
 			FlyerLocation loc = getFlyerParkedLocation(d);
 			if (loc != null) {
 				loc.clearParking();
 			}
 		}
-		else {
-			VehicleLocation parkedLoc = getVehicleParkedLocation(vehicle);
-			if (parkedLoc != null) {
-				parkedLoc.clearParking();
+		else if (vehicle instanceof LightUtilityVehicle luv) {
+			UtilityVehicleLocation loc = getUtilityVehicleParkedLocation(luv);
+			if (loc != null) {
+				loc.clearParking();
 			}
 		}
+		
 
 		vehicle.setPrimaryStatus(StatusType.PARKED);
 		// Update the vehicle's location state type
@@ -351,14 +471,24 @@ public abstract class VehicleMaintenance extends Function {
 	}
 	
 	/**
-	 * Checks if a vehicle (Rover or LUV only, but NOT including Drone) is in the building.
+	 * Checks if a rover is in the building.
 	 * 
-	 * @return true if vehicle is in the building.
+	 * @return true if rover is in the building.
 	 */
-	public boolean containsVehicle(Vehicle vehicle) {
-		return vehicles.contains(vehicle);
+	public boolean containsRover(Vehicle vehicle) {
+		return rovers.contains(vehicle);
 	}
 
+	/**
+	 * Checks if a LUV is in the building.
+	 * 
+	 * @return true if LUV is in the building.
+	 */
+	public boolean containsUtilityVehicle(Vehicle vehicle) {
+		return luvs.contains(vehicle);
+	}
+
+	
 	/**
 	 * Checks if a flyer is in the building.
 	 * 
@@ -369,14 +499,23 @@ public abstract class VehicleMaintenance extends Function {
 	}
 	
 	/**
-	 * Gets a collection of vehicles in the building.
+	 * Gets a collection of rovers in the building.
 	 * 
-	 * @return Collection of vehicles in the building.
+	 * @return Collection of rovers in the building.
 	 */
-	public Collection<Vehicle> getVehicles() {
-		return vehicles;
+	public Collection<Rover> getRovers() {
+		return rovers;
 	}
 
+	/**
+	 * Gets a collection of luvs in the building.
+	 * 
+	 * @return Collection of luvs in the building.
+	 */
+	public Collection<LightUtilityVehicle> getUtilityVehicles() {
+		return luvs;
+	}
+	
 	/**
 	 * Gets a collection of flyers in the building.
 	 * 
@@ -426,10 +565,19 @@ public abstract class VehicleMaintenance extends Function {
 	 * 
 	 * @param position the relative position of the parking spot.
 	 */
-	protected void addParkingLocation(LocalPosition position) {
-		parkingLocations.add(new VehicleLocation(position));
+	protected void addRoverParkingLocation(LocalPosition position) {
+		roverLocations.add(new RoverLocation(position));
 	}
 
+	/**
+	 * Add a new utility vehicle parking location in the building.
+	 * 
+	 * @param position the relative position of the parking spot.
+	 */
+	protected void addUilityVehicleParkingLocation(LocalPosition position) {
+		luvLocations.add(new UtilityVehicleLocation(position));
+	}
+	
 	/**
 	 * Add a new flyer parking location in the building.
 	 * 
@@ -445,11 +593,11 @@ public abstract class VehicleMaintenance extends Function {
 	 * @param vehicle the parked vehicle.
 	 * @return the parking location or null if none.
 	 */
-	public VehicleLocation getVehicleParkedLocation(Vehicle vehicle) {
-		VehicleLocation result = null;
-		Iterator<VehicleLocation> i = parkingLocations.iterator();
+	public RoverLocation getVehicleParkedLocation(Vehicle vehicle) {
+		RoverLocation result = null;
+		Iterator<RoverLocation> i = roverLocations.iterator();
 		while (i.hasNext()) {
-			VehicleLocation parkingLocation = i.next();
+			RoverLocation parkingLocation = i.next();
 			if (vehicle.equals(parkingLocation.getParkedVehicle())) {
 				result = parkingLocation;
 			}
@@ -458,6 +606,26 @@ public abstract class VehicleMaintenance extends Function {
 		return result;
 	}
 
+	/**
+	 * Gets the parking location of a given parked utility vehicle.
+	 * 
+	 * @param vehicle the parked utility vehicle.
+	 * @return the parking location or null if none.
+	 */
+	public UtilityVehicleLocation getUtilityVehicleParkedLocation(Vehicle vehicle) {
+		UtilityVehicleLocation result = null;
+		Iterator<UtilityVehicleLocation> i = luvLocations.iterator();
+		while (i.hasNext()) {
+			UtilityVehicleLocation parkingLocation = i.next();
+			if (vehicle.equals(parkingLocation.getParkedUtilityVehicle())) {
+				result = parkingLocation;
+			}
+		}
+
+		return result;
+	}
+
+	
 	/**
 	 * Gets the drone parking location of a given parked flyer.
 	 * 
@@ -478,18 +646,18 @@ public abstract class VehicleMaintenance extends Function {
 	}
 	
 	/**
-	 * Gets an empty parking location.
+	 * Gets an empty rover parking location.
 	 * 
 	 * @return empty parking location or null if none available.
 	 */
-	public VehicleLocation getEmptyParkingLocation() {
-		VehicleLocation result = null;
+	public RoverLocation getEmptyRoverParkingLocation() {
+		RoverLocation result = null;
 
 		// Get list of empty parking locations.
-		List<VehicleLocation> emptyLocations = new ArrayList<>(parkingLocations.size());
-		Iterator<VehicleLocation> i = parkingLocations.iterator();
+		List<RoverLocation> emptyLocations = new ArrayList<>(roverLocations.size());
+		Iterator<RoverLocation> i = roverLocations.iterator();
 		while (i.hasNext()) {
-			VehicleLocation parkingLocation = i.next();
+			RoverLocation parkingLocation = i.next();
 			if (!parkingLocation.hasParkedVehicle()) {
 				emptyLocations.add(parkingLocation);
 			}
@@ -504,6 +672,33 @@ public abstract class VehicleMaintenance extends Function {
 		return result;
 	}
 
+	/**
+	 * Gets an empty utility vehicle parking location.
+	 * 
+	 * @return empty parking location or null if none available.
+	 */
+	public UtilityVehicleLocation getEmptyUtilityVehicleParkingLocation() {
+		UtilityVehicleLocation result = null;
+
+		// Get list of empty parking locations.
+		List<UtilityVehicleLocation> emptyLocations = new ArrayList<>(luvLocations.size());
+		Iterator<UtilityVehicleLocation> i = luvLocations.iterator();
+		while (i.hasNext()) {
+			UtilityVehicleLocation parkingLocation = i.next();
+			if (!parkingLocation.hasParkedUtilityVehicle()) {
+				emptyLocations.add(parkingLocation);
+			}
+		}
+
+		// Randomize empty parking locations and select one.
+		if (!emptyLocations.isEmpty()) {
+			Collections.shuffle(emptyLocations);
+			result = emptyLocations.get(0);
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets an empty flyer parking location.
 	 * 
@@ -533,18 +728,18 @@ public abstract class VehicleMaintenance extends Function {
 	
 	@Override
 	public double getMaintenanceTime() {
-		return parkingLocations.size() * 5D;
+		return roverLocations.size() * 5D;
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
 
-		vehicles.clear();
-		vehicles = null;
+		rovers.clear();
+		rovers = null;
 
-		parkingLocations.clear();
-		parkingLocations = null;
+		roverLocations.clear();
+		roverLocations = null;
 		
 		flyerLocations.clear();
 		flyerLocations = null;
@@ -553,37 +748,74 @@ public abstract class VehicleMaintenance extends Function {
 	/**
 	 * Inner class to represent a parking location in the building.
 	 */
-	public class VehicleLocation implements Serializable {
+	public class RoverLocation implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 		
 		// Data members
 		private LocalPosition pos;
-		private Vehicle parkedVehicle;
+		private Rover rover;
 
-		protected VehicleLocation(LocalPosition pos) {
+		protected RoverLocation(LocalPosition pos) {
 			this.pos = pos;
-			parkedVehicle = null;
+			rover = null;
 		}
 
 		public LocalPosition getPosition() {
 			return pos;
 		}
 
-		public Vehicle getParkedVehicle() {
-			return parkedVehicle;
+		public Rover getParkedVehicle() {
+			return rover;
 		}
 
 		public boolean hasParkedVehicle() {
-			return (parkedVehicle != null);
+			return (rover != null);
 		}
 
-		protected void parkVehicle(Vehicle vehicle) {
-			parkedVehicle = vehicle;
+		protected void parkVehicle(Rover r) {
+			rover = r;
 		}
 
 		protected void clearParking() {
-			parkedVehicle = null;
+			rover = null;
+		}
+	}
+	
+	/**
+	 * Inner class to represent a parking location for the utility vehicles in the building.
+	 */
+	public class UtilityVehicleLocation implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+		
+		// Data members
+		private LocalPosition pos;
+		private LightUtilityVehicle luv;
+
+		protected UtilityVehicleLocation(LocalPosition pos) {
+			this.pos = pos;
+			luv = null;
+		}
+
+		public LocalPosition getPosition() {
+			return pos;
+		}
+
+		public Vehicle getParkedUtilityVehicle() {
+			return luv;
+		}
+
+		public boolean hasParkedUtilityVehicle() {
+			return (luv != null);
+		}
+
+		protected void parkUtilityVehicle(LightUtilityVehicle vehicle) {
+			luv = vehicle;
+		}
+
+		protected void clearParking() {
+			luv = null;
 		}
 	}
 	

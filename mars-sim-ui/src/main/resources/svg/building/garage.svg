@@ -6,7 +6,7 @@
    height="1600"
    id="svg2832"
    version="1.1"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
    sodipodi:docname="garage.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -75,17 +75,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="427.7996"
-     inkscape:cy="947.52309"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="-5.6568543"
+     inkscape:cy="929.13831"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="g3639"
      showgrid="true"
      showguides="true"
-     inkscape:window-width="1450"
-     inkscape:window-height="1080"
-     inkscape:window-x="2397"
-     inkscape:window-y="11"
+     inkscape:window-width="1456"
+     inkscape:window-height="954"
+     inkscape:window-x="305"
+     inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:snap-global="false"
      inkscape:guide-bbox="true"
@@ -134,7 +134,7 @@
      style="display:inline"
      sodipodi:insensitive="true">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;opacity:1"
        id="rect3656"
        width="1200"
        height="1600"
@@ -195,20 +195,20 @@
        style="display:inline;fill:#1515ab;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="purple door 1" />
     <rect
-       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;opacity:0.5"
+       style="opacity:0.5;fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect3734"
        width="200"
        height="640"
        x="240"
-       y="280"
+       y="170.5"
        inkscape:label="vehicle border left" />
     <rect
-       y="280"
+       y="170.5"
        x="760"
        height="640"
        width="200"
        id="rect3736"
-       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;opacity:0.5"
+       style="opacity:0.5;fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="vehicle border right " />
     <rect
        style="fill:none;stroke:#ffff00;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -248,10 +248,10 @@
        width="280"
        height="40"
        x="200"
-       y="800"
+       y="690.5"
        inkscape:label="crane 2 back" />
     <rect
-       y="360"
+       y="250.5"
        x="200"
        height="40"
        width="280"
@@ -264,10 +264,10 @@
        width="280"
        height="40"
        x="720"
-       y="360"
+       y="250.5"
        inkscape:label="crane 1 front" />
     <rect
-       y="800"
+       y="690.5"
        x="720"
        height="40"
        width="280"
@@ -309,8 +309,8 @@
        y="720"
        inkscape:label="center cabinet" />
     <path
-       style="fill:#060605;fill-opacity:1;fill-rule:evenodd;stroke:#3a3b3d;stroke-width:2.069;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 162.42943,1035.0443 c -31.72911,0 -57.4375,25.7083 -57.4375,57.4374 0,31.7292 25.70839,57.4688 57.4375,57.4688 31.72911,0 57.46875,-25.7396 57.46875,-57.4688 0,-31.7291 -25.73964,-57.4374 -57.46875,-57.4374 z m 0,34.4687 c 12.69164,0 23,10.2771 23,22.9687 0,12.6917 -10.30836,23 -23,23 -12.69164,0 -22.96875,-10.3083 -22.96875,-23 0,-12.6916 10.27711,-22.9687 22.96875,-22.9687 z"
+       style="fill:#060605;fill-opacity:1;fill-rule:evenodd;stroke:#3a3b3d;stroke-width:1.415;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 599.98931,845.7075 c -21.6997,0 -39.28181,17.5821 -39.28181,39.2818 0,21.6997 17.58211,39.3032 39.28181,39.3032 21.69971,0 39.30319,-17.6035 39.30319,-39.3032 0,-21.6997 -17.60348,-39.2818 -39.30319,-39.2818 z m 0,23.5733 c 8.67989,0 15.72982,7.0286 15.72982,15.7085 0,8.6799 -7.04993,15.7297 -15.72982,15.7297 -8.67988,0 -15.70844,-7.0498 -15.70844,-15.7297 0,-8.6799 7.02856,-15.7085 15.70844,-15.7085 z"
        id="path3641"
        inkscape:connector-curvature="0"
        inkscape:label="circle 1" />
@@ -381,7 +381,7 @@
     <g
        id="g2"
        inkscape:label="green cab 1"
-       transform="rotate(-90,765.16312,1155.975)">
+       transform="matrix(-0.73650868,0,0,-0.93787467,1212.0213,1726.7245)">
       <rect
          y="1404.6678"
          x="750.54553"
@@ -457,6 +457,22 @@
        x="561.58752"
        y="143.8508"
        inkscape:label="grey cabinet" />
+    <rect
+       style="display:inline;fill:none;stroke:#007aff;stroke-width:11.7307;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:46.9227, 11.7307;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8078-8-0"
+       width="163.26927"
+       height="248.26923"
+       x="105.86535"
+       y="920.86536"
+       inkscape:label="drone border 1" />
+    <rect
+       style="display:inline;opacity:1;fill:none;stroke:#007aff;stroke-width:11.7307;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:46.9227, 11.7307;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8078-8-0-1"
+       width="163.26927"
+       height="248.26923"
+       x="930.86536"
+       y="920.86536"
+       inkscape:label="drone border 1" />
   </g>
   <g
      inkscape:label="frame"
@@ -468,7 +484,8 @@
     <g
        id="g3639">
       <g
-         id="g3632">
+         id="g3632"
+         style="opacity:0.7">
         <path
            style="fill:url(#linearGradient3651);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-opacity:1"
            d="M -3.59375,0 V 1602.875 H 1200 V 0 Z M 120,120 h 960 V 1480 H 120 Z"

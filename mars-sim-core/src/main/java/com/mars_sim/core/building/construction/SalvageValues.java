@@ -302,7 +302,7 @@ implements Serializable {
 		// Check that the building doesn't currently have any vehicles in it.
 		if (building.hasFunction(FunctionType.VEHICLE_MAINTENANCE)) {
 		    VehicleGarage vehicleMaint = building.getVehicleParking();
-		    if (vehicleMaint.getCurrentVehicleNumber() > 0) {
+		    if (vehicleMaint.getCurrentRoverNumber() > 0) {
 		        result = 0D;
 		    }
 		}

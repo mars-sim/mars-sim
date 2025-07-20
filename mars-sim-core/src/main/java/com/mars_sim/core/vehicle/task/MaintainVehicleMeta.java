@@ -143,7 +143,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			
 			boolean hasSpace = false;
 			if (isRover)
-				hasSpace = garage.getAvailableCapacity() > 0;
+				hasSpace = garage.getAvailableRoverCapacity() > 0;
 			else
 				hasSpace = garage.getAvailableFlyerCapacity() > 0;
 				
@@ -165,7 +165,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			VehicleMaintenance garage = j.getVehicleParking();
 			
 			if (isRover)
-				garageSpaces += garage.getAvailableCapacity();
+				garageSpaces += garage.getAvailableRoverCapacity();
 			else
 				garageSpaces += garage.getAvailableFlyerCapacity();
 		}
