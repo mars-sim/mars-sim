@@ -76,7 +76,7 @@ public class SettlementMapPanel extends JPanel {
 
 	// Static members.
 	public static final double DEFAULT_SCALE = 10D;
-	private static final double SELECTION_RANGE = 0.10D; // This is the Settlement coordinate frame, 10cm
+	private static final double SELECTION_RANGE = 0.25; // This is the Settlement coordinate frame, 25cm
 
 
 	// Data members
@@ -271,17 +271,17 @@ public class SettlementMapPanel extends JPanel {
 			@Override
 			public void mouseExited(MouseEvent evt) {
 				if (!exit)  {
-					int x = evt.getX();
-					int y = evt.getY();
-					
-					settlementWindow.setPop(getSettlement().getNumCitizens());
-					// Remove the pixel coordinate of the window panel
-					// Note: the top left most corner is (0,0)
-					settlementWindow.setPixelXYCoord(x,y);
-					// Remove the settlement map coordinate of the hovering mouse pointer
-					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
-					// Remove the building coordinate
-					settlementWindow.setBuildingXYCoord(LocalPosition.DEFAULT_POSITION, true);
+//					int x = evt.getX();
+//					int y = evt.getY();
+//					
+//					settlementWindow.setPop(getSettlement().getNumCitizens());
+//					// Remove the pixel coordinate of the window panel
+//					// Note: the top left most corner is (0,0)
+//					settlementWindow.setPixelXYCoord(x,y);
+//					// Remove the settlement map coordinate of the hovering mouse pointer
+//					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
+//					// Remove the building coordinate
+//					settlementWindow.setBuildingXYCoord(LocalPosition.DEFAULT_POSITION, true);
 					exit = true;
 				}
 			}
@@ -320,7 +320,6 @@ public class SettlementMapPanel extends JPanel {
 		int y = evt.getY();
 
 		LocalPosition settlementPosition = convertToSettlementLocation(x, y);
-
 
 		// Deconflict cases by the virtue of the if-else order below
 		// when one or more are detected
@@ -489,13 +488,15 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selectedPerson;
 	 */
 	private Person selectPersonAt(LocalPosition settlementPosition) {
-
+	
 		// Note 1: Not using settlement.getIndoorPeople() for now since it doesn't  
 		// 		   include those who have stepped outside
-		// Note 2: getIndoorPeople() will shorten the execution time to find people 
-		// Note 3: need to include non-associated people from other settlements
-		for(Person person : CollectionUtils.getPeopleInSettlementVicinity(settlement)) {
-			if (person.getPosition().getDistanceTo(settlementPosition) < SELECTION_RANGE) {
+		// Note 2: This should include non-associated people from other settlements 
+		//         in the vicinity of this settlement
+		// Note 3: Could create a list of people not being out there on a mission as well as 
+		//         those visiting this settlement to shorten the execution time to find people 
+		for (Person person : CollectionUtils.getPeopleInSettlementVicinity(settlement)) {
+			if (person.getPosition().getDistanceTo(settlementPosition) <= SELECTION_RANGE) {
 				selectPerson(person);
 				return person;
 
@@ -505,6 +506,45 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
+	 * Selects a person on the map.
+	 *
+	 * @param person the selected person.
+	 */
+	public void selectPerson(Person person) {
+		if ((settlement != null) && (person != null)) {
+			Person currentlySelected = selectedPerson.get(settlement);
+			if (person.equals(currentlySelected)) {
+				selectedPerson.put(settlement, null);
+			} else {
+				selectedPerson.put(settlement, person);
+			}
+		}
+	}
+
+	/**
+	 * Displays the person on the map
+	 *
+	 * @param person
+	 */
+	public void displayPerson(Person person) {
+		if (settlement != null && person != null)
+			selectedPerson.put(settlement, person);
+	}
+
+	/**
+	 * Gets the selected person for the current settlement.
+	 *
+	 * @return the selected person.
+	 */
+	public Person getSelectedPerson() {
+		Person result = null;
+		if (settlement != null) {
+			result = selectedPerson.get(settlement);
+		}
+		return result;
+	}
+	
+	/**
 	 * Selects the robot if any robot is at the given x and y pixel position.
 	 *
 	 * @param settlementPosition Position to search for
@@ -512,7 +552,7 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	private Robot selectRobotAt(LocalPosition settlementPosition) {
 
-		for(Robot robot : CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement)) {
+		for (Robot robot : CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement)) {
 			if (robot.getPosition().getDistanceTo(settlementPosition) <= SELECTION_RANGE) {
 				selectRobot(robot);
 				return robot;
@@ -522,8 +562,48 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Is a position within the bounds of an Object. 
+	 * Selects a robot on the map.
+	 *
+	 * @param robot the selected robot.
+	 */
+	public void selectRobot(Robot robot) {
+		if ((settlement != null) && (robot != null)) {
+			Robot currentlySelected = selectedRobot.get(settlement);
+			if (robot.equals(currentlySelected)) {
+				selectedRobot.put(settlement, null);
+			} else {
+				selectedRobot.put(settlement, robot);
+			}
+		}
+	}
+
+	/**
+	 * Displays the robot on the map.
+	 *
+	 * @param robot
+	 */
+	public void displayRobot(Robot robot) {
+		if (settlement != null && robot != null)
+			selectedRobot.put(settlement, robot);
+	}
+
+	/**
+	 * Gets the selected Robot for the current settlement.
+	 *
+	 * @return the selected Robot.
+	 */
+	public Robot getSelectedRobot() {
+		Robot result = null;
+		if (settlement != null) {
+			result = selectedRobot.get(settlement);
+		}
+		return result;
+	}
+	
+	/**
+	 * Is a position within the bounds of an Object ?
 	 * This should be in a common class.
+	 * 
 	 * @param pos
 	 * @param lbo
 	 * @return
@@ -663,44 +743,6 @@ public class SettlementMapPanel extends JPanel {
 		return result;
 	}
 	
-	/**
-	 * Selects a person on the map.
-	 *
-	 * @param person the selected person.
-	 */
-	public void selectPerson(Person person) {
-		if ((settlement != null) && (person != null)) {
-			Person currentlySelected = selectedPerson.get(settlement);
-			if (person.equals(currentlySelected)) {
-				selectedPerson.put(settlement, null);
-			} else {
-				selectedPerson.put(settlement, person);
-			}
-		}
-	}
-
-	/**
-	 * Displays the person on the map
-	 *
-	 * @param person
-	 */
-	public void displayPerson(Person person) {
-		if (settlement != null && person != null)
-			selectedPerson.put(settlement, person);
-	}
-
-	/**
-	 * Gets the selected person for the current settlement.
-	 *
-	 * @return the selected person.
-	 */
-	public Person getSelectedPerson() {
-		Person result = null;
-		if (settlement != null) {
-			result = selectedPerson.get(settlement);
-		}
-		return result;
-	}
 
 	/**
 	 * Selects a building on the map.
@@ -731,44 +773,7 @@ public class SettlementMapPanel extends JPanel {
 		return result;
 	}
 
-	/**
-	 * Selects a robot on the map.
-	 *
-	 * @param robot the selected robot.
-	 */
-	public void selectRobot(Robot robot) {
-		if ((settlement != null) && (robot != null)) {
-			Robot currentlySelected = selectedRobot.get(settlement);
-			if (robot.equals(currentlySelected)) {
-				selectedRobot.put(settlement, null);
-			} else {
-				selectedRobot.put(settlement, robot);
-			}
-		}
-	}
 
-	/**
-	 * Displays the robot on the map.
-	 *
-	 * @param robot
-	 */
-	public void displayRobot(Robot robot) {
-		if (settlement != null && robot != null)
-			selectedRobot.put(settlement, robot);
-	}
-
-	/**
-	 * Gets the selected Robot for the current settlement.
-	 *
-	 * @return the selected Robot.
-	 */
-	public Robot getSelectedRobot() {
-		Robot result = null;
-		if (settlement != null) {
-			result = selectedRobot.get(settlement);
-		}
-		return result;
-	}
 
 	/**
 	 * Converts a pixel X,Y position to a X,Y (meter) position local to the

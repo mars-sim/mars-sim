@@ -290,7 +290,7 @@ public class Sleep extends Task {
 				endTask();
 				return null;
 			}
-			logger.warning(person, "No bed found. Sleeping at '"
+			logger.warning(person, "No bed found. Sleeping at bed'"
 									+ tempBed.getSpotDescription() + "'.");
 		}
 		return tempBed;
