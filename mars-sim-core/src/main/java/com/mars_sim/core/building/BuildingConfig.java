@@ -500,7 +500,7 @@ public class BuildingConfig {
 				// Identify name
 				String name = activitySpot.getAttributeValue(NAME);
 				if (name == null) {
-					name = namePrefix + "" + i;
+					name = namePrefix + " " + i;
 					i++;
 				}
 				result.add(new NamedPosition(name, point));

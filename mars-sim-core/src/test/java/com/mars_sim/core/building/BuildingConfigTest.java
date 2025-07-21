@@ -40,7 +40,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertTrue("Has of beds in " + LANDER_HAB, !beds.getActivitySpots().isEmpty());
 
         for(var b : beds.getActivitySpots()) {
-            assertTrue("Bed name", b.name().startsWith("Bed #"));
+            assertTrue("Bed name", b.name().startsWith("Bed "));
         }
         Set<String> names = beds.getActivitySpots().stream()
                                 .map(NamedPosition::name)
@@ -49,7 +49,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * This tets is very tied to the building spec of LANDER_HAB
+     * This test is very tied to the building spec of LANDER_HAB
      */
     public void testLanderHabNamedSpots() {
         var bc = simConfig.getBuildingConfiguration();
@@ -59,7 +59,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         // Check names of exercise stations but could check any Function
         FunctionSpec exercise = spec.getFunctionSpec(FunctionType.EXERCISE);
-        assertTrue("Has of exercise in " + LANDER_HAB, !exercise.getActivitySpots().isEmpty());
+        assertTrue("Has exercise in " + LANDER_HAB, !exercise.getActivitySpots().isEmpty());
 
         Set<String> names = exercise.getActivitySpots().stream()
                                 .map(NamedPosition::name)
@@ -69,7 +69,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * This tets is very tied to the building spec of LANDER_HAB
+     * This test is very tied to the building spec of LANDER_HAB
      */
     public void testInflatableGreenhouse() {
 	    var simConfig = SimulationConfig.loadConfig();
