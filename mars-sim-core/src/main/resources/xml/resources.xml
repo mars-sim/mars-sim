@@ -35,7 +35,7 @@
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand=".15" />
+	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand=".35" />
 	
 	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="1.5" />
 	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand=".5" >Methanol CH3OH

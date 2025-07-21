@@ -116,7 +116,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Gets a collection of available Rovers at a settlement that are usable for
+	 * Gets a collection of available rovers at a settlement that are usable for
 	 * this mission.
 	 *
 	 * @param settlement the settlement to find vehicles.

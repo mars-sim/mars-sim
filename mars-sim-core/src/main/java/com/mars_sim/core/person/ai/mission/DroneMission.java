@@ -46,7 +46,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 * @param missionType    the type of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 * @param minPeople      the minimum number of people required for mission.
-	 * @param drone          the drone to use on the mission.
+	 * @param drone    
+	 *       the drone to use on the mission.
 	 */
 	protected DroneMission(MissionType missionType, Worker startingMember, Drone drone) {
 		// Use VehicleMission constructor.

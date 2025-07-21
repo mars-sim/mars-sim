@@ -308,7 +308,7 @@ public class BuildingConfig {
 			case RECREATION -> "Chair";
 			case RESEARCH -> "Bench";
 			case ROBOTIC_STATION -> "Charge Pt";
-			default -> "S";
+			default -> "";
 		};
 	}
 
@@ -342,7 +342,8 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Factory method to create FunctionSpecs
+	 * Creates factory method to create FunctionSpecs.
+	 * 
 	 * @param context Context for error messages
 	 * @param function Type of Function
 	 * @param props Coming standard props
@@ -499,7 +500,7 @@ public class BuildingConfig {
 				// Identify name
 				String name = activitySpot.getAttributeValue(NAME);
 				if (name == null) {
-					name = namePrefix + " #" + i;
+					name = namePrefix + "" + i;
 					i++;
 				}
 				result.add(new NamedPosition(name, point));

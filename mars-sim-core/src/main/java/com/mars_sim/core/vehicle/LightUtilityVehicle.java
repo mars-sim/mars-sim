@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
@@ -217,18 +216,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return slotNumber;
 	}
 
-	@Override
-	public Vehicle getVehicle() {
-		if (getContainerUnit() instanceof Vehicle luv)
-			return luv;
-		return null;
-	}
-	 
-	@Override
-	public void setParkedLocation(LocalPosition position, double facing) {
-		super.setParkedLocation(position, facing);
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();

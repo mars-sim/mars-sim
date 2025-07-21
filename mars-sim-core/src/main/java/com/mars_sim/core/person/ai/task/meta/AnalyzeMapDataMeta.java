@@ -32,10 +32,10 @@ import com.mars_sim.core.tool.Msg;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final double UNIMPROVED_FACTOR = 0.75;
-	private static final double CLAIM_FACTOR = 1.25;
-	private static final double POTENTIAL_FACTOR = 1.2;
-	private static final double MAX = 2000;
+	private static final double UNIMPROVED_FACTOR = 1.25;
+	private static final double CLAIM_FACTOR = 1.75;
+	private static final double POTENTIAL_FACTOR = 1.75;
+	private static final double MAX = 3000;
 	
     /** Task name */
     private static final String NAME = Msg.getString(

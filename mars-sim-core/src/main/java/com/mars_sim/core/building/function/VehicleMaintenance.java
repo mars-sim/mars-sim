@@ -184,7 +184,7 @@ public abstract class VehicleMaintenance extends Function {
 			
 			if (location != null) {
 				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
-				location.parkVehicle(rover);
+				location.parkRover(rover);
 				
 				// change the vehicle status
 				rover.setPrimaryStatus(StatusType.GARAGED);
@@ -221,7 +221,7 @@ public abstract class VehicleMaintenance extends Function {
 			 return false;
 		}
 		
-		if (luvs.size() >= roverLocations.size()) {
+		if (luvs.size() >= luvLocations.size()) {
 			logger.log(luv, Level.INFO, 1000,
 				building + " already full.");
 			return false;
@@ -405,28 +405,14 @@ public abstract class VehicleMaintenance extends Function {
 				// and it's called by removeFromGarage()
 				Vehicle v = p.getVehicle();
 				if (v != null) {
-//					if (p.getVehicle().equals(vehicle)) {
-//						p.setContainerUnit(vehicle);
-//						p.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-//					}
-//					else {
-//						p.transfer(vehicle);
-						BuildingManager.removePersonFromBuilding(p, building);
-//					}
+					BuildingManager.removePersonFromBuilding(p, building);
 				}
 			}
 			// Remove the robot occupants from the settlement
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
 				Vehicle v = r.getVehicle();
 				if (v != null) {
-//					if (r.getVehicle().equals(vehicle)) {
-//						r.setContainerUnit(vehicle);
-//						r.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-//					}
-//					else {
-//						r.transfer(vehicle);
-						BuildingManager.removeRobotFromBuilding(r, building);
-//					}
+					BuildingManager.removeRobotFromBuilding(r, building);
 				}
 			}
 		}
@@ -444,9 +430,9 @@ public abstract class VehicleMaintenance extends Function {
 		// or by AI that costs a minute amount of CUs.
 		
 		if (vehicle instanceof Rover r) {
-			RoverLocation parkedLoc = getVehicleParkedLocation(r);
-			if (parkedLoc != null) {
-				parkedLoc.clearParking();
+			RoverLocation loc = getRoverParkedLocation(r);
+			if (loc != null) {
+				loc.clearParking();
 			}
 		}
 		else if (vehicle instanceof Drone d) {
@@ -473,25 +459,28 @@ public abstract class VehicleMaintenance extends Function {
 	/**
 	 * Checks if a rover is in the building.
 	 * 
+	 * @param rover
 	 * @return true if rover is in the building.
 	 */
-	public boolean containsRover(Vehicle vehicle) {
-		return rovers.contains(vehicle);
+	public boolean containsRover(Rover rover) {
+		return rovers.contains(rover);
 	}
 
 	/**
 	 * Checks if a LUV is in the building.
 	 * 
+	 * @param luv
 	 * @return true if LUV is in the building.
 	 */
-	public boolean containsUtilityVehicle(Vehicle vehicle) {
-		return luvs.contains(vehicle);
+	public boolean containsUtilityVehicle(LightUtilityVehicle luv) {
+		return luvs.contains(luv);
 	}
 
 	
 	/**
 	 * Checks if a flyer is in the building.
 	 * 
+	 * @param flyer
 	 * @return true if flyer is in the building.
 	 */
 	public boolean containsFlyer(Flyer flyer) {
@@ -593,12 +582,12 @@ public abstract class VehicleMaintenance extends Function {
 	 * @param vehicle the parked vehicle.
 	 * @return the parking location or null if none.
 	 */
-	public RoverLocation getVehicleParkedLocation(Vehicle vehicle) {
+	public RoverLocation getRoverParkedLocation(Vehicle vehicle) {
 		RoverLocation result = null;
 		Iterator<RoverLocation> i = roverLocations.iterator();
 		while (i.hasNext()) {
 			RoverLocation parkingLocation = i.next();
-			if (vehicle.equals(parkingLocation.getParkedVehicle())) {
+			if (vehicle.equals(parkingLocation.getParkedRover())) {
 				result = parkingLocation;
 			}
 		}
@@ -765,7 +754,7 @@ public abstract class VehicleMaintenance extends Function {
 			return pos;
 		}
 
-		public Rover getParkedVehicle() {
+		public Rover getParkedRover() {
 			return rover;
 		}
 
@@ -773,7 +762,7 @@ public abstract class VehicleMaintenance extends Function {
 			return (rover != null);
 		}
 
-		protected void parkVehicle(Rover r) {
+		protected void parkRover(Rover r) {
 			rover = r;
 		}
 

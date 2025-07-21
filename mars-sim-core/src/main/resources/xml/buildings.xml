@@ -2534,8 +2534,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<vehicle-maintenance>
 				<rover>
-		        	<location xloc="2.60" yloc="1.5" />
-		        	<location xloc="-2.60" yloc="1.5" />
+		        	<location xloc="2.70" yloc="1.5" />
+		        	<location xloc="-2.70" yloc="1.5" />
 		        </rover>
 				<utility>
 		        	<location xloc="4.1" yloc="-2.45" />
@@ -2546,19 +2546,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		        	<location xloc="-2.35" yloc="-5.4" />
 		        </flyer>		        
 		        <activity>
-					<activity-spot xloc="3.25" yloc="-3" />		        
-					<activity-spot xloc="1.5" yloc="-3" />
-					<activity-spot xloc="-1.5" yloc="-3" />
-					<activity-spot xloc="-3.25" yloc="-3" />
-								
-					<activity-spot xloc="0.6" yloc="-1" />
-					<activity-spot xloc="-0.6" yloc="-1" />
-					<activity-spot xloc="0.6" yloc="1" />
-					<activity-spot xloc="-0.6" yloc="1" />
-					<activity-spot xloc="0.6" yloc="3" />
-					<activity-spot xloc="-0.6" yloc="3" />
-					<activity-spot xloc="0.6" yloc="5" />
-					<activity-spot xloc="-0.6" yloc="5" />					
+		        	<!-- For Flyers -->
+					<activity-spot xloc="0.75" yloc="-5.0" />		        
+					<activity-spot xloc="-0.75" yloc="-5.0" />
+					<activity-spot xloc="3.75" yloc="-6.0" />
+					<activity-spot xloc="-3.75" yloc="-6.0" />
+					<!-- For Rovers -->		
+					<activity-spot xloc="0.65" yloc="-1.5" />
+					<activity-spot xloc="-0.65" yloc="-1.5" />
+					<activity-spot xloc="0.65" yloc="0.5" />
+					<activity-spot xloc="-0.65" yloc="0.5" />
+					<activity-spot xloc="0.65" yloc="1.5" />
+					<activity-spot xloc="-0.65" yloc="1.5" />
+					<!-- For LUVs -->		
+					<activity-spot xloc="0.55" yloc="-2.5" />
+					<activity-spot xloc="-0.55" yloc="-2.5" />		
 				</activity>
 			</vehicle-maintenance>
 			<life-support capacity="8" power-required="0.4" />
@@ -2568,10 +2570,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			<power-storage capacity="60" discharge-rate="1.25"/>
-			<robotic-station capacity="2">
+			<robotic-station capacity="4">
 				<activity>
-					<activity-spot xloc="0.6" yloc="-5.5" />
-					<activity-spot xloc="-0.6" yloc="-5.5" />
+					<!-- For LUVs -->	
+					<activity-spot xloc="1.0" yloc="-5.5" />
+					<activity-spot xloc="-1.0" yloc="-5.5" />
+					<!-- For Rovers -->	
+					<activity-spot xloc="0.55" yloc="-3" />
+					<activity-spot xloc="-0.55" yloc="-3" />	
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="20000">
@@ -3775,30 +3781,41 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<vehicle-maintenance>
 				<rover>
-                	<location xloc="4.5" yloc=".55" />
-                	<location xloc="0.0" yloc=".55" />
-                	<location xloc="-4.5" yloc=".55" />
+                	<location xloc="4.65" yloc=".75" />
+                	<location xloc="0.0" yloc=".75" />
+                	<location xloc="-4.65" yloc=".75" />
                 </rover>
 				<utility>
-		        	<location xloc="4.5" yloc="-6.25" />
-		        	<location xloc="-4.5" yloc="-6.25" />
+		        	<location xloc="4.6" yloc="-6.25" />
+		        	<location xloc="-4.6" yloc="-6.25" />
 		        </utility>	  
 				<flyer>
 		        	<location xloc="4.5" yloc="-6.25" />
 		        	<location xloc="-4.5" yloc="-6.25" />
 		        </flyer>	                
                 <activity>
-					<activity-spot xloc="1.5" yloc="3" />
-					<activity-spot xloc="1.5" yloc="1" />
-					<activity-spot xloc="1.5" yloc="-1" />
-					<activity-spot xloc="1.5" yloc="-3" />			
-					<activity-spot xloc="3.0" yloc="-4.5" />
-					
-					<activity-spot xloc="-1.5" yloc="3" />
-					<activity-spot xloc="-1.5" yloc="1" />
-					<activity-spot xloc="-1.5" yloc="-1" />
-					<activity-spot xloc="-1.5" yloc="-3" />
-					<activity-spot xloc="-3.0" yloc="-4.5" />
+					<activity-spot xloc="5.15" yloc="4.85" />
+					<activity-spot xloc="5.15" yloc="3.45" />
+					<activity-spot xloc="5.15" yloc="2.35" />
+					<activity-spot xloc="5.15" yloc="0.45" />			
+					<activity-spot xloc="5.15" yloc="-1.0" />
+					<activity-spot xloc="5.15" yloc="-1.5" />			
+					<activity-spot xloc="5.8" yloc="-7.25" />
+					<activity-spot xloc="3.0" yloc="-6.5" />					
+					<activity-spot xloc="2.0" yloc="-6.75" />
+					<activity-spot xloc="1.0" yloc="-7.0" />	
+															
+					<activity-spot xloc="-5.15" yloc="4.85" />
+					<activity-spot xloc="-5.15" yloc="3.45" />
+					<activity-spot xloc="-5.15" yloc="2.35" />
+					<activity-spot xloc="-5.15" yloc="-0.45" />
+					<activity-spot xloc="-5.15" yloc="-1.0" />
+					<activity-spot xloc="-5.15" yloc="-1.5" />
+					<activity-spot xloc="-5.8" yloc="-7.25" />
+					<activity-spot xloc="-3.0" yloc="-6.5" />					
+					<activity-spot xloc="-2.0" yloc="-6.75" />
+					<activity-spot xloc="-1.0" yloc="-7.0" />
+										
 				</activity>
 			</vehicle-maintenance>
 			<life-support capacity="16" power-required="0.8" />
@@ -3808,10 +3825,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
-			<robotic-station capacity="2">
+			<robotic-station capacity="6">
 				<activity>
-					<activity-spot xloc="-1" yloc="-7.0" />
-					<activity-spot xloc="1" yloc="-7.0" />
+					<activity-spot xloc="5.15" yloc="-2.0" />
+					<activity-spot xloc="-5.15" yloc="-2.0" />
+					<activity-spot xloc="1.0" yloc="-7.5" />
+					<activity-spot xloc=".5" yloc="-6.0" />
+					<activity-spot xloc="1.0" yloc="7.5" />
+					<activity-spot xloc=".5" yloc="6.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="30000">

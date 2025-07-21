@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2024-06-09
+ * @date 2025-07-20
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle;

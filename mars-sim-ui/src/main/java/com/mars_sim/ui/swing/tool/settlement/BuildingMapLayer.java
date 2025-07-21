@@ -42,7 +42,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final String T = "T";
 	
     // Static members
-    private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 6); 
+    private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 5); 
     private static final Color BLDG_COLOR = Color.GREEN;
     
     private static final Color BLDG_SELECTED_COLOR = Color.WHITE;//new Color(119, 85, 0); // dark orange
@@ -50,13 +50,13 @@ public class BuildingMapLayer extends AbstractMapLayer {
     private static final Color CONN_COLOR = Color.RED;
     private static final Color SPLIT_CONN_COLOR = Color.WHITE;
 
-    private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
+    private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note: size doesn't matter
 
     private static final Color BLACK_OUTLINE = new Color(0, 0, 0, 190);
 	private static final Color WHITE_OUTLINE = new Color(255, 255, 255, 190);
 	private static final Color GREY_OUTLINE = new Color(192, 192, 192, 190);
  	private static final ColorChoice BUILDING_COLOR = new ColorChoice(Color.gray.darker(), WHITE_OUTLINE);
-    private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.BLACK, WHITE_OUTLINE);
+    private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.gray, BLACK_OUTLINE);
 
 	private static final Map<BuildingCategory,ColorChoice> BUILDING_COLORS = new EnumMap<>(BuildingCategory.class);
 
@@ -101,7 +101,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
             // Display svg images of all buildings in the entire settlement
             // Draw all buildings.
             var buildings = settlement.getBuildingManager().getBuildingSet();
-            for(Building b: buildings) {
+            for (Building b: buildings) {
                 drawBuilding(b, bldgLabels, viewpoint);
             }
 
@@ -110,7 +110,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
             // Must draw spots last so they are on top of hatches
             if (!spotLabels.isEmpty()) {
-                for(Building b: buildings) {
+                for (Building b: buildings) {
                     drawSpots(b, spotLabels, viewpoint);
                 }
             }
@@ -159,11 +159,11 @@ public class BuildingMapLayer extends AbstractMapLayer {
     private void drawSpots(Building building, Set<FunctionType> showSpots, MapViewPoint viewpoint) {
         for(Function f : building.getFunctions()) {
             if (showSpots.contains(f.getFunctionType())) {
-                for(ActivitySpot spot : f.getActivitySpots()) {
+                for (ActivitySpot spot : f.getActivitySpots()) {
                     drawOval(spot.getPos(), SPOT_COLOR, viewpoint);
                     
                     drawRightLabel(false, spot.getName(), spot.getPos(), SPOT_COLOR,
-                            SPOT_FONT, 1.5f, 0f, viewpoint);
+                            SPOT_FONT, 1.5f, 1f, viewpoint);
                 }
             }
         }
@@ -177,7 +177,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
      */
     private synchronized void drawBuildingConnectors(Settlement settlement, MapViewPoint viewpoint) {
 
-        for(BuildingConnector c : settlement
+        for (BuildingConnector c : settlement
                     .getBuildingConnectorManager()
                     .getAllBuildingConnections()) {
             drawBuildingConnector(c, viewpoint);

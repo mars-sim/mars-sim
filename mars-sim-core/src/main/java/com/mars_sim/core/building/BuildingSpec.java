@@ -302,8 +302,8 @@ public class BuildingSpec {
 		return flyerParking;
 	}
 
-	void setFlyerParking(Set<LocalPosition> droneParking) {
-		this.flyerParking = Collections.unmodifiableSet(droneParking);
+	void setFlyerParking(Set<LocalPosition> parking) {
+		this.flyerParking = Collections.unmodifiableSet(parking);
 	}
 
 	/**

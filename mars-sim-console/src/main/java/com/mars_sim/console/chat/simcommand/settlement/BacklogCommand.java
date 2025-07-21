@@ -32,14 +32,14 @@ class BacklogCommand extends AbstractSettlementCommand {
         SettlementTaskManager stm = settlement.getTaskManager();
 
         StructuredResponse response = new StructuredResponse();
-        response.appendLabeledString("Reuse ratio", String.format(CommandHelper.DOUBLE_FORMAT, stm.getReuseScore()));
+        response.appendLabeledString("Reuse Ratio", String.format(CommandHelper.DOUBLE_FORMAT, stm.getReuseScore()));
         response.appendLabelledDigit("Tasks Executed", stm.getExecutedCount());
 
         List<SettlementTask> tasks = stm.getAvailableTasks();
         if (tasks != null) {
             response.appendTableHeading(true, "Tasks", 35, "Subject", CommandHelper.BUILIDNG_WIDTH,
-                            "#", 3, "Scope", 8, "Score", -30);
-            for(SettlementTask t : tasks) {
+                            "#", 3, "Scope", 9, "Score", -28);
+            for (SettlementTask t : tasks) {
                 String subjectName = null;
                 Entity subject = t.getFocus();
                 if (subject != null) {

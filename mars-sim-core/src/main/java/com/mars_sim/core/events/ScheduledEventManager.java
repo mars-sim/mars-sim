@@ -44,7 +44,8 @@ public class ScheduledEventManager implements Serializable, Temporal {
         }
         
         /**
-         * Get the handler waiting for this scheduled event to occur.
+         * Gets the handler waiting for this scheduled event to occur.
+         * 
          * @return
          */
         public ScheduledEventHandler getHandler() {
@@ -99,7 +100,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
     }
 
     /**
-     * Adds an event ti be executed in the future.
+     * Adds an event to be executed in the future.
      * 
      * @param duration Duration in miliisols until the event is executed
      * @param handler Handler when the event expires
@@ -177,7 +178,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
                     eventQueue.remove(next);
                     int repeatInterval = next.handler.execute(currentTime);
                     if (repeatInterval > 0) {
-                        // Update the when and add back intot he queue
+                        // Update the when and add back into the queue
                         next.when = next.when.addTime(repeatInterval);
                         addEvent(next);
                     }

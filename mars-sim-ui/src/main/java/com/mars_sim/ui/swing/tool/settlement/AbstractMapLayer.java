@@ -127,8 +127,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Determine transform information.
 		double centerX = labelImage.getWidth() / 2D;
 		double centerY = labelImage.getHeight() / 2D;
-		double translationX = (-1 * loc.getX() * scale) - centerX;
-		double translationY = (-1 * loc.getY() * scale) - centerY;
+		double translationX = -loc.getX() * scale - centerX;
+		double translationY = -loc.getY() * scale - centerY;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);

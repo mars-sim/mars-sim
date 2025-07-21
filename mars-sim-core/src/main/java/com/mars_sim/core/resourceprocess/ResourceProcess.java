@@ -85,7 +85,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 	@Override
 	public String getEventDescription() {
-		return "Toggle " + (runningProcess ? "Off" : "On") + " for " + processSpec.getName();
+		return "Toggle " + (runningProcess ? "Off" : "On") + " - " + processSpec.getName();
 	}
 
 	/**

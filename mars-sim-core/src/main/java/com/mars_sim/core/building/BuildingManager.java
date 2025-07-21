@@ -987,7 +987,38 @@ public class BuildingManager implements Serializable {
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 		
-			if (vehicle instanceof Flyer f) {
+			 if (vehicle instanceof Rover r) {
+				if (garage.containsRover(r)) {
+					logger.info(r, 60_000,
+							"Already inside " + garageBuilding.getName() + ".");
+
+					return garageBuilding;
+				}
+				else { 
+					boolean vacated = false;
+					
+					if (garage.getAvailableRoverCapacity() == 0) {
+						// Try removing a non-reserved vehicle inside a garage		
+						for (Rover rover: garage.getRovers()) {
+							if (!vacated && !rover.isReserved() && rover.getMission() != null) {
+								if (garage.removeRover(rover, true)) {
+									vacated = true;
+								}
+							}
+						}
+					}
+					
+					if ((garage.getAvailableRoverCapacity() > 0)
+						&& garage.addRover(r)) {
+
+						logger.info(r, 60_000,
+ 							   "Just stowed inside " + garageBuilding.getName() + ".");
+						return garageBuilding;
+					}
+				}
+			}
+			
+			else if (vehicle instanceof Flyer f) {
 				
 				if (garage.containsFlyer(f)) {
 					logger.info(f, 60_000,
@@ -1018,36 +1049,7 @@ public class BuildingManager implements Serializable {
 					}
 				}
 			}
-			else if (vehicle instanceof Rover r) {
-				if (garage.containsRover(r)) {
-					logger.info(r, 60_000,
-							"Already inside " + garageBuilding.getName() + ".");
-
-					return garageBuilding;
-				}
-				else { 
-					boolean vacated = false;
-					
-					if (garage.getAvailableRoverCapacity() == 0) {
-						// Try removing a non-reserved vehicle inside a garage		
-						for (Rover rover: garage.getRovers()) {
-							if (!vacated && !rover.isReserved() && rover.getMission() != null) {
-								if (garage.removeRover(rover, true)) {
-									vacated = true;
-								}
-							}
-						}
-					}
-					
-					if ((garage.getAvailableRoverCapacity() > 0)
-						&& garage.addRover(r)) {
-
-						logger.info(r, 60_000,
- 							   "Just stowed inside " + garageBuilding.getName() + ".");
-						return garageBuilding;
-					}
-				}
-			}
+				
 			else if (vehicle instanceof LightUtilityVehicle luv) {
 				if (garage.containsUtilityVehicle(luv)) {
 					logger.info(luv, 60_000,
@@ -1058,7 +1060,7 @@ public class BuildingManager implements Serializable {
 				else { 
 					boolean vacated = false;
 					
-					if (garage.getAvailableRoverCapacity() == 0) {
+					if (garage.getAvailableUtilityVehicleCapacity() == 0) {
 						// Try removing a non-reserved vehicle inside a garage		
 						for (LightUtilityVehicle l: garage.getUtilityVehicles()) {
 							if (!vacated && !l.isReserved() && l.getMission() != null) {
@@ -1069,7 +1071,7 @@ public class BuildingManager implements Serializable {
 						}
 					}
 					
-					if ((garage.getAvailableRoverCapacity() > 0)
+					if ((garage.getAvailableUtilityVehicleCapacity() > 0)
 						&& garage.addUtilityVehicle(luv)) {
 
 						logger.info(luv, 60_000,

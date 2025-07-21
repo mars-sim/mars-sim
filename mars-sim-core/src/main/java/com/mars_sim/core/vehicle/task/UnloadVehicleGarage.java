@@ -82,7 +82,8 @@ public class UnloadVehicleGarage extends Task {
 		}
 		
 		if (isFullyUnloaded(vehicle)) {
-			clearTask(vehicle.getName() + " already unloaded.");
+			vehicle.removeSecondaryStatus(StatusType.UNLOADING);
+			clearTask(vehicle.getName() + " already unloaded. No need to execute UnloadVehicleGarage");
 			return;
 		}
 		logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
