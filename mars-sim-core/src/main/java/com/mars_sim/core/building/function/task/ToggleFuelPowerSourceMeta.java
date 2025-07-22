@@ -225,7 +225,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
         boolean result = false;
 
         int resource = fuelSource.getFuelResourceID();
-        double stored = settlement.getAmountResourceStored(resource);
+        double stored = settlement.getSpecificAmountResourceStored(resource);
         if (stored == 0D) {
             result = true;
         }

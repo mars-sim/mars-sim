@@ -149,8 +149,8 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         // Now that regen is possible for recharging the battery, the line below won't work
 //        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
             
-        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.OXYGEN_ID));
-        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
        
         // Now it will rely on its battery to power the flight
 
@@ -180,8 +180,8 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         
 
         // Take away the fuel
-        v.retrieveAmountResource(v.getFuelTypeID(), v.getAmountResourceStored(v.getFuelTypeID()));
-        assertEquals("Fuel emptied", 0.0D, v.getAmountResourceStored(v.getFuelTypeID()));
+        v.retrieveAmountResource(v.getFuelTypeID(), v.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEquals("Fuel emptied", 0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
       
         // Pilot
         executeTask(p, task, 8);

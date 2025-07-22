@@ -97,7 +97,7 @@ class GenericContainer extends Equipment implements Container {
 	 * @return a list of resource ids
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
+	public Set<Integer> getSpecificResourceStoredIDs() {
 		if (resourceHeld == -1) {
 			return Collections.emptySet();
 		}
@@ -111,8 +111,8 @@ class GenericContainer extends Equipment implements Container {
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAllAmountResourceIDs() {
-		return getAmountResourceIDs();
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		return getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -157,7 +157,7 @@ class GenericContainer extends Equipment implements Container {
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceStored(int resource) {
+	public double getSpecificAmountResourceStored(int resource) {
 		if (resource == resourceHeld) {
 			return amountStored;
 		}
@@ -171,8 +171,19 @@ class GenericContainer extends Equipment implements Container {
 	 * @return quantity
 	 */
 	@Override
+	public double getAllSpecificAmountResourceStored(int resource) {
+		return getSpecificAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets the quantity of all stock and specific amount resource stored.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
 	public double getAllAmountResourceStored(int resource) {
-		return getAmountResourceStored(resource);
+		return getSpecificAmountResourceStored(resource);
 	}
 	
 	/**

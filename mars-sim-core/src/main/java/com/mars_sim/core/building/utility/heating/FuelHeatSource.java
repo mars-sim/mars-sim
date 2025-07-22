@@ -147,8 +147,8 @@ public class FuelHeatSource extends HeatSource {
 				consumed = deltaFuel;
 			}
 			else {
-				double fuelStored = getSettlement().getAmountResourceStored(ResourceUtil.METHANE_ID);
-				double o2Stored = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				double fuelStored = getSettlement().getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
+				double o2Stored = getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				
 				double transferFuel = tankCap + deltaFuel - reserveFuel;
 				

@@ -47,8 +47,8 @@ public class TendAlgaePondTest extends AbstractMarsSimUnitTest {
 
         assertTrue("Harvesting task completed", task.isDone());       
 
-        assertTrue("Algae harvest created", s.getAmountResourceStored(ResourceUtil.SPIRULINA_ID) >0D);
-        assertTrue("Food waste created", s.getAmountResourceStored(ResourceUtil.FOOD_WASTE_ID) >0D);
+        assertTrue("Algae harvest created", s.getSpecificAmountResourceStored(ResourceUtil.SPIRULINA_ID) >0D);
+        assertTrue("Food waste created", s.getSpecificAmountResourceStored(ResourceUtil.FOOD_WASTE_ID) >0D);
     }
     
 }

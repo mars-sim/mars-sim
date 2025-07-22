@@ -398,7 +398,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 
-				double o2 = getTowingVehicle().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				double o2 = getTowingVehicle().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000,
 						"No more oxygen.");
@@ -412,7 +412,7 @@ public class Rover extends GroundVehicle implements Crewable,
 					return false;
 				}
 
-				if (getTowingVehicle().getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+				if (getTowingVehicle().getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000,
 							"Ran out of water.");
 					return false;
@@ -421,7 +421,7 @@ public class Rover extends GroundVehicle implements Crewable,
 
 			else if (getSettlement() != null)  {
 
-				double o2 = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				double o2 = getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000,
 						"No more oxygen.");
@@ -435,7 +435,7 @@ public class Rover extends GroundVehicle implements Crewable,
 					return false;
 				}
 
-				if (getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+				if (getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000,
 							"Ran out of water.");
 					return false;
@@ -445,7 +445,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 		else {
 
-			double o2 = getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			double o2 = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (o2 < SMALL_AMOUNT) {
 				logger.log(this, Level.WARNING, 60_000,
 					"No more oxygen.");
@@ -459,7 +459,7 @@ public class Rover extends GroundVehicle implements Crewable,
 				return false;
 			}
 
-			if (getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+			if (getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 60_000,
 						"Ran out of water.");
 				return false;
@@ -601,13 +601,13 @@ public class Rover extends GroundVehicle implements Crewable,
 
 		if (!isInSettlement()) {
 			if (getTowingVehicle() != null) {
-				oxygenLeft = getTowingVehicle().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				oxygenLeft = getTowingVehicle().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			}
 			else
-				oxygenLeft = getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 		else {
-			oxygenLeft = getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			oxygenLeft = getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 
 		if (oxygenLeft < SMALL_AMOUNT) {

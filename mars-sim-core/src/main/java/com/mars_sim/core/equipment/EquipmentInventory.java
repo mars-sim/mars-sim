@@ -218,11 +218,11 @@ public class EquipmentInventory
 			
 			for (Equipment e: containerSet) {
 				Container c = (Container)e;
-				Set<Integer> ids = c.getAmountResourceIDs();
+				Set<Integer> ids = c.getSpecificResourceStoredIDs();
 				String arNames = "";
 				for (int i: ids) {
 					arNames += ResourceUtil.findAmountResourceName(i) 
-							+ " (" + Math.round(c.getAmountResourceStored(i) * 100.0)/100.0 + ")";
+							+ " (" + Math.round(c.getSpecificAmountResourceStored(i) * 100.0)/100.0 + ")";
 				}
 				containerName += e.getName() + " [" + arNames + "]";
 				containerMass += e.getMass();
@@ -312,7 +312,7 @@ public class EquipmentInventory
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
 		double shortfall = quantity;
-		double stored = microInventory.getAmountResourceStored(resource);
+		double stored = microInventory.getSpecificAmountResourceStored(resource);
 		if (stored > 0) {
 			shortfall = microInventory.retrieveAmountResource(resource, shortfall);
 		}
@@ -399,7 +399,7 @@ public class EquipmentInventory
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
 		
 		double cap = microInventory.getSpecificCapacity(resource);
-		double stored = microInventory.getAmountResourceStored(resource);
+		double stored = microInventory.getSpecificAmountResourceStored(resource);
 		
 		return (cap > stored);
 		
@@ -429,34 +429,44 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the amount resource stored.
+	 * Gets the specific amount resources stored, NOT including those inside equipment.
 	 *
 	 * @param resource
-	 * @return quantity
+	 * @return amount
 	 */
 	@Override
-	public double getAmountResourceStored(int resource) {
-		return microInventory.getAmountResourceStored(resource);
+	public double getSpecificAmountResourceStored(int resource) {
+		return microInventory.getSpecificAmountResourceStored(resource);
 	}
 
 	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
+	 * Gets all the specific amount resources stored, including those inside equipment.
 	 *
 	 * @param resource
-	 * @return quantity
+	 * @return amount
 	 */
 	@Override
-	public double getAllAmountResourceStored(int resource) {
+	public double getAllSpecificAmountResourceStored(int resource) {
 		double result = 0;
 		// Do not consume resources from container Equipment. THis is an expensive
 		// and can generate concurrency issues
 		for (Equipment e: suitSet) {
-		 	result += e.getAmountResourceStored(resource);
+		 	result += e.getSpecificAmountResourceStored(resource);
 		 }
 		for (Equipment e: containerSet) {
-		 	result += e.getAmountResourceStored(resource);
+		 	result += e.getSpecificAmountResourceStored(resource);
 		 }
-		return result + getAmountResourceStored(resource);
+		return result + getSpecificAmountResourceStored(resource);
+	}
+
+	/**
+	 * Gets the quantity of all stock and specific amount resource stored.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getAllAmountResourceStored(int resource) {
+		return microInventory.getAllAmountResourceStored(resource);
 	}
 	
 	/**
@@ -606,7 +616,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemsStored();
+		return microInventory.getItemStoredIDs();
 	}
 
 	/**
@@ -615,25 +625,27 @@ public class EquipmentInventory
 	 * @return a set of amount resources
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return microInventory.getResourcesStored();
+	public Set<Integer> getSpecificResourceStoredIDs() {
+		return microInventory.getSpecificResourceStoredIDs();
 	}
 
 	/**
-	 * Gets all stored amount resources.
-	 *
+	 * Gets a set of IDs of the specific amount resources being stored, 
+	 * including those in containers and EVA suit set.
+	 * Ignore any IDs that are zero amount.
+	 * 
 	 * @return all stored amount resources.
 	 */
-	public Set<Integer> getAllAmountResourceIDs() {
-		Set<Integer> set = new HashSet<>(getAmountResourceIDs());
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		Set<Integer> set = new HashSet<>(getSpecificResourceStoredIDs());
 		for (Equipment e: containerSet) {
 			if (e instanceof ResourceHolder rh) {
-				set.addAll(rh.getAmountResourceIDs());
+				set.addAll(rh.getSpecificResourceStoredIDs());
 			}
 		}
 		for (Equipment e: suitSet) {
 			if (e instanceof ResourceHolder rh) {
-				set.addAll(rh.getAmountResourceIDs());
+				set.addAll(rh.getSpecificResourceStoredIDs());
 			}
 		}
 		return set;
@@ -745,7 +757,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the remaining quantity of an item resource.
+	 * Gets the remaining quantity (in integer) of an item resource that this inventory can store.
 	 *
 	 * @param resource
 	 * @return quantity

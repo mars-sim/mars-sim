@@ -125,7 +125,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		
 		infoPanel.addRow("Fuel Type", fuelTypeStr);
 		
-		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
+		double fuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
 		
 		fuelTankLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
 				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
@@ -148,7 +148,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 
 		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		
-		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
+		double fuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
 		fuelTankLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
 				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled Up)");
 		

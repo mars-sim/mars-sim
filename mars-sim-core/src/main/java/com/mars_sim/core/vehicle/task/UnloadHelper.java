@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadHelper.java
- * @date 2024-05-18
+ * @date 2025-07-21
  * @author Barry Evans
  */
 package com.mars_sim.core.vehicle.task;
@@ -121,12 +121,12 @@ public final class UnloadHelper {
      * @return Amount not used
      */
     private static double unloadResources(Vehicle source, Settlement dest, double amountUnloading) {
-    	for(int id : source.getAmountResourceIDs()) {
-    		double amount = source.getAmountResourceStored(id);
+    	for (int id : source.getAllAmountResourceStoredIDs()) {
+    		double amount = source.getAllAmountResourceStored(id);
     		if (amount > amountUnloading) {
     			amount = amountUnloading;
     		}
-    		double capacity = dest.getRemainingSpecificCapacity(id);
+    		double capacity = dest.getRemainingCombinedCapacity(id);
 
     		if (capacity < amount) {
     			amount = capacity;
@@ -192,8 +192,8 @@ public final class UnloadHelper {
 	private static void unloadResourcesHolder(ResourceHolder rh, Settlement settlement) {
 
 		// Note: only unloading amount resources at the moment.
-        for(int resource : rh.getAmountResourceIDs()) {
-            double amount = rh.getAmountResourceStored(resource);
+        for (int resource : rh.getAllAmountResourceStoredIDs()) {
+            double amount = rh.getAllAmountResourceStored(resource);
             double capacity = settlement.getRemainingCombinedCapacity(resource);
             if (amount > capacity) {
                 amount = capacity;
@@ -240,10 +240,8 @@ public final class UnloadHelper {
      */
     public static double unloadInventory(Vehicle vehicle, Settlement settlement, double amountUnloading) {
 		amountUnloading = unloadItems(vehicle, settlement, amountUnloading);
-//		System.out.println("amountUnloading: " + amountUnloading);
 		if (amountUnloading > 0) {
 			amountUnloading = unloadResources(vehicle, settlement, amountUnloading);
-//			System.out.println("amountUnloading: " + amountUnloading);
 			if (amountUnloading > 0) {
 				amountUnloading = unloadEquipment(vehicle, settlement, amountUnloading);
 			}

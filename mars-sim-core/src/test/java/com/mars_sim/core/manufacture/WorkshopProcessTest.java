@@ -105,7 +105,7 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
         for(var i: processItems) {
             switch(i.getType()) {
                 case AMOUNT_RESOURCE:
-                    assertTrue("Settlement has output " + i.getName(), s.getAmountResourceStored(i.getId()) >= i.getAmount());
+                    assertTrue("Settlement has output " + i.getName(), s.getSpecificAmountResourceStored(i.getId()) >= i.getAmount());
                     break;
                 case PART:
                     assertTrue("Settlement has output " + i.getName(), s.getItemResourceStored(i.getId()) >= i.getAmount());

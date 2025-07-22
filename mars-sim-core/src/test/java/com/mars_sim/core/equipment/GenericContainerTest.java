@@ -69,12 +69,12 @@ extends TestCase {
 		// Load oxygen
 		double quantity = bagCap/2D;
 		assertEquals("Full store", 0D, c.storeAmountResource(rockID, quantity));
-		assertEquals("Stored", quantity, c.getAmountResourceStored(rockID));
+		assertEquals("Stored", quantity, c.getSpecificAmountResourceStored(rockID));
 		assertEquals("Remaining capacity after load", quantity, c.getRemainingCombinedCapacity(rockID));
 
 		// Fully overload
 		assertEquals("Overload stored excess", quantity, c.storeAmountResource(rockID, bagCap));
-		assertEquals("Stored after overload", bagCap, c.getAmountResourceStored(rockID));
+		assertEquals("Stored after overload", bagCap, c.getSpecificAmountResourceStored(rockID));
 		assertEquals("Remaining capacity after overload", 0D, c.getRemainingCombinedCapacity(rockID));
 	}
 	
@@ -90,13 +90,13 @@ extends TestCase {
 		// Load rock
 		double quantity = bagCap/2D;
 		c.storeAmountResource(rockID, quantity);
-		assertEquals("Stored", quantity, c.getAmountResourceStored(rockID));
+		assertEquals("Stored", quantity, c.getSpecificAmountResourceStored(rockID));
 		assertEquals("Stored resource", rockID, c.getResource());
 		
 		// Attempt to load 2nd resource
 		int secondResource = ResourceUtil.ICE_ID;
 		assertEquals("Stored 2nd resource", quantity, c.storeAmountResource(secondResource, quantity));
-		assertEquals("2nd resource capacity", 0D, c.getAmountResourceStored(secondResource));
+		assertEquals("2nd resource capacity", 0D, c.getSpecificAmountResourceStored(secondResource));
 		assertEquals("2nd resource remaining capacity", 0D, c.getRemainingCombinedCapacity(secondResource));
 	}
 	
@@ -112,12 +112,12 @@ extends TestCase {
 		// Load rock
 		double quantity = bagCap/2D;
 		c.storeAmountResource(rockID, bagCap);
-		assertEquals("Stored", bagCap, c.getAmountResourceStored(rockID));
+		assertEquals("Stored", bagCap, c.getSpecificAmountResourceStored(rockID));
 		assertEquals("Partial Unload", 0D, c.retrieveAmountResource(rockID, quantity));
-		assertEquals("Stored after partial unload", quantity, c.getAmountResourceStored(rockID));
+		assertEquals("Stored after partial unload", quantity, c.getSpecificAmountResourceStored(rockID));
 
 		assertEquals("Full Unload", 0D, c.retrieveAmountResource(rockID, quantity));
-		assertEquals("Stored after full unload", 0D, c.getAmountResourceStored(rockID));
+		assertEquals("Stored after full unload", 0D, c.getSpecificAmountResourceStored(rockID));
 
 		assertEquals("Excessive Unload", quantity, c.retrieveAmountResource(rockID, quantity));
 

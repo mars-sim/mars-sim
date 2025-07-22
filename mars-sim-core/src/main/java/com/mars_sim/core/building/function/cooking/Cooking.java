@@ -471,7 +471,7 @@ public class Cooking extends Function {
 	 */
 	private static boolean consumeOil(double oilRequired, Settlement s) {
 		var oil = ResourceUtil.getOilResources().stream()
-						.filter(o -> s.getAmountResourceStored(o) > oilRequired)
+						.filter(o -> s.getSpecificAmountResourceStored(o) > oilRequired)
 						.findAny()
 						.orElse(-1);
 		if (oil != -1) {

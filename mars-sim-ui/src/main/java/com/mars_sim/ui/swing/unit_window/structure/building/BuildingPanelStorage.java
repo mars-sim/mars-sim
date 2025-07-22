@@ -67,7 +67,7 @@ public class BuildingPanelStorage extends TabPanelTable {
 				
 				buildingStorage.put(name, resource.getValue());
 
-				available.put(name, holder.getAllAmountResourceStored(id));
+				available.put(name, holder.getAllSpecificAmountResourceStored(id));
 				
 				settlementStorage.put(name, holder.getSpecificCapacity(id));
 			}

@@ -412,7 +412,7 @@ public class CollectResources extends EVAOperation {
 					boolean done = container.transfer(rover);
 					if (done) {
 //						logger.info(person, 5000, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
-						double amount = container.getAmountResourceStored(resourceType);
+						double amount = container.getSpecificAmountResourceStored(resourceType);
 						if (amount > 0) {
 							unloadContainer(container, amount, getTimeCompleted());
 						}

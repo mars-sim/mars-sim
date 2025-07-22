@@ -174,7 +174,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	public boolean isResourcesAvailable(Settlement source) {
 		for(ProcessItem item : inputList) {
 			if (((ItemType.AMOUNT_RESOURCE == item.getType()) 
-					&& (source.getAmountResourceStored(item.getId()) < item.getAmount()))
+					&& (source.getSpecificAmountResourceStored(item.getId()) < item.getAmount()))
 				|| ((ItemType.PART == item.getType())
 					&& (source.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
 				return false;

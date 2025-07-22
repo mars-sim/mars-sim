@@ -253,7 +253,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case WATER :
-				value = vehicle.getAmountResourceStored(ResourceUtil.WATER_ID);
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 				if (value == 0.0)
 					result = null;
 				else
@@ -261,7 +261,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case FOOD : 
-				value = vehicle.getAmountResourceStored(ResourceUtil.FOOD_ID);
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 				if (value == 0.0)
 					result = null;
 				else
@@ -269,7 +269,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case OXYGEN : 
-				value = vehicle.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (value == 0.0)
 					result = null;
 				else
@@ -277,7 +277,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case METHANOL : 
-				value = vehicle.getAmountResourceStored(ResourceUtil.METHANOL_ID);
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
 				if (value == 0.0)
 					result = null;
 				else
@@ -285,7 +285,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case ROCK_SAMPLES : ;
-				value = vehicle.getAmountResourceStored(ResourceUtil.ROCK_SAMPLES_ID);
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.ROCK_SAMPLES_ID);
 				if (value == 0.0)
 					result = null;
 				else
@@ -293,7 +293,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case ICE :
-				value = vehicle.getAmountResourceStored(ResourceUtil.ICE_ID);
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
 				if (value == 0.0)
 					result = null;
 				else

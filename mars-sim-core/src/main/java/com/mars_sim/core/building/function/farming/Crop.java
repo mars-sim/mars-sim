@@ -1107,7 +1107,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		double waterReq = compositeFactor * averageWaterNeeded * growingArea * time / 1000;
 
 		// Determine the amount of grey water available.
-		double greyWaterStored = building.getSettlement().getAmountResourceStored(ResourceUtil.GREY_WATER_ID);
+		double greyWaterStored = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(greyWaterStored * greyFilterRate * time, greyWaterStored);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
@@ -1127,7 +1127,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
 
 			waterReq = waterReq - greyWaterUsed;
-			double waterStored = building.getSettlement().getAmountResourceStored(ResourceUtil.WATER_ID);
+			double waterStored = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 
 			if (waterStored >= waterReq) {
 				waterUsed = waterReq;				
@@ -1147,7 +1147,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				waterModifier = (greyWaterUsed + waterUsed) / (waterReq + .005);
 			}
 
-			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(ResourceUtil.FERTILIZER_ID);
+			double fertilizerAvailable = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.FERTILIZER_ID);
 			// The amount of fertilizer to be used depends on the water used
 			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * waterUsed;
 			double fertilizerUsed = fertilizerRequired;
@@ -1192,7 +1192,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			double o2Required = compositeFactor * averageOxygenNeeded * time * growingArea / 1000;
 	
-			double o2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			double o2Available = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
 
 			// Avoid divided by a very low o2Required
@@ -1214,7 +1214,7 @@ public class Crop implements Comparable<Crop>, Entity {
 
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = compositeFactor * averageCarbonDioxideNeeded * time * growingArea / 1000;
-			double cO2Available = building.getSettlement().getAmountResourceStored(ResourceUtil.CO2_ID);
+			double cO2Available = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
 			// Future: allow higher concentration of co2 to be pumped to increase the harvest

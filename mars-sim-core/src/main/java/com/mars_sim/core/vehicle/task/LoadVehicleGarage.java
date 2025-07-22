@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @date 2022-09-24
+ * @date 2025-07-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -190,10 +190,10 @@ public class LoadVehicleGarage extends Task {
 			int resource = required.getKey();
 			if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
-				double stored = settlement.getAmountResourceStored(resource);
+				double stored = settlement.getAllAmountResourceStored(resource);
 				double needed = required.getValue().doubleValue();
 				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
-				double loaded = vehicle.getAmountResourceStored(resource);
+				double loaded = vehicle.getAllAmountResourceStored(resource);
 				double totalNeeded = needed + settlementNeed - loaded;
 					
 				if (stored < totalNeeded) {

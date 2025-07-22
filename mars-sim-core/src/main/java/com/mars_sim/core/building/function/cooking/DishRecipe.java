@@ -67,7 +67,7 @@ public class DishRecipe implements Serializable {
 	 */
 	public boolean isIngredientsAvailable(Settlement settlement) {
 		return ingredientList.stream().filter(i -> i.isMandatory()) 
-				.allMatch(i -> settlement.getAmountResourceStored(i.getAmountResourceID()) >= i.getDryMass());
+				.allMatch(i -> settlement.getSpecificAmountResourceStored(i.getAmountResourceID()) >= i.getDryMass());
 	}
 
 	/***

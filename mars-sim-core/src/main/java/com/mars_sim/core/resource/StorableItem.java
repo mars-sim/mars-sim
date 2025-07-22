@@ -8,6 +8,10 @@ package com.mars_sim.core.resource;
 
 import com.mars_sim.core.goods.GoodType;
 
+/**
+ * This class enables a part to store amount resources.
+ * PLEASE DO NOT DELETE. IT'S A PART OF EXPERIMENTAL WORK
+ */
 public class StorableItem extends Part {
 	
 	/** default serial id. */
@@ -17,8 +21,6 @@ public class StorableItem extends Part {
 	private double amountLoaded;
 	
 	private AmountResource resourceLoaded;
-	
-//	Map<Integer, SimpleContainer> containers = new HashMap<>();
 	 
 	public StorableItem(String name, int id, String description, GoodType type, double mass, int sol) {
 		// Use Part constructor.
@@ -56,16 +58,4 @@ public class StorableItem extends Part {
 	public void setLoadingLimit(double loadingLimit) {
 		this.loadingLimit = loadingLimit;
 	}
-	
-//	public Map<Integer, SimpleContainer> getContainers() {
-//		return containers;
-//	}
-	
-//	public void removeContainer(int id) {
-		// Note: when a SimpleContainer is needed on-demand, it's created. 
-		// If no longer in use, remove that SimpleContainer 
-//		containers.remove(id);
-//	}
-	
-	
 }

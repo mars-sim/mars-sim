@@ -93,7 +93,7 @@ public class Kit extends Equipment
 	}
 
 	@Override
-	public double getAmountResourceStored(int resource) {
+	public double getSpecificAmountResourceStored(int resource) {
 		return 0;
 	}
 

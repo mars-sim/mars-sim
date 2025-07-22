@@ -373,12 +373,12 @@ public class InventoryTabPanel extends TabPanel {
 
         private void loadResources(List<Resource> kys, Map<Resource, Double> stored, Map<Resource, Double> cap) {  
         	List<AmountResource> arItems = 
-        			holder.getAllAmountResourceIDs().stream()
+        			holder.getAllAmountResourceStoredIDs().stream()
 					.map(ar -> ResourceUtil.findAmountResource(ar))
 					.filter(Objects::nonNull)
 					.toList();
 
-    		arItems = holder.getAllAmountResourceIDs().stream()
+    		arItems = holder.getAllAmountResourceStoredIDs().stream()
 			.map(ar -> ResourceUtil.findAmountResource(ar))
 			.filter(Objects::nonNull)
 			.toList();

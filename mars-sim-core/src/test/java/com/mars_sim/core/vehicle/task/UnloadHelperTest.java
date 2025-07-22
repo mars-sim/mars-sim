@@ -57,7 +57,7 @@ public class UnloadHelperTest extends AbstractMarsSimUnitTest{
         UnloadHelper.unloadEVASuits(v, s, 1000D, 1);
         assertEquals("EVASuits left", 1, inv.getSuitSet().size());
         assertEquals("EVASuits in settlement", suits - 1, s.getEquipmentInventory().getSuitSet().size());
-        assertGreaterThan("Settlement oxygen", 0D, s.getAmountResourceStored(ResourceUtil.OXYGEN_ID));
+        assertGreaterThan("Settlement oxygen", 0D, s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
     }
 
     public void testUnloadInventory() {
@@ -89,8 +89,8 @@ public class UnloadHelperTest extends AbstractMarsSimUnitTest{
         
         assertEquals("Final stored mass", 0D, mass);
         
-        assertEquals("Settlement res1", 10D, s.getAmountResourceStored(res1));
-        assertEquals("Settlement res2", 10D, s.getAmountResourceStored(res2));
+        assertEquals("Settlement res1", 10D, s.getSpecificAmountResourceStored(res1));
+        assertEquals("Settlement res2", 10D, s.getSpecificAmountResourceStored(res2));
         assertEquals("Settlement part1", 10, s.getItemResourceStored(part1));
 
     }

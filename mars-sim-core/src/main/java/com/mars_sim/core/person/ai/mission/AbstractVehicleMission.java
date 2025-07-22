@@ -1172,18 +1172,18 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
 				double amount = (Double) value;
-				double amountStored = vehicle.getAmountResourceStored(id);
+				double amountStored = vehicle.getSpecificAmountResourceStored(id);
 
 				// Check inside vehicle
 				if (VehicleType.isRover(vehicle.getVehicleType())) {
 					Rover rover = (Rover) vehicle;
 					// Check people's possession
 					for (Person person: rover.getCrew()) {
-						amountStored += person.getAmountResourceStored(id);
+						amountStored += person.getSpecificAmountResourceStored(id);
 					}
 					// Check vehicle's equipment
 					for (Equipment equipment: rover.getContainerSet()) {
-						amountStored += equipment.getAmountResourceStored(id);
+						amountStored += equipment.getSpecificAmountResourceStored(id);
 					}
 				}
 				

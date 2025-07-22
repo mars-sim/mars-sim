@@ -42,8 +42,8 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
 //        System.out.println("mass: " + mass);
         
         assertEquals("Final stored mass", 0.0, mass);
-        assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.OXYGEN_ID)));
-        assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.FOOD_ID)));
+        assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)));
+        assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID)));
         assertEquals("Garments unloaded", ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.garmentID));
         assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 

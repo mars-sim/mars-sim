@@ -249,7 +249,7 @@ public abstract class DigLocal extends EVAOperation {
     	if (container == null)
     		return 0D;
     	
-    	double amount = container.getAmountResourceStored(resourceID);	
+    	double amount = container.getSpecificAmountResourceStored(resourceID);	
     	
         if (amount > 0) {
         	 	
@@ -514,7 +514,7 @@ public abstract class DigLocal extends EVAOperation {
 		if (!success)
 			logger.warning(person, "Unable to transfer " + containerType.getName() + " back.");
 
-		double amount = container.getAmountResourceStored(resourceID);
+		double amount = container.getSpecificAmountResourceStored(resourceID);
 		if (amount > 0) {
 			unloadContainer(container, amount, getTimeCompleted());
 		}

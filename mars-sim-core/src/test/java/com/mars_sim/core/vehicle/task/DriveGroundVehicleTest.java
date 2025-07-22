@@ -98,12 +98,12 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
 //        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
         
         // If Battery power is used, instead of fuel
-        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.OXYGEN_ID));
-        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
         
         // Remove methanol
-        v.retrieveAmountResource(v.getFuelTypeID(), v.getAmountResourceStored(v.getFuelTypeID()));
-        assertEquals("Fuel emptied", 0.0D, v.getAmountResourceStored(v.getFuelTypeID()));
+        v.retrieveAmountResource(v.getFuelTypeID(), v.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEquals("Fuel emptied", 0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
 
         executeTask(p, task, 10);
         

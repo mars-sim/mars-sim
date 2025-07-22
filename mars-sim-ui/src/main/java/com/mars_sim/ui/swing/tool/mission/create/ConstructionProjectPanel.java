@@ -560,7 +560,7 @@ class ConstructionProjectPanel extends WizardPanel {
         while (i.hasNext()) {
         	Integer resource = i.next();
             double amount = stageInfo.getResources().get(resource);
-            if (settlement.getAmountResourceStored(resource) < amount)
+            if (settlement.getSpecificAmountResourceStored(resource) < amount)
                 result = false;
         }
 
@@ -597,7 +597,7 @@ class ConstructionProjectPanel extends WizardPanel {
             while (i.hasNext()) {
             	Integer resource = i.next();
                 double amount = stage.getMissingResources().get(resource);
-                if (settlement.getAmountResourceStored(resource) < amount) {
+                if (settlement.getSpecificAmountResourceStored(resource) < amount) {
                     result = false;
                 }
             }
@@ -757,7 +757,7 @@ class ConstructionProjectPanel extends WizardPanel {
                 	Integer resource = ii.next();
                     double amountRequired = info.getResources().get(
                             resource);
-                    double amountAvailable = settlement.getAmountResourceStored(resource);
+                    double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
                     materialsList.add(new ConstructionMaterial(
                     		ResourceUtil.findAmountResource(resource).getName(), (int) amountRequired,
                             (int) amountAvailable, false));
@@ -828,7 +828,7 @@ class ConstructionProjectPanel extends WizardPanel {
                 	Integer resource = i.next();
                     double amountRequired = info.getResources().get(
                             resource);
-                    double amountAvailable = settlement.getAmountResourceStored(resource);
+                    double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
                     materialsList.add(new ConstructionMaterial(ResourceUtil.findAmountResource(resource)
                             .getName(), (int) amountRequired,
                             (int) amountAvailable, false));

@@ -47,12 +47,12 @@ extends TestCase {
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		
 		assertEquals("No excess on 1st load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
-		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, inv.getAmountResourceStored(resource));
+		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, inv.getSpecificAmountResourceStored(resource));
 		assertEquals("Remaining after 1st load capacity", CAPACITY_AMOUNT/2, inv.getRemainingSpecificCapacity(resource));
 		assertEquals("Total mass after 1st load", CAPACITY_AMOUNT/2, inv.getStoredMass());
 		
 		assertEquals("No excess on 2nd load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
-		assertEquals("Stored capacity after 2nd load", CAPACITY_AMOUNT, inv.getAmountResourceStored(resource));
+		assertEquals("Stored capacity after 2nd load", CAPACITY_AMOUNT, inv.getSpecificAmountResourceStored(resource));
 		assertEquals("Remaining after 2nd load capacity", 0D, inv.getRemainingSpecificCapacity(resource));
 		assertEquals("Total mass after 2nd load", CAPACITY_AMOUNT, inv.getStoredMass());
 
@@ -69,7 +69,7 @@ extends TestCase {
 		assertEquals("No excess on capacity load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 
 		assertEquals("Excess on overload", CAPACITY_AMOUNT/2, inv.storeAmountResource(resource, CAPACITY_AMOUNT));
-		assertEquals("Stored capacity after overload", CAPACITY_AMOUNT, inv.getAmountResourceStored(resource));
+		assertEquals("Stored capacity after overload", CAPACITY_AMOUNT, inv.getSpecificAmountResourceStored(resource));
 		assertEquals("Remaining after overload", 0D, inv.getRemainingSpecificCapacity(resource));
 	}
 
@@ -108,7 +108,7 @@ extends TestCase {
 		
 		assertEquals("Shortfall on 1st retrieve", 0D, shortfall);
 		
-		double stored = inv.getAmountResourceStored(resource);
+		double stored = inv.getSpecificAmountResourceStored(resource);
 		System.out.println("stored: " + stored);
 		
 		assertEquals("Stored on 1st retrieve", CAPACITY_AMOUNT/2, stored);
@@ -124,7 +124,7 @@ extends TestCase {
 		
 		assertEquals("Shortfall on 2nd retrieve", 0D, shortfall);
 		
-		stored = inv.getAmountResourceStored(resource);
+		stored = inv.getSpecificAmountResourceStored(resource);
 		System.out.println("stored: " + stored);
 		
 		assertEquals("Stored on 2nd retrieve", 0D, stored);

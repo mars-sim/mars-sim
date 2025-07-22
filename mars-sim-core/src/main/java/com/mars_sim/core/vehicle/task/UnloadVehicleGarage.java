@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @date 2023-09-17
+ * @date 2025-07-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;

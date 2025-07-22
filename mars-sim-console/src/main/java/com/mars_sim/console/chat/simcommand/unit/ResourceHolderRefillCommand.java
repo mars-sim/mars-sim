@@ -57,7 +57,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 					double quantity = Double.parseDouble(args[1]);
 					rh.storeAmountResource(resource.getID(), quantity);
 					
-					double newAmount = rh.getAllAmountResourceStored(resource.getID());
+					double newAmount = rh.getAllSpecificAmountResourceStored(resource.getID());
 					
 					context.println(Math.round(quantity * 1000.0)/1000.0 + " kg " + resource.getName() + " added.");
 					

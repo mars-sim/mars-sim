@@ -486,16 +486,16 @@ class AmountResourceGood extends Good {
         double amount = 0D;
 
 		// Get amount of resource in settlement storage.
-		amount += settlement.getAmountResourceStored(getID());
+		amount += settlement.getSpecificAmountResourceStored(getID());
         
         // Get amount of resource out on mission vehicles.
         amount += getVehiclesOnMissions(settlement)
-                        .map(v -> v.getAmountResourceStored(getID()))
+                        .map(v -> v.getSpecificAmountResourceStored(getID()))
                         .collect(Collectors.summingDouble(f -> f));
 
 		// Get amount of resource carried by people on EVA.
 		amount += getPersonOnEVA(settlement)
-                    .map(p -> p.getAmountResourceStored(getID()))
+                    .map(p -> p.getSpecificAmountResourceStored(getID()))
                     .collect(Collectors.summingDouble(f -> f));
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing
@@ -511,7 +511,7 @@ class AmountResourceGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-		double totalMass = Math.round(settlement.getAmountResourceStored(getID()) * 100.0)/100.0;
+		double totalMass = Math.round(settlement.getSpecificAmountResourceStored(getID()) * 100.0)/100.0;
 		double factor = 1.5 / (.5 + Math.log(totalMass + 1));
 	    return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
     }
@@ -610,7 +610,7 @@ class AmountResourceGood extends Good {
 		owner.setDemandValue(this, totalDemand);
 		
 		// Calculate total supply
-		totalSupply = getAverageAmountSupply(settlement.getAmountResourceStored(id));
+		totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
 
 		// Store the average supply
 		owner.setSupplyValue(this, totalSupply);

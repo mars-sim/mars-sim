@@ -183,7 +183,7 @@ extends Task {
         	int resourceID = c.getResource();
             if (resourceID != -1) {
             	// resourceID = -1 means the container has not been initialized
-                double sourceAmount = source.getAmountResourceStored(resourceID);
+                double sourceAmount = source.getSpecificAmountResourceStored(resourceID);
                 if (sourceAmount > 0D) {
 	                // Move resource in container to top inventory if possible.
 	                double topRemainingCapacity = parent.getRemainingCombinedCapacity(resourceID);
@@ -206,7 +206,7 @@ extends Task {
 	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (sourceAmount > 0D)) {
 	                    	Container otherUnit = (Container)k.next();
 	                        if (otherUnit != source) { // && otherUnit instanceof Container) {
-	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
+	                            double otherAmount = otherUnit.getSpecificAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
 	                                double otherRemainingCapacity = otherUnit.getRemainingCombinedCapacity(resourceID);
 	                                if (otherRemainingCapacity >= 0D) {

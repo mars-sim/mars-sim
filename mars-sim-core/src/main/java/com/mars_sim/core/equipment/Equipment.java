@@ -133,12 +133,12 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	public abstract double getSpecificCapacity(int resource);
 
 	/**
-	 * Gets the amount resource stored.
+	 * Gets all the specific amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
-	public abstract double getAmountResourceStored(int resource);
+	public abstract double getSpecificAmountResourceStored(int resource);
 
 	/**
 	 * Is this equipment empty ?

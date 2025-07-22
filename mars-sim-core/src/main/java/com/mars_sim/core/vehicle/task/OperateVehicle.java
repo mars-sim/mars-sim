@@ -422,7 +422,7 @@ public abstract class OperateVehicle extends Task {
         // Case 0a to Case 0d
         if (fuelTypeID != 0) {
         	
-        	remainingFuel = vehicle.getAmountResourceStored(fuelTypeID);
+        	remainingFuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
 	
 	    	if (remainingFuel < LEAST_AMOUNT) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
@@ -445,7 +445,7 @@ public abstract class OperateVehicle extends Task {
 		    	}
 	    	}
 
-	        remainingOxidizer = vehicle.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+	        remainingOxidizer = vehicle.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 

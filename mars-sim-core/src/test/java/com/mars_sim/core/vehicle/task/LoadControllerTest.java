@@ -353,7 +353,7 @@ extends TestCase {
 
 		double optionalLoaded;
 		if (missingId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			optionalLoaded = vehicle.getAmountResourceStored(missingId);
+			optionalLoaded = vehicle.getSpecificAmountResourceStored(missingId);
 		}
 		else {
 			optionalLoaded = vehicle.getItemResourceStored(missingId);
@@ -444,7 +444,7 @@ extends TestCase {
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				String resourceName = ResourceUtil.findAmountResourceName(key);
 
-				double stored = source.getAmountResourceStored(key);
+				double stored = source.getSpecificAmountResourceStored(key);
 				double expected = resource.getValue().doubleValue();
 				assertLessThan("Vehicle amount resource stored " + resourceName, expected, stored);
 			}

@@ -1445,18 +1445,29 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the specific amount resources stored, NOT including those inside equipment.
 	 *
 	 * @param resource
-	 * @return quantity
+	 * @return amount
 	 */
 	@Override
-	public double getAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getAmountResourceStored(resource);
+	public double getSpecificAmountResourceStored(int resource) {
+		return getAssociatedSettlement().getSpecificAmountResourceStored(resource);
 	}
 
 	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
+	 * Gets all the specific amount resources stored, including those inside equipment.
+	 *
+	 * @param resource
+	 * @return amount
+	 */
+	@Override
+	public double getAllSpecificAmountResourceStored(int resource) {
+		return getAssociatedSettlement().getAllSpecificAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets the quantity of all stock and specific amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1540,8 +1551,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return getAssociatedSettlement().getAmountResourceIDs();
+	public Set<Integer> getSpecificResourceStoredIDs() {
+		return getAssociatedSettlement().getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -1550,8 +1561,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAllAmountResourceIDs() {
-		return getAssociatedSettlement().getAllAmountResourceIDs();
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		return getAssociatedSettlement().getAllAmountResourceStoredIDs();
 	}
 
 	@Override

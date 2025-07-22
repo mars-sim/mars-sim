@@ -253,7 +253,7 @@ public class Farming extends Function {
 
 		list = list.stream()
 				.filter(c -> building.getSettlement()
-				.getAllAmountResourceOwned(c.getCropID()) > amount)
+				.getAllAmountResourceStored(c.getCropID()) > amount)
 				.collect(Collectors.toList());
 
 		List<AmountResource> tissues = new ArrayList<>();
@@ -263,7 +263,7 @@ public class Farming extends Function {
 			String tissueName = cropName + Farming.TISSUE;
 			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);
 			if (tissue != null) {	
-				double amountTissue = building.getSettlement().getAmountResourceStored(tissue.getID());
+				double amountTissue = building.getSettlement().getSpecificAmountResourceStored(tissue.getID());
 				if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
 					tissues.add(tissue);
 			}
@@ -275,7 +275,7 @@ public class Farming extends Function {
 				String tissueName = ar.getName();
 				cropName = tissueName.replace(" tissue", "");
 				int cropId = ResourceUtil.findIDbyAmountResourceName(cropName);
-				double amountCrop = building.getSettlement().getAmountResourceStored(cropId);
+				double amountCrop = building.getSettlement().getSpecificAmountResourceStored(cropId);
 				if (amountCrop > CROP_AMOUNT_FOR_TISSUE_EXTRACTION) {
 					building.getSettlement().retrieveAmountResource(cropId, CROP_AMOUNT_FOR_TISSUE_EXTRACTION);
 					break;
@@ -294,7 +294,7 @@ public class Farming extends Function {
 			double selectedTissueAmount = 0;
 			
 			for (AmountResource ar: tissues) {
-				double tissueAmount = building.getSettlement().getAmountResourceStored(ar.getID());
+				double tissueAmount = building.getSettlement().getSpecificAmountResourceStored(ar.getID());
 				if (tissueAmount <= selectedTissueAmount) {
 					selectedTissueAmount = tissueAmount;
 					selectedTissueName = ar.getName();
@@ -546,7 +546,7 @@ public class Farming extends Function {
 		boolean available = false;
 
 		try {
-			double amountStored = building.getSettlement().getAmountResourceStored(tissueID);
+			double amountStored = building.getSettlement().getSpecificAmountResourceStored(tissueID);
 
 			if (amountStored < MIN) {
 				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName + ".");

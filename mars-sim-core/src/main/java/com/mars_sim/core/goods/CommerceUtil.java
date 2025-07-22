@@ -366,7 +366,7 @@ public final class CommerceUtil {
 	public static double getNumInInventory(Good good, Settlement settlement) {
 		switch(good.getCategory()) {
 			case AMOUNT_RESOURCE:
-				return settlement.getAmountResourceStored(good.getID());
+				return settlement.getSpecificAmountResourceStored(good.getID());
 			
 			case ITEM_RESOURCE:
 				return settlement.getItemResourceStored(good.getID());

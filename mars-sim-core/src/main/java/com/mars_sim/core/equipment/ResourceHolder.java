@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceHolder.java
- * @date 2021-10-14
+ * @date 2025-07-21
  * @author Barry Evans
  */
 package com.mars_sim.core.equipment;
@@ -17,21 +17,21 @@ import com.mars_sim.core.Entity;
 public interface ResourceHolder extends Entity {
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the specific amount resources stored, NOT including those inside equipment.
 	 *
 	 * @param resource
-	 * @return quantity
+	 * @return amount
 	 */
-	double getAmountResourceStored(int resource);
+	double getSpecificAmountResourceStored(int resource);
 
 	
 	/**
-	 * Gets all the amount resource resource stored, including inside equipment
+	 * Gets all the specific amount resources stored, including inside equipment
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
-	double getAllAmountResourceStored(int resource);
+	double getAllSpecificAmountResourceStored(int resource);
 	
 	/**
 	 * Stores the amount resource
@@ -88,14 +88,14 @@ public interface ResourceHolder extends Entity {
 	 *
 	 * @return a collection of resource ids
 	 */
-	Set<Integer> getAmountResourceIDs();
+	Set<Integer> getSpecificResourceStoredIDs();
 
 	/**
 	 * Gets a collection of all supported resources, including inside equipment
 	 *
 	 * @return a collection of resource ids
 	 */
-	Set<Integer> getAllAmountResourceIDs();
+	Set<Integer> getAllAmountResourceStoredIDs();
 	
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
@@ -104,4 +104,13 @@ public interface ResourceHolder extends Entity {
 	 * @return
 	 */
 	public boolean hasAmountResourceRemainingCapacity(int resource);
+
+
+	/**
+	 * Gets the quantity of all stock and specific amount resource stored.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getAllAmountResourceStored(int resource);
 }

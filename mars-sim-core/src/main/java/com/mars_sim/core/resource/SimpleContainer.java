@@ -6,6 +6,10 @@
  */
 package com.mars_sim.core.resource;
 
+/**
+ * This class defines a container that holds a particular amount resource or a part.
+ * PLEASE DO NOT DELETE. IT'S A PART OF EXPERIMENTAL WORK
+ */
 public class SimpleContainer {
 	
 	private int ownerId;

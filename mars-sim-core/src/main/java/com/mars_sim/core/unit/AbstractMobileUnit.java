@@ -22,7 +22,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * Represent a Unit that can move around the surface
+ * Represents a Unit that can move around the surface.
  */
 @SuppressWarnings("serial")
 public abstract class AbstractMobileUnit extends Unit
@@ -52,7 +52,8 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
-	 * Get the container of this mobile unit.
+	 * Gets the container of this mobile unit.
+	 * 
 	 * @return Should never be null
 	 */
 	@Override
@@ -61,7 +62,8 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
-	 * Set the container of this mobile unit
+	 * Sets the container of this mobile unit.
+	 * 
 	 * @param destination New destination of container
 	 * @param newState 
 	 */
@@ -318,7 +320,8 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
-	 * Get the location tag which refines the vicinity of the Unit.
+	 * Gets the location tag which refines the vicinity of the Unit.
+	 * 
 	 * @return
 	 */
 	public LocationTag getLocationTag() {
@@ -326,7 +329,7 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 	
 	/**
-	 * Get the current location state for this mobile unit. It will be a refinement of the container.
+	 * Gets the current location state for this mobile unit. It will be a refinement of the container.
 	 */
 	public LocationStateType getLocationStateType() {
 		return locnState;
@@ -337,7 +340,7 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
     /**
-	 * Return the default Location state for a new container
+	 * Returns the default Location state for a new container.
 	 *
 	 * @param newContainer
 	 */
@@ -356,7 +359,7 @@ public abstract class AbstractMobileUnit extends Unit
 	/**
 	 * Gets the unit's mass including inventory mass.
 	 * This method will be overridden by those inheriting this Unit.
-	 * Bt default it returns the base mass.
+	 * By default it returns the base mass.
 	 *
 	 * @return mass of unit
 	 */

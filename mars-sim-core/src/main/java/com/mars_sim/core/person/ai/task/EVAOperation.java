@@ -561,7 +561,7 @@ public abstract class EVAOperation extends Task {
 		try {
 			// Check if EVA suit is at 15% of its oxygen capacity.
 			double oxygenCap = suit.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
-			double oxygen = suit.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			double oxygen = suit.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (oxygen <= (oxygenCap * .2D)) {
 				logger.log(person, Level.WARNING, 20_000,
 						suit.getName() + " reported less than 20% O2 left when "
@@ -571,7 +571,7 @@ public abstract class EVAOperation extends Task {
 
 			// Check if EVA suit is at 15% of its water capacity.
 			double waterCap = suit.getSpecificCapacity(ResourceUtil.WATER_ID);
-			double water = suit.getAmountResourceStored(ResourceUtil.WATER_ID);
+			double water = suit.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			if (water <= (waterCap * .10D)) {
 				logger.log(person, Level.WARNING, 20_000,
 						suit.getName() + " reported less than 10% water left when "
@@ -798,8 +798,8 @@ public abstract class EVAOperation extends Task {
 				if (done) {
 					logger.info(person, 5000, "Transferring " + e.getName() + " from person back to rover.");
 					if (e instanceof Container c) {
-						for (int resource: c.getAllAmountResourceIDs()) {
-							double amount = c.getAmountResourceStored(resource);
+						for (int resource: c.getAllAmountResourceStoredIDs()) {
+							double amount = c.getSpecificAmountResourceStored(resource);
 							if (amount > 0) {
 								// Retrieve this amount from the container
 								c.retrieveAmountResource(resource, amount);

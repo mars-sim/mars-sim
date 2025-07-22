@@ -92,8 +92,8 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
         executeTaskForDuration(p, task, TendFishTank.MAX_FISHING * 1.1);
         assertTrue("Fishing task completed", task.isDone());
         
-        assertTrue("Fish meat created", s.getAmountResourceStored(ResourceUtil.FISH_MEAT_ID) >0D);
-        assertTrue("Fish oil created", s.getAmountResourceStored(ResourceUtil.FISH_OIL_ID) >0D);
+        assertTrue("Fish meat created", s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) >0D);
+        assertTrue("Fish oil created", s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) >0D);
         assertLessThan("Fish count has reduced", origSize, tank.getNumFish());
     }
 }

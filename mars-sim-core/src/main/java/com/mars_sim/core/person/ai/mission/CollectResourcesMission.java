@@ -341,7 +341,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			EVAOperation collectResources = new CollectResources(person,
 					getRover(), resourceID, rate,
 					objective.getSiteResourceGoal() - amountCollectedAtSiteSoFar0, 
-					rover.getAmountResourceStored(resourceID),
+					rover.getSpecificAmountResourceStored(resourceID),
 					containerID, this);
 			
 			assignTask(person, collectResources);

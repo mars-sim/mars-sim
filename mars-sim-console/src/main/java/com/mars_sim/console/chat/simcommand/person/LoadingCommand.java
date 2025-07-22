@@ -36,7 +36,7 @@ public class LoadingCommand extends AbstractPersonCommand {
 		StructuredResponse response = new StructuredResponse();
 		
  		List<AmountResource> ars = person.getEquipmentInventory()
-				.getAllAmountResourceIDs().stream()
+				.getAllAmountResourceStoredIDs().stream()
 				.map(ar -> ResourceUtil.findAmountResource(ar))
 				.filter(Objects::nonNull)
 				.toList();

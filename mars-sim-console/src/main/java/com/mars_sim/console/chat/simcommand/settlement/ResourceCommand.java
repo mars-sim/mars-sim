@@ -111,7 +111,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayCO2(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getAmountResourceStored(ResourceUtil.CO2_ID);
+		double reserve = settlement.getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 
 		response.appendHeading(CO2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
@@ -132,7 +132,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	}
 
 	private void displayWater(Settlement settlement, StructuredResponse response, int id) {
-		double reserve = settlement.getAmountResourceStored(id);
+		double reserve = settlement.getSpecificAmountResourceStored(id);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 		response.appendBlankLine();
 		// For consumption, use the '+ve' sign	
@@ -234,7 +234,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayOxygen(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double reserve = settlement.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		
 		response.appendHeading(O2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));

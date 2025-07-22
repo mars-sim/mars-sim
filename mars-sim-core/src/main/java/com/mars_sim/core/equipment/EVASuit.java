@@ -297,13 +297,13 @@ public class EVASuit extends Equipment
 	public boolean lifeSupportCheck() {
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
-			if (getAmountResourceStored(ResourceUtil.OXYGEN_ID) <= massO2MinimumLimit) {
+			if (getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID) <= massO2MinimumLimit) {
 				logger.log(this, Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 
-			if (getAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+			if (getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 30_000,
 						"Ran out of water.");
 			}
@@ -399,7 +399,7 @@ public class EVASuit extends Equipment
 		// 17    kPa -> 0.2552 kg (target O2 pressure)
 		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 
-		double oxygenLeft = getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
 		if (oxygenLeft < massO2NominalLimit) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
@@ -522,7 +522,7 @@ public class EVASuit extends Equipment
 	 * @param newSuitOwner
 	 */
 	public void unloadWaste(EquipmentOwner holder) {
-		double co2 = getAmountResourceStored(ResourceUtil.CO2_ID);
+		double co2 = getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 		if (co2 > 0) {
 			retrieveAmountResource(ResourceUtil.CO2_ID, co2);
 			holder.storeAmountResource(ResourceUtil.CO2_ID, co2);
@@ -535,8 +535,8 @@ public class EVASuit extends Equipment
 	 * @return Percentage of lowest resource
 	 */
 	public double getFullness() {
-		double o2Loaded = getAmountResourceStored(ResourceUtil.OXYGEN_ID)/OXYGEN_CAPACITY;
-		double waterLoaded = getAmountResourceStored(ResourceUtil.WATER_ID)/WATER_CAPACITY;
+		double o2Loaded = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)/OXYGEN_CAPACITY;
+		double waterLoaded = getSpecificAmountResourceStored(ResourceUtil.WATER_ID)/WATER_CAPACITY;
 
 		return Math.min(o2Loaded, waterLoaded);
 	}
@@ -547,6 +547,9 @@ public class EVASuit extends Equipment
 		return microInventory.getItemResourceStored(resource);
 	}
 
+	/**
+	 * NOTE: EVASuit doesn't have any items/parts yet.
+	 */
 	@Override
 	public int getItemResourceRemainingQuantity(int resource) {
 		return microInventory.getItemResourceRemainingQuantity(resource);
@@ -569,12 +572,12 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemsStored();
+		return microInventory.getItemStoredIDs();
 	}
 
 	@Override
-	public double getAmountResourceStored(int resource) {
-		return microInventory.getAmountResourceStored(resource);
+	public double getSpecificAmountResourceStored(int resource) {
+		return microInventory.getSpecificAmountResourceStored(resource);
 	}
 
 	/**
@@ -584,8 +587,8 @@ public class EVASuit extends Equipment
 	 * @return quantity
 	 */
 	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return microInventory.getAmountResourceStored(resource);
+	public double getAllSpecificAmountResourceStored(int resource) {
+		return microInventory.getSpecificAmountResourceStored(resource);
 	}
 	
 	/**
@@ -632,13 +635,24 @@ public class EVASuit extends Equipment
 	}
 	
 	/**
-	 * Gets a list of all stored amount resources.
+	 * Gets the quantity of all stock and specific amount resource stored.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return microInventory.getAllAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets a list of all stored specific amount resources.
 	 *
 	 * @return a list of resource ids
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return microInventory.getResourcesStored();
+	public Set<Integer> getSpecificResourceStoredIDs() {
+		return microInventory.getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -647,8 +661,8 @@ public class EVASuit extends Equipment
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAllAmountResourceIDs() {
-		return getAmountResourceIDs();
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		return getSpecificResourceStoredIDs();
 	}
 	
 	/**

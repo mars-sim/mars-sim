@@ -100,7 +100,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		double bestRange = 0D;
 
 		for (Drone drone : settlement.getParkedGaragedDrones()) {
-
 			boolean usable = !drone.isReservedForMission();
             usable = usable && (allowMaintReserved || !drone.isReserved());
 			usable = usable && drone.isVehicleReady();

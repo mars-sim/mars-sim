@@ -717,12 +717,12 @@ public class Settlement extends Unit implements Temporal,
 	public boolean lifeSupportCheck() {
 
 		try {
-			double amount = getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			double amount = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more oxygen.");
 				return false;
 			}
-			amount = getAmountResourceStored(ResourceUtil.WATER_ID);
+			amount = getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more water.");
 				return false;
@@ -1027,7 +1027,7 @@ public class Settlement extends Unit implements Temporal,
 
 		Map<Integer, Map<Integer, Double>> todayMap = null;
 		Map<Integer, Double> msolMap = null;
-		double newAmount = getAmountResourceStored(resourceType);
+		double newAmount = getSpecificAmountResourceStored(resourceType);
 
 		int sol = now.getMissionSol();
 		if (resourceStat.containsKey(sol)) {
@@ -1109,7 +1109,7 @@ public class Settlement extends Unit implements Temporal,
 		minimumPassingScore *= 0.9D;
 
 		// Check the Grey water situation
-		if (getAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
@@ -2312,7 +2312,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return level of water ration.
 	 */
 	public boolean isWaterRatioChanged() {
-		double storedWater = getAmountResourceStored(ResourceUtil.WATER_ID);
+		double storedWater = getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		int reserveWater = getNumCitizens() * MIN_WATER_RESERVE;
 		// Assuming a 90-day supply of water
 		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
@@ -2975,18 +2975,29 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Gets the amount resource stored.
+	 * Gets the specific amount resources stored, NOT including those inside equipment.
 	 *
 	 * @param resource
-	 * @return quantity
+	 * @return amount
 	 */
 	@Override
-	public double getAmountResourceStored(int resource) {
-		return eqmInventory.getAmountResourceStored(resource);
+	public double getSpecificAmountResourceStored(int resource) {
+		return eqmInventory.getSpecificAmountResourceStored(resource);
 	}
 
 	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
+	 * Gets all the specific amount resources stored, including those inside equipment.
+	 *
+	 * @param resource
+	 * @return amount
+	 */
+	@Override
+	public double getAllSpecificAmountResourceStored(int resource) {
+		return eqmInventory.getAllSpecificAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets the quantity of all stock and specific amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -2997,20 +3008,21 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Gets the amount resource owned by all resource holders.
+	 * Gets the specific (not stock) amount resource owned by all resource holders 
+	 * (including people and vehicles) in the settlement.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getAllAmountResourceOwned(int resource) {
+	public double getAllSpecificAmountResourceOwned(int resource) {
 		double sum = 0;
 		for (ResourceHolder rh: citizens) {
-			sum += rh.getAmountResourceStored(resource);
+			sum += rh.getSpecificAmountResourceStored(resource);
 		}
 		for (ResourceHolder rh: ownedVehicles) {
-			sum += rh.getAmountResourceStored(resource);
+			sum += rh.getSpecificAmountResourceStored(resource);
 		}		
-		return sum + getAmountResourceStored(resource);
+		return sum + getSpecificAmountResourceStored(resource);
 	}
 	
 	/**
@@ -3019,8 +3031,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return eqmInventory.getAmountResourceIDs();
+	public Set<Integer> getSpecificResourceStoredIDs() {
+		return eqmInventory.getSpecificResourceStoredIDs();
 	}
 
 	/**
@@ -3039,8 +3051,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAllAmountResourceIDs() {
-		return eqmInventory.getAllAmountResourceIDs();
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		return eqmInventory.getAllAmountResourceStoredIDs();
 	}
 	
 	/**

@@ -121,7 +121,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		}
 		
 		// Add Resources allow dirty to avoid updating
-		Set<Integer> amountIDs = eqmOwner.getAmountResourceIDs();
+		Set<Integer> amountIDs = eqmOwner.getSpecificResourceStoredIDs();
 		Set<AmountResource> amountResources;
 		if (input != null) {
 			// Filter according to input
@@ -139,7 +139,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		}
 		for (AmountResource ar : amountResources) {
 			String name = ar.getName();
-			double amount = eqmOwner.getAmountResourceStored(ar.getID());
+			double amount = eqmOwner.getSpecificAmountResourceStored(ar.getID());
 			if (amount > 0) {
 				entries.put(name, "" + String.format(CommandHelper.KG_FORMAT, amount));
 			}

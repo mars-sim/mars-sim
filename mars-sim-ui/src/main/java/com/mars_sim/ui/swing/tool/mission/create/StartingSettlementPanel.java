@@ -223,19 +223,19 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 2)
 						result = settlement.findNumParkedRovers();
 					if (column == 3) {
-						result = (int) settlement.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+						result = (int) settlement.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 					}
 					else if (column == 4) {
-						result = (int) settlement.getAmountResourceStored(ResourceUtil.WATER_ID);
+						result = (int) settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 					}
 					else if (column == 5) {
-						result = (int) settlement.getAmountResourceStored(ResourceUtil.FOOD_ID);
+						result = (int) settlement.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 					}
 					else if (column == 6) {
-						result = (int) settlement.getAmountResourceStored(ResourceUtil.METHANE_ID);
+						result = (int) settlement.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
 					}
 					else if (column == 7) {
-						result = (int) settlement.getAmountResourceStored(ResourceUtil.METHANOL_ID);
+						result = (int) settlement.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
 					}
 					else if (column == 8)
 						result = settlement.getNumEVASuit();
@@ -360,19 +360,19 @@ class StartingSettlementPanel extends WizardPanel {
 					if (settlement.findNumParkedRovers() == 0) result = true;
 				}
 				else if (column == 3) {
-					if (settlement.getAmountResourceStored(ResourceUtil.OXYGEN_ID) < 100D) result = true;
+					if (settlement.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID) < 100D) result = true;
 				}
 				else if (column == 4) {
-					if (settlement.getAmountResourceStored(ResourceUtil.WATER_ID) < 100D) result = true;
+					if (settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < 100D) result = true;
 				}
 				else if (column == 5) {
-					if (settlement.getAmountResourceStored(ResourceUtil.FOOD_ID) < 100D) result = true;
+					if (settlement.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID) < 100D) result = true;
 				}
 				else if (column == 6) {
-					if (settlement.getAmountResourceStored(ResourceUtil.METHANE_ID) < 100D) result = true;
+					if (settlement.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID) < 100D) result = true;
 				}
 				else if (column == 7) {
-					if (settlement.getAmountResourceStored(ResourceUtil.METHANOL_ID) < 100D) result = true;
+					if (settlement.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID) < 100D) result = true;
 				}
 				else if (column == 8) {
 					if (settlement.getNumEVASuit() == 0) result = true;

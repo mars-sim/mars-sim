@@ -152,7 +152,7 @@ public class Storage extends Function {
 			}
 
 			double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
-			double resourceStored = settlement.getAmountResourceStored(resource);
+			double resourceStored = settlement.getSpecificAmountResourceStored(resource);
 			double resourceDemand = resourceValue * (resourceStored + 1D);
 
 			double currentStorageDemand = resourceDemand - existingStorage;
@@ -196,7 +196,7 @@ public class Storage extends Function {
 			double storageCapacityAmount = resourceCapacities.get(resource);
 			double totalStorageCapacityAmount = getBuilding().getSettlement().getSpecificCapacity(resource);
 			double remainingStorageCapacityAmount = totalStorageCapacityAmount - storageCapacityAmount;
-			double totalStoredAmount = getBuilding().getSettlement().getAmountResourceStored(resource);
+			double totalStoredAmount = getBuilding().getSettlement().getSpecificAmountResourceStored(resource);
 			if (remainingStorageCapacityAmount < totalStoredAmount) {
 				double resourceAmountRemoved = totalStoredAmount - remainingStorageCapacityAmount;
 				getBuilding().getSettlement().retrieveAmountResource(resource, resourceAmountRemoved);
@@ -292,7 +292,7 @@ public class Storage extends Function {
 		boolean result = false;
 		if (amount > 0) {
 			try {
-				double amountStored = rh.getAmountResourceStored(id);
+				double amountStored = rh.getSpecificAmountResourceStored(id);
 
 				if (amountStored < 0.00001) {
 					result = false;

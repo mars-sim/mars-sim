@@ -277,7 +277,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 */
 	private static boolean isInputsPresent(Settlement settlement, ResourceProcessSpec processSpec) {
 		for (var amount : processSpec.getMinimumInputs().entrySet()) {
-			if (amount.getValue() > settlement.getAmountResourceStored(amount.getKey())) {
+			if (amount.getValue() > settlement.getSpecificAmountResourceStored(amount.getKey())) {
 				return false;
 			}
 		}
@@ -303,7 +303,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				percAvailable = 1D;
 			}
 			else {
-				double available = settlement.getAmountResourceStored(id);
+				double available = settlement.getSpecificAmountResourceStored(id);
 				double rate = process.getBaseInputRate(id); // per sol
 				double perSol = process.getProcessTime() / 1000D;
 				percAvailable = Math.min(1D, ((rate * perSol)/available));

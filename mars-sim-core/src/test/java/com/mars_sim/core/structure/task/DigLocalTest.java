@@ -47,7 +47,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         // Add up reg resources
         double collected = 0D;
         for(int i : ResourceUtil.REGOLITH_TYPES) {
-            collected += s.getAmountResourceStored(i);
+            collected += s.getSpecificAmountResourceStored(i);
         }
         assertGreaterThan("Collected Regolith", 0D, collected);
     }
@@ -83,7 +83,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         executeTaskUntilPhase(p, task, 1000);
 
         // Add up reg resources
-        double collected = s.getAmountResourceStored(ResourceUtil.ICE_ID);
+        double collected = s.getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
         assertGreaterThan("Collected Ice", 0D, collected);
     }
 

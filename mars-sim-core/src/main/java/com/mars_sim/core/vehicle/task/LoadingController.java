@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadingController.java
- * @date 2021-10-21
+ * @date 2025-07-21
  * @author Barry Evans
  */
 package com.mars_sim.core.vehicle.task;
@@ -132,7 +132,7 @@ public class LoadingController implements Serializable {
 	private void removeVehicleAmounts(Map<Integer, Double> resources) {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
 		for (Integer resourceId : ids) {
-			double amountLoaded = vehicle.getAmountResourceStored(resourceId);
+			double amountLoaded = vehicle.getAllAmountResourceStored(resourceId);
 			double capacity = vehicle.getSpecificCapacity(resourceId);
 			double amountRequired = resources.get(resourceId).doubleValue();
 			if (capacity < amountRequired) {
@@ -230,7 +230,7 @@ public class LoadingController implements Serializable {
 		// use load amount (that means load couldn't complete it
 		boolean completed = isCompleted();
 		
-		// If not completed then check that the vehcile still has a capacity
+		// If not completed then check that the vehicle still has a capacity
 		if (!completed) {
 			vehicleFull = vehicle.getRemainingCargoCapacity() < 10D;
 			if (vehicleFull) {
@@ -328,7 +328,7 @@ public class LoadingController implements Serializable {
 
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
-			double settlementStored = settlement.getAmountResourceStored(resource);
+			double settlementStored = settlement.getAllAmountResourceStored(resource);
 
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
@@ -349,7 +349,7 @@ public class LoadingController implements Serializable {
 			}
 
 			// Check remaining capacity in vehicle inventory.
-			double remainingCapacity = vehicle.getRemainingCombinedCapacity(resource);
+			double remainingCapacity = vehicle.getRemainingSpecificCapacity(resource);
 			if (remainingCapacity < amountToLoad) {
 				if (remainingCapacity < SMALLEST_RESOURCE_LOAD) {
 					// Nothing left for this type so stop loading this resource
@@ -553,7 +553,8 @@ public class LoadingController implements Serializable {
 	/**
 	 * This is called in the background from the Drone/Rover time pulse method
 	 * to load resources. But why is it different to the loadResources above,
-	 * it uses a different definition of resources needed
+	 * it uses a different definition of resources needed.
+	 * 
 	 * @param amountLoading
 	 */
 	public void backgroundLoad(double amountLoading) {

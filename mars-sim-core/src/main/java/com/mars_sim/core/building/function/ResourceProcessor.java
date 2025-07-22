@@ -81,7 +81,7 @@ public abstract class ResourceProcessor extends Function {
 					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * fullRate;
 
 					// Check inventory limit.
-					double inputSupply = settlement.getAmountResourceStored(inResource);
+					double inputSupply = settlement.getSpecificAmountResourceStored(inResource);
 					if (inputSupply < fullRate) {
 						double limit = inputSupply / fullRate;
 						if (limit < inputInventoryLimit) {

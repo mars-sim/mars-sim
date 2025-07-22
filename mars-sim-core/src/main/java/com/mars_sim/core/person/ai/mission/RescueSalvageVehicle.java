@@ -279,9 +279,9 @@ public class RescueSalvageVehicle extends RoverMission {
 
 			for (Integer resource : rescueResources.keySet()) {
 				double amount = (Double) rescueResources.get(resource);
-				double amountNeeded = amount - vehicleTarget.getAmountResourceStored(resource);
+				double amountNeeded = amount - vehicleTarget.getSpecificAmountResourceStored(resource);
 
-				if ((amountNeeded > 0) && (getRover().getAmountResourceStored(resource) > amountNeeded)) {
+				if ((amountNeeded > 0) && (getRover().getSpecificAmountResourceStored(resource) > amountNeeded)) {
 					getRover().retrieveAmountResource(resource, amountNeeded);
 					vehicleTarget.storeAmountResource(resource, amountNeeded);
 				}

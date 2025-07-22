@@ -561,7 +561,6 @@ public class ConstructionMission extends AbstractMission
 
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				boolean usable = !vehicle.isReserved();
-
                 usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
 
 				if (((Crewable) vehicle).getCrewNum() > 0)
@@ -696,7 +695,7 @@ public class ConstructionMission extends AbstractMission
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double amountNeeded = stage.getMissingResources().get(resource);
-			double amountAvailable = settlement.getAmountResourceStored(resource);
+			double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
 			// Load as much of the remaining resource as possible into the construction site
 			// stage.
 			double amountLoading = Math.min(amountAvailable, amountNeeded);

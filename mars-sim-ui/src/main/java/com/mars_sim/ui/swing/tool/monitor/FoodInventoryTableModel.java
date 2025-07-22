@@ -140,7 +140,7 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
     	
     	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
       		// For Amount Resource
-    		return settlement.getAmountResourceStored(id);
+    		return settlement.getSpecificAmountResourceStored(id);
     	}
     	
     	return null;

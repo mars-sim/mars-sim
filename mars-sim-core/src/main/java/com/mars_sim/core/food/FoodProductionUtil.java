@@ -241,7 +241,7 @@ public final class FoodProductionUtil {
 			ProcessItem item = i.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
+				result = (settlement.getSpecificAmountResourceStored(id) >= item.getAmount());
 			} else if (ItemType.PART == item.getType()) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());

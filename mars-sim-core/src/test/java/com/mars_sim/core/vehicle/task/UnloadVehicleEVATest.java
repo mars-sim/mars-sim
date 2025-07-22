@@ -41,13 +41,13 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         // Move onsite
         EVAOperationTest.executeEVAWalk(this, eva, task);
 
-        double storedO2Settlement0 = s.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+        double storedO2Settlement0 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Settlement0: " + storedO2Settlement0);
         
-        double storedO2Person = p.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+        double storedO2Person = p.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Person: " + storedO2Person);
         
-        double storedO2Vehicle = v.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+        double storedO2Vehicle = v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Vehicle: " + storedO2Vehicle);
         
         // Do maintenance and advance to return
@@ -59,12 +59,12 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         assertEquals("Final stored mass", 0D, mass);
         assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 
-        double storedO2Settlement1 = s.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+        double storedO2Settlement1 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Settlement1: " + storedO2Settlement1); 
         
         assertLessThan("Oxygen unloaded", storedO2Settlement0 + RESOURCE_AMOUNT, storedO2Settlement1);
         
-        double storedFood = s.getAmountResourceStored(ResourceUtil.FOOD_ID);
+        double storedFood = s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 //        System.out.println("storedFood: " + storedFood);
         
         assertEquals("Food unloaded", RESOURCE_AMOUNT, storedFood);

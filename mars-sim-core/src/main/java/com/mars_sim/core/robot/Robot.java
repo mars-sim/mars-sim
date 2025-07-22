@@ -693,12 +693,23 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceStored(int resource) {
-		return eqmInventory.getAmountResourceStored(resource);
+	public double getSpecificAmountResourceStored(int resource) {
+		return eqmInventory.getSpecificAmountResourceStored(resource);
 	}
 
 	/**
 	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllSpecificAmountResourceStored(int resource) {
+		return eqmInventory.getAllSpecificAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets the quantity of all stock and specific amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -714,8 +725,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return eqmInventory.getAmountResourceIDs();
+	public Set<Integer> getSpecificResourceStoredIDs() {
+		return eqmInventory.getSpecificResourceStoredIDs();
 	}
 
 	/**
@@ -724,8 +735,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAllAmountResourceIDs() {
-		return eqmInventory.getAllAmountResourceIDs();
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		return eqmInventory.getAllAmountResourceStoredIDs();
 	}
 	
 	/**

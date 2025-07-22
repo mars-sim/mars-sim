@@ -247,7 +247,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 						case ORE_ID -> getTotalAmount(ResourceUtil.ORE_DEPOSIT_IDS, settle);
 						case MINERAL_ID -> getTotalAmount(ResourceUtil.MINERAL_CONC_IDs, settle);
 						case ROCK_ID -> getTotalAmount(ResourceUtil.ROCK_IDS, settle);
-						default -> settle.getAllAmountResourceOwned(resourceId);
+						default -> settle.getAllSpecificAmountResourceOwned(resourceId);
 					};
 				}
 				break;						
@@ -292,7 +292,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	static double getTotalAmount(int [] types, ResourceHolder holder) {
 		double result = 0;
 		for (int id : types) {
-			result += holder.getAmountResourceStored(id);
+			result += holder.getSpecificAmountResourceStored(id);
 		}
 		return result;
 	}

@@ -153,13 +153,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Rover result = null;
 
 		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
-
 			boolean usable = !vehicle.isReservedForMission();
-
             usable = usable && (allowMaintReserved || !vehicle.isReserved());
-
 			usable = usable && vehicle.isVehicleReady();
-
 			usable = usable && (vehicle.isEmpty());
 
 			if (usable && (vehicle instanceof Rover rover)) {
@@ -175,40 +171,40 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		return result;
 	}
 
-	/**
-	 * Checks to see if any vehicles are available at a settlement.
-	 *
-	 * @param settlement         the settlement to check.
-	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
-	 * @return true if vehicles are available.
-	 */
-	public static boolean areVehiclesAvailable(Settlement settlement, boolean allowMaintReserved) {
-
-		boolean result = false;
-
-		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-
-			boolean usable = !vehicle.isReservedForMission();
-
-            if (!allowMaintReserved && vehicle.isReserved())
-				usable = false;
-
-			usable = vehicle.isVehicleReady();
-
-			if (!(vehicle instanceof Rover))
-				usable = false;
-
-			if (!vehicle.isEmpty())
-				usable = false;
-
-			if (usable)
-				result = true;
-		}
-
-		return result;
-	}
+//	/**
+//	 * Checks to see if any vehicles are available at a settlement.
+//	 *
+//	 * @param settlement         the settlement to check.
+//	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
+//	 * @return true if vehicles are available.
+//	 */
+//	public static boolean areVehiclesAvailable(Settlement settlement, boolean allowMaintReserved) {
+//
+//		boolean result = false;
+//
+//		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
+//		while (i.hasNext()) {
+//			Vehicle vehicle = i.next();
+//
+//			boolean usable = !vehicle.isReservedForMission();
+//
+//            if (!allowMaintReserved && vehicle.isReserved())
+//				usable = false;
+//
+//			usable = vehicle.isVehicleReady();
+//
+//			if (!(vehicle instanceof Rover))
+//				usable = false;
+//
+//			if (!vehicle.isEmpty())
+//				usable = false;
+//
+//			if (usable)
+//				result = true;
+//		}
+//
+//		return result;
+//	}
 
 	/**
 	 * Checks if vehicle is usable for this mission. (This method should be

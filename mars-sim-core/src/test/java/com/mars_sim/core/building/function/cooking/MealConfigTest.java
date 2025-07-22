@@ -117,7 +117,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         // CLaim all ingredients
         var minimalQuality = meal.retrieveIngredients(s);
         for(var i : meal.getIngredientList()) {
-            assertEquals("Ingredient stored " + i.getName(), 0D, s.getAmountResourceStored(i.getAmountResourceID()));
+            assertEquals("Ingredient stored " + i.getName(), 0D, s.getSpecificAmountResourceStored(i.getAmountResourceID()));
         }
 
         // Add all ingriedients

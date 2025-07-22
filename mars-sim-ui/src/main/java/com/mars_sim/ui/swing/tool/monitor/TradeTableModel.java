@@ -256,7 +256,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
     	
     	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
       		// For Amount Resource
-    		return Math.round(settlement.getAmountResourceStored(id) * 100.0)/100.0;
+    		return Math.round(settlement.getSpecificAmountResourceStored(id) * 100.0)/100.0;
     	}
     	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
     		// For Item Resource

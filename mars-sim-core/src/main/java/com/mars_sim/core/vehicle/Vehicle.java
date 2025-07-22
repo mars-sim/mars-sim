@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2025-07-20
+ * @date 2025-07-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle;
@@ -104,7 +104,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 			StatusType.TOWED,
 			StatusType.MOVING,
 			StatusType.STUCK,
-			StatusType.MALFUNCTION);
+			StatusType.MALFUNCTION,
+			StatusType.LOADING,
+			StatusType.UNLOADING,
+			StatusType.HOVERING,
+			StatusType.OUT_OF_BATTERY_POWER,
+			StatusType.OUT_OF_FUEL,
+			StatusType.OUT_OF_OXIDIZER,	
+			StatusType.TOWING
+			);
 
 	/** True if vehicle is currently reserved for a mission. */
 	protected boolean isReservedMission;
@@ -355,7 +363,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Change the loading status of this loading
+	 * Changes the loading status of this loading.
+	 * 
 	 * @param manifest Supplies to load; if this is null then stop the loading
 	 */
     public LoadingController setLoading(SuppliesManifest manifest) {
@@ -364,7 +373,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			loadingController = null;
 		}
         else if (statusTypes.contains(StatusType.LOADING)) {
-			logger.warning(this, "Is already in the loading status");
+			logger.warning(this, "Already in loading status");
 		}
 		else {
 			removeSecondaryStatus(StatusType.UNLOADING);
@@ -842,7 +851,7 @@ public abstract class Vehicle extends AbstractMobileUnit
     			range = MAXIMUM_RANGE;
     		}
     		else {
-                double amountOfFuel = getAmountResourceStored(fuelTypeID);
+                double amountOfFuel = getSpecificAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
         		range = getEstimatedFuelEconomy() * amountOfFuel;
     		}
@@ -1393,15 +1402,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		// Regardless being outside or inside settlement,
-		// if it's malfunction (outside or inside settlement) 
-		// whether it's in a garage or not
-		else if (haveStatusType(StatusType.MALFUNCTION)
-				&& malfunctionManager.getMalfunctions().isEmpty()) {
-			// Remove the malfunction status
-			removeSecondaryStatus(StatusType.MALFUNCTION);
-		}
-
-		// Regardless being outside or inside settlement,
 		// NOT under maintenance
 		else {
 			
@@ -1419,7 +1419,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			
 		}
 
-		// Bckground loading check
+		// Background loading check
 		if (haveStatusType(StatusType.LOADING) && isInSettlement()
 				&& !loadingController.isCompleted()) {
 			double time = pulse.getElapsed();
@@ -1428,9 +1428,23 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 			loadingController.backgroundLoad(amountLoading);
 		}
-
+		
 		// Check once per msol (millisol integer)
 		if (pulse.isNewIntMillisol()) {
+					
+			if (haveStatusType(StatusType.MALFUNCTION)
+					&& malfunctionManager.getMalfunctions().isEmpty()) {
+				// Regardless being outside or inside settlement,
+				// if it's malfunction (outside or inside settlement) 
+				// whether it's in a garage or not
+				
+				// Remove the malfunction status
+				removeSecondaryStatus(StatusType.MALFUNCTION);
+			}
+			else if (haveStatusType(StatusType.UNLOADING)
+					&& isEmpty() && !isReservedMission) {
+				removeSecondaryStatus(StatusType.UNLOADING);	
+			}
 			
 			// Sample a data point every SAMPLE_FREQ (in msols)
 			int msol = pulse.getMarsTime().getMillisolInt();
@@ -2059,18 +2073,29 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Gets the amount resource stored.
+	 * Gets the specific amount resources stored, NOT including those inside equipment.
+	 *
+	 * @param resource
+	 * @return amount
+	 */
+	@Override
+	public double getSpecificAmountResourceStored(int resource) {
+		return eqmInventory.getSpecificAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets all the specific amount resources stored, including those inside equipment.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
-	public double getAmountResourceStored(int resource) {
-		return eqmInventory.getAmountResourceStored(resource);
+	public double getAllSpecificAmountResourceStored(int resource) {
+		return eqmInventory.getAllSpecificAmountResourceStored(resource);
 	}
-	
+
 	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
+	 * Gets the quantity of all stock and specific amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -2147,8 +2172,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return  a set of resources
 	 */
 	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return eqmInventory.getAmountResourceIDs();
+	public Set<Integer> getSpecificResourceStoredIDs() {
+		return eqmInventory.getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -2157,8 +2182,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<Integer> getAllAmountResourceIDs() {
-		return eqmInventory.getAllAmountResourceIDs();
+	public Set<Integer> getAllAmountResourceStoredIDs() {
+		return eqmInventory.getAllAmountResourceStoredIDs();
 	}
 	
 	/**

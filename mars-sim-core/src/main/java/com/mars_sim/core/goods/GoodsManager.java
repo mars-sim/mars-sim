@@ -794,7 +794,7 @@ public class GoodsManager implements Serializable {
 		// Compare the available amount of oxygen
 		double supply = getSupplyValue(resourceID);
 
-		double stored = settlement.getAmountResourceStored(resourceID);
+		double stored = settlement.getSpecificAmountResourceStored(resourceID);
 	
 		if (stored >= optimalPerPop * pop) {
 			// Thus no need of demand adjustment

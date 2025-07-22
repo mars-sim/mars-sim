@@ -30,7 +30,7 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         s.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         testWater(p);
-        assertTrue("Water consumed", s.getAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
+        assertTrue("Water consumed", s.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
     }
 
     public void testBottleWater() {
@@ -44,7 +44,7 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         p.assignThermalBottle();
 
         testWater(p);
-        assertTrue("Water consumed", b.getAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
+        assertTrue("Water consumed", b.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
     }
 
     public void testVehicleWater() {
@@ -57,7 +57,7 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         assertTrue("In vehicle", p.isInVehicle());
 
         testWater(p);
-        assertTrue("Water consumed", v.getAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
+        assertTrue("Water consumed", v.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
 
     }
 
@@ -123,6 +123,6 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         executeTask(p, t, 1000);
         assertTrue("Eatdrnk completed", t.isDone());
         assertFalse("Person is not hungry", pc.isHungry());
-        assertTrue("Food consumed", rh.getAmountResourceStored(ResourceUtil.FOOD_ID) < INITIAL_RESOURCE);
+        assertTrue("Food consumed", rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID) < INITIAL_RESOURCE);
     }
 }

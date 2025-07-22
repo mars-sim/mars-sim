@@ -95,7 +95,7 @@ public class StudyFieldSamples extends LabTask {
 		int bestID = 0;
 		if (person.getContainerUnit() instanceof ResourceHolder rh) {
 			for (int i: ResourceUtil.ROCK_IDS) {
-				double stored = rh.getAmountResourceStored(i);
+				double stored = rh.getSpecificAmountResourceStored(i);
 				if (mostStored < stored) {
 					mostStored = stored;
 					bestID = i;

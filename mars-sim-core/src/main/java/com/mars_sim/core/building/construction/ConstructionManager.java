@@ -137,7 +137,7 @@ implements Serializable {
 	    	Integer resource = i.next();
 	        double amountRequired = stage.getMissingResources().get(resource);
 	        if (amountRequired > 0D) {
-	            double amountStored = settlement.getAmountResourceStored(resource);
+	            double amountStored = settlement.getSpecificAmountResourceStored(resource);
 	            if (amountStored > 0D) {
 	                result = true;
 	            }

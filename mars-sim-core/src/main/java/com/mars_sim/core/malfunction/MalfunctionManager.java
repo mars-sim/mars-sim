@@ -894,7 +894,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 						double amount = entry.getValue();
 						double amountDepleted = amount * time * percent / 100;
 						ResourceHolder rh = (ResourceHolder)entity;
-						double amountStored = rh.getAmountResourceStored(resource);
+						double amountStored = rh.getSpecificAmountResourceStored(resource);
 
 						if (amountStored < amountDepleted) {
 							amountDepleted = amountStored;

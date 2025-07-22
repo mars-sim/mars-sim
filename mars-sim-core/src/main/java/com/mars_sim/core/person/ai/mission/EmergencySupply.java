@@ -499,21 +499,20 @@ public class EmergencySupply extends RoverMission {
 
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {
-			Settlement settlement = i.next();
+			Settlement targetSettlement = i.next();
 
-			if (settlement != startingSettlement 
-				&& !settlement.equals(startingSettlement)
+			if (targetSettlement != startingSettlement 
+				&& !targetSettlement.equals(startingSettlement)
 				// Check if an emergency supply mission is currently ongoing to settlement.
-				&& !hasCurrentEmergencySupplyMission(settlement)) {
+				&& !hasCurrentEmergencySupplyMission(targetSettlement)) {
 
 				// Check if settlement is within rover range.
-				double settlementRange = settlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
+				double settlementRange = targetSettlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
 				if (settlementRange <= (rover.getEstimatedRange() * .8D)) {
 
 					// Find what emergency supplies are needed at settlement.
-					Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
-					Map<Integer, Integer> emergencyContainersNeeded = getContainersRequired(
-							emergencyResourcesNeeded);
+					Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(targetSettlement);
+					Map<Integer, Integer> emergencyContainersNeeded = getContainersRequired(emergencyResourcesNeeded);
 
 					if (!emergencyResourcesNeeded.isEmpty()) {
 
@@ -521,7 +520,7 @@ public class EmergencySupply extends RoverMission {
 						// supplies.
 						if (hasEnoughSupplies(startingSettlement, emergencyResourcesNeeded,
 								emergencyContainersNeeded)) {
-							result = settlement;
+							result = targetSettlement;
 							break;
 						}
 					}
@@ -554,7 +553,7 @@ public class EmergencySupply extends RoverMission {
 			double amountRequired = emergencyResourcesNeeded.get(resource);
 			double amountNeededAtStartingSettlement = getResourceAmountNeededAtStartingSettlement(startingSettlement,
 					resource);
-			double amountAvailable = startingSettlement.getAmountResourceStored(resource);
+			double amountAvailable = startingSettlement.getSpecificAmountResourceStored(resource);
 			// Adding tracking demand
 			if (amountAvailable < (amountRequired + amountNeededAtStartingSettlement)) {
 				result = false;
@@ -675,7 +674,7 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine oxygen amount needed.
 		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
-		double oxygenAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double oxygenAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.OXYGEN_ID);
 
 		oxygenAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.OXYGEN_ID);
 		if (oxygenAmountAvailable < oxygenAmountNeeded) {
@@ -688,7 +687,7 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine water amount needed.
 		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;// * Mission.WATER_MARGIN;
-		double waterAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.WATER_ID);
+		double waterAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.WATER_ID);
 
 		waterAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.WATER_ID);
 		if (waterAmountAvailable < waterAmountNeeded) {
@@ -701,7 +700,7 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine food amount needed.
 		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;// * Mission.FOOD_MARGIN;
-		double foodAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.FOOD_ID);
+		double foodAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.FOOD_ID);
 
 		foodAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.FOOD_ID);
 		if (foodAmountAvailable < foodAmountNeeded) {
@@ -714,7 +713,7 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine methane amount needed.
 		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-		double methaneAmountAvailable = settlement.getAmountResourceStored(ResourceUtil.METHANOL_ID);
+		double methaneAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.METHANOL_ID);
 
 		methaneAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.METHANOL_ID);
 		if (methaneAmountAvailable < methaneAmountNeeded) {
@@ -747,7 +746,7 @@ public class EmergencySupply extends RoverMission {
 				if (!isTradeMission && !isEmergencySupplyMission) {
 					Rover rover = roverMission.getRover();
 					if (rover != null) {
-						result += rover.getAmountResourceStored(resource);
+						result += rover.getSpecificAmountResourceStored(resource);
 					}
 				}
 			}

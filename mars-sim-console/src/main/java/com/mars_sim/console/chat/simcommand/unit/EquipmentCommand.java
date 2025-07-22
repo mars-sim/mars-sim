@@ -97,7 +97,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 			else if (e instanceof ResourceHolder suit) {
 				StringBuilder builder = new StringBuilder();
 
-				for(int resourceID: suit.getAmountResourceIDs()) {
+				for(int resourceID: suit.getSpecificResourceStoredIDs()) {
 					if (builder.length() > 0) {
 						builder.append(", ");
 					}
@@ -128,7 +128,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 	private static String formatResource(ResourceHolder holder, int resourceID) {
 		return String.format(RESOURCE_FORMAT, 
 				ResourceUtil.findAmountResourceName(resourceID),
-				holder.getAmountResourceStored(resourceID),
+				holder.getSpecificAmountResourceStored(resourceID),
 				holder.getSpecificCapacity(resourceID));
 	}
 }
