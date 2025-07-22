@@ -281,7 +281,9 @@ public class EquipmentGood extends Good {
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
 
-		int pop = settlement.getNumCitizens();
+		// Note: The population should only minimally impact the demand value
+		// pop should never be linearly proportional to demand
+		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
 		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
@@ -329,13 +331,13 @@ public class EquipmentGood extends Good {
 				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
 
 			case GAS_CANISTER:
-				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * pop * GAS_CANISTER_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * popFactor * GAS_CANISTER_DEMAND;
 
 			case THERMAL_BOTTLE:
-				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * pop * THERMAL_BOTTLE_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * popFactor * THERMAL_BOTTLE_DEMAND;
 
 			case WHEELBARROW:
-				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * pop * WHEELBARROW_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * popFactor * WHEELBARROW_DEMAND;
 							
 			default:
 				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType + ".");

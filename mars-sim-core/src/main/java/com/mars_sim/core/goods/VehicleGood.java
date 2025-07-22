@@ -369,7 +369,11 @@ class VehicleGood extends Good {
 		if (supply < 0D)
 			supply = 0D;
 
-		return demand / Math.log(supply + 2) * DRONE_FACTOR * Math.log(Math.min(48, settlement.getNumCitizens()));
+		// Note: The population should only minimally impact the demand value
+		// pop should never be linearly proportional to demand
+		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+		
+		return demand / Math.log(supply + 2) * DRONE_FACTOR * popFactor;
 	}
 
 	/**
@@ -398,7 +402,11 @@ class VehicleGood extends Good {
 		if (supply < 0D)
 			supply = 0D;
 
-		return demand / Math.log(supply + 2) * LUV_FACTOR * Math.log(Math.min(24, settlement.getNumCitizens()));
+		// Note: The population should only minimally impact the demand value
+		// pop should never be linearly proportional to demand
+		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+		
+		return demand / Math.log(supply + 2) * LUV_FACTOR * popFactor;
 	}
 
 	/**

@@ -111,7 +111,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double OXYGEN_VALUE_MODIFIER = 8;
 	private static final double METHANE_VALUE_MODIFIER = 0.07;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.0001;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	private static final double CO2_VALUE_MODIFIER = 0.0075;
@@ -162,7 +162,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = .025;
+	private static final double HYDROGEN_FLATTENING_FACTOR = .15;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
@@ -916,8 +916,10 @@ class AmountResourceGood extends Good {
 			// Determine total demand for cooked meal mass for the settlement.
 			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
 			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			int numPeople = settlement.getNumCitizens();
-			double cookedMealDemand = numPeople * cookedMealDemandOrbit;
+			// Note: The population should only minimally impact the demand value
+			// pop should never be linearly proportional to demand
+			double popFactor = Math.log(settlement.getNumCitizens()) * 10;
+			double cookedMealDemand = popFactor * cookedMealDemandOrbit;
 			var meals = SimulationConfig.instance().getMealConfiguration().getDishList();
 			int numMeals = meals.size();
 			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
@@ -1151,7 +1153,9 @@ class AmountResourceGood extends Good {
 	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
 		int resourceID = resource.getID();
 		if (resource.isLifeSupport()) {
-			int numPeople = settlement.getNumCitizens();
+			// Note: The population should only minimally impact the demand value
+			// pop should never be linearly proportional to demand
+			double popFactor = Math.log(settlement.getNumCitizens()) * 5;
 
 			double amountNeededSol = switch(resourceID) {
 				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
@@ -1163,7 +1167,7 @@ class AmountResourceGood extends Good {
 				default -> 0D;
 			};
 			
-			return numPeople * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
+			return popFactor * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
 					* LIFE_SUPPORT_FACTOR;
 		}
 		else
@@ -1302,8 +1306,10 @@ class AmountResourceGood extends Good {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRationLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
-			int numPeople = settlement.getNumCitizens();
-			demand = numPeople * amountNeededSol *  WATER_VALUE_MODIFIER 
+			// Note: The population should only minimally impact the demand value
+			// pop should never be linearly proportional to demand
+			double popFactor = Math.log(settlement.getNumCitizens()) * 10;
+			demand = popFactor * amountNeededSol *  WATER_VALUE_MODIFIER 
 					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);
 		}
 

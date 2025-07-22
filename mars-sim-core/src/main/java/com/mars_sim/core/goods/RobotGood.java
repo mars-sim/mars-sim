@@ -197,7 +197,9 @@ class RobotGood extends Good {
 	private double determineRobotDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = BASE_DEMAND;
 
-		int pop = settlement.getNumCitizens();
+		// Note: The population should only minimally impact the demand value
+		// pop should never be linearly proportional to demand
+		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
 		
 		if (robotType == RobotType.MAKERBOT) {
 			
@@ -209,7 +211,7 @@ class RobotGood extends Good {
 			
 			double makerFactor = 1 + .65 * engineer + .25 * tech + .1 * comp;
 			
-			baseDemand += baseDemand / makerFactor * pop;
+			baseDemand += baseDemand / makerFactor * popFactor;
 		}
 		
 		else if (robotType == RobotType.REPAIRBOT) {
@@ -220,7 +222,7 @@ class RobotGood extends Good {
 			
 			double repairFactor = 1 + .75 * tech + .25 * engineer;
 			
-			baseDemand += baseDemand / repairFactor * pop;
+			baseDemand += baseDemand / repairFactor * popFactor;
 		}
 		
 		else if (robotType == RobotType.CONSTRUCTIONBOT) {
@@ -232,19 +234,19 @@ class RobotGood extends Good {
 			int architect = JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
 			double constructFactor = 1 + .60 * architect + .25 * engineer + .15 * comp;
-			baseDemand += baseDemand / constructFactor * pop;
+			baseDemand += baseDemand / constructFactor * popFactor;
 		}
 		
 		else if (robotType == RobotType.GARDENBOT) {
 			int botanistFactor = JobUtil.numJobs(JobType.BOTANIST, settlement);
 			
-			baseDemand += baseDemand / botanistFactor * pop;
+			baseDemand += baseDemand / botanistFactor * popFactor;
 		}
 		
 		else if (robotType == RobotType.CHEFBOT) {
 			double chiefFactor = 1.0 + JobUtil.numJobs(JobType.CHEF, settlement);
 			
-			baseDemand += baseDemand / chiefFactor * pop;
+			baseDemand += baseDemand / chiefFactor * popFactor;
 		}
 		
 		else if (robotType == RobotType.DELIVERYBOT) {
@@ -254,7 +256,7 @@ class RobotGood extends Good {
 			
 			double traderFactor = 1 + .75 * trader + .25 * pilot;
 			
-			baseDemand += baseDemand / traderFactor * pop;
+			baseDemand += baseDemand / traderFactor * popFactor;
 		}
 		
 		else if (robotType == RobotType.MEDICBOT) {
@@ -264,7 +266,7 @@ class RobotGood extends Good {
 			
 			double medicFactor = 1 + .75 * doc + .25 * psy;
 			
-			baseDemand += baseDemand / medicFactor * pop;
+			baseDemand += baseDemand / medicFactor * popFactor;
 		}
 		
 		return baseDemand;
