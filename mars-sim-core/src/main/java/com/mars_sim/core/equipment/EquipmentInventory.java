@@ -406,6 +406,16 @@ public class EquipmentInventory
 		// Warning : May also needs to account for the amount resources inside equipment
 	}
 	
+	
+	/**
+	 * Gets the stock capacity of its micro inventory.
+	 *
+	 * @return
+	 */
+	public double getStockCapacity() {
+		return microInventory.getStockCapacity();
+	}
+	
 	/**
 	 * Obtains the remaining cargo/general/shared capacity.
 	 *

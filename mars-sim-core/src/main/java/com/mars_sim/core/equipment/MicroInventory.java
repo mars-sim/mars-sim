@@ -262,10 +262,7 @@ public class MicroInventory implements Serializable {
 		updateStockAmountResourceTotalMass();
 		updateSpecificAmountResourceTotalMass();
 		updateItemResourceTotalMass();
-				
-		double total = Math.round((stockAmountTotalMass + specificAmountTotalMass + itemTotalMass) * 100.0)/100.0;
-//		if (total != 0D) printStoredMass();
-		return total;
+		return Math.round((stockAmountTotalMass + specificAmountTotalMass + itemTotalMass) * 100.0)/100.0;
 	}
 
 	/**
@@ -354,13 +351,17 @@ public class MicroInventory implements Serializable {
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeStockAmountResource(int resource, double quantity) {
-		if (!stockAmountStorage.containsKey(resource)) {
-			return 0;
+		double stockAmount = 0;
+		
+		if (stockAmountStorage.containsKey(resource)) {
+			// Gets the existing stock amount
+			stockAmount = stockAmountStorage.get(resource);
 		}
-		double stockAmount = stockAmountStorage.get(resource);
-	
-		double remaining =  stockAmountTotalMass - stockAmount;
+
+		double remaining = stockAmountTotalMass - stockAmount;
+		
 		double excess = 0D;
+		
 		if (remaining < quantity) {
 			// Obtain the excess
 			excess = quantity - remaining;
@@ -373,14 +374,12 @@ public class MicroInventory implements Serializable {
 					logger.warning(owner, 120_000L, "Stock Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
 			}
 		}
-
+		// Increase the existing stock amount by adding quantity
 		stockAmount += quantity;
-		// Update the stock amount
+		// Update the stock storage map with the new stock amount
 		stockAmountStorage.put(resource, stockAmount);
-		
 		// Update the stock amount total mass
 		stockAmountTotalMass += quantity;
-		
 		// Fire the unit event type
 		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
 		return excess;
@@ -550,10 +549,12 @@ public class MicroInventory implements Serializable {
 	 * @return shortfall quantity that cannot be retrieved
 	 */
 	public double retrieveStockAmountResource(int resource, double quantity) {
-		if (!stockAmountStorage.containsKey(resource)) {
-			return 0;
+		double stockAmount = 0;
+		
+		if (stockAmountStorage.containsKey(resource)) {
+			// Gets the existing stock amount
+			stockAmount = stockAmountStorage.get(resource);
 		}
-		double stockAmount = stockAmountStorage.get(resource);
 
 		double shortfall = 0D;
 		double remaining = stockAmount - quantity;
@@ -567,22 +568,21 @@ public class MicroInventory implements Serializable {
 						+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
 						+ name + " from stock storage but lacking " + Math.round(shortfall * 1_000.0)/1_000.0 + " kg.");
 			}
-			
+			// Update the remaining
 			remaining = 0;
-			
-			// Update the specific amount resource total mass
+			// Reduce the stock amount resource total mass by stockAmount
 			stockAmountTotalMass -= stockAmount;
 		}
 		else {
-			// Update the specific amount resource total mass
+			// Update the existing stock amount resource total mass
 			stockAmountTotalMass -= quantity;
 		}
 
-		// Update the stock amount
+		// Update the stock storage map with remaining
 		stockAmountStorage.put(resource, remaining);
-	
 		// Fire the unit event type
 		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+		
 		return shortfall;
 	}
 	

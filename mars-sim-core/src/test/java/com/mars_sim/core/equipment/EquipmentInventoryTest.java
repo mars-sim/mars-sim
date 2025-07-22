@@ -78,17 +78,17 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 		int resource = ResourceUtil.CO2_ID;
 
 		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
-		System.out.println("excess: " + excess);
+//		System.out.println("excess: " + excess);
 		
 		assertEquals("No excess on 1st load", 0D, excess);
 		
 		double stored = inv.getSpecificAmountResourceStored(resource);
-		System.out.println("stored: " + stored);
+//		System.out.println("stored: " + stored);
 		
 		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, stored);
 		
 		double cap = inv.getRemainingSpecificCapacity(resource);
-		System.out.println("cap: " + cap);
+//		System.out.println("cap: " + cap);
 				
 		assertEquals("Remaining after 1st load capacity", CAPACITY_AMOUNT/2, cap);
 		assertEquals("Total mass after 1st load", CAPACITY_AMOUNT/2, inv.getStoredMass());
@@ -127,39 +127,47 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 		int resource = ResourceUtil.CO2_ID;
 		
 		EquipmentInventory inv = new EquipmentInventory(settlement, 0);
-	
 		inv.setSpecificResourceCapacity(resource, CAPACITY_AMOUNT);
-
+		
+		double sCap = inv.getSpecificCapacity(resource);
+		assertEquals("Check specific capacity", CAPACITY_AMOUNT, sCap);
+		System.out.println("sCap: " + sCap);
+		
 		double cargo = inv.getCargoCapacity();
 		assertEquals("No cargo capacity", 0D, cargo);
+		System.out.println("cargo: " + cargo);	
 		
-		double cap = inv.getSpecificCapacity(resource);
-		assertEquals("Check specific capacity", CAPACITY_AMOUNT, cap);
-//		System.out.println("cap: " + cap);
+		double stock = inv.getStockCapacity();
+		assertEquals("No stock capacity", 0D, stock);
+		System.out.println("stock: " + stock);	
 		
+		double rCCap = inv.getRemainingCombinedCapacity(resource);
+		assertEquals("Check remaining combined capacity", CAPACITY_AMOUNT, rCCap);
+		System.out.println("rCCap: " + rCCap);
+			
 		// Add half the capacity
 		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 		assertEquals("No excess on capacity load", 0D, excess);
-
+		System.out.println("excess: " + excess);
+		
 		// Check amount stored
 		double stored = inv.getSpecificAmountResourceStored(resource);
 		assertEquals("Check specific amount stored", CAPACITY_AMOUNT/2, stored);
-//		System.out.println("stored: " + stored);
+		System.out.println("stored: " + stored);
 		
 		// Add twice the capacity
 		excess = inv.storeAmountResource(resource, 2*CAPACITY_AMOUNT);
-//		System.out.println("excess: " + excess);
+		System.out.println("excess: " + excess);
 		assertEquals("Excess on overload", CAPACITY_AMOUNT * 1.5, excess);
 		
 		stored = inv.getSpecificAmountResourceStored(resource);
 		assertEquals("Stored capacity after overload", CAPACITY_AMOUNT, stored);
-//		System.out.println("stored: " + stored);
+		System.out.println("stored: " + stored);
 		
-		double remain = inv.getRemainingSpecificCapacity(resource);
-//		System.out.println("remain: " + remain);
-//		System.out.println("cap: " + cap);
+		double rsCap = inv.getRemainingSpecificCapacity(resource);
+		System.out.println("rsCap: " + rsCap);
 		
-		assertEquals("Remaining after overload", 0D, remain);
+		assertEquals("Remaining after overload", 0D, rsCap);
 	}
 
 	/*
