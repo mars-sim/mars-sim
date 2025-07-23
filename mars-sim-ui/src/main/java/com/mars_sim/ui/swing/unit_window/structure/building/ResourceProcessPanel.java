@@ -378,11 +378,11 @@ public class ResourceProcessPanel extends JPanel {
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
         columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(1).setPreferredWidth(120);
-        columnModel.getColumn(2).setPreferredWidth(200);
-        columnModel.getColumn(3).setPreferredWidth(50);
-        columnModel.getColumn(4).setPreferredWidth(50);
-        columnModel.getColumn(5).setPreferredWidth(50);
+        columnModel.getColumn(1).setPreferredWidth(90);
+        columnModel.getColumn(2).setPreferredWidth(150);
+        columnModel.getColumn(3).setPreferredWidth(60);
+        columnModel.getColumn(4).setPreferredWidth(60);
+        columnModel.getColumn(5).setPreferredWidth(60);
         
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);

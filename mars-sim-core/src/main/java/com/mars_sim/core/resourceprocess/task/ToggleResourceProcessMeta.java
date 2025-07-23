@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @date 2024-06-08
+ * @date 2025-07-23
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
@@ -364,7 +364,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Multiply by bias so as to favor/discourage the production of output resources
 
 				// Calculate the modified mass rate
-				double mrate = rate * vp * INPUT_BIAS;
+				double mrate = rate * vp * vp * INPUT_BIAS / Math.max(100, supply) / 100;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -375,11 +375,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// e.g. For CO2, limit the score
 					score += mrate;
-				} else if (isInSitu(resource) || isRawMaterial(resource)) {
-					// If in-situ, reduce the input score 
-					score += mrate / MATERIAL_BIAS * Math.max(60, supply);
+				} else if (isInSitu(resource)) {
+					// If in-situ, increase the score 
+					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS;
+				} else if (isRawMaterial(resource)) {
+					// If in-situ, adjust the score with MATERIAL_BIAS
+					score += mrate / MATERIAL_BIAS;
 				} else {
-					score += mrate * supply;
+					score += mrate;
 				}
 			}
 
@@ -401,7 +404,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				// Calculate the modified mass rate
-				double mrate = rate * vp;
+				double mrate = rate * vp * vp * Math.max(100, supply) / 100;
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
@@ -409,11 +412,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 					score += mrate;
-				} else if (isInSitu(resource) || isRawMaterial(resource)) {
-					// If in-situ, increase the output score 
-					score += mrate * supply * MATERIAL_BIAS;
+				} else if (isInSitu(resource)) {
+					// If in-situ, increase the score 
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;
+				} else if (isRawMaterial(resource)) {
+					// If in-situ, adjust the score with MATERIAL_BIAS
+					score += mrate * MATERIAL_BIAS ;
 				} else
-					score += mrate * supply;
+					score += mrate;
 			}
 		}
 

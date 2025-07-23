@@ -125,7 +125,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int ICE_PROB_FACTOR = 10;
+	private static final int ICE_PROB_FACTOR = 5;
 	private static final int REGOLITH_PROB_FACTOR = 15;
 	
 	private static final int MAX_PROB = 5000;
