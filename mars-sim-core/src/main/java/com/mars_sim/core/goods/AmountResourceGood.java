@@ -23,7 +23,6 @@ import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.building.construction.ConstructionValues;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
-import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.DishRecipe;
 import com.mars_sim.core.building.function.cooking.MealConfig;
@@ -109,7 +108,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 0.1;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 8;
+	private static final double OXYGEN_VALUE_MODIFIER = 10;
 	private static final double METHANE_VALUE_MODIFIER = 0.07;
 	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
@@ -162,7 +161,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = .15;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 1.1;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
@@ -184,9 +183,9 @@ class AmountResourceGood extends Good {
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
-	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 3000; 
-	private static final double MAX_MANUFACTURING_DEMAND = 3000;
-	private static final double MAX_FOOD_PRODUCTION_DEMAND = 3000;
+	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500; 
+	private static final double MAX_MANUFACTURING_DEMAND = 1500;
+	private static final double MAX_FOOD_PRODUCTION_DEMAND = 1500;
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -199,7 +198,9 @@ class AmountResourceGood extends Good {
 	private double costModifier = -1;
 		
 	private AmountResource resource;
-
+	
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
 		this.resource = ar;
@@ -207,7 +208,7 @@ class AmountResourceGood extends Good {
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar);
 		costModifier = calculateCostModifier(ar);
-		ingredientDemand = calculateIngredientDemand(ar, SimulationConfig.instance().getMealConfiguration());
+		ingredientDemand = calculateIngredientDemand(ar, simulationConfig.getMealConfiguration());
     }
 
 	/**
@@ -527,10 +528,10 @@ class AmountResourceGood extends Good {
     }
 
     @Override
-    void refreshSupplyDemandValue(GoodsManager owner) {
+    void refreshSupplyDemandScore(GoodsManager owner) {
         int id = getID();
         
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
 
         Settlement settlement = owner.getSettlement();
 
@@ -607,7 +608,7 @@ class AmountResourceGood extends Good {
 		}
 		
 		// Save the goods demand
-		owner.setDemandValue(this, totalDemand);
+		owner.setDemandScore(this, totalDemand);
 		
 		// Calculate total supply
 		totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
@@ -646,7 +647,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 3);
+		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 20);
 	}
 
 	/**
@@ -668,7 +669,7 @@ class AmountResourceGood extends Good {
 			for (Integer output : outputResources) {
 				double singleOutputRate = process.getBaseSingleOutputRate(output);
 				if (!process.isWasteOutputResource(resourceID)) {
-					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) 
+					outputValue += (owner.getDemandScore(GoodsUtil.getGood(output)) 
 							* singleOutputRate);
 				}
 			}
@@ -690,8 +691,7 @@ class AmountResourceGood extends Good {
 		List<ResourceProcess> processes = new ArrayList<>();
 		for(Building building : settlement.getBuildingManager().getBuildingSet()) {
 			if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
-				ResourceProcessing processing = building.getResourceProcessing();
-				processes.addAll(processing.getProcesses());
+				processes.addAll(building.getResourceProcessing().getProcesses());
 			}
 		}
 		return processes;
@@ -715,7 +715,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 100);
+		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 200);
 	}
 
 	/**
@@ -736,7 +736,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_FOOD_PRODUCTION_DEMAND, demand);
+		return Math.min(MAX_FOOD_PRODUCTION_DEMAND, demand / 2);
 	}
 
 	/**
@@ -918,9 +918,9 @@ class AmountResourceGood extends Good {
 			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			// Note: The population should only minimally impact the demand value
 			// pop should never be linearly proportional to demand
-			double popFactor = Math.log(settlement.getNumCitizens()) * 10;
+			double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 			double cookedMealDemand = popFactor * cookedMealDemandOrbit;
-			var meals = SimulationConfig.instance().getMealConfiguration().getDishList();
+			var meals = simulationConfig.getMealConfiguration().getDishList();
 			int numMeals = meals.size();
 			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
 			
@@ -1138,7 +1138,7 @@ class AmountResourceGood extends Good {
 		if (ar.getGoodType() == GoodType.TISSUE) {		
 			String cropName = ar.getName().replace(" tissue", "");
 			// Convert the tissue name to its crop's name
-			return owner.getDemandValue(GoodsUtil.getGood(cropName)) * TISSUE_CULTURE_VALUE;
+			return owner.getDemandScore(GoodsUtil.getGood(cropName)) * TISSUE_CULTURE_VALUE;
 		}
 		else
 			return 0;
@@ -1155,7 +1155,7 @@ class AmountResourceGood extends Good {
 		if (resource.isLifeSupport()) {
 			// Note: The population should only minimally impact the demand value
 			// pop should never be linearly proportional to demand
-			double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+			double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 
 			double amountNeededSol = switch(resourceID) {
 				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
@@ -1190,25 +1190,25 @@ class AmountResourceGood extends Good {
 			case ResourceUtil.SOIL_ID:
 				return base * settlement.getTotalCropArea() * SOIL_VALUE_MODIFIER;
 			case ResourceUtil.CEMENT_ID: {
-				double cementDemand = owner.getDemandValueWithID(ResourceUtil.CEMENT_ID);
-				double concreteDemand = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
-				double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
-				double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+				double cementDemand = owner.getDemandScoreWithID(ResourceUtil.CEMENT_ID);
+				double concreteDemand = owner.getDemandScoreWithID(ResourceUtil.CONCRETE_ID);
+				double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
+				double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
 				return base * (.5 * cementDemand + .2 * regolithDemand + .2 * sandDemand + .1 * concreteDemand) 
 						/ (1 + cementDemand) * CEMENT_VALUE_MODIFIER;
 			}
 			case ResourceUtil.CONCRETE_ID:{
-				double concreteDemand = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
-				double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
-				double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+				double concreteDemand = owner.getDemandScoreWithID(ResourceUtil.CONCRETE_ID);
+				double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
+				double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
 				// the demand for sand is dragged up or down by that of regolith
 				// loses 5% by default
 				return base * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
 							/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
 			}
 			case ResourceUtil.SAND_ID: {
-				double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
-				double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+				double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
+				double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
 				// the demand for sand is dragged up or down by that of regolith
 				// loses 10% by default
 				return base * (.2 * regolithDemand + .7 * sandDemand) 
@@ -1216,12 +1216,12 @@ class AmountResourceGood extends Good {
 			}
 		}
         
-		double regolithDemand = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
-		double sandDemand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
+		double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
+		double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
 
 		for (int id : ResourceUtil.ROCK_IDS) {
 			if (resourceID == id) {
-				double rockDemand = owner.getDemandValueWithID(id);
+				double rockDemand = owner.getDemandScoreWithID(id);
 				return base * (.2 * regolithDemand + .9 * rockDemand) 
 						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 			}
@@ -1229,7 +1229,7 @@ class AmountResourceGood extends Good {
 
 		for (int id : ResourceUtil.MINERAL_CONC_IDs) {
 			if (resourceID == id) {
-				double mineralDemand = owner.getDemandValueWithID(id);
+				double mineralDemand = owner.getDemandScoreWithID(id);
 				return base * (.2 * regolithDemand + .9 * mineralDemand) 
 						/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
 			}
@@ -1237,7 +1237,7 @@ class AmountResourceGood extends Good {
 
 		for (int id : ResourceUtil.ORE_DEPOSIT_IDS) {
 			if (resourceID == id) {
-				double oreDemand = owner.getDemandValueWithID(id);
+				double oreDemand = owner.getDemandScoreWithID(id);
 				// loses 10% by default
 				return base * (.3 * regolithDemand + .6 * oreDemand) 
 						/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
@@ -1260,7 +1260,7 @@ class AmountResourceGood extends Good {
 		// Checks if this resource is a ROCK type
 		GoodType type = getGoodType();
 		if (type != null && type == GoodType.ROCK) {
-			double rockDemand = owner.getDemandValueWithID(resourceID);
+			double rockDemand = owner.getDemandScoreWithID(resourceID);
 
 			if (resourceID == ResourceUtil.METEORITE_ID)
 				return base * (.4 * regolithDemand + .5 * rockDemand) 
@@ -1308,7 +1308,7 @@ class AmountResourceGood extends Good {
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			// Note: The population should only minimally impact the demand value
 			// pop should never be linearly proportional to demand
-			double popFactor = Math.log(settlement.getNumCitizens()) * 10;
+			double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 			demand = popFactor * amountNeededSol *  WATER_VALUE_MODIFIER 
 					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);
 		}
@@ -1326,8 +1326,8 @@ class AmountResourceGood extends Good {
 	private double computeIceProjectedDemand(GoodsManager owner) {
         int resourceID = getID();
 		if (resourceID == ResourceUtil.ICE_ID) {
-			double ice = 1 + owner.getDemandValueWithID(resourceID);
-			double water = 1 + owner.getDemandValueWithID(ResourceUtil.WATER_ID);
+			double ice = 1 + owner.getDemandScoreWithID(resourceID);
+			double water = 1 + owner.getDemandScoreWithID(ResourceUtil.WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
 			return  (.5 * water + .5 * ice) / ice
 					* ICE_VALUE_MODIFIER;
@@ -1351,15 +1351,15 @@ class AmountResourceGood extends Good {
 			|| resourceID ==  ResourceUtil.REGOLITHC_ID
 			|| resourceID ==  ResourceUtil.REGOLITHD_ID) {
 
-			double sand = owner.getDemandValueWithID(ResourceUtil.SAND_ID);
-			double concrete = owner.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
-			double cement = owner.getDemandValueWithID(ResourceUtil.CEMENT_ID);
+			double sand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
+			double concrete = owner.getDemandScoreWithID(ResourceUtil.CONCRETE_ID);
+			double cement = owner.getDemandScoreWithID(ResourceUtil.CEMENT_ID);
 
-			double targetRegolith = owner.getDemandValueWithID(resourceID);
-			double regolith = owner.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
-			double regolithB = owner.getDemandValueWithID(ResourceUtil.REGOLITHB_ID);
-			double regolithC = owner.getDemandValueWithID(ResourceUtil.REGOLITHC_ID);
-			double regolithD = owner.getDemandValueWithID(ResourceUtil.REGOLITHD_ID);
+			double targetRegolith = owner.getDemandScoreWithID(resourceID);
+			double regolith = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
+			double regolithB = owner.getDemandScoreWithID(ResourceUtil.REGOLITHB_ID);
+			double regolithC = owner.getDemandScoreWithID(ResourceUtil.REGOLITHC_ID);
+			double regolithD = owner.getDemandScoreWithID(ResourceUtil.REGOLITHD_ID);
 			
 			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
 			

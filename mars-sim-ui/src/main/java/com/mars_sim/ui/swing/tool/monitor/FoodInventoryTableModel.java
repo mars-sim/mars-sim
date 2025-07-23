@@ -100,15 +100,15 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 				return selectedSettlement.getName();
 			
 			case DEMAND_COL:
-				return selectedSettlement.getGoodsManager().getDemandValueWithID(selectedFood.getID());
+				return selectedSettlement.getGoodsManager().getDemandScoreWithID(selectedFood.getID());
 			case SUPPLY_COL:
-				return selectedSettlement.getGoodsManager().getSupplyValue(selectedFood.getID());
+				return selectedSettlement.getGoodsManager().getSupplyScore(selectedFood.getID());
 			case MASS_COL:
 				return getTotalMass(selectedSettlement, selectedFood);
 			case LOCAL_VP_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedFood.getID()); 
 			case MARKET_VP_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(convertFoodToGood(selectedFood)).getValue();
+				return selectedSettlement.getGoodsManager().getMarketData(convertFoodToGood(selectedFood)).getGoodValue();
 			case COST_COL:
 				return convertFoodToGood(selectedFood).getCostOutput();
 			case PRICE_COL:

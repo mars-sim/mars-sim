@@ -227,9 +227,9 @@ public class EquipmentGood extends Good {
 	}
 
 	@Override
-	void refreshSupplyDemandValue(GoodsManager owner) {
+	void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
 
 		double totalDemand = 0;
 		
@@ -253,7 +253,7 @@ public class EquipmentGood extends Good {
 		// Note: need to look into parts and equipment reliability in MalfunctionManager 
 		// to derive the repair value 
 		if (equipmentType == EquipmentType.EVA_SUIT) {
-			repairDemand = owner.getEVASuitLevel() * owner.getDemandValue(this);
+			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this);
 		}
 		
 		if (previousDemand == 0) {
@@ -269,7 +269,7 @@ public class EquipmentGood extends Good {
 						+ .005 * tradeDemand;
 		}
 				
-		owner.setDemandValue(this, totalDemand);
+		owner.setDemandScore(this, totalDemand);
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class EquipmentGood extends Good {
 
 		// Note: The population should only minimally impact the demand value
 		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
@@ -304,7 +304,7 @@ public class EquipmentGood extends Good {
 			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
 				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
 
-				double resourceDemand = owner.getDemandValueWithID(resource.getID());
+				double resourceDemand = owner.getDemandScoreWithID(resource.getID());
 
 				if (resourceDemand > settlementCapacity) {
 					double resourceOverfill = resourceDemand - settlementCapacity;
@@ -386,7 +386,7 @@ public class EquipmentGood extends Good {
 	
 		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
 			for (int id : ItemResourceUtil.evaSuitPartIDs) {
-				demand += owner.getDemandValueWithID(id);
+				demand += owner.getDemandScoreWithID(id);
 			}
 		}
 		return demand;

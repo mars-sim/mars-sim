@@ -126,7 +126,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_STAT_SOLS = 12;
 
 	private static final int ICE_PROB_FACTOR = 10;
-	private static final int REGOLITH_PROB_FACTOR = 10;
+	private static final int REGOLITH_PROB_FACTOR = 15;
 	
 	private static final int MAX_PROB = 5000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
@@ -185,7 +185,6 @@ public class Settlement extends Unit implements Temporal,
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-
 	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
@@ -193,11 +192,11 @@ public class Settlement extends Unit implements Temporal,
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
 	private boolean waterRatioReviewFlag = false;
+	
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
 	/** The new water ratio of the settlement. */
 	private int newWaterRatio = 0;
-	
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
@@ -212,6 +211,8 @@ public class Settlement extends Unit implements Temporal,
 	private int numOwnedVehicles;
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
+	/** The time offset of day rise for this settlement. Location based. */
+	private int timeOffset;
 	
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
@@ -239,16 +240,15 @@ public class Settlement extends Unit implements Temporal,
 	private double outsideTemperature;
 	/** Total Crop area */
 	private double cropArea = -1;
-	private int timeOffset;
-	private MealSchedule meals;
-
 	/** The settlement terrain profile. */
 	private double[] terrainProfile = new double[2];
+	
 	/** The settlement template name. */
 	private String template;
 	/** The settlement code. */
 	private String settlementCode;
-	
+	/** The meal schedule. */
+	private MealSchedule meals;
 	/** The radiation status instance that capture if the settlement has been exposed to a radiation event. */
 	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
 	/** The settlement's ReportingAuthority instance. */
@@ -277,8 +277,11 @@ public class Settlement extends Unit implements Temporal,
 	private CreditManager creditManager;
 	/** Manages the shifts */
 	private ShiftManager shiftManager;
+	/** The settlement task manager. */
 	private SettlementTaskManager taskManager;
+	/** The event scheduling manager. */
 	private ScheduledEventManager futureEvents;
+	/** The manufacture manager. */
 	private ManufacturingManager manuManager;
 	
 	/** The settlement objective type instance. */
@@ -293,6 +296,11 @@ public class Settlement extends Unit implements Temporal,
 	
 	/** The settlement's achievement in scientific fields. */
 	private EnumMap<ScienceType, Double> scientificAchievement;
+	/** The settlement's preference map. */
+	private ParameterManager preferences = new ParameterManager();
+	/** Manage local Explorations */
+	private ExplorationManager explorations;
+	
 	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	/** The total amount resource collected/studied. */
@@ -319,20 +327,18 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Person> indoorPeople;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
-	/** The settlement's preference map. */
-	private ParameterManager preferences = new ParameterManager();
-	/** Manage local Explorations */
-	private ExplorationManager explorations;
+
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(40);
 	
-	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-	private static SettlementTemplateConfig settlementTemplateConfig = SimulationConfig.instance().getSettlementTemplateConfiguration();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
+	private static SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
 	
 	static {
-		var personConfig = SimulationConfig.instance().getPersonConfig();
+		var personConfig = simulationConfig.getPersonConfig();
 		waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		minimumAirPressure = personConfig.getMinAirPressure();
 		tempRange = settlementConfig.getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
@@ -2401,37 +2407,37 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private double computeRegolithProbability() {
 		double result = 0;
-		double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.REGOLITH_ID);
+		double regolithDemand = goodsManager.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
 		if (regolithDemand > REGOLITH_MAX)
 			regolithDemand = REGOLITH_MAX;
 		else if (regolithDemand < 1)
 			regolithDemand = 1;
 
-		double sandDemand = goodsManager.getDemandValueWithID(ResourceUtil.SAND_ID);
+		double sandDemand = goodsManager.getDemandScoreWithID(ResourceUtil.SAND_ID);
 		if (sandDemand > REGOLITH_MAX)
 			sandDemand = REGOLITH_MAX;
 		else if (sandDemand < 1)
 			sandDemand = 1;
 		
-		double concreteDemand = goodsManager.getDemandValueWithID(ResourceUtil.CONCRETE_ID);
+		double concreteDemand = goodsManager.getDemandScoreWithID(ResourceUtil.CONCRETE_ID);
 		if (concreteDemand > REGOLITH_MAX)
 			concreteDemand = REGOLITH_MAX;
 		else if (concreteDemand < 1)
 			concreteDemand = 1;
 		
-		double cementDemand = goodsManager.getDemandValueWithID(ResourceUtil.CEMENT_ID);
+		double cementDemand = goodsManager.getDemandScoreWithID(ResourceUtil.CEMENT_ID);
 		if (cementDemand > REGOLITH_MAX)
 			cementDemand = REGOLITH_MAX;
 		else if (cementDemand < 1)
 			cementDemand = 1;
 
-		double regolithAvailable = goodsManager.getSupplyValue(ResourceUtil.REGOLITH_ID);
+		double regolithAvailable = goodsManager.getSupplyScore(ResourceUtil.REGOLITH_ID);
 		
-		double sandAvailable = goodsManager.getSupplyValue(ResourceUtil.SAND_ID);
+		double sandAvailable = goodsManager.getSupplyScore(ResourceUtil.SAND_ID);
 	
-		double concreteAvailable = goodsManager.getSupplyValue(ResourceUtil.CONCRETE_ID);
+		double concreteAvailable = goodsManager.getSupplyScore(ResourceUtil.CONCRETE_ID);
 		
-		double cementAvailable = goodsManager.getSupplyValue(ResourceUtil.CEMENT_ID);
+		double cementAvailable = goodsManager.getSupplyScore(ResourceUtil.CEMENT_ID);
 		
 		int pop = numCitizens;
 		int reserve = MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE;
@@ -2464,20 +2470,20 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private double computeIceProbability() {
 		double result = 0;
-		double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.ICE_ID);
+		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
 		if (iceDemand > ICE_MAX)
 			iceDemand = ICE_MAX;
 		if (iceDemand < 1)
 			iceDemand = 1;
 		
-		double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.WATER_ID);
+		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
 		waterDemand = waterDemand * waterRatioCache / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
-		double brineWaterDemand = goodsManager.getDemandValueWithID(ResourceUtil.BRINE_WATER_ID);
+		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
 		brineWaterDemand = brineWaterDemand * waterRatioCache / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
@@ -2485,9 +2491,9 @@ public class Settlement extends Unit implements Temporal,
 			waterDemand = 1;
 		
 		// Compare the available amount of water and ice reserve
-		double iceSupply = goodsManager.getSupplyValue(ResourceUtil.ICE_ID);
-		double waterSupply = goodsManager.getSupplyValue(ResourceUtil.WATER_ID);
-		double brineWaterSupply = goodsManager.getSupplyValue(ResourceUtil.BRINE_WATER_ID);
+		double iceSupply = goodsManager.getSupplyScore(ResourceUtil.ICE_ID);
+		double waterSupply = goodsManager.getSupplyScore(ResourceUtil.WATER_ID);
+		double brineWaterSupply = goodsManager.getSupplyScore(ResourceUtil.BRINE_WATER_ID);
 		
 		int pop = numCitizens;
 		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE;

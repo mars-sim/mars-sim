@@ -53,7 +53,7 @@ public class ToggleResourceProcessMetaTest extends AbstractMarsSimUnitTest {
         assertEquals("Stored mass", 100.0, stored);
         
         for (var o : p.getOutputResources()) {
-            s.getGoodsManager().setSupplyValue(o, 100);  // Force a value output value
+            s.getGoodsManager().setSupplyScore(o, 100);  // Force a value output value
         }
 
         results = mt.getSettlementTasks(s);

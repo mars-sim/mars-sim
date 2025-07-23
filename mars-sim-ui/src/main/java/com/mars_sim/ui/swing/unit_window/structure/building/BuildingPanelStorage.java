@@ -152,11 +152,11 @@ public class BuildingPanelStorage extends TabPanelTable {
 	
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
-		var r = new NumberCellRenderer(0);
+		var r = new NumberCellRenderer(2);
+		var rr = new NumberCellRenderer(0);
 		columnModel.getColumn(1).setCellRenderer(r);
-		columnModel.getColumn(2).setCellRenderer(r);
-
-		columnModel.getColumn(3).setCellRenderer(new NumberCellRenderer(0));
+		columnModel.getColumn(2).setCellRenderer(rr);
+		columnModel.getColumn(3).setCellRenderer(rr);
 	}
 
 	/**

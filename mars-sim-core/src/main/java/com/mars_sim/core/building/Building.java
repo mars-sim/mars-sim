@@ -177,6 +177,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private List<Function> functions = new ArrayList<>();
 	
 	private static HistoricalEventManager eventManager;
+	
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
 	/**
 	 * Factory method to create from a building template
@@ -272,7 +274,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
 		
 		// Add building type to the standard scope
-		SimulationConfig.instance().getPartConfiguration().addScopes(buildingSpec.getName());
+		simulationConfig.getPartConfiguration().addScopes(buildingSpec.getName());
 		
 		// Add building type to malfunction manager.
 		malfunctionManager.addScopeString(buildingSpec.getName());

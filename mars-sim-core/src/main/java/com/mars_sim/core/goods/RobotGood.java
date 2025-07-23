@@ -144,9 +144,9 @@ class RobotGood extends Good {
     }
 
     @Override
-    void refreshSupplyDemandValue(GoodsManager owner) {
+    void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
 
 		double totalDemand = 0;
 		
@@ -169,7 +169,7 @@ class RobotGood extends Good {
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
-				* owner.getDemandValue(this);
+				* owner.getDemandScore(this);
 	
 		
 		if (previousDemand == 0) {
@@ -185,7 +185,7 @@ class RobotGood extends Good {
 						+ .005 * tradeDemand;
 		}
 				
-		owner.setDemandValue(this, totalDemand);
+		owner.setDemandScore(this, totalDemand);
     }
     
 	/**
@@ -199,7 +199,7 @@ class RobotGood extends Good {
 
 		// Note: The population should only minimally impact the demand value
 		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) / 2;
 		
 		if (robotType == RobotType.MAKERBOT) {
 			

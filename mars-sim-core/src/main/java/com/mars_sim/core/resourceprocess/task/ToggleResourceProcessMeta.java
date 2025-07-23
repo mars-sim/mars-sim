@@ -295,11 +295,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 							ResourceProcessSpec process) {
 		double lowestPercentage = -1;
 
-		// Is tere enugh for a sol'sworth of processing
+		// Is there enough for a sol's worth of processing
 		for(int id : process.getInputResources()) {
 			double percAvailable;
 			if (process.isAmbientInputResource(id)) {
-				// Ambient is always avaialble
+				// Ambient is always available
 				percAvailable = 1D;
 			}
 			else {
@@ -354,7 +354,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			// Gets the supply of this resource
 			// Note: use supply instead of stored amount.
 			// Stored amount is slower and more time consuming
-			double supply = gm.getSupplyValue(resource);
+			double supply = gm.getSupplyScore(resource);
 
 			if (input) {
 				// For inputs: 

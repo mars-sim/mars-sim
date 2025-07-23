@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * LoadVehicleTest.java
- * @version 3.1.0 2017-04-11
+ * WalkOutsideTest.java
+ * @date 2025-07-22
  * @author Scott Davis
  */
 
@@ -71,7 +71,7 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
 		assertFalse("Person can do walk", outsideWalk.isDone());
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
-		assertFalse("Has vo obstacles in calculated path", outsideWalk.areObstaclesInPath());
+		assertFalse("Has no obstacles in calculated path", outsideWalk.areObstaclesInPath());
 		
 	    int calls = executeTask(person, outsideWalk, 40);
 		

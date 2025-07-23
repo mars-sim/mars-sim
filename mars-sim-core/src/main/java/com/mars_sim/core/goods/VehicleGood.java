@@ -205,9 +205,9 @@ class VehicleGood extends Good {
     }
 
     @Override
-    void refreshSupplyDemandValue(GoodsManager owner) {
+    void refreshSupplyDemandScore(GoodsManager owner) {
 		
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
         Settlement settlement = owner.getSettlement();
 
 		// Calculate total supply
@@ -232,7 +232,7 @@ class VehicleGood extends Good {
 		// to derive the repair value. 
 		// Look at each part in vehicleType
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
-				* owner.getDemandValue(this);
+				* owner.getDemandScore(this);
 	
 		double totalDemand;
 		if (previousDemand == 0) {
@@ -251,7 +251,7 @@ class VehicleGood extends Good {
 					+ .003 * tradeDemand;
 		}
 				
-		owner.setDemandValue(this, totalDemand);
+		owner.setDemandScore(this, totalDemand);
 	}
 
    	/**
@@ -371,7 +371,7 @@ class VehicleGood extends Good {
 
 		// Note: The population should only minimally impact the demand value
 		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 		
 		return demand / Math.log(supply + 2) * DRONE_FACTOR * popFactor;
 	}
@@ -404,7 +404,7 @@ class VehicleGood extends Good {
 
 		// Note: The population should only minimally impact the demand value
 		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(settlement.getNumCitizens()) * 5;
+		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 		
 		return demand / Math.log(supply + 2) * LUV_FACTOR * popFactor;
 	}
@@ -427,7 +427,7 @@ class VehicleGood extends Good {
 		Set<Integer> setIDs = vs.getParts();
 		if (setIDs != null && !setIDs.isEmpty()) {
 			for (int id : setIDs) {
-				partDemand += owner.getDemandValueWithID(id);
+				partDemand += owner.getDemandScoreWithID(id);
 			}
 		}
 		
@@ -469,13 +469,13 @@ class VehicleGood extends Good {
 					/ (double) settlement.getPopulationCapacity());
 
 		case COLLECT_ICE:
-			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 100);
+			return Math.min(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 100);
 		
 		case TRADE, DELIVERY:
 			return JobUtil.numJobs(JobType.TRADER, settlement);
 		
 		case COLLECT_REGOLITH:
-			return Math.min(owner.getDemandValue(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 100);
+			return Math.min(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 100);
 		
 		case MINING, AREOLOGY, EXPLORATION:
 			return JobUtil.numJobs(JobType.AREOLOGIST, settlement);

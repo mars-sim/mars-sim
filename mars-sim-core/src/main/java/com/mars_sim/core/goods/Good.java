@@ -502,7 +502,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @param owner Owner of the Supply/Demand values.
 	 */
-	abstract void refreshSupplyDemandValue(GoodsManager owner);
+	abstract void refreshSupplyDemandScore(GoodsManager owner);
 
 	/**
 	 * Initialises the configs.

@@ -138,7 +138,7 @@ public class TabPanelGoods extends TabPanelTable {
 				// Capitalized good's names
 				if (column == 0) return good.getName();
 				else if (column == 1) {
-					return manager.getDemandValueWithID(good.getID());
+					return manager.getDemandScoreWithID(good.getID());
 				}
 				else if (column == 2) {
 					return manager.getGoodValuePoint(good.getID());

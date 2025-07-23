@@ -159,8 +159,6 @@ public class GoodsManager implements Serializable {
 
 	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
 
-	private static UnitManager unitManager;
-
 	// Data members
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
@@ -184,6 +182,8 @@ public class GoodsManager implements Serializable {
 
 	private Settlement settlement;
 
+	private static UnitManager unitManager;
+
 
 	/**
 	 * Constructor.
@@ -204,6 +204,9 @@ public class GoodsManager implements Serializable {
 		// Populate the caches
 		populateCaches();
 
+		// Schedule reseting the first review cycle during early morning
+		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
+		
 		// Schedule reseting the first review cycle during early morning
 		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
 	}
@@ -306,7 +309,7 @@ public class GoodsManager implements Serializable {
 			double localPrice = g.calculatePrice(settlement, localValue);
 			
 			mv.setDemand(localDemand);	
-			mv.setValue(localValue);	
+			mv.setGoodValue(localValue);	
 			mv.setCost(localCost);
 			mv.setPrice(localPrice);
 			
@@ -326,21 +329,20 @@ public class GoodsManager implements Serializable {
 	 */
 	public double determineGoodValue(Good good) {
 		if (good != null) {
-			// Refresh the Supply and Demand values
-			good.refreshSupplyDemandValue(this);
+			// Refresh the Supply and Demand score
+			good.refreshSupplyDemandScore(this);
 
 			int id = good.getID();
 		
-			// Calculate the value point
 			double totalSupply = supplyCache.get(id);
 			double oldDemand = demandCache.get(id);
 			double newDemand = oldDemand;
 			
 			// Adjust the market demand
 			MarketData marketData = getMarketData(good);
-			double adj0 = adjustMarketDemand(good, oldDemand) / 20.0;
-			if (oldDemand + adj0 > 0)
-				newDemand += adj0;
+			double adjustment = adjustMarketDemand(good, oldDemand) / 20.0;
+			if (oldDemand + adjustment > 0)
+				newDemand += adjustment;
 			
 			// Save the demand if it has changed
 			if (oldDemand != newDemand) {
@@ -348,36 +350,37 @@ public class GoodsManager implements Serializable {
 
 				settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
 			}
-			
-			double newValue = newDemand / (1 + totalSupply);
+
+			// Calculate the good value
+			double newGoodValue = newDemand / (1 + totalSupply);
 
 			// Check if it surpasses MAX_VP
-			if (newValue > MAX_VP) {
+			if (newGoodValue > MAX_VP) {
 				// Update deflationIndexMap for other resources of the same category
-				newValue = updateDeflationMap(id, newValue, good.getCategory(), true);
+				newGoodValue = updateDeflationMap(id, newGoodValue, good.getCategory(), true);
 			}
 			// Check if it falls below MIN_VP
-			else if (newValue < MIN_VP) {
+			else if (newGoodValue < MIN_VP) {
 				// Update deflationIndexMap for other resources of the same category
-				updateDeflationMap(id, newValue, good.getCategory(), false);
+				updateDeflationMap(id, newGoodValue, good.getCategory(), false);
 			}
 
 			// Check for inflation and deflation adjustment due to other resources
-			newValue = checkDeflation(id, newValue);
+			newGoodValue = checkDeflation(id, newGoodValue);
 			// Adjust the market value
-			double adj1 = marketData.setValue(newValue) / 20.0;
-			if (newValue + adj1 > 0)
-				newValue += adj1;
+			double adj1 = marketData.setGoodValue(newGoodValue) / 20.0;
+			if (newGoodValue + adj1 > 0)
+				newGoodValue += adj1;
 
 			// Save the value point if it has changed
 			double oldValue = goodsValues.get(id);
-			if (oldValue != newValue) {
-				goodsValues.put(id, newValue);
+			if (oldValue != newGoodValue) {
+				goodsValues.put(id, newGoodValue);
 
 				settlement.fireUnitUpdate(UnitEventType.VALUE_EVENT, good);
 			}
 
-			return newValue;
+			return newGoodValue;
 		} else
 			logger.severe(settlement, "Good is null.");
 
@@ -506,7 +509,7 @@ public class GoodsManager implements Serializable {
 
 		for (Settlement tempSettlement : unitManager.getSettlements()) {
 			if (tempSettlement != settlement) {
-				double baseValue = tempSettlement.getGoodsManager().getDemandValue(good);
+				double baseValue = tempSettlement.getGoodsManager().getDemandScore(good);
 				double distance = settlement.getCoordinates().getDistance(
 												tempSettlement.getCoordinates());
 				double tradeValue = baseValue / (1D + (distance / 1000D));
@@ -648,12 +651,12 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the demand value from an resource id.
+	 * Gets the demand score from an resource id.
 	 *
 	 * @param good's id.
 	 * @return demand value
 	 */
-	public double getDemandValueWithID(int id) {
+	public double getDemandScoreWithID(int id) {
 		if (demandCache.containsKey(id))
 			return demandCache.get(id);
 		else
@@ -662,60 +665,66 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the demand value of a good.
+	 * Gets the demand score of a good.
 	 * 
 	 * @param good
 	 * @return
 	 */
-	public double getDemandValue(Good good) {
+	public double getDemandScore(Good good) {
 		return demandCache.get(good.getID());
 	}
 
 	/**
-	 * Sets the demand value of a good.
+	 * Sets the demand score of a good.
 	 * 
 	 * @param good
-	 * @param newValue
+	 * @param newScore
 	 */
-	public void setDemandValue(Good good, double newValue) {
-		double clippedValue = MathUtils.between(newValue, MIN_DEMAND, MAX_DEMAND);
+	public void setDemandScore(Good good, double newScore) {
+		double clippedValue = MathUtils.between(newScore, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
 		
 		settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
 	}
 
 	/**
-	 * Sets the supply value of a good.
+	 * Sets the supply score of a good.
 	 * 
 	 * @param good
-	 * @param newValue
+	 * @param newScore
 	 */
-	void setSupplyValue(Good good, double newValue) {
-		setSupplyValue(good.getID(), newValue);
+	void setSupplyValue(Good good, double newScore) {
+		setSupplyScore(good.getID(), newScore);
 	}
 
-	public void setSupplyValue(int id, double newValue) {
-		double clippedValue = MathUtils.between(newValue, MIN_SUPPLY, MAX_SUPPLY);
+	/**
+	 * Sets the supply score of a good.
+	 * 
+	 * @param good
+	 * @param newScore
+	 */
+	public void setSupplyScore(int id, double newScore) {
+		double clippedValue = MathUtils.between(newScore, MIN_SUPPLY, MAX_SUPPLY);
 		supplyCache.put(id, clippedValue);
 	}
 
 	/**
-	 * Gets the supply value of a good.
+	 * Gets the supply score of a good.
 	 * 
 	 * @param good
 	 * @return
 	 */
-	public double getSupplyValue(Good good) {
-		return getSupplyValue(good.getID());
+	public double getSupplyScore(Good good) {
+		return getSupplyScore(good.getID());
 	}
 	
 	/**
-	 * Gets the supply value of a good.
+	 * Gets the supply score of a good.
 	 * 
 	 * @param id
 	 * @return
 	 */
-	public double getSupplyValue(int id) {
+	public double getSupplyScore(int id) {
 		return supplyCache.get(id);
 	}
 	
@@ -726,7 +735,7 @@ public class GoodsManager implements Serializable {
 	 * @return value (VP)
 	 */
 	public double determineGoodValueWithSupply(Good good, double supply) {
-		double previousDemand = getDemandValue(good);
+		double previousDemand = getDemandScore(good);
 		return previousDemand / supply;
 	}
 
@@ -789,10 +798,10 @@ public class GoodsManager implements Serializable {
 		int optimalPerPop = limits.max();
 		int pop = settlement.getNumCitizens();
 		
-		double demand = getDemandValueWithID(resourceID);
+		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen
-		double supply = getSupplyValue(resourceID);
+		double supply = getSupplyScore(resourceID);
 
 		double stored = settlement.getSpecificAmountResourceStored(resourceID);
 	
@@ -809,7 +818,7 @@ public class GoodsManager implements Serializable {
 		if (lacking > optimalPerPop)
 			lacking = optimalPerPop;
 
-		// Note: may need to further limit each increase to a value only to avoid an abrupt rise or drop in demand 
+		// Note: may need to further limit each increase to avoid an abrupt rise or drop in demand 
 
 		// Warning: make sure stored is not zero so that delta is not infinite
 		double delta = lacking / (1 + Math.max(1, stored)) * demand - demand;
@@ -840,11 +849,12 @@ public class GoodsManager implements Serializable {
 	 */
 	public void injectResourceDemand(int resourceID, double newDemand) {
 		// Inject a sudden change of demand
-		setDemandValue(GoodsUtil.getGood(resourceID), newDemand);
+		setDemandScore(GoodsUtil.getGood(resourceID), newDemand);
 	}
 
 	/**
-	 * Get the market position for a Good from the view of this Settlement
+	 * Gets the market position for a Good from the view of this Settlement.
+	 * 
 	 * @param good
 	 * @return
 	 */
@@ -853,6 +863,15 @@ public class GoodsManager implements Serializable {
 		return marketMap.computeIfAbsent(good, g -> new MarketData());
 	}
 
+	/**
+	 * GEts the market map.
+	 * 
+	 * @return
+	 */
+	public Map<Good, MarketData> getMarketMap() {
+		return marketMap;
+	}
+	
 
 	/**
 	 * Returns the owning Settlement of this manager.

@@ -113,10 +113,10 @@ public class BinGood extends Good {
 	}
 
 	@Override
-	void refreshSupplyDemandValue(GoodsManager owner) {
+	void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
 		
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
 
 		double totalDemand = 0;
 		// Determine average demand.
@@ -136,7 +136,7 @@ public class BinGood extends Good {
 			totalDemand = .97 * previousDemand + .005 * average + .005 * trade;
 		}
 				
-		owner.setDemandValue(this, totalDemand);
+		owner.setDemandScore(this, totalDemand);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class BinGood extends Good {
 			if (BinFactory.getBinTypeForResource(resource.getID()) == binType) {
 				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
 
-				double resourceDemand = owner.getDemandValueWithID(resource.getID());
+				double resourceDemand = owner.getDemandScoreWithID(resource.getID());
 
 				if (resourceDemand > settlementCapacity) {
 					double resourceOverfill = resourceDemand - settlementCapacity;

@@ -357,13 +357,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="48"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="60"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="40" />
-				<process-engine name="Filter Brine Water" number-modules="20" />
+				<process-engine name="Melt Ice" number-modules="72" />
+				<process-engine name="Filter Brine Water" number-modules="48" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -728,13 +728,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>	
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="36"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="72"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="96"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
-				<process-engine name="Melt Ice" number-modules="80" />
-				<process-engine name="Filter Brine Water" number-modules="40" />
+				<process-engine name="Melt Ice" number-modules="96" />
+				<process-engine name="Filter Brine Water" number-modules="60" />
 						
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
@@ -1423,7 +1423,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="72"/>			
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="96"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>					
 			</resource-processing>
 
@@ -1647,8 +1647,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="120"/>	
-				<process-engine name="Filter Brine Water" number-modules="60"/>						
+				<process-engine name="Melt Ice" number-modules="144"/>	
+				<process-engine name="Filter Brine Water" number-modules="96"/>						
 			</resource-processing>
 			
 			<storage stock-capacity="300000">
@@ -1798,7 +1798,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="8"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="64"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="72"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>
 			</resource-processing> 
 
@@ -3584,13 +3584,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="48"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="60"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="60" />
-				<process-engine name="Filter Brine Water" number-modules="20" />
+				<process-engine name="Melt Ice" number-modules="72" />
+				<process-engine name="Filter Brine Water" number-modules="48" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * WalkOutside.java
- * @date 2023-09-06
+ * @date 2025-07-22
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -55,8 +55,9 @@ public class WalkOutside extends Task {
 //	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
-	/** The greater than zero distance [meter] */
-	private static final double VERY_SMALL_DISTANCE = .01D;
+	/** A very small distance (meters) for measuring how close two positions are. */
+	private static final double ONE_CENTIMETER = .01; // within a centimeter
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .3D;
 	/** The base chance of an accident per millisol. */
@@ -676,7 +677,7 @@ public class WalkOutside extends Task {
 			remainingTime = 0D; // Use all the remaining time
 		}
 		
-		while (coveredMeters > VERY_SMALL_DISTANCE) {
+		while (coveredMeters > ONE_CENTIMETER) {
 			// Walk to next path location.
 			LocalPosition location = walkingPath.get(walkingPathIndex);
 			double distanceToLocation = worker.getPosition().getDistanceTo(location);
@@ -711,7 +712,7 @@ public class WalkOutside extends Task {
 		}
 
 		// If path destination is reached, end task.
-		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
+		if (getRemainingPathDistance() <= ONE_CENTIMETER) {
 
 			LocalPosition finalLocation = walkingPath.get(walkingPath.size() - 1);
 			

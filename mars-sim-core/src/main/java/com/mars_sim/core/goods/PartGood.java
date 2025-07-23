@@ -386,11 +386,11 @@ public class PartGood extends Good {
     }
 
     @Override
-    void refreshSupplyDemandValue(GoodsManager owner) {
+    void refreshSupplyDemandScore(GoodsManager owner) {
 		int id = getID();
 		Part part = getPart();
 		
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
 		
 		Settlement settlement = owner.getSettlement();
 
@@ -437,7 +437,7 @@ public class PartGood extends Good {
 
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
-		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandValue(this);
+		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
 		
 		if (previousDemand == 0) {
 			// At the start of the sim
@@ -466,7 +466,7 @@ public class PartGood extends Good {
 		}
 		
 		// Save the goods demand
-		owner.setDemandValue(this, totalDemand);
+		owner.setDemandScore(this, totalDemand);
 		
 		// Calculate total supply
 		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
@@ -541,7 +541,7 @@ public class PartGood extends Good {
 	 */
 	private double getAverageItemDemand(GoodsManager owner) {
 		// Future: find the 7 sols average of this resource
-		return owner.getDemandValue(this);
+		return owner.getDemandScore(this);
 	}
 
 	/**
@@ -552,7 +552,7 @@ public class PartGood extends Good {
 	 */
 	private double getAttachmentPartsDemand(GoodsManager owner) {
 		if (attachments.contains(getID())) {
-			return ATTACHMENT_PARTS_DEMAND * (1 + owner.getDemandValue(this) / 3);
+			return ATTACHMENT_PARTS_DEMAND * (1 + owner.getDemandScore(this) / 3);
 		}
 		return 0;
 	}
@@ -566,7 +566,7 @@ public class PartGood extends Good {
 	 */
 	private double getEVASuitPartsDemand(GoodsManager owner) {		
 		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
-			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandValue(this) / 3;
+			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandScore(this) / 3;
 		}
 		return 0;
 	}
@@ -841,7 +841,7 @@ public class PartGood extends Good {
 	 */
 	private double getKitchenPartDemand(GoodsManager owner) {
 		if (kithenWare.contains(getID())) {
-			return owner.getDemandValue(this) * KITCHEN_DEMAND;
+			return owner.getDemandScore(this) * KITCHEN_DEMAND;
 		}
 		return 0;
 	}
@@ -975,7 +975,7 @@ public class PartGood extends Good {
 	 * @param owner
 	 */
 	public void injectPartsDemand(Part part, GoodsManager owner, int needNum) {
-		double previousDemand = owner.getDemandValue(this);
+		double previousDemand = owner.getDemandScore(this);
 		
 		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
 		
@@ -995,7 +995,7 @@ public class PartGood extends Good {
 				finalDemand = previousDemand + newAddedDemand;
 			}
 			
-			owner.setDemandValue(this, finalDemand);
+			owner.setDemandScore(this, finalDemand);
 			
 			reason = "Injecting demand for ";
 			// Recalculate settlement good value for this part.

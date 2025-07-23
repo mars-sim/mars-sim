@@ -15,16 +15,17 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private double value = 0;
+	private double goodValue = 0;
 	private double price = 0;
 	private double cost = 0;
 	private double demand = 0;
 	
-	MarketData() {
+	public MarketData() {
 	}
 	
 	/**
 	 * This adjusts a new value to smooth out the transition from one value to another.
+	 * 
 	 * @param newValue
 	 * @param oldValue
 	 * @return
@@ -36,19 +37,25 @@ public class MarketData implements Serializable {
 		return newValue;
 	}
 
-	double setValue(double data) {
-		var oldValue = value;
+	/**
+	 * Sets the Good Value here.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public double setGoodValue(double data) {
+		var oldValue = goodValue;
 		var newValue = smoothValue(data, oldValue);
-		this.value = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
+		this.goodValue = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
 
-		return value - oldValue;
+		return goodValue - oldValue;
 	}
 
 	void setPrice(double data) {
 		this.price = smoothValue(data, price);
 	}
 
-	double setDemand(double data) {
+	public double setDemand(double data) {
 		var oldDemand = demand;
 		var newDemand = smoothValue(data, oldDemand);		
 		demand = MathUtils.between(newDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
@@ -59,8 +66,8 @@ public class MarketData implements Serializable {
 		this.cost = smoothValue(data, cost);
 	}
 	
-	public double getValue() {
-		return value;
+	public double getGoodValue() {
+		return goodValue;
 	}
 
 	public double getPrice() {

@@ -344,14 +344,20 @@ public class Crop implements Comparable<Crop>, Entity {
 		if ((currentPhase != null) && currentPhase.getPhaseType() == PhaseType.PLANTING) {
 			isTenderRequired = true;
 		}
-		if (newPhase.getPhaseType() == PhaseType.HARVESTING) {
-			isTenderRequired = false;
+		
+		if (newPhase == null) {
+			logger.severe(this, "Last phase : " + currentPhase + ". new phase is null in " 
+					+ building + " in " + building.getSettlement());
 		}
 
-		currentPhase = newPhase;
-		currentPhaseWorkRequired = currentPhase.getWorkRequired() * 1000D;
+		else if (newPhase.getPhaseType() == PhaseType.HARVESTING) {
+			isTenderRequired = false;
 
-		logger.fine(this, "Entered a new phase " + currentPhase.getName());
+			currentPhase = newPhase;
+			currentPhaseWorkRequired = currentPhase.getWorkRequired() * 1000D;
+
+			logger.fine(this, "Entered a new phase " + currentPhase.getName());
+		}
 	}
 
 	/**
@@ -403,7 +409,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 
 	/**
-	 * Gets the crop spec that defines this Crop.
+	 * Gets the crop spec that defines this crop.
 	 *
 	 * @return crop type ID
 	 */
@@ -559,13 +565,13 @@ public class Crop implements Comparable<Crop>, Entity {
 			}
 		}
 
-		// set healthCondition so that it can be accessed outside of this class
+		// Set healthCondition so that it can be accessed outside of this class
 		healthCondition = health;
 
 		return health;
 	}
 
-	/*
+	/**
 	 * Computes the health of a crop.
 	 */
 	private double calculateHealth() {

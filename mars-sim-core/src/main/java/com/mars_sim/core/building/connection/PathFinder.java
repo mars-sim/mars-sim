@@ -14,7 +14,7 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 
 /**
- * This is reponsible for finding a path between two positions in a settlement.
+ * This is responsible for finding a path between two positions in a settlement.
  * It uses a 2 phase approach
  * 1. It finds the best route between two buildings in a settlement.
  * 2. It converts the route into a specific path with connectors and hatches.
@@ -112,7 +112,8 @@ public class PathFinder {
     }
 
     /**
-     * Has a valid route between teh  Buildoings been found
+     * Has a valid route between the buildings been found ?
+     * 
      * @return
      */
     public boolean isValidRoute() {
@@ -120,7 +121,8 @@ public class PathFinder {
     }
 
     /**
-     * This converts an already found Buildoing Route into a specific walking path.
+     * This converts an already found Building Route into a specific walking path.
+     * 
      * @return
      */
     public InsideBuildingPath toPath() {
@@ -164,7 +166,7 @@ public class PathFinder {
             current = b; // Update current building
         }
 
-        // Add the explict end position
+        // Add the explicit end position
         newPath.addPathLocation(end);
     
         newPath.iteratePathLocation(); // This feels wrong but all the calling code is based on this

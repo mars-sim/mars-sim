@@ -652,7 +652,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Update layers according to Map type
+	 * Update layers according to Map type.
 	 */
 	private void updateMapControls() {
 		// Update dependent panels
@@ -665,6 +665,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
+	/**
+	 * Returns the map layer given its name.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	private MapLayer nameToLayer(String name) {
 		return mapLayers.stream()
 					.filter(n -> n.name().equals(name))
