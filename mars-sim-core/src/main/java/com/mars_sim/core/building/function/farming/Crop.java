@@ -340,24 +340,26 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param phaseType
 	 */
 	private void updatePhase(Phase newPhase) {
+
+		if (newPhase == null) {
+			logger.severe(this, 20_000, "Last phase : " + currentPhase + ". new phase is null in " 
+					+ building + " in " + building.getSettlement());
+			
+			return;
+		}
+
 		// Tendering is needed after PLANTING and up to HARVEST
 		if ((currentPhase != null) && currentPhase.getPhaseType() == PhaseType.PLANTING) {
 			isTenderRequired = true;
 		}
-		
-		if (newPhase == null) {
-			logger.severe(this, "Last phase : " + currentPhase + ". new phase is null in " 
-					+ building + " in " + building.getSettlement());
-		}
-
 		else if (newPhase.getPhaseType() == PhaseType.HARVESTING) {
 			isTenderRequired = false;
-
-			currentPhase = newPhase;
-			currentPhaseWorkRequired = currentPhase.getWorkRequired() * 1000D;
-
-			logger.fine(this, "Entered a new phase " + currentPhase.getName());
 		}
+		
+		currentPhase = newPhase;
+		currentPhaseWorkRequired = currentPhase.getWorkRequired() * 1000D;
+
+		logger.info(this, 5_000, "Just entered the new phase of '" + currentPhase.getName() + "'.");
 	}
 
 	/**

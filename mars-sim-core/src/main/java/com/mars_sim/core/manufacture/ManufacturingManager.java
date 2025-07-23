@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * ManufacturingManager.java
+ * @date 2025-07-23
+ * @author Barry Evans
+ */
+
 package com.mars_sim.core.manufacture;
 
 import java.io.Serializable;
@@ -58,7 +65,8 @@ public class ManufacturingManager implements Serializable {
         }
 
         /**
-         * Change the priority of this queued process
+         * Changes the priority of this queued process.
+         * 
          * @param newPri
          */
         public void setValue(RatingScore newScore) {
@@ -78,7 +86,8 @@ public class ManufacturingManager implements Serializable {
         }
 
         /**
-         * Create a workshop process to handle this item at a specific Workshop
+         * Creates a workshop process to handle this item at a specific Workshop.
+         * 
          * @param workshop
          * @return
          */
@@ -155,7 +164,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * The queued processes waiting for resources/capacity
+     * Gets the queued processes waiting for resources/capacity.
+     * 
      * @return
      */
     public List<QueuedProcess> getQueue() {
@@ -163,7 +173,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Claim the next process on the queue that matches a tech level.
+     * Claims the next process on the queue that matches a tech level.
+     * 
      * @param techLevel Maximum tech level of process
      * @param skillLevel Maximum skill level of worker
      * @return
@@ -196,7 +207,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Remove the process from the queue
+     * Removes the process from the queue.
+     * 
      * @param selected Process to remove
      */
     public void removeProcessFromQueue(QueuedProcess selected) {
@@ -205,8 +217,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Add a process to the queue for later processing. THis is usually triggered by
-     * the end user
+     * Adds a process to the queue for later processing. This is usually triggered by
+     * the end user.
+     * 
      * @param newProcess Process definition to add
      */
     public void addProcessToQueue(WorkshopProcessInfo newProcess) {
@@ -217,8 +230,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Add a salvage process to the queue for later processing. This is targeted at a specific
+     * Adds a salvage process to the queue for later processing. This is targeted at a specific
      * entity.
+     * 
      * @param newProcess Process definition to add
      * @param target Item to salvage in this process
      */
@@ -234,7 +248,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Add a new item to the processing queue
+     * Adds a new item to the processing queue.
+     * 
      * @param newItem Queued item to add
      */
     private void addToQueue(QueuedProcess newItem) {
@@ -245,7 +260,7 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Check which queued processes have available resources
+     * Checks which queued processes have available resources.
      */
     private void updateQueueItems() {
         // Check resoruces on queue
@@ -266,8 +281,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Set the percentage of boost the user applies to a QueuedProcess. This will
-     * apply a modifer to the value. The bonus is a percentage of the value so 100% is zero bonus
+     * Sets the percentage of boost the user applies to a QueuedProcess. This will
+     * apply a modifier to the value. The bonus is a percentage of the value so 100% is zero bonus.
+     * 
      * @param q
      * @param bonusPerc A positive value that represents a percentage modifier
      */
@@ -276,7 +292,7 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Calculate the maximum tech level and available tooling this Settlement can run.
+     * Calculates the maximum tech level and available tooling this Settlement can run.
      * Scans the connected Workshops.
      */
     public void updateTechLevel() {
@@ -294,7 +310,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the prefered capacity to add new items to the queue.
+     * Gets the preferred capacity to add new items to the queue.
+     * 
      * @return This could be negative
      */
     private int getQueueCapacity() {
@@ -305,7 +322,7 @@ public class ManufacturingManager implements Serializable {
         return maxQueue - queue.size();
     }
     /**
-     * Find any manufacturing proesses that can be added to the queue
+     * Finds any manufacturing processes that can be added to the queue.
      */
     void updateQueue() {
         // Check no workshop have been added/removed/upgraded
@@ -324,7 +341,7 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Create and add new items to the queue for manufacturing. Get any queuable manu process
+     * Creates and add new items to the queue for manufacturing. Get any queuable manu process
      * that has resources available. Then score the remaining set.
      * The score of the potential processes are check for the threshold value.
      * The top N processes with the highest process values are added to the queue.
@@ -347,8 +364,11 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the value of a process to the settlement. This is captured as a RatingScore so 
-     * the inidividual parts can be seen.
+     * Gets the value of a process to the settlement. This is captured as a RatingScore so 
+     * the individual parts can be seen.
+     * 
+     * @param info
+     * @return
      */
     private RatingScore getProcessValue(ProcessInfo info) {
         RatingScore value = new RatingScore();
@@ -359,10 +379,11 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Add the top value processes from the potential list where the value is above the 
+     * Adds the top value processes from the potential list where the value is above the 
      * threshold.
+     * 
      * @param name Tag of the potentials
-     * @param potential Potential processes to evualted.
+     * @param potential Potential processes to evaluated.
      * @param scoreThreshold Value threshold of processes to add
      * @param maxProcesses Max number of processes to add
      * @return Number added
@@ -388,7 +409,7 @@ public class ManufacturingManager implements Serializable {
         // Take the top N of what is left
         Collections.sort(candidates, Comparator.comparingDouble(ProcessValue::value));
         int added = Math.min(candidates.size(), maxProcesses);
-        for(int i = 0; i < added; i++) {
+        for (int i = 0; i < added; i++) {
             var choosen = candidates.get(i);
 
             // This info has resources otherwise would not be here
@@ -396,15 +417,19 @@ public class ManufacturingManager implements Serializable {
             addToQueue(newItem);
         }
 
-        if (added > 0) {
-            logger.info(owner, "Automatically added " + name + ": added " + added + "/" + candidates.size());
+        if (added == 1) {
+            logger.info(owner, "Automatically added a process. max: " + candidates.size() + ".");
         }
-
+        else if (added > 1) {
+            logger.info(owner, "Automatically added " + added + " processes. max: " + candidates.size() + ".");
+        }
+        
         return added;
     }
 
     /**
-     * Get the lowest tech level of queued items
+     * Gets the lowest tech level of queued items.
+     * 
      * @return
      */
     public int getLowestOnQueue() {
@@ -414,7 +439,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the highest skill level of all the Workers at this Settlement
+     * Gets the highest skill level of all the Workers at this settlement.
+     * 
      * @return
      */
     private int getHighestSkill() {
@@ -434,10 +460,11 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the mau processed that can be supported by this Settlement. It considers
-     * - Maxtechlevel of any workshops
+     * Gets the mau processed that can be supported by this settlement. It considers
+     * - MaxTechlevel of any workshops
      * - MaterialScience skill of settlement workers; this is recalculated each time
-     * @return Processes that can be processed by this Settlment
+     * 
+     * @return Processes that can be processed by this settlement
      */
     private List<ManufactureProcessInfo> getSupportedManuProcesses() {
         return ManufactureUtil.getManufactureProcessesForTechSkillLevel(getMaxTechLevel(),
@@ -446,7 +473,7 @@ public class ManufacturingManager implements Serializable {
 
     
     /**
-     * Get a list of Manufacturing processes that can be queued.
+     * Gets a list of Manufacturing processes that can be queued.
      * There is no process of the type already queue and workers with the skill present.
      * 
      * @return
@@ -466,9 +493,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get a list of Manufacturing processes that can be queued.
+     * Gets a list of Manufacturing processes that can be queued.
      * There is no process of the type already queue and workers with the skill present.
-     * Optionally the queuable processes can be filtered by a manatory output of the process.
+     * Optionally the queuable processes can be filtered by a mandatory output of the process.
      * 
      * @param outputName Optional name of an output that must be produced
      * @return
@@ -485,7 +512,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the Salvage processes that can be processed by this Settlement
+     * Gets the Salvage processes that can be processed by this settlement.
+     * 
      * @return List of salvage processes.
      */
     public List<SalvageProcessInfo> getQueuableSalvageProcesses() {
@@ -493,8 +521,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the maximum tech level that can be supported by this Settlement.
+     * Gets the maximum tech level that can be supported by this settlement.
      * The value is updated if not initialised.
+     * 
      * @return
      */
     public int getMaxTechLevel() {
@@ -505,8 +534,8 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Get the list of resources that could be manufactured bu this Settlement based on it's workshops.
-     * This does not consder avaialble resources
+     * Gets the list of resources that could be manufactured based on its workshops.
+     * This does not consider available resources
      */
     public List<String> getPossibleOutputs() {
         var supported = getSupportedManuProcesses();
