@@ -130,7 +130,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 	private static final double RATE_FACTOR = 10;
 	private static final double INPUT_BIAS = 0.9;
-	private static final double MATERIAL_BIAS = 3;
+	private static final double MATERIAL_BIAS = 5;
 	
 
     public ToggleResourceProcessMeta() {
@@ -246,11 +246,21 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			}
 			else {
 				// Compute the input score
-				double inputValue = computeResourcesValue(settlement, process, true) * 10;
+				double inputValue = computeResourcesValue(settlement, process, true);
 
+				if (inputValue < 0.03)
+					inputValue = 0.03;
+				else if (inputValue > 300)
+					inputValue = 300;
+				
 				// Compute the output score		
-				double outputValue = computeResourcesValue(settlement, process, false) * 10;
+				double outputValue = computeResourcesValue(settlement, process, false);
 
+				if (outputValue < 0.03)
+					outputValue = 0.03;
+				else if (outputValue > 300)
+					outputValue = 300;
+				
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 									outputValue - inputValue, true);
 				score = new RatingScore("outputs", outputValue);
@@ -364,7 +374,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Multiply by bias so as to favor/discourage the production of output resources
 
 				// Calculate the modified mass rate
-				double mrate = rate * vp * vp * INPUT_BIAS / Math.max(100, supply) / 100;
+				// Note: divided by (supply + 0.001) make sense in two scenarios : 
+				// (1) when input has large supply and output has zero supply
+				// (2) when input has zero supply and output has large supply
+				
+				double mrate = rate * vp * vp * INPUT_BIAS / (supply + 0.01) ;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -404,7 +418,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				// Calculate the modified mass rate
-				double mrate = rate * vp * vp * Math.max(100, supply) / 100;
+				// Note: divided by (supply + 0.001) make sense in two scenarios : 
+				// (1) when input has large supply and output has zero supply
+				// (2) when input has zero supply and output has large supply
+
+				double mrate = rate * vp * vp / (supply + 0.01);
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),

@@ -359,7 +359,7 @@
 	</process> <!-- "Methanol Synthesis" -->
 
 
-	<process name="Melt Ice" power-required="0.625" >
+	<process name="Melt Ice" power-required="1.25" >
 		<description> Melting permafrost ice and filtering the water. 
 			Specific heat capacity of ice is 2.09 J/g/C			
 			e.g. For 1 mol of ice, from -25 C to 0 C
@@ -389,12 +389,12 @@
 			2. Exposing ice sunlight is the most economic way of melting ice.
 			3. Ice melts when outside temperature is above zero deg Celsius  
 		</description>
-		<input resource="ice" rate="200.0"  />
+		<input resource="ice" rate="400.0"  />
 		
-		<output resource="brine water" rate="170.0"  />
-		<output resource="regolith" rate="20.0"  />
+		<output resource="brine water" rate="340.0"  />
+		<output resource="regolith" rate="40.0"  />
 		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-		<output resource="rock salt" rate="10.0"  />
+		<output resource="rock salt" rate="20.0"  />
 	</process>
 
 
