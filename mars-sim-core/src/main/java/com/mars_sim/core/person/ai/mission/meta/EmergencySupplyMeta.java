@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EmergencySupplyMeta.java
- * @date 2022-07-14
+ * @date 2025-07-24
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission.meta;
@@ -41,10 +41,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
             Settlement settlement = person.getSettlement();
         	
             missionProbability = new RatingScore(EmergencySupply.BASE_STARTING_PROBABILITY);
-    		
-	        // Determine job modifier.
-            missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-	
+ 
 	        // Check if person is in a settlement.
 	        if (missionProbability.getScore() > 0D) {
 
@@ -74,7 +71,10 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
 	    	        return RatingScore.ZERO_RATING;
 	    	    }
-	    		
+	    		   		
+		        // Determine job modifier.
+	            missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+		
 	           	RoleType roleType = person.getRole().getType();
             	double roleModifier = switch(roleType) {
 					case MISSION_SPECIALIST -> 1.5;
