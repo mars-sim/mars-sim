@@ -256,10 +256,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Compute the output score		
 				double outputValue = computeResourcesValue(settlement, process, false);
 
-				if (outputValue < 0.03)
-					outputValue = 0.03;
-				else if (outputValue > 300)
-					outputValue = 300;
+				if (outputValue < 0.035)
+					outputValue = 0.035;
+				else if (outputValue > 350)
+					outputValue = 350;
 				
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 									outputValue - inputValue, true);
@@ -378,7 +378,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 				
-				double mrate = rate * vp * vp * INPUT_BIAS / (supply + 0.01) ;
+				double mrate = rate * vp * vp * INPUT_BIAS / (supply/100.0 + 0.001) ;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -422,7 +422,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 
-				double mrate = rate * vp * vp / (supply + 0.01);
+				double mrate = rate * vp * vp / (supply/100.0 + 0.001);
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
@@ -436,6 +436,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (isRawMaterial(resource)) {
 					// If in-situ, adjust the score with MATERIAL_BIAS
 					score += mrate * MATERIAL_BIAS ;
+				} else if (ResourceUtil.isTargetResource(resource)) {
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * vp;
 				} else
 					score += mrate;
 			}

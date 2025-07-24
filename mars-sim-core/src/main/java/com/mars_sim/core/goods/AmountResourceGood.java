@@ -160,8 +160,8 @@ class AmountResourceGood extends Good {
 	private static final double TISSUE_FLATTENING_FACTOR = 4;
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
-	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 1.1;
+	private static final double METHANE_FLATTENING_FACTOR = 1.3;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 1.3;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
@@ -174,7 +174,7 @@ class AmountResourceGood extends Good {
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
 	
-	private static final double WATER_FLATTENING_FACTOR = 0.5;
+	private static final double WATER_FLATTENING_FACTOR = 1.2;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.05;
 	

@@ -425,6 +425,19 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * Is this water ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isTargetResource(int resource) {
+		return switch (resource) {
+			case WATER_ID, METHANE_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
 	 * Is this a raw material resource ?
 	 * 
 	 * @param resource
