@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RobotGood.java
- * @date 2024-06-29
+ * @date 2025-07-23
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -25,7 +25,7 @@ class RobotGood extends Good {
     private static final int BASE_DEMAND = 10;
 	private static final int ROBOT_COST_MOD = 200;
 	
-	private static final double ROBOT_FLATTENING_FACTOR = 2;
+	private static final double ROBOT_FLATTENING_FACTOR = 1.1;
 	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -204,69 +204,56 @@ class RobotGood extends Good {
 		if (robotType == RobotType.MAKERBOT) {
 			
 			int tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
-			
 			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
-			
 			int comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
+			double makerFactor = .5 * engineer + .25 * tech + .1 * comp;
 			
-			double makerFactor = 1 + .65 * engineer + .25 * tech + .1 * comp;
-			
-			baseDemand += baseDemand / makerFactor * popFactor;
+			baseDemand += baseDemand / (.2 + makerFactor) * popFactor;
 		}
 		
 		else if (robotType == RobotType.REPAIRBOT) {
-
 			int tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
-			
 			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			double repairFactor = .5 * tech + .25 * engineer;
 			
-			double repairFactor = 1 + .75 * tech + .25 * engineer;
-			
-			baseDemand += baseDemand / repairFactor * popFactor;
+			baseDemand += baseDemand / (.2 + repairFactor) * popFactor;
 		}
 		
 		else if (robotType == RobotType.CONSTRUCTIONBOT) {
-	
 			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
-			
 			int comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
-			
 			int architect = JobUtil.numJobs(JobType.ARCHITECT, settlement);
-		
-			double constructFactor = 1 + .60 * architect + .25 * engineer + .15 * comp;
-			baseDemand += baseDemand / constructFactor * popFactor;
+			double constructFactor = .5 * architect + .25 * engineer + .15 * comp;
+			
+			baseDemand += baseDemand / (.2 + constructFactor) * popFactor;
 		}
 		
 		else if (robotType == RobotType.GARDENBOT) {
 			int botanistFactor = JobUtil.numJobs(JobType.BOTANIST, settlement);
 			
-			baseDemand += baseDemand / botanistFactor * popFactor;
+			baseDemand += baseDemand / (.2 + botanistFactor) * popFactor;
 		}
 		
 		else if (robotType == RobotType.CHEFBOT) {
-			double chiefFactor = 1.0 + JobUtil.numJobs(JobType.CHEF, settlement);
+			int chiefFactor = JobUtil.numJobs(JobType.CHEF, settlement);
 			
-			baseDemand += baseDemand / chiefFactor * popFactor;
+			baseDemand += baseDemand / (.2 + chiefFactor) * popFactor;
 		}
 		
 		else if (robotType == RobotType.DELIVERYBOT) {
 			int trader = JobUtil.numJobs(JobType.TRADER, settlement);
-			
 			int pilot = JobUtil.numJobs(JobType.PILOT, settlement);
+			double traderFactor = .5 + .75 * trader + .25 * pilot;
 			
-			double traderFactor = 1 + .75 * trader + .25 * pilot;
-			
-			baseDemand += baseDemand / traderFactor * popFactor;
+			baseDemand += baseDemand / (.2 + traderFactor) * popFactor;
 		}
 		
 		else if (robotType == RobotType.MEDICBOT) {
 			int doc = JobUtil.numJobs(JobType.DOCTOR, settlement);
-			
 			int psy = JobUtil.numJobs(JobType.PSYCHOLOGIST, settlement);
+			double medicFactor = .5 + .75 * doc + .25 * psy;
 			
-			double medicFactor = 1 + .75 * doc + .25 * psy;
-			
-			baseDemand += baseDemand / medicFactor * popFactor;
+			baseDemand += baseDemand / (.2 + medicFactor) * popFactor;
 		}
 		
 		return baseDemand;
