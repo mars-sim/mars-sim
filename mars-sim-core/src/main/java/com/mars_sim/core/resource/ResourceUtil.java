@@ -425,14 +425,14 @@ public class ResourceUtil {
 	}
 	
 	/**
-	 * Is this water ?
+	 * Is this a critical resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isTargetResource(int resource) {
+	public static boolean isCriticalResource(int resource) {
 		return switch (resource) {
-			case WATER_ID, METHANE_ID -> true;
+			case BRINE_WATER_ID, WATER_ID, METHANE_ID -> true;
 			default -> false;
 		};
 	}
