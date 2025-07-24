@@ -597,8 +597,7 @@
         </connection-list>
     </building>
         
-        
-    
+
      <!-- Row 9 : 905 to 999 -->
   
      <building id="904n5" type="Half Core B" xloc="-30.0" yloc="58.5" facing="0.0">
@@ -628,9 +627,7 @@
             <connection id="906" hatch-facing="west" />
         </connection-list>
     </building>
-        
-       
-              
+  
         
    <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
@@ -649,13 +646,13 @@
 	<building-package name="MD1 Set 1 - 1x2"/>
 	<building-package name="MD4 Set 1 - 1x1"/>   	        
       
-    <vehicle type="Explorer Rover" number="3" />
-    <vehicle type="Long Range Explorer" number="2" />
+    <vehicle type="Explorer Rover" number="4" />
+    <vehicle type="Long Range Explorer" number="4" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="6" />
-    <vehicle type="Delivery Drone" number="3" />
-    <vehicle type="Cargo Drone" number="3" />
+    <vehicle type="Light Utility Vehicle" number="8" />
+    <vehicle type="Delivery Drone" number="4" />
+    <vehicle type="Cargo Drone" number="4" />
      
     <!-- Robots -->
     <robot name="Huey Pro" type="GardenBot" model="Advanced"/>

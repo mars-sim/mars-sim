@@ -169,7 +169,7 @@ public class UnloadVehicleGarage extends Task {
 				vehicle.removeSecondaryStatus(StatusType.UNLOADING);
 
 				// Remove the vehicle from garage when done
-				BuildingManager.removeFromGarage(vehicle);
+//				BuildingManager.removeFromGarage(vehicle);
 				
 				endTask();
 			}

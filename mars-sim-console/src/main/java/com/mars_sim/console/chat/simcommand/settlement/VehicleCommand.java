@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleCommand.java
- * @date 2022-06-27
+ * @date 2025-07-24
  * @author Barry Evans
  */
 
@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
-import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -21,8 +20,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * Command to display vehicles
- * This is a singleton.
+ * Command to display a list of vehicles. This is a singleton.
  */
 public class VehicleCommand extends AbstractSettlementCommand {
 
@@ -33,23 +31,24 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the answer
+	 * Outputs the answer.
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 	
-		response.appendHeading("Vehicles");
+		response.appendHeading("A list of vehicles own by this settlement : ");
 		
 		// Sort the vehicle list according to the name
 		List<Vehicle> vlist = new ArrayList<>(settlement.getAllAssociatedVehicles());
 		Collections.sort(vlist);
 
-		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 21, 
-									"Status", 7, "Home", "Maint Due", "Mission", 25);
+		response.appendTableHeading("Name", 16, "Type", 14, "Home", "Reserved", 
+									"Pri Stat", 8, "Other Stats", 11, 
+									"Maint Due", "Mission", 25);
 
 		for (Vehicle v : vlist) {
-			String vTypeStr = v.getName();	
+			String vTypeStr = v.getVehicleType().getName();	
 
 			// Print mission name
 			String missionName = "";
@@ -61,10 +60,13 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			MalfunctionManager mm = v.getMalfunctionManager();
 			boolean needMaintenance = mm.getTimeSinceLastMaintenance() > mm.getMaintenancePeriod();
 			
+			boolean isReserved = v.isReserved();
+			
 			// Dropped Parked once fix problem
 			boolean isHome = settlement.equals(v.getSettlement());
-			response.appendTableRow(v.getName(), vTypeStr, v.getPrimaryStatus().getName(),
-						isHome, needMaintenance, missionName);
+			response.appendTableRow(v.getName(), vTypeStr, isHome, isReserved,
+					v.getPrimaryStatus().getName(), v.printStatusTypes(), 
+						 needMaintenance, missionName);
 		}
 		
 		context.println(response.getOutput());
