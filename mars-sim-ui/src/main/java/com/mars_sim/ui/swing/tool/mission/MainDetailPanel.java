@@ -66,7 +66,6 @@ import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
-import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;

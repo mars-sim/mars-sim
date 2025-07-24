@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarketData.java
- * @date 2024-09-21
+ * @date 2025-07-23
  * @author Manny Kung
  */
 
@@ -15,10 +15,10 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private double goodValue = 0;
+	private double goodValue = 1;
 	private double price = 0;
 	private double cost = 0;
-	private double demand = 0;
+	private double demand = 1;
 	
 	public MarketData() {
 	}
@@ -38,13 +38,17 @@ public class MarketData implements Serializable {
 	}
 
 	/**
-	 * Sets the Good Value here.
+	 * Updates the Good Value here.
 	 * 
 	 * @param data
-	 * @return
+	 * @return the delta
 	 */
-	public double setGoodValue(double data) {
-		var oldValue = goodValue;
+	public double updateGoodValue(double data) {
+		double oldValue = goodValue;
+		if (oldValue == 0.0) {
+			goodValue = data;
+			return goodValue;
+		}
 		var newValue = smoothValue(data, oldValue);
 		this.goodValue = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
 
@@ -55,8 +59,18 @@ public class MarketData implements Serializable {
 		this.price = smoothValue(data, price);
 	}
 
-	public double setDemand(double data) {
-		var oldDemand = demand;
+	/**
+	 * Updates the demand here.
+	 * 
+	 * @param data
+	 * @return the delta
+	 */
+	public double updateDemand(double data) {
+		double oldDemand = demand;
+		if (oldDemand == 0.0) {
+			demand = data;
+			return demand;
+		}
 		var newDemand = smoothValue(data, oldDemand);		
 		demand = MathUtils.between(newDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
 		return demand - oldDemand;

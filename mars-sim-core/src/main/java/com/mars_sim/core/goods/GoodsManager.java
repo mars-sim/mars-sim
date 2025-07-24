@@ -308,8 +308,8 @@ public class GoodsManager implements Serializable {
 			
 			double localPrice = g.calculatePrice(settlement, localValue);
 			
-			mv.setDemand(localDemand);	
-			mv.setGoodValue(localValue);	
+			mv.updateDemand(localDemand);	
+			mv.updateGoodValue(localValue);	
 			mv.setCost(localCost);
 			mv.setPrice(localPrice);
 			
@@ -368,7 +368,7 @@ public class GoodsManager implements Serializable {
 			// Check for inflation and deflation adjustment due to other resources
 			newGoodValue = checkDeflation(id, newGoodValue);
 			// Adjust the market value
-			double adj1 = marketData.setGoodValue(newGoodValue) / 20.0;
+			double adj1 = marketData.updateGoodValue(newGoodValue) / 20.0;
 			if (newGoodValue + adj1 > 0)
 				newGoodValue += adj1;
 
@@ -396,7 +396,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private double adjustMarketDemand(Good good, double demand) {
 		// Gets the market demand among the settlements
-		var adj = getMarketData(good).setDemand(demand);
+		var adj = getMarketData(good).updateDemand(demand);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
 		return adj;
 	}
