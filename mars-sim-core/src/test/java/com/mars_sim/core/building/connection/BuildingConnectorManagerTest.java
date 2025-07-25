@@ -21,7 +21,10 @@ import junit.framework.TestCase;
 
 public class BuildingConnectorManagerTest extends TestCase {
 
+	private static final String SECTOR_BASE_1 = "Sector Base 1";
+	
     private static final double SMALL_DELTA = .0000001D;
+    
     private SimulationConfig simConfig;
     
 	@Override
@@ -292,7 +295,7 @@ public class BuildingConnectorManagerTest extends TestCase {
     }
 
     public void testLargeRoute() {
-        var largeTemplate = "Sector Base 1-MS";
+        var largeTemplate = SECTOR_BASE_1;
         List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration().getItem(largeTemplate).getSupplies().getBuildings();
         Settlement settlement = new MockSettlement();
 

@@ -9,7 +9,6 @@ package com.mars_sim.core.vehicle.task;
 import java.util.logging.Level;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
