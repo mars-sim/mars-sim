@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FoodInventoryTableModel.java
- * @date 2022-07-22
+ * @date 2025-07-24
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -49,11 +49,11 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 		COLUMNS[TYPE_COL] =  new ColumnSpec("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] =  new ColumnSpec("Settlement", String.class);
 
-		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Double.class);
-		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class);
+		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Number.class);
+		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Number.class);
 		COLUMNS[MASS_COL] = new ColumnSpec("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Double.class);
-		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Double.class);
+		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Number.class);
+		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Number.class);
 		COLUMNS[COST_COL] = new ColumnSpec("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[PRICE_COL] = new ColumnSpec("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}
