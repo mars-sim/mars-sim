@@ -2164,9 +2164,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		Settlement settlement =	getCurrentNavpointSettlement();
 		if (settlement != null) {
-			// This should never be null
-			settlement.getBuildingManager().addToGarage(vehicle);
-			settlement.addVicinityVehicle(vehicle); // Should this be needed ?
+			// Add the vehicle to the settlement
+			settlement.addVicinityVehicle(vehicle);
 		}
 		setPhase(nextPhase, (settlement != null ? settlement.getName() : "Unknown"));
 	}

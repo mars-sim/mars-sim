@@ -76,8 +76,8 @@ public final class UnloadHelper {
     		towingVehicle.setTowedVehicle(null);
     		towedVehicle.setTowingVehicle(null);
     		if (!dest.containsVicinityParkedVehicle(towedVehicle)) {
-    			dest.addVicinityVehicle(towedVehicle);
-    			towedVehicle.findNewParkingLoc();					
+    			// Add the towed vehicle to the settlement
+    			dest.addVicinityVehicle(towedVehicle);			
     		}
     	}
     }

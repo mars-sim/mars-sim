@@ -558,10 +558,9 @@ public class SalvageMission extends AbstractMission
 					vehicle.setMission(null);
 				}
 
-				// Store construction vehicle in settlement.
+				// Store construction vehicle back to the settlement.
 				settlement.addVicinityVehicle(vehicle);
-				vehicle.findNewParkingLoc();
-
+	
 				// Store all construction vehicle attachments in settlement.
 				for(int id : vehicle.getItemResourceIDs()) {
 					int num = vehicle.getItemResourceStored(id);

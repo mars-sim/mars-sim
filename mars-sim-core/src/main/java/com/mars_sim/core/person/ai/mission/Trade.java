@@ -370,11 +370,14 @@ public class Trade extends RoverMission  {
 		Rover r = getRover();
 		Vehicle towed = r.getTowedVehicle();
 		if (towed != null) {
+			
 			towed.setReservedForMission(false);
+			
 			r.setTowedVehicle(null);
+			
 			towed.setTowingVehicle(null);
+			// Add the towed vehicle to the settlement
 			r.getSettlement().addVicinityVehicle(towed);
-			towed.findNewParkingLoc();
 		}
 	}
 

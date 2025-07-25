@@ -318,7 +318,9 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		
 		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(drone)) {
 			result = assignTask(person, new UnloadVehicleGarage(person, drone));
-		} else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
+		} 
+		
+		else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
 			result = assignTask(person, new UnloadVehicleEVA(person, drone));
 		}
 

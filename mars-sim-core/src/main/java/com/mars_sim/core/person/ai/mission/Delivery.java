@@ -232,14 +232,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 		Vehicle v = getVehicle();
 		// If drone is not parked at settlement, park it.
 		if ((v != null) && (v.getSettlement() == null)) {
-
+			// Add the vehicle to the trading settlement
 			tradingSettlement.addVicinityVehicle(v);
-
-			// Add vehicle to a garage if available.
-			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
-				// or else re-orient it
-//				v.findNewParkingLoc();
-			}
 		}
 
 		setPhaseEnded(true);

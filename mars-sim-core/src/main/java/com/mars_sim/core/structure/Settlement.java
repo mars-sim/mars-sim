@@ -1855,9 +1855,18 @@ public class Settlement extends Unit implements Temporal,
 			return true;
 		}
 		if (vicinityParkedVehicles.add(vehicle)) {
-			// Directly update the location state type
-			vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
-
+			
+			boolean canGarage = getBuildingManager().addToGarage(vehicle);
+			
+			if (!canGarage) {
+				// Set vehicle's coordinates to that of settlement
+				vehicle.setCoordinates(getCoordinates());
+				// Call findNewParkingLoc to get a non-collided x and y coordinates
+				vehicle.findNewParkingLoc();
+				// Directly update the location state type
+				vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+			}
+			
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
@@ -1899,14 +1908,9 @@ public class Settlement extends Unit implements Temporal,
 	public boolean addOwnedVehicle(Vehicle vehicle) {
 		if (ownedVehicles.contains(vehicle))
 			return true;
-		if (ownedVehicles.add(vehicle)) {
-			
+		if (ownedVehicles.add(vehicle)) {			
 			// Add this vehicle as parked
 			addVicinityVehicle(vehicle);
-			// Set vehicle's coordinates to that of settlement
-			vehicle.setCoordinates(getCoordinates());
-			// Call findNewParkingLoc to get a non-collided x and y coordinates
-			vehicle.findNewParkingLoc();
 			// Update the numOwnedVehicles
 			numOwnedVehicles = ownedVehicles.size();
 

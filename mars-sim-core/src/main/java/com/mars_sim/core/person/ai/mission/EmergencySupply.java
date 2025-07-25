@@ -306,14 +306,8 @@ public class EmergencySupply extends RoverMission {
 
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-
+			// Add the vehicle to the emergency settlement
 			emergencySettlement.addVicinityVehicle(getVehicle());
-
-			// Add vehicle to a garage if available.
-			if (!emergencySettlement.getBuildingManager().addToGarage(getVehicle())) {
-				// or else re-orient it
-//				getVehicle().findNewParkingLoc();
-			}
 		}
 
 		// Have member exit rover if necessary.
@@ -360,11 +354,14 @@ public class EmergencySupply extends RoverMission {
 
 		// Unload towed vehicle (if necessary).
 		if (getRover().getTowedVehicle() != null) {
+			
 			emergencyVehicle.setReservedForMission(false);
+			
 			getRover().setTowedVehicle(null);
+			
 			emergencyVehicle.setTowingVehicle(null);
+			// Add the vehicle to the emergency settlement
 			emergencySettlement.addVicinityVehicle(emergencyVehicle);
-			emergencyVehicle.findNewParkingLoc();
 		}
 
 		// Unload rover if necessary.

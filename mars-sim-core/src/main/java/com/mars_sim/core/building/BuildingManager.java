@@ -68,6 +68,7 @@ import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -1011,6 +1012,11 @@ public class BuildingManager implements Serializable {
 					if ((garage.getAvailableRoverCapacity() > 0)
 						&& garage.addRover(r)) {
 
+						// Vehicle already on Garage
+						vehicle.setPrimaryStatus(StatusType.GARAGED);
+						// Directly update the location state type
+						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+						
 						logger.info(r, 60_000,
  							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
@@ -1043,6 +1049,11 @@ public class BuildingManager implements Serializable {
 					if (garage.getAvailableFlyerCapacity() > 0 
 							&& garage.addFlyer(f)) {
 
+						// Vehicle already on Garage
+						vehicle.setPrimaryStatus(StatusType.GARAGED);
+						// Directly update the location state type
+						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+						
 						logger.info(f, 60_000,
  							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
@@ -1074,6 +1085,11 @@ public class BuildingManager implements Serializable {
 					if ((garage.getAvailableUtilityVehicleCapacity() > 0)
 						&& garage.addUtilityVehicle(luv)) {
 
+						// Vehicle already on Garage
+						vehicle.setPrimaryStatus(StatusType.GARAGED);
+						// Directly update the location state type
+						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+						
 						logger.info(luv, 60_000,
  							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
@@ -1128,10 +1144,13 @@ public class BuildingManager implements Serializable {
 	 * @return true if it's already in the garage or added to a garage
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
+		// Check if the vehicle is already inside garage
 		if (isInGarage(vehicle)) {
 			// Vehicle already on Garage
 			vehicle.setPrimaryStatus(StatusType.GARAGED);
-
+			// Directly update the location state type
+			vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+			
 			return true;
 		}
 
