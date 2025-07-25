@@ -24,7 +24,7 @@
 		<part type="microcontroller" number="60" />
 		<part type="communications circuit board" number="6" />
 		<part type="navigation circuit board" number="4" />
-		<part type="biosensor" number="20" />
+		<part type="Biosensor" number="20" />
 		
 		<part type="methane fuel cell" number="200"/>
 		<part type="methane fuel cell stack" number="4"/>
@@ -177,7 +177,7 @@
 		<part type="decontamination kit" number="2" />
 		<part type="plasma cutter" number="2" />
 		<part type="semiconductor wafer" number="5" />
-		<part type="biosensor" number="4" />
+		<part type="Biosensor" number="4" />
 				
 	</part-package>
 
@@ -297,7 +297,7 @@
 		<part type="decontamination kit" number="4" />
 		<part type="plasma cutter" number="3" />
 		<part type="semiconductor wafer" number="10" />
-		<part type="biosensor" number="8" />
+		<part type="Biosensor" number="8" />
 						
 	</part-package>
 
@@ -417,7 +417,7 @@
 		<part type="decontamination kit" number="6" />
 		<part type="plasma cutter" number="4" />
 		<part type="semiconductor wafer" number="15" />
-		<part type="biosensor" number="12" />
+		<part type="Biosensor" number="12" />
 				
 	</part-package>
 
@@ -537,7 +537,7 @@
 		<part type="decontamination kit" number="12" />
 		<part type="plasma cutter" number="5" />
 		<part type="semiconductor wafer" number="20" />
-		<part type="biosensor" number="24" />
+		<part type="Biosensor" number="24" />
 				
 	</part-package>
 

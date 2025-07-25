@@ -839,6 +839,7 @@ public class BuildingManager implements Serializable {
 					.getBuildingSet(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b.getZone() == 0
+							&& b.getCategory() != BuildingCategory.EVA
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 
@@ -878,6 +879,7 @@ public class BuildingManager implements Serializable {
 					.getBuildingSet(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b.getZone() == 0
+							&& b.getCategory() != BuildingCategory.EVA
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 
@@ -926,19 +928,19 @@ public class BuildingManager implements Serializable {
 		for (Building bldg : functionBuildings) {
 			// Go to the default zone 0 only
 			if (!canAdd && bldg.getZone() == 0
+					// Do not add robot to EVA airlock, hallway and tunnel
+					&& bldg.getCategory() != BuildingCategory.EVA
+					&& bldg.getCategory() != BuildingCategory.CONNECTION
 					&& bldg.getFunction(functionType).hasEmptyActivitySpot()) {
-				BuildingCategory category = bldg.getCategory();
-				// Do not add robot to hallway and tunnel
-				if (category != BuildingCategory.CONNECTION) {
 					destination = bldg;
 					canAdd = addRobotToActivitySpot(robot, destination, functionType);
-				}
 			}
 		}
 
 		functionBuildings = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
 		for (Building bldg : functionBuildings) {
 			if (!canAdd && bldg.getZone() == 0
+					&& bldg.getCategory() != BuildingCategory.EVA
 					&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
 				destination = bldg;
 				canAdd = addRobotToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
@@ -1273,17 +1275,19 @@ public class BuildingManager implements Serializable {
 		// Find least crowded bot population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building building : buildingSet) {
-			RoboticStation roboticStation = building.getRoboticStation();
-			int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
-			if (crowded < -1)
-				crowded = -1;
-			if (crowded < leastCrowded) {
-				leastCrowded = crowded;
-				result = new UnitSet<>();
-				result.add(building);
-			}
-			else if (crowded == leastCrowded) {
-				result.add(building);
+			if (building.getCategory() != BuildingCategory.EVA) {
+				RoboticStation roboticStation = building.getRoboticStation();
+				int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
+				if (crowded < -1)
+					crowded = -1;
+				if (crowded < leastCrowded) {
+					leastCrowded = crowded;
+					result = new UnitSet<>();
+					result.add(building);
+				}
+				else if (crowded == leastCrowded) {
+					result.add(building);
+				}
 			}
 		}
 

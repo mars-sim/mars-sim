@@ -430,12 +430,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 					score += mrate;
-				} else if (isInSitu(resource)) {
-					// If in-situ, increase the score 
-					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;
 				} else if (isRawMaterial(resource)) {
 					// If in-situ, adjust the score with MATERIAL_BIAS
 					score += mrate * MATERIAL_BIAS ;
+				} else if (isInSitu(resource)) {
+					// If in-situ, increase the score 
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;	
 				} else if (ResourceUtil.isCriticalResource(resource)) {
 					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * 10;
 				} else

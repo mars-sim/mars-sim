@@ -533,7 +533,7 @@ public class Cooking extends Function {
 
 					if (qNum < 1) {
 						if (dryMassPerServing > 0)
-							// Turn into food waste
+							// Turn low quality food into food waste
 							store(dryMassPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
 
 						log.append(dryMassPerServing)
@@ -549,7 +549,7 @@ public class Cooking extends Function {
 								.append(dryMassPerServing).append(" kg ").append(meal.getName())
 								.append(PRESERVED);
 
-						logger.log(building, Level.FINE, 10_000, log.toString());
+						logger.log(building, Level.INFO, 20_000, log.toString());
 					}
 
 					// Adjust the rate to go down for each meal that wasn't eaten.

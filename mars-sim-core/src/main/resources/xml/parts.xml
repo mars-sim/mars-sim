@@ -521,11 +521,11 @@
 	</part>
 
 	<part name="Pneumatic Drill" type="attachment" mass="25.0">
-		<description>Attachment part for LUV. A pneumatic hand for lifting.</description>
+		<description>Attachment part for LUV. A pneumatic rock drill is used for breaking, drilling, or cutting through hard ground.</description>
 	</part>
 
 	<part name="Backhoe" type="attachment" mass="35.0" >
-		<description>Attachment part for LUV. An excavating equipment with a digging bucket on the end of a two-part articulated arm</description>
+		<description>Attachment part for LUV. An excavating equipment with a digging bucket on the end of a two-part articulated arm.</description>
 	</part>
 
 	<part name="Bulldozer Blade" type="attachment" mass="40.0">
@@ -533,11 +533,11 @@
 	</part>
 
 	<part name="Soil Compactor" type="attachment" mass="100.0">
-		<description>Attachment part for LUV. A drum roller that applied stress to a soil</description>
+		<description>Attachment part for LUV. A drum roller that applied stress to a soil.</description>
 	</part>
 
 	<part name="Crane Boom" type="attachment" mass="75.0">
-		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects</description>
+		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects.</description>
 	</part>
 
 	<part name="Wheel small" type="vehicle"  mass="4.45" >
@@ -1149,7 +1149,7 @@
 		XPS is often lined with aluminium foil. </description>
 	</part>
 
-	<part name="biosensor" type="electronic" mass="0.1">
+	<part name="Biosensor" type="electronic" mass="0.1">
 		<description>A biopolymer sensor that can be printed on a wide range of materials 
 		for sensing trace levels of pollutants/toxins or whatever airborne/waterborne bacteria 
 		and virus. It contains embedded molecular switches consisting of a protein that acts 

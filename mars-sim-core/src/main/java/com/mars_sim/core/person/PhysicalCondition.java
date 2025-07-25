@@ -528,7 +528,7 @@ public class PhysicalCondition implements Serializable {
 					ComplaintType type = problem.getType();
 
 					logger.log(person, Level.INFO, 20_000,
-							"Cured from " + type + ".");
+							"Cured from " + type.getName() + ".");
 
 					if (type == ComplaintType.DEHYDRATION)
 						isDehydrated = false;
