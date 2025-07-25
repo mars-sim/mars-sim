@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Phase 0-ISRA" default-population="2" description="Phase 0 base for ISRA"
-		number-of-robots="2" sponsor="ISRA">
+		number-of-robots="4" sponsor="ISRA">
 
     <!-- Lander habitat building is the main habitation in the Mars Direct
         mission plan. -->

@@ -45,6 +45,7 @@ import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.GameManager;
@@ -122,8 +123,8 @@ public class SettlementTransparentPanel extends JComponent {
 	private String zaString;
 	private String odString;
 
-	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-	private Font sunBoldFont = new Font(Font.MONOSPACED, Font.BOLD, 14);
+	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+	private Font sunBoldFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
 	
 	private Map<Settlement, String> resourceCache = new HashMap<>();
 
@@ -303,32 +304,35 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private JPanel buildSunPane() {
 	    JPanel sunPane = new JPanel(new BorderLayout(3, 3));
-	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+//	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    sunPane.setBackground(new Color(0, 0, 0, 128));
-	    sunPane.setOpaque(false);
+//	    sunPane.setOpaque(false);
+	    sunPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210, 105, 30)));
+		
 
-	    JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0)) {
+	    JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0))
+	    {
 	        @Override
 	        protected void paintComponent(Graphics g) {
 	           super.paintComponent(g);
-	           Dimension arcs = new Dimension(20, 20); //Border corners arcs {width,height}, change this to whatever you want
-	           int width = getWidth();
-	           int height = getHeight();
+//	           Dimension arcs = new Dimension(20, 20); //Border corners arcs {width,height}, change this to whatever you want
+//	           int width = getWidth();
+//	           int height = getHeight();
 	           Graphics2D graphics = (Graphics2D) g;
 	           graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 	           //Draws the rounded panel with borders.
 	           graphics.setColor(getBackground());
-	           graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint background
+//	           graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint background
 	           graphics.setColor(getForeground());
-	           graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint border
+//	           graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint border
 	        }
 	    };
 
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
-	    roundPane.setPreferredSize(new Dimension(290, 185));
-	    sunPane.add(roundPane, BorderLayout.EAST);
+	    roundPane.setPreferredSize(new Dimension(230, 185)); // (260, 185), (293, 185);
+	    sunPane.add(roundPane, BorderLayout.CENTER);
   		
 	    double []projectSunTime = {0, 0, 0};
 	    if (mapPanel.getSettlement() != null) {
@@ -368,8 +372,8 @@ public class SettlementTransparentPanel extends JComponent {
 		Color brown = new Color(153, 102, 0).brighter();
 		Color yellow = Color.yellow.brighter().brighter();
 		Color white = Color.white;
-		Color red = Color.red.brighter().brighter();
-		Color lightBlue = new Color(51, 204, 255).brighter();
+		Color red = Color.pink;
+		Color lightBlue = new Color(51, 204, 255);
 		
 		projectSunriseLabel.setForeground(red);
 		sunriseLabel.setForeground(red);

@@ -47,7 +47,8 @@ public class SplashWindow extends JComponent {
 			"Internal view of Mars Habitat. Hassell + Eckersley O’Callaghan",
 			"Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net",
 			"Agridome for growing food on Mars. Mars Society. 2020", 
-			"Cyanobacteria help detoxify the environment on Mars. Astronomy Magazine. 2023"
+			"Cyanobacteria help detoxify the environment", // Astronomy Magazine. 2023
+			"Water Ice drilling. NASA Langley Advanced Concepts Lab AMA"
 	};
 	
 	private static String[] FILE_NAME = {
@@ -58,7 +59,8 @@ public class SplashWindow extends JComponent {
 			"Interior_home.jpg",
 			"greenhouse_lady.jpg",
 			"MSC-AgriDomes-on-Mars.jpg",
-			"Cyanobacteria_terraforming.jpg"
+			"Cyanobacteria_terraforming.jpg",
+			"nasa_langley_advanced_concepts_lab.jpg"
 	};
 	
 	/** The font for displaying {@link #MSP_STRING}. */
@@ -69,7 +71,7 @@ public class SplashWindow extends JComponent {
 	private final int titleWidth = titleMetrics.stringWidth(MSP_STRING);
 	
 	/** The font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont = new Font(Font.MONOSPACED, Font.BOLD, 30);
+	private final Font versionStringFont = new Font(Font.SANS_SERIF, Font.BOLD, 30);
 	/** Measures the pixels needed to display text. */
 	private final FontMetrics versionMetrics = getFontMetrics(versionStringFont);
 	/** The displayed length of {@link #VERSION_STRING} in pixels. */
@@ -126,17 +128,17 @@ public class SplashWindow extends JComponent {
 			
 				if (rand == 0) {
 					g2d.setFont(versionStringFont);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 110);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 120);
 				}
 				else if (rand == 1) {
 					g2d.setFont(versionStringFont);
 					g2d.setColor(Color.ORANGE);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 80);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 100);
 				}
 				else {
 					g2d.setFont(versionStringFont1);
 					g2d.setColor(Color.WHITE);
-					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 55);
+					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
 				}
 				
 				g2d.setColor(Color.WHITE);
