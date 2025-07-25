@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1-MS" default-population="120" description="Sector base 1 for Mars Society"
+        name="Sector Base 1" default-population="120" description="Sector base 1 for Mars Society"
 		number-of-robots="84" sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
@@ -676,12 +676,11 @@
 	<bin type="pot" number="40" />
 		
 	<!-- Life Support Resources -->
-	<resource type="food" amount="8000" />
-	<resource type="water" amount="9600" />
-	<resource type="oxygen" amount="9600" />
+	<resource type="food" amount="12000" />
+	<resource type="water" amount="14400" />
+	<resource type="oxygen" amount="12000" />
 
-    <part type="biosensor" number="1" />
-    <part-package name="tech" number="1" />
+    <part-package name="tech" number="2" />
     <part-package name="package 4" number="5" />
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->

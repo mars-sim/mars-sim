@@ -412,7 +412,7 @@
 	<resource type="water" amount="7200" />
 	<resource type="oxygen" amount="5760" />
 
-    <part type="biosensor" number="1" />
+    <part-package name="tech" number="1" />
     <part-package name="package 2" number="1" />
     <part-package name="package 4" number="1" />
 
