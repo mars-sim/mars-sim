@@ -2332,6 +2332,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// NOTE: need to revert back the storage action
 			}
 			else {
+				if (leaving && isInGarage()) {
+					BuildingManager.removeFromGarage(this);
+				}
 				setContainerUnitAndID(destination);
 			}
 		}

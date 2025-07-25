@@ -306,7 +306,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		
 		assertFalse("Vehicle has left garage", vehicle.isInGarage());
 	
-		assertTrue("person is not inside", person.isInside());
+		assertTrue("person is inside", person.isInside());
 	
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
 		
