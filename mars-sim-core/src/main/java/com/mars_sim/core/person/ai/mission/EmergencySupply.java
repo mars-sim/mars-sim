@@ -106,6 +106,9 @@ public class EmergencySupply extends RoverMission {
 
 		if (s != null && !isDone()) {
 
+	    	// Question : how to record targetSettlement in such a way that 
+	    	// it doesn't need to look for it in both EmergencySupplyMeta and again in EmergencySupply
+
 			// Determine emergency settlement.
 			emergencySettlement = findSettlementNeedingEmergencySupplies(s, getRover());
 
@@ -492,6 +495,9 @@ public class EmergencySupply extends RoverMission {
 	 */
 	public static Settlement findSettlementNeedingEmergencySupplies(Settlement startingSettlement, Rover rover) {
 
+    	// Question : how to record targetSettlement in such a way that 
+    	// it doesn't need to look for it in both EmergencySupplyMeta and again in EmergencySupply
+		
 		Settlement result = null;
 
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
