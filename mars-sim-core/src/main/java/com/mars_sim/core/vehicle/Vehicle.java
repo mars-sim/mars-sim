@@ -635,7 +635,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public boolean isInGarage() {
 		Settlement settlement = getSettlement();
-		return settlement != null && getSettlement().getBuildingManager().isInGarage(this);
+		return settlement != null && settlement.getBuildingManager().isInGarage(this);
 	}
 
 	/**

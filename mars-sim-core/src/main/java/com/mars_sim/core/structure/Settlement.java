@@ -1854,6 +1854,7 @@ public class Settlement extends Unit implements Temporal,
 		if (vicinityParkedVehicles.contains(vehicle)) {
 			return true;
 		}
+		
 		if (vicinityParkedVehicles.add(vehicle)) {
 			
 			boolean canGarage = getBuildingManager().addToGarage(vehicle);
@@ -1866,6 +1867,10 @@ public class Settlement extends Unit implements Temporal,
 				// Directly update the location state type
 				vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}
+			
+			else
+				// Directly update the location state type
+				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 			
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
