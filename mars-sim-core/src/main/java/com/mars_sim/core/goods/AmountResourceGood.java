@@ -161,7 +161,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.3;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 1.3;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.85;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;

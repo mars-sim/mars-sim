@@ -24,8 +24,8 @@
 
 	<!-- Life Support Resources -->
 	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents thermo-stabilized food that can afford long-term storage.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true" demand=".5" >Potable water</resource>
-	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="1.25" />
+	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="1.25" >Potable water</resource>
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.75" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
@@ -35,7 +35,7 @@
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="1.5" />
+	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="0.75" />
 	
 	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="2.0" />
 	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand=".5" >Methanol CH3OH

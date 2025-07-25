@@ -437,7 +437,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					// If in-situ, adjust the score with MATERIAL_BIAS
 					score += mrate * MATERIAL_BIAS ;
 				} else if (ResourceUtil.isCriticalResource(resource)) {
-					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * vp;
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * 10;
 				} else
 					score += mrate;
 			}
