@@ -3781,17 +3781,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<vehicle-maintenance>
 				<rover>
-                	<location xloc="4.65" yloc=".75" />
-                	<location xloc="0.0" yloc=".75" />
-                	<location xloc="-4.65" yloc=".75" />
+                	<location xloc="4.78" yloc=".78" />
+                	<location xloc="0.0" yloc=".78" />
+                	<location xloc="-4.78" yloc=".78" />
                 </rover>
 				<utility>
-		        	<location xloc="4.6" yloc="-6.25" />
-		        	<location xloc="-4.6" yloc="-6.25" />
+		        	<location xloc="2.45" yloc="-3.95" />
+		        	<location xloc="-2.45" yloc="-3.95" />
 		        </utility>	  
 				<flyer>
-		        	<location xloc="4.5" yloc="-6.25" />
-		        	<location xloc="-4.5" yloc="-6.25" />
+		        	<location xloc="4.6" yloc="-6.8" />
+		        	<location xloc="-4.6" yloc="-6.8" />
 		        </flyer>	                
                 <activity>
 					<activity-spot xloc="5.15" yloc="4.85" />
