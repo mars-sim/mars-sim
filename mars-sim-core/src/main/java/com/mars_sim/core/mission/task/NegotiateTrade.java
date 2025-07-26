@@ -9,7 +9,6 @@ package com.mars_sim.core.mission.task;
 import java.util.Map;
 
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Good;
@@ -22,10 +21,8 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Task to perform a trade negotiation between the buyer and seller for a Trade
@@ -52,36 +49,34 @@ public class NegotiateTrade extends Task {
 
 	// Data members.
 	private Map<Good, Integer> buyLoad;
-	private Settlement sellingSettlement;
-	private Settlement buyingSettlement;
-	private Rover rover;
+	private Vehicle delivery;
 	private Map<Good, Integer> soldLoad;
 	private Worker buyingTrader;
 	private Worker sellingTrader;
+	private boolean inPerson;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param sellingSettlement the selling settlement.
-	 * @param buyingSettlement  the buying settlement.
-	 * @param rover             the rover to transport the goods.
-	 * @param soldLoad          the goods sold.
 	 * @param buyingTrader      the buying trader.
 	 * @param sellingTrader     the selling trader.
+	 * @param inPerson			Do negiotation in person
+	 * @param delivery          the vehicle to transport the goods.
+	 * @param soldLoad          the goods sold.
+
 	 */
-	public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover,
-			Map<Good, Integer> soldLoad, Worker buyingTrader, Worker sellingTrader) {
+	public NegotiateTrade(Worker buyingTrader, Worker sellingTrader, boolean inPerson, Vehicle delivery,
+			Map<Good, Integer> soldLoad) {
 
 		// Use trade constructor.
 		super(NAME, buyingTrader, false, false, STRESS_MODIFIER, SkillType.TRADING, 100D, DURATION);
 
 		// Initialize data members.
-		this.sellingSettlement = sellingSettlement;
-		this.buyingSettlement = buyingSettlement;
-		this.rover = rover;
+		this.delivery = delivery;
 		this.soldLoad = soldLoad;
 		this.buyingTrader = buyingTrader;
 		this.sellingTrader = sellingTrader;
+		this.inPerson = inPerson;
 
 		// Initialize task phase.
 		addPhase(NEGOTIATING);
@@ -97,11 +92,14 @@ public class NegotiateTrade extends Task {
 	private double negotiatingPhase(double time) {
 
 		// Follow selling trader to his/her building if necessary.
-		followSeller();
+		if (inPerson) {
+			followSeller();
+		}
 
 		// If duration, complete trade.
 		if (getDuration() <= (getTimeCompleted() + time)) {
-
+			var sellingSettlement = sellingTrader.getAssociatedSettlement();
+			var buyingSettlement = buyingTrader.getAssociatedSettlement();
 			double tradeModifier = determineTradeModifier();
 			logger.info(person, 
 					"Trade negotiation completed. "
@@ -109,7 +107,7 @@ public class NegotiateTrade extends Task {
 					+ ". Seller: " + sellingSettlement.getName()
 					+ ". Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0);
 
-			buyLoad = CommerceUtil.negotiateDeal(sellingSettlement, buyingSettlement, rover, tradeModifier, soldLoad);
+			buyLoad = CommerceUtil.negotiateDeal(sellingSettlement, buyingSettlement, delivery, tradeModifier, soldLoad);
 
 		}
 
@@ -121,17 +119,9 @@ public class NegotiateTrade extends Task {
 	 * different building.
 	 */
 	private void followSeller() {
-		Building sellerBuilding = null;
-		Building building = null;
+		var sellerBuilding = BuildingManager.getBuilding(sellingTrader);
+		var building = BuildingManager.getBuilding(worker);
 		
-		if (sellingTrader instanceof Person person) {
-			sellerBuilding = BuildingManager.getBuilding(person);
-			building = BuildingManager.getBuilding(person);
-		} else if (sellingTrader instanceof Robot robot) {
-			sellerBuilding = BuildingManager.getBuilding(robot);
-			building = BuildingManager.getBuilding(robot);
-		}
-
 		if ((sellerBuilding != null) && (!sellerBuilding.equals(building))) {
 			// Walk to seller trader's building.
 			walkToEmptyActivitySpotInBuilding(sellerBuilding, false);

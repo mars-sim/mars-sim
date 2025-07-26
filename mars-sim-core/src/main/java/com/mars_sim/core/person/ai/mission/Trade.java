@@ -15,6 +15,7 @@ import java.util.Set;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
+import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
@@ -37,7 +38,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * A mission for trading between two settlements
  */
-public class Trade extends RoverMission  {
+public class Trade extends RoverMission implements CommerceMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -307,9 +308,8 @@ public class Trade extends RoverMission  {
 
 				if (settlementTrader != null) {
 					if (member instanceof Person person) {
-						negotiationTask = new NegotiateTrade(objective.getTradingVenue(),
-															getStartingSettlement(), getRover(),
-															objective.getSell(), person, settlementTrader);
+						negotiationTask = new NegotiateTrade(settlementTrader, person, true, getRover(),
+															objective.getSell());
 						assignTask(person, negotiationTask);
 					}
 				}
@@ -555,7 +555,8 @@ public class Trade extends RoverMission  {
 	 */
 	private Person getMissionTrader() {
 		if (missionTrader == null) {
-			missionTrader = getBestTrader(getMembers(), Collections.emptyList());
+			missionTrader = (Person) getMostSkilled(getMembers(), Collections.emptyList(),
+											SkillType.TRADING, true);
 
 		}
 		return missionTrader;
@@ -567,24 +568,34 @@ public class Trade extends RoverMission  {
 	 * @return the trader.
 	 */
 	private Person getSettlementBuyer() {
-		return getBestTrader(objective.getTradingVenue().getIndoorPeople(), getMembers());
+		return (Person) getMostSkilled(objective.getTradingVenue().getIndoorPeople(), getMembers(),
+										SkillType.TRADING, true);
 	}
 
-	private static Person getBestTrader(Collection<? extends Worker> potentials, Collection<? extends Worker> excluded) {
-		Person bestTrader = null;
-		int bestTradeSkill = -1;
+	/**
+	 * Find the best Worker with a skill
+	 * @param potentials Potential workers.
+	 * @param excluded Exclude these Workers
+	 * @param skill The skill needed
+	 * @param onlyPerson Only consider Peronds
+	 * @return
+	 */
+	static Worker getMostSkilled(Collection<? extends Worker> potentials, Collection<? extends Worker> excluded,
+						SkillType skill, boolean onlyPerson) {
+		Worker bestSkilled = null;
+		int bestSkill = -1;
 
 		for(var w : potentials) {
-			if (!excluded.contains(w) && w instanceof Person p) {
-				int tradeSkill = p.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-				if (tradeSkill > bestTradeSkill) {
-					bestTradeSkill = tradeSkill;
-					bestTrader = p;
+			if (!excluded.contains(w) && (!onlyPerson || (w instanceof Person))) {
+				int tradeSkill = w.getSkillManager().getEffectiveSkillLevel(skill);
+				if (tradeSkill > bestSkill) {
+					bestSkill = tradeSkill;
+					bestSkilled = w;
 				}
 			}
 		}
 
-		return bestTrader;
+		return bestSkilled;
 	}
 
 	/**

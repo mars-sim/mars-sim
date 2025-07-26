@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.goods;
 
-import java.util.Map;
-
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.structure.Settlement;
 
@@ -30,11 +28,4 @@ public interface CommerceMission {
      * Settlement trading with
      */
     Settlement getTradingSettlement();
-
-    Map<Good, Integer> getDesiredBuyLoad();
-
-    Map<Good, Integer> getBuyLoad();
-
-    Map<Good, Integer> getSellLoad();
-
 }
