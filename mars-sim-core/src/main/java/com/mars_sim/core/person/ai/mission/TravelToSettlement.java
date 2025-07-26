@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,19 +27,15 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.comparators.CrewRangeComparator;
 
 /**
  * The TravelToSettlement class is a mission to travel from one settlement to
- * another randomly selected one within range of an available rover. TODO
- * externalize strings
+ * another randomly selected one within range of an available rover. 
  */
 public class TravelToSettlement extends RoverMission {
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
@@ -284,7 +281,7 @@ public class TravelToSettlement extends RoverMission {
 		if (member instanceof Person person) {
 			JobType currentJob = person.getMind().getJob();
 			double currentJobProspect = JobUtil.getJobProspect(person, currentJob, startingSettlement, true);
-			double destinationJobProspect = 0D;
+			double destinationJobProspect;
 
 			if (person.getMind().getJobLock()) {
 				destinationJobProspect = JobUtil.getJobProspect(person, currentJob, destinationSettlement, false);
@@ -371,50 +368,11 @@ public class TravelToSettlement extends RoverMission {
 	}
 
 	/**
-	 * Gets the settlement associated with the mission.
-	 * 
-	 * @return settlement or null if none.
+	 * Get the Vehicle comparator that is based on largest cargo
 	 */
 	@Override
-	public Settlement getAssociatedSettlement() {
-		return destinationSettlement;
-	}
-
-	/**
-	 * Compares the quality of two vehicles for use in this mission. (This method
-	 * should be added to by children)
-	 * 
-	 * @param firstVehicle  the first vehicle to compare
-	 * @param secondVehicle the second vehicle to compare
-	 * @return -1 if the second vehicle is better than the first vehicle, 0 if
-	 *         vehicle are equal in quality, and 1 if the first vehicle is better
-	 *         than the second vehicle.
-	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
-	 * @throws MissionException         if error comparing vehicles.
-	 */
-	@Override
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = super.compareVehicles(firstVehicle, secondVehicle);
-
-		if (result == 0) {
-			// Check if one can hold more crew than the other.
-			if (((Rover) firstVehicle).getCrewCapacity() > ((Rover) secondVehicle).getCrewCapacity()) {
-				result = 1;
-			} else if (((Rover) firstVehicle).getCrewCapacity() < ((Rover) secondVehicle).getCrewCapacity()) {
-				result = -1;
-			}
-
-			// Vehicle with superior range should be ranked higher.
-			if (result == 0) {
-				if (firstVehicle.getEstimatedRange() > secondVehicle.getEstimatedRange()) {
-					result = 1;
-				} else if (firstVehicle.getEstimatedRange() < secondVehicle.getEstimatedRange()) {
-					result = -1;
-				}
-			}
-		}
-
-		return result;
+	protected  Comparator<Vehicle> getVehicleComparator() {
+		return new CrewRangeComparator();
 	}
 
 	@Override

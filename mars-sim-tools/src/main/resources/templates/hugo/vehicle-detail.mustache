@@ -11,16 +11,18 @@
 |Model:|{{vehicle.modelName}}|
 |Base Speed:|{{vehicle.baseSpeed}} kmph|
 |Crew Size:|{{vehicle.crewSize}}|
-|Empty Mass:|{{vehicle.emptymass}} kg|
+|Cargo Capacity:|{{vehicle.totalCapacity}} kg|
+|Empty Mass:|{{vehicle.emptyMass}} kg|
 |Width:|{{vehicle.width}}|
 |Length:|{{vehicle.length}}|
+|Base Range:|{{vehicle.baseRange}} km|
 |Fuel Efficiency:|{{vehicle.drivetrainEfficiency}}|
     {{#vehicle.hasLab}}
 |Lab Tech Level:|{{vehicle.labTechLevel}}|
 |Lab Specialties:|{{vehicle.labTechSpecialties}}|
     {{/vehicle.hasLab}}
     {{#vehicle.hasSickbay}}
-|Sickbay Tech Level:|{{vehicle.sickBayTechLevel}}|
+|Sickbay Tech Level:|{{vehicle.sickbayTechLevel}}|
 |Sickbay Beds:|{{vehicle.sickbayBeds}}|
     {{/vehicle.hasSickbay}}
 |Attachment Slots:|{{vehicle.attachmentSlots}}|
@@ -34,6 +36,8 @@
 {{/vehicle.hasPartAttachments}}
 
 ## Storage Capacity
+
+Total storage: {{vehicle.cargoCapaciity}} 
 
 | Resource      | Amount |
 |--------:|:------|

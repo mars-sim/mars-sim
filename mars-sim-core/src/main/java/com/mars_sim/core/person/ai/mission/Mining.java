@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +41,7 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -359,6 +361,14 @@ public class Mining extends EVAMission
 
 		// Attach light utility vehicle for towing.
 		attachLUV(true);
+	}
+
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
+	@Override
+	protected  Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
 	}
 
 	/**

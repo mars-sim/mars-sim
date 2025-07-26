@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A mission for delivery between two settlements
@@ -389,42 +391,14 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 	}
 
-	@Override
-	
 	/**
-	 * Compares the two given vehicles
-	 * 
-	 * @param firstVehicle
-	 * @param secondVehicle
+	 * Get the Vehicle comparator that is based on largest cargo
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = super.compareVehicles(firstVehicle, secondVehicle);
-
-		if (result == 0) {
-			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getCargoCapacity();
-			double secondCapacity = secondVehicle.getCargoCapacity();
-			if (firstCapacity > secondCapacity) {
-				result = 1;
-			} else if (secondCapacity > firstCapacity) {
-				result = -1;
-			}
-
-			// Vehicle with superior range should be ranked higher.
-			if (result == 0) {
-				double firstRange = firstVehicle.getEstimatedRange();
-				double secondRange = secondVehicle.getEstimatedRange();
-				if (firstRange > secondRange) {
-					result = 1;
-				} else if (firstRange < secondRange) {
-					result = -1;
-				}
-			}
-		}
-
-		return result;
+	@Override
+	protected  Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
 	}
-
+	
 	/**
 	 * Gets the settlement that the starting settlement is trading with.
 	 *

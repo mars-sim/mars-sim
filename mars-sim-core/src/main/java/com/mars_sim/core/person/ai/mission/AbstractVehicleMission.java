@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.mission;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +56,7 @@ import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
 import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.RangeComparator;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
@@ -232,31 +234,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private final boolean reserveVehicle() {
 		Collection<Vehicle> vList = getAvailableVehicles(getStartingSettlement());
-		List<Vehicle> bestVehicles = new ArrayList<>();
-
-		for (Vehicle v : vList) {
-			// CHeck if vehicle is usable
-			if (isUsableVehicle(v)) {
-				// Compare to existing best
-				if (!bestVehicles.isEmpty()) {
-					int comparison = compareVehicles(v, bestVehicles.get(0));
-					if (comparison == 0) {
-						bestVehicles.add(v);
-					} else if (comparison == 1) {
-						bestVehicles.clear();
-						bestVehicles.add(v);
-					}
-				}
-				else
-					bestVehicles.add(v);
-			}
-		}
+		var best = vList.stream()
+			.filter(this::isUsableVehicle)
+			.sorted(getVehicleComparator().reversed())  // Reverse so we find the best one
+			.findFirst().orElse(null);
 
 		boolean result;
-		// Randomly select from the best vehicles.
-		if (!bestVehicles.isEmpty()) {
-			int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
-			setVehicle(bestVehicles.get(bestVehicleIndex));
+		if (best != null) {
+			setVehicle(best);
 			result = true;
 		}
 		else {
@@ -267,7 +252,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		return result;
 	}
-	
+		
+	/**
+	 * Get a comparator of Vehicles for ths mission. The default takes the Vehicle wioth the lognest range
+	 */
+	protected  Comparator<Vehicle> getVehicleComparator() {
+		return new RangeComparator();
+	}
+
 	/**
 	 * Is the vehicle under maintenance and unable to be embarked ?
 	 *
@@ -380,22 +372,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	protected boolean isUsableVehicle(Vehicle vehicle) {
 		return vehicle.isVehicleReady() && vehicle.isEmpty();
-	}
-
-	/**
-	 * Compares the quality of two vehicles for use in this mission. (This method
-	 * should be added to by children)
-	 *
-	 * @param firstVehicle  the first vehicle to compare
-	 * @param secondVehicle the second vehicle to compare
-	 * @return -1 if the second vehicle is better than the first vehicle, 0 if
-	 *         vehicle are equal in quality, and 1 if the first vehicle is better
-	 *         than the second vehicle.
-	 * @throws MissionException if error determining vehicle range.
-	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		// By default all vehicles are equal
-		return 0;
 	}
 
 	/**

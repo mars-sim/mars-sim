@@ -508,7 +508,7 @@ public class VehicleSpec implements Serializable {
 	
 		// Gets the base range [in km] of the vehicle
 		// km = kWh / kN = kWh / kW * m/s = h * m/s = 3600 s * m/s = 3.6 km
-		baseRange = baseEnergyConsumed / baseForce * 3.6;
+		baseRange = Math.round((baseEnergyConsumed / baseForce * 3.6) * 100D)/100D;
 		// Gets the base fuel economy [in km/kg] of this vehicle
 		baseFuelEconomy = baseRange / (.1 + fuelCapacity);
 		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.
