@@ -203,10 +203,12 @@ public class Settlement extends Unit implements Temporal,
 	private int initialNumOfRobots;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
+	/** The factor due to the population. */
+	private double popFactor = 1;
 	/** Numbers of citizens of this settlement. */
-	private int numCitizens;
+	private int numCitizens = 1;
 	/** Numbers of bots owned by this settlement. */
-	private int numOwnedBots;
+	private int numOwnedBots = 1;
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
 	/** The background map image id used by this settlement. */
@@ -1575,6 +1577,10 @@ public class Settlement extends Unit implements Temporal,
 	public int getNumCitizens() {
 		return numCitizens;
 	}
+	
+	public double getPopulationFactor() {
+		return popFactor;
+	}
 
 	/**
 	 * Gets all people associated with this settlement, even if they are out on
@@ -1684,22 +1690,18 @@ public class Settlement extends Unit implements Temporal,
 		if (citizens.contains(p))
 			return true;
 		if (citizens.add(p)) {
-
 			// Set x and y coordinates first prior to adding the person 
-			p.setCoordinates(getCoordinates());
-						
+			p.setCoordinates(getCoordinates());						
 			// Add this person indoor map of the settlement
-			addToIndoor(p);
-			
+			addToIndoor(p);			
 			// Add to a random building
-			BuildingManager.landOnRandomBuilding(p, getAssociatedSettlement());
-			
+			BuildingManager.landOnRandomBuilding(p, getAssociatedSettlement());			
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
-
 			// Update the numCtizens
 			numCitizens = citizens.size();
-
+			// Update the population factor
+			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));		
 			// Update mission limit dependent upon population
 			setMissionLimit(MissionLimitParameters.TOTAL_MISSIONS, 1, 5);
 			setMissionLimit(MissionType.MINING.name(), 0, 8);
@@ -1750,6 +1752,8 @@ public class Settlement extends Unit implements Temporal,
 			removePeopleWithin(p);
 			// Update the numCtizens
 			numCitizens = citizens.size();
+			// Update the population factor
+			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));
 			// Fire unit update
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			
@@ -1781,14 +1785,11 @@ public class Settlement extends Unit implements Temporal,
 	public boolean addOwnedRobot(Robot r) {
 		if (ownedRobots.contains(r))
 			return true;
-		if (ownedRobots.add(r)) {
-			
+		if (ownedRobots.add(r)) {		
 			// Set x and y coordinates first prior to adding the robot 
 			r.setCoordinates(getCoordinates());	
-			
 			// Add the robot to the settlement
 			addRobotsWithin(r);
-			
 			// Update the numOwnedBots
 			numOwnedBots = ownedRobots.size();
 			// Fire unit update

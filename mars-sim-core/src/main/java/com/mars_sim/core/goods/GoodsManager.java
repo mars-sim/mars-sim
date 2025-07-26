@@ -818,7 +818,7 @@ public class GoodsManager implements Serializable {
 		// Note: may need to further limit each increase to avoid an abrupt rise or drop in demand 
 
 		// Warning: make sure stored is not zero so that delta is not infinite
-		double delta = lacking / (1 + stored) * demand - demand;
+		double delta = lacking / stored * demand - demand;
 		
 		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(resourceID);

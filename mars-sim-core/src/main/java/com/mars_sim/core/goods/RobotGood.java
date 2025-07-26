@@ -27,8 +27,6 @@ class RobotGood extends Good {
 	
 	private static final double ROBOT_FLATTENING_FACTOR = 1.1;
 	
-	/** The factor due to the population. */
-	private double popFactor;
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
@@ -148,10 +146,7 @@ class RobotGood extends Good {
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-        popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-        
+
 		double previousDemand = owner.getDemandScore(this);
 
 		double totalDemand = 0;
@@ -210,7 +205,7 @@ class RobotGood extends Good {
 			int comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
 			double makerFactor = .5 * engineer + .25 * tech + .1 * comp;
 			
-			baseDemand += baseDemand / (.2 + makerFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + makerFactor);
 		}
 		
 		else if (robotType == RobotType.REPAIRBOT) {
@@ -218,7 +213,7 @@ class RobotGood extends Good {
 			int engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
 			double repairFactor = .5 * tech + .25 * engineer;
 			
-			baseDemand += baseDemand / (.2 + repairFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + repairFactor);
 		}
 		
 		else if (robotType == RobotType.CONSTRUCTIONBOT) {
@@ -227,19 +222,19 @@ class RobotGood extends Good {
 			int architect = JobUtil.numJobs(JobType.ARCHITECT, settlement);
 			double constructFactor = .5 * architect + .25 * engineer + .15 * comp;
 			
-			baseDemand += baseDemand / (.2 + constructFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + constructFactor);
 		}
 		
 		else if (robotType == RobotType.GARDENBOT) {
 			int botanistFactor = JobUtil.numJobs(JobType.BOTANIST, settlement);
 			
-			baseDemand += baseDemand / (.2 + botanistFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + botanistFactor);
 		}
 		
 		else if (robotType == RobotType.CHEFBOT) {
 			int chiefFactor = JobUtil.numJobs(JobType.CHEF, settlement);
 			
-			baseDemand += baseDemand / (.2 + chiefFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + chiefFactor);
 		}
 		
 		else if (robotType == RobotType.DELIVERYBOT) {
@@ -247,7 +242,7 @@ class RobotGood extends Good {
 			int pilot = JobUtil.numJobs(JobType.PILOT, settlement);
 			double traderFactor = .5 + .75 * trader + .25 * pilot;
 			
-			baseDemand += baseDemand / (.2 + traderFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + traderFactor);
 		}
 		
 		else if (robotType == RobotType.MEDICBOT) {
@@ -255,10 +250,10 @@ class RobotGood extends Good {
 			int psy = JobUtil.numJobs(JobType.PSYCHOLOGIST, settlement);
 			double medicFactor = .5 + .75 * doc + .25 * psy;
 			
-			baseDemand += baseDemand / (.2 + medicFactor) / popFactor;
+			baseDemand += baseDemand / (.2 + medicFactor);
 		}
 		
-		return baseDemand * 10;
+		return baseDemand * settlement.getPopulationFactor();
 	}
 
 		

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentGood.java
- * @date 2024-06-29
+ * @date 2025-07-26
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -53,9 +53,7 @@ public class EquipmentGood extends Good {
 
 	private static final double EVA_SUIT_FLATTENING_FACTOR = 2;
 	private static final double CONTAINER_FLATTENING_FACTOR = .25;
-	
-	/** The factor due to the population. */
-	private double popFactor;
+
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
@@ -232,10 +230,7 @@ public class EquipmentGood extends Good {
 	void refreshSupplyDemandScore(GoodsManager owner) {
 		
 		Settlement settlement = owner.getSettlement();
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-		popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-		
+
 		double previousDemand = owner.getDemandScore(this);
 
 		double totalDemand = 0;
@@ -316,13 +311,13 @@ public class EquipmentGood extends Good {
 			}
 		}
 
-		baseDemand += totalPhaseOverfill * containerCapacity / popFactor * 10;
+		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getPopulationFactor();
 
 		double ratio = computeUsageFactor(settlement);
 
 		switch (equipmentType) {
 			case BAG:
-				return Math.max(baseDemand * ratio *settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
+				return Math.max(baseDemand * ratio * settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
 
 			case LARGE_BAG:
 				return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * LARGE_BAG_DEMAND;

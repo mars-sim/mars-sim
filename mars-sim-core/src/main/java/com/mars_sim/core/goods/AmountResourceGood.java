@@ -186,8 +186,7 @@ class AmountResourceGood extends Good {
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500; 
 	private static final double MAX_MANUFACTURING_DEMAND = 1500;
 	private static final double MAX_FOOD_PRODUCTION_DEMAND = 1500;
-	/** The factor due to the population. */
-	private double popFactor;
+
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
@@ -536,9 +535,6 @@ class AmountResourceGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 
         Settlement settlement = owner.getSettlement();
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-        popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
         
 		double totalDemand = 0;
 		double totalSupply = 0;	
@@ -921,7 +917,7 @@ class AmountResourceGood extends Good {
 			// Determine total demand for cooked meal mass for the settlement.
 			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
 			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			double cookedMealDemand = popFactor * cookedMealDemandOrbit;
+			double cookedMealDemand = settlement.getPopulationFactor() * cookedMealDemandOrbit;
 			var meals = simulationConfig.getMealConfiguration().getDishList();
 			int numMeals = meals.size();
 			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
@@ -1165,7 +1161,7 @@ class AmountResourceGood extends Good {
 				default -> 0D;
 			};
 			
-			return popFactor * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
+			return settlement.getPopulationFactor() * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
 					* LIFE_SUPPORT_FACTOR;
 		}
 		else
@@ -1304,7 +1300,7 @@ class AmountResourceGood extends Good {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRationLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
-			demand = popFactor * amountNeededSol *  WATER_VALUE_MODIFIER 
+			demand = amountNeededSol *  WATER_VALUE_MODIFIER 
 					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);
 		}
 
