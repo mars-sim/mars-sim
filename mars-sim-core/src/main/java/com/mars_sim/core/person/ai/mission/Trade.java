@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
+import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
@@ -33,11 +35,12 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A mission for trading between two settlements
  */
-public class Trade extends RoverMission  {
+public class Trade extends RoverMission implements CommerceMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -307,9 +310,8 @@ public class Trade extends RoverMission  {
 
 				if (settlementTrader != null) {
 					if (member instanceof Person person) {
-						negotiationTask = new NegotiateTrade(objective.getTradingVenue(),
-															getStartingSettlement(), getRover(),
-															objective.getSell(), person, settlementTrader);
+						negotiationTask = new NegotiateTrade(settlementTrader, person, true, getRover(),
+															objective.getSell());
 						assignTask(person, negotiationTask);
 					}
 				}
@@ -522,33 +524,12 @@ public class Trade extends RoverMission  {
 		return objective.addResourcesToLoad(result, outbound);
 	}
 
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
 	@Override
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = super.compareVehicles(firstVehicle, secondVehicle);
-
-		if (result == 0) {
-			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getCargoCapacity();
-			double secondCapacity = secondVehicle.getCargoCapacity();
-			if (firstCapacity > secondCapacity) {
-				result = 1;
-			} else if (secondCapacity > firstCapacity) {
-				result = -1;
-			}
-
-			// Vehicle with superior range should be ranked higher.
-			if (result == 0) {
-				double firstRange = firstVehicle.getEstimatedRange();
-				double secondRange = secondVehicle.getEstimatedRange();
-				if (firstRange > secondRange) {
-					result = 1;
-				} else if (firstRange <secondRange) {
-					result = -1;
-				}
-			}
-		}
-
-		return result;
+	protected  Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
 	}
 
 	/**
@@ -558,7 +539,8 @@ public class Trade extends RoverMission  {
 	 */
 	private Person getMissionTrader() {
 		if (missionTrader == null) {
-			missionTrader = getBestTrader(getMembers(), Collections.emptyList());
+			missionTrader = (Person) getMostSkilled(getMembers(), Collections.emptyList(),
+											SkillType.TRADING, true);
 
 		}
 		return missionTrader;
@@ -570,24 +552,34 @@ public class Trade extends RoverMission  {
 	 * @return the trader.
 	 */
 	private Person getSettlementBuyer() {
-		return getBestTrader(objective.getTradingVenue().getIndoorPeople(), getMembers());
+		return (Person) getMostSkilled(objective.getTradingVenue().getIndoorPeople(), getMembers(),
+										SkillType.TRADING, true);
 	}
 
-	private static Person getBestTrader(Collection<? extends Worker> potentials, Collection<? extends Worker> excluded) {
-		Person bestTrader = null;
-		int bestTradeSkill = -1;
+	/**
+	 * Find the best Worker with a skill
+	 * @param potentials Potential workers.
+	 * @param excluded Exclude these Workers
+	 * @param skill The skill needed
+	 * @param onlyPerson Only consider Peronds
+	 * @return
+	 */
+	static Worker getMostSkilled(Collection<? extends Worker> potentials, Collection<? extends Worker> excluded,
+						SkillType skill, boolean onlyPerson) {
+		Worker bestSkilled = null;
+		int bestSkill = -1;
 
 		for(var w : potentials) {
-			if (!excluded.contains(w) && w instanceof Person p) {
-				int tradeSkill = p.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-				if (tradeSkill > bestTradeSkill) {
-					bestTradeSkill = tradeSkill;
-					bestTrader = p;
+			if (!excluded.contains(w) && (!onlyPerson || (w instanceof Person))) {
+				int tradeSkill = w.getSkillManager().getEffectiveSkillLevel(skill);
+				if (tradeSkill > bestSkill) {
+					bestSkill = tradeSkill;
+					bestSkilled = w;
 				}
 			}
 		}
 
-		return bestTrader;
+		return bestSkilled;
 	}
 
 	/**

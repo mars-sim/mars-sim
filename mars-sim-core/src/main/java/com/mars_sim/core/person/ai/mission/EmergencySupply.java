@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleGarage;
@@ -121,10 +123,8 @@ public class EmergencySupply extends RoverMission {
 				determineNeededEmergencySupplies();
 
 				// Recruit additional members to mission.
-				if (!isDone()) {
-					if (!recruitMembersForMission(startingPerson, MAX_MEMBERS))
-						return;
-				}
+				if (!isDone() && !recruitMembersForMission(startingPerson, MAX_MEMBERS))
+					return;
 			} else {
 				endMission(NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
 				logger.warning("No settlement could be found to deliver emergency supplies to.");
@@ -177,8 +177,7 @@ public class EmergencySupply extends RoverMission {
 				emergencyParts.put(good.getID(), amount);
 				break;
 
-			case EQUIPMENT:
-			case CONTAINER:
+			case EQUIPMENT, CONTAINER:
 				emergencyEquipment.put(good.getID(), amount);
 				break;
 
@@ -472,10 +471,6 @@ public class EmergencySupply extends RoverMission {
 		// If rover is loaded and everyone is aboard, embark from settlement.
 		if (isEveryoneInRover()) {
 			
-			// Put the rover outside.
-			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
-//			BuildingManager.removeFromGarage(v);
-			
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {
 				setPhaseEnded(true);
@@ -624,20 +619,15 @@ public class EmergencySupply extends RoverMission {
 	 */
 	private static boolean hasCurrentEmergencySupplyMission(Settlement settlement) {
 
-		boolean result = false;
-
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof EmergencySupply emergencyMission) {
-				if (settlement.equals(emergencyMission.getEmergencySettlement())) {
-					result = true;
-					break;
-				}
-			}
+			if (mission instanceof EmergencySupply emergencyMission && settlement.equals(emergencyMission.getEmergencySettlement())) {
+				return true;
+			}	
 		}
 
-		return result;
+		return false;
 	}
 
 	/**
@@ -650,7 +640,7 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine containers needed to hold emergency resources.
 		Map<Integer, Integer> containers = getContainersRequired(emergencyResources);
-		emergencyEquipment = new HashMap<>(containers.size());
+		emergencyEquipment = new HashMap<>();
 		Iterator<Integer> i = containers.keySet().iterator();
 		while (i.hasNext()) {
 			Integer container = i.next();
@@ -676,7 +666,7 @@ public class EmergencySupply extends RoverMission {
 		int numPeople = settlement.getNumCitizens();
 
 		// Determine oxygen amount needed.
-		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
+		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;
 		double oxygenAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.OXYGEN_ID);
 
 		oxygenAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.OXYGEN_ID);
@@ -689,7 +679,7 @@ public class EmergencySupply extends RoverMission {
 		}
 
 		// Determine water amount needed.
-		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;// * Mission.WATER_MARGIN;
+		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;
 		double waterAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.WATER_ID);
 
 		waterAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.WATER_ID);
@@ -702,7 +692,7 @@ public class EmergencySupply extends RoverMission {
 		}
 
 		// Determine food amount needed.
-		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;// * Mission.FOOD_MARGIN;
+		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;
 		double foodAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.FOOD_ID);
 
 		foodAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.FOOD_ID);
@@ -865,38 +855,17 @@ public class EmergencySupply extends RoverMission {
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 
-		return new HashMap<>(0);
+		return new HashMap<>();
 	}
 
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
 	@Override
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = super.compareVehicles(firstVehicle, secondVehicle);
-
-		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
-			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getCargoCapacity();
-			double secondCapacity = secondVehicle.getCargoCapacity();
-			if (firstCapacity > secondCapacity) {
-				result = 1;
-			} else if (secondCapacity > firstCapacity) {
-				result = -1;
-			}
-
-			// Vehicle with superior range should be ranked higher.
-			if (result == 0) {
-				double firstRange = firstVehicle.getEstimatedRange();
-				double secondRange = secondVehicle.getEstimatedRange();
-				if (firstRange > secondRange) {
-					result = 1;
-				} else if (firstRange < secondRange) {
-					result = -1;
-				}
-			}
-		}
-
-		return result;
+	protected  Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
 	}
-
+	
 	@Override
 	protected Map<Integer, Number> getRequiredResourcesToLoad() {
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(true);

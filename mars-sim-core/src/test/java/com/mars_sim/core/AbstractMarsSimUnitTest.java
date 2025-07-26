@@ -37,6 +37,10 @@ import junit.framework.TestCase;
 public abstract class AbstractMarsSimUnitTest extends TestCase
 			implements MarsSimContext {
 
+	protected static final String EXPLORER_ROVER = "explorer rover";
+	protected static final String TRANSPORT_ROVER = "transport rover";
+	protected static final String CARGO_ROVER = "cargo rover";
+
 	protected static final double BUILDING_LENGTH = 9D;
 	protected static final double BUILDING_WIDTH = 9D;
 
@@ -93,8 +97,11 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
+		return buildRover(settlement, name, parked, EXPLORER_ROVER);
+	}
 
-	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec("explorer rover"),
+	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked, String spec) {
+	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec(spec),
 								settlement);
 		if (parked != null) {			
 			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor

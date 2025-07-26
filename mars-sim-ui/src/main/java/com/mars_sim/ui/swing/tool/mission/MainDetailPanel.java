@@ -56,7 +56,6 @@ import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
-import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.person.ai.mission.EmergencySupply;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -332,13 +331,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		JPanel emptyCustomPanel = new JPanel();
 		missionCustomPane.add(emptyCustomPanel, EMPTY);
 		customInfoPanels = new HashMap<>();
-
-		// Create custom delivery mission panel.
-		MissionCustomInfoPanel deliveryPanel = new DeliveryMissionCustomInfoPanel();
-		String deliveryMissionName = Delivery.class.getName();
-		customInfoPanels.put(deliveryMissionName, deliveryPanel);
-		missionCustomPane.add(deliveryPanel, deliveryMissionName);
-
 
 		// Create custom construction mission panel.
 		MissionCustomInfoPanel constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);

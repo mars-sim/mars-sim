@@ -177,7 +177,7 @@ public abstract class OperateVehicle extends Task {
 		
         int now = getMarsTime().getMillisolInt();
         
-        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.MID, now, getDuration(), NAME);
+        this.compute = new ComputingJob(worker.getAssociatedSettlement(), ComputingLoadType.MID, now, getDuration(), NAME);
 
         compute.pickMultipleNodes(0, now);
         
