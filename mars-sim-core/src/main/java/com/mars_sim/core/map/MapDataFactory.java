@@ -117,8 +117,8 @@ import com.mars_sim.core.map.megdr.MEGDRFactory;
 					+ "'. Color: " + mapMetaData.isColourful());
 			return mapData;
 
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Could not find the map file.", e);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Unable to instantiate IntegerMapData: ", e);
 			return null;
 		}		
  	}

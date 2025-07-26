@@ -517,7 +517,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					centerCoords = new Coordinates(HALF_PI, 0);
 				}
 				if (rho == 0D) {
-					// Should never happen but it can buy it does on the MissionWindow
+					// It happens at the start of the sim.
 					if (marsMap == null) {
 						return;
 	 				}
@@ -592,6 +592,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
         		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
+	                		// Note: how to stop continuously callng CannedMarsMap.getMapImage() below ?
+//	                		logger.config("Calling getMapImage()");
 	                		var mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
 	                		if (mapImage != null) {
 	                			g2d.drawImage(mapImage, 0, 0, this);  
@@ -604,7 +606,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                	hotspots = new ArrayList<>();
 
 						// Display the layers and record any hotspots
-	                	for(var i : mapLayers) {
+	                	for (var i : mapLayers) {
 	                		hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d, size));
 						}
               		

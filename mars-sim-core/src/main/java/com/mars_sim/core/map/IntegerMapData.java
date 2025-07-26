@@ -222,7 +222,8 @@ import com.mars_sim.core.map.location.Coordinates;
  	}
  	
 	/**
-	 * Parse the byte data from a colour image into a color array
+	 * Parses the byte data from a colour image into a color array.
+	 * 
 	 * @param pixels Source mono byte values
 	 * @return
 	 */
@@ -258,7 +259,8 @@ import com.mars_sim.core.map.location.Coordinates;
 	}
 
 	/**
-	 * Parse image data of an image with an Alpha channel into a set ofcolour pixels
+	 * Parses image data of an image with an Alpha channel into a set of colour pixels.
+	 * 
 	 * @param pixels
 	 * @return
 	 */
@@ -312,7 +314,8 @@ import com.mars_sim.core.map.location.Coordinates;
 	}
 
 	/**
-	 * Convert monochromomatic shared image into coloured pixels
+	 * Converts monochromomatic shared image into coloured pixels.
+	 * 
 	 * @param cylindricalMapImage
 	 * @return
 	 */
@@ -361,18 +364,27 @@ import com.mars_sim.core.map.location.Coordinates;
 			try {
 				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
 				rendered = true;
+//				logger.config("GPU OpenCL map rendering successful.");
 			} catch(Exception e) {
 				hardwareAccel = false;
 				rendered = false; // Fallback to CPU
-				logger.log(Level.SEVERE, "Exception with GPU OpenCL accel when running gpu(). " + e.getMessage());
+				logger.log(Level.SEVERE, "Exception with GPU OpenCL accel map rendering: " + e.getMessage());
 			}
 		}
+		
 		if (!rendered) {
-			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
+			try {
+				cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
+//				logger.config("CPU map rendering successful.");
+			} catch(Exception e) {
+				rendered = false;
+				logger.log(Level.SEVERE, "Exception with CPU map rendering: " + e.getMessage());
+			}
 		}
 
 	 	// Gets the color pixels ready for the new projected map image in Mars Navigator.
-	 	setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
+		if (!rendered)
+			setRGB(bImage, 0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 	 	
  		return bImage;
  	}
@@ -797,7 +809,7 @@ import com.mars_sim.core.map.location.Coordinates;
  	}
  	
 	/**
-	 * Has the data loaded
+	 * Gets the status if the data has been loaded ?
 	 */
 	@Override
 	public MapState getStatus() {

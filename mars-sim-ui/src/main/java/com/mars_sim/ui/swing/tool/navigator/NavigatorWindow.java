@@ -317,19 +317,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 		buttonPane.setBorder(StyleManager.createLabelBorder("Graphics"));
-
 		controlPane.add(buttonPane, BorderLayout.SOUTH);
 
-		// Prepare options button.
-		JButton mapButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //-NLS-1$
-		mapButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //-NLS-1$
-		mapButton.addActionListener(e -> {
-					var s = (Component)e.getSource();
-					createMapOptionsMenu().show(s, s.getWidth(), s.getHeight());
-			}
-		);		
-		buttonPane.add(mapButton);
-	
 		// Prepare gpu button
 		gpuButton = new FlatToggleButton(); 
 		gpuButton.setPreferredSize(new Dimension(80, 25));
@@ -340,6 +329,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		updateGPUButton();
 		gpuButton.addActionListener(e -> updateGPUButton());
 		buttonPane.add(gpuButton);
+		
+		// Prepare options button.
+		JButton mapButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //-NLS-1$
+		mapButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //-NLS-1$
+		mapButton.addActionListener(e -> {
+					var s = (Component)e.getSource();
+					createMapOptionsMenu().show(s, s.getWidth(), s.getHeight());
+			}
+		);		
+		buttonPane.add(mapButton);
+		
 		return controlPane;
 	}
 
@@ -414,6 +414,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		else {
 			gpuButton.setEnabled(false);
 			gpuButton.setText("No GPU");
+			logger.config("GPU not available for rendering maps.");
 		}
 	}
 	
@@ -655,6 +656,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * Update layers according to Map type.
 	 */
 	private void updateMapControls() {
+		// Update GPU Button
+		updateGPUButton();
+		
 		// Update dependent panels
 		MapMetaData metaType = mapPanel.getMapMetaData();
 		

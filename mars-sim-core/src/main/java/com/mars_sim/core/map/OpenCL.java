@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * OpenCL.java
+ * @date 2025-07-26
+ * @author xxx
+ */
 package com.mars_sim.core.map;
 
 import com.jogamp.opencl.CLCommandQueue;
@@ -32,7 +38,8 @@ public class OpenCL {
   }
 
   /**
-   * Initialise compute
+   * Initialises compute.
+   * 
    * @return Is OpenCL supported
    */
   public static boolean initCompute() {
@@ -54,8 +61,9 @@ public class OpenCL {
   }
 
   /**
-   * Retrieve a built program of the name provided using getSystemResourceAsStream
-   * If the program was already loaded/built - load that instead
+   * Retrieves a built program of the name provided using getSystemResourceAsStream
+   * If the program was already loaded/built - load that instead.
+   * 
    * @param name the resource name
    * @return the requested cl program, built
    * @see ClassLoader#getSystemResourceAsStream(String)
@@ -73,8 +81,9 @@ public class OpenCL {
   }
 
   /**
-   * Retrieve a requested Kernel within a program, these are built and kept in memory until
+   * Retrieves a requested Kernel within a program, these are built and kept in memory until
    * destroy() is called.
+   * 
    * @param program the program the kernel is attached to
    * @param kernelName the name of the kernel within the program
    * @return the requested CLKernel (rewound to 0)
@@ -89,7 +98,10 @@ public class OpenCL {
 
   /**
    * This is currently not required, but may be in the future as a fallback to catch
-   * Runtime Errors
+   * Runtime Errors.
+   * 
+   * @param program
+   * @param kernelName
    */
   public static void removeKernel(CLProgram program, String kernelName) {
     throw new UnsupportedOperationException();
@@ -97,7 +109,9 @@ public class OpenCL {
 
   /**
    * This is currently not required, but may be in the future as a fallback to catch
-   * Runtime Errors
+   * Runtime Errors.
+   * 
+   * @param programName
    */
   public static void removeProgram(String programName) {
     throw new UnsupportedOperationException();
@@ -124,6 +138,8 @@ public class OpenCL {
   }
 
   /**
+   * Gets the context.
+   * 
    * @return The current device in use.
    * @see CLContext
    */
@@ -132,6 +148,8 @@ public class OpenCL {
   }
 
   /**
+   * Gets the device.
+   * 
    * @return The current device in use.
    * @see CLDevice
    */
@@ -140,6 +158,8 @@ public class OpenCL {
   }
 
   /**
+   * Gets the queue.
+   * 
    * @return The current queue in use.
    * @see CLCommandQueue
    */
@@ -148,7 +168,7 @@ public class OpenCL {
   }
 
   /**
-   * Clear, release and prepare for closure.
+   * Clears, releases and prepares for closure.
    * This must be called before the program shutdown to properly flush
    * the GPU and cached contexts.
    */
