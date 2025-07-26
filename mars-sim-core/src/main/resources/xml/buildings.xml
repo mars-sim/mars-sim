@@ -983,6 +983,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.5" yloc="2" />
 					<activity-spot xloc="1.5" yloc="1" />
 					<activity-spot xloc="1.5" yloc="0" />
+					
 					<activity-spot xloc="1.5" yloc="-1" />
 					<activity-spot xloc="1.5" yloc="-2" />
 					<activity-spot xloc="1.5" yloc="-3" />
@@ -990,6 +991,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.5" yloc="3" />
 					<activity-spot xloc="-1.5" yloc="2" />
 					<activity-spot xloc="-1.5" yloc="1" />
+					
 					<activity-spot xloc="-1.5" yloc="0" />
 					<activity-spot xloc="-1.5" yloc="-1" />
 					<activity-spot xloc="-1.5" yloc="-2" />
@@ -1011,7 +1013,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0" yloc="3" />
 					<activity-spot xloc="0" yloc="2" />
 					<activity-spot xloc="0" yloc="1" />
+					
 					<activity-spot xloc="0" yloc="0" />
+					
 					<activity-spot xloc="0" yloc="-1" />
 					<activity-spot xloc="0" yloc="-2" />
 					<activity-spot xloc="0" yloc="-3" />
@@ -1031,14 +1035,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="8"/>
 				<activity>
-					<activity-spot xloc="-1.47" yloc="3.68" />
+					<activity-spot xloc="-1.6" yloc="3.6" />
 				</activity>
 			</resource-processing>
 
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="2.2" yloc="3.8" />
-					<activity-spot xloc="-2.2" yloc="3.8" />
+					<activity-spot xloc="2.2" yloc="4.0" />
+					<activity-spot xloc="-2.2" yloc="4.0" />
 				</activity>
 			</robotic-station>
 
@@ -1943,19 +1947,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="18" power-required="0.9" />
 			<living-accommodation capacity="11" guesthouse="true">
 				<activity>
-					<activity-spot xloc="2.2" yloc="3.2" />
-					<activity-spot xloc="2.2" yloc="1.8" />
-					<activity-spot xloc="2.2" yloc=".4" />
-					<activity-spot xloc="2.2" yloc="-.6" />
-					<activity-spot xloc="2.2" yloc="-2.0" />			
-					<activity-spot xloc="2.2" yloc="-3.4" />
+					<activity-spot xloc="2.2" yloc="3.15" />
+					<activity-spot xloc="2.2" yloc="1.7" />
+					<activity-spot xloc="2.2" yloc="0.38" />
+					<activity-spot xloc="2.2" yloc="-0.2" />
+					<activity-spot xloc="2.2" yloc="-1.95" />			
+					<activity-spot xloc="2.2" yloc="-3.35" />
 					
-					<activity-spot xloc="-2.2" yloc="3.2" />
-					<activity-spot xloc="-2.2" yloc="1.8" />
-					<activity-spot xloc="-2.2" yloc=".4" />
-					<activity-spot xloc="-2.2" yloc="-.6" />
-					<activity-spot xloc="-2.2" yloc="-2.0" />
-					<activity-spot xloc="-2.2" yloc="-3.4" />
+					<activity-spot xloc="-2.2" yloc="3.15" />
+					<activity-spot xloc="-2.2" yloc="1.7" />
+					<activity-spot xloc="-2.2" yloc="0.38" />
+					<activity-spot xloc="-2.2" yloc="-0.2" />
+					<activity-spot xloc="-2.2" yloc="-1.95" />
+					<activity-spot xloc="-2.2" yloc="-3.35" />
 				</activity>
 			</living-accommodation>
 			<power-generation>
@@ -3369,15 +3373,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="6" power-required="3" />
 			<manufacture tech-level="4" concurrent-processes="8">
 				<activity>
-					<activity-spot xloc="2.16" yloc="1.45" />
-					<activity-spot xloc="0.8" yloc="3.0" />
+					<activity-spot xloc="2.25" yloc="1.45" />
+					<activity-spot xloc="0.0" yloc="3.0" />
 					<activity-spot xloc="-2.7" yloc="1.0" />
 					<activity-spot xloc="-3.0" yloc="-1.0" />
 
 					<activity-spot xloc="-1.3" yloc="-2.1" />
 					<activity-spot xloc=".85" yloc="-2.0" />
-					<activity-spot xloc="2.1" yloc="0.0" />
-					<activity-spot xloc="-1.35" yloc="3.0" />
+					<activity-spot xloc="2.35" yloc="0.0" />
+					<activity-spot xloc="-1.35" yloc="3.2" />
 				</activity>
 				<tooling name="furnace" number="3"/>
 				<tooling name="lifting" number="1"/>

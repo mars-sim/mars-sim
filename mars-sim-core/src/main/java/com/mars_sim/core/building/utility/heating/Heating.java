@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.building.function.ClassicAirlock;
@@ -76,6 +77,10 @@ public class Heating implements Serializable {
 
 	private static final double HEAT_GAIN_PER_CHEF = .15; // [in kW]
 
+	private static final double HALLWAY_PROXIMITY = .95;
+	
+	private static final double BUILDING_PROXIMITY = .85;
+		
 	// MSOL_LIMIT = 1.5;
 	// kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
 	// R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
@@ -226,11 +231,13 @@ public class Heating implements Serializable {
 	 */
 	private double devTCache;
 	/**
-	 * The conversion factor regarding the mass of the air moisture within this
-	 * building.
+	 * The factor due to the proximity of adjacent building's wall. 
+	 * It lowers the structural loss of heat of the building.
+	 * e.g. having a building on each of the four side of the wall should 
+	 * somewhat lower the loss of heat
 	 */
-//	private double convFactorAirMoisture;
-
+	private double proximityBarrierScore = 1.0;
+	
 	private Coordinates location;
 
 	private Building building;
@@ -313,6 +320,24 @@ public class Heating implements Serializable {
 			heatGainEquipment = 0.117;
 			break;
 		}
+
+	}
+	
+	
+	/**
+	 * Initializes the heating parameters.
+	 */
+	public void initializeParams() {
+		
+		adjacentBuildings = new ArrayList<>(building.getSettlement().getAdjacentBuildings(building));
+		
+		for (Building b: adjacentBuildings) {
+			if (b.getCategory() == BuildingCategory.CONNECTION)
+				proximityBarrierScore = proximityBarrierScore * HALLWAY_PROXIMITY;
+			else
+				proximityBarrierScore = proximityBarrierScore * BUILDING_PROXIMITY;
+		}
+		
 		// transmittance or SHGC range from 0 (completely blocking solar radiation) to
 		// 1 (completely transmitting solar radiation).
 
@@ -332,13 +357,13 @@ public class Heating implements Serializable {
 			transmittance = TRANSMITTANCE_WINDOW;
 		}
 
-		uValueAreaWall = uValue * 2D * (width + length) * HEIGHT;
+		uValueAreaWall = uValue * 2D * (width + length) * HEIGHT * proximityBarrierScore;
 
 		uValueAreaCeilingFloor = uValue * floorArea;
 		// assuming airChangePerHr = .5 and q_H = 21.4;
-		uValueAreaCrackLength = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (4 * (.5 + .5));
+		uValueAreaCrackLength = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (4 * (.5 + .5)) * proximityBarrierScore;
 		// assuming four windows
-		uValueAreaCrackLengthAirlock = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (2 * (2 + 6) + 4 * (.5 + .5));
+		uValueAreaCrackLengthAirlock = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (2 * (2 + 6) + 4 * (.5 + .5)) * proximityBarrierScore;
 		// assuming two EVA airlock
 
 		tPreset = building.getPresetTemperature();
@@ -1266,6 +1291,9 @@ public class Heating implements Serializable {
 	 */
 	private void cycleThermalControl(double millisols) {
 
+		if (adjacentBuildings == null)
+			initializeParams();
+		
 		double oldT = getCurrentTemperature();
 
 		// Reset the error flag
@@ -1662,8 +1690,6 @@ public class Heating implements Serializable {
 		if (!tooLow && !tooHigh) {
 			return 0;
 		}
-
-		adjacentBuildings = new ArrayList<>(building.getSettlement().getAdjacentBuildings(building));
 
 		int size = adjacentBuildings.size();
 
