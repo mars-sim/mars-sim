@@ -798,6 +798,7 @@ public class GoodsManager implements Serializable {
 		int optimalPerPop = limits.max();
 		int pop = settlement.getNumCitizens();
 		
+		double limit = optimalPerPop * pop;
 		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen
@@ -805,23 +806,19 @@ public class GoodsManager implements Serializable {
 
 		double stored = settlement.getSpecificAmountResourceStored(resourceID);
 	
-		if (stored >= optimalPerPop * pop) {
+		if (stored > limit) {
 			// Thus no need of demand adjustment
 			return 0;
 		}
 
-		lacking = (optimalPerPop - reservePerPop) * pop - stored;
+		stored = MathUtils.between(stored, 1, limit);
 		
-		if (lacking < 0)
-			lacking = 0;
-				
-		if (lacking > optimalPerPop)
-			lacking = optimalPerPop;
+		lacking = MathUtils.between((optimalPerPop - reservePerPop) * pop - stored, 0, optimalPerPop);
 
 		// Note: may need to further limit each increase to avoid an abrupt rise or drop in demand 
 
 		// Warning: make sure stored is not zero so that delta is not infinite
-		double delta = lacking / (1 + Math.max(1, stored)) * demand - demand;
+		double delta = lacking / (1 + stored) * demand - demand;
 		
 		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(resourceID);

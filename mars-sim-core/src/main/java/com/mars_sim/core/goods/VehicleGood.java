@@ -51,7 +51,9 @@ class VehicleGood extends Good {
 
     private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsTime.convertSecondsToMillisols(1D) * 1000D;
 	private static final double VEHICLE_FLATTENING_FACTOR = 2;
-
+	
+	/** The factor due to the population. */
+	private double popFactor;
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
@@ -208,8 +210,13 @@ class VehicleGood extends Good {
     void refreshSupplyDemandScore(GoodsManager owner) {
 		
 		double previousDemand = owner.getDemandScore(this);
+		
         Settlement settlement = owner.getSettlement();
 
+		// Note: The population should only minimally impact the demand value
+		// pop should never be linearly proportional to demand
+		popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
+		
 		// Calculate total supply
 		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
 		
@@ -368,12 +375,8 @@ class VehicleGood extends Good {
 			supply--;
 		if (supply < 0D)
 			supply = 0D;
-
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 		
-		return demand / Math.log(supply + 2) * DRONE_FACTOR * popFactor;
+		return demand / Math.log(supply + 2) * DRONE_FACTOR / popFactor * 10;
 	}
 
 	/**
@@ -401,12 +404,8 @@ class VehicleGood extends Good {
 			supply--;
 		if (supply < 0D)
 			supply = 0D;
-
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-		
-		return demand / Math.log(supply + 2) * LUV_FACTOR * popFactor;
+	
+		return demand / Math.log(supply + 2) * LUV_FACTOR / popFactor * 10;
 	}
 
 	/**

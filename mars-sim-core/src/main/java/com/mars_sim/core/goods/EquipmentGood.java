@@ -53,7 +53,9 @@ public class EquipmentGood extends Good {
 
 	private static final double EVA_SUIT_FLATTENING_FACTOR = 2;
 	private static final double CONTAINER_FLATTENING_FACTOR = .25;
-
+	
+	/** The factor due to the population. */
+	private double popFactor;
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
@@ -228,7 +230,12 @@ public class EquipmentGood extends Good {
 
 	@Override
 	void refreshSupplyDemandScore(GoodsManager owner) {
+		
 		Settlement settlement = owner.getSettlement();
+		// Note: The population should only minimally impact the demand value
+		// pop should never be linearly proportional to demand
+		popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
+		
 		double previousDemand = owner.getDemandScore(this);
 
 		double totalDemand = 0;
@@ -280,10 +287,6 @@ public class EquipmentGood extends Good {
 	 */
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
-
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
 		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
@@ -313,7 +316,7 @@ public class EquipmentGood extends Good {
 			}
 		}
 
-		baseDemand += totalPhaseOverfill * containerCapacity;
+		baseDemand += totalPhaseOverfill * containerCapacity / popFactor * 10;
 
 		double ratio = computeUsageFactor(settlement);
 
@@ -331,13 +334,13 @@ public class EquipmentGood extends Good {
 				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
 
 			case GAS_CANISTER:
-				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * popFactor * GAS_CANISTER_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * GAS_CANISTER_DEMAND;
 
 			case THERMAL_BOTTLE:
-				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * popFactor * THERMAL_BOTTLE_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000)  * THERMAL_BOTTLE_DEMAND;
 
 			case WHEELBARROW:
-				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * popFactor * WHEELBARROW_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * WHEELBARROW_DEMAND;
 							
 			default:
 				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType + ".");
