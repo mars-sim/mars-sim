@@ -392,7 +392,15 @@ public class UnitManager implements Serializable, Temporal {
 			int size = (int)(lookupSettlement.size()/2D);
 			int num = Math.min(size, SimulationRuntime.NUM_CORES - simulationConfig.getUnusedCores());
 			if (num <= 0) num = 1;
-			logger.config("Setting up " + num + " thread(s) for running the settlement update.");
+			
+			for (Settlement s: getSettlements()) {
+				logger.config(s + " possesses " + s.getNumCitizens() 
+					+ " citizens, " + s.getOwnedVehicleNum() + " vehicles, " 
+					+ s.getBuildingManager().getNumBuildings() + " buildings, and "
+					+ s.getEquipmentSet().size() + " pieces of equipment.");
+			}
+			
+			logger.config("Setting up a total of " + num + " thread(s) for updating " + size + " settlement(s). ");
 			executor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("unitmanager-thread-%d").build());
 		}
@@ -409,7 +417,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Adds a Settlement to the managed list and activate it for time pulses.
+	 * Adds a settlement to the managed set and activate it for time pulses.
 	 *
 	 * @param s
 	 */
@@ -419,9 +427,8 @@ public class UnitManager implements Serializable, Temporal {
 						+ s.getName());
 		}
 
-		logger.config("Setting up a settlement task thread for " + s + ".");
-		SettlementTask st = new SettlementTask(s);
-		settlementTasks.add(st);
+		logger.config("Activating the settlement task pulse for " + s + ".");
+		settlementTasks.add(new SettlementTask(s));
 	}
 
 	/**
@@ -469,7 +476,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-			logger.severe("Problem running the pulse : ", ee);
+			logger.severe("Problem running the settlement task pulses : ", ee);
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting

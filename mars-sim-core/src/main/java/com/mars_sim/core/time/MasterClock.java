@@ -142,10 +142,11 @@ public class MasterClock implements Serializable {
 	
 	/** The Martian Clock. */
 	private MarsTime marsTime;
-	/** A copy of the initial martian clock at the start of the sim. */
+	/** A copy of the initial Martian clock at the start of the sim. */
 	private MarsTime initialMarsTime;
 	/** The Earth Clock. */
 	private LocalDateTime earthTime;
+	/** The starting Earth time. */	
 	private LocalDateTime initialEarthTime;
 	/** The Uptime Timer. */
 	private UpTimer uptimer;
@@ -155,16 +156,16 @@ public class MasterClock implements Serializable {
 	/**
 	 * Constructor. 
 	 *
-	 * @param config The configuratino that cotnrols default clock settings
+	 * @param config The configuration that controls default clock settings
 	 * @param userTimeRatio the time ratio defined by user
 	 * @throws Exception if clock could not be constructed.
 	 */
 	public MasterClock(SimulationConfig config, int userTimeRatio) {
 	
-		// Create a martian clock
+		// Create a Martian clock
 		marsTime = MarsTimeFormat.fromDateString(config.getMarsStartDateTime());
 
-		// Save a copy of the initial mars time
+		// Save a copy of the initial Mars time
 		initialMarsTime = marsTime;
 
 		// Create an Earth clock
@@ -514,7 +515,8 @@ public class MasterClock implements Serializable {
 				realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL 
 						/ desiredTR);
 			}
-			// Note: Catch the zero realElapsedMillisec below. Probably due to simulation pause
+			// At the start of the sim, realElapsedMillisec is also zero
+			// Note: find out when the zero realElapsedMillisec will also occur. Probably due to simulation pause ?!
 			else if (realElapsedMillisec == 0.0) {
 				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
@@ -524,7 +526,7 @@ public class MasterClock implements Serializable {
 				if (nextPulseTime > 0)
 					realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.config(10_000, "Elapsed real time is zero. Resetting it back to " + realElapsedMillisec + " ms.");
+				logger.config(10_000, "Elapsed real time is zero. (Re)setting it back to " + realElapsedMillisec + " ms.");
 			}
 			
 			else {
