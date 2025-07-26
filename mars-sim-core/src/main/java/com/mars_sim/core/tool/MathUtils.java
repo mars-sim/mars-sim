@@ -116,7 +116,7 @@ public class MathUtils {
 			value = low;
 		}
 
-		if (value > high) {
+		else if (value > high) {
 			value = high;
 		}
 		return value;

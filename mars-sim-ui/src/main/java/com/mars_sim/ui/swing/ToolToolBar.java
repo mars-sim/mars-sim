@@ -145,29 +145,26 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
 		
+		addSeparator(new Dimension(20, 20));
+
 		// Everything after this is on the right hand side
 		add(Box.createHorizontalGlue()); 
 
-		addSeparator(new Dimension(20, 20));
-
+		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		add(timePanel);
+		
 		earthDate = createTextLabel("Greenwich Mean Time (GMT) for Earth");
-		add(earthDate);
+		timePanel.add(earthDate);
 			
-		addSeparator();
-		
 		missionSol = createTextLabel("Simulation Sol Count");
-		add(missionSol);
-		
-		addSeparator();
+		timePanel.add(missionSol);
 		
 		marsTime = createTextLabel("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
-		add(marsTime);
+		timePanel.add(marsTime);
 		
-		addSeparator();
-
 		calendarPane = setupCalendarPanel(masterClock.getMarsTime());		
 		addToolButton(MARSCAL, "Mars Calendar", "schedule");
-
+		
 		addSeparator(new Dimension(20, 20));
 	}
     

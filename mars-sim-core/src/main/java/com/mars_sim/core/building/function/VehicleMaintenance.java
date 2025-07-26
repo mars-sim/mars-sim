@@ -46,9 +46,13 @@ public abstract class VehicleMaintenance extends Function {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMaintenance.class.getName());
 
-	protected List<RoverLocation> roverLocations;
-	protected List<UtilityVehicleLocation> luvLocations;
-	protected List<FlyerLocation> flyerLocations;
+	private static final String FULL = " already full.";
+	private static final String GARAGED = "Already garaged in ";
+	private static final String ADDED = "Added to ";
+	
+	private List<RoverLocation> roverLocations;
+	private List<UtilityVehicleLocation> luvLocations;
+	private List<FlyerLocation> flyerLocations;
 	
 	private Collection<Rover> rovers;
 	private Collection<LightUtilityVehicle> luvs;
@@ -165,13 +169,13 @@ public abstract class VehicleMaintenance extends Function {
 		// Check if vehicle cannot be added to building.
 		if (rovers.contains(rover)) {
 			logger.log(rover, Level.INFO, 1000, 
-				"Already garaged in " + building + ".");
+				GARAGED + building + ".");
 			 return false;
 		}
 		
 		if (rovers.size() >= roverLocations.size()) {
 			logger.log(rover, Level.INFO, 1000,
-				building + " already full.");
+				building + FULL);
 			return false;
 		}
 		
@@ -194,7 +198,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				rover.setParkedLocation(newLoc, newFacing);
 		
-				logger.fine(rover, "Added to " + building.getName() 
+				logger.fine(rover, ADDED + building.getName() 
 					+ " in " + building.getSettlement() + ".");
 
 				return true;
@@ -217,13 +221,13 @@ public abstract class VehicleMaintenance extends Function {
 		// Check if vehicle cannot be added to building.
 		if (luvs.contains(luv)) {
 			logger.log(luv, Level.INFO, 1000, 
-				"Already garaged in " + building + ".");
+				GARAGED + building + ".");
 			 return false;
 		}
 		
 		if (luvs.size() >= luvLocations.size()) {
 			logger.log(luv, Level.INFO, 1000,
-				building + " already full.");
+				building + FULL);
 			return false;
 		}
 		
@@ -246,7 +250,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				luv.setParkedLocation(newLoc, newFacing);
 		
-				logger.fine(luv, "Added to " + building.getName() 
+				logger.fine(luv, ADDED + building.getName() 
 					+ " in " + building.getSettlement() + ".");
 	
 				return true;
@@ -274,7 +278,7 @@ public abstract class VehicleMaintenance extends Function {
 		
 		if (flyers.size() >= flyerLocations.size()) {
 			logger.log(flyer, Level.INFO, 1000,
-				building + " already full.");
+				building + FULL);
 			return false;
 		}
 
@@ -296,7 +300,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				flyer.setParkedFlyerLocation(newLoc, newFacing);
 		
-				logger.fine(flyer, "Added to " + building.getName() 
+				logger.fine(flyer, ADDED + building.getName() 
 					+ " in " + building.getSettlement() + ".");
 				
 				return true;

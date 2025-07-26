@@ -26,7 +26,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A subtask for walking between two interior locations in a settlement. (Ex:

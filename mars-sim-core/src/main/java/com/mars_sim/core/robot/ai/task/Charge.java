@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Charge.java
- * @date 2023-12-04
+ * @date 2025-07-25
  * @author Barry Evans
  */
 package com.mars_sim.core.robot.ai.task;
@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.logging.SimLogger;
@@ -91,9 +92,6 @@ public class Charge extends Task {
 			
 			isWirelessCharge = true;
 			
-//			logger.info(robot, 60_000L, "Switching to wireless charging in "
-//					+ robot.getBuildingLocation() + ".");
-			
 			setDescription(WIRELESS_CHARGING);
 		}
 		
@@ -158,8 +156,7 @@ public class Charge extends Task {
 			
 			double threshold = sc.getRecommendedThreshold();
 			double lowPower = sc.getLowPowerModePercent();
-//			double timeLeft = getTimeLeft();
-			
+		
 			if (batteryLevel >= LEVEL_UPPER_LIMIT) {
 				endCharging();
 				
@@ -316,10 +313,6 @@ public class Charge extends Task {
 		// be doing other tasks while consuming energy
 		robot.getSystemCondition().setCharging(false);
 
-//		if (robot.getStation() != null) {
-//			robot.getStation().removeRobot(robot);
-//		}
-		
 		walkToAssignedDutyLocation(robot, true);
 		
 		super.clearDown();
@@ -344,7 +337,9 @@ public class Charge extends Task {
 		// Check if robot's current building may offer a spot
 		Building currentBldg = robot.getBuildingLocation();
 		
-		if (currentBldg != null && currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
+		if (currentBldg != null 
+				&& currentBldg.getCategory() != BuildingCategory.EVA
+				&& currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
 			
 			roboticStation = currentBldg.getRoboticStation();
 			
@@ -363,6 +358,7 @@ public class Charge extends Task {
 					.getBuildings(FunctionType.ROBOTIC_STATION)
 					.stream()
 					.filter(b -> b.getZone() == robot.getBuildingLocation().getZone()
+							&& b.getCategory() != BuildingCategory.EVA
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		

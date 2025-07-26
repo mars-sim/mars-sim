@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1-MS" default-population="120" description="Sector base 1 for Mars Society"
+        name="Sector Base 1" default-population="120" description="Sector base 1 for Mars Society"
 		number-of-robots="84" sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
@@ -597,8 +597,7 @@
         </connection-list>
     </building>
         
-        
-    
+
      <!-- Row 9 : 905 to 999 -->
   
      <building id="904n5" type="Half Core B" xloc="-30.0" yloc="58.5" facing="0.0">
@@ -628,9 +627,7 @@
             <connection id="906" hatch-facing="west" />
         </connection-list>
     </building>
-        
-       
-              
+  
         
    <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
@@ -649,13 +646,13 @@
 	<building-package name="MD1 Set 1 - 1x2"/>
 	<building-package name="MD4 Set 1 - 1x1"/>   	        
       
-    <vehicle type="Explorer Rover" number="3" />
-    <vehicle type="Long Range Explorer" number="2" />
+    <vehicle type="Explorer Rover" number="4" />
+    <vehicle type="Long Range Explorer" number="4" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="6" />
-    <vehicle type="Delivery Drone" number="3" />
-    <vehicle type="Cargo Drone" number="3" />
+    <vehicle type="Light Utility Vehicle" number="8" />
+    <vehicle type="Delivery Drone" number="4" />
+    <vehicle type="Cargo Drone" number="4" />
      
     <!-- Robots -->
     <robot name="Huey Pro" type="GardenBot" model="Advanced"/>
@@ -679,12 +676,11 @@
 	<bin type="pot" number="40" />
 		
 	<!-- Life Support Resources -->
-	<resource type="food" amount="8000" />
-	<resource type="water" amount="9600" />
-	<resource type="oxygen" amount="9600" />
+	<resource type="food" amount="12000" />
+	<resource type="water" amount="14400" />
+	<resource type="oxygen" amount="12000" />
 
-    <part type="biosensor" number="1" />
-    <part-package name="tech" number="1" />
+    <part-package name="tech" number="2" />
     <part-package name="package 4" number="5" />
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->

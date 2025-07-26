@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleGood.java
- * @date 2024-06-29
+ * @date 2025-07-26
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -24,6 +24,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleSpec;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -208,8 +209,9 @@ class VehicleGood extends Good {
     void refreshSupplyDemandScore(GoodsManager owner) {
 		
 		double previousDemand = owner.getDemandScore(this);
+		
         Settlement settlement = owner.getSettlement();
-
+		
 		// Calculate total supply
 		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
 		
@@ -358,22 +360,18 @@ class VehicleGood extends Good {
 		double demand = 1D;
 
 		// Add demand for construction missions by architects.
-		demand += Math.min(7, JobUtil.numJobs(JobType.PILOT, settlement) * 1.1);
+		demand += MathUtils.between(JobUtil.numJobs(JobType.PILOT, settlement) * 1.1, 1, 100);
 
 		// Add demand for mining missions by engineers.
-		demand += Math.min(8, JobUtil.numJobs(JobType.TRADER, settlement) * 1.2);
+		demand += MathUtils.between(JobUtil.numJobs(JobType.TRADER, settlement) * 1.2, 1, 100);
 
 		double supply = getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
-		if (supply < 0D)
-			supply = 0D;
-
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
+		if (supply < 1)
+			supply = 1;
 		
-		return demand / Math.log(supply + 2) * DRONE_FACTOR * popFactor;
+		return settlement.getPopulationFactor() / demand / supply * DRONE_FACTOR;
 	}
 
 	/**
@@ -388,25 +386,21 @@ class VehicleGood extends Good {
 		double demand = 1;
 
 		// Add demand for mining missions by areologists.
-		demand += Math.min(10, JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3);
+		demand +=  MathUtils.between(JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3, 1, 100);
 
 		// Add demand for construction missions by architects.
-		demand += Math.min(8, JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2);
+		demand +=  MathUtils.between(JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2, 1, 100);
 
 		// Add demand for mining missions by engineers.
-		demand += Math.min(6, JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1);
+		demand +=  MathUtils.between(JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1, 1, 100);
 
 		double supply = getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
-		if (supply < 0D)
-			supply = 0D;
-
-		// Note: The population should only minimally impact the demand value
-		// pop should never be linearly proportional to demand
-		double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-		
-		return demand / Math.log(supply + 2) * LUV_FACTOR * popFactor;
+		if (supply < 1)
+			supply = 1;
+	
+		return settlement.getPopulationFactor() / demand / supply * LUV_FACTOR;
 	}
 
 	/**
@@ -459,38 +453,39 @@ class VehicleGood extends Good {
 	 */
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
 		// TODO should come from MissionMeta classes
+		
+		double demand = settlement.getPopulationFactor();
+		
 		switch(missionType) {
 		case CONSTRUCTION, SALVAGE:
-				return JobUtil.numJobs(JobType.ARCHITECT, settlement);
+			demand /= 1 + JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
 		case TRAVEL_TO_SETTLEMENT, RESCUE_SALVAGE_VEHICLE:
-			return JobUtil.numJobs(JobType.PILOT, settlement)
-					* ((double) settlement.getNumCitizens() 
-					/ (double) settlement.getPopulationCapacity());
+			demand /= 1 + JobUtil.numJobs(JobType.PILOT, settlement);
 
 		case COLLECT_ICE:
-			return Math.min(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 100);
+			demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 1, 100);
 		
 		case TRADE, DELIVERY:
-			return JobUtil.numJobs(JobType.TRADER, settlement);
+			demand /= 1 + JobUtil.numJobs(JobType.TRADER, settlement);
 		
 		case COLLECT_REGOLITH:
-			return Math.min(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 100);
+			demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 1, 100);
 		
 		case MINING, AREOLOGY, EXPLORATION:
-			return JobUtil.numJobs(JobType.AREOLOGIST, settlement);
+			demand /= 1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement);
 		
 		case BIOLOGY:
-			return JobUtil.numJobs(JobType.BIOLOGIST, settlement);
+			demand /= 1 + JobUtil.numJobs(JobType.BIOLOGIST, settlement);
 		
 		case METEOROLOGY:
-			return JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
+			demand /= 1 + JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
 		
 		case EMERGENCY_SUPPLY:
-            return 1D; // Simplify code as a temp measure
+			; // Simplify code as a temp measure
 		}
 
-		return 0;
+		return demand;
 	}
 
 	/**

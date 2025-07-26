@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
@@ -299,7 +298,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			// End the phase.
 
 			// If the drone is in a garage, put the drone outside.
-			BuildingManager.removeFromGarage(drone);
+//			BuildingManager.removeFromGarage(drone);
 			// Release the drone
 			releaseVehicle(drone);
 			
@@ -318,7 +317,9 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		
 		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(drone)) {
 			result = assignTask(person, new UnloadVehicleGarage(person, drone));
-		} else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
+		} 
+		
+		else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
 			result = assignTask(person, new UnloadVehicleEVA(person, drone));
 		}
 

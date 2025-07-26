@@ -18,14 +18,12 @@
    - [Mars Direct Mission Plan](#mars-direct-mission-plan) 
    - [Settlement Development](#settlement-development)
    - [Economics](#economics)
-   - [Sponsors](#sponsors)   
+   - [Authorities](#authorities)   
 - [Operation Modeling](#operation-modeling)
    - [Timekeeping](#timekeeping)
    - [Indoor Atmosphere](#indoor-atmosphere)
    - [EVA](#eva)
    - [Radiation](#radiation)
-   - [Job](#job)
-   - [Role](#role)
    - [Task](#task)
    - [Work Shift](#work-shift)
    - [Mission](#mission)
@@ -69,49 +67,46 @@ chemistry, biology, economics, psychology, and social science) as possible to si
 and behaviors of people, social structures, physical and mechanical systems, and environments in the 
 context of developing human settlements on Mars.
 
-mars-sim models each settler as an intelligent agent possessing varying degrees of autonomy and mobility.
-It simulates how a conscious agent, given a capacity to learn from past experiences, may 
-cooperate with others under a prescribed set of circumstances and make weighted decisions as he interacts 
-with one another to produce unexpected results in an open world.
-
-In particular, a settler would be assigned with a job, a role, having technical
-[skills](https://github.com/mars-sim/mars-sim/wiki/Skills), [personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural
+Each settler is modeled as an intelligent agent possessing a high degree of autonomy and mobility.
+As a conscious agent given a capacity to learn from past experiences, each settler would be assigned 
+with a [job](https://github.com/mars-sim/mars-sim/wiki/Jobs), a [role](https://github.com/mars-sim/mars-sim/wiki/Role), 
+having technical[skills](https://github.com/mars-sim/mars-sim/wiki/Skills), 
+[personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural
 [attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and preferences of tasks.
 Given their [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) with one another, 
 they live, dream, explore, and settle down on Mars.
 
 ## Mars Direct Mission Plan 
 
-mars-sim loosely follows the *Mars Direct Mission Plan* (by Robert Zubrin) and has crafted 7 basic
-settlement templates. In general, a 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* base.
-An 8-settler base follows a *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
-is designated as *Alpha Base*, whereas a 36-settler base is called *Hub Base*. Besides, players may 
-build a *Trading Outpost* or a *Mining Depot* near sites with high mineral concentrations. 
+mars-sim loosely follows the *Mars Direct Mission Plan* (by Robert Zubrin) and has 8 basic
+settlement templates to choose from. The first template is a *Mars Direct Plan (MDP) Phase 1* base
+with 4 settlers. The next template is a *MDP Phase 2* base with 8 settlers. Then a *MDP Phase 3* base
+has 12 settlers. An *Alpha Base* has 24 settlers. A *Hub Base* has 36 settlers. A *Sector Base* has
+120 settlers. Besides, players may build a *Trading Outpost* or a *Mining Depot* 
+near sites with high mineral concentrations. 
 
 Each country of origin and sponsor has unique template that house various types of buildings. 
-Altogether, there is a total of 30 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+Altogether, there is a total of 32 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
 to choose from.
 
 ## Settlement Development
 
-The selection of a landing site is determined by a variety of factors. 
 The goals in mars-sim include populating Mars with human settlements, outposts, weather station, 
-communication towers, and, in future, road/train network.
+communication towers, and, in future, road/train network. First, a sponsor decides the 
+location of a landing site and provides initial guidance over the development of its settlements. 
+Eventually, each settlement will evolve and develop its own laws and governance and its 
+previously stated mission agendas and [objectives](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
 
-The key to achieve this is developing a network of viable and self-sustainable settlements. 
-Initially, the sponsor would guide the development of her settlements. Eventually, each settlement
-will evolve and develop her own laws and governance, going beyond its former [command structure](https://github.com/mars-sim/mars-sim/wiki/Role), 
-and it previously defined mission agenda and [objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
 
 ## Economics
 
 In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim 
-implements the **Value Point (VP)** system, which keeps track of the supply and demand on each 
+implements the **Good Value** system, which keeps track of the supply and demand on each 
 good and resource. As there is no standard currency established on Mars yet, settlers barter 
-trades with neighboring settlements by keeping track of the credits and deficit based on the 
+trades and do deliveries with neighboring settlements by keeping track of the credits and deficit based on the 
 VPs of the exchange of resources in a Trading mission or Delivery mission.
 
-## Sponsors
+## Authorities
 
 In mars-sim, we witness an incredible undertaking in that 33 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
 from Earth are participating in this dream of making Mars as the second home for humanity. 
@@ -167,7 +162,7 @@ and design specifications. In comparison, Apollo Lunar Module (LM) atmosphere of
 (4.8 psi). The National Aeronautics and Space Administration (NASA)'s Shuttle airlock has an oxygen 
 concentration of 30% at 70.3 kPa (10.2 psi). NASA's Extravehicular Mobility Units (EMU) has the 
 operating pressure of 29.6 kPa (4.3 psi). The upcoming Artemis program's lunar lander will have an atmosphere 
-of 342% oxygen at a pressure of 56.5 kPa (8.2 psi).
+of 34.2% oxygen at a pressure of 56.5 kPa (8.2 psi).
 
 > [!NOTE]
 > See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki for more design details.
@@ -222,17 +217,6 @@ closely monitored in 3 specific exposure interval, namely, the 30-day, the annua
 and the career lifetime of a settler. It would affect 3 different regions of our body, 
 namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose 
 limits are measured in *milli-Severt*.
-
-## Job
-
-Each settler is initially assigned a meaningful [job](https://github.com/mars-sim/mars-sim/wiki/Jobs) 
-that fit one's attributes and career profile. Player may also designate the job of 
-a predefined settler in the crew xml file.
-
-## Role
-
-Each settlement has a command structure that brings each settler a [role](https://github.com/mars-sim/mars-sim/wiki/Role) 
-to play. 
 
 ## Task
 
@@ -291,23 +275,23 @@ Region of Interests (ROIs) for both scientific investigations and resource extra
 In the second decade, if the human aspiration to become multi-planetary remains unwavering, 
 we must fully engage the following four major areas : 
 
-(1) Risk
+(1) Risk: 
 How will we as a society perceive success and failure in the human exploration of the planet Mars ? 
 Does a spiral engineering development approach for Mars exploration reduce the program risk ?
 How do we analyze and reduce risk in maturing hardware and software responsible for 
 exploring Mars ? What is the likelihood that it would increase or decrease the success 
 and failure in the human exploration of Mars ? 
 
-(2) Collaboration
+(2) Collaboration: 
 What kind of partnership and alliances between governmental entities and corporations should 
 be established in the next phase of the exploration of Mars ? 
 
-(3) Cost
+(3) Cost: 
 How do we contain the expense of developing flight proven hardware and software for Mars mission ?
 What kind of public support would be needed to continue exploration missions ? How will the mission
 planners pay off the capital and mission costs in the long run ? 
 
-(4) Sustainment
+(4) Sustainment: 
 What effort does it take to make the construction of long-term, sustainable settlements possible ? 
 How do we make humans more adaptable to Mars so that it may one day become the second home for humanity ? 
 

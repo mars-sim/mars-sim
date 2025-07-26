@@ -227,7 +227,7 @@
 	
 
 
-	<process name="Oxygen Generation System (OGS)" power-required="0.25" defaultOn="true">
+	<process name="Oxygen Generation System (OGS)" power-required="2.5" defaultOn="true">
 	<description> 
 	
 		Oxygen Generation System can split water into H2 and O2.
@@ -276,10 +276,10 @@
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 		
 	</description> 
-		<input resource="water" rate="180" />
-		
-		<output resource="hydrogen" rate="20" />
-		<output resource="oxygen" rate="160"  />
+		<input resource="water" rate="360" />
+		<!-- it needs 2.5 kW -->
+		<output resource="hydrogen" rate="40" />
+		<output resource="oxygen" rate="320"  />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
 	<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.1" defaultOn="true">
@@ -359,7 +359,7 @@
 	</process> <!-- "Methanol Synthesis" -->
 
 
-	<process name="Melt Ice" power-required="0.3125" >
+	<process name="Melt Ice" power-required="1.25" >
 		<description> Melting permafrost ice and filtering the water. 
 			Specific heat capacity of ice is 2.09 J/g/C			
 			e.g. For 1 mol of ice, from -25 C to 0 C
@@ -389,12 +389,12 @@
 			2. Exposing ice sunlight is the most economic way of melting ice.
 			3. Ice melts when outside temperature is above zero deg Celsius  
 		</description>
-		<input resource="ice" rate="100.0"  />
+		<input resource="ice" rate="400.0"  />
 		
-		<output resource="brine water" rate="85.0"  />
-		<output resource="regolith" rate="10.0"  />
+		<output resource="brine water" rate="340.0"  />
+		<output resource="regolith" rate="40.0"  />
 		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-		<output resource="rock salt" rate="5.0"  />
+		<output resource="rock salt" rate="20.0"  />
 	</process>
 
 

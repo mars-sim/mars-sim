@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @date 2024-06-08
+ * @date 2025-07-23
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
@@ -32,6 +32,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -130,7 +131,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 	private static final double RATE_FACTOR = 10;
 	private static final double INPUT_BIAS = 0.9;
-	private static final double MATERIAL_BIAS = 3;
+	private static final double MATERIAL_BIAS = 5;
 	
 
     public ToggleResourceProcessMeta() {
@@ -246,11 +247,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			}
 			else {
 				// Compute the input score
-				double inputValue = computeResourcesValue(settlement, process, true) * 10;
-
+				double inputValue = MathUtils.between(computeResourcesValue(settlement, process, true), 0.03, 300);
+				
 				// Compute the output score		
-				double outputValue = computeResourcesValue(settlement, process, false) * 10;
-
+				double outputValue = MathUtils.between(computeResourcesValue(settlement, process, false), 0.035, 350);
+						
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 									outputValue - inputValue, true);
 				score = new RatingScore("outputs", outputValue);
@@ -364,7 +365,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Multiply by bias so as to favor/discourage the production of output resources
 
 				// Calculate the modified mass rate
-				double mrate = rate * vp * INPUT_BIAS;
+				// Note: divided by (supply + 0.001) make sense in two scenarios : 
+				// (1) when input has large supply and output has zero supply
+				// (2) when input has zero supply and output has large supply
+				
+				double mrate = rate * vp * vp * INPUT_BIAS / (supply/100.0 + 0.001) ;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -375,11 +380,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// e.g. For CO2, limit the score
 					score += mrate;
-				} else if (isInSitu(resource) || isRawMaterial(resource)) {
-					// If in-situ, reduce the input score 
-					score += mrate / MATERIAL_BIAS * Math.max(60, supply);
+				} else if (isInSitu(resource)) {
+					// If in-situ, increase the score 
+					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS;
+				} else if (isRawMaterial(resource)) {
+					// If in-situ, adjust the score with MATERIAL_BIAS
+					score += mrate / MATERIAL_BIAS;
 				} else {
-					score += mrate * supply;
+					score += mrate;
 				}
 			}
 
@@ -401,7 +409,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				// Calculate the modified mass rate
-				double mrate = rate * vp;
+				// Note: divided by (supply + 0.001) make sense in two scenarios : 
+				// (1) when input has large supply and output has zero supply
+				// (2) when input has zero supply and output has large supply
+
+				double mrate = rate * vp * vp / (supply/100.0 + 0.001);
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
@@ -409,11 +421,16 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 					score += mrate;
-				} else if (isInSitu(resource) || isRawMaterial(resource)) {
-					// If in-situ, increase the output score 
-					score += mrate * supply * MATERIAL_BIAS;
+				} else if (isRawMaterial(resource)) {
+					// If in-situ, adjust the score with MATERIAL_BIAS
+					score += mrate * MATERIAL_BIAS ;
+				} else if (isInSitu(resource)) {
+					// If in-situ, increase the score 
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;	
+				} else if (ResourceUtil.isCriticalResource(resource)) {
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * 10;
 				} else
-					score += mrate * supply;
+					score += mrate;
 			}
 		}
 

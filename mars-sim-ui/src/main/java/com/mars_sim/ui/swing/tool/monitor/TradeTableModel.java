@@ -11,13 +11,13 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.goods.MarketManager;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -78,8 +78,8 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}
 
-	/** The unit manager instance. */
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	/** The market manager instance. */
+	private static MarketManager marketManager = Simulation.instance().getMarketManager();
 	
 	/**
 	 * Constructor 2.
@@ -157,7 +157,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandScore(selectedGood);
 			case MARKET_DEMAND_COL:
-				return unitManager.getInterMarketDemand(selectedGood); // selectedSettlement.getGoodsManager().getMarketData(selectedGood).getDemand();
+				return marketManager.getGlobalMarketDemand(selectedGood); // selectedSettlement.getGoodsManager().getMarketData(selectedGood).getDemand();
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyScore(selectedGood);
 			case QUANTITY_COL:
@@ -167,7 +167,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			case VALUE_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
 			case MARKET_VALUE_COL:
-				return unitManager.getInterMarketGoodValue(selectedGood); // selectedSettlement.getGoodsManager().getMarketData(selectedGood).getValue();
+				return marketManager.getGlobalMarketGoodValue(selectedGood); // selectedSettlement.getGoodsManager().getMarketData(selectedGood).getValue();
 			case COST_COL:
 				return selectedGood.getCostOutput();
 			case MARKET_COST_COL:

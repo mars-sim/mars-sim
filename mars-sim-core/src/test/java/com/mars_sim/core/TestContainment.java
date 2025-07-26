@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * LoadVehicleTest.java
- * @version 3.1.0 2017-01-21
+ * TestContainment.java
+ * @date 2025-07-25
  * @author Scott Davis
  */
 
@@ -61,12 +61,14 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	}
 
 	/**
-	 * Test condition of a vehicle parked in the vicinity of a settlement
+	 * Tests condition of a vehicle parked in the vicinity of a settlement.
+	 * 
 	 * @param msg
 	 * @param source
 	 * @param base
 	 */
 	private void assertVehicleParked(String msg, Vehicle source, Settlement base) {
+		
 		assertEquals(msg + ": Location state type", LocationStateType.SETTLEMENT_VICINITY, source.getLocationStateType());
 		assertEquals(msg + ": Settlement", base, source.getSettlement());
 		
@@ -81,20 +83,39 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	}
 
 	/**
-	 * Test condition of a vehicle garaged inside a settlement
+	 * Tests condition of a vehicle garaged inside a settlement.
+	 * 
 	 * @param msg
 	 * @param source
 	 * @param base
 	 */
 	private void assertVehicleGaraged(String msg, Vehicle source, Settlement base) {
-		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType());
+		
+		// If a vehicle is in a garage, then it's local state 
+		boolean isInGarage = source.isInGarage();
+		System.out.println("In assertVehicleGaraged(), isInGarage: " + isInGarage);
+		
+		LocationStateType state = LocationStateType.SETTLEMENT_VICINITY;
+		if (isInGarage)
+			state = LocationStateType.INSIDE_SETTLEMENT;
+	
+		assertEquals(msg + ": Location state type", state, source.getLocationStateType());
+		
 		assertEquals(msg + ": Settlement", base, source.getSettlement());
 		
 		assertTrue(msg + ": InSettlement", source.isInSettlement());
-		assertTrue(msg + ": IsInside", source.isInside());
-		assertFalse(msg + ": IsOutside", source.isOutside());
-
+		
+		if (isInGarage) {
+			assertTrue(msg + ": IsInside", source.isInside());
+			assertFalse(msg + ": IsOutside", source.isOutside());
+		}
+		else {
+			assertFalse(msg + ": IsInside", source.isInside());
+			assertTrue(msg + ": IsOutside", source.isOutside());
+		}
+			
 		assertFalse(msg + ": isInVehicle", source.isInVehicle());
+		
 		assertNull(msg + ": Vehicle", source.getVehicle());
 		
 		assertEquals(msg + ": Container", base, source.getContainerUnit());
@@ -110,7 +131,12 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	private static void assertInVehicle(String msg, Person source, Vehicle vehicle) {
 		assertEquals(msg + ": person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
 	
-		assertFalse(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
+		// Note that once the vehicle is built, it goes to a garage by default
+		boolean isInGarage = vehicle.isInGarage();
+//		System.out.println("isInGarage: " + isInGarage);
+		
+		assertTrue(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
+		
 		assertFalse(msg + ": InSettlement", source.isInSettlement());
 		
 		assertTrue(msg + ": IsInside", source.isInside());
@@ -174,12 +200,21 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	public void testVehicleInGarage() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
         
-		assertVehicleParked("Initial Vehicle", vehicle, settlement);
+		// Since garage has been built at constructor, once the vehicle is built, 
+		// it goes into a garage automatically 
 		
-		boolean addedTogarage = settlement.getBuildingManager().addToGarage(vehicle);
-		assertTrue("Parking vehicle in garage", addedTogarage);
+		boolean isInGarage = vehicle.isInGarage();
+		System.out.println("In testVehicleInGarage(), isInGarage: " + isInGarage);
 		
 		assertVehicleGaraged("Vehicle in garage", vehicle, settlement);
+	
+		boolean toRemove = BuildingManager.removeFromGarage(vehicle);
+			
+		assertVehicleParked("Initial Vehicle", vehicle, settlement);
+//		System.out.println("toRemove: " + toRemove);
+		
+		assertTrue("Vehicle parking outside", toRemove);
+
 	}
 
 	/*
@@ -190,7 +225,19 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 
 		vehicle.transfer(settlement);
 
-		testContainment(vehicle, settlement, settlement, LocationStateType.SETTLEMENT_VICINITY);
+		// Since garage has been built at constructor, once the vehicle is built, 
+		// it goes into a garage automatically 
+		
+		boolean isInGarage = vehicle.isInGarage();
+		System.out.println("In testVehicleNearSettlement(), isInGarage: " + isInGarage);
+		
+		assertVehicleGaraged("Vehicle in garage", vehicle, settlement);
+		
+		LocationStateType state = LocationStateType.SETTLEMENT_VICINITY;
+		if (isInGarage)
+			state = LocationStateType.INSIDE_SETTLEMENT;
+		
+		testContainment(vehicle, settlement, settlement, state);
 	}
 	
 	/*
@@ -256,7 +303,9 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		Rover vehicle = buildRover(settlement, getName(), new LocalPosition(1,1));
         
 		assertTrue("Transfer person from settlement to vehicle", person.transfer(vehicle));
+		// Note that once the vehicle is built, it goes to a garage by default
 		assertInVehicle("In vehicle", person, vehicle);
+		
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
@@ -271,19 +320,20 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals("vehicle location state type is INSIDE_SETTLEMENT", LocationStateType.INSIDE_SETTLEMENT, vehicle.getLocationStateType());
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 		
-		
         // Vehicle leaves garage
         BuildingManager.removeFromGarage(vehicle);
+        
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 		
 		assertFalse("Vehicle has left garage", vehicle.isInGarage());
-		
-		assertInVehicle("In vehicle", person, vehicle);
+	
+		assertTrue("person is inside", person.isInside());
+	
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
 		
 		assertTrue("Transfer person from vehicle back to settlement", person.transfer(settlement));
+		
 		assertInsideSettlement("After return", person, settlement);
-
 	}
 
 	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocal.java
- * @date 2023-09-07
+ * @date 2025-07-25
  * @author Scott Davis
  */
 
@@ -68,7 +68,7 @@ public abstract class DigLocal extends EVAOperation {
 
 	private double compositeRate;
 
-	private double factor;
+	private double fatigueFactor;
 	/** The amount of resource that can be collected by this person per trip [in kg]. */
 	private double collectionLimit;
 	
@@ -168,8 +168,12 @@ public abstract class DigLocal extends EVAOperation {
         int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
         int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-
-        factor = .9 * (1 - (agility + strength) / 200D);
+        int endurance = nManager.getAttribute(NaturalAttributeType.ENDURANCE);
+        
+        // Increase the duration of this task based upon one's endurance
+        setDuration(getDuration() * (1 + endurance/100/2));
+        
+        fatigueFactor = .5 * (1 - (agility + strength + endurance) / 300D);
 		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
 	}
 
@@ -348,7 +352,7 @@ public abstract class DigLocal extends EVAOperation {
         double skillMod = 1.0 + person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);		
         		
         // Add penalty to the fatigue
-        condition.increaseFatigue(time * factor * (1.1D - strengthMod)/skillMod);
+        condition.increaseFatigue(time * fatigueFactor * (1.1D - strengthMod)/skillMod);
 
         // Account for hormone regulation, musculosketetal impact and record exercise time
         condition.workout(time);

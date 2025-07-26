@@ -34,7 +34,7 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
                         .toList();
         assertFalse("No Group Activities", events.isEmpty());
 
-        // Find my added avtivity
+        // Find my added activity
         var matched = events.stream()
                     .filter(g -> (ga.equals(g.getHandler())))
                     .toList();
@@ -114,7 +114,7 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         assertGreaterThan("Friend better score than enemy", eScore.getScore(), fScore.getScore());
         
         // Check instigator has a very high score
-        assertGreaterThan("Insitigator score", 900D, iScore.getScore());
+        assertGreaterThan("Instigator score", 900D, iScore.getScore());
 
     }
 }

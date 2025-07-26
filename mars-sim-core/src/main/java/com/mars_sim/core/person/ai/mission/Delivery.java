@@ -323,14 +323,12 @@ public class Delivery extends DroneMission implements CommerceMission {
 		// If person is not aboard the drone, board drone.
 		if (!isDone()) {
 
-			if (member instanceof Person pilot) {
-				if (pilot.isDeclaredDead()) {
-					logger.info(pilot, "No longer alive. Switching to another pilot.");
-					// Pick another member to head the delivery
-					var newP = Trade.getMostSkilled(getMembers(), Collections.emptyList(), SkillType.PILOTING, false);
-					setStartingMember(newP);
-				}
-			}
+			if (member instanceof Person pilot && pilot.isDeclaredDead()) {
+				logger.info(pilot, "No longer alive. Switching to another pilot.");
+				// Pick another member to head the delivery
+				var newP = Trade.getMostSkilled(getMembers(), Collections.emptyList(), SkillType.PILOTING, false);
+				setStartingMember(newP);
+			}		
 
 			Vehicle v = getVehicle();
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AmountResourceGood.java
- * @date 2024-06-29
+ * @date 2025-07-26
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -160,8 +160,8 @@ class AmountResourceGood extends Good {
 	private static final double TISSUE_FLATTENING_FACTOR = 4;
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
-	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 1.1;
+	private static final double METHANE_FLATTENING_FACTOR = 1.3;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.85;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
@@ -174,7 +174,7 @@ class AmountResourceGood extends Good {
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
 	
-	private static final double WATER_FLATTENING_FACTOR = 0.5;
+	private static final double WATER_FLATTENING_FACTOR = 1.2;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.05;
 	
@@ -193,6 +193,7 @@ class AmountResourceGood extends Good {
 	private double projectedDemand;
 	/** The trade demand of each refresh cycle. */
 	private double tradeDemand;
+	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
 	
 	private double costModifier = -1;
@@ -534,7 +535,7 @@ class AmountResourceGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 
         Settlement settlement = owner.getSettlement();
-
+        
 		double totalDemand = 0;
 		double totalSupply = 0;	
 
@@ -916,10 +917,7 @@ class AmountResourceGood extends Good {
 			// Determine total demand for cooked meal mass for the settlement.
 			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
 			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			// Note: The population should only minimally impact the demand value
-			// pop should never be linearly proportional to demand
-			double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-			double cookedMealDemand = popFactor * cookedMealDemandOrbit;
+			double cookedMealDemand = settlement.getPopulationFactor() * cookedMealDemandOrbit;
 			var meals = simulationConfig.getMealConfiguration().getDishList();
 			int numMeals = meals.size();
 			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
@@ -1153,10 +1151,6 @@ class AmountResourceGood extends Good {
 	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
 		int resourceID = resource.getID();
 		if (resource.isLifeSupport()) {
-			// Note: The population should only minimally impact the demand value
-			// pop should never be linearly proportional to demand
-			double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-
 			double amountNeededSol = switch(resourceID) {
 				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
 				case ResourceUtil.WATER_ID -> personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
@@ -1167,7 +1161,7 @@ class AmountResourceGood extends Good {
 				default -> 0D;
 			};
 			
-			return popFactor * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
+			return settlement.getPopulationFactor() * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
 					* LIFE_SUPPORT_FACTOR;
 		}
 		else
@@ -1306,10 +1300,7 @@ class AmountResourceGood extends Good {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRationLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
-			// Note: The population should only minimally impact the demand value
-			// pop should never be linearly proportional to demand
-			double popFactor = Math.log(Math.sqrt(settlement.getNumCitizens())) * 5;
-			demand = popFactor * amountNeededSol *  WATER_VALUE_MODIFIER 
+			demand = amountNeededSol *  WATER_VALUE_MODIFIER 
 					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);
 		}
 
@@ -1381,7 +1372,8 @@ class AmountResourceGood extends Good {
 		if (getID() == ResourceUtil.TOILET_TISSUE_ID) {
 			double amountNeededSol = LivingAccommodation.TOILET_WASTE_PERSON_SOL;
 			int numPeople = settlement.getIndoorPeopleCount();
-			return numPeople * amountNeededSol;
+			int pop = settlement.getNumCitizens(); 
+			return numPeople * amountNeededSol / pop * 20;
 		}
 
 		return 0;
@@ -1395,27 +1387,30 @@ class AmountResourceGood extends Good {
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR;
+		int pop = settlement.getNumCitizens();
 
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {
 				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 					double fuelDemand = v.getSpecificCapacity(getID());
-					demand += fuelDemand * transFactor * METHANOL_VALUE_MODIFIER;
+					demand += fuelDemand;
 				}
+				demand = demand * transFactor * METHANOL_VALUE_MODIFIER * 10 / pop;
 			} break;
 		
 			case ResourceUtil.METHANE_ID: {
 				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 					double fuelDemand = v.getSpecificCapacity(getID());
-					demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER / 5;
+					demand += fuelDemand;
 				}
+				demand = demand * transFactor * METHANE_VALUE_MODIFIER * 2 / pop;
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
-				demand +=  transFactor * HYDROGEN_VALUE_MODIFIER / 10;
+				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / 10;
 			} break;
 		}
 
-		return demand / 5;
+		return demand;
 	}
 }

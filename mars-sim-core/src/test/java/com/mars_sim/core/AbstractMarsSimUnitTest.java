@@ -103,13 +103,15 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked, String spec) {
 	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec(spec),
 								settlement);
-		if (parked != null) {
+		if (parked != null) {			
+			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
 	    	rover1.setParkedLocation(parked, 0D);
 		}
 	    unitManager.addUnit(rover1);
+	    
 	    return rover1;
 	}
-
+	
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);

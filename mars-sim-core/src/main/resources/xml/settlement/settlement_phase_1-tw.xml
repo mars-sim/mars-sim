@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Phase 0-ISRA" default-population="2" description="Phase 0 base for ISRA"
-		number-of-robots="4" sponsor="ISRA">
+        name="Phase 1-TW" default-population="4" description="Phase 1 base for Taiwan"
+		number-of-robots="4" sponsor="TASA">
 
     <!-- Lander habitat building is the main habitation in the Mars Direct
         mission plan. -->
@@ -13,6 +13,7 @@
             <!-- X & Y locations are relative to this building, not in the settlement
                 locale. -->
             <connection id="1" xloc="4.5" yloc="0.0" />
+            <connection id="2" xloc="-4.5" yloc="0.0" />
         </connection-list>
     </building>
 
@@ -23,15 +24,33 @@
         </connection-list>
     </building>
 
+    <!-- Hallway connecting lander hab and inflatable greenhouse. -->
+    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
+        the length argument must be provided below. -->
+    <building id="2" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="1.5" />
+            <connection id="3" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+
+    <!-- Inflatable greenhouse can be used to grow crops. -->
+    <building id="3" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="2" xloc="0.0" yloc="4.5" />
+        </connection-list>
+    </building>
+
     <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
    	<building-package name="ERV Set 1"/>
-    <building-package name="Sabatier Set 1 - 1x1"/>
+   	<building-package name="Air Set 1 - 1x1"/>
+   	<building-package name="Sabatier Set 1 - 1x1"/>
    	<building-package name="Nuclear Set 1 - Combo 0"/>
-    <building-package name="Solar Set 1 - 1x3"/>
-       		
+   	 <building-package name="Solar Set 1 - 1x6"/>
+   	    
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
-    <vehicle type="Explorer Rover" number="2" />
+    <vehicle type="Long Range Explorer" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
 
@@ -87,10 +106,10 @@
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
-            <schedule firstSol="2" frequency="80" /> 
+            <schedule firstSol="2" frequency="80" />
         </resupply-mission>
         <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
-            <schedule firstSol="668"/>
+            <schedule firstSol="668" />
         </resupply-mission>
     </resupply>
 </template>

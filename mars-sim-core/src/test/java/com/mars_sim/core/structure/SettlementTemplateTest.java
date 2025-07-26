@@ -5,7 +5,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 
 public class SettlementTemplateTest extends AbstractMarsSimUnitTest {
 
-    // This test assumes certain characterits of the Alpha Base template
+    // This test assumes certain characteristics of the Alpha Base template
     private static final String ALPHA_BASE = "Alpha Base";
     private static final Object RESUPPLY_MISSION = "Bi-Monthly Delivery";
     private static final String MANIFEST = "Standard Resupply 1";

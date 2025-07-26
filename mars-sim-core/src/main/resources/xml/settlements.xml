@@ -223,11 +223,16 @@
 						duration="10" scope="WORK_HOUR">
 				<calendar eventTime="400" firstSol="7" frequency="20"/>
 			</activity>
+			<activity name="EVA Operation Training"  score="400" population="0.3" waitDuration="20"
+						duration="15" scope="WORK_HOUR">
+				<calendar eventTime="400" firstSol="7" frequency="5"/>
+			</activity>
 		</activities>
 
 		<!-- Activities for a small settlement is just essential meetings -->
 		<schedule name="Small Settlement" minPopulation="6">
 			<meeting name="Team Meeting"/>
+			<meeting name="EVA Operation Training"/>
 		</schedule>
 
 		<!-- Activities for a large settlement include a social life and regular meetings-->
@@ -238,7 +243,8 @@
 			<meeting name="Team Meeting"/>
 			<meeting name="Movie Night"/>
 			<meeting name="Safety Training"/>
-
+			<meeting name="EVA Operation Training"/>
+			
 			<!-- This needs an obseratory but will be cancelled when one not available-->
 			<meeting name="Night Sky Party"/>
 		</schedule>
@@ -258,7 +264,8 @@
 		<template name="Phase 0-MS"/>
 		<template name="Phase 0-US"/>
 								
-		<!-- 8 Phase 1 templates -->
+		<!-- 9 Phase 1 templates -->
+		<template name="Phase 1-TW"/>
 		<template name="Phase 1-BR"/>
 		<template name="Phase 1-CN"/>
 		<template name="Phase 1-IN"/>
@@ -300,7 +307,7 @@
 		<template name="Hub Base"/>
 		
 		<!-- 1 Sector Base 1 template -->	
-		<template name="Sector Base 1-MS"/>
+		<template name="Sector Base 1"/>
 				
 		<!-- 1 trading outpost template -->			
 		<template name="Trading Outpost"/>

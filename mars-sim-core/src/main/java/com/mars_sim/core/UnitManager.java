@@ -30,9 +30,6 @@ import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.core.goods.MarketData;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.map.location.Coordinates;
@@ -100,11 +97,6 @@ public class UnitManager implements Serializable, Temporal {
 	/** A map of settlements with its coordinates. */
 	private Map<Coordinates, Integer> settlementCoordinateMap;
 
-	/** A map of settlements and their market data. */
-	private Map<Settlement, Map<Good, MarketData>> settlementMarketBook;
-
-	/** A map of Goods and their intermarket data. */
-	private Map<Good, MarketData> interMarketBook;
 
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -379,68 +371,6 @@ public class UnitManager implements Serializable, Temporal {
 				factory.computePartReliability(pulse.getMarsTime().getMissionSol());
 			}
 			justLoaded = false;
-		
-			Collection<Settlement> settlements = getSettlements();
-			
-			if (settlementMarketBook == null) {
-				settlementMarketBook = new HashMap<>();
-				// At the startup of the sim
-				List<Good> goods = GoodsUtil.getGoodsList();
-				
-				for (Settlement s: settlements) {
-					Map<Good, MarketData> initialBook = new HashMap<>();
-						
-					for (Good g: goods) {
-						MarketData marketData = new MarketData();
-						initialBook.put(g, marketData);
-					}
-					
-					settlementMarketBook.put(s, initialBook);
-				}
-				
-				if (this.interMarketBook == null) {
-					interMarketBook = new HashMap<>();
-					
-					for (Good g: goods) {
-						MarketData marketData = new MarketData();
-						interMarketBook.put(g, marketData);
-					}
-				}
-			}
-
-
-			for (Settlement s: settlements) {
-				Map<Good, MarketData> map = s.getGoodsManager().getMarketMap();
-				settlementMarketBook.put(s, map);
-			}
-			
-			for (Settlement s: settlements) {
-				Map<Good, MarketData> interMarket = settlementMarketBook.get(s);			
-				Set<Good> goods = interMarket.keySet();
-							
-				for (Good g: goods) {
-					MarketData data = interMarket.get(g);
-					double oneDemand = data.getDemand(); 
-					double oneGoodValue = data.getGoodValue();
-					
-					MarketData interData = interMarketBook.get(g);
-//					double lastSumDemand = interData.getDemand(); 
-//					interData.setDemand(oneDemand + lastSumDemand);
-					
-					interData.setDemand(oneDemand);
-					interData.setGoodValue(oneGoodValue);				
-					interMarketBook.put(g, interData);			
-				}
-				
-//				int size = goods.size();					
-//				for (Good g: goods) {
-//					MarketData interData = interMarketBook.get(g);
-//					double sumDemand = interData.getDemand(); 
-//		
-//					// Record the average demand from all markets/settlements
-//					interData.setDemand(sumDemand/size);
-//				}			
-			}
 		}
 
 		if (pulse.getElapsed() > 0) {
@@ -453,34 +383,6 @@ public class UnitManager implements Serializable, Temporal {
 		return true;
 	}
 
-	/**
-	 * Gets the average inter-market demand score.
-	 * 
-	 * @param g
-	 * @return
-	 */
-	public double getInterMarketDemand(Good g) {
-		if (interMarketBook == null)
-			return 0;
-		if (interMarketBook.isEmpty())
-			return 0;
-		return interMarketBook.get(g).getDemand();
-	}
-	
-	/**
-	 * Gets the average inter-market Good value.
-	 * 
-	 * @param g
-	 * @return
-	 */
-	public double getInterMarketGoodValue(Good g) {
-		if (interMarketBook == null)
-			return 0;
-		if (interMarketBook.isEmpty())
-			return 0;
-		return interMarketBook.get(g).getGoodValue();
-	}
-	
 	
 	/**
 	 * Sets up executive service.
@@ -490,7 +392,15 @@ public class UnitManager implements Serializable, Temporal {
 			int size = (int)(lookupSettlement.size()/2D);
 			int num = Math.min(size, SimulationRuntime.NUM_CORES - simulationConfig.getUnusedCores());
 			if (num <= 0) num = 1;
-			logger.config("Setting up " + num + " thread(s) for running the settlement update.");
+			
+			for (Settlement s: getSettlements()) {
+				logger.config(s + " possesses " + s.getNumCitizens() 
+					+ " citizens, " + s.getOwnedVehicleNum() + " vehicles, " 
+					+ s.getBuildingManager().getNumBuildings() + " buildings, and "
+					+ s.getEquipmentSet().size() + " pieces of equipment.");
+			}
+			
+			logger.config("Setting up a total of " + num + " thread(s) for updating " + size + " settlement(s). ");
 			executor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("unitmanager-thread-%d").build());
 		}
@@ -507,7 +417,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Adds a Settlement to the managed list and activate it for time pulses.
+	 * Adds a settlement to the managed set and activate it for time pulses.
 	 *
 	 * @param s
 	 */
@@ -517,9 +427,8 @@ public class UnitManager implements Serializable, Temporal {
 						+ s.getName());
 		}
 
-		logger.config("Setting up a settlement task thread for " + s + ".");
-		SettlementTask st = new SettlementTask(s);
-		settlementTasks.add(st);
+		logger.config("Activating the settlement task pulse for " + s + ".");
+		settlementTasks.add(new SettlementTask(s));
 	}
 
 	/**
@@ -567,7 +476,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-			logger.severe("Problem running the pulse : ", ee);
+			logger.severe("Problem running the settlement task pulses : ", ee);
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting

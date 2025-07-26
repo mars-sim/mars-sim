@@ -855,7 +855,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Transfers the seedling.
+	 * Selects a seedling.
 	 * Note: Enable this task to take time to complete the work.
 	 *
 	 * @param time

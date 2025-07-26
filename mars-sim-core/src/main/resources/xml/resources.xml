@@ -23,23 +23,25 @@
 	<!-- edible - Is the resource edible? -->
 
 	<!-- Life Support Resources -->
-	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents thermo-stabilized food that can afford long-term storage.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true" demand=".5" >Potable water</resource>
-	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="1.25" />
+	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">
+		Represents thermo-stabilized food that is not perishable.</resource>
+	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="1.25" >Potable water</resource>
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.75" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
 
-	<resource name="Brine Water" type="compound" phase="liquid">Brine water comes from melted mineral ice or from underground water reserve.</resource>
+	<resource name="Brine Water" type="compound" phase="liquid">
+		Brine water comes from melted mineral ice or from underground water reserve.</resource>
 
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="1.5" />
+	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="0.75" />
 	
-	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="1.5" />
-	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand=".75" >Methanol CH3OH
-	  can be used as a fuel source, solvent, pesticide, or 
+	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="2.0" />
+	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand=".5" >
+	  Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	  a chemical feedstock for production of a range of important industrial
 	  chemicals such as polyester. It appears as a colorless fairly volatile 
 	  liquid with a faintly sweet pungent odor like that of ethyl alcohol. 
@@ -715,7 +717,7 @@
 	 called plessite. Taenite is one of four known Fe-Ni meteorite minerals: The others are
 	 kamacite, tetrataenite, and antitaenite.</resource>
 
-<!-- Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
+<!-- 10 Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
 	<resource name="Rock samples" type="rock" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="Columnar basalt" type="rock"  phase="solid">Basalt is a dark-colored, fine-grained, igneous rock
 	 composed mainly of plagioclase and pyroxene minerals. It most commonly forms as an

@@ -108,6 +108,9 @@ public class EmergencySupply extends RoverMission {
 
 		if (s != null && !isDone()) {
 
+	    	// Question : how to record targetSettlement in such a way that 
+	    	// it doesn't need to look for it in both EmergencySupplyMeta and again in EmergencySupply
+
 			// Determine emergency settlement.
 			emergencySettlement = findSettlementNeedingEmergencySupplies(s, getRover());
 
@@ -305,14 +308,8 @@ public class EmergencySupply extends RoverMission {
 
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-
+			// Add the vehicle to the emergency settlement
 			emergencySettlement.addVicinityVehicle(getVehicle());
-
-			// Add vehicle to a garage if available.
-			if (!emergencySettlement.getBuildingManager().addToGarage(getVehicle())) {
-				// or else re-orient it
-//				getVehicle().findNewParkingLoc();
-			}
 		}
 
 		// Have member exit rover if necessary.
@@ -359,11 +356,14 @@ public class EmergencySupply extends RoverMission {
 
 		// Unload towed vehicle (if necessary).
 		if (getRover().getTowedVehicle() != null) {
+			
 			emergencyVehicle.setReservedForMission(false);
+			
 			getRover().setTowedVehicle(null);
+			
 			emergencyVehicle.setTowingVehicle(null);
+			// Add the vehicle to the emergency settlement
 			emergencySettlement.addVicinityVehicle(emergencyVehicle);
-			emergencyVehicle.findNewParkingLoc();
 		}
 
 		// Unload rover if necessary.
@@ -490,6 +490,9 @@ public class EmergencySupply extends RoverMission {
 	 */
 	public static Settlement findSettlementNeedingEmergencySupplies(Settlement startingSettlement, Rover rover) {
 
+    	// Question : how to record targetSettlement in such a way that 
+    	// it doesn't need to look for it in both EmergencySupplyMeta and again in EmergencySupply
+		
 		Settlement result = null;
 
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();

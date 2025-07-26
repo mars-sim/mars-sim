@@ -9,7 +9,7 @@ package com.mars_sim.core.structure;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 
 /**
- * Test the intenrals of the SHiftMansger
+ * Test the internals of the ShiftMansger
  */
 public class SettlementCodeTest extends AbstractMarsSimUnitTest {
 

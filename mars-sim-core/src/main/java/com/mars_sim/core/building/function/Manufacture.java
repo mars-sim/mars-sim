@@ -112,9 +112,9 @@ public class Manufacture extends Function {
 		@SuppressWarnings("unchecked")
 		Map<Tooling,Integer> toolCapacity = (Map<Tooling, Integer>) spec.getProperty("tooling");
 		availableTools = new HashMap<>();
-		toolCapacity.forEach((tool, cap) -> {
-			availableTools.put(tool, new ToolCapacity(cap));
-		});
+		toolCapacity.forEach((tool, cap) ->
+			availableTools.put(tool, new ToolCapacity(cap))
+		);
 
 		ongoingProcesses = new CopyOnWriteArrayList<>();
 	}

@@ -29,9 +29,8 @@ public class CollectResourceObjective implements MissionObjective {
 
     /**
      * Constructor.
+     * 
      * @param siteResourceGoal 
-     *
-     * @param name the name of the objective
      */
     public CollectResourceObjective(double siteResourceGoal) {
         this.name = "Collect Resources";
@@ -44,7 +43,8 @@ public class CollectResourceObjective implements MissionObjective {
     }
 
     /**
-     * Get the cummulative amount of resources collected so far.
+     * Gets the cumulative amount of resources collected so far.
+     * 
      * @return
      */
     public Map<Integer, Double> getResourcesCollected() {
@@ -52,7 +52,8 @@ public class CollectResourceObjective implements MissionObjective {
     }
 
     /**
-     * Get the cummulative amount of resources collected at each site.
+     * Gets the cumulative amount of resources collected at each site.
+     * 
      * @return
      */
     public Map<Integer,Double> getCollectedAtSites() {
@@ -60,7 +61,8 @@ public class CollectResourceObjective implements MissionObjective {
     }
 
     /**
-     * Record the amount of resources collected at a specific site. This updates the perSite and perResource totals.
+     * Records the amount of resources collected at a specific site. This updates the perSite and perResource totals.
+     * 
      * @param siteIndex Index of the site where the resources were collected.
      * @param resourceId  ID of the resource collected.
      * @param collected  Amount of resources collected (in kg).
@@ -73,7 +75,8 @@ public class CollectResourceObjective implements MissionObjective {
     }
 
     /**
-     * What is the collection goal at each site
+     * Gets the collection goal at each site.
+     * 
      * @return
      */
     public double getSiteResourceGoal() {

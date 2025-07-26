@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelResourceProcessing.java
- * @date 2022-07-26
+ * @date 2025-07-23
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;

@@ -308,8 +308,8 @@ public class GoodsManager implements Serializable {
 			
 			double localPrice = g.calculatePrice(settlement, localValue);
 			
-			mv.setDemand(localDemand);	
-			mv.setGoodValue(localValue);	
+			mv.updateDemand(localDemand);	
+			mv.updateGoodValue(localValue);	
 			mv.setCost(localCost);
 			mv.setPrice(localPrice);
 			
@@ -368,7 +368,7 @@ public class GoodsManager implements Serializable {
 			// Check for inflation and deflation adjustment due to other resources
 			newGoodValue = checkDeflation(id, newGoodValue);
 			// Adjust the market value
-			double adj1 = marketData.setGoodValue(newGoodValue) / 20.0;
+			double adj1 = marketData.updateGoodValue(newGoodValue) / 20.0;
 			if (newGoodValue + adj1 > 0)
 				newGoodValue += adj1;
 
@@ -396,7 +396,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private double adjustMarketDemand(Good good, double demand) {
 		// Gets the market demand among the settlements
-		var adj = getMarketData(good).setDemand(demand);
+		var adj = getMarketData(good).updateDemand(demand);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
 		return adj;
 	}
@@ -798,6 +798,7 @@ public class GoodsManager implements Serializable {
 		int optimalPerPop = limits.max();
 		int pop = settlement.getNumCitizens();
 		
+		double limit = optimalPerPop * pop;
 		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen
@@ -805,23 +806,19 @@ public class GoodsManager implements Serializable {
 
 		double stored = settlement.getSpecificAmountResourceStored(resourceID);
 	
-		if (stored >= optimalPerPop * pop) {
+		if (stored > limit) {
 			// Thus no need of demand adjustment
 			return 0;
 		}
 
-		lacking = (optimalPerPop - reservePerPop) * pop - stored;
+		stored = MathUtils.between(stored, 1, limit);
 		
-		if (lacking < 0)
-			lacking = 0;
-				
-		if (lacking > optimalPerPop)
-			lacking = optimalPerPop;
+		lacking = MathUtils.between((optimalPerPop - reservePerPop) * pop - stored, 0, optimalPerPop);
 
 		// Note: may need to further limit each increase to avoid an abrupt rise or drop in demand 
 
 		// Warning: make sure stored is not zero so that delta is not infinite
-		double delta = lacking / (1 + Math.max(1, stored)) * demand - demand;
+		double delta = lacking / stored * demand - demand;
 		
 		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(resourceID);

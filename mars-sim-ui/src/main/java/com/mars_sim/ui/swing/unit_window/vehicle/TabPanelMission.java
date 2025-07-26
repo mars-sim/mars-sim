@@ -175,7 +175,7 @@ extends TabPanel {
 		else {
 		    tempCollection = new ConcurrentLinkedQueue<>();
 		}
-		if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
+		if (memberCache != null && !Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
 			memberCache = tempCollection;
 			memberListModel.clear();
 			Iterator<Worker> i = memberCache.iterator();

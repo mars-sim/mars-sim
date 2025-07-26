@@ -24,14 +24,14 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
         var siteLocn = found.getKey();
         var newRoI = eMgr.createROI(siteLocn, 100);
 
-        assertNotNull("New RoI created", newRoI);
+        assertNotNull("New ROI created", newRoI);
         assertEquals("New ROI coordinates", siteLocn, newRoI.getCoordinates());
-        assertNull("New RoI settlement", newRoI.getOwner());
-        assertFalse("New RoI not claimed", newRoI.isClaimed());
+        assertNull("New ROI settlement", newRoI.getOwner());
+        assertFalse("New ROI not claimed", newRoI.isClaimed());
         assertEquals("Declared locations", 1, eMgr.getDeclaredROIs().size());
 
         newRoI.setClaimed(s.getReportingAuthority());
-        assertTrue("New RoI claimed", newRoI.isClaimed());
+        assertTrue("New ROI claimed", newRoI.isClaimed());
 
     }
 

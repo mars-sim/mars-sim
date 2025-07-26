@@ -28,7 +28,6 @@ public class ChargeMeta extends FactoryMetaTask {
     
 	private static final double CHANCE_0 = 10;
 	private static final double CHANCE_1 = 5;
-//	private static final double CHANCE_2 = 1;
 	
 	private Building buildingStation;
 	
@@ -73,8 +72,6 @@ public class ChargeMeta extends FactoryMetaTask {
     			if (rand < sc.getLowPowerModePercent())
     				// At max, ~20% chance it will need to charge 
     				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_1;
-//    			else
-//    				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_2;
     		}
 
 
@@ -85,12 +82,6 @@ public class ChargeMeta extends FactoryMetaTask {
         	// but reserving the exact activity spot
         	
         	// NOTE: May offer directional charging in future
-        	
-//        	buildingStation = Charge.findStation(robot);
-//        	
-//        	if (buildingStation != null) {
-//        		return result;
-//        	}
         }
 
         return result;

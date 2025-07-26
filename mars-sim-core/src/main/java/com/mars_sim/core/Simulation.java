@@ -53,6 +53,7 @@ import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.MarketManager;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.logging.SimuLoggingFormatter;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -185,6 +186,8 @@ public class Simulation implements ClockListener, Serializable {
 	private ScientificStudyManager scientificStudyManager;
 	/** Manages transportation of settlements and resupplies from Earth. */
 	private TransportManager transportManager;
+	/** Manages the global market. */
+	private MarketManager marketManager;
 	/** The SimulationConfig instance. */
 	private transient SimulationConfig simulationConfig;
 
@@ -348,11 +351,13 @@ public class Simulation implements ClockListener, Serializable {
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 	
+		marketManager = new MarketManager(this);
+		
         RoleUtil.initialize();
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 		
 		missionManager = new MissionManager();
-		
+			
 		medicalManager = new MedicalManager();
 		MedicalManager.initializeInstances(mc);
 
@@ -432,14 +437,13 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
-
+		// Initialize MedicalManager instance
 		medicalManager = new MedicalManager();
 		MedicalManager.initializeInstances(mc);
-		
+		// Initialize UnitManager instance		
 		eventManager = new HistoricalEventManager(masterClock);
-		
+		// Initialize TransportManager instance		
 		transportManager = new TransportManager(this);
-		
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
 	
@@ -458,6 +462,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 		
+		// Initialize MarketManager instance		
+		marketManager = new MarketManager(this);
 		// Add colonies to lunarColonyManager
 		lunarColonyManager.addInitColonies();
 		
@@ -583,6 +589,8 @@ public class Simulation implements ClockListener, Serializable {
 		
 		transportManager.reinitalizeInstances(sim);
 	
+		marketManager.reinitalizeInstances(sim);
+		
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 		
@@ -760,6 +768,7 @@ public class Simulation implements ClockListener, Serializable {
 			scientificStudyManager = (ScientificStudyManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
 			transportManager = (TransportManager) ois.readObject();
+			marketManager = (MarketManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
 			
@@ -1040,6 +1049,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(scientificStudyManager);
 			oos.writeObject(eventManager);
 			oos.writeObject(transportManager);
+			oos.writeObject(marketManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
 
@@ -1086,6 +1096,7 @@ public class Simulation implements ClockListener, Serializable {
 				medicalManager,
 				scientificStudyManager,
 				transportManager,
+				marketManager,
 				eventManager,
 				unitManager,
 				masterClock
@@ -1314,6 +1325,15 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
+	 * Gets the market manager.
+	 *
+	 * @return market manager
+	 */
+	public MarketManager getMarketManager() {
+		return marketManager;
+	}
+	
+	/**
 	 * Gets the master clock.
 	 *
 	 * @return master clock
@@ -1397,6 +1417,8 @@ public class Simulation implements ClockListener, Serializable {
 
 			unitManager.timePassing(pulse);
 
+			marketManager.timePassing(pulse);
+			
 			transportManager.timePassing(pulse);
 			
 			// Pending save
@@ -1458,6 +1480,10 @@ public class Simulation implements ClockListener, Serializable {
 
 		if (medicalManager != null) {
 			medicalManager = null;
+		}
+		
+		if (marketManager != null) {
+			marketManager = null;
 		}
 
 		logger.config("Done with medicalManager");

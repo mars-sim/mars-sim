@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceUtil.java
- * @date 2023-09-19
+ * @date 2025-07-23
  * @author Manny Kung
  */
 
@@ -58,28 +58,61 @@ public class ResourceUtil {
 	public static final int REGOLITHB_ID = REGOLITH_ID + 1;
 	public static final int REGOLITHC_ID = REGOLITHB_ID + 1;
 	public static final int REGOLITHD_ID = REGOLITHC_ID + 1;
-	public static final int OLIVINE_ID = REGOLITHD_ID + 1;
-	public static final int KAMACITE_ID = OLIVINE_ID + 1;
-	public static final int GYPSUM_ID = KAMACITE_ID + 1; 
-	public static final int MALACHITE_ID = GYPSUM_ID + 1;
-	public static final int SYLVITE_ID = MALACHITE_ID + 1;
-	public static final int SOIL_ID = SYLVITE_ID + 1;
+	
+	// 6 types of ores 
+	public static final int GYPSUM_ID = REGOLITHD_ID + 1;
+	public static final int BASALTIC_ID = GYPSUM_ID + 1;
+	public static final int SMECTITE_ID = BASALTIC_ID + 1;
+	public static final int ALLOPHANE_ID = SMECTITE_ID + 1;
+	public static final int AKAGANEITE_ID = ALLOPHANE_ID + 1;
+	public static final int BASSANITE_ID = AKAGANEITE_ID + 1;
+	
+	// 11 types of Mineral concentrations :
+	public static final int CHALCOPYRITE_ID = BASSANITE_ID + 1;
+	public static final int GEOTHITE_ID = CHALCOPYRITE_ID + 1;
+	public static final int HEMATITE_ID = GEOTHITE_ID + 1;
+	public static final int KAMACITE_ID = HEMATITE_ID + 1;
+	public static final int MAGNESITE_ID = KAMACITE_ID + 1;
+	
+	public static final int MAGNETITE_ID = MAGNESITE_ID + 1;
+	public static final int MALACHITE_ID = MAGNETITE_ID + 1;
+	public static final int OLIVINE_ID = MALACHITE_ID + 1;
+	public static final int PYROXENE_ID = OLIVINE_ID + 1;
+	public static final int SYLVITE_ID = PYROXENE_ID + 1;
+	public static final int TAENITE_ID = SYLVITE_ID + 1;
+	
+	// 10 types of rocks
+	public static final int ROCK_SAMPLES_ID = TAENITE_ID + 1;
+	private static final int COLUMNAR_BASALT_ID = ROCK_SAMPLES_ID + 1;
+	private static final int GRANITE_ID = COLUMNAR_BASALT_ID + 1;
+	private static final int MUDSTONE_ID = GRANITE_ID + 1;
+	private static final int SANDSTONE_ID = MUDSTONE_ID + 1;
+	
+	private static final int SHALE_ID = SANDSTONE_ID + 1;
+	private static final int CONGLOMERATE_ID = SHALE_ID + 1;
+	private static final int CROSSBEDDING_ID = CONGLOMERATE_ID + 1;
+	public static final int METEORITE_ID = CROSSBEDDING_ID + 1;
+	private static final int SCORIAL_ID = METEORITE_ID + 1;
+	
+	public static final int SOIL_ID = SCORIAL_ID + 1;
 	public static final int SAND_ID = SOIL_ID + 1;
-	public static final int ROCK_SAMPLES_ID = SAND_ID + 1;
-	public static final int BLACK_WATER_ID = ROCK_SAMPLES_ID + 1;
+	public static final int BLACK_WATER_ID = SAND_ID + 1;
 	public static final int GREY_WATER_ID = BLACK_WATER_ID + 1;
 	public static final int BRINE_WATER_ID = GREY_WATER_ID + 1;
 	public static final int CONCRETE_ID = BRINE_WATER_ID + 1;
 	public static final int CEMENT_ID = CONCRETE_ID + 1;
 	public static final int LIME_ID = CEMENT_ID + 1;
+	
 	public static final int COMPOST_ID = LIME_ID + 1;
 	public static final int CROP_WASTE_ID = COMPOST_ID + 1;
 	public static final int FOOD_WASTE_ID = CROP_WASTE_ID + 1;
 	public static final int TOXIC_WASTE_ID = FOOD_WASTE_ID + 1;
 	public static final int SOLID_WASTE_ID = TOXIC_WASTE_ID + 1;
+	
 	public static final int TOILET_TISSUE_ID = SOLID_WASTE_ID + 1;
 	public static final int FERTILIZER_ID = TOILET_TISSUE_ID + 1;
 	public static final int NACLO_ID = FERTILIZER_ID + 1; 
+	
 	public static final int LEAVES_ID = NACLO_ID + 1;
 	public static final int FISH_OIL_ID = LEAVES_ID + 1;
 	public static final int EPSOM_SALT_ID = FISH_OIL_ID + 1;
@@ -87,42 +120,26 @@ public class ResourceUtil {
 	public static final int ROCK_SALT_ID = TABLE_SALT_ID + 1;
 	public static final int E_WASTE_ID = ROCK_SALT_ID + 1;
 	public static final int NAPKIN_ID = E_WASTE_ID + 1;
-	public static final int METEORITE_ID = NAPKIN_ID + 1;
-	public static final int FISH_MEAT_ID = METEORITE_ID + 1;
+
+	public static final int FISH_MEAT_ID = NAPKIN_ID + 1;
 	public static final int SPIRULINA_ID = FISH_MEAT_ID + 1;
 
-	private static final int SMECTITE_ID = SPIRULINA_ID + 1;
-	private static final int BASALTIC_ID = SMECTITE_ID + 1;
-	private static final int BASSANITE_ID = BASALTIC_ID + 1;
-	private static final int ALLOPHANE_ID = BASSANITE_ID + 1;
-	private static final int AKAGANEITE_ID = ALLOPHANE_ID + 1;
-	private static final int CHALCOPYRITE_ID = AKAGANEITE_ID + 1;
-	private static final int GEOTHITE_ID = CHALCOPYRITE_ID + 1;
-	private static final int HEMATITE_ID = GEOTHITE_ID + 1;
-	private static final int MAGNESITE_ID = HEMATITE_ID + 1;
-	private static final int MAGNETITE_ID = MAGNESITE_ID + 1;
-	private static final int TAENITE_ID = MAGNETITE_ID + 1;
-	private static final int COLUMNAR_BASALT_ID = TAENITE_ID + 1;
-	private static final int GRANITE_ID = COLUMNAR_BASALT_ID + 1;
-	private static final int SHALE_ID = GRANITE_ID + 1;
-	private static final int MUDSTONE_ID = SHALE_ID + 1;
-	private static final int CONGLOMERATE_ID = MUDSTONE_ID + 1;
-	private static final int SANDSTONE_ID = CONGLOMERATE_ID + 1;
-	private static final int CROSSBEDDING_ID = SANDSTONE_ID + 1;
-	private static final int SCORIAL_ID = CROSSBEDDING_ID + 1;
-
 	// Must be one after the last fixed resource
-	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = SCORIAL_ID + 1;
+	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = SPIRULINA_ID + 1;
 
-	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, COLUMNAR_BASALT_ID,
-													GRANITE_ID, MUDSTONE_ID, SANDSTONE_ID,
-													SHALE_ID, CONGLOMERATE_ID, CROSSBEDDING_ID,
-													METEORITE_ID, SCORIAL_ID};
+	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
+			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
+			CONGLOMERATE_ID ,SANDSTONE_ID, CROSSBEDDING_ID, 
+			METEORITE_ID, SCORIAL_ID										
+	};
+	
 	public static final int[] MINERAL_CONC_IDs = new int[]{CHALCOPYRITE_ID, GEOTHITE_ID,
 														HEMATITE_ID, KAMACITE_ID, MAGNESITE_ID, MAGNETITE_ID,
-														MALACHITE_ID, OLIVINE_ID, TAENITE_ID, SYLVITE_ID};
+														MALACHITE_ID, OLIVINE_ID, PYROXENE_ID, SYLVITE_ID, TAENITE_ID};
+	
 	public static final int[] ORE_DEPOSIT_IDS = new int[]{ALLOPHANE_ID, AKAGANEITE_ID, BASALTIC_ID,
 														BASSANITE_ID, GYPSUM_ID, SMECTITE_ID};
+	
 	public static final int[] REGOLITH_TYPES = new int[] {REGOLITH_ID, REGOLITHB_ID,
 														REGOLITHC_ID, REGOLITHD_ID};
 
@@ -178,6 +195,7 @@ public class ResourceUtil {
 		fixedResources.put("nitrogen", NITROGEN_ID);
 		fixedResources.put("olivine", OLIVINE_ID);
 		fixedResources.put("oxygen", OXYGEN_ID);
+		fixedResources.put("pyroxene", PYROXENE_ID);
 		fixedResources.put("regolith", REGOLITH_ID);
 		fixedResources.put("regolith-b", REGOLITHB_ID);
 		fixedResources.put("regolith-c", REGOLITHC_ID);
@@ -407,6 +425,19 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * Is this a critical resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isCriticalResource(int resource) {
+		return switch (resource) {
+			case BRINE_WATER_ID, WATER_ID, METHANE_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
 	 * Is this a raw material resource ?
 	 * 
 	 * @param resource
@@ -414,8 +445,30 @@ public class ResourceUtil {
 	 */
 	public static boolean isRawMaterial(int resource) {
 		return switch (resource) {
-			case SAND_ID, OLIVINE_ID, BRINE_WATER_ID, GYPSUM_ID,
-					MALACHITE_ID, KAMACITE_ID, SYLVITE_ID -> true;
+			case SAND_ID, BRINE_WATER_ID, 
+					// 6 types of ores :
+					GYPSUM_ID,
+					BASALTIC_ID,
+					SMECTITE_ID,
+					ALLOPHANE_ID,
+					AKAGANEITE_ID,
+					BASSANITE_ID,
+					
+					// 11 types of Mineral concentrations :
+					CHALCOPYRITE_ID,
+					GEOTHITE_ID,
+					HEMATITE_ID, 
+					KAMACITE_ID, 
+					MAGNESITE_ID,
+					
+					MAGNETITE_ID, 
+					MALACHITE_ID,
+					OLIVINE_ID,
+					PYROXENE_ID,
+					SYLVITE_ID,
+					TAENITE_ID
+					
+					-> true;
 			default -> false;
 		};
 	}

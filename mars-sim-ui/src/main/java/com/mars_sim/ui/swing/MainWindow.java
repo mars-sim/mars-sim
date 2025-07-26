@@ -76,13 +76,6 @@ public class MainWindow
 	public static final String LANDER_64_PNG = "lander_hab64.png";
 	public static final String LANDER_16 = "lander16";
 	
-	
-//	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
-//	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
-//	private static final Icon DECREASE_ICON = ImageLoader.getIconByName("speed/decrease");
-//	private static final Icon INCREASE_ICON = ImageLoader.getIconByName("speed/increase");
-	
-	
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
@@ -516,9 +509,9 @@ public class MainWindow
 		
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton("\u23EA");
+		decreaseSpeed.setFont(new Font("Arial", Font.BOLD, 14));
 		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
 		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
-//		decreaseSpeed.setIcon(DECREASE_ICON);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 		
 		decreaseSpeed.addActionListener(e -> {
@@ -531,9 +524,9 @@ public class MainWindow
 		createPauseSwitch();
 
 		JButton increaseSpeed = new JButton("\u23E9");
+		increaseSpeed.setFont(new Font("Arial", Font.BOLD, 14));
 		increaseSpeed.setPreferredSize(new Dimension(30, 30));
 		increaseSpeed.setMaximumSize(new Dimension(30, 30));
-//		increaseSpeed.setIcon(INCREASE_ICON);
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
 		increaseSpeed.addActionListener(e -> {
@@ -543,9 +536,9 @@ public class MainWindow
 		});
 		
 		// Add the increase speed button
-		speedPanel.add(decreaseSpeed);//, BorderLayout.WEST);
-		speedPanel.add(playPauseSwitch);//, BorderLayout.CENTER);
-		speedPanel.add(increaseSpeed);//, BorderLayout.EAST);
+		speedPanel.add(decreaseSpeed);
+		speedPanel.add(playPauseSwitch);
+		speedPanel.add(increaseSpeed);
 		toolBar.add(panel);
 		
 	}
@@ -554,22 +547,20 @@ public class MainWindow
 	 * Creates the pause button.
 	 */
 	private void createPauseSwitch() {
-		playPauseSwitch = new JToggleButton("\u23E8");//PAUSE_ICON);
+		playPauseSwitch = new JToggleButton("\u23E8");
+		playPauseSwitch.setFont(new Font("Arial", Font.BOLD, 18));
 		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
 		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
 		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
-//		playPauseSwitch.setSelected(false);
-		
-//		playPauseSwitch.setFocusable(true);
-//		playPauseSwitch.putClientProperty("togglePause", true);
-		
 		playPauseSwitch.addActionListener(e -> {
 				boolean isSel = playPauseSwitch.isSelected();
 				if (isSel) {
-					playPauseSwitch.setText("\u23F5");//.setIcon(PLAY_ICON);
+					// To show play symbol
+					playPauseSwitch.setText("\u23F5");
 				}
 				else {
-					playPauseSwitch.setText("\u23F8");//.setIcon(PAUSE_ICON);
+					// To show pause symbol 
+					playPauseSwitch.setText("\u23F8");
 				}		
 				masterClock.setPaused(isSel, false);	
 			});

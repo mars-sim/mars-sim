@@ -163,6 +163,7 @@ public class ReturnLightUtilityVehicle extends Task {
 			}
 			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
 				s = (Settlement)returnContainer;
+    			// Add the luv to the settlement
 				done = s.addVicinityVehicle(r);
 				// Unload any attachment parts or inventory from light utility vehicle.
 				unloadLUVInventory(s);

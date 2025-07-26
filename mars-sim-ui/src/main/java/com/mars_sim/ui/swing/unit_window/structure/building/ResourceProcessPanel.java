@@ -160,16 +160,29 @@ public class ResourceProcessPanel extends JPanel {
             ResourceProcess p = processes.get(row);
             switch(column) {
                 case RUNNING_STATE: return p.getState();
-                case BUILDING_NAME: return getBuilding(row);                
+                case BUILDING_NAME: return getBuilding(row).getName();           
                 case PROCESS_NAME: return p.getProcessName();
-                case INPUT_SCORE: return Math.round(p.getInputScore() * 100.0)/100.0;
-                case OUTPUT_SCORE: return Math.round(p.getOutputScore() * 100.0)/100.0;
-                case SCORE: return Math.round(p.getOverallScore() * 100.0)/100.0;
+                case INPUT_SCORE: return getFormattedScore(p.getInputScore());
+                case OUTPUT_SCORE: return getFormattedScore(p.getOutputScore());
+                case SCORE: return getFormattedScore(p.getOverallScore());
                 default:
                     throw new IllegalArgumentException("Column unknown " + column);
             }
 		}
 
+        /**
+         * Returns the score in a formatted manner for easy reading.
+         * 
+         * @param score
+         * @return
+         */
+        public double getFormattedScore(double score) {
+        	if (score > 1) {
+        		return Math.round(score * 10.0)/10.0;
+        	}
+        	return Math.round(score * 100.0)/100.0;
+        }
+        
         /**
          * Gets the associated process object.
          */
@@ -378,11 +391,11 @@ public class ResourceProcessPanel extends JPanel {
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
         columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(1).setPreferredWidth(120);
-        columnModel.getColumn(2).setPreferredWidth(200);
-        columnModel.getColumn(3).setPreferredWidth(50);
-        columnModel.getColumn(4).setPreferredWidth(50);
-        columnModel.getColumn(5).setPreferredWidth(50);
+        columnModel.getColumn(1).setPreferredWidth(90);
+        columnModel.getColumn(2).setPreferredWidth(150);
+        columnModel.getColumn(3).setPreferredWidth(60);
+        columnModel.getColumn(4).setPreferredWidth(60);
+        columnModel.getColumn(5).setPreferredWidth(60);
         
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);

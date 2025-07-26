@@ -321,7 +321,7 @@ public class TimeWindow extends ToolWindow {
 		// clockExecutor.getActiveCount() is stabilized
 		masterClock.initReferencePulse();
 		
-		double cpuValue = masterClock.getCpuFactor();
+		double cpuValue = Math.round(masterClock.getCpuFactor() * 100.0)/100.0;
 	
 		double min = Math.round(cpuValue / 5 * 10.0)/10.0;
 		double max = Math.round(5 * cpuValue * 10.0)/10.0;
@@ -336,7 +336,7 @@ public class TimeWindow extends ToolWindow {
 		// 2. Get the text field of your spinner's editor:
 		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
 		// 3. Set a default size to the text field:
-		jftf.setColumns(2);
+		jftf.setColumns(3);
 	
 		jftf.setHorizontalAlignment(JTextField.LEFT);
 		
@@ -355,13 +355,12 @@ public class TimeWindow extends ToolWindow {
 	 * @param masterClock
 	 */
 	private void updateTimeLabels(MasterClock masterClock) {
-		double cpuCache = masterClock.getCpuFactor();
+		double cpu = Math.round(masterClock.getCpuFactor() * 100.0)/100.0;
 		SpinnerNumberModel spinnerModel = (SpinnerNumberModel)(cpuSpinner.getModel());
 		
 		double cpuValue = ((Number)spinnerModel.getValue()).doubleValue();
-		if (cpuValue != cpuCache) {
+		if (cpuValue != cpu) {
 		
-			double cpu = masterClock.getCpuFactor();
 			double min = Math.round(cpu / 5 * 10.0)/10.0;
 			double max = Math.round(5 * cpu * 10.0)/10.0;
 			

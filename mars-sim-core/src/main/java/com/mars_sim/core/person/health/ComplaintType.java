@@ -45,6 +45,6 @@ public enum ComplaintType {
 	}
 
 	public String getName() {
-		return this.name;
+		return name.toLowerCase().replaceAll("_", " ");
 	}
 }

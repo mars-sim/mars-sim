@@ -635,7 +635,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public boolean isInGarage() {
 		Settlement settlement = getSettlement();
-		return settlement != null && getSettlement().getBuildingManager().isInGarage(this);
+		return settlement != null && settlement.getBuildingManager().isInGarage(this);
 	}
 
 	/**
@@ -2323,6 +2323,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				leaving = true;
 			}
 			else if (destination instanceof Settlement s) {
+    			// Add the vehicle to the settlement
 				transferred = s.addVicinityVehicle(this);
 			}
 
@@ -2334,7 +2335,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 				if (leaving && isInGarage()) {
 					BuildingManager.removeFromGarage(this);
 				}
-
 				setContainerUnitAndID(destination);
 			}
 		}
