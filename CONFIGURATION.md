@@ -1,13 +1,12 @@
 # Mars Simulation Project
 
-Copyright &copy; 2024 Scott Davis  
-Project: https://mars-sim.com  
+Copyright &copy; 2025 Scott Davis  
+Project: https://marssim.space/
 GitHub: https://github.com/mars-sim/mars-sim  
 
-------------------------------------------|---------------------
 
 ## Configuration
-`Revised : 02 Nov 2023`
+
 
 A majority of the Mars Simulation Project's configuration files are 
 primarily written in XML format. This guide will get you 

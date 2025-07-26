@@ -1,7 +1,7 @@
 # Mars Simulation Project
 
-Copyright &copy; 2024 Scott Davis  
-Project: https://mars-sim.com  
+Copyright &copy; 2025 Scott Davis  
+Project: https://marssim.space/
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
@@ -40,7 +40,6 @@ do a `Pull Request` and write a few words telling us your approach
 and methodology. We welcome your help and contributions to mars-sim. 
 
 
-
 ## <a name="submit"></a> Submission Guidelines
 
 Before you submit your issue, search the archive to check if your 
@@ -68,6 +67,7 @@ concepts and coding.
 If you would like to become a developer and contribute to coding, 
 see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) 
 about setting up the development environment on your machine.
+
 
 ## <a name="info"></a> Further Information
 

@@ -19,6 +19,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.megdr.MEGDRFactory;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 // Note: the newly surveyed ice deposit spans latitudes from 39 to 49 deg
@@ -244,11 +245,7 @@ public class TerrainElevation implements Serializable {
 			rate *= 5 + RandomUtil.getRandomDouble(5) + Math.abs(24 - elevation) + Math.abs(latitude) / 75.0;
 		}
 
-		if (rate > 100)
-			rate = 100;
-
-		if (rate < 1)
-			rate = 1;
+		rate = MathUtils.between(rate, 1, 100);
 
 		site.setIceCollectionRate(rate);
 	}

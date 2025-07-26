@@ -32,6 +32,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -246,21 +247,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			}
 			else {
 				// Compute the input score
-				double inputValue = computeResourcesValue(settlement, process, true);
-
-				if (inputValue < 0.03)
-					inputValue = 0.03;
-				else if (inputValue > 300)
-					inputValue = 300;
+				double inputValue = MathUtils.between(computeResourcesValue(settlement, process, true), 0.03, 300);
 				
 				// Compute the output score		
-				double outputValue = computeResourcesValue(settlement, process, false);
-
-				if (outputValue < 0.035)
-					outputValue = 0.035;
-				else if (outputValue > 350)
-					outputValue = 350;
-				
+				double outputValue = MathUtils.between(computeResourcesValue(settlement, process, false), 0.035, 350);
+						
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 									outputValue - inputValue, true);
 				score = new RatingScore("outputs", outputValue);
