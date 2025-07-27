@@ -41,7 +41,7 @@ public interface MapDisplay {
 	public boolean isImageDone();
 
 	/**
-	 * Gte an image for this details.
+	 * Gets an image for this details.
 	 * 
 	 * @param newCenter 	The new center location
 	 * @param rho 		The new map rho
@@ -51,7 +51,7 @@ public interface MapDisplay {
 
 	/**
 	 * Gets the rho of the Mars surface map (height pixels divided by pi).
-	 * Dervied from last map image cretion
+	 * Derived from last map image creation.
 	 * 
 	 * @return
 	 */

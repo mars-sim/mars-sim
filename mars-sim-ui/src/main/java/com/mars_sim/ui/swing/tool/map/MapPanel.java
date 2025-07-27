@@ -461,6 +461,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	/**		
 	 * Updates the map display.
+	 * 
 	 * @return Map displayed was changed
 	 */
 	public boolean updateDisplay() {
@@ -592,7 +593,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
         		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
-	                		// Note: how to stop continuously callng CannedMarsMap.getMapImage() below ?
+	                		// Update GPU Button
+//	                		getDesktop().getNavWin().updateGPUButton();
+	                		// Q: how to stop continuously calling CannedMarsMap.getMapImage() below ?
 //	                		logger.config("Calling getMapImage()");
 	                		var mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
 	                		if (mapImage != null) {
@@ -663,7 +666,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	
 	/**
-	 * Get the Coordindates of a point on the Map from a center.
+	 * Gets the Coordinates of a point on the Map from a center.
+	 * 
 	 * @param center
 	 * @param displayPos
 	 * @return
@@ -675,7 +679,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     }
 
 	/**
-	 * Get teh parent desktop
+	 * Gets the parent desktop.
 	 */
 	public MainDesktopPane getDesktop() {
 		return desktop;
@@ -716,7 +720,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     }
 
 	/**
-	 * Get the current hotspot in the map.
+	 * Gets the current hotspot in the map.
+	 * 
 	 * @return
 	 */
     public List<MapHotspot> getHotspots() {

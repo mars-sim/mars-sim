@@ -463,6 +463,15 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
+	 * Gets the navigator window.
+	 * 
+	 * @return
+	 */
+	public NavigatorWindow getNavWin() {
+		return ((NavigatorWindow)openToolWindow(NavigatorWindow.NAME));
+	}
+		
+	/**
 	 * Creates and opens a window for an Entity if it isn't already in existence and
 	 * open. This selects the most appropriate tool window.
 	 *

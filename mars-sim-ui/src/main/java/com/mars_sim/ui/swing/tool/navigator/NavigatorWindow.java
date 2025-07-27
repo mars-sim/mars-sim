@@ -324,7 +324,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		gpuButton.setPreferredSize(new Dimension(80, 25));
 		gpuButton.putClientProperty("JButton.buttonType", "roundRect");
 		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //-NLS-1$
-		gpuButton.setSelected(IntegerMapData.isHardwareAccel());
+//		gpuButton.setSelected(IntegerMapData.isHardwareAccel());
 
 		updateGPUButton();
 		gpuButton.addActionListener(e -> updateGPUButton());
@@ -395,27 +395,31 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/**
 	 * Updates the state of the GPU button.
 	 */
-	private void updateGPUButton() {	
+	public void updateGPUButton() {	
 		if (IntegerMapData.isGPUAvailable()) {
+			
+			// Check if the GPU button is on or not
 			boolean isSelected = gpuButton.isSelected();
 			String gpuStateStr1 = " off";
 			if (isSelected) {
 				gpuStateStr1 = " on";
-				logger.config("Set GPU button to be ON.");
+				logger.config("GPU button is ON.");
 			}
 			else {
-				logger.config("Set GPU button to be OFF.");
+				logger.config("GPU button is OFF.");
 			}
-			IntegerMapData.setHardwareAccel(isSelected);
+//			IntegerMapData.setHardwareAccel(isSelected);
 			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
-			
-			mapPanel.repaint();
 		}
 		else {
+			// Gray out the GPU button since it's NOT supported
 			gpuButton.setEnabled(false);
 			gpuButton.setText("No GPU");
 			logger.config("GPU not available for rendering maps.");
 		}
+		
+		gpuButton.validate();
+		mapPanel.repaint();
 	}
 	
 	
@@ -658,7 +662,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void updateMapControls() {
 		// Update GPU Button
 		updateGPUButton();
-		
 		// Update dependent panels
 		MapMetaData metaType = mapPanel.getMapMetaData();
 		

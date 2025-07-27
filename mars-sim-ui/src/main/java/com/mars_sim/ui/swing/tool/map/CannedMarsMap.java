@@ -20,7 +20,6 @@ import com.mars_sim.core.map.location.Coordinates;
  * The CannedMarsMap class reads in data from files in the map_data jar file in
  * order to generate a map image.
  */
-@SuppressWarnings("serial")
 public class CannedMarsMap implements MapDisplay {
 
 	// Data members

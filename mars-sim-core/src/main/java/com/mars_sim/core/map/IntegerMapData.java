@@ -42,20 +42,18 @@ import com.mars_sim.core.map.location.Coordinates;
 
 	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
-	
- 	private static final double TWO_PI = Math.PI * 2;
- 	
+
  	private static boolean isGPUCapable = true;
  	private static boolean hardwareAccel = true;
 	
-	// The max rho
- 	private Range rhoRange; 	
+ 	private static final double TWO_PI = Math.PI * 2;
  	
- 	// The factor to apply for calaculate the min & max rho
+ 	// The factor to apply for calculate the min & max rho
   	private static final double MAX_RHO_MULTIPLER = 5;
   	private static final double MIN_RHO_MULTIPLER = 0.9;
   	
  	private static final double HALF_PI = Math.PI / 2D;
+
  	private static final String CL_FILE = "MapDataFast.cl";
  	private static final String KERNEL_NAME = "getMapImage";
  	
@@ -70,6 +68,10 @@ import com.mars_sim.core.map.location.Coordinates;
 	
 	/* The base map color pixels double array. */
  	private int[][] colorPixels = new int[0][0];
+ 	
+	// The max rho
+ 	private Range rhoRange; 	
+ 	
  	
  	/* The meta data of the map. */
 	private MapMetaData meta;
@@ -121,7 +123,7 @@ import com.mars_sim.core.map.location.Coordinates;
 			logger.config("GPU OpenCL accel enabled.");
 		} catch(Exception e) {
 			hardwareAccel = false;
-			logger.log(Level.SEVERE, "Exception with GPU OpenCL accel when loading kernel program.", e);
+			logger.log(Level.SEVERE, "Exception with GPU OpenCL when loading kernel program.", e);
 		}
  	}
 
@@ -136,7 +138,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	}
 
 	/**
-	 * Get the resolution layer of this data in the parent Map Meta Data stack.
+	 * Gets the resolution layer of this data in the parent Map Meta Data stack.
 	 */
 	@Override
 	public int getResolution() {
@@ -164,7 +166,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	}
 
 	/**
-	 * Get the min and max value of rho supported by this mao data.
+	 * Gets the min and max value of rho supported by this mao data.
 	 */
 	@Override
 	public Range getRhoRange() {
@@ -172,7 +174,7 @@ import com.mars_sim.core.map.location.Coordinates;
 	}
 
 	/**
-	 * Get the default rho for this map data
+	 * Gets the default rho for this map data
 	 */
 	@Override
 	public double getRhoDefault() {
@@ -219,6 +221,11 @@ import com.mars_sim.core.map.location.Coordinates;
 		rhoDefault = pixelHeight / Math.PI;
 		rhoRange = new Range(rhoDefault * MIN_RHO_MULTIPLER,
 							 rhoDefault * MAX_RHO_MULTIPLER);
+		
+//		int r = colorPixels.length;
+//		int c = colorPixels[r-1].length;
+//		int totalElements = r * c;
+//		System.out.println("totalElements: " + totalElements);
  	}
  	
 	/**
@@ -359,6 +366,12 @@ import com.mars_sim.core.map.location.Coordinates;
  		
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
+	
+//		int r = colorPixels.length;
+//		int c = colorPixels[r-1].length;
+//		int totalElements = r * c;
+//		System.out.println("totalElements: " + totalElements);
+	
 		var rendered = false;
 		if (hardwareAccel) {
 			try {
@@ -368,7 +381,7 @@ import com.mars_sim.core.map.location.Coordinates;
 			} catch(Exception e) {
 				hardwareAccel = false;
 				rendered = false; // Fallback to CPU
-				logger.log(Level.SEVERE, "Exception with GPU OpenCL accel map rendering: " + e.getMessage());
+				logger.log(Level.SEVERE, "Exception in GPU OpenCL map rendering: " + e.getMessage());
 			}
 		}
 		
@@ -378,7 +391,7 @@ import com.mars_sim.core.map.location.Coordinates;
 //				logger.config("CPU map rendering successful.");
 			} catch(Exception e) {
 				rendered = false;
-				logger.log(Level.SEVERE, "Exception with CPU map rendering: " + e.getMessage());
+				logger.log(Level.SEVERE, "Exception in CPU map rendering: " + e.getMessage());
 			}
 		}
 
@@ -460,13 +473,13 @@ import com.mars_sim.core.map.location.Coordinates;
 	  * @param scale
 	  */
 	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double rho, int[] mapArray) {
-		 
+	  
 		 // Set the rho this way to avoid artifacts in a quarter of the globe map. Reason unknown.
 		 kernel.setArg(12, (float) rho);
 		 
 		 int size = mapArray.length;
 		 int globalSize = getGlobalSize(size);
-
+		 
 		 CLBuffer<IntBuffer> rowBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
 		 CLBuffer<IntBuffer> colBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
 
@@ -503,7 +516,7 @@ import com.mars_sim.core.map.location.Coordinates;
 				 mapArray[i] = 0;
 			 }
 			 else {
-				 mapArray[i] = colorPixels[x][y];
+				 mapArray[i] = colorPixels[x-1][y-1];
 			 }
 		 }
 
