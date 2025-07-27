@@ -23,7 +23,7 @@
 	<!-- edible - Is the resource edible? -->
 
 	<!-- Life Support Resources -->
-	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">
+	<resource name="Food" type="derived" phase="solid" life-support="true" demand="1.25" edible="true">
 		Represents thermo-stabilized food that is not perishable.</resource>
 	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="1.25" >Potable water</resource>
 	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.75" />

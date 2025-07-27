@@ -42,6 +42,7 @@ import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -70,7 +71,7 @@ class AmountResourceGood extends Good {
     private static final double CO2_COST = 0.0000005;
 	private static final double CL_COST = 0.25;
 	private static final double ICE_COST = 0.5;
-	private static final double FOOD_COST = 0.1;
+	private static final double FOOD_COST = 0.3;
 	private static final double DERIVED_COST = .07;
 	private static final double SOY_COST = 0.05;
 	private static final double CROP_COST = 5;
@@ -106,7 +107,7 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = 0.1;
 	
-	private static final double FOOD_VALUE_MODIFIER = 0.1;
+	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
 	private static final double OXYGEN_VALUE_MODIFIER = 10;
 	private static final double METHANE_VALUE_MODIFIER = 0.07;
@@ -176,10 +177,10 @@ class AmountResourceGood extends Good {
 	
 	private static final double WATER_FLATTENING_FACTOR = 1.2;
 	
-	private static final double COOKED_MEAL_INPUT_FACTOR = 0.05;
+	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
-	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
+	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
@@ -737,7 +738,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_FOOD_PRODUCTION_DEMAND, demand / 2);
+		return MathUtils.between(demand, 0.5, MAX_FOOD_PRODUCTION_DEMAND);
 	}
 
 	/**
@@ -791,6 +792,7 @@ class AmountResourceGood extends Good {
 
 	/**
 	 * Converts an amount resource in the context of an Objective to a commerce type.
+	 * 
 	 * @param resource
 	 * @param objective
 	 * @return

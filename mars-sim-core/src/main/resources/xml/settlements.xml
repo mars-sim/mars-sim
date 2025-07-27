@@ -146,6 +146,7 @@
 
 	<!-- Define the limits for essential resources per Person-->
 	<essential-resources>
+		<resource name="Food" reserve="100" max="1000" />
 		<resource name="Oxygen" reserve="800" max="8000" />
 		<resource name="Methane" reserve="800" max="8000" />
 		<resource name="Methanol" reserve="600" max="6000" />

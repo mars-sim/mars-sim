@@ -69,6 +69,7 @@ public class BudgetResources extends Task {
 		
 	// Data members		
 	private int settlementResource;
+	
 	private double newDemand = 0;
 	
 	/** The administration building the person is using. */

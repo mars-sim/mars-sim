@@ -234,7 +234,7 @@ public class SettlementConfig {
 		}
 	}
 
-	public Map<Integer,ResourceLimits> getEssentialResources() {
+	public Map<Integer, ResourceLimits> getEssentialResources() {
 		return resLimits;
 	}
 
