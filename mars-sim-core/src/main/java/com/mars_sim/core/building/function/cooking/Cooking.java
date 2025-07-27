@@ -39,7 +39,7 @@ import com.mars_sim.core.tool.RandomUtil;
 public class Cooking extends Function {
 
 	/**
-	 * Statitics of a prepared Dish
+	 * Statistics of a prepared Dish.
 	 */
 	public static final class DishStats implements Serializable {
 		/** default serial id. */
@@ -83,7 +83,8 @@ public class Cooking extends Function {
 		}
 
 		/**
-		 * Merge two MealStats objects summing the number of meals and takign the worst & best of the 2.
+		 * Merges two MealStats objects summing the number of meals and takes the worst & best of the 2.
+		 * 
 		 * @param a
 		 * @param b
 		 * @return
@@ -100,18 +101,19 @@ public class Cooking extends Function {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Cooking.class.getName());
 
-	private static final String CONVERTING = "A dish has expired. Converting ";
-	private static final String DISCARDED = " is expired and discarded at ";
-	private static final String PRESERVED = "into preserved food at ";
+	private static final String CONVERTING = "A dish had expired. Converting ";
+	private static final String DISCARDED = " was expired and discarded.";
+	private static final String PRESERVED = " into thermo-stabilized/preserved food.";
 
 	public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
 	public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
 	/**  The base amount of work time (cooking skill 0) to produce one single cooked meal.*/
 	private static final double COOKED_MEAL_WORK_REQUIRED = 8D;
 	// Note : 10 millisols is 15 mins
-	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
-
+	/** The capacity of the water holding tank in kg. */
+	private static final double WATER_TANK_CAPACITY = 5.0;
+	/** The capacity of the water holding tank in kg. */
+	private static final double WASTE_WATER_TANK_CAPACITY = 5.0;
 	private static final double UP = 0.01;
 	private static final double DOWN = 0.007;
 
@@ -119,8 +121,12 @@ public class Cooking extends Function {
 
 	/** The cache for msols */
 	private int cookCapacity;
+	
 	private int mealCounterPerSol = 0;
-
+	/** The amount of waste water in the holding tank. */
+	private double wasteWaterTank;
+	/** The amount of water in the holding tank. */
+	private double waterHoldingTank;
 	// Dynamically adjusted the rate of generating meals
 	private double cleaningAgentPerSol;
 	/** Cleanliness score between -1 and 1. */
@@ -442,25 +448,54 @@ public class Cooking extends Function {
 	 */
 	private void consumeWater() {
 		int sign = RandomUtil.getRandomInt(0, 1);
-		double rand = RandomUtil.getRandomDouble(0.2);
+		double rand = RandomUtil.getRandomDouble(0.1);
 		double usage;
 		if (sign == 0)
-			usage = 1 + rand;
+			usage = .5 + rand;
 		else
-			usage = 1 - rand;
+			usage = .5 - rand;
 
 		// If settlement is rationing water, reduce water usage according to its level
 		var s = building.getSettlement();
 		int level = s.getWaterRationLevel();
 		if (level != 0)
 			usage = usage / 1.5D / level;
-		if (usage > MIN) {
-			s.retrieveAmountResource(ResourceUtil.WATER_ID, usage);
+		
+		// Replenish water from the water holding tank
+		if (waterHoldingTank == 0.0) {
+			// Refill the whole tank
+			// Note: this way, it won't have to call retrieveAmountResource() excessively
+			double shortfall = s.retrieveAmountResource(ResourceUtil.WATER_ID, WATER_TANK_CAPACITY);
+			waterHoldingTank = waterHoldingTank + WATER_TANK_CAPACITY - shortfall;
+		}
+		
+		if (usage <= waterHoldingTank) {
+			waterHoldingTank = waterHoldingTank - usage;
 			s.addWaterConsumption(WaterUseType.PREP_MEAL, usage);
 		}
+		else {
+			usage = usage - waterHoldingTank;
+			waterHoldingTank = 0;
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, usage);
+		}
+		
 		double wasteWaterAmount = usage * .75;
-		if (wasteWaterAmount > 0)
-			store(wasteWaterAmount, ResourceUtil.GREY_WATER_ID, "Cooking::consumeWater");
+		double wasteWaterTemp = wasteWaterTank + wasteWaterAmount;
+
+		if (wasteWaterTemp >= WASTE_WATER_TANK_CAPACITY) {
+			// Drain the whole tank
+			// Note: this way, it won't have to call storeAmountResource() excessively
+			double excess = s.storeAmountResource(ResourceUtil.GREY_WATER_ID, wasteWaterTemp);
+			wasteWaterTemp = wasteWaterTemp - excess;
+			wasteWaterTank = excess;
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, wasteWaterTemp);
+		}
+		
+		else {
+			wasteWaterTank = wasteWaterTank + wasteWaterAmount;
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, wasteWaterAmount);
+		}
+
 	}
 
 	/**
