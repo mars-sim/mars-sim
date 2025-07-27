@@ -18,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
@@ -92,24 +93,28 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         popLabel = new JLabel();
+        popLabel.setHorizontalAlignment(SwingConstants.LEFT);
         popLabel.setFont(font0);
-  
-        JPanel gridPanel = new JPanel(new GridLayout(1, 4));
           
 	    buildingXYLabel = new JLabel();
+	    buildingXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    buildingXYLabel.setFont(font0);
   		
 	    windowXYLabel = new JLabel();
+	    windowXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    windowXYLabel.setFont(font0);
     
 	    mapXYLabel = new JLabel();
+	    mapXYLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 	    mapXYLabel.setFont(font0);
     
+        JPanel gridPanel = new JPanel(new GridLayout(1, 4));
+        gridPanel.setAlignmentX(CENTER_ALIGNMENT);
 	    gridPanel.add(popLabel);
 	    gridPanel.add(windowXYLabel);
 	    gridPanel.add(mapXYLabel);
 	    gridPanel.add(buildingXYLabel);
-	    statusBar.addFullBarComponent(gridPanel, false);
+	    statusBar.addFullBarComponent(gridPanel, true);
 	    
         // Create subPanel for housing the settlement map
 		subPanel = new JPanel(new BorderLayout());

@@ -204,14 +204,14 @@
     </building>
     
 
-    <building id="203" type="Inflatable Greenhouse" xloc="-15.0" yloc="12.0" facing="90.0">
+    <building id="203" type="Algae Pond" xloc="-15.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="202" hatch-facing="west" />
             <connection id="204" hatch-facing="east" />
         </connection-list>
     </building>
 
-    <building id="204" type="Inflatable Greenhouse" xloc="-24.0" yloc="12.0" facing="90.0">
+    <building id="204" type="Algae Pond" xloc="-24.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="203" hatch-facing="west" />
             <connection id="204n5" hatch-facing="east" />        
@@ -227,14 +227,14 @@
         </connection-list>
     </building>
 
-    <building id="205" type="Algae Pond" xloc="-36.0" yloc="12.0" facing="90.0">
+    <building id="205" type="Inflatable Greenhouse" xloc="-36.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="204n5" hatch-facing="west" />
             <connection id="206" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="206" type="Algae Pond" xloc="-45.0" yloc="12.0" facing="90.0">
+    <building id="206" type="Inflatable Greenhouse" xloc="-45.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="205" hatch-facing="west" />
             <connection id="206n7" hatch-facing="east" />
@@ -250,14 +250,14 @@
         </connection-list>
     </building>
     	
-    <building id="207" type="Inflatable Greenhouse" xloc="-57.0" yloc="12.0" facing="90.0">
+    <building id="207" type="Fish Farm" xloc="-57.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="206n7" hatch-facing="west" />
             <connection id="208" hatch-facing="east" />
         </connection-list>
     </building>
 	
-    <building id="208" type="Inflatable Greenhouse" xloc="-66.0" yloc="12.0" facing="90.0">
+    <building id="208" type="Fish Farm" xloc="-66.0" yloc="12.0" facing="90.0">
         <connection-list>
             <connection id="207" hatch-facing="west" />
             <connection id="209" hatch-facing="east" />          
@@ -314,14 +314,14 @@
         </connection-list>
     </building>
 
-    <building id="305" type="Fish Farm" xloc="-36.0" yloc="18.0" facing="90.0">
+    <building id="305" type="Inflatable Greenhouse" xloc="-36.0" yloc="18.0" facing="90.0">
         <connection-list>
             <connection id="304n5" hatch-facing="west" />
             <connection id="306" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="306" type="Fish Farm" xloc="-45.0" yloc="18.0" facing="90.0">
+    <building id="306" type="Inflatable Greenhouse" xloc="-45.0" yloc="18.0" facing="90.0">
         <connection-list>
             <connection id="305" hatch-facing="west" />
             <connection id="306n7" hatch-facing="east" />

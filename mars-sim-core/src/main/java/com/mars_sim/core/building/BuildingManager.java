@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2025-07-20
+ * @date 2025-07-27
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -1275,7 +1275,7 @@ public class BuildingManager implements Serializable {
 		// Find least crowded bot population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building building : buildingSet) {
-			if (building.getCategory() != BuildingCategory.EVA) {
+//			if (building.getCategory() != BuildingCategory.EVA) {
 				RoboticStation roboticStation = building.getRoboticStation();
 				int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
 				if (crowded < -1)
@@ -1288,7 +1288,7 @@ public class BuildingManager implements Serializable {
 				else if (crowded == leastCrowded) {
 					result.add(building);
 				}
-			}
+//			}
 		}
 
 		return result;
