@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2024-07-03
+ * @date 2025-07-26
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -98,7 +98,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
-	private  static final double HEIGHT = 2.5;
+	private static final double HEIGHT = 2.5;
 	/** 500 W heater for use during EVA ingress */
 	private static final double EVA_HEATER_KW = .5D;
 	// Assuming 20% chance for each person to witness or be conscious of the
@@ -218,9 +218,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		this.powerModeCache = PowerMode.FULL_POWER;
 
-		if (length == width) {
+		if (name.contains("Hab") || name.contains("Hub")) {
 			// For Habs and Hubs that have a circular footprint
-			this.floorArea = Math.PI * .25 * length * width;
+			this.floorArea = Math.PI * (.5 * length) * (.5 * length);
 		}
 		else
 			this.floorArea = length * width;

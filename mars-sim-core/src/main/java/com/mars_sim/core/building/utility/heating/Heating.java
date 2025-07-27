@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Heating.java
- * @date 2024-07-26
+ * @date 2025-07-26
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -149,6 +149,8 @@ public class Heating implements Serializable {
 
 	private static double uValueAreaCrackLength, uValueAreaCrackLengthAirlock;
 
+	/** Is this building a round hab or Hub? */
+	private boolean isHabHub = false;
 	/** Is this building a greenhouse? */
 	private boolean isGreenhouse = false;
 	/** Is this building a hallway or tunnel? */
@@ -264,6 +266,9 @@ public class Heating implements Serializable {
 			logger.severe(building, "length: " + length);
 		}
 
+		if (building.getName().contains("Hab") || building.getName().contains("Hub"))
+			isHabHub = true;
+		
 		width = building.getWidth();
 
 		floorArea = building.getFloorArea();
@@ -338,10 +343,18 @@ public class Heating implements Serializable {
 				proximityBarrierScore = proximityBarrierScore * BUILDING_PROXIMITY;
 		}
 		
-		// transmittance or SHGC range from 0 (completely blocking solar radiation) to
+		// Transmittance or SHGC range from 0 (completely blocking solar radiation) to
 		// 1 (completely transmitting solar radiation).
 
-		if (isGreenhouse) {
+		if (isHabHub) { 
+			// has round walls and ceiling
+			hullArea = Math.PI * width * HEIGHT + floorArea;
+
+			transmittance = TRANSMITTANCE_WINDOW;
+			
+			uValueAreaWall = uValue * (Math.PI * width) * HEIGHT * proximityBarrierScore;
+		}
+		else if (isGreenhouse) {
 			// Note that greenhouse has a semi-transparent rooftop
 			// Include the 4 side walls
 			// Take only half of the height of the 2 side walls
@@ -350,21 +363,24 @@ public class Heating implements Serializable {
 			// SHGC values range from 0 (completely blocking solar radiation) to
 			// 1 (completely transmitting solar radiation).
 			transmittance = TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE;
+			
+			uValueAreaWall = uValue * 2D * (width + length) * HEIGHT * proximityBarrierScore;
+
 		} else {
 			// Include the 4 side walls and ceiling
 			hullArea = (width + length) * HEIGHT * 2 + floorArea;
 
 			transmittance = TRANSMITTANCE_WINDOW;
+			
+			uValueAreaWall = uValue * 2D * (width + length) * HEIGHT * proximityBarrierScore;
 		}
 
-		uValueAreaWall = uValue * 2D * (width + length) * HEIGHT * proximityBarrierScore;
-
+		// Assume airChangePerHr = .5 and q_H = 21.4;
 		uValueAreaCeilingFloor = uValue * floorArea;
-		// assuming airChangePerHr = .5 and q_H = 21.4;
+		// Assume four windows
 		uValueAreaCrackLength = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (4 * (.5 + .5)) * proximityBarrierScore;
-		// assuming four windows
+		// Assume two EVA airlocks
 		uValueAreaCrackLengthAirlock = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (2 * (2 + 6) + 4 * (.5 + .5)) * proximityBarrierScore;
-		// assuming two EVA airlock
 
 		tPreset = building.getPresetTemperature();
 
@@ -547,6 +563,8 @@ public class Heating implements Serializable {
 		// mass of water as heat sink
 		if (isConnector) { // 2m*length
 			waterMass = floorArea;
+		} else if (isHabHub) { // 9m*9m round
+			waterMass = floorArea / 1.5;
 		} else if (isGreenhouse) { // 6m*9m, 5m*10m, 12m*18m
 			waterMass += floorArea / 2;
 		} else if (isCommand) { // 7m*9m, 10m*10m
