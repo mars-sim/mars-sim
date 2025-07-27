@@ -383,18 +383,12 @@ public class SimulationBuilder {
 			authority = simulationConfig.getReportingAuthorityFactory().getItem(authorityName);
 		}
 		
-		// Create a random name
-		String settlementName = "New Settlement";
+		// Pick a random name
 		List<String> settlementNames = authority.getSettlementNames();
 		// Use shuffle to alter the order of these settlement names
 		Collections.shuffle(settlementNames);
-		if (!settlementNames.isEmpty()) {
-			int size = settlementNames.size();
-			// Warning: getRandomInt is not working below to truly provide
-			// a random number
-			int rand = RandomUtil.getRandomInt(size-1);
-			settlementName = settlementNames.get(rand);
-		}
+		
+		String settlementName = RandomUtil.getRandomElement(settlementNames);
 		
 		logger.info("Starting a single settlement sim using template '" + template
 				+ "' with settlement name '" + settlementName + "'.");
