@@ -11,14 +11,10 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
@@ -68,16 +64,10 @@ public class TemporalExecutorService implements TemporalExecutor {
      * Create a blank temporal executor
      */
     public TemporalExecutorService(String name) {
-        int maxThreads = SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores();
+        logger.config("Setting up a caching thread factory wuth a caching strategy");
 
-
-        logger.config("Setting up a caching thread factory wuth a max " + maxThreads);
-
-        // This replaces the Executor.newCachedThreadPool method but enforces a max thread
-        executor = new ThreadPoolExecutor(0, maxThreads,
-                                      60L, TimeUnit.SECONDS,
-                                      new SynchronousQueue<>(),
-                                      new ThreadFactoryBuilder().setNameFormat(name + "-%d").build());
+        // Use a standard cached thread pool
+        executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat(name + "-%d").build());
     }
 
     /**

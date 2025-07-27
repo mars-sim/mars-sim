@@ -3,7 +3,7 @@
 	<!ELEMENT simulation-configuration (time-configuration, mission-configuration)>
 	<!ELEMENT time-configuration (base-time-ratio, min-simulated-pulse, max-simulated-pulse, default-time-pulse,
 	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, autosave-number, average-transit-time,
-	unused-cores)>
+	executor-type)>
 	<!ATTLIST simulation-configuration content-url CDATA #IMPLIED>
 	<!ELEMENT base-time-ratio EMPTY>
 	<!ATTLIST base-time-ratio value CDATA #REQUIRED>
@@ -25,8 +25,8 @@
 	<!ATTLIST autosave-number value CDATA #REQUIRED>
 	<!ELEMENT average-transit-time EMPTY>
 	<!ATTLIST average-transit-time value CDATA #REQUIRED>
-	<!ELEMENT unused-cores EMPTY>
-	<!ATTLIST unused-cores value CDATA #REQUIRED>
+	<!ELEMENT executor-type EMPTY>
+	<!ATTLIST executor-type value CDATA #REQUIRED>
 	<!ELEMENT mission-configuration (min-eva-light)>
 	<!ELEMENT min-eva-light EMPTY>
 	<!ATTLIST min-eva-light value CDATA #REQUIRED>
@@ -40,7 +40,7 @@
 		<!-- The base time ratio (TR) is the default simulation time ratio : the ratio of real time to sim time prior to modification
 			Note 1 : It denotes the initial speed of the simulation.
 			     2 : Value must be a positive integer between 16 and 2048 and cannot be zero.
-			     3 : The calculated TR is dependent upon the # of cpu threads available on user's machine.
+			     3 : The calculated TR is dependent upon the # of cpu threads available on users machine.
 			     4 : The base TR value below will be overridden by the calculated TR at the start of the sim.
 		-->
 		<!-- Default: 128. Min is 1. Max is 21870.  -->
@@ -129,11 +129,10 @@
 		<!-- Default: 66 -->
 		<average-transit-time value="66" />
 
-		<!-- unused-cores is the difference between the number of cores and the number of simulation threads -->
-		<!-- unused-cores are the numbers of cores that are free from being used by mars-sim -->
-		<!-- Min : 0 -->
-		<!-- Default: 2 -->
-		<unused-cores value="2" />
+		<!-- executor-type governs the type of temporal executor can be used in a Unitmanager -->
+		<!-- Default: shared : Shared thread model using a Callable -->
+		<!-- thread : Each Temporal runs on a permenant dedicated Thread -->
+		<executor-type value="shared" />
 	</time-configuration>
 
 	<!-- Lists configuration for missions -->

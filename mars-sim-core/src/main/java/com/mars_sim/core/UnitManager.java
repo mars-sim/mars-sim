@@ -34,6 +34,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.unit.TemporalExecutor;
 import com.mars_sim.core.unit.TemporalExecutorService;
+import com.mars_sim.core.unit.TemporalThreadExecutor;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -56,6 +57,10 @@ public class UnitManager implements Serializable, Temporal {
 	private static final int TYPE_BITS = 4;
 	private static final int TYPE_MASK = (1 << (TYPE_BITS)) - 1;
 	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1;
+
+	public static final String THREAD = "thread";
+	public static final String SHARED = "shared";
+	
 
 	// Data members
 	/** Counter of unit identifiers. */
@@ -326,7 +331,12 @@ public class UnitManager implements Serializable, Temporal {
 
 		logger.config("Activating the settlement task pulse for " + s + ".");
 		if (executor == null) {
-			executor = new TemporalExecutorService("Settlement-executor");
+			String execType = SimulationConfig.instance().getExecutorType();
+			executor = switch(execType) {
+				case THREAD -> new TemporalThreadExecutor();
+				case SHARED -> new TemporalExecutorService("Settlement-");
+				default -> throw new IllegalArgumentException("Unknown executor type called " + execType);
+			};
 		}
 		executor.addTarget(s);
 	}

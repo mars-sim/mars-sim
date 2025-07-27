@@ -97,11 +97,12 @@ public class SimulationConfig {
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
 	private static final String BASE_TIME_RATIO = "base-time-ratio";
-	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
 
 	private static final String MISSION_CONFIGURATION = "mission-configuration";
 	private static final String EVA_LIGHT = "min-eva-light";
 	private static final String CONTENT_URL = "content-url";
+
+	protected static final String EXECUTOR_TYPE = "executor-type";
 
 	private static SimulationConfig instance = null;
 
@@ -117,7 +118,7 @@ public class SimulationConfig {
 	private int autosaveInterval = 0;
 	private int numberOfAutoSaves = 0;
 	private int averageTransitTime = 0;
-	private int unusedCores = 0;	
+	private String executorType = null;	
 	
 	/*
 	 * -----------------------------------------------------------------------------
@@ -217,7 +218,7 @@ public class SimulationConfig {
 		
 			defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
 			baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, (int)MasterClock.MAX_TIME_RATIO);
-			unusedCores = loadIntValue(timeConfig, DEFAULT_UNUSEDCORES, 1, 360);
+			executorType = loadValue(timeConfig, EXECUTOR_TYPE);
 			averageTransitTime = loadIntValue(timeConfig, AVERAGE_TRANSIT_TIME, 0, 430);
 			autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);
 			numberOfAutoSaves = loadIntValue(timeConfig, AUTOSAVE_NUMBER, 1, 100);
@@ -355,13 +356,12 @@ public class SimulationConfig {
 	}
 	
 	/**
-	 * The difference between number of cores in the machine and the simulation threads created, 
-	 * i.e. the unused cores. Must be positive.
+	 * The type of temporal executor to use for doing parallel pulse apply.
 	 * 
-	 * @return # of cores
+	 * @return Executor type defined in config
 	 */
-	public int getUnusedCores() {
-		return unusedCores;
+    public String getExecutorType() {
+        return executorType;
 	}
 	
 	/**

@@ -969,10 +969,8 @@ public class MasterClock implements Serializable {
 		if (listenerExecutor == null 
 				|| listenerExecutor.isShutdown()
 				|| listenerExecutor.isTerminated()) {
-			int num = Math.min(1, SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores());
-			if (num <= 0) num = 1;
-			logger.config(3_000, "Setting up " + num + " thread(s) for clock listener.");
-			listenerExecutor = Executors.newFixedThreadPool(num,
+			logger.config(3_000, "Setting up thread(s) for clock listener.");
+			listenerExecutor = Executors.newFixedThreadPool(1,
 					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
 		}
 	}
