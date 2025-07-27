@@ -505,8 +505,8 @@ public class MasterClock implements Serializable {
 			// Note: Catch the large realElapsedMillisec below. Probably due to power save
 			if (realElapsedMillisec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
-				logger.config(10_000, "Elapsed real time is " + realElapsedMillisec 
-						+ " ms (longer than the max time of " + MAX_ELAPSED + " ms).");	
+				logger.config(10_000, "Elapsed real time is " + realElapsedMillisec/1000.0 
+						+ " secs, exceeding the max time of " + MAX_ELAPSED/1000.0 + " secs.");	
 				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
 				// Reset nextPulseTime
@@ -526,7 +526,7 @@ public class MasterClock implements Serializable {
 				if (nextPulseTime > 0)
 					realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.config(10_000, "Elapsed real time is zero. (Re)setting it back to " + realElapsedMillisec + " ms.");
+				logger.config(10_000, "Elapsed real time is zero. Setting it to the expected " + realElapsedMillisec + " ms.");
 			}
 			
 			else {

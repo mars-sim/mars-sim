@@ -158,8 +158,9 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		if (result) {
 			long expectedPulse = lastPulse + 1;
 			if (expectedPulse != newPulse) {
-				// Pulse out of sequence; maybe missed one
-				logger.warning(getName() + " expected pulse #" + expectedPulse + " but received #" + newPulse);
+				// Pulse out of sequence. May have missed one.
+				// Note: this usually happens when restarting the simulation from pause
+				logger.warning(getName() + " expected pulse #" + expectedPulse + " but received #" + newPulse + ".");
 			}
 			lastPulse = newPulse;
 		} else {
@@ -168,7 +169,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 				return true;
 			}
 			else
-				logger.severe(getName() + " rejected pulse #" + newPulse + ". Last pulse was #" + lastPulse);
+				logger.severe(getName() + " rejected pulse #" + newPulse + ". Last pulse was #" + lastPulse+ ".");
 		}
 		return result;
 	}
