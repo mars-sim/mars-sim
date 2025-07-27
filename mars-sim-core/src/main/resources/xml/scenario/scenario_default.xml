@@ -16,7 +16,7 @@
 		</settlement>
 
 		<settlement name="Origin" template="Phase 2-BO" persons="8" robots="8" sponsor="BO">
-			<location longitude="29.75 W" latitude="10.63 N" />
+			<location longitude="20.46 W" latitude="6.26 N" />
 		</settlement>
 		
 		<settlement name="Arcadia" template="Phase 2-EU" persons="8" robots="8" sponsor="ESA">

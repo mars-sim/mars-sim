@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * FoodInventoryTableModel.java
+ * FoodTableModel.java
  * @date 2025-07-24
  * @author Manny Kung
  */
@@ -25,8 +25,6 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 
 	private static final long serialVersionUID = 1L;
 
-	protected static final int NUM_DATA_COL = 7;
-
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
@@ -35,13 +33,17 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 	private static final int SETTLEMENT_COL = TYPE_COL+1;
 	protected static final int NUM_INITIAL_COLUMNS = SETTLEMENT_COL+1;
 
-	private static final int DEMAND_COL = SETTLEMENT_COL+1;
-	private static final int SUPPLY_COL = DEMAND_COL+1;
+	private static final int LOCAL_DEMAND_COL = SETTLEMENT_COL+1;
+	private static final int MARKET_DEMAND_COL = LOCAL_DEMAND_COL+1;
+	private static final int SUPPLY_COL = MARKET_DEMAND_COL+1;
 	static final int MASS_COL = SUPPLY_COL+1;
 	private static final int LOCAL_VP_COL = MASS_COL+1;
 	private static final int MARKET_VP_COL = LOCAL_VP_COL+1;
 	static final int COST_COL = MARKET_VP_COL+1;
 	static final int PRICE_COL = COST_COL+1;
+	
+	protected static final int NUM_DATA_COL = PRICE_COL - LOCAL_DEMAND_COL + 1;
+	
 	static {
 		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
 
@@ -49,11 +51,12 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 		COLUMNS[TYPE_COL] =  new ColumnSpec("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] =  new ColumnSpec("Settlement", String.class);
 
-		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Number.class);
+		COLUMNS[LOCAL_DEMAND_COL] = new ColumnSpec("Local Demand", Number.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec("Market Demand", Number.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Number.class);
 		COLUMNS[MASS_COL] = new ColumnSpec("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Number.class);
-		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Number.class);
+		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Number.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Number.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[COST_COL] = new ColumnSpec("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[PRICE_COL] = new ColumnSpec("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}
@@ -65,12 +68,12 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting",
 					COLUMNS, FoodUtil.getFoodList());
 		
-		setCachedColumns(DEMAND_COL, PRICE_COL);
+		setCachedColumns(LOCAL_DEMAND_COL, PRICE_COL);
 		setSettlementColumn(SETTLEMENT_COL);
 	}
 
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
 	 *
 	 * @param event the unit event.
 	 */
@@ -82,7 +85,7 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 					&& (event.getSource() instanceof Settlement s)) {
 			CategoryKey<Food> row = new CategoryKey<>(s, f);
 			// Update the whole row
-			entityValueUpdated(row, DEMAND_COL, PRICE_COL);
+			entityValueUpdated(row, LOCAL_DEMAND_COL, PRICE_COL);
 		}
 	}
 
@@ -99,8 +102,10 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 			case SETTLEMENT_COL:
 				return selectedSettlement.getName();
 			
-			case DEMAND_COL:
+			case LOCAL_DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandScoreWithID(selectedFood.getID());
+			case MARKET_DEMAND_COL:
+				return selectedSettlement.getGoodsManager().getMarketData(convertFoodToGood(selectedFood)).getDemand();
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyScore(selectedFood.getID());
 			case MASS_COL:
