@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * InitialSettlement.java
- * @version 3.2.0 2021-07-10
+ * @date 2025-07-26
  * @author Barry Evans
  */
 package com.mars_sim.core.structure;

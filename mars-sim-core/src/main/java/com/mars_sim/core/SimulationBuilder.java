@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationBuilder.java
- * @date 2023-03-31
+ * @date 2025-07-26
  * @author Barry Evans
  */
 package com.mars_sim.core;
@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -385,8 +386,12 @@ public class SimulationBuilder {
 		// Create a random name
 		String settlementName = "New Settlement";
 		List<String> settlementNames = authority.getSettlementNames();
+		// Use shuffle to alter the order of these settlement names
+		Collections.shuffle(settlementNames);
 		if (!settlementNames.isEmpty()) {
 			int size = settlementNames.size();
+			// Warning: getRandomInt is not working below to truly provide
+			// a random number
 			int rand = RandomUtil.getRandomInt(size-1);
 			settlementName = settlementNames.get(rand);
 		}

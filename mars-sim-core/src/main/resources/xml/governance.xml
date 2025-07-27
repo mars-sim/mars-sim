@@ -560,8 +560,11 @@
 			<settlement-name name="Xin Chongqing" />
 			<settlement-name name="New Manchuria" />
 			<settlement-name name="Xin Xianggang" />
+			<settlement-name name="Luzhou" />
+			<settlement-name name="Huoxing Cheng" />
+			
 			<rover-name name="Shenzhou" />  <!-- Chinese for divine craft -->
-			<rover-name name="Huoxing" />  <!-- Chinese for "Mars" -->
+			<rover-name name="Zhanshen" />  <!-- Chinese for god of war -->
 			<rover-name name="Zidan" />    <!-- Chinese for bullet -->
 			<rover-name name="Huojian" />  <!-- Chinese for rocket -->
 			<rover-name name="Bolang" />   <!-- Chinese for wave front -->

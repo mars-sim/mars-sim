@@ -208,7 +208,7 @@ implements Entity, UserConfigurable {
 	}
 	
 	/**
-	 * Gets the name of Settlement for this Authority.
+	 * Gets a list of names for the settlement for this Authority.
 	 * 
 	 * @return
 	 */
@@ -217,7 +217,7 @@ implements Entity, UserConfigurable {
 	}
 
 	/**
-	 * Gets the potential names of Vehicles.
+	 * Gets a list of the potential names for vehicles.
 	 * 
 	 * @return
 	 */
