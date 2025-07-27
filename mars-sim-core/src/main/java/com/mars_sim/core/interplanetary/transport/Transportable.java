@@ -16,7 +16,6 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MasterClock;
 
 /**
  * An class for an item that is transported between planets/moons/etc.
@@ -34,9 +33,8 @@ public abstract class Transportable
 	private String name;
 
 	protected static TransportManager tm;
-	protected static MasterClock master;
 
-	public Transportable(String name, Coordinates landingSite) {
+	protected Transportable(String name, Coordinates landingSite) {
 		this.name = name;
 		
 		this.landingSite = landingSite;
@@ -108,7 +106,7 @@ public abstract class Transportable
 		// Future: how do we handle a Mars date before sol 0 ?
 		
 		// Set resupply state based on launch and arrival time.
-		MarsTime now = master.getMarsTime();
+		MarsTime now = tm.getMarsTime();
 		MarsTime nextScheduledEvent = launchDate;
 		state = TransitState.PLANNED;
 		if (now.getMissionSol() < travelSols) {
@@ -192,16 +190,13 @@ public abstract class Transportable
 		return nextEvent;
 	}
 
+	/**
+	 * Compare firstly on arrival data and then secondly on name
+	 */
 	@Override
 	public int compareTo(Transportable o) {
-		int result = 0;
-
-		double arrivalTimeDiff = getArrivalDate().getTimeDiff(o.getArrivalDate());
-		if (arrivalTimeDiff < 0D) {
-			result = -1;
-		} else if (arrivalTimeDiff > 0D) {
-			result = 1;
-		} else {
+		int result  = getArrivalDate().compareTo(o.getArrivalDate());
+		if (result == 0) {
 			// If arrival time is the same, compare by name alphabetically.
 			result = getName().compareTo(o.getName());
 		}
@@ -215,8 +210,7 @@ public abstract class Transportable
 	 * @param mc
 	 * @param transportManager
 	 */
-	static void initalizeInstances(MasterClock mc, TransportManager transportManager) {
-		master = mc;
+	static void initalizeInstances(TransportManager transportManager) {
 		tm = transportManager;
 	}
 }

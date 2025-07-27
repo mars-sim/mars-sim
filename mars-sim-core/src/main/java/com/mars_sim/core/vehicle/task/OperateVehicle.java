@@ -737,7 +737,7 @@ public abstract class OperateVehicle extends Task {
 	 * @return true if destination is at a settlement location.
 	 */
 	private boolean isSettlementDestination() {
-        return unitManager.isSettlement(destination);
+        return unitManager.findSettlement(destination) != null;
     }
 	
 	/**

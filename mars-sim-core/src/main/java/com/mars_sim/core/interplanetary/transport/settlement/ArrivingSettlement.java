@@ -13,7 +13,6 @@ import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.InitialSettlement;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -174,7 +173,7 @@ public class ArrivingSettlement extends Transportable {
 
 	@Override
 	public String toString() {
-		StringBuffer buff = new StringBuffer();
+		var buff = new StringBuilder();
 		buff.append(getName());
 		buff.append(": ");
 		buff.append(getArrivalDate().getDateTimeStamp());
@@ -187,18 +186,15 @@ public class ArrivingSettlement extends Transportable {
 		InitialSettlement spec = new InitialSettlement(getName(), sponsorCode,
 													   template, populationNum, numOfRobots,
 													   getLandingLocation(), null);
-		Settlement newSettlement = build.createFullSettlement(spec);
-		
-		// Sim is already running so add to the active queue
-		sim.getUnitManager().activateSettlement(newSettlement);
+		build.createFullSettlement(spec);
 	}
 
 	/**
 	 * Schedule the launch for a future date.
 	 */
-	public void scheduleLaunch(ScheduledEventManager futures) {
+	public void scheduleLaunch() {
 		// Determine the arrival date
-		MarsTime proposedArrival = master.getMarsTime().addTime(
+		MarsTime proposedArrival = tm.getMarsTime().addTime(
 					(arrivalSols - 1) * 1000D
 					+ 100 
 					+ RandomUtil.getRandomDouble(890));
@@ -208,6 +204,7 @@ public class ArrivingSettlement extends Transportable {
 	
 	@Override
 	public void reinit(UnitManager um) {
+		// This is not needed
 	}
 
     public void setLandingLocation(Coordinates landingLocation) {

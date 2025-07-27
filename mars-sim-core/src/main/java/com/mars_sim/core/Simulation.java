@@ -1415,6 +1415,11 @@ public class Simulation implements ClockListener, Serializable {
 
 			surfaceFeatures.timePassing(pulse);
 
+			if (pulse.isNewSol()) {
+				// Compute reliability daily for each part
+				malfunctionFactory.computePartReliability(pulse.getMarsTime().getMissionSol());
+			}
+		
 			unitManager.timePassing(pulse);
 
 			marketManager.timePassing(pulse);
