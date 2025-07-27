@@ -33,9 +33,12 @@ If applicable, add screenshots to help explain your problem.
 Cut and paste the stacktrace or the log statement from your terminal/command prompt.
 
 **Specifications**
-- OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
-- Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17]
-- Major version and build : [e.g. 3.7.0 build 8814]
+- OS version : [e.g. Windows 11, macOS 15.5, Ubuntu 14.04]
+- Java version : [e.g. Oracle JDK 21.0.7, AdoptOpenJDK 21.0.7]
+- Major version and build : [e.g. pre-3.10.0 build xyz, post-3.10.0 build abc]
+
+**Related Issues and Discussions**
+- Add the links here.
 
 **Additional context**
 - Add any other context about the problem here.
