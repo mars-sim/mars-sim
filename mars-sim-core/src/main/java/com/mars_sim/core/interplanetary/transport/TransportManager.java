@@ -23,6 +23,8 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 
 /**
@@ -42,13 +44,16 @@ public class TransportManager implements Serializable, Temporal {
 
 	private ScheduledEventManager futures;
 
+	private MasterClock clock;
+
 	/**
 	 * Constructor.
 	 */
 	public TransportManager(Simulation sim) {
 		this.eventManager = sim.getEventManager();
+		this.clock = sim.getMasterClock();
 
-		Transportable.initalizeInstances(sim.getMasterClock(), this);
+		Transportable.initalizeInstances(this);
 
 		// Initialize data
 		transportItems = new ArrayList<>();
@@ -78,7 +83,7 @@ public class TransportManager implements Serializable, Temporal {
 				throw new IllegalArgumentException("Arriving settlement has a incorrect RAcode " + a.getSponsorCode());
 			}
 			
-			a.scheduleLaunch(futures);
+			a.scheduleLaunch();
 			logger.config("Scheduling a new settlement called '" + a.getName() + "' to arrive at Sol "
 						+ a.getArrivalDate().getTruncatedDateTimeStamp());
 			transportItems.add(a);
@@ -137,7 +142,7 @@ public class TransportManager implements Serializable, Temporal {
 	 */
 	public void reinitalizeInstances(Simulation sim) {
 		this.eventManager = sim.getEventManager();
-		Transportable.initalizeInstances(sim.getMasterClock(), this);
+		Transportable.initalizeInstances(this);
 
 		UnitManager um = sim.getUnitManager();
 		for(Transportable t : transportItems) {
@@ -147,5 +152,13 @@ public class TransportManager implements Serializable, Temporal {
 
 	public ScheduledEventManager getFutureEvents() {
 		return futures;
+	}
+
+	/**
+	 * Get the current mars time
+	 * @return
+	 */
+	public MarsTime getMarsTime() {
+		return clock.getMarsTime();
 	}
 }

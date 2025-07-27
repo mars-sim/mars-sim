@@ -51,6 +51,16 @@ public class MarsTimeTest extends TestCase {
         assertEquals("Difference of different sol", 1050D, later.getTimeDiff(start));
     }
 
+    public void testCompare() {
+        MarsTime start = new MarsTime(1,1, 1, 100D, 1);
+
+        assertEquals("Compare same time", 0, start.compareTo(start));
+
+        MarsTime later = start.addTime(1000D);
+        assertEquals("Compare old to new", -1, start.compareTo(later));
+        assertEquals("Compare new to old", 1, later.compareTo(start));
+    }
+
     public void testMarsDate() {
         MarsTime start = new MarsTime(1,1, 1, 100D, 1);
         MarsTime later = new MarsTime(1,1, 1, 150D, 1);

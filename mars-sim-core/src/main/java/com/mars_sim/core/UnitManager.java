@@ -16,22 +16,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.moon.Moon;
 import com.mars_sim.core.person.Person;
@@ -39,6 +32,8 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.unit.TemporalExecutor;
+import com.mars_sim.core.unit.TemporalExecutorService;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -63,8 +58,6 @@ public class UnitManager implements Serializable, Temporal {
 	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1;
 
 	// Data members
-	/** Flag true if the class has just been loaded. */
-	private boolean justLoaded = true;
 	/** Counter of unit identifiers. */
 	private int uniqueId = 0;
 	/** The commander's unique id . */
@@ -75,9 +68,8 @@ public class UnitManager implements Serializable, Temporal {
 	/** List of unit manager listeners. */
 	private transient Map<UnitType, Set<UnitManagerListener>> listeners;
 
-	private transient ExecutorService executor;
+	private transient TemporalExecutor executor;
 
-	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
 	/** A map of settlements with its unit identifier. */
@@ -95,16 +87,7 @@ public class UnitManager implements Serializable, Temporal {
 	/** A map of building with its unit identifier. */
 	private Map<Integer, Building> lookupBuilding;
 	/** A map of settlements with its coordinates. */
-	private Map<Coordinates, Integer> settlementCoordinateMap;
-
-
-	
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static Simulation sim = Simulation.instance();
-
-	private static MalfunctionFactory factory = sim.getMalfunctionFactory();
-
-	private static ThreadLocal<Settlement> activeSettlement = new ThreadLocal<>();
+	private transient Map<Coordinates, Settlement> settlementCoordinateMap = new HashMap<>();
 
 	/** The instance of Mars Surface. */
 	private MarsSurface marsSurface;
@@ -127,8 +110,6 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment  = new ConcurrentHashMap<>();
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
-
-		settlementCoordinateMap = new HashMap<>();
 	}
 
 	/**
@@ -201,50 +182,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public Settlement findSettlement(Coordinates c) {
-
-		if (!settlementCoordinateMap.containsKey(c)) {
-			Collection<Settlement> ss = getSettlements();
-
-			Settlement settlement = null;
-			for (Settlement s : ss) {
-				Coordinates coord = s.getCoordinates();
-
-				// Put the coord and id into the map
-				if (!settlementCoordinateMap.containsKey(coord))
-					settlementCoordinateMap.put(coord, s.getIdentifier());
-				if (coord.equals(c)) {
-					settlement = s;
-				}
-			}
-
-			return settlement;
-		}
-
-		Integer i = settlementCoordinateMap.get(c);
-		if (i != null)
-			return lookupSettlement.get(i);
-
-		return null;
-	}
-
-	/**
-	 * Is this a settlement's coordinates ?
-	 *
-	 * @param c {@link Coordinates}
-	 * @return
-	 */
-	public boolean isSettlement(Coordinates c) {
-		if (settlementCoordinateMap == null) {
-			settlementCoordinateMap = new HashMap<>();
-
-			Collection<Settlement> ss = getSettlements();
-
-			for (Settlement s : ss) {
-				settlementCoordinateMap.put(s.getCoordinates(), s.getIdentifier());
-			}
-		}
-		Integer i = settlementCoordinateMap.get(c);
-		return (i != null);
+		return settlementCoordinateMap.get(c);
 	}
 
 	/**
@@ -302,7 +240,10 @@ public class UnitManager implements Serializable, Temporal {
 		int unitIdentifier = unit.getIdentifier();
 
 		switch(unit) {
-			case Settlement s -> lookupSettlement.put(unitIdentifier, s);
+			case Settlement s -> {
+				lookupSettlement.put(unitIdentifier, s);
+				activateSettlement(s);
+			}
 			case Person p -> lookupPerson.put(unitIdentifier, p);
 			case Robot r -> lookupRobot.put(unitIdentifier, r);
 			case Vehicle v -> lookupVehicle.put(unitIdentifier, v);
@@ -365,16 +306,8 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		if (pulse.isNewSol() || justLoaded) {
-			if (factory != null) {
-				// Compute reliability daily for each part
-				factory.computePartReliability(pulse.getMarsTime().getMissionSol());
-			}
-			justLoaded = false;
-		}
-
 		if (pulse.getElapsed() > 0) {
-			runExecutor(pulse);
+			executor.applyPulse(pulse);
 		}
 		else {
 			logger.warning("Zero elapsed pulse #" + pulse.getId());
@@ -383,107 +316,19 @@ public class UnitManager implements Serializable, Temporal {
 		return true;
 	}
 
-	
-	/**
-	 * Sets up executive service.
-	 */
-	private void setupExecutor() {
-		if (executor == null) {
-			int size = (int)(lookupSettlement.size()/2D);
-			int num = Math.min(size, SimulationRuntime.NUM_CORES - simulationConfig.getUnusedCores());
-			if (num <= 0) num = 1;
-			
-			for (Settlement s: getSettlements()) {
-				logger.config(s + " possesses " + s.getNumCitizens() 
-					+ " citizens, " + s.getOwnedVehicleNum() + " vehicles, " 
-					+ s.getBuildingManager().getNumBuildings() + " buildings, and "
-					+ s.getEquipmentSet().size() + " pieces of equipment.");
-			}
-			
-			logger.config("Setting up a total of " + num + " thread(s) for updating " + size + " settlement(s). ");
-			executor = Executors.newFixedThreadPool(num,
-					new ThreadFactoryBuilder().setNameFormat("unitmanager-thread-%d").build());
-		}
-	}
-
-	/**
-	 * Sets up settlement tasks for executive service.
-	 */
-	private void setupTasks() {
-		if (settlementTasks == null || settlementTasks.isEmpty()) {
-			settlementTasks = new HashSet<>();
-			lookupSettlement.values().forEach(this::activateSettlement);
-		}
-	}
-
 	/**
 	 * Adds a settlement to the managed set and activate it for time pulses.
 	 *
 	 * @param s
 	 */
-	public void activateSettlement(Settlement s) {
-		if (!lookupSettlement.containsKey(s.getIdentifier())) {
-			throw new IllegalStateException("Do not know new settlement "
-						+ s.getName());
-		}
+	private void activateSettlement(Settlement s) {
+		settlementCoordinateMap.put(s.getCoordinates(), s);
 
 		logger.config("Activating the settlement task pulse for " + s + ".");
-		settlementTasks.add(new SettlementTask(s));
-	}
-
-	/**
-	 * This method validates whether the current active Settlement in this thread matches
-	 * the owner of an entity. This is a Thread specific method.
-	 *
-	 * @param operation
-	 * @param owner
-	 */
-	public static void validateActiveSettlement(String operation, Unit owner) {
-		Settlement currentSettlement = activeSettlement.get();
-		Settlement owningSettlement;
-		if (owner instanceof Settlement s) {
-			owningSettlement = s;
+		if (executor == null) {
+			executor = new TemporalExecutorService("Settlement-executor");
 		}
-		else {
-			owningSettlement = owner.getAssociatedSettlement();
-		}
-		if ((currentSettlement != null) && !currentSettlement.equals(owningSettlement)) {
-			// Log an error but don't throw an exception; use a temp exception to get a stack trace
-			logger.severe(operation + " is executed by "
-					+ currentSettlement.getName() + " but owner is " + owningSettlement.getName(),
-					new IllegalStateException(operation));
-		}
-	}
-
-	/**
-	 * Fires the clock pulse to each clock listener.
-	 *
-	 * @param pulse
-	 */
-	private void runExecutor(ClockPulse pulse) {
-		setupExecutor();
-		setupTasks();
-		// May use parallelStream() after it's proven to be safe
-		settlementTasks.stream().forEach(s -> s.setCurrentPulse(pulse));
-
-		// Execute all listener concurrently and wait for all to complete before advancing
-		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		try {
-			List<Future<String>> results = executor.invokeAll(settlementTasks);
-			for (Future<String> future : results) {
-				future.get();
-			}
-		}
-		catch (ExecutionException ee) {
-			// Problem running the pulse
-			logger.severe("Problem running the settlement task pulses : ", ee);
-		}
-		catch (InterruptedException ie) {
-			// Program probably exiting
-			if (executor.isShutdown()) {
-				Thread.currentThread().interrupt();
-			}
-		}
+		executor.addTarget(s);
 	}
 
 	/**
@@ -491,7 +336,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public void endSimulation() {
 		if (executor != null)
-			executor.shutdownNow();
+			executor.stop();
 	}
 
 	/**
@@ -677,17 +522,15 @@ public class UnitManager implements Serializable, Temporal {
 		lookupRobot.values().forEach(Robot::reinit);
 		lookupSettlement.values().forEach(Settlement::reinit);
 
-		// Sets up the executor
-		setupExecutor();
 		// Sets up the concurrent tasks
-		setupTasks();
+		settlementCoordinateMap = new HashMap<>();
+		lookupSettlement.values().forEach(this::activateSettlement);
 	}
 
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		activeSettlement.remove();
 
 		lookupSettlement.values().forEach(Settlement::destroy);
 		lookupSite.values().forEach(ConstructionSite::destroy);
@@ -708,41 +551,5 @@ public class UnitManager implements Serializable, Temporal {
 		marsSurface = null;
 
 		listeners = null;
-	}
-
-	/**
-	 * Prepares the Settlement task for setting up its own thread.
-	 */
-	class SettlementTask implements Callable<String> {
-		private Settlement settlement;
-		private ClockPulse currentPulse;
-
-		protected Settlement getSettlement() {
-			return settlement;
-		}
-
-		public void setCurrentPulse(ClockPulse pulse) {
-			this.currentPulse = pulse;
-		}
-
-		private SettlementTask(Settlement settlement) {
-			this.settlement = settlement;
-		}
-
-		@Override
-		public String call() throws Exception {
-			try {
-				activeSettlement.set(settlement);
-				settlement.timePassing(currentPulse);
-				activeSettlement.remove();
-			}
-			catch (RuntimeException rte) {
-				String msg = "Problem with pulse on " + settlement.getName()
-        					  + ": " + rte.getMessage();
-	            logger.severe(msg, rte);
-	            return msg;
-			}
-			return settlement.getName() + " completed pulse #" + currentPulse.getId();
-		}
 	}
 }
