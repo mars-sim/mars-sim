@@ -129,9 +129,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final double MAX_SCORE = 500;
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
 	
-	private static final double RATE_FACTOR = 10;
+	private static final double RATE_FACTOR = 1.1;
 	private static final double INPUT_BIAS = 0.9;
-	private static final double MATERIAL_BIAS = 5;
+	private static final double MATERIAL_BIAS = 2.5;
 	
 
     public ToggleResourceProcessMeta() {
@@ -349,13 +349,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		GoodsManager gm = settlement.getGoodsManager();
 		for (int resource : set) {
 			// Gets the vp for this resource
-			// Add 1 to avoid being less than 1
-			double vp = gm.getGoodValuePoint(resource);
+			// Add .25 to avoid being less than 1
+			double vp = gm.getGoodValuePoint(resource) + .25;
 
 			// Gets the supply of this resource
 			// Note: use supply instead of stored amount.
 			// Stored amount is slower and more time consuming
-			double supply = gm.getSupplyScore(resource);
+//			double supply = gm.getSupplyScore(resource);
 
 			if (input) {
 				// For inputs: 
@@ -369,7 +369,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 				
-				double mrate = rate * vp * vp * INPUT_BIAS / (supply/100.0 + 0.001) ;
+				double mrate = rate * vp * vp * INPUT_BIAS;// / (supply/100.0 + 0.001) ;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -380,12 +380,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// e.g. For CO2, limit the score
 					score += mrate;
-				} else if (isInSitu(resource)) {
-					// If in-situ, increase the score 
-					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS;
-				} else if (isRawMaterial(resource)) {
-					// If in-situ, adjust the score with MATERIAL_BIAS
+				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
+					score += mrate * MATERIAL_BIAS ;
+				} else if (isRawMaterial(resource)) { // ore, minerals, sand
 					score += mrate / MATERIAL_BIAS;
+				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water
+					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS;	
+				} else if (isInSitu(resource)) { // ice, regolith
+					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS / MATERIAL_BIAS;
 				} else {
 					score += mrate;
 				}
@@ -413,7 +415,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 
-				double mrate = rate * vp * vp / (supply/100.0 + 0.001);
+				double mrate = rate * vp * vp;// / (supply/100.0 + 0.001);
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
@@ -421,14 +423,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 					score += mrate;
-				} else if (isRawMaterial(resource)) {
-					// If in-situ, adjust the score with MATERIAL_BIAS
+				} else if (isRawMaterial(resource)) {  // ore, minerals, sand
 					score += mrate * MATERIAL_BIAS ;
-				} else if (isInSitu(resource)) {
-					// If in-situ, increase the score 
-					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;	
-				} else if (ResourceUtil.isCriticalResource(resource)) {
-					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * 10;
+				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;
+				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * MATERIAL_BIAS * MATERIAL_BIAS;
 				} else
 					score += mrate;
 			}

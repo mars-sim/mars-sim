@@ -67,7 +67,9 @@ public class Farming extends Function {
 	private static final double MIN  = .00001D;
 	
 	private static final String CROPS = "crops";
-	private static final String POWER_GROWING_CROP = "power-growing-crop";
+	
+//	Not in use currently but may use in future : private static final String POWER_GROWING_CROP = "power-growing-crop";
+	
 	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
 	private static final String GROWING_AREA = "growing-area";
 
@@ -90,8 +92,6 @@ public class Farming extends Function {
 	private int identifer;
 	/** The number of crops to plant. */
 	private int numCrops2Plant;
-
-	private double powerGrowingCrop;
 	
 	private double powerSustainingCrop;
 	/** The total growing area for all crops. */		
@@ -156,7 +156,7 @@ public class Farming extends Function {
 		
 		defaultCropNum = spec.getIntegerProperty(CROPS);
 
-		powerGrowingCrop = spec.getDoubleProperty(POWER_GROWING_CROP);
+//		double powerGrowingCrop = spec.getDoubleProperty(POWER_GROWING_CROP);
 		powerSustainingCrop = spec.getDoubleProperty(POWER_SUSTAINING_CROP);
 		maxGrowingArea = spec.getDoubleProperty(GROWING_AREA);
 		remainingArea = maxGrowingArea;

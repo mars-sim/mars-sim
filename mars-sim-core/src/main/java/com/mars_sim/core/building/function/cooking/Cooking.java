@@ -447,55 +447,114 @@ public class Cooking extends Function {
 	 * Consumes a certain amount of water for each meal.
 	 */
 	private void consumeWater() {
-		int sign = RandomUtil.getRandomInt(0, 1);
-		double rand = RandomUtil.getRandomDouble(0.1);
-		double usage;
-		if (sign == 0)
-			usage = .5 + rand;
-		else
-			usage = .5 - rand;
+		double waterUsage = RandomUtil.getRandomDouble(0.1, 0.2);
 
 		// If settlement is rationing water, reduce water usage according to its level
 		var s = building.getSettlement();
 		int level = s.getWaterRationLevel();
 		if (level != 0)
-			usage = usage / 1.5D / level;
+			waterUsage = waterUsage / 1.5D / level;
 		
-		// Replenish water from the water holding tank
-		if (waterHoldingTank == 0.0) {
-			// Refill the whole tank
-			// Note: this way, it won't have to call retrieveAmountResource() excessively
-			double shortfall = s.retrieveAmountResource(ResourceUtil.WATER_ID, WATER_TANK_CAPACITY);
-			waterHoldingTank = waterHoldingTank + WATER_TANK_CAPACITY - shortfall;
-		}
+		waterUsage = retrieveFromTank(ResourceUtil.WATER_ID, s, waterHoldingTank, waterUsage, WATER_TANK_CAPACITY);
 		
-		if (usage <= waterHoldingTank) {
-			waterHoldingTank = waterHoldingTank - usage;
-			s.addWaterConsumption(WaterUseType.PREP_MEAL, usage);
+		double wasteWaterAmount = waterUsage * .75;
+		
+		storeToTank(ResourceUtil.GREY_WATER_ID, s, wasteWaterTank, wasteWaterAmount, WASTE_WATER_TANK_CAPACITY);
+		
+	}
+	
+	/**
+	 * Retrieves a resource from a holding tank.
+	 * 
+	 * @param resource
+	 * @param s
+	 * @param tank
+	 * @param consuming
+	 * @param cap
+	 * @return the amount it can take
+	 */
+	public double retrieveFromTank(int resource, Settlement s, double tank, double consuming, double cap) {
+		
+		double canConsume = 0;
+				
+		if (consuming <= tank) {
+			// Consume it from the tank
+			tank = tank - consuming;
+			
+			canConsume = consuming;
+			
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, canConsume);
 		}
 		else {
-			usage = usage - waterHoldingTank;
-			waterHoldingTank = 0;
-			s.addWaterConsumption(WaterUseType.PREP_MEAL, usage);
+			// Note: this way, it won't have to call retrieveAmountResource() excessively
+			double shortfall = s.retrieveAmountResource(resource, cap);
+			double available = cap - shortfall + tank;
+			
+			if (available >= consuming) {
+				// the resource holder has enough to fill up the tank	
+				canConsume = consuming;
+						
+				tank = available - canConsume;
+				// Not enough resource 
+				s.addWaterConsumption(WaterUseType.PREP_MEAL, canConsume);
+			}
+			else {
+				// the resource holder doesn't have enough to fill up the tank	
+				canConsume = available;
+				
+				tank = 0;
+				// Has enough resource
+				s.addWaterConsumption(WaterUseType.PREP_MEAL, canConsume);
+			}
 		}
 		
-		double wasteWaterAmount = usage * .75;
-		double wasteWaterTemp = wasteWaterTank + wasteWaterAmount;
+		waterHoldingTank = tank;
+		
+		return canConsume;
+	}
+	
+	
+	/**
+	 * Stores a resource to a holding tank.
+	 * 
+	 * @param resource
+	 * @param s
+	 * @param tank
+	 * @param storing
+	 * @param cap
+	 * @return canStore
+	 */
+	public double storeToTank(int resource, Settlement s, double tank, double storing, double cap) {
+	
+		double canStore = tank + storing;
 
-		if (wasteWaterTemp >= WASTE_WATER_TANK_CAPACITY) {
+		if (canStore >= cap) {
 			// Drain the whole tank
 			// Note: this way, it won't have to call storeAmountResource() excessively
-			double excess = s.storeAmountResource(ResourceUtil.GREY_WATER_ID, wasteWaterTemp);
-			wasteWaterTemp = wasteWaterTemp - excess;
-			wasteWaterTank = excess;
-			s.addWaterConsumption(WaterUseType.PREP_MEAL, wasteWaterTemp);
+			double excess = s.storeAmountResource(resource, canStore);
+			// Update what can be stored
+			canStore = canStore - excess;
+			
+			tank = excess;
+			
+			if (tank >= cap) {
+				logger.log(s, Level.WARNING, 30_000, getBuilding() + " - The tank for " + ResourceUtil.findAmountResourceName(resource)
+					+ " was already full at " + Math.round(cap) + ".");
+			}
+			
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, storing);
 		}
 		
 		else {
-			wasteWaterTank = wasteWaterTank + wasteWaterAmount;
-			s.addWaterConsumption(WaterUseType.PREP_MEAL, wasteWaterAmount);
+			
+			tank = canStore;
+			
+			s.addWaterConsumption(WaterUseType.PREP_MEAL, storing);
 		}
 
+		wasteWaterTank = tank;
+		
+		return canStore;
 	}
 
 	/**

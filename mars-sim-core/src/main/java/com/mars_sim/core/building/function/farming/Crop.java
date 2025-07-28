@@ -18,8 +18,10 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.WaterUseType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -59,6 +61,11 @@ public class Crop implements Comparable<Crop>, Entity {
 	private static final int O2_INDEX = 4;
 	private static final int CO2_INDEX = 5;
 
+	
+	/** The capacity of the water holding tank in kg. */
+	private static final double WATER_TANK_CAPACITY = 5.0;
+	/** The capacity of the water holding tank in kg. */
+	private static final double FERTILIZER_TANK_CAPACITY = 5.0;
 	/** 
 	 * The range of wavelengths that corresponds to about 45% of the energy of 
 	 * solar radiation is the 400-700 nm range, which is commonly referred to 
@@ -158,8 +165,11 @@ public class Crop implements Comparable<Crop>, Entity {
 	
 	private int sunrise;
 	private int sunset;
-	
-	
+
+	/** The amount of fertilizer in the holding tank. */
+	private double fertilizerHoldingTank;
+	/** The amount of water in the holding tank. */
+	private double waterHoldingTank;
 	/** The total amount of light received by this crop. */
 //	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
@@ -1089,18 +1099,75 @@ public class Crop implements Comparable<Crop>, Entity {
 		return effectivePAR;
 	}
 
+//	/**
+//	 * Retrieves water or grey water from the Settlement and record the usage in the Farm.
+//	 * 
+//	 * @param amount Amount being retrieved
+//	 * @param id Resource id
+//	 */
+//	private void retrieveWater(double amount, int id) {
+//		if (amount > 0) {
+//			retrieve(amount, id);
+//			// Record the amount of water or grey water taken up by the crop
+//			farm.addCropUsage(getName(), amount, id);		
+//		}
+//	}
+	
 	/**
-	 * Retrieves water or grey water from the Settlement and record the usage in the Farm.
+	 * Retrieves a resource from a holding tank.
 	 * 
-	 * @param amount Amount being retrieved
-	 * @param id Resource id
+	 * @param resource
+	 * @param s
+	 * @param tank
+	 * @param consuming
+	 * @param cap
+	 * @return the amount it can take
 	 */
-	private void retrieveWater(double amount, int id) {
-		if (amount > 0) {
-			retrieve(amount, id);
-			// Record the amount of water or grey water taken up by the crop
-			farm.addCropUsage(getName(), amount, id);		
+	public double retrieveFromTank(int resource, Settlement s, double tank, double consuming, double cap) {
+		
+		double canConsume = 0;
+				
+		if (consuming <= tank) {
+			// Consume it from the tank
+			tank = tank - consuming;
+			
+			canConsume = consuming;
+			
+			farm.addCropUsage(getName(), canConsume, resource);
 		}
+		else {
+			// Note: this way, it won't have to call retrieveAmountResource() excessively
+			double shortfall = s.retrieveAmountResource(resource, cap);
+			double available = cap - shortfall + tank;
+			
+			if (available >= consuming) {
+				// the resource holder has enough to fill up the tank	
+				canConsume = consuming;
+						
+				tank = available - canConsume;
+				// Not enough resource 
+				farm.addCropUsage(getName(), canConsume, resource);
+			}
+			else {
+				// the resource holder doesn't have enough to fill up the tank	
+				canConsume = available;
+				
+				tank = 0;
+				// Has enough resource
+				farm.addCropUsage(getName(), canConsume, resource);
+			}
+		}
+		
+		if (resource == ResourceUtil.WATER_ID) {
+			waterHoldingTank = tank;
+//			System.out.println(building.getName() + " " + getName() + " water tank: " + Math.round(tank * 1000.0)/1000.0
+//					+ "  canConsume: " + Math.round(canConsume * 1000.0)/1000.0);
+		}
+		else {
+			fertilizerHoldingTank = tank;
+		}
+		
+		return canConsume;
 	}
 	
 	/**
@@ -1114,72 +1181,30 @@ public class Crop implements Comparable<Crop>, Entity {
 		// Calculate water usage (kg * millisols / 1000 * square meter)
 		double waterReq = compositeFactor * averageWaterNeeded * growingArea * time / 1000;
 
-		// Determine the amount of grey water available.
-		double greyWaterStored = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID);
-		double greyWaterAvailable = Math.min(greyWaterStored * greyFilterRate * time, greyWaterStored);
-		double waterUsed = 0;
-		double greyWaterUsed = 0;
-		double waterModifier = 0;
-		double fertilizerModifier = 0;
+		double waterUsage = retrieveFromTank(ResourceUtil.WATER_ID, building.getSettlement(), 
+				waterHoldingTank, waterReq, WATER_TANK_CAPACITY);
 
-		// First water crops with grey water if it is available.
-		if (greyWaterAvailable >= waterReq) {
-			greyWaterUsed = waterReq;
-			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
-			waterModifier = 1D;
-		}
-
-		else {
-			// If not enough grey water, use water
-			greyWaterUsed = greyWaterAvailable;
-			retrieveWater(greyWaterUsed, ResourceUtil.GREY_WATER_ID);
-
-			waterReq = waterReq - greyWaterUsed;
-			double waterStored = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-
-			if (waterStored >= waterReq) {
-				waterUsed = waterReq;				
-//				logger.info(this, 20_000, "waterUsed: " + Math.round(waterUsed * 1000.0)/1000.0);
-				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
-
-				waterModifier = 1D;
-			}
-			else {
-				// not enough water
-				waterUsed = waterStored;
-//				logger.info(this, 20_000, "waterUsed: " + Math.round(waterUsed * 1000.0)/1000.0);
-				retrieveWater(waterUsed, ResourceUtil.WATER_ID);
-
-				// Incur penalty if water is NOT available
-				// Avoid divided by a very low waterRequired
-				waterModifier = (greyWaterUsed + waterUsed) / (waterReq + .005);
-			}
-
-			double fertilizerAvailable = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.FERTILIZER_ID);
-			// The amount of fertilizer to be used depends on the water used
-			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * waterUsed;
-			double fertilizerUsed = fertilizerRequired;
-
-			if (fertilizerUsed > fertilizerAvailable) {
-				// not enough fertilizer
-				fertilizerUsed = fertilizerAvailable;
-				// should incur penalty due to insufficient fertilizer
-				fertilizerModifier = fertilizerUsed / (fertilizerRequired + 0.005);
-			} else {
-				// there's enough fertilizer
-				fertilizerModifier = 1D;
-			}
-
-			if (fertilizerUsed > 0) {
-				retrieve(fertilizerUsed, ResourceUtil.FERTILIZER_ID);
-			}
-
-			adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_INDEX);
-
-		}
+		double waterModifier = 1; 
+		
+		if (waterReq > 0)
+			waterModifier = MathUtils.between(1.05 * waterUsage / waterReq, .01, 1);
 
 		adjustEnvironmentFactor(waterModifier, WATER_INDEX);
+		
+		
+		
+		// The amount of fertilizer to be used depends on the water used
+		double fertilizerReq = FERTILIZER_NEEDED_WATERING * waterUsage;
+		
+		double fertilizerUsage = retrieveFromTank(ResourceUtil.FERTILIZER_ID, building.getSettlement(), 
+				fertilizerHoldingTank, fertilizerReq, FERTILIZER_TANK_CAPACITY);
 
+		double fertilizerModifier = 1;
+		
+		if (fertilizerReq > 0)
+			fertilizerModifier = MathUtils.between(1.05 * fertilizerUsage / fertilizerReq, .01, 1);
+		
+		adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_INDEX);
 	}
 	
 	/**

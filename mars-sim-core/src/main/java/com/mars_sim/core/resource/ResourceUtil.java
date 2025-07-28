@@ -425,14 +425,27 @@ public class ResourceUtil {
 	}
 	
 	/**
-	 * Is this a critical resource ?
+	 * Is this tier 1 resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isCriticalResource(int resource) {
+	public static boolean isTier1Resource(int resource) {
 		return switch (resource) {
-			case BRINE_WATER_ID, WATER_ID, METHANE_ID -> true;
+			case WATER_ID, METHANE_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
+	 * Is this tier 1 resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isDerivedResource(int resource) {
+		return switch (resource) {
+			case BRINE_WATER_ID -> true;
 			default -> false;
 		};
 	}
@@ -445,7 +458,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isRawMaterial(int resource) {
 		return switch (resource) {
-			case SAND_ID, BRINE_WATER_ID, 
+			case SAND_ID, 
 					// 6 types of ores :
 					GYPSUM_ID,
 					BASALTIC_ID,
