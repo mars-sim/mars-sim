@@ -69,9 +69,12 @@ public class MasterClock implements Serializable {
 	/** The maximum allowable elapsed time [in ms] before action is taken. */
 	private static final int MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
 
-	/** The maximum allowable sleep time [in ms] before action is taken. */
-	private static final int MAX_SLEEP = 2_000;
+	/** The execution time limit [in ms] before action is taken. */
+	private static final int EXE_UPPER_LIMIT = 3_000;
 	
+	/** The TPS lower limit before action is taken. */
+	private static final double TPS_LOWER_LIMIT = 0.5;
+				
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
 	private static final int NEW_SLEEP = 100;
 	
@@ -1262,20 +1265,6 @@ public class MasterClock implements Serializable {
 		
 		// if sleepTime is negative continuously, will consider calling Thread.sleep() 
 		// to pause the execution of this thread and allow other threads to complete.
-
-		// NOTE: When resuming from power save, executionTime is often very high
-		// Do NOT delete the followings. Very useful for debugging.
-		if (executionTime > 1000) {
-			String msg = String.format(
-				// "sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
-				"Abnormal execution time detected : %d ms.", 
-//				+ "millisol/sec=%.2f, pulse/sec=%.2f, mspp=%.2f, ms/pulse=%.2f, ",
-				executionTime
-//				sleepTime, desiredTR, actualTR, 
-//				desiredMsolPerSec, desiredPulsesPerSec, mspp, millisecPerPulse 
-				);
-	    	logger.severe(msg);
-		}
 	    
 	    if (sleepTime < 0)
 	    	sleepTime = 0;
@@ -1338,15 +1327,20 @@ public class MasterClock implements Serializable {
 					// Get the sleep time
 					calculateSleepTime();
 					
-					if (executionTime > MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
-
-						logger.warning(30_000, 
-								// "sleepTime: " + sleepTime + " ms.  "
-								"executionTime: " + executionTime
-								+ "  optMilliSolPerPulse: " + Math.round(optMilliSolPerPulse * 1000.0)/1000.0
-								+ "  ave pulse: " + getAveragePulsesPerSecond());
-						// Set the sleep time in proportion to the anomalous executionTime
-						sleepTime = executionTime/30;
+					// NOTE: When resuming from power save, executionTime is often very high
+					// Do NOT delete the followings. Very useful for debugging.
+					if (executionTime > EXE_UPPER_LIMIT) {
+				    	logger.severe(String.format("Abnormal execution time: %d ms.", executionTime));
+						// Slow down the time ratio
+						decreaseSpeed();
+						
+						double tps = getAveragePulsesPerSecond();
+						
+						if (tps < TPS_LOWER_LIMIT) {			
+							logger.warning(30_000, " Average TPS: " + tps);
+							// Slow down the time ratio
+							decreaseSpeed();
+						}
 					}
 				}
 				else if (!isPaused) {
