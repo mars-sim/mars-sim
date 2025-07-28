@@ -314,14 +314,14 @@
         </connection-list>
     </building>
 
-    <building id="305" type="Inflatable Greenhouse" xloc="-36.0" yloc="18.0" facing="90.0">
+    <building id="305" type="Bioreactor H1" xloc="-36.0" yloc="18.0" facing="0.0">
         <connection-list>
             <connection id="304n5" hatch-facing="west" />
             <connection id="306" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="306" type="Inflatable Greenhouse" xloc="-45.0" yloc="18.0" facing="90.0">
+    <building id="306" type="Bioreactor H2" xloc="-45.0" yloc="18.0" facing="0.0">
         <connection-list>
             <connection id="305" hatch-facing="west" />
             <connection id="306n7" hatch-facing="east" />
@@ -407,14 +407,14 @@
         </connection-list>
     </building>
     
-    <building id="405" type="Inflatable Greenhouse" xloc="-36.0" yloc="24.0" facing="90.0">
+    <building id="405" type="Bioreactor M1" xloc="-36.0" yloc="24.0" facing="0.0">
         <connection-list>
             <connection id="404n5" hatch-facing="west" />
             <connection id="406" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="406" type="Inflatable Greenhouse" xloc="-45.0" yloc="24.0" facing="90.0">
+    <building id="406" type="Bioreactor G1" xloc="-45.0" yloc="24.0" facing="0.0">
         <connection-list>
             <connection id="405" hatch-facing="west" />
             <connection id="406n7" hatch-facing="east" />

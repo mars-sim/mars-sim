@@ -385,7 +385,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (isRawMaterial(resource)) { // ore, minerals, sand
 					score += mrate / MATERIAL_BIAS;
 				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water
-					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS;	
+					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS / MATERIAL_BIAS;	
 				} else if (isInSitu(resource)) { // ice, regolith
 					score += mrate / MATERIAL_BIAS / MATERIAL_BIAS / MATERIAL_BIAS;
 				} else {
@@ -426,7 +426,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (isRawMaterial(resource)) {  // ore, minerals, sand
 					score += mrate * MATERIAL_BIAS ;
 				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
-					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS;
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * MATERIAL_BIAS;
 				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water
 					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * MATERIAL_BIAS * MATERIAL_BIAS;
 				} else

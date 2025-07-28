@@ -113,7 +113,8 @@ public class ResourceUtil {
 	public static final int FERTILIZER_ID = TOILET_TISSUE_ID + 1;
 	public static final int NACLO_ID = FERTILIZER_ID + 1; 
 	
-	public static final int LEAVES_ID = NACLO_ID + 1;
+	public static final int GLUCOSE_ID = NACLO_ID + 1;
+	public static final int LEAVES_ID = GLUCOSE_ID + 1;
 	public static final int FISH_OIL_ID = LEAVES_ID + 1;
 	public static final int EPSOM_SALT_ID = FISH_OIL_ID + 1;
 	public static final int TABLE_SALT_ID = EPSOM_SALT_ID + 1;
@@ -182,6 +183,7 @@ public class ResourceUtil {
 		fixedResources.put("hydrogen", HYDROGEN_ID);
 		fixedResources.put("ice", ICE_ID);
 		fixedResources.put("kamacite", KAMACITE_ID);
+		fixedResources.put("glucose", GLUCOSE_ID);
 		fixedResources.put("leaves", LEAVES_ID);
 		fixedResources.put("lime", LIME_ID);
 		fixedResources.put("magnesite", MAGNESITE_ID);
@@ -438,14 +440,14 @@ public class ResourceUtil {
 	}
 	
 	/**
-	 * Is this tier 1 resource ?
+	 * Is this derived resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
 	public static boolean isDerivedResource(int resource) {
 		return switch (resource) {
-			case BRINE_WATER_ID -> true;
+			case GLUCOSE_ID, BRINE_WATER_ID, LEAVES_ID -> true;
 			default -> false;
 		};
 	}

@@ -691,7 +691,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 			
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="10">
@@ -898,12 +898,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="10.0" />
 			</thermal-generation>
-			
-			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
-			</waste-processing>				
-			
 		</functions>
 	</building>
 	<!-- end of Half Core A -->
@@ -953,16 +947,297 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="10.0" />
 			</thermal-generation>
-			
-			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
-			</waste-processing>				
-			
+
 		</functions>
 	</building>
 	<!-- end of Half Core B -->
 
+	<building type="Bioreactor H1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
+		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
+			to produce gases and compounds that are vital to the survival of the settlers.
+		</description>
+		<power-required base-power="5.0" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="2" power-required="0.2">
+				<activity>
+					<activity-spot xloc="-2.86" yloc="1.67" />
+					<activity-spot xloc="0.76" yloc="-0.53" />										
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+			
+			<power-storage capacity="10" discharge-rate="1.2"/>
+
+			<research tech-level="4" capacity="8">
+				<!-- Sciences that can be researched at the laboratory. -->
+				<research-specialty name="BIOLOGY" />
+				<research-specialty name="CHEMISTRY" />
+				<activity>
+					<activity-spot xloc="2.72" yloc="0.45" />
+					<activity-spot xloc="0.90" yloc="0.45" />
+					
+					<activity-spot xloc="-1.2" yloc="0.45" />
+					<activity-spot xloc="-2.43" yloc="0.45" />
+					
+					<activity-spot xloc="2.32" yloc="-0.53" />
+					<activity-spot xloc="1.12" yloc="-1.76" />
+					
+					<activity-spot xloc="-1.56" yloc="-0.53" />
+					<activity-spot xloc="-2.65" yloc="-1.76" />	
+				</activity>
+			</research>
+			
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="4"/>
+				<activity>
+					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="-1.34" yloc="1.68" />		
+					<activity-spot xloc="2.18" yloc="-1.74" />	
+					<activity-spot xloc="-1.50" yloc="-1.75" />											
+				</activity>
+			</resource-processing>
+				
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.63" yloc="1.66" />
+					<activity-spot xloc="-3.28" yloc="-1.04" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="8000">	
+				<resource-capacity type="glucose" amount="1000.0" />
+				<resource-capacity type="water" amount="400.0" />
+				<resource-capacity type="acetic acid" amount="6000.0" />
+				<resource-capacity type="hydrogen" amount="1600.0" />							
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="20.0" />
+			</thermal-generation>		
+		</functions>
+	</building>
+	<!-- end of Bioreactor H1 -->
+
+	<building type="Bioreactor H2" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
+		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
+			to produce gases and compounds that are vital to the survival of the settlers.
+		</description>
+		<power-required base-power="5.0" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="2" power-required="0.2">
+				<activity>
+					<activity-spot xloc="-2.86" yloc="1.67" />
+					<activity-spot xloc="0.76" yloc="-0.53" />										
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+			
+			<power-storage capacity="10" discharge-rate="1.2"/>
+
+			<research tech-level="4" capacity="8">
+				<!-- Sciences that can be researched at the laboratory. -->
+				<research-specialty name="BIOLOGY" />
+				<research-specialty name="CHEMISTRY" />
+				<activity>
+					<activity-spot xloc="2.72" yloc="0.45" />
+					<activity-spot xloc="0.90" yloc="0.45" />
+					
+					<activity-spot xloc="-1.2" yloc="0.45" />
+					<activity-spot xloc="-2.43" yloc="0.45" />
+					
+					<activity-spot xloc="2.32" yloc="-0.53" />
+					<activity-spot xloc="1.12" yloc="-1.76" />
+					
+					<activity-spot xloc="-1.56" yloc="-0.53" />
+					<activity-spot xloc="-2.65" yloc="-1.76" />	
+				</activity>
+			</research>
+			
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
+				<activity>
+					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="-1.34" yloc="1.68" />		
+					<activity-spot xloc="2.18" yloc="-1.74" />	
+					<activity-spot xloc="-1.50" yloc="-1.75" />													
+				</activity>
+			</resource-processing>
+				
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.63" yloc="1.66" />
+					<activity-spot xloc="-3.28" yloc="-1.04" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="8000">	
+				<resource-capacity type="glucose" amount="1000.0" />
+				<resource-capacity type="water" amount="1000.0" />
+				<resource-capacity type="Carbon dioxide" amount="1000.0" />
+				<resource-capacity type="hydrogen" amount="4000.0" />							
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="20.0" />
+			</thermal-generation>		
+		</functions>
+	</building>
+	<!-- end of Bioreactor H2 -->
+	
+	<building type="Bioreactor M1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
+		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
+			to produce gases and compounds that are vital to the survival of the settlers.
+		</description>
+		<power-required base-power="5.0" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="2" power-required="0.2">
+				<activity>
+					<activity-spot xloc="-2.86" yloc="1.67" />
+					<activity-spot xloc="0.76" yloc="-0.53" />										
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+			
+			<power-storage capacity="10" discharge-rate="1.2"/>
+
+			<research tech-level="4" capacity="8">
+				<!-- Sciences that can be researched at the laboratory. -->
+				<research-specialty name="BIOLOGY" />
+				<research-specialty name="CHEMISTRY" />
+				<activity>
+					<activity-spot xloc="2.72" yloc="0.45" />
+					<activity-spot xloc="0.90" yloc="0.45" />
+					
+					<activity-spot xloc="-1.2" yloc="0.45" />
+					<activity-spot xloc="-2.43" yloc="0.45" />
+					
+					<activity-spot xloc="2.32" yloc="-0.53" />
+					<activity-spot xloc="1.12" yloc="-1.76" />
+					
+					<activity-spot xloc="-1.56" yloc="-0.53" />
+					<activity-spot xloc="-2.65" yloc="-1.76" />	
+				</activity>
+			</research>
+			
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
+				<activity>
+					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="-1.34" yloc="1.68" />		
+					<activity-spot xloc="2.18" yloc="-1.74" />	
+					<activity-spot xloc="-1.50" yloc="-1.75" />													
+				</activity>
+			</resource-processing>
+				
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.63" yloc="1.66" />
+					<activity-spot xloc="-3.28" yloc="-1.04" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="8000">
+				<resource-capacity type="Methanol" amount="640.0" />
+				<resource-capacity type="Hydrogen" amount="40.0" />
+				<resource-capacity type="Methane" amount="3200.0" />
+				<resource-capacity type="Water" amount="3600.0" />				
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="20.0" />
+			</thermal-generation>		
+		</functions>
+	</building>
+	<!-- end of Bioreactor M1 -->
+
+	<building type="Bioreactor G1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
+		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
+			to produce gases and compounds that are vital to the survival of the settlers.
+		</description>
+		<power-required base-power="5.0" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="2" power-required="0.2">
+				<activity>
+					<activity-spot xloc="-2.86" yloc="1.67" />
+					<activity-spot xloc="0.76" yloc="-0.53" />										
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+			
+			<power-storage capacity="10" discharge-rate="1.2"/>
+
+			<research tech-level="4" capacity="8">
+				<!-- Sciences that can be researched at the laboratory. -->
+				<research-specialty name="BIOLOGY" />
+				<research-specialty name="CHEMISTRY" />
+				<activity>
+					<activity-spot xloc="2.72" yloc="0.45" />
+					<activity-spot xloc="0.90" yloc="0.45" />
+					
+					<activity-spot xloc="-1.2" yloc="0.45" />
+					<activity-spot xloc="-2.43" yloc="0.45" />
+					
+					<activity-spot xloc="2.32" yloc="-0.53" />
+					<activity-spot xloc="1.12" yloc="-1.76" />
+					
+					<activity-spot xloc="-1.56" yloc="-0.53" />
+					<activity-spot xloc="-2.65" yloc="-1.76" />					
+				</activity>
+			</research>
+			
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				<activity>
+					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="-1.34" yloc="1.68" />		
+					<activity-spot xloc="2.18" yloc="-1.74" />	
+					<activity-spot xloc="-1.50" yloc="-1.75" />													
+				</activity>
+			</resource-processing>
+				
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.63" yloc="1.66" />
+					<activity-spot xloc="-3.28" yloc="-1.04" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="8000">
+				<resource-capacity type="Leaves" amount="3200.0" />
+				<resource-capacity type="Water" amount="360.0" />
+				<resource-capacity type="Glucose" amount="3600.0" />
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="20.0" />
+			</thermal-generation>		
+		</functions>
+	</building>
+	<!-- end of Bioreactor G1 -->
 		
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
 		construction="INFLATABLE" base-level="0"
@@ -1013,7 +1288,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 
 			<recreation capacity="7">
 				<activity>
@@ -1279,7 +1554,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			
-			<power-storage capacity="80"  discharge-rate="1.25"/>
+			<power-storage capacity="80" discharge-rate="1.2"/>
 
 			<recreation capacity="5">
 				<activity>
@@ -1709,7 +1984,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Thermionic Nuclear Power Source" 
 					modules="37" power="3.1" thermal-conversion="10.5" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="5"  discharge-rate="1.25"/>
+			<power-storage capacity="5" discharge-rate="1.25"/>
 		</functions>
 	</building>
 	
@@ -1724,7 +1999,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Thermionic Nuclear Power Source" 
 					modules="74" power="4.7" thermal-conversion="10.37" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="02"  discharge-rate="1.25"/>
+			<power-storage capacity="02" discharge-rate="1.25"/>
 		</functions>
 	</building>
 		
@@ -1748,7 +2023,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fission Power Source" 
 					modules="2" power="43.3" thermal-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="10"  discharge-rate="1.25"/>
+			<power-storage capacity="10" discharge-rate="1.25"/>
 		</functions>
 	</building>
 	
@@ -1762,7 +2037,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fission Power Source" 
 					modules="1" power="175.0" thermal-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 		</functions>
 	</building>
 
@@ -1779,7 +2054,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fission Power Source" 
 					modules="3" power="145.8" thermal-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="80" discharge-rate="1.25"/>
+			<power-storage capacity="80" discharge-rate="1.0"/>
 			<!--thermal-generation>
 				<heat-source type="Electric Heating" amount="80.0" />
 			</thermal-generation-->
@@ -1856,7 +2131,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
@@ -1901,7 +2176,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="0.0" yloc="-0.5" />
@@ -1973,7 +2248,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="0.0" yloc="-0.5" />
@@ -2112,7 +2387,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 
 			<recreation capacity="20">
 				<activity>
@@ -2268,7 +2543,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<research tech-level="2" capacity="2">
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="PSYCHOLOGY" />
@@ -2359,7 +2634,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.1"/>
 			<robotic-station capacity="4">
 				<activity>
 					<activity-spot xloc="-2.1" yloc="3.0" />
@@ -2449,7 +2724,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.1"/>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-1.95" yloc="3.0" />
@@ -2470,7 +2745,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Laboratory" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="4000">
 		<description> The Laboratory is a modest facility furnished with workbench,
-		instruments, COMPUTINGs and tablets and peer collaboration communication
+		instruments, computers and tablets and peer collaboration communication
 		suites of equipment that enables making scientific inquiries on the frontier of Mars.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
@@ -2487,7 +2762,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<research tech-level="3" capacity="16">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="COMPUTING" />
@@ -2580,7 +2855,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="7.5"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="60" discharge-rate="1.25"/>
+			<power-storage capacity="60" discharge-rate="1.05"/>
 			<robotic-station capacity="4">
 				<activity>
 					<!-- For LUVs -->	
@@ -2641,7 +2916,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.2"/>
 			<robotic-station capacity="4">
 				<activity>
 					<activity-spot xloc="1.7" yloc="-4" />
@@ -2721,7 +2996,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Wind Power Source" power="18.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.5"/>
+			<power-storage capacity="20" discharge-rate="1.5"/>
 		</functions>
 	</building>
 
@@ -2737,7 +3012,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="15.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.75"/>
+			<power-storage capacity="20" discharge-rate="1.2"/>
 		</functions>
 	</building>
 
@@ -2754,7 +3029,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Thermal Power Source" power="20.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.75"/>
+			<power-storage capacity="20" discharge-rate="1.5"/>
 		</functions>
 	</building>
 
@@ -2770,7 +3045,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="30.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.3"/>
 		</functions>
 	</building>
 
@@ -2786,7 +3061,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="100.0" />
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.2"/>
 		</functions>
 	</building>
 
@@ -3067,7 +3342,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<!-- power storage capacity in the energy unit of kW hr. -->
-			<power-storage capacity="300"  discharge-rate="1.75"/>
+			<power-storage capacity="300" discharge-rate="1.5"/>
 		</functions>
 	</building>
 
@@ -3121,7 +3396,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<life-support capacity="8" power-required="0.4" />
 
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 			<research tech-level="4" capacity="3">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="COMPUTING" />
@@ -3168,7 +3443,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="2.6" yloc="2.5" />
@@ -3213,7 +3488,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<research tech-level="4" capacity="8">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
@@ -3277,7 +3552,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="0.0" yloc="1.0" />
@@ -3330,7 +3605,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25" />
 			<research tech-level="3" capacity="8">
-				<research-specialty name="BIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="PSYCHOLOGY" />
@@ -3401,7 +3675,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -3553,7 +3827,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 			
 			<recreation capacity="10">
 				<activity>
@@ -3731,7 +4005,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="1.6" yloc="-1.6" />
@@ -3762,7 +4036,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="10" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -3875,7 +4149,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<research tech-level="2" capacity="2">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="CHEMISTRY" />
@@ -3931,7 +4205,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="8" power-required="0.4" />
 
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 
 			<recreation capacity="4">
 				<activity>

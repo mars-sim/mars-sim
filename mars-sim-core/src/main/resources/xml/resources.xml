@@ -187,6 +187,8 @@
 	<resource name="Tofu" type="soy-based" phase="solid" edible="true">Tofu made of Coagulant and Soymilk from Soybean.</resource>
 
 <!-- food resources derived from crop produce -->
+	<resource name="Glucose" type="derived" phase="solid" edible="true">Glucose can be used for providing food for bio-organism
+		to work in bio-reactors to produce compounds.</resource>
 	<resource name="Cane fiber" type="derived" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
 	<resource name="Leaves" type="derived" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
 	<resource name="Sesame milk" type="derived" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and sesame seeds and grinding them with water.</resource>
@@ -345,6 +347,13 @@
 	
 		
 <!-- Chemical for utility -->
+	<resource name="Acetic acid" type="chemical" phase="solid">
+		Acetic acid is a weak acid, and the defining ingredient in vinegar. 
+		Aside from its common use in food, acetic acid is an important 
+		industrial chemical. Its formulae is C2H4O2. Since ancient times, 
+		it has been used as a medicine to reduce headaches and act 
+		as a weak blood thinner.</resource>
+
 	<resource name="Terephthalic acid"  type="chemical" phase="solid">
 		Terephthalic acid is an organic compound with formula C6H4(CO2H)2. 
 		This white solid is a commodity chemical, used principally as a precursor 

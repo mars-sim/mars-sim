@@ -22,6 +22,92 @@
 ]>
 
 <process-list>
+
+	<process name="Glucose Fermentation by Cyanobacteria" power-required="0.0" >
+		<description>
+         This reaction is not catalysed by single micro-organisms but by syntrophic 
+         associations of micro-organisms. First the glucose is fermented to acetate, 
+         C02 and H2 or to acetate, formate and H2:
+         
+	     C6H12O6 + 2H2O -> 2CH3COOH (acetic acid) + 2CO2 + 4H2
+	     180 g/mol,  2*18 g/mol ->  2 * 60g/mol, 2*44 g/mol + 4 *2 g/mol
+	     
+	     see https://www.microbiologyresearch.org/content/journal/micro/10.1099/00221287-144-9-2377
+	     
+	     -215.7 kJ / mol
+	     
+		</description>						
+		<input resource="Glucose" rate="180.0" />
+		<input resource="Water" rate="36.0" />	
+
+		<output resource="Acetic acid" rate="120.0" />
+		<output resource="Carbon dioxide" rate="88.0" />
+		<output resource="Hydrogen" rate="8.0" />
+	</process>
+
+	<process name="Photo Fermentation by Chlorella" power-required="0.0" >
+		<description>
+                  
+	     C6H12O6 + 6H2O -> 6CO2 + 12H2
+	     180 g/mol,  6*18 g/mol ->  6*44 g/mol + 12*2 g/mol
+	     
+		</description>						
+		<input resource="Glucose" rate="180.0" />
+		<input resource="Hydrogen" rate="108.0" />	
+
+		<output resource="Carbon dioxide" rate="264.0" />
+		<output resource="Hydrogen" rate="24.0" />
+	</process>
+
+
+	<process name="Methanogenesis by Archaea" power-required="0.0" >
+		<description>
+		Methanogenesis is the only way that methanogenic archaea can obtain energy 
+		for growth and these are the only organisms known to produce methane as a catabolic end product.
+		
+	     CH3OH + H2 -> CH4 + H2O 
+	     g/mol : 32 + 2 -> 16 + 18 
+	     
+	     see https://www.microbiologyresearch.org/content/journal/micro/10.1099/00221287-144-9-2377
+	     
+	     -112.5 kJ / mol
+	     
+		</description>						
+		<input resource="Methanol" rate="320.0" />
+		<input resource="Hydrogen" rate="20.0" />	
+
+		<output resource="Methane" rate="160.0" />
+		<output resource="Water" rate="180.0" />
+	</process>
+
+	<process name="Cellulolysis of Fiber into Glucose" power-required="0.0" >
+		<description>
+		 The chemical process for converting fiber into glucose involves breaking down 
+		 the complex carbohydrate structures of fiber into simpler sugar molecules.	
+	     
+	     Cellulose (C6H10O5)n 162.14 g/mol
+	     
+	     Glucose C6H12O6 
+	     
+	     The term "fibres" mostly means cellulose, which is a polysaccharide molecule, 
+	     i.e. it is composed of hundreds or thousands of glucose molecules connected to 
+	     each other by glycosidic bonds.
+	     
+	     Cow has intestinal flora that contain bacterias that can break down β(1→4) bonds,
+	     live on the energy these bonds contain, and as a consequence provide the host 
+	     with the resulting glucose.
+
+		 Cellulase is a group of enzymes (amylase, lipase and protease) that break down 
+		 cellulose into its component glucose molecules.
+
+		</description>						
+		<input resource="Leaves" rate="162.0" />
+		<input resource="Water" rate="18.0" />
+		
+		<output resource="Glucose" rate="180.0" />
+
+	</process>
+		
 	<process name="Sabatier RWGS Reactor" power-required="0.12" defaultOn="true">
 	<description> 
 	 A. Sabatier process :
