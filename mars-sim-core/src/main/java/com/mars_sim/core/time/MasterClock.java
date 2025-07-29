@@ -529,7 +529,7 @@ public class MasterClock implements Serializable {
 				if (nextPulseTime > 0)
 					realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.config(10_000, "Elapsed real time is zero. Setting it to the expected " + realElapsedMillisec + " ms.");
+				logger.config("Skipping this frame. Elapsed real time is zero. Setting it to the expected " + realElapsedMillisec + " ms.");
 			}
 			
 			else {

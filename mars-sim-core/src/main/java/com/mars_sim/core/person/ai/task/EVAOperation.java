@@ -532,13 +532,13 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * THis is a safe check method; it intercepts end task calls when the Worker is still outside.
+	 * This is a safe check method; it intercepts end task calls when the Worker is still outside.
 	 * In this case the endEVA method is called.
 	 */
 	@Override
 	public void endTask() {		
 		if (person.isOutside()) {
-			logger.warning(worker, "End task called when on EVA");
+			logger.warning(worker, "Prematurely ending a task during an EVA");
             endEVA("Premature endTask");
 		}
     	else
