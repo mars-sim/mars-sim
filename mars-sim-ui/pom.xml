@@ -11,7 +11,7 @@
 	<name>mars-sim-ui</name>
 	<properties>
 		<flatlaf.version>3.6</flatlaf.version>
-		<jfreechart.version>1.5.5</jfreechart.version>
+		<jfreechart.version>1.5.6</jfreechart.version>
 		<jide-oss.version>3.7.15</jide-oss.version>
 
 		<mainClass>com.mars_sim.ui.swing.main.MarsProject</mainClass>
