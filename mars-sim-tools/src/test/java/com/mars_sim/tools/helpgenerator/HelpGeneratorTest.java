@@ -25,6 +25,8 @@ import com.mars_sim.core.robot.RobotType;
 
 public class HelpGeneratorTest {
 
+	private static final String ALPHA_BASE_1 = "Alpha Base 1";
+	
     private SimulationConfig simconfig;
     
     private HelpContext createGenerator() {
@@ -248,7 +250,7 @@ public class HelpGeneratorTest {
         var context = createGenerator();
         
         // Has both inputs and outputs
-        var spec = context.getConfig().getSettlementTemplateConfiguration().getItem("Alpha Base");
+        var spec = context.getConfig().getSettlementTemplateConfiguration().getItem(ALPHA_BASE_1);
 
         var vg = new SettlementGenerator(context);
         var content = createDoc(vg, spec);
@@ -276,8 +278,9 @@ public class HelpGeneratorTest {
     }
 
     /**
-     * Search for a tag with an id. The tag should be present and have a heading and table.
-     * The tag should be a <div>. The table should be fully populated wth a heading
+     * Searches for a tag with an id. The tag should be present and have a heading and table.
+     * The tag should be a <div>. The table should be fully populated with a heading.
+     * 
      * @param doc
      * @param id
      */

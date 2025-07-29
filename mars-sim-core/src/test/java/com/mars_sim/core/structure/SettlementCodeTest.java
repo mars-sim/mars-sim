@@ -9,7 +9,7 @@ package com.mars_sim.core.structure;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 
 /**
- * Test the internals of the ShiftMansger
+ * Tests the internals of the ShiftManager.
  */
 public class SettlementCodeTest extends AbstractMarsSimUnitTest {
 
@@ -22,7 +22,7 @@ public class SettlementCodeTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * Test the code logic based on words
+     * Tests the code logic based on words.
      */
     public void testWordSettlement() {
         buildSettlement("First Second");
@@ -32,7 +32,7 @@ public class SettlementCodeTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * Test the code logic based on words
+     * Tests the code logic based on words.
      */
     public void testLettersSettlement() {
         buildSettlement("First Second");
@@ -42,7 +42,7 @@ public class SettlementCodeTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * Test the code logic based on letters with puncutation
+     * Tests the code logic based on letters with punctuation.
      */
     public void testLettersPuncSettlement() {
         buildSettlement("First Second");

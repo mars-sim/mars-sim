@@ -3,7 +3,7 @@
   name="Single Settlement" description="Single Settlement">
   
   <initial-settlement-list>
-    <settlement name="Schiaparelli Point" template="Alpha Base" persons="24" robots="12" sponsor="MS" crew="Founders">
+    <settlement name="Schiaparelli Point" template="Alpha Base 1" persons="24" robots="12" sponsor="MS" crew="Founders">
       <location longitude="10.00 W" latitude="10.00 N" />
     </settlement>
   </initial-settlement-list>

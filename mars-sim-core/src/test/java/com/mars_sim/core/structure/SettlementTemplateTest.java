@@ -6,7 +6,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 public class SettlementTemplateTest extends AbstractMarsSimUnitTest {
 
     // This test assumes certain characteristics of the Alpha Base template
-    private static final String ALPHA_BASE = "Alpha Base";
+    private static final String ALPHA_BASE_1 = "Alpha Base 1";
     private static final Object RESUPPLY_MISSION = "Bi-Monthly Delivery";
     private static final String MANIFEST = "Standard Resupply 1";
 
@@ -22,7 +22,7 @@ public class SettlementTemplateTest extends AbstractMarsSimUnitTest {
     public void testResupply() {
         var config = simConfig.getSettlementConfiguration();
 
-        var template =  simConfig.getSettlementTemplateConfiguration().getItem(ALPHA_BASE);
+        var template =  simConfig.getSettlementTemplateConfiguration().getItem(ALPHA_BASE_1);
 
         var resupplies = template.getResupplyMissionTemplates();
         assertFalse("Settlement has resupplies", resupplies.isEmpty());

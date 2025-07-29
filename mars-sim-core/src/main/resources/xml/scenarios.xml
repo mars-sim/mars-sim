@@ -20,13 +20,13 @@
         <scenario-name value="Corporate Expansion" />
         <sponsor value="SpaceX" />
         <base name="Phelgra City" longitude="203.35 E" latitude="40.02 N"
-        	population="24" bots="48" template="Alpha Base (Phase 4)" />
+        	population="24" bots="48" template="Alpha Base 1" />
     </scenario>
 
     <scenario>
         <scenario-name value="Red Mars" />
         <sponsor value="China" />
         <base name="XingTiang" longitude="4.2 E" latitude="15.9 S"
-        	population="4" bots="4" template="Mars Direct Base (Phase 1)" />
+        	population="4" bots="4" template="Phase 1-CN" />
     </scenario>
 </scenario-list>

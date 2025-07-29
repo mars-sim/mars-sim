@@ -200,7 +200,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
     protected Robot buildRobot(String name, Settlement s, RobotType type, Building place, FunctionType activity) {
         var spec = simConfig.getRobotConfiguration().getRobotSpec(type, "Standard");
         var robot = new Robot(name, s, spec);
-		s.addOwnedRobot(robot);  // This shouldnot be needed as the constructor should add the Robot
+		s.addOwnedRobot(robot);  // This should not be needed as the constructor should add the Robot
 
         unitManager.addUnit(robot);
 
