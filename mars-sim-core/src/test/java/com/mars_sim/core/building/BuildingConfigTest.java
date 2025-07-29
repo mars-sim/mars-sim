@@ -37,7 +37,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         // Check names of beds but could check any Function
         FunctionSpec beds = spec.getFunctionSpec(FunctionType.LIVING_ACCOMMODATION);
-        assertTrue("Has of beds in " + LANDER_HAB, !beds.getActivitySpots().isEmpty());
+        assertTrue("Has beds in " + LANDER_HAB, !beds.getActivitySpots().isEmpty());
 
         for(var b : beds.getActivitySpots()) {
             assertTrue("Bed name", b.name().startsWith("Bed "));
