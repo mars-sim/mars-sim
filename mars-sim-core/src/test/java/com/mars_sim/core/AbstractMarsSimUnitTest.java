@@ -37,6 +37,9 @@ import junit.framework.TestCase;
 public abstract class AbstractMarsSimUnitTest extends TestCase
 			implements MarsSimContext {
 
+    // This test assumes certain characteristics of the Alpha Base 1 template
+    public static final String ALPHA_BASE_1 = "Alpha Base 1";
+
 	protected static final String EXPLORER_ROVER = "explorer rover";
 	protected static final String TRANSPORT_ROVER = "transport rover";
 	protected static final String CARGO_ROVER = "cargo rover";

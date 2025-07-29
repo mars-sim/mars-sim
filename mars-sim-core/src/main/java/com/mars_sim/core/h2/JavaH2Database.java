@@ -131,7 +131,7 @@
 //	        
 //	        prepStatement.setString(1, "Freds");
 //	        prepStatement.setString(2, "Flinstones");
-//	        prepStatement.setString(3, "Alpha Base");
+//	        prepStatement.setString(3, "Alpha Base 1");
 //	        prepStatement.setString(4, "Lander Hab 1");
 //	        int rc = prepStatement.executeUpdate();
 //	         

@@ -163,7 +163,7 @@ public class SettlersController implements Initializable {
     		info[1] = "Engineer";
     		info[2] = "Commander";
     		info[3] = "A Shift";;
-    		info[4] = "Alpha Base" ;
+    		info[4] = "Alpha Base 1" ;
         	load(info);
     	} 	
 */  	
