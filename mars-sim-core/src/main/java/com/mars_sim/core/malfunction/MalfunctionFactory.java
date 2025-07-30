@@ -115,7 +115,8 @@ public final class MalfunctionFactory implements Serializable {
 
 	/**
 	 * Gets a collection of malfunctionable entities local to the given worker.
-	 *
+	 * NOTE: DO NOT DELTE. RETAIN THIS METHOD FOR FUTURE USE.
+	 * 
 	 * @param worker
 	 * @return collection collection of malfunctionables.
 	 */

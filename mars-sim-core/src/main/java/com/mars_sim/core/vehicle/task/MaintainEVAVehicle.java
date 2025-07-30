@@ -53,7 +53,7 @@ public class MaintainEVAVehicle extends EVAOperation {
         super(NAME, person, 100, MAINTAIN_VEHICLE);
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
         setMinimumSunlight(LightLevel.NONE);
@@ -66,7 +66,7 @@ public class MaintainEVAVehicle extends EVAOperation {
         // Add the rover to a garage if possible.
         if (settlement.getBuildingManager().addToGarage(vehicle)) {
             // no need of doing EVA
-            checkLocation("Vehicle in garage.");
+        	endEVA("Vehicle in garage.");
             return;
         }
         
@@ -108,7 +108,7 @@ public class MaintainEVAVehicle extends EVAOperation {
 			return time;
 			
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation("Vehicle in garage.");
+			endEVA("Vehicle in garage.");
 			return time;
 		}
 		
@@ -117,14 +117,14 @@ public class MaintainEVAVehicle extends EVAOperation {
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
 
 		if (malfunction) {
-			checkLocation("Vehicle had malfunction. Quit maintenance.");
+			endEVA("Vehicle had malfunction.");
 			return time;
 		}
 		
 		if (finishedMaintenance) {
             vehicle.setReservedForMaintenance(false);
             vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-			checkLocation("Maintenance finished.");
+            endEVA("Maintenance finished.");
 			return time;
 		}
 

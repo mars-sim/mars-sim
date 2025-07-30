@@ -154,7 +154,7 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 		
 		// Check if the study is completed
 		if (performStudy(time)) {
-			checkLocation("Study completed.");
+			endEVA("Study completed.");
 			return time;
 		}
 

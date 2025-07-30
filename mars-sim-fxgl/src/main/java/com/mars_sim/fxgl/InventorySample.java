@@ -111,9 +111,9 @@ public class InventorySample extends GameApplication {
 
     private class InventorySubScene extends SubScene {
 
-        public Inventory<Entity> playerInventory = new Inventory(10);
+        public Inventory<Entity> playerInventory = new Inventory<>(10);
 
-        public InventoryView view = new InventoryView<>(playerInventory);
+        public InventoryView<Entity> view = new InventoryView<>(playerInventory);
 
         public InventorySubScene() {
             getContentRoot().getChildren().addAll(view);

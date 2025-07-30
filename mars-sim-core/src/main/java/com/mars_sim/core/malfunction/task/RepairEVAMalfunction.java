@@ -57,7 +57,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		setMinimumSunlight(LightLevel.NONE);
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
 
@@ -117,7 +117,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		
         // Check if malfunction repair is done
 		if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-			checkLocation("Repair done.");
+			endEVA("Repair done.");
 			return time;
 		}	
 
@@ -138,7 +138,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 
 		else {
 			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available @ " + entity.getName() + ".");
-			checkLocation("Part(s) not available.");
+			endEVA("Part(s) not available.");
             return remainingTime;
 		}
 
@@ -161,7 +161,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 					+ malfunction.getName() + "' in " + entity 
 					+ String.format(WORK_FORMAT,
 							malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)));
-			checkLocation("Repair done.");
+			endEVA("Repair done.");
 		}
 
 		return workTimeLeft;

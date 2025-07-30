@@ -66,7 +66,7 @@ public class SalvageBuilding extends EVAOperation {
         super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, SALVAGE);
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
 			return;
 		}
 
@@ -220,7 +220,7 @@ public class SalvageBuilding extends EVAOperation {
 				}
 			}
 
-			checkLocation("Stage completed.");
+            endEVA("Salvage completed.");
 			return remainingTime;
         }
 	

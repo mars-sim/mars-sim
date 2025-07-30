@@ -71,11 +71,11 @@ public class UnloadVehicleEVA extends EVAOperation {
 		this.vehicle = vehicle;
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
 		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {
-			checkLocation("Vehicle is not ready for Unloading");
+			endEVA("Vehicle is not ready for ynloading.");
         	return;
 		}
 		
@@ -129,7 +129,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation("Vehicle in garage.");
+			endEVA("Vehicle in garage.");
 			return time;
 		}
 		
@@ -163,7 +163,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		if (isFullyUnloaded(vehicle)) {
 			vehicle.removeSecondaryStatus(StatusType.UNLOADING);
-			checkLocation("Vehicle already fully unloaded.");
+			endEVA("Vehicle already fully unloaded.");
 	        return remainingTime;
 		}
 

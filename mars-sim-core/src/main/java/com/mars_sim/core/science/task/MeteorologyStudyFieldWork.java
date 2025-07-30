@@ -80,7 +80,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 		if (totalCollected < AVERAGE_ROCK_COLLECTED_SITE)
 			collectRocks(time);
 		else {
-			checkLocation("Rocks colelcted exceeded set average.");
+			endEVA("Rocks colelcted exceeded set average.");
 			completed = true;
 		}
 		

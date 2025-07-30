@@ -797,11 +797,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				int distanceNextNav = (int) vehicleMission.getDistanceCurrentLegRemaining();
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(distanceNextNav));
 				}
+			
+			default -> {}
+				
 			}
 
 			
 			// Forward to any objective panels
-			for(int i = 0; i < objectivesPane.getTabCount(); i++) {
+			for (int i = 0; i < objectivesPane.getTabCount(); i++) {
 				Component comp = objectivesPane.getComponentAt(i);
 				if (comp instanceof MissionListener ul) {
 					ul.missionUpdate(event);

@@ -123,6 +123,7 @@ public class Battery implements Serializable {
     
     /**
      * Updates the full Amp Hour capacity [in Ah].
+     * NOTE: DO NOT DELTE. RETAIN THIS METHOD FOR FUTURE USE.
      */
     private void updateFullAmpHourCapacity() {
     	ampHourFullCapacity = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 

@@ -204,14 +204,12 @@ extends WizardPanel {
         
         /**
          * Gets the field of science a person is researching for a scientific study.
+         * 
          * @param person the person.
          * @return field of science or null if none.
          */
         private ScienceType getResearchScience(Person person) {
-        	ScienceType result = null;
-            
-            ScientificStudy study = getWizard().getMissionData().getStudy();
-            return study.getContribution(person);
+            return getWizard().getMissionData().getStudy().getContribution(person);
         }
         
         /**

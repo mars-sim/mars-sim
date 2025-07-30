@@ -57,7 +57,7 @@ extends EVAOperation {
 		super(NAME, person, RandomUtil.getRandomDouble(90, 100), MAINTAIN);
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
         
@@ -104,7 +104,7 @@ extends EVAOperation {
 		boolean malfunction = manager.hasMalfunction();
 
 		if (malfunction) {
-			checkLocation("Building had malfunction. Quit maintenance.");
+			endEVA("Building had malfunction.");
 			return time;
 		}
 

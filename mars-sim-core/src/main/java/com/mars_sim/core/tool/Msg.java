@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Msg.java
- * @date 2024-11-28
+ * @date 2025-07-29
  * @author stpa
  */
 package com.mars_sim.core.tool;
@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * For getting internationizations of strings
+ * For getting internationalization of strings
  * from {@link ResourceBundle}-
  * properties-files, like date or decimal formats,
  * or image-icon-paths (think of red cross vs. crescent).
@@ -40,7 +40,7 @@ public class Msg {
 	private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
 
 	/**
-	 * the default resource bundle.<br/>
+	 * The default resource bundle.<br/>
 	 * while translation is still ongoing, it is safer to set a default locale,
 	 * otherwise users with other locales will see partial translations,
 	 * which can be very annoying.<br/>
@@ -49,21 +49,23 @@ public class Msg {
 	 */
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(
 		BUNDLE_NAME
-		,new Locale("") //$NON-NLS-1$
+		, Locale.US
 		,new UTF8Control()
 	);
 
-	// snippets for constructing html-style tooltips
+	// Snippets for constructing html-style tooltips
 	public static final String BR = "<br>"; //$NON-NLS-1$
 	public static final String NBSP = "&nbsp;"; //$NON-NLS-1$
 	public static final String HTML_START = "<html>"; //$NON-NLS-1$
 	public static final String HTML_STOP = "</html>"; //$NON-NLS-1$
 
-	/** hidden constructor. */
+	/** Hidden constructor. */
 	private Msg() {
 	}
 
 	/**
+	 * Gets the string.
+	 * 
 	 * @param key {@link String} should comply with the format
 	 * <code>"ClassName.categoryIfAny.keyForThisText"</code>
 	 * @return {@link String} translation for given key to the current locale.
@@ -72,11 +74,13 @@ public class Msg {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-			return handle(e,key);
+			return handle(e, key);
 		}
 	}
 
 	/**
+	 * Gets the string with fallback.
+	 * 
 	 * @param key {@link String} should comply with the format
 	 * <code>"ClassName.categoryIfAny.keyForThisText"</code>
 	 * @param fallback Fallback value if no key match
@@ -91,9 +95,10 @@ public class Msg {
 
 	
 	/**
-	 * This search for an entry <category>.<key> in the resource bundle. If no entry is found then the key 
-	 * is formatted and returned.
-	 * This ispartocualrly useful to create readabler labels for Enum
+	 * Gets the string with a search for an entry <category>.<key> in the resource bundle. 
+	 * If no entry is found then the key is formatted and returned.
+	 * This is particularly useful to create readable labels for Enum.
+	 * 
 	 * @param category should comply with the format <code>"ClassName.categoryIfAny"</code>
 	 * @param key should comply with the format <code>"keyForThisText"</code>
 	 * @return translation for given key to the current locale or the automatically
@@ -109,8 +114,8 @@ public class Msg {
 	}
 
 	/**
-	 * replaces all occurrences of "{n}" (with n an integer)
-	 * with the
+	 * Gets the string and replaces all occurrences of "{n}" (with n an integer).
+	 * 
 	 * @param key
 	 * @param args
 	 * @return
@@ -198,15 +203,16 @@ public class Msg {
 	}
 
 	/**
-	 * inner utility class to load properties files in proper unicode format.
+	 * The inner utility class to load properties files in proper Unicode format.
+	 * 
 	 * @author stpa
 	 * @see <a href="http://stackoverflow.com/questions/4659929/how-to-use-utf-8-in-resource-properties-with-resourcebundle">
-	 * Stackoverflow - How to Use UTF-8 in Resource Properties</a>
+	 * StackOverflow - How to Use UTF-8 in Resource Properties</a>
 	 */
 	public static class UTF8Control
 	extends Control {
 
-		/* use utf-8 instead of default encoding to read files. */
+		/* Uses utf-8 instead of default encoding to read files. */
 		@Override
 		public ResourceBundle newBundle (
 			String baseName, Locale locale,

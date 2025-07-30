@@ -154,6 +154,7 @@ public class ClockPulse {
 	
 	/**
 	 * Fires a clock pulse.
+	 * NOTE: DO NOT DELTE. RETAIN THIS METHOD FOR FUTURE USE.
 	 * 
 	 * @param actualElapsed
 	 * @return

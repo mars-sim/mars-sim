@@ -60,7 +60,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		setMinimumSunlight(LightLevel.NONE);
 		
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
 		
@@ -77,7 +77,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		this.loadingPlan = vehicle.getLoadingPlan();
 		if (loadingPlan == null) {
 			// Mission must be done
-			checkLocation("Vehicle is null.");
+			endEVA("Vehicle is null.");
 			return;
 		}
 
@@ -86,7 +86,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Add the rover to a garage if possible.
 		if (settlement.getBuildingManager().addToGarage(vehicle)) {
 			// no need of doing EVA
-			checkLocation("Vehicle in garage.");
+			endEVA("Vehicle in garage.");
 			return;
 		}
 
@@ -117,12 +117,12 @@ public class LoadVehicleEVA extends EVAOperation {
 	private double loadingPhase(double time) {
 	
 		if (settlement == null) {
-			checkLocation("Settlement is null.");
+			endEVA("Settlement is null.");
 			return time;
 		}
 
 		if (vehicle == null) {
-			checkLocation("Vehicle is null.");
+			endEVA("Vehicle is null.");
 			return time;
 		}
 		
@@ -132,13 +132,13 @@ public class LoadVehicleEVA extends EVAOperation {
 		
 		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation("Vehicle in garage.");
+			endEVA("Vehicle in garage.");
 			return time;
 		}
 		
 		// Load the resource
 		if (loadingPlan.load(worker, time)) {
-			checkLocation("Loading plan fully executed.");
+			endEVA("Loading plan fully executed.");
 			return time;
 		}
 

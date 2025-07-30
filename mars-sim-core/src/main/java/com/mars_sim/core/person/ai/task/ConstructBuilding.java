@@ -71,7 +71,7 @@ public class ConstructBuilding extends EVAOperation {
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
 
@@ -113,7 +113,7 @@ public class ConstructBuilding extends EVAOperation {
 		this.vehicles = vehicles;
 
 		if (person.isSuperUnfit()) {
-			checkLocation("Super Unfit.");
+			endEVA("Super Unfit.");
         	return;
 		}
 
@@ -265,7 +265,7 @@ public class ConstructBuilding extends EVAOperation {
 				returnVehicle();
 			}
 
-			checkLocation("Stage completed.");
+			endEVA("Stage completed.");
 			return workTime;
 		}
 
