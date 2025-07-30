@@ -30,16 +30,26 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
 
     private Building buildCompute(BuildingManager buildingManager) {
         return buildFunction(buildingManager, "Server Farm", BuildingCategory.LABORATORY,
-                        FunctionType.COMPUTATION,  LocalPosition.DEFAULT_POSITION, 0D, true);
+                        FunctionType.COMPUTATION, LocalPosition.DEFAULT_POSITION, 0D, true);
 	}
 
     public void testCompute() {
         var s = buildSettlement("Compute City");
 
         // Research has compute
-        buildCompute(s.getBuildingManager());
+        Building b = buildCompute(s.getBuildingManager());
         
         var p = buildPerson("Test Programmer", s, JobType.COMPUTER_SCIENTIST);
+        
+//        Building b = buildBuilding(s.getBuildingManager(), "Server Farm", BuildingCategory.LABORATORY,  
+//        		new LocalPosition(0 + BUILDING_WIDTH, -BUILDING_LENGTH/2), 0, true);
+        
+        BuildingManager.addToBuilding(p, b);
+        
+        Building bLoc = p.getBuildingLocation();
+        
+        System.out.println(bLoc);
+        
         OptimizeSystem task = new OptimizeSystem(p);
 
         var job = new ComputingJob(s, ComputingLoadType.LOW, 1, DURATION, "Test Task");  

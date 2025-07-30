@@ -282,7 +282,7 @@ extends AbstractTableModel {
 	 }
 
 	 public static List<String> getSortedBuildingTypes() {
-		return buildingConfig.getBuildingTypes().stream()
+		return buildingConfig.getBuildingSpecs().stream()
 					.map(BuildingSpec::getName)
 					.sorted()
 					.toList();

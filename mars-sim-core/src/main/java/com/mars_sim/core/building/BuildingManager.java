@@ -562,18 +562,16 @@ public class BuildingManager implements Serializable {
 	 */
 	public Set<Building> getDiningBuildings(Person person) {
 		if (person.getBuildingLocation() != null) {
-			return getBuildingSet()
+			return getBuildingSet(FunctionType.DINING)
 					.stream()
-					.filter(b -> b.hasFunction(FunctionType.DINING)
-							&& b.getZone() == person.getBuildingLocation().getZone()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
 		
-		return getBuildingSet()
+		return getBuildingSet(FunctionType.DINING)
 				.stream()
-				.filter(b -> b.hasFunction(FunctionType.DINING)
-						&& b.getZone() == 0
+				.filter(b -> b.getZone() == 0
 						&& !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());
 	}
@@ -626,18 +624,16 @@ public class BuildingManager implements Serializable {
 	 */
 	private static Set<Building> getBuildingsinSameZone(Person person, FunctionType functionType) {		
 		if (person.getBuildingLocation() != null) {
-			return person.getSettlement().getBuildingManager().getBuildingSet()
+			return person.getSettlement().getBuildingManager().getBuildingSet(functionType)
 					.stream()
-					.filter(b -> b.hasFunction(functionType)
-							&& b.getZone() == person.getBuildingLocation().getZone()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
 		
-		return person.getSettlement().getBuildingManager().getBuildingSet()
+		return person.getSettlement().getBuildingManager().getBuildingSet(functionType)
 				.stream()
-				.filter(b -> b.hasFunction(functionType)
-						&& b.getZone() == 0
+				.filter(b -> b.getZone() == 0
 						&& !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());		
 	}

@@ -128,14 +128,23 @@ public class BuildingConfig {
 	}
 
 	/**
+	 * Gets a set of all building specs.
+	 *
+	 * @return set of building types.
+	 */
+	public Collection<BuildingSpec> getBuildingSpecs() {
+		return buildSpecMap.values();
+	}
+
+	/**
 	 * Gets a set of all building types.
 	 *
 	 * @return set of building types.
 	 */
-	public Collection<BuildingSpec> getBuildingTypes() {
-		return buildSpecMap.values();
+	public Collection<String> getBuildingTypes() {
+		return buildSpecMap.keySet();
 	}
-
+	
 	/**
 	 * Parses a building spec node.
 	 *

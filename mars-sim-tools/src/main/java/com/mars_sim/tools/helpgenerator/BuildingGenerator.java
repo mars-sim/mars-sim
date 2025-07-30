@@ -45,7 +45,7 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
      * Gets a list of all the building specifications configured.
      */
     protected List<BuildingSpec> getEntities() {
-        return getConfig().getBuildingConfiguration().getBuildingTypes()
+        return getConfig().getBuildingConfiguration().getBuildingSpecs()
                             .stream()
 		 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 							.toList();

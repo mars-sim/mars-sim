@@ -196,8 +196,8 @@ implements Serializable {
 
 		double result = 0D;
 
-		BuildingManager buildingManager = settlement.getBuildingManager();
-		Iterator<Building> i = buildingManager.getBuildingSet().iterator();
+
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			double salvageProfit = getNewBuildingSalvageProfit(building, constructionSkill);

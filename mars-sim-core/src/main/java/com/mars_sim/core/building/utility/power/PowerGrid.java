@@ -322,7 +322,7 @@ public class PowerGrid implements Serializable, Temporal {
 //		logger.info(settlement, 10_000, "excess: " + Math.round(excess));
 		sufficientPower = true;
 		
-		Set<Building> buildings = manager.getBuildingSet();
+		Set<Building> buildings = manager.getBuildingSet(FunctionType.POWER_GENERATION);
 
 		// A. Switch from no power to low power in inhabitable buildings
 		// building until required power reduction is met.
@@ -483,7 +483,7 @@ public class PowerGrid implements Serializable, Temporal {
 			return;
 		}
 
-		Set<Building> buildings = manager.getBuildingSet();
+		Set<Building> buildings = manager.getBuildingSet(FunctionType.POWER_GENERATION);
 		
 		// Turn on emergency power generators to supplement power production
 		
@@ -822,7 +822,7 @@ public class PowerGrid implements Serializable, Temporal {
 	private double updateTotalRequiredPower() {
 		double power = 0D;
 		// Gets all buildings, not just power producers
-		Iterator<Building> iUsed = manager.getBuildingSet().iterator();
+		Iterator<Building> iUsed = manager.getBuildingSet(FunctionType.POWER_GENERATION).iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
 			if (building.getPowerMode() == PowerMode.FULL_POWER) {

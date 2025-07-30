@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.building.function.FunctionType;
@@ -50,7 +51,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
     protected static VehicleConfig vehicleConfig;
 	protected static PersonConfig personConfig;
 	protected static CropConfig cropConfig;
-
+	protected static BuildingConfig buildingConfig;
 
 	// Data members
 	private String name;
@@ -316,9 +317,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 						// Check if any existing buildings have same frame stage and can be refit or
 						// refurbished
 						// into new building.
-						for(var b : settlement.getBuildingManager().getBuildingSet()) {
+						for (String type: buildingConfig.getBuildingTypes()) {
 							ConstructionStageInfo tempBuildingStage = ConstructionUtil
-									.getConstructionStageInfo(b.getBuildingType());
+									.getConstructionStageInfo(type);
 							if (tempBuildingStage != null) {
 								ConstructionStageInfo tempFrameStage = tempBuildingStage.getPrerequisiteStage();
 								if (frameStage.equals(tempFrameStage)) {
@@ -516,5 +517,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		vehicleConfig = sc.getVehicleConfiguration();
 		personConfig = sc.getPersonConfig();
 		cropConfig = sc.getCropConfiguration();
+		buildingConfig = sc.getBuildingConfiguration();
 	}
 }
