@@ -1233,8 +1233,6 @@ public class BuildingManager implements Serializable {
 		
 		return null;
 	}
-
-
 	
 	/**
 	 * Gets a list of the least crowded buildings from a given list of buildings
@@ -1939,22 +1937,38 @@ public class BuildingManager implements Serializable {
 		if (person.getBuildingLocation() != null) {
 			int personZone = person.getBuildingLocation().getZone();
 			
-			bldgs = bldgs
-					.stream()
-					.filter(b -> 
-						// Note: the condition below needs to be true 
-						anyZones || (b.getZone() == personZone)
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			if (anyZones) {
+				bldgs = bldgs.stream()
+						// Condition: the building doesn't need to be in the same zone as the person
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				bldgs = bldgs.stream()
+						.filter(b -> 
+							// Condition: the building must be in the same zone as the person
+							// Note: the condition below needs to be true 
+							b.getZone() == personZone
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+
 		}
 		else {
-			bldgs = bldgs
-					.stream()
-					// if anyZones is true and the person is not in a building, then buildings of any zones will be included
-					// if anyZones is false and the person is not in a building, then only buildings of zone 0 will be chosen
-					.filter(b -> anyZones || b.getZone() == 0
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			if (anyZones) {
+				bldgs = bldgs.stream()
+						// Condition: the building doesn't need to be in the same zone as the person						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				bldgs = bldgs.stream()
+						.filter(b -> 
+							// Condition: the building must be in the same zone as the person
+							// Note: only buildings in zone 0 will be chosen
+							b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}	
 		}
 
 		if (bldgs.isEmpty()) {
@@ -2033,22 +2047,38 @@ public class BuildingManager implements Serializable {
 		if (person.getBuildingLocation() != null) {
 			int personZone = person.getBuildingLocation().getZone();
 			
-			bldgs = bldgs
-					.stream()
-					.filter(b -> 
-						// Note: the condition below needs to be true 
-						anyZones || (b.getZone() == personZone)
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			if (anyZones) {
+				bldgs = bldgs.stream()
+						// Condition: the building doesn't need to be in the same zone as the person
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				bldgs = bldgs.stream()
+						.filter(b -> 
+							// Condition: the building must be in the same zone as the person
+							// Note: the condition below needs to be true 
+							b.getZone() == personZone
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+
 		}
 		else {
-			bldgs = bldgs
-					.stream()
-					// if anyZones is true and the person is not in a building, then buildings of any zones will be included
-					// if anyZones is false and the person is not in a building, then only buildings of zone 0 will be chosen
-					.filter(b -> anyZones || b.getZone() == 0
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			if (anyZones) {
+				bldgs = bldgs.stream()
+						// Condition: the building doesn't need to be in the same zone as the person						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				bldgs = bldgs.stream()
+						.filter(b -> 
+							// Condition: the building must be in the same zone as the person
+							// Note: only buildings in zone 0 will be chosen
+							b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}	
 		}
 
 		if (bldgs.isEmpty()) {
@@ -2131,22 +2161,43 @@ public class BuildingManager implements Serializable {
 		if (person.getBuildingLocation() != null) {
 			int personZone = person.getBuildingLocation().getZone();
 			
-			buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
-					.stream()
-					.filter(b -> 
-						// Note: the condition below needs to be true 
-						anyZones || (b.getZone() == personZone)
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			if (anyZones) {
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
+						.stream()
+						// Condition: the building doesn't need to be in the same zone as the person
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
+						.stream()
+						.filter(b -> 
+							// Condition: the building must be in the same zone as the person
+							// Note: the condition below needs to be true 
+							b.getZone() == personZone
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+
 		}
 		else {
-			buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
-					.stream()
-					// if anyZones is true and the person is not in a building, then buildings of any zones will be included
-					// if anyZones is false and the person is not in a building, then only buildings of zone 0 will be chosen
-					.filter(b -> anyZones || b.getZone() == 0
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			if (anyZones) {
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
+						.stream()
+						// Condition: the building doesn't need to be in the same zone as the person						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
+						.stream()
+						
+						.filter(b -> 
+						// Condition: the building must be in the same zone as the person
+						// Note: only buildings in zone 0 will be chosen
+							b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}	
 		}
 		
 		buildings = getLeastCrowdedBuildings(buildings);
@@ -2161,6 +2212,7 @@ public class BuildingManager implements Serializable {
 		
 	/**
 	 * Gets an available kitchen for a worker.
+	 * DO NOT DELETE. LEAVE HERE AS A REFERENCE
 	 * 
 	 * @param worker
 	 * @param functionType
