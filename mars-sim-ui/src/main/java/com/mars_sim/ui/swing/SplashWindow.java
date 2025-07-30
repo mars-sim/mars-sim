@@ -41,26 +41,26 @@ public class SplashWindow extends JComponent {
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
 	private static final String[] AUTHOR_STRING = {
 			"A picture from NASA Ames Research Center. 2005", 
+			"Water Ice drilling. NASA Langley Advanced Concepts Lab AMA",
 			"Family Watching News on Terraforming Mars. Tiago da Silva",
 			"Underground Oasis in Martian Lava Tube. Marstopia Design Contest",
 			"Light enters through trough-shaped ports. Team SEArch+/Apis Cor",
 			"Internal view of Mars Habitat. Hassell + Eckersley O’Callaghan",
 			"Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net",
 			"Agridome for growing food on Mars. Mars Society. 2020", 
-			"Cyanobacteria help detoxify the environment", // Astronomy Magazine. 2023
-			"Water Ice drilling. NASA Langley Advanced Concepts Lab AMA"
+			"Cyanobacteria help detoxify the environment" // Astronomy Magazine. 2023
 	};
 	
 	private static String[] FILE_NAME = {
 			"Mars_Canyon.jpg",
+			"nasa_langley_advanced_concepts_lab.jpg",
 			"News_Terraforming_Mars.jpg",
 			"Underground_Oasis_Martian_Lava_Tube.jpg",
 			"3D_printed_habitat.jpg",
 			"Interior_home.jpg",
 			"greenhouse_lady.jpg",
 			"MSC-AgriDomes-on-Mars.jpg",
-			"Cyanobacteria_terraforming.jpg",
-			"nasa_langley_advanced_concepts_lab.jpg"
+			"Cyanobacteria_terraforming.jpg"
 	};
 	
 	/** The font for displaying {@link #MSP_STRING}. */
@@ -112,7 +112,7 @@ public class SplashWindow extends JComponent {
 				
 				int x = splashImage.getWidth(this);
 				
-				if (rand > 0)
+				if (rand > 1)
 					g2d.setColor(Color.ORANGE);
 				else
 					g2d.setColor(Color.black);

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Relax.java
- * @date 2022-08-10
+ * @date 2025-07-30
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -42,6 +42,16 @@ extends Task {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1D;
 
+	private static final FunctionType[] LOCATIONS_WIDE = {FunctionType.DINING,
+			FunctionType.RECREATION,
+			FunctionType.FARMING,
+			FunctionType.FISHERY,
+			FunctionType.EXERCISE, 
+			FunctionType.LIVING_ACCOMMODATION};
+	private static final FunctionType[] LOCATIONS_SMALL = {FunctionType.RECREATION,
+			FunctionType.LIVING_ACCOMMODATION};
+	private static final FunctionType[] LOCATIONS_EMPTY = {};
+
 	/**
 	 * Constructor.
 	 * 
@@ -56,33 +66,52 @@ extends Task {
 		    setDuration(RandomUtil.getRandomDouble(DURATION/6, DURATION/2));
 		}
 		
-		// If person is in a settlement, try to find a place to relax.
-		boolean walkSite = false;
 		if (person.isInSettlement()) {
-			Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-			if (rec != null) {
-				// Walk to recreation building.
-				walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-				walkSite = true;
+			boolean walkDone = false;
+			int rand = RandomUtil.getRandomInt(15);
+			FunctionType [] locations = switch(rand) {
+				case 0,1 -> LOCATIONS_SMALL;
+				case 2,3,4,5 -> LOCATIONS_WIDE;
+				default -> LOCATIONS_EMPTY;
+				// Note: in future, save the preferred venue for each person
+			};
+			
+			boolean anyZone = false;
+			int zoneRand = RandomUtil.getRandomInt(50);
+			if (zoneRand == 50) {
+				// 98% same zone; 2% any zones (including other zones)
+				anyZone = true;
 			}
-			else {
-				// Go back to his bed
-				if (person.hasBed()) {
-					// Walk to the bed
-					walkToBed(person, true);
+			
+			// Choose a building in order
+			for (var ft : locations) {
+				Building b = BuildingManager.getAvailableFunctionBuilding(person, ft, anyZone);
+				if (b != null) {
+					walkDone = walkToActivitySpotInBuilding(b, ft, true);
+					if (walkDone) {
+						break;
+					}
 				}
+			}
+			
+			// Note: if locations is LOCATIONS_EMPTY, 
+			//       then stay at the same activity spot for this task
+			
+			if (!walkDone && locations.length != 0) {
+				// Case: if no suitable building is found
+			
+				// Go back to his bed
+				walkToBed(person, true);
+				
+				// Note: in future, save and use a preference location for each person
 			}
 		}
 
-		if (!walkSite) {
-            // If person is in rover, walk to passenger activity spot.
-            if (person.getVehicle() instanceof Rover rover) {
-                walkToPassengerActivitySpotInRover(rover, true);
-            }
-            else {
-	            // Walk to random location.
-	            walkToRandomLocation(true);
-            }
+		else if (person.isInVehicle()) {
+			// If person is in rover, walk to passenger activity spot.
+			if (person.getVehicle() instanceof Rover rover) {
+				walkToPassengerActivitySpotInRover(rover, true);
+			}
 		}
 
 		// Initialize phase

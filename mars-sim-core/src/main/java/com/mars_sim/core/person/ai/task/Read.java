@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Read.java
- * @date 2022-07-16
+ * @date 2025-07-30
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.task;
@@ -35,14 +35,21 @@ public class Read extends Task {
 	/** Task phases. */
 	private static final TaskPhase READING = new TaskPhase(Msg.getString("Task.phase.reading")); //$NON-NLS-1$
 
-	private static final FunctionType[] LOCATIONS_WIDE = {FunctionType.DINING, FunctionType.RECREATION};
-	private static final FunctionType[] LOCATIONS_SMALL = {FunctionType.RECREATION};
+	private static final FunctionType[] LOCATIONS_WIDE = {FunctionType.DINING,
+														FunctionType.RECREATION,
+														FunctionType.FARMING,
+														FunctionType.FISHERY,
+														FunctionType.EXERCISE, 
+														FunctionType.LIVING_ACCOMMODATION};
+	private static final FunctionType[] LOCATIONS_SMALL = {FunctionType.RECREATION,
+														FunctionType.LIVING_ACCOMMODATION};
 	private static final FunctionType[] LOCATIONS_EMPTY = {};
 
 	private SkillType selectedSkill;
 	
 	/**
 	 * Factory method to create a Read task for a Person. This will select a Skill to read about.
+	 * 
 	 * @param p
 	 * @return
 	 */
@@ -70,17 +77,18 @@ public class Read extends Task {
 
 		if (person.isInSettlement()) {
 			boolean walkDone = false;
-			int rand = RandomUtil.getRandomInt(2);
+			int rand = RandomUtil.getRandomInt(15);
 			FunctionType [] locations = switch(rand) {
-				case 0 -> LOCATIONS_WIDE;
-				case 1 -> LOCATIONS_SMALL;
-				default -> LOCATIONS_EMPTY;
+				case 0,1 -> LOCATIONS_SMALL;
+				case 2,3,4,5 -> LOCATIONS_WIDE;
+				default -> LOCATIONS_EMPTY;				
+				// Note: in future, save the preferred venue for each person
 			};
 			
 			boolean anyZone = false;
-			int zoneRand = RandomUtil.getRandomInt(9);
-			if (zoneRand == 9) {
-				// 90% same zone; 10% any zones (including other zones)
+			int zoneRand = RandomUtil.getRandomInt(50);
+			if (zoneRand == 50) {
+				// 98% same zone; 2% any zones (including other zones)
 				anyZone = true;
 			}
 			
@@ -94,10 +102,17 @@ public class Read extends Task {
 					}
 				}
 			}
-
-			if (!walkDone) {
+			
+			// Note: if locations is LOCATIONS_EMPTY, 
+			//       then stay at the same activity spot for this task
+			
+			if (!walkDone && locations.length != 0) {
+				// Case: if no suitable building is found
+			
 				// Go back to his bed
 				walkToBed(person, true);
+				
+				// Note: in future, save and use a preference location for each person
 			}
 		}
 
@@ -105,9 +120,6 @@ public class Read extends Task {
 			// If person is in rover, walk to passenger activity spot.
 			if (person.getVehicle() instanceof Rover rover) {
 				walkToPassengerActivitySpotInRover(rover, true);
-			} else {
-				// Walk to random location.
-				walkToRandomLocation(true);
 			}
 		}
 

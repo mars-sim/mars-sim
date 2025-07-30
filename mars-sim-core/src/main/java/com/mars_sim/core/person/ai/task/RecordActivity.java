@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RecordActivity.java
- * @date 2022-07-18
+ * @date 2025-07-30
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.task;
@@ -45,7 +45,9 @@ public class RecordActivity extends Task {
 
 		if (person.isInSettlement()) {
 			
-			walkToRandomLocation(false);
+			int rand = RandomUtil.getRandomInt(3);
+			if (rand == 3)
+				walkToRandomLocation(false);
 			
 			// Initialize phase
 			addPhase(RECORDING);
@@ -63,7 +65,7 @@ public class RecordActivity extends Task {
 		}
 
 		else {
-			// TODO: Move to where other settlers are working outside or near a building
+			// Move to where other settlers are working outside or near a building
 			endTask();
 		}
 
