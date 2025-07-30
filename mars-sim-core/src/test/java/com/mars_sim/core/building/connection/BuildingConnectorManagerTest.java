@@ -296,7 +296,8 @@ public class BuildingConnectorManagerTest extends TestCase {
 
     public void testLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
-        List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration().getItem(largeTemplate).getSupplies().getBuildings();
+        List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
+        		.getItem(largeTemplate).getSupplies().getBuildings();
         Settlement settlement = new MockSettlement();
 
         for(var bt : buildingTemplates) {
@@ -305,13 +306,13 @@ public class BuildingConnectorManagerTest extends TestCase {
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
 
         var bMgr = settlement.getBuildingManager();
-        var lHab = bMgr.getBuildingByTemplateID("000"); // Lander Hab
-        var lab = bMgr.getBuildingByTemplateID("605"); // Laboratory
+        var lHab = bMgr.getBuildingByTemplateID("HAB1"); // Lander Hab
+        var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
         var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, lab);
 
-        var core = bMgr.getBuildingByTemplateID("906n7"); 
+        var core = bMgr.getBuildingByTemplateID("HC907"); 
         path = manager.determineShortestPath(lHab, lHab.getPosition(), core, core.getPosition());
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, core);
