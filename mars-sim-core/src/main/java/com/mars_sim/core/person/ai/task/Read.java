@@ -76,10 +76,17 @@ public class Read extends Task {
 				case 1 -> LOCATIONS_SMALL;
 				default -> LOCATIONS_EMPTY;
 			};
-
+			
+			boolean anyZone = false;
+			int zoneRand = RandomUtil.getRandomInt(9);
+			if (zoneRand == 9) {
+				// 90% same zone; 10% any zones (including other zones)
+				anyZone = true;
+			}
+			
 			// Choose a building in order
 			for (var ft : locations) {
-				Building b = BuildingManager.getAvailableFunctionTypeBuilding(person, ft);
+				Building b = BuildingManager.getAvailableFunctionBuilding(person, ft, anyZone);
 				if (b != null) {
 					walkDone = walkToActivitySpotInBuilding(b, ft, true);
 					if (walkDone) {
