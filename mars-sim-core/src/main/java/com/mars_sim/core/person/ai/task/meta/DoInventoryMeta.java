@@ -70,16 +70,6 @@ public class DoInventoryMeta extends FactoryMetaTask {
 				+ .3 * manager.getAttribute(NaturalAttributeType.METICULOUSNESS)
 				+ .4 * manager.getAttribute(NaturalAttributeType.DISCIPLINE)) / 20;
 		
-		// Make sure the minimum skillF is 1, not zero
-//		double skillF = 1;
-//		
-//		// Match the skill type with the lab research subject
-//		if (person.getSkillManager().getSkill(SkillType.BOTANY) != null) {
-//			skillF = 1 + person.getSkillManager().getSkill(SkillType.BOTANY).getLevel();
-//		}
-//
-//		score.addModifier("skill", skillF);
-		
         score.addModifier(ATTRIBUTE, att);
         
         score = assessPersonSuitability(score, person);

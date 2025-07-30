@@ -1413,11 +1413,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Set the global flag to stop any failures or accidents
+	 * Sets the global flag to stop any failures or accidents.
 	 */
 	public static void setNoFailures(boolean newFlag) {
 		noFailures = newFlag;
-		logger.info("No failures flag set to " + noFailures);
+//		logger.info("No failures flag set to " + noFailures);
 	}
 
 	/**

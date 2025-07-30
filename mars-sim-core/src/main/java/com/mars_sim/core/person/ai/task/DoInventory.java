@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DoInventory.java
- * @date 2023-11-30
+ * @date 2025-07-29
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.task;
@@ -55,12 +55,23 @@ public class DoInventory extends Task {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(30));
 
-		if (person.isInSettlement()) {
+		if (person.isInSettlement() || person.isInSettlementVicinity()) {
+			
+			boolean anyZone = false;
+			
+			int rand = RandomUtil.getRandomInt(9);
+			if (rand == 9) {
+				// 90% on the same zone; 10% on possibly any zone
+				anyZone = true;
+			}
+			
 			// If person is in a settlement, try to find a lab.
-			lab = person.getSettlement().getBuildingManager().getWorstEntropyLabByProbability(person);
+			lab = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyLabByProbability(person, anyZone);
+		
 			if (lab != null) {
-				// Walk to the spot.
+				// The person must walk to a spot physically to take inventory.
 				walkToTaskSpecificActivitySpotInBuilding(lab.getBuilding(), FunctionType.RESEARCH, false);
+				
 			}
 			else
 				endTask();
@@ -68,18 +79,6 @@ public class DoInventory extends Task {
 			// Initialize phase
 			addPhase(DOING_INVENTORY);
 			setPhase(DOING_INVENTORY);
-		}
-		
-		else if (person.isInVehicle()) {
-			// If person is in a settlement, try to find a lab.
-//			lab = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyLabByProbability(person);
-//			if (lab != null) {
-//				// May be done remotely in a vehicle
-//				// Walk to the passenger spot
-////				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
-//			}
-//			else
-				endTask();
 		}
 		
 		else

@@ -137,7 +137,7 @@ public class Computation extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COMPUTATION)) {
+		for (Building building : settlement.getBuildingManager().getComNodes()) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

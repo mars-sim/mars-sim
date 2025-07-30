@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Astronomer.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-07-29
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.job;
@@ -11,7 +11,6 @@ import java.util.Iterator;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.AstronomicalObservation;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -58,7 +57,7 @@ public class Astronomer extends Job  {
 		result += getBuildingScienceDemand(settlement, ScienceType.ASTRONOMY, 16D);
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
-		Iterator<Building> j = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
+		Iterator<Building> j = manager.getObservatories().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			AstronomicalObservation observatory = building.getAstronomicalObservation();

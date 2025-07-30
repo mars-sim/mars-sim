@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AstronomicalObservation.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-07-29
  * @author Sebastien Venot
  */
 package com.mars_sim.core.building.function;
@@ -141,7 +141,7 @@ public class AstronomicalObservation extends Function {
 		// Determine existing settlement supply of astronomical observatories.
 		double observatorySupply = 0D;
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+		for(Building building : settlement.getBuildingManager().getObservatories()) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

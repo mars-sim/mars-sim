@@ -25,7 +25,8 @@ public class TaskParameters extends ParameterCategory{
     }
 
     /**
-     * Calculate the possible keys based the range of MetaTasks defined.
+     * Calculates the possible keys based the range of MetaTasks defined.
+     * 
      * @return Map from id to the corresponding Spec
      */
     @Override

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ObserveAstronomicalObjectsMeta.java
- * @date 2022-08-06
+ * @date 2025-07-29
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function.task;
@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.AstronomicalObservation;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
@@ -80,7 +79,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
     public List<SettlementTask> getSettlementTasks(Settlement target) {
         List<SettlementTask> result = new ArrayList<>();
         if (ObserveAstronomicalObjects.areConditionsSuitable(target)
-                && !target.getBuildingManager().getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION).isEmpty()) {    
+                && !target.getBuildingManager().getObservatories().isEmpty()) {    
             // Any Astro based study active at this Settlement
             for (ScientificStudy s : getAstroStudies(target)) {
             	// Suitable study so create tasks for each Observatory
@@ -178,8 +177,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 	public static AstronomicalObservation determineObservatory(Settlement target) {
 
 		BuildingManager manager = target.getBuildingManager();
-		Set<Building> observatoryBuildings = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION);
-		observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
+		Set<Building> observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(manager.getObservatories());
 
 		if (observatoryBuildings == null || observatoryBuildings.isEmpty()) {
 			return null;

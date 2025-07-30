@@ -230,10 +230,10 @@ public class ProduceFood extends Task {
 			if (!foodProductionBuildings.isEmpty()) {
 				Map<Building, Double> foodProductionBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 						person, foodProductionBuildings);
-				return buildingManager.getWorstEntropyByProbability(person,
-						foodProductionBuildings, foodProductionBuildingProbs);
+				return RandomUtil.getWeightedRandomObject(foodProductionBuildingProbs);
 			}
 		}
+		
 		return null;
 	}
 

@@ -1206,7 +1206,7 @@ public class Settlement extends Unit implements Temporal,
 		Set<Building> pressurizedBldgs = new UnitSet<>();
 		Set<Building> depressurizedBldgs = new UnitSet<>();
 
-		for (Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
+		for (Building airlockBdg : buildingManager.getAirlocks()) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();
 			if (airlock.isPressurized()	|| airlock.isPressurizing())
 				pressurizedBldgs.add(airlockBdg);
@@ -1513,7 +1513,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return airlock or null if none available.
 	 */
 	private boolean hasClosestWalkableAvailableAirlock(Building building) {
-        for (Building nextBuilding : buildingManager.getBuildingSet(FunctionType.EVA)) {
+        for (Building nextBuilding : buildingManager.getAirlocks()) {
             boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
             if (!chamberFull
                     && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
@@ -1539,7 +1539,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return number of airlocks.
 	 */
 	public int getAirlockNum() {
-		return buildingManager.getBuildingSet(FunctionType.EVA).size();
+		return buildingManager.getAirlocks().size();
 	}
 
 	/**
@@ -2747,7 +2747,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @param person
 	 */
 	public void removeAirlockRecord(Person person) {
-		for (Building b : buildingManager.getBuildingSet(FunctionType.EVA)) {
+		for (Building b : buildingManager.getAirlocks()) {
 			Airlock lock = b.getEVA().getAirlock();
 			lock.removeAirlockRecord(person);
 		}

@@ -12,6 +12,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
+import com.mars_sim.core.tool.Conversion;
 
 
 public class BuildingConfigTest extends AbstractMarsSimUnitTest {
@@ -40,7 +41,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertTrue("Has beds in " + LANDER_HAB, !beds.getActivitySpots().isEmpty());
 
         for(var b : beds.getActivitySpots()) {
-            assertTrue("Bed name", b.name().startsWith("Bed "));
+            assertTrue("Bed name", b.name().startsWith(Conversion.capitalize(FunctionSpec.BED)));
         }
         Set<String> names = beds.getActivitySpots().stream()
                                 .map(NamedPosition::name)

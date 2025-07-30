@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OptimizeSystem.java
- * @date 2022-08-01
+ * @date 2025-07-29
  * @author Manny Kung
  */
 package com.mars_sim.core.building.function.task;
@@ -55,29 +55,70 @@ public class OptimizeSystem extends Task {
 	 */
 	public OptimizeSystem(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(30));
+		super(NAME, person, true, false, STRESS_MODIFIER, 20D + RandomUtil.getRandomInt(15));
 
 		if (person.isInSettlement()) {
+	
 			// If person is in a settlement, try to find a server node.
-			node = person.getSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person);
-			if (node != null) {
+			node = person.getSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person, true);
+			
+			if (node == null)
+				endTask();
+			
+			int bldgZone = node.getBuilding().getZone();
+			int personZone = person.getBuildingLocation().getZone();
+			
+			// Note: need to consider how much is the worth in physically going to the observatory or any buildings in another zone
+			// Q: since it takes time to go through the EVA airlock, it's more logical to perform a longer task by one person rather
+			// than sending 2 persons.
+
+			boolean remoteWork = true;
+			
+			if (bldgZone == personZone) {
 				// Walk to the spot.
 				walkToTaskSpecificActivitySpotInBuilding(node.getBuilding(), FunctionType.COMPUTATION, false);
 			}
-			else
-				endTask();
-			
-			// Initialize phase
-			addPhase(OPTIMIZING_SYSTEM);
-			setPhase(OPTIMIZING_SYSTEM);
+			else {
+				// Note: This lab building is located at a different zone
+				
+				int rand = RandomUtil.getRandomInt(9);
+				if (rand == 9) {
+					// 90% remote work; 10% physical work
+					remoteWork = false;
+				}
+				
+				if (!remoteWork) {
+					// Lengthen the time the person will optimize the system since it needs to physical get there
+					// via EVA airlock
+					setDuration(getDuration() * 3);
+					// Walk to the spot.
+					walkToTaskSpecificActivitySpotInBuilding(node.getBuilding(), FunctionType.COMPUTATION, false);
+				}
+			}
 		}
 		
 		else if (person.isInVehicle()) {
-			endTask();
+			// If person is in a settlement, try to find a server node.
+			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person, true);
+			
+			if (node == null)
+				endTask();
+		}
+		
+		else if (person.isInSettlementVicinity()) {
+			// If person is in a settlement, try to find a server node.
+			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person, true);
+			
+			if (node == null)
+				endTask();
 		}
 		
 		else
 			endTask();
+		
+		// Initialize phase
+		addPhase(OPTIMIZING_SYSTEM);
+		setPhase(OPTIMIZING_SYSTEM);
 	}
 
 	@Override
@@ -124,7 +165,7 @@ public class OptimizeSystem extends Task {
 	}
 
 	/**
-	 * Releases office space.
+	 * Releases the task.
 	 */
 	@Override
 	protected void clearDown() {

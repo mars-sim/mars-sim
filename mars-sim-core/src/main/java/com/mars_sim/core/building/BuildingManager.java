@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2025-07-27
+ * @date 2025-07-29
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -112,7 +112,10 @@ public class BuildingManager implements Serializable {
 
 	private Set<Building> buildings = new UnitSet<>();
 	private Set<Building> garages = new UnitSet<>();
-
+	private Set<Building> observatories = new UnitSet<>();
+	private Set<Building> airlocks = new UnitSet<>();
+	private Set<Building> comNodes = new UnitSet<>();
+	
 	private transient Map<String, Double> vPNewCache = new HashMap<>();
 	private transient Map<String, Double> vPOldCache = new HashMap<>();
 	private transient Map<FunctionType, Set<Building>> buildingFunctionsMap;
@@ -177,14 +180,27 @@ public class BuildingManager implements Serializable {
 	public void setupBuildingFunctionsMap() {
 		buildingFunctionsMap = new EnumMap<>(FunctionType.class); 
 
-		for(Building b : buildings) {
+		for (Building b : buildings) {
 			addBuildingToMap(b);
 		}
 
-		// Get a handy shortcut to garages
+		// Get a handy shortcut to a set of garages
 		garages = buildingFunctionsMap.computeIfAbsent(FunctionType.VEHICLE_MAINTENANCE,
-								ft -> new UnitSet<>());
+				ft -> new UnitSet<>());
+		
+		// Get a handy shortcut to a set of observatories
+		observatories = buildingFunctionsMap.computeIfAbsent(FunctionType.ASTRONOMICAL_OBSERVATION,
+				ft -> new UnitSet<>());
+		
+		// Get a handy shortcut to a set of airlocks
+		airlocks = buildingFunctionsMap.computeIfAbsent(FunctionType.EVA,
+				ft -> new UnitSet<>());
+		
+		// Get a handy shortcut to a set of airlocks
+		comNodes = buildingFunctionsMap.computeIfAbsent(FunctionType.COMPUTATION,
+				ft -> new UnitSet<>());
 	}
+	
 
 	/**
 	 * Adds a building to the function map.
@@ -1828,7 +1844,7 @@ public class BuildingManager implements Serializable {
 	public double[] getTotalCombinedLoads() {
 		double loadTotal = 0;
 		double nonloadTotal = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		Set<Building> nodeBldgs = getComNodes();
 		if (nodeBldgs.isEmpty())
 			return new double[] {0, 0};
 		for (Building b: nodeBldgs) {
@@ -1850,8 +1866,7 @@ public class BuildingManager implements Serializable {
 	public double[] getPeakCurrentPercent() {
 		double peak = 0;
 		double current = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		for (Building b: nodeBldgs) {
+		for (Building b: getComNodes()) {
 			Computation node = b.getComputation();
 			current += node.getCurrentCU();
 			peak += node.getPeakCU();
@@ -1867,10 +1882,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public double getTotalEntropy() {
 		double entropy = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
-		for (Building b: nodeBldgs) {
+		for (Building b: getComNodes()) {
 			Computation node = b.getComputation();
 			entropy += node.getEntropy();
 		}
@@ -1884,7 +1896,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public double[] getTotalEntropyPerNode() {
 		double entropy = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		Set<Building> nodeBldgs = getComNodes();
 		if (nodeBldgs.isEmpty())
 			return new double[]{0, 0};		
 		int size = nodeBldgs.size();
@@ -1902,7 +1914,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public double[] getTotalEntropyPerCU() {
 		double entropyPerCU = 0;
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		Set<Building> nodeBldgs = getComNodes();
 		int size = nodeBldgs.size();
 		if (nodeBldgs.isEmpty())
 			return new double[]{0, 0};	
@@ -1918,21 +1930,48 @@ public class BuildingManager implements Serializable {
 	 * Gets a computing node for having the worst entropy by probability.
 	 * 
 	 * @param person
+	 * @param anyZones
 	 * @return
 	 */
-	public Computation getWorstEntropyComputingNodeByProbability(Person person) {
+	public Computation getWorstEntropyComputingNodeByProbability(Person person, boolean anyZones) {
 		Map<Computation, Double> scores = new HashMap<>();
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		Set<Building> bldgs = getComNodes();
 				
-		if (nodeBldgs.isEmpty())
+		if (bldgs.isEmpty())
 			return null;
 
-		for (Building b: nodeBldgs) {
+		if (person.getBuildingLocation() != null) {
+			int personZone = person.getBuildingLocation().getZone();
+			
+			bldgs = bldgs
+					.stream()
+					.filter(b -> 
+						// Note: the condition below needs to be true 
+						anyZones || (b.getZone() == personZone)
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		else {
+			bldgs = bldgs
+					.stream()
+					// if anyZones is true and the person is not in a building, then buildings of any zones will be included
+					// if anyZones is false and the person is not in a building, then only buildings of zone 0 will be chosen
+					.filter(b -> anyZones || b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+
+		if (bldgs.isEmpty()) {
+			return null;
+		}
+		
+		for (Building b: bldgs) {
 			Computation node = b.getComputation();
 			double entropy = node.getEntropy();
 			scores.put(node, entropy);
 		}
-		return getWorstEntropyByProbability(person, nodeBldgs, scores);
+		
+		return RandomUtil.getWeightedRandomObject(scores);
 	}
 	
 
@@ -1946,10 +1985,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public Computation getMostFreeComputingNode(double need, int startTime, int endTime) {
 		Map<Computation, Double> scores = new HashMap<>();
-		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return null;
-		for (Building b: nodeBldgs) {
+
+		for (Building b: getComNodes()) {
 			Computation node = b.getComputation();
 			double score = node.evaluateScheduleTask(need, startTime, endTime);
 			if (score > 0)
@@ -1971,8 +2008,10 @@ public class BuildingManager implements Serializable {
 	public double getTotalEntropyPerLab() {
 		double entropy = 0;
 		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
+		
 		if (bldgs.isEmpty())
-			return 0;		
+			return 0;	
+		
 		int size = bldgs.size();
 		for (Building b: bldgs) {
 			Research lab = b.getResearch();
@@ -1985,49 +2024,54 @@ public class BuildingManager implements Serializable {
 	 * Gets a lab for having the worst entropy by probability.
 	 * 
 	 * @param person
+	 * @param anyZones
 	 * @return
 	 */
-	public Research getWorstEntropyLabByProbability(Person person) {
+	public Research getWorstEntropyLabByProbability(Person person, boolean anyZones) {
 		Map<Research, Double> scores = new HashMap<>();
 		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
-				
+		
 		if (bldgs.isEmpty())
 			return null;
 
+		if (person.getBuildingLocation() != null) {
+			int personZone = person.getBuildingLocation().getZone();
+			
+			bldgs = bldgs
+					.stream()
+					.filter(b -> 
+						// Note: the condition below needs to be true 
+						anyZones || (b.getZone() == personZone)
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		else {
+			bldgs = bldgs
+					.stream()
+					// if anyZones is true and the person is not in a building, then buildings of any zones will be included
+					// if anyZones is false and the person is not in a building, then only buildings of zone 0 will be chosen
+					.filter(b -> anyZones || b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+
+		if (bldgs.isEmpty()) {
+			return null;
+		}
+		
+		
 		for (Building b: bldgs) {
 			Research lab = b.getResearch();
 			double entropy = lab.getEntropy();
 			scores.put(lab, entropy);
 		}
-		return getWorstEntropyByProbability(person, bldgs, scores);
-	}
-
-	public <T> T getWorstEntropyByProbability(Person person, Set<Building> buildings,
-											   Map<T, Double> scores) {
-
-		if (person.getBuildingLocation() != null) {
-			buildings = buildings
-					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
-		}
-		else {
-			buildings = buildings
-					.stream()
-					.filter(b -> b.getZone() == 0
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
-		}
-
-		if (buildings.isEmpty()) {
-			return null;
-		}
+		
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
+
 	
 	/**
-	 * Gets a list of farm buildings needing work from a list of buildings with the
+	 * Gets a set of farm buildings needing work from a list of buildings with the
 	 * farming function.
 	 *
 	 * @param buildingList list of buildings with the farming function.
@@ -2072,45 +2116,47 @@ public class BuildingManager implements Serializable {
 	 */
 	public static Building getAvailableFunctionTypeBuilding(
 			Person person, FunctionType functionType) {
-		return getAvailableFunctionBuilding(person, functionType, true);
+		return getAvailableFunctionBuilding(person, functionType, false);
 	}
 
 	/**
 	 * Gets an available building with a particular function in a particular zone. 
 	 *
 	 * @param person the person looking for a facility.
-	 * @return an available space or null if none found.
+	 * @param functionType
+	 * @param anyZones
+	 * @return
 	 */
 	public static Building getAvailableFunctionBuilding(
-			Person person, FunctionType functionType, boolean sameZone) {
+			Person person, FunctionType functionType, boolean anyZones) {
 		
-		// If person is in a settlement, try to find a building of functionType
-		if (person.isInSettlement()) {
+		Set<Building> buildings = null;
+		
+		if (person.getBuildingLocation() != null) {
+			int personZone = person.getBuildingLocation().getZone();
 			
-			Set<Building> bldgs0 = null;
-					
-			if (sameZone && person.getBuildingLocation() != null) {
-				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(functionType)
-						.stream()
-						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(functionType)
-						.stream()
-						.filter(b -> b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());		
-			}
-			
-			Set<Building> bldgs1 = getLeastCrowdedBuildings(bldgs0);
+			buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
+					.stream()
+					.filter(b -> 
+						// Note: the condition below needs to be true 
+						anyZones || (b.getZone() == personZone)
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		else {
+			buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
+					.stream()
+					// if anyZones is true and the person is not in a building, then buildings of any zones will be included
+					// if anyZones is false and the person is not in a building, then only buildings of zone 0 will be chosen
+					.filter(b -> anyZones || b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		
+		buildings = getLeastCrowdedBuildings(buildings);
 
-			if (!bldgs1.isEmpty()) {
-				return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs1));
-			}
-			
-			return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs0));
+		if (!buildings.isEmpty()) {
+			return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, buildings));
 		}
 		
 		return null;
@@ -2400,12 +2446,39 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a set of garages for the settlement.
+	 * Gets a handy set of garages for the settlement.
 	 *
 	 * @return
 	 */
 	public Set<Building> getGarages() {
 		return garages;
+	}
+
+	/**
+	 * Gets a handy set of observatories for the settlement.
+	 *
+	 * @return
+	 */
+	public Set<Building> getObservatories() {
+		return observatories;
+	}
+	
+	/**
+	 * Gets a handy set of airlocks for the settlement.
+	 *
+	 * @return
+	 */
+	public Set<Building> getAirlocks() {
+		return airlocks;
+	}
+	
+	/**
+	 * Gets a handy set of computational nodes for the settlement.
+	 *
+	 * @return
+	 */
+	public Set<Building> getComNodes() {
+		return comNodes;
 	}
 
 	/**

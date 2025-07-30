@@ -511,7 +511,7 @@ public class Walk extends Task {
 	 * @return
 	 */
 	public static boolean anyAirlocksForIngressEgress(Person person, boolean ingress) {
-		Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.EVA);
+		Set<Building> bldgs = person.getSettlement().getBuildingManager().getAirlocks();
 
 		Iterator<Building> i = bldgs.iterator();
 		while (i.hasNext()) {

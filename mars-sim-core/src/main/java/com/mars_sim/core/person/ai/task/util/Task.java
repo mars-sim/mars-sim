@@ -343,7 +343,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * What effort is required for this task
+	 * Returns the effort required for this task.
 	 */
     public PhysicalEffort getEffortRequired() {
         return getImpact().getEffortRequired();
@@ -743,7 +743,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	} 
 
 	/**
-	 * This gets the relevant Impact assessment of doing this Task. It is a temp. measure
+	 * Gets the relevant Impact assessment of doing this Task. It is a temporary measure
 	 * as eventually the impact will come via the constructor.
 	 * @return Impact assessment of doing this Task
 	 */
@@ -795,7 +795,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Who is working on this Task.
+	 * Gets the worker working on this task.
 	 * 
 	 * @return
 	 */

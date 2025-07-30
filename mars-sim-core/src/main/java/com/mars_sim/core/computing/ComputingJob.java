@@ -16,7 +16,6 @@ import java.util.Set;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Computation;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -136,7 +135,7 @@ public class ComputingJob implements Serializable {
     public boolean pickMultipleNodes(double timeCompleted, int now) {
     	boolean canWork = false;
     	
-		List<Building> nodes = new ArrayList<>(host.getBuildingManager().getBuildingSet(FunctionType.COMPUTATION));
+		List<Building> nodes = new ArrayList<>(host.getBuildingManager().getComNodes());
 
 		double remainingDemand = initDemand;
 		

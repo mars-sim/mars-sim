@@ -76,7 +76,7 @@ public class YogaMeta extends FactoryMetaTask {
         if (kJ < 500 || fatigue > 750 || hunger > 750 || base <= 0)
             return EMPTY_TASKLIST;
 
-        RatingScore result = new RatingScore(base/10D);  // Workout score is divied by 10 as well  
+        RatingScore result = new RatingScore(base/10D);  // Workout score is divided by 10 as well  
         result = assessPersonSuitability(result, person);
 
         // Get an available gym.
