@@ -1,15 +1,14 @@
 /*
  * Mars Simulation Project
  * ConstructBuilding.java
- * @date 2023-07-24
+ * @date 2025-07-30
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
@@ -175,7 +174,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public static List<ConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
 
-		List<ConstructionMission> result = new CopyOnWriteArrayList<>();
+		List<ConstructionMission> result = new ArrayList<>(); // CopyOnWriteArrayList<>();
 
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {

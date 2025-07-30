@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SplashWindow.java
- * @date 2022-08-05
+ * @date 2025-07-30
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;

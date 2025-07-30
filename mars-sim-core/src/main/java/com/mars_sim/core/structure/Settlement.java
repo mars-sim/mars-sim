@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2025-07-02
+ * @date 2025-07-30
  * @author Scott Davis
  */
 
@@ -1328,22 +1328,37 @@ public class Settlement extends Unit implements Temporal,
             Building building = unitManager.getBuildingByID(bldg);
             Airlock airlock = building.getEVA().getAirlock();
             boolean chamberFull = airlock.isFull();
-
+            boolean reservedFull = airlock.isReservationFull();
+            
             // Select airlock that fulfill either conditions:
+            
             // 1. Chambers are NOT full
             // 2. Chambers are full but the reservation is NOT full
-            if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
-                if (result == null) {
-                    result = airlock;
-                    continue;
-                }
+            
+            if ((chamberFull && !reservedFull) || !chamberFull) {
+            	
                 double distance = building.getPosition().getDistanceTo(pos);
-                if (distance < leastDistance
-                        && !chamberFull) {
+                if (distance < leastDistance) {
                     result = airlock;
                     leastDistance = distance;
                 }
             }
+     
+            // WARNING: do NOT call hasValidPath() since it will do pathfinding and 
+            //          consume a lot of CPU.
+            
+//            if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
+//                if (result == null) {
+//                    result = airlock;
+//                    continue;
+//                }
+//                double distance = building.getPosition().getDistanceTo(pos);
+//                if (distance < leastDistance
+//                        && !chamberFull) {
+//                    result = airlock;
+//                    leastDistance = distance;
+//                }
+//            }
         }
 
 		return result;
@@ -1413,10 +1428,25 @@ public class Settlement extends Unit implements Temporal,
         for (Building nextBuilding : airlocks) {
             Airlock airlock = nextBuilding.getEVA().getAirlock();
 
+            
             boolean chamberFull = airlock.isFull();
-            if (chamberFull
-                    || !buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-                // This will eliminate airlocks that are not in the same zone
+            boolean reservedFull = airlock.isReservationFull();
+            
+            // Select airlock that fulfill either conditions:
+            
+            // 1. Chambers are NOT full
+            // 2. Chambers are full but the reservation is NOT full
+            
+            if ( !((chamberFull && !reservedFull) || !chamberFull) ) {
+            	
+                // WARNING: do NOT call hasValidPath() since it will do pathfinding and 
+                //          consume a lot of CPU.
+            	
+            	
+//                    || !buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+            	
+                // Note: may need to eliminate airlocks that are not in the same zone
+            	
                 continue;
             }
 
@@ -1515,8 +1545,8 @@ public class Settlement extends Unit implements Temporal,
 	private boolean hasClosestWalkableAvailableAirlock(Building building) {
         for (Building nextBuilding : buildingManager.getAirlocks()) {
             boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
-            if (!chamberFull
-                    && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+            if (!chamberFull) {
+//                    && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
                 return true;
             }
         }

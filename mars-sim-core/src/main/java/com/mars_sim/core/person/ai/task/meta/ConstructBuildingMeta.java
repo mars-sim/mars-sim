@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @date 2021-10-20
+ * @date 2025-07-30
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.meta;
@@ -46,26 +46,35 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
     }
 
     /**
-     * Assess a person constructing a building. Assessment is base don role/Job & number of Construction
-     * missions
+     * Assesses a person constructing a building. 
+     * Assessment is based on role/job & number of construction missions.
      */
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
 
         // Probability affected by the person's stress and fatigue.
-        if (!person.isInSettlement()
-            || !person.getPhysicalCondition().isFitByLevel(500, 50, 500)
-            || (EVAOperation.getWalkableEgressAirlock(person) == null) 
-            || EVAOperation.isGettingDark(person)) {
+        if (person.isOutside()) {
         	return EMPTY_TASKLIST;
         }
-
+        
+        if (!person.getPhysicalCondition().isEVAFit()) {
+            return EMPTY_TASKLIST;
+        }
+        
+        if (EVAOperation.isGettingDark(person)) {
+            return EMPTY_TASKLIST;
+        }
+        
         // Check all building construction missions occurring at the settlement.
-        Settlement s = person.getAssociatedSettlement();
         List<ConstructionMission> missions = ConstructBuilding.
-                    getAllMissionsNeedingAssistance(s);
+                    getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
 		if (missions.isEmpty())
 			return EMPTY_TASKLIST;
+		
+		// Avoid call getWalkableEgressAirlock since it involve pathfinding.
+        if (EVAOperation.getWalkableEgressAirlock(person) == null) {
+            return EMPTY_TASKLIST;
+        }
 
         var score = new RatingScore(WEIGHT * missions.size());
         score = assessPersonSuitability(score, person);

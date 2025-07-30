@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UIConfig.java
- * @date 2023-03-30
+ * @date 2025-07-30
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +37,6 @@ import org.jdom2.output.XMLOutputter;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
-
-import com.google.common.base.Charsets;
-
 /**
  * Static class for saving/loading user interface configuration data.
  */
@@ -273,7 +271,7 @@ public class UIConfig {
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 
-			OutputStreamWriter writer = new OutputStreamWriter(stream, Charsets.UTF_8);
+			OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
 
 			fmt.output(outputDoc, writer);
 
