@@ -78,7 +78,7 @@ public class Read extends Task {
 			};
 
 			// Choose a building in order
-			for(var ft : locations) {
+			for (var ft : locations) {
 				Building b = BuildingManager.getAvailableFunctionTypeBuilding(person, ft);
 				if (b != null) {
 					walkDone = walkToActivitySpotInBuilding(b, ft, true);

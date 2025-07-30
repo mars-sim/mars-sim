@@ -45,17 +45,8 @@ public class Yoga extends Task {
 	 */
 	public Yoga(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomDouble(30D));
-
-		if (person.isInVehicle()) {
-			// If person is in rover, walk to passenger activity spot.
-			if (person.getVehicle() instanceof Rover) {
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-				// set the boolean to true so that it won't be done again today
-				person.getPreference().setTaskDue(this, true);
-			}
-		} 
-		
-		else if (person.isInSettlement()) {
+	
+		if (person.isInSettlement()) {
 			// If person is in a settlement, try to find a gym.
 			Building gymBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
 			if (gymBuilding != null) {

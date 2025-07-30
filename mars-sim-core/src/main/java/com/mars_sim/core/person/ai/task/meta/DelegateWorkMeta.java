@@ -67,10 +67,12 @@ public class DelegateWorkMeta extends FactoryMetaTask {
         var score = new RatingScore(base);
             
         // Get an available office space.
-        Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
-        score = assessBuildingSuitability(score, building, person);
-        score = assessPersonSuitability(score, person);
-
+        if (person.isInSettlement()) {
+	        Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+	        score = assessBuildingSuitability(score, building, person);
+	        score = assessPersonSuitability(score, person);
+        }
+        
         return createTaskJobs(score);
     }
 }

@@ -91,10 +91,10 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         // In a moving vehicle?
 		result = assessMoving(result, person);
         
-        // Crowding modifier
-        Building adminBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
-        result = assessBuildingSuitability(result, adminBuilding, person);
-
+		if (person.isInSettlement()) {
+	        Building adminBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+	        result = assessBuildingSuitability(result, adminBuilding, person);
+		}
         // Increase probability if person's current job is related to study's science.
         JobType job = person.getMind().getJob();
         ScienceType science = study.getScience();

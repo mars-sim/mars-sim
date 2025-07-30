@@ -58,8 +58,11 @@ public class RelaxMeta extends FactoryMetaTask{
 
         RatingScore result = new RatingScore(WEIGHT);
             
-        Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-        result = assessBuildingSuitability(result, recBuilding, person);
+        if (person.isInSettlement()) {
+	        Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
+	        result = assessBuildingSuitability(result, recBuilding, person);
+        }
+        
         result = assessPersonSuitability(result, person);
 
         // Modify probability if during person's work shift.

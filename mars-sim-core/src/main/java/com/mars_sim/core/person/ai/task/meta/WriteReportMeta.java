@@ -41,7 +41,8 @@ public class WriteReportMeta extends FactoryMetaTask {
     }
 
 	/**
-	 * Assess the suitability of a person to write a report. Based on their Role.
+	 * Assesses the suitability of a person to write a report. Based on their Role.
+	 * 
 	 * @param person Being assessed
 	 * @return Potential tasks jobs
 	 */
@@ -67,12 +68,13 @@ public class WriteReportMeta extends FactoryMetaTask {
 
 		RatingScore score = new RatingScore(base);
 		
-		// Get an available office space.
-		Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
-
-		// Note: if an office space is not available such as in a vehicle, one can still write reports!
-		assessBuildingSuitability(score, building, person);
-
+		if (person.isInSettlement()) {
+			// Get an available office space.
+			Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);	
+			// Note: if an office space is not available such as in a vehicle, one can still write reports!
+			assessBuildingSuitability(score, building, person);
+		}
+		
 		score = assessPersonSuitability(score, person);
 		
 		return createTaskJobs(score);
