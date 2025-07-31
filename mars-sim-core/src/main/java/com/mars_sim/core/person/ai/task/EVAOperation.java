@@ -334,7 +334,9 @@ public abstract class EVAOperation extends Task {
 				// Get closest airlock building at settlement.
 				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
-					interiorObject = (LocalBoundedObject)(s.getClosestIngressAirlock(person)).getEntity();
+					Airlock airlock = s.getClosestIngressAirlock(person);
+					if (airlock != null)
+						interiorObject = (LocalBoundedObject)(airlock).getEntity();
 				}
 				else {
 					// near a vehicle
@@ -349,7 +351,7 @@ public abstract class EVAOperation extends Task {
 				logger.log(person, Level.SEVERE, 30_000, "Trying to walk somewhere. interiorObject is null.");
 
 				boolean canAdd = addSubTask(new Walk(person));
-				if (!canAdd) {
+				if (!canAdd) { 
 					logger.log(person, Level.WARNING, 4_000,
 							". Unable to add subtask Walk.");
 					// Note: may call below many times
@@ -752,23 +754,11 @@ public abstract class EVAOperation extends Task {
 		else {
 			Settlement s = worker.getSettlement();
 			if (s != null) {
-				result = s.getClosestWalkableEgressAirlock(worker, pos);
+				result = s.getClosestWalkableEgressAirlock(worker);
 			}
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets an available airlock to a given location that has a walkable path from
-	 * the person's current location.
-	 *
-	 * @param worker the worker.
-	 * @param ingress is the person ingressing.
-	 * @return airlock or null if none available
-	 */
-	public static Airlock getWalkableEgressAirlock(Worker worker) {
-		return getClosestWalkableEgressAirlock(worker, worker.getPosition());
 	}
 
 	/**

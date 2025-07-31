@@ -540,9 +540,11 @@ public abstract class DigLocal extends EVAOperation {
 	 * @return
 	 */
 	public static boolean canDigLocal(Person person) {
-		// Check if person can exit the rover.
-		if (getWalkableAvailableEgressAirlock(person) == null)
-			return false;
+
+		// Note: check egress airlock is already covered by another method 
+		
+//		if (getWalkableAvailableEgressAirlock(person) == null)
+//			return false;
 
 		// Check if sunlight is insufficient
 		if (EVAOperation.isGettingDark(person))

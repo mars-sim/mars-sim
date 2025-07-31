@@ -65,7 +65,7 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%02.1f", secs) + SECONDS);
+		b.append(String.format("%04.1f", secs) + SECONDS);
 //			.append(SIM_TIME);
 		
 		String s = b.toString();

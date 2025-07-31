@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -314,9 +313,9 @@ public class Settlement extends Unit implements Temporal,
 	private List<Double> missionScores;
 
 	/** The set of available pressurized/pressurizing airlocks. */
-	private Set<Integer> pressurizedAirlocks = new HashSet<>();
+	private Set<Building> pressurizedAirlocks = new UnitSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
-	private Set<Integer> depressurizedAirlocks = new HashSet<>();
+	private Set<Building> depressurizedAirlocks = new UnitSet<>();
 	/** The settlement's list of citizens. */
 	private Set<Person> citizens;
 	/** The settlement's list of owned robots. */
@@ -1208,41 +1207,66 @@ public class Settlement extends Unit implements Temporal,
 
 		for (Building airlockBdg : buildingManager.getAirlocks()) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();
-			if (airlock.isPressurized()	|| airlock.isPressurizing())
+			if (airlock.isPressurized()	|| airlock.isPressurizing()) {
 				pressurizedBldgs.add(airlockBdg);
+			}
 			else if (airlock.isDepressurized() || airlock.isDepressurizing())
 				depressurizedBldgs.add(airlockBdg);
 		}
 
-		if (!pressurizedBldgs.isEmpty()) {
-			trackAirlocks(pressurizedBldgs, true);
-		}
-
-		if (!depressurizedBldgs.isEmpty()) {
-			trackAirlocks(depressurizedBldgs, false);
-		}
+		pressurizedAirlocks = pressurizedBldgs;
+		depressurizedAirlocks = depressurizedBldgs;
 	}
 
 	/**
 	 * Gets the closest available airlock at the settlement to the given location.
 	 * The airlock must have a valid walkable interior path from the person's
 	 * current location.
+	 * Note: if just checking and returning true/false, adopt the use of
+	 *       Walk::anyAirlocksForIngressEgress instead as it's much faster and 
+	 *       less convoluted 
 	 *
 	 * @param worker the worker.
-	 * @param pos Position to search
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableEgressAirlock(Worker worker, LocalPosition pos) {
+	public Airlock getClosestWalkableEgressAirlock(Worker worker) {
+	
 		Building currentBuilding = BuildingManager.getBuilding(worker);
 
 		if (currentBuilding == null) {
-			// Note: What if a person is out there in ERV building for maintenance ?
-			// ERV building has no LifeSupport function. currentBuilding will be null
-			logger.log(worker, Level.WARNING, 10_000, "Not currently in a building.");
+			logger.log(worker, Level.WARNING, 10_000, "Not in a building but trying to find an airlock to egress.");
 			return null;
 		}
 
-		return getAirlock(currentBuilding, pos, false);
+		Airlock result = null;
+		
+		// The order of priority in finding an egress-ready airlock
+		// with 
+		// 1. Ready now - pressurized and chamber open
+		// 2. Soon ready - depressurized and chamber not open but reservation open
+		// 3. Wait to be ready - depressurized and chamber open
+		// 4. Wait for the next cycle - pressurized and chamber not open but reservation open
+		
+		// Note: even if an airlock is not immediately available,
+		//       it's better than returning null
+		
+		result = getOptimalAirlock((Person)worker, pressurizedAirlocks, true, false);
+		
+		if (result == null) {
+			result = getOptimalAirlock((Person)worker, depressurizedAirlocks, false, true);
+		}
+		if (result == null) {
+			// At least go and make an reservation now
+			// Will wait for the state of airlock to change to being pressurized
+			result = getOptimalAirlock((Person)worker, depressurizedAirlocks, true, false);
+		}
+		if (result == null) {
+			// At least go and make an reservation now
+			// The longest wait 
+			result = getOptimalAirlock((Person)worker, pressurizedAirlocks, false, true);
+		}	
+	
+		return result;
 	}
 
 	/**
@@ -1254,33 +1278,70 @@ public class Settlement extends Unit implements Temporal,
 	public Airlock getClosestIngressAirlock(Person person) {
 		Airlock result = null;
 
-		result = getAvailableAirlock(person, depressurizedAirlocks);
+		// The order of priority in finding an ingress-ready airlock
+		// with 
+		// 1. Ready now - depressurized and chamber open
+		// 2. Soon ready -  pressurized and chamber not open but reservation open
+		// 3. Wait to be ready - pressurized and chamber open
+		// 4. Wait for the next cycle - depressurized and chamber not open but reservation open
+		
+		// Note: even if an airlock is not immediately available,
+		//       it's better than returning null
+		
+		result = getOptimalAirlock(person, depressurizedAirlocks, true, false);
 		
 		if (result == null) {
-			result = getAvailableAirlock(person, pressurizedAirlocks);
+			// Will wait for the state of airlock to change to being depressurized
+			result = getOptimalAirlock(person, pressurizedAirlocks, false, true);
 		}
+		if (result == null) {
+			// At least go and make an reservation now
+			// Will wait for the state of airlock to change to being depressurized
+			result = getOptimalAirlock(person, pressurizedAirlocks, true, false);
+		}
+		if (result == null) {
+			// At least go and make an reservation now
+			// The longest wait 
+			result = getOptimalAirlock(person, depressurizedAirlocks, false, true);
+		}
+		
 		
 		return result;
 	}
 	
 	/**
-	 * Gets an available airlock to a person.
+	 * Gets an optimal airlock with specific conditions to a person.
 	 *  
 	 * @param person
 	 * @param bldgs
+	 * @param needChamberOpen
+	 * @param needReservationOpen
 	 * @return
 	 */
-	private Airlock getAvailableAirlock(Person person, Set<Integer> bldgs) {
+	private Airlock getOptimalAirlock(Person person, Set<Building> bldgs, 
+			boolean needChamberOpen, boolean needReservationOpen) {
 
 		Airlock result = null;
 		double leastDistance = Double.MAX_VALUE;
 
-        for (Integer bldg : bldgs) {
-            Building nextBuilding = unitManager.getBuildingByID(bldg);
+        for (Building nextBuilding : bldgs) {
             Airlock airlock = nextBuilding.getEVA().getAirlock();
             boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
-
-            if (!chamberFull && BuildingCategory.ASTRONOMY != nextBuilding.getCategory()) {
+            boolean reservationFull = airlock.isReservationFull();
+            
+            boolean pass = false;
+            
+            if (needChamberOpen) {
+            	pass = !chamberFull;
+            }
+            else {
+                if (needReservationOpen) {
+                	pass = !reservationFull;
+                }
+            }
+         
+//            if ((!chamberFull || (chamberFull && !reservationFull)) 
+            if (pass && BuildingCategory.ASTRONOMY != nextBuilding.getCategory()) {
 
                 double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
 
@@ -1300,116 +1361,8 @@ public class Settlement extends Unit implements Temporal,
 		return result;
 	}
 	
-	/**
-	 * Gets an airlock for an EVA ingress or egress.
-	 * Considers if the chambers are full and if the reservation is full.
-	 *
-	 * @param currentBuilding
-	 * @param pos Position for search
-	 * @param ingress is the person ingressing ?
-	 * @return
-	 */
-	private Airlock getAirlock(Building currentBuilding, LocalPosition pos, boolean ingress) {
-		Airlock result = null;
 
-		// Search the closest of the buildings
-		double leastDistance = Double.MAX_VALUE;
-
-		Set<Integer> bldgs = null;
-		if (ingress) {
-			bldgs = depressurizedAirlocks;
-		}
-		else {
-			bldgs = pressurizedAirlocks;
-		}
-        for (Integer bldg : bldgs) {
-            Building building = unitManager.getBuildingByID(bldg);
-            Airlock airlock = building.getEVA().getAirlock();
-            boolean chamberFull = airlock.isFull();
-            boolean reservationFull = airlock.isReservationFull();
-            
-
-            // Select airlock that fulfill either conditions:
-            
-            // 1. Chambers are NOT full
-            // 2. Chambers are full but the reservation is NOT full
-            
-            if (!chamberFull || (chamberFull && !reservationFull)) {
-//           	if (!chamberFull) {	
-                
-                double distance = building.getPosition().getDistanceTo(pos);
-                
-                if (result == null) {
-                    result = airlock;
-                    leastDistance = distance;
-                    continue;
-                }
-
-                if (distance < leastDistance) {
-                    result = airlock;
-                    leastDistance = distance;
-                }
-            }
-     
-            // WARNING: do NOT call hasValidPath() since it will do pathfinding and 
-            //          consume a lot of CPU.
-            
-//            if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
-//            	
-//                if (result == null) {
-//                    result = airlock;
-//                    continue;
-//                }
-//                
-//                double distance = building.getPosition().getDistanceTo(pos);
-//                if (distance < leastDistance
-//                        && !chamberFull) {
-//                    result = airlock;
-//                    leastDistance = distance;
-//                }
-//            }
-        }
-
-		return result;
-	}
-
-
-	/**
-	 * Categorizes the state of the airlocks.
-	 * 
-	 * @param bldgs
-	 * @param pressurized
-	 */
-	private void trackAirlocks(Set<Building> bldgs, boolean pressurized) {	
-		for (Building building : bldgs) {
-			boolean chamberFull = building.getEVA().getAirlock().isFull();
-			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
-
-			int id = building.getIdentifier();
-			// Select airlock that fulfill either conditions:
-			// 1. Chambers are NOT full
-			// 2. Chambers are full but the reservation is NOT full
-            if (!chamberFull || (chamberFull && !reservationFull)) {
-//			if (!chamberFull) {	
-				if (pressurized
-					&& !pressurizedAirlocks.contains(id)) {
-						pressurizedAirlocks.add(id);
-				}
-				else if (!depressurizedAirlocks.contains(id)) {
-					depressurizedAirlocks.add(id);
-				}
-			}
-			else {
-				if (pressurized
-					&& pressurizedAirlocks.contains(id)) {
-						pressurizedAirlocks.remove(id);
-				}
-				else if (!depressurizedAirlocks.contains(id)) {
-					depressurizedAirlocks.add(id);
-				}
-			}
-		}
-	}
+	
 
 	/**
 	 * Gets the best available airlock at the settlement to the given location.

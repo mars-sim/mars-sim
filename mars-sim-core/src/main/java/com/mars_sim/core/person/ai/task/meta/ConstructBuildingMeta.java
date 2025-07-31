@@ -15,11 +15,11 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.task.ConstructBuilding;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -71,8 +71,8 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
 		if (missions.isEmpty())
 			return EMPTY_TASKLIST;
 		
-		// Avoid call getWalkableEgressAirlock since it involve pathfinding.
-        if (EVAOperation.getWalkableEgressAirlock(person) == null) {
+
+        if (!Walk.anyAirlocksForIngressEgress(person, false)) {
             return EMPTY_TASKLIST;
         }
 

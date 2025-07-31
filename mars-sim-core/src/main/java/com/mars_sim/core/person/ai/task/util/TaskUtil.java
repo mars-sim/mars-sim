@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Read;
 import com.mars_sim.core.person.ai.task.Relax;
+import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.Workout;
 import com.mars_sim.core.person.ai.task.Yoga;
 import com.mars_sim.core.robot.Robot;
@@ -195,7 +196,7 @@ public class TaskUtil {
 	 */
 	public static double getEVAModifier(Person person) {
 		// Check if an airlock is available
-		if (EVAOperation.getWalkableEgressAirlock(person) == null)
+		if (!Walk.anyAirlocksForIngressEgress(person, false))
 			return 0;
 
 		// Check if it is night time.

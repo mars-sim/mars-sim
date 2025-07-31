@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -120,8 +119,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		MainDesktopPane desktop = getDesktop();
 		
 		// Create top panel
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        JPanel topPanel = new JPanel(new BorderLayout());
+//        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         content.add(topPanel, BorderLayout.CENTER);
  
 		JPanel wikiPanel = new JPanel(new FlowLayout());
@@ -132,10 +131,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		content.add(wikiPanel, BorderLayout.NORTH);
 		
 		AttributePanel westGrid = new AttributePanel(6, 1, 2, 2);
-		topPanel.add(westGrid);
+		topPanel.add(westGrid, BorderLayout.CENTER);
         
 		AttributePanel eastGrid = new AttributePanel(6, 1, 2, 2);
-		topPanel.add(eastGrid);	
+		topPanel.add(eastGrid, BorderLayout.EAST);	
 		
 		if (eva.getAirlock().isInnerDoorLocked())
 			innerDoorStateCache = LOCKED;

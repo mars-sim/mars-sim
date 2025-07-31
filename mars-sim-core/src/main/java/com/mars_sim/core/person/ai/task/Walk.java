@@ -504,7 +504,6 @@ public class Walk extends Task {
 
 	/**
 	 * Are any airlocks available for ingress or egress ?
-	 * Used by DigLocalMeta
 	 * 
 	 * @param person
 	 * @param ingress

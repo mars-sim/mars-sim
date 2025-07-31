@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.SalvageBuilding;
+import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -101,7 +102,7 @@ public class SalvageBuildingMeta extends MetaTask implements SettlementMetaTask 
         RatingScore score = RatingScore.ZERO_RATING;
         if(p.isInSettlement()
             && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
-            && (EVAOperation.getWalkableEgressAirlock(p) != null)) {
+            && Walk.anyAirlocksForIngressEgress(p, false)) {
             
             score = super.assessPersonSuitability(st, p);
         }

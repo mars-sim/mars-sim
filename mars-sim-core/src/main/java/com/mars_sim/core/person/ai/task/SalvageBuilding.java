@@ -118,10 +118,13 @@ public class SalvageBuilding extends EVAOperation {
     public  static boolean canSalvage(Person person) {
 
         // Check if person can exit the settlement airlock.
-        Airlock airlock = getWalkableAvailableEgressAirlock(person);
-        if (airlock != null && !ExitAirlock.canExitAirlock(person, airlock)) {
-            return false;
+        if (!Walk.anyAirlocksForIngressEgress(person, false)) {
+        	return false;
         }
+        
+//        if (!ExitAirlock.canExitAirlock(person, airlock)) {
+//            return false;
+//        }
 
 		// Check if it is night time.
 		if (EVAOperation.isGettingDark(person)) {

@@ -1296,23 +1296,13 @@ public class ExitAirlock extends Task {
 						&& (person.getVehicle().isInSettlementVicinity()
 							|| person.getVehicle().isInSettlement())) {
 					Settlement settlement = person.getVehicle().getSettlement();
-//					Settlement nearbySettlement = unitManager.findSettlement(person.getVehicle().getCoordinates());
-//					if (nearbySettlement != null) {
-						logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
-						// Attempt a rescue operation
-						person.rescueOperation((Rover) person.getVehicle(), settlement);
-						// Note: rescueOperation() is more like a hack, rather than a legitimate way 
-						// of transferring a person through the airlock into the settlement 
-//					}	
+
+					logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
+					// Attempt a rescue operation
+					person.rescueOperation((Rover) person.getVehicle(), settlement);
+					// Note: rescueOperation() is more like a hack, rather than a legitimate way 
+					// of transferring a person through the airlock into the settlement 
 				}
-				
-//				else if (person.isOutside()) {
-//					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
-//					if (nearbySettlement != null)
-//						logger.info(person, 4_000, "Starting a rescue operation near " + nearbySettlement.getName() + ".");  
-//						// Attempt a rescue operation
-//						person.rescueOperation(null, ((Building) (airlock.getEntity())).getSettlement());
-//				}
 
 			} catch (Exception e) {
 				logger.severe(person, 4_000, "Could not get new action: ", e);

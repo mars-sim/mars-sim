@@ -23,10 +23,8 @@ import java.util.concurrent.RejectedExecutionException;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.tool.MathUtils;
 
 /**
  * The MasterClock represents the simulated time clock on virtual Mars and
