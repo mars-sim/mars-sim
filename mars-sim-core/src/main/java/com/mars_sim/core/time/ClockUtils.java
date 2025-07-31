@@ -23,6 +23,7 @@ public class ClockUtils implements Serializable {
 	/** the sim time label string */
 	private static final String SIM_TIME = " (Sim-Time)";
 
+	private static final String DAYS = "d ";
 	private static final String HOURS = "h ";
 	private static final String MINUTES = "m ";
 	private static final String ZERO_MINUTES = "00m ";
@@ -43,12 +44,17 @@ public class ClockUtils implements Serializable {
 			return mapping.get(ratio);
 		}
 
+		int days = (int) (ratio / SEC_PER_DAY);
 		int hours = (int) ((ratio % SEC_PER_DAY) / SEC_PER_HR);
 		int minutes = (int) ((ratio % SEC_PER_HR) / SEC_PER_MIN);
 		double secs = ratio % SEC_PER_MIN;
 
 		StringBuilder b = new StringBuilder();
 
+		if (days > 0) {
+			b.append(String.format("%01d", days)).append(DAYS);
+		}
+		
 		if (hours > 0) {
 			b.append(String.format("%02d", hours)).append(HOURS);
 		}
@@ -59,8 +65,8 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%.1f", secs) + SECONDS)
-			.append(SIM_TIME);
+		b.append(String.format("%02.1f", secs) + SECONDS);
+//			.append(SIM_TIME);
 		
 		String s = b.toString();
 

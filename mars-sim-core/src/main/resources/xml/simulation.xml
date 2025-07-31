@@ -43,12 +43,14 @@
 			     3 : The calculated TR is dependent upon the # of cpu threads available on users machine.
 			     4 : The base TR value below will be overridden by the calculated TR at the start of the sim.
 		-->
-		<!-- Default: 128. Min is 1. Max is 21870.  -->
+		<!-- Default: 128. Min is 1.  -->
 		<base-time-ratio value="128" />
-		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
-			 2. time ratio can be a multiple of 2 (between 1 and 256), 1.5 (between 256 and and 2916), 1.25 (between 2916 and 21870)
-			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim
-			 4. Minimum: 1; maximum: 21870
+		<!-- 1. The time ratio (TR) will be re-scaled according to available # of threads (not # of cpu cores).
+			 2. The time ratio (TR) can be a multiple of 
+			    - 2 (1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x)
+			    - 1.5 (384x, 576x, 864x, 1296x, 1944x, 2916x, 4374x, 6561x)
+			    - 1.25 (8201x, 10,251x, 12,813x, 16,016x, 20,020x, 25,025x, 31,281x, 39,101x)
+			    - 1.125 (48,876x, 54,985x, 61,858x, 69,590x, 78,288x, 88,074x, 99,083x, 111,468x)
 		-->
 
 		<!-- The time span covered by each simulation pulse is defined below. These are defined in terms of
@@ -66,16 +68,17 @@
 		     1 earth minute has 1.4795874 millisols
 		     10 earth minute has 14.7959 millisols
 		     15 earth minutes has 22.1938 millisols
-	     
+		     30 earth minutes has 44.3876 millisols
+	     	 45 earth minutes has 66.5814 millisols
 		-->
 		
 		<!-- Default: 0.01126440159375963 millisols or 1 earth second.
 		     Must be smaller than max-simulated-pulse   -->
 		<min-simulated-pulse value="0.01126440159375963"/>
 
-		<!-- Default: 14.7959 millisols or 10 earth mins. 
+		<!-- Default: 30 earth minutes has 44.3876 millisols 
 		     Must be greater than min-simulated-pulse   -->
-		<max-simulated-pulse value="14.7959"/>
+		<max-simulated-pulse value="44.3876"/>
 
 		<!-- The simulation creates a pulse periodically to execution the simulation. This integer value defines the
 		maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more

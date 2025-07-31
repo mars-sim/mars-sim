@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2023-09-08
+ * @date 2025-07-30
  * @author Scott Davis
  */
 package com.mars_sim.core.time;
@@ -19,13 +19,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.tool.MathUtils;
 
 /**
  * The MasterClock represents the simulated time clock on virtual Mars and
@@ -39,23 +40,28 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 	/** The maximum speed allowed .*/
-	public static final int MAX_SPEED = 20;
+	public static final int TIER_3_TOP = 32;
+	/** The maximum speed allowed .*/
+	public static final int TIER_2_TOP = 24;
 	/** The high speed setting. */
-	public static final int HIGH_SPEED = 14;
+	public static final int TIER_1_TOP = 16;
 	/** The mid speed setting. */
-	public static final int MID_SPEED = 8;
+	public static final int TIER_0_TOP = 8;
 	
 	/** The CPU modifier for adjust the ref pulse width. */
 	public static final int CPU_MODIFIER = 4;
 
-	// 1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x 
-	public static final double MID_TIME_RATIO = Math.pow(2.0, 1.0 * MID_SPEED); 
-	// 384x, 576x, 864x, 1296x, 1944x, 2916x
-	public static final double HIGH_TIME_RATIO = MID_TIME_RATIO 
-							* Math.pow(1.5, 1.0 * HIGH_SPEED - MID_SPEED);
-	// 3645x, 7290x, 10935x, 14580x, 18225x, 21870x
-	public static final double MAX_TIME_RATIO = HIGH_TIME_RATIO
-							* Math.pow(1.25, 1.0 * MAX_SPEED - HIGH_SPEED);
+	// 1x,    2x, 4x, 8x, 16x,    32x, 64x, 128x, 256x 
+	public static final double LOW_SPEED_RATIO = Math.pow(2.0, 1.0 * TIER_0_TOP); 
+	// 384x, 576x, 864x, 1296x,    1944x, 2916x, 4374x, 6561x
+	public static final double MID_SPEED_RATIO = LOW_SPEED_RATIO 
+									* Math.pow(1.5, 1.0 * TIER_1_TOP - TIER_0_TOP);
+	// 8201x, 10,251x, 12,813x, 16,016x,    20,020x, 25,025x, 31,281x, 39,101x
+	public static final double HIGH_SPEED_RATIO = MID_SPEED_RATIO
+									* Math.pow(1.25, 1.0 * TIER_2_TOP - TIER_1_TOP);
+	// 48,876x, 54,985x, 61,858x, 69,590x,     78,288x, 88,074x, 99,083x, 111,468x
+	public static final double SUPER_HIGH_SPEED_RATIO = HIGH_SPEED_RATIO
+									* Math.pow(1.125, 1.0 * TIER_3_TOP - TIER_2_TOP);
 	
 	/** The Maximum number of pulses in the log .*/
 	private static final int MAX_PULSE_LOG = 40;
@@ -70,16 +76,19 @@ public class MasterClock implements Serializable {
 	private static final int MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
 
 	/** The execution time limit [in ms] before action is taken. */
-	private static final int EXE_UPPER_LIMIT = 3_000;
+	private static final int EXE_UPPER_LIMIT = 9_000;
 	
 	/** The TPS lower limit before action is taken. */
-	private static final double TPS_LOWER_LIMIT = 0.5;
+	private static final double TPS_LOWER_LIMIT = 0.1;
 				
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
-	private static final int NEW_SLEEP = 100;
+	private static final int NEW_SLEEP = 20;
 	
 	/** The maximum pulse time allowed in one frame for a task phase. */
 	public static final double MAX_PULSE_WIDTH = .082;
+	
+	/** The ratio between the next pulse width and the task pulse width. */
+	public static final double PULSE_RATIO = 2;
 	
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
@@ -140,8 +149,13 @@ public class MasterClock implements Serializable {
 	private double referencePulse;
 	/** The next pulse deviation in fraction. */
 	private double nextPulseDeviation;
-	/** The tick factor. */
+	/** The CPU factor. */
 	private double cpuFactor;
+	/** The CPU load. */
+	private double cpuLoad;
+	
+	/** The recommended task pulse time allowed in one frame for a task phase. */
+	private double taskPulseWidth = MAX_PULSE_WIDTH;
 	
 	/** The Martian Clock. */
 	private MarsTime marsTime;
@@ -185,20 +199,26 @@ public class MasterClock implements Serializable {
 		clockThreadTask = new ClockThreadTask();
 		
 		if (userTimeRatio > 0) {
-			if (userTimeRatio <= MID_TIME_RATIO) {
-				desiredTR = (int)MID_TIME_RATIO;
+			if (userTimeRatio <= LOW_SPEED_RATIO) {
+				desiredTR = (int)LOW_SPEED_RATIO;
 				while (desiredTR > userTimeRatio) {
 					decreaseSpeed();
 				}
 			}
-			else if (userTimeRatio <= HIGH_TIME_RATIO) {
-				desiredTR = (int)HIGH_TIME_RATIO;
+			else if (userTimeRatio <= MID_SPEED_RATIO) {
+				desiredTR = (int)MID_SPEED_RATIO;
 				while (desiredTR > userTimeRatio) {
 					decreaseSpeed();
 				}
 			}
-			else if (userTimeRatio <= MAX_TIME_RATIO) {
-				desiredTR = (int)MAX_TIME_RATIO;
+			else if (userTimeRatio <= HIGH_SPEED_RATIO) {
+				desiredTR = (int)HIGH_SPEED_RATIO;
+				while (desiredTR > userTimeRatio) {
+					decreaseSpeed();
+				}
+			}	
+			else if (userTimeRatio <= SUPER_HIGH_SPEED_RATIO) {
+				desiredTR = (int)SUPER_HIGH_SPEED_RATIO;
 				while (desiredTR > userTimeRatio) {
 					decreaseSpeed();
 				}
@@ -213,8 +233,13 @@ public class MasterClock implements Serializable {
 		minMilliSolPerPulse = config.getMinSimulatedPulse();
 		maxMilliSolPerPulse = config.getMaxSimulatedPulse();
 		
-		// Set the optimal width of a pulse
-		initReferencePulse();
+		// Set the CPU load
+		computeCPULoad();
+		// Set cpuFactor initially to cpuLoad
+		// Note: cpuFactor is player adjustable
+		cpuFactor = cpuLoad;
+		// Set the reference pulse width
+		computeReferencePulse();
 		
 		maxWaitTimeBetweenPulses = config.getDefaultPulsePeriod();
 
@@ -235,30 +260,35 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Initializes the reference pulse width and the optimal pulse width according to the desire TR.
+	 * Computes the CPU load.
 	 */
-	public void initReferencePulse() {
+	public void computeCPULoad() {
 		
-		int cores = SimulationRuntime.NUM_CORES;
+		double coreFactor = 8; //Math.sqrt(1.2 * SimulationRuntime.NUM_CORES) * 2;
 		
-		if (clockExecutor != null) {
-			cores = ((ThreadPoolExecutor)clockExecutor).getActiveCount();
+		Simulation sim = Simulation.instance();
+		
+		if (sim.getUnitManager() != null) {
+			int numObjs = sim.getUnitManager().getMainObjectsCount();
+			
+			double load = 50 * Math.sqrt(Math.max(1, numObjs/20.0));
+			
+			cpuLoad = load / coreFactor ; 
 		}
+		else
+			cpuLoad = 50.0 / coreFactor; 
 		
-		cpuFactor = Math.sqrt((double)cores + SimulationRuntime.NUM_CORES) * 2;
-				
-		// Re-evaluate the optimal width of a pulse
-		computeReferencePulse();
+		logger.config(20_000, "CPU load: " + cpuLoad);
 	}
 
 	/**
-	 * Recomputes the reference pulse width and the optimal pulse width according to the desire TR.
+	 * Computes the reference pulse width and the optimal pulse width according to the desire TR.
 	 */
 	public void computeReferencePulse() {		
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / cpuFactor / CPU_MODIFIER - minMilliSolPerPulse) 
-						* Math.pow(desiredTR, 1.2) / HIGH_TIME_RATIO);
+				+ Math.max(minMilliSolPerPulse, 
+						minMilliSolPerPulse * Math.pow(desiredTR, 1.25) * cpuLoad / 1200 / CPU_MODIFIER);
 
 		optMilliSolPerPulse = referencePulse;
 	}
@@ -271,7 +301,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the CPU factor.
+	 * Sets the CPU factor.
 	 */
 	public void setCPUFactor(double newTick) {
 		cpuFactor = newTick;
@@ -550,7 +580,7 @@ public class MasterClock implements Serializable {
 				nextPulseDeviation = computePulseDev();
 			}
 		
-			if (nextPulseDeviation > -2.0 ||  nextPulseDeviation < 2.0) {
+			if (nextPulseDeviation > -100.0 ||  nextPulseDeviation < 100.0) {
 				acceptablePulse = true;
 			}
 			
@@ -638,8 +668,8 @@ public class MasterClock implements Serializable {
 			if (ratio > 1.1) {
 				double diff = refPulse - optPulse;
 				optPulse = optPulse + diff / refPulse / PULSE_STEPS;
-				if (optPulse > maxMilliSolPerPulse * 1.05) {
-					optPulse = maxMilliSolPerPulse * 1.05;
+				if (optPulse > maxMilliSolPerPulse) {
+					optPulse = maxMilliSolPerPulse;
 					logger.warning(30_000L, "refPulse / optPulse = " + ratio + ". Set optPulse to max.");
 				}
 				goOn = false;
@@ -662,9 +692,13 @@ public class MasterClock implements Serializable {
 				if (ratio < 0.99) {
 					// Increase the optimal pulse width
 					nextPulse = nextPulse + (1 - ratio) * nextPulse / PULSE_STEPS / 2;
-					if (nextPulse > maxMilliSolPerPulse * 1.05) {
-						nextPulse = maxMilliSolPerPulse * 1.05;
+					if (nextPulse > referencePulse * 1.2) {
+						nextPulse = referencePulse * 1.2;
 						logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
+					}
+					
+					if (ratio < 0.1) {
+						decreaseSpeed();
 					}
 					goOn = false;
 				}
@@ -686,8 +720,8 @@ public class MasterClock implements Serializable {
 				if (ratio > 1.1) {
 					double diff = refPulse - nextPulse;
 					nextPulse = nextPulse + diff / refPulse / PULSE_STEPS / 2;
-					if (nextPulse > maxMilliSolPerPulse * 1.05) {
-						nextPulse = maxMilliSolPerPulse * 1.05;
+					if (nextPulse > referencePulse * 1.2) {
+						nextPulse = referencePulse * 1.2;
 						logger.warning(30_000L, "refPulse / nextPulse = " + ratio + ". Set nextPulse to max.");
 					}
 					goOn = false;
@@ -705,7 +739,7 @@ public class MasterClock implements Serializable {
 			nextPulseTime = nextPulse;
 			
 		}
-		
+
 		// Update the optimal pulse time
 		optMilliSolPerPulse = optPulse;
 		
@@ -713,14 +747,14 @@ public class MasterClock implements Serializable {
 			logger.warning(30_000L, "optPulse is " + optPulse + ", 10x the ref pulse.");
 			
 		// Update the pulse time for use in tasks
-		double oldPulse = Task.getStandardPulseTime();
-		double newPulse = Math.max(Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
-		if (newPulse > MAX_PULSE_WIDTH) {
-			newPulse = MAX_PULSE_WIDTH;
-		}
-		if (newPulse != oldPulse) {
-			Task.setStandardPulseTime(newPulse);
-//			logger.info(5_000L, "New standard pulse time is " + Math.round(newPulse * 1000.0)/1000.0);
+		taskPulseWidth = .5 * (MAX_PULSE_WIDTH + nextPulse / PULSE_RATIO / cpuFactor);
+		
+		double oldTaskPulse = Task.getStandardPulseTime();
+		double newTaskPulse = taskPulseWidth; //MathUtils.between(taskPulseWidth, minMilliSolPerPulse, maxMilliSolPerPulse * PULSE_RATIO * cpuFactor);
+
+		if (newTaskPulse != oldTaskPulse) {
+			Task.setStandardPulseTime(newTaskPulse);
+			logger.info(5_000L, "Task pulse: " + Math.round(newTaskPulse * 10000.0)/10000.0);
 		}
 
 		// Returns the deviation ratio
@@ -991,7 +1025,9 @@ public class MasterClock implements Serializable {
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 			
 			// Redo the pulses
-			initReferencePulse();
+			computeReferencePulse();
+			// Recompute CPU load
+			computeCPULoad();
 		}
 		clockExecutor.execute(clockThreadTask);
 	}
@@ -1001,23 +1037,31 @@ public class MasterClock implements Serializable {
 	 */
 	public synchronized void increaseSpeed() {
 		int tr = desiredTR;
-		if (tr >= MAX_TIME_RATIO) {
+		
+		if (tr >= SUPER_HIGH_SPEED_RATIO) {
 			return;
 		}
-		else if (tr >= HIGH_TIME_RATIO) {
+		else if (tr >= HIGH_SPEED_RATIO) {
+			tr = (int)(tr * 1.125);
+		}
+		else if (tr >= MID_SPEED_RATIO) {
 			tr = (int)(tr * 1.25);
 		}
-		else if (desiredTR >= MID_TIME_RATIO) {
+		else if (desiredTR >= LOW_SPEED_RATIO) {
 			tr = (int)(tr * 1.5);
 		}
 		else {
 			tr = tr * 2;
 		}
 		
+		logger.config("Speed increased from " + desiredTR + " to " + tr + ".");
+		
 		desiredTR = tr;
 		
 		// Recompute the optimal pulse width
 		computeReferencePulse();
+		// Recompute CPU load
+		computeCPULoad();
 		// Recompute the delta TR
 		calculateDeltaTR();
 	}
@@ -1027,10 +1071,14 @@ public class MasterClock implements Serializable {
 	 */
 	public synchronized void decreaseSpeed() {
 		int tr = desiredTR;
-		if (tr > HIGH_TIME_RATIO) {
+		
+		if (tr > HIGH_SPEED_RATIO) {
+			tr = (int)Math.round(tr / 1.125);
+		}
+		else if (tr > MID_SPEED_RATIO) {
 			tr = (int)Math.round(tr / 1.25);
 		}
-		else if (tr > MID_TIME_RATIO) {
+		else if (tr > LOW_SPEED_RATIO) {
 			tr = (int)Math.round(tr / 1.5);
 		}
 		else if (tr > 1) {
@@ -1040,10 +1088,14 @@ public class MasterClock implements Serializable {
 			return;
 		}
 		
+		logger.config("Speed decreased from " + desiredTR + " to " + tr + ".");
+		
 		desiredTR = tr;
 
 		// Recompute the reference pulse width and optimal pulse width
 		computeReferencePulse();
+		// Recompute CPU load
+		computeCPULoad();
 		// Compute the delta TR
 		calculateDeltaTR();
 	}
@@ -1126,6 +1178,15 @@ public class MasterClock implements Serializable {
 		return nextPulseTime;
 	}
 
+	/**
+	 * Gets the task pulse width.
+	 *
+	 * @return
+	 */
+	public double geTaskPulseWidth() {
+		return taskPulseWidth;
+	}
+	
 	/**
 	 * Gets the optimal pulse width.
 	 *
@@ -1327,29 +1388,40 @@ public class MasterClock implements Serializable {
 					// Get the sleep time
 					calculateSleepTime();
 					
+//					double tps = getAveragePulsesPerSecond();			
+//					if (tps < TPS_LOWER_LIMIT) {			
+//						logger.warning(30_000, "TPS fells below the lower limit : " + tps + " ms.");
+//						// Slow down the time ratio
+//						decreaseSpeed();
+//					}
+					
 					// NOTE: When resuming from power save, executionTime is often very high
 					// Do NOT delete the followings. Very useful for debugging.
 					if (executionTime > EXE_UPPER_LIMIT) {
-				    	logger.severe(String.format("Abnormal execution time: %d ms.", executionTime));
+				    	logger.severe(10_000, String.format("Abnormal execution time: %d ms.", executionTime));
 						// Slow down the time ratio
-						decreaseSpeed();
-						
-						double tps = getAveragePulsesPerSecond();
-						
-						if (tps < TPS_LOWER_LIMIT) {			
-							logger.warning(30_000, " Average TPS: " + tps);
-							// Slow down the time ratio
-							decreaseSpeed();
-						}
+						decreaseSpeed();	
+						// Set the sleep time
+						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
+					}
+					else if (executionTime > EXE_UPPER_LIMIT / 3) {
+				    	logger.severe(10_000, String.format("Abnormal execution time: %d ms.", executionTime));
+						// Set the sleep time
+						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
 					}
 				}
 				else if (!isPaused) {
 					// Case 2: acceptablePulse is false
-					logger.warning(30_000, "Time Pulse not within range. "
-							+ "Set sleepTime to " + NEW_SLEEP 
-							+ " ms to allow other CPU tasks get done first.");
-					// Set the sleep time
-					sleepTime = NEW_SLEEP;
+//					logger.warning(0, "Time Pulse not within range. "
+//							+ "Set sleepTime to " + NEW_SLEEP 
+//							+ " ms to allow other CPU tasks get done first.");
+//					// Set the sleep time
+//					sleepTime = NEW_SLEEP;
+					
+					// NOTE: check if resuming from power saving can cause this
+					logger.config(".... Restarting listener executor thread.");
+					
+					resetListenerExecutor();
 				}
 				
 				// If still going then wait

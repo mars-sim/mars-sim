@@ -213,11 +213,11 @@ public class SimulationConfig {
 			marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
 			
 			accuracyBias =  loadDoubleValue(timeConfig, ACCURACY_BIAS, 0D, 1D);
-			minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.01, 1.4795874);
-			maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 1.4795874, 40.55184573753467);
+			minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.011, 1.4795874);
+			maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 1.4795874, 45);
 		
 			defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
-			baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, (int)MasterClock.MAX_TIME_RATIO);
+			baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, (int)MasterClock.HIGH_SPEED_RATIO);
 			executorType = loadValue(timeConfig, EXECUTOR_TYPE);
 			averageTransitTime = loadIntValue(timeConfig, AVERAGE_TRANSIT_TIME, 0, 430);
 			autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);

@@ -319,7 +319,7 @@ public class TimeWindow extends ToolWindow {
 	private void createCPUSpinner(MasterClock masterClock) {
 		// Initializes one more time after  
 		// clockExecutor.getActiveCount() is stabilized
-		masterClock.initReferencePulse();
+		masterClock.computeReferencePulse();
 		
 		double cpuValue = Math.round(masterClock.getCpuFactor() * 100.0)/100.0;
 	
@@ -344,6 +344,7 @@ public class TimeWindow extends ToolWindow {
 		
 		cpuSpinner.addChangeListener(e -> {
 			double cpuTicks = ((Number)spinnerModel.getValue()).doubleValue();
+			// Change the CPU factor
 			masterClock.setCPUFactor(cpuTicks);
 		});
 	}

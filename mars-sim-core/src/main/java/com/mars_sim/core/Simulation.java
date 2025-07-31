@@ -446,7 +446,9 @@ public class Simulation implements ClockListener, Serializable {
 		transportManager = new TransportManager(this);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-	
+		// Compute the CPU laod after unit manager is done
+		masterClock.computeCPULoad();
+		
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
 		// Add it to unitManager
@@ -560,6 +562,8 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock = new MasterClock(simulationConfig, userTimeRatio);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
+		// Compute the CPU laod after unit manager is done
+		masterClock.computeCPULoad();
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 	}
@@ -1421,7 +1425,7 @@ public class Simulation implements ClockListener, Serializable {
 			}
 		
 			unitManager.timePassing(pulse);
-
+			
 			marketManager.timePassing(pulse);
 			
 			transportManager.timePassing(pulse);

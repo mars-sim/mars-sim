@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
@@ -377,7 +378,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get a collection of robots.
+	 * Gets a collection of robots.
 	 *
 	 * @return Collection of Robots
 	 */
@@ -386,7 +387,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get a collection of EVA suits.
+	 * Gets a collection of EVA suits.
 	 *
 	 * @return Collection of EVA suits
 	 */
@@ -396,6 +397,15 @@ public class UnitManager implements Serializable, Temporal {
 				.collect(Collectors.toSet());
 	}
 
+	/**
+	 * Gets the total number of people and robots.
+	 * 
+	 * @return
+	 */
+	public int getMainObjectsCount() {
+		return (int)(lookupPerson.entrySet().stream().count() + lookupRobot.entrySet().stream().count());
+	}
+	
 	/**
 	 * Adds a unit manager listener.
 	 *

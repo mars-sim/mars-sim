@@ -23,13 +23,14 @@ public class UpTimer implements Serializable {
 	/** Initialized logger. */
 //  may add back private static final Logger logger = Logger.getLogger(UpTimer.class.getName())
 
-	private static final String DAY = "d ";
+//	private static final String DAY = "d ";
 //	private static final String HR = "h ";
 //	private static final String MIN = "m ";
 //	private static final String SEC = "s ";
 //	private static final String ZERO = "0";
 
-	private static final String TIMESTAMP_FORMAT = "%02dh %02dm %02ds";
+	private static final String TIMESTAMP0_FORMAT = "%02dh %02dm %02ds";
+	private static final String TIMESTAMP1_FORMAT = "%01dd %02dh %02dm %02ds";
 	
 	private static final long SECS_PER_MIN = 60;
 	private static final long HOURS_PER_DAY = 24;
@@ -75,11 +76,10 @@ public class UpTimer implements Serializable {
        	long secs = uptimeSec % SECS_PER_MIN;
        	
         if (days > 0) {
-        	result.append(days);
-        	result.append(DAY);
+        	result.append(String.format(TIMESTAMP1_FORMAT, days, hours, mins, secs));
         }
-
-        result.append(String.format(TIMESTAMP_FORMAT, hours, mins, secs));
+        else
+        	result.append(String.format(TIMESTAMP0_FORMAT, hours, mins, secs));
 
         return result.toString();
      }

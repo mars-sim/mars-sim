@@ -14,7 +14,7 @@ import com.mars_sim.core.time.MasterClock;
 
 public class SpeedCommand extends ChatCommand {
 
-	private static final int MAX_RATE = (int)MasterClock.MAX_TIME_RATIO;
+	private static final int MAX_RATE = (int)MasterClock.HIGH_SPEED_RATIO;
 
 	public SpeedCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sp", "speed",
