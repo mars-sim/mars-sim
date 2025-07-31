@@ -92,10 +92,13 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
-
+   
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
         assertNotNull(walkingSteps);
-
+        
+//        boolean canWalk = walkingSteps.canWalkAllSteps();
+//        System.out.println("canWalk: " + canWalk);
+        
         assertFalse(walkingSteps.canWalkAllSteps());
 
         assertNotNull(walkingSteps.getWalkingStepsList());
@@ -124,18 +127,21 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
-        assertNotNull("Perons s in start building", person.getBuildingLocation());
+        assertNotNull("Person's starting building", person.getBuildingLocation());
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
         assertNotNull(walkingSteps);
 
         boolean canWalk = walkingSteps.canWalkAllSteps();
+//        System.out.println("canWalk: " + canWalk);
         
         assertFalse("No walking path found", canWalk);
 
         assertNotNull(walkingSteps.getWalkingStepsList());
-
+//        System.out.println("walking steps: " + walkingSteps.getWalkingStepsList());
+        
         int steps = walkingSteps.getWalkingStepsNumber();
+        
         assertEquals(0, steps); 
 
         assertEquals(0, walkingSteps.getWalkingStepsList().size()); 

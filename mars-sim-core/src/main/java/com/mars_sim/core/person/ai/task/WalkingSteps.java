@@ -8,8 +8,8 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
@@ -58,7 +58,7 @@ implements Serializable {
         // Initialize data members.
         canWalkAllSteps = true;
 
-        walkingStepList = new CopyOnWriteArrayList<>();
+        walkingStepList = new ArrayList<>();
 
         // Determine initial walk state.
         WalkState initialWalkState = determineInitialWalkState(person);
@@ -91,7 +91,7 @@ implements Serializable {
         // Initialize data members.
         canWalkAllSteps = true;
 
-        walkingStepList = new CopyOnWriteArrayList<>();
+        walkingStepList = new ArrayList<>();
 
         // Determine initial walk state.
         RobotWalkState initialWalkState = determineInitialRobotWalkState(robot);

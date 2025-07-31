@@ -30,6 +30,7 @@ import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
@@ -184,8 +185,7 @@ public class Settlement extends Unit implements Temporal,
 	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
-	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-	
+
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
@@ -1278,10 +1278,9 @@ public class Settlement extends Unit implements Temporal,
         for (Integer bldg : bldgs) {
             Building nextBuilding = unitManager.getBuildingByID(bldg);
             Airlock airlock = nextBuilding.getEVA().getAirlock();
-
             boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
 
-            if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+            if (!chamberFull && BuildingCategory.ASTRONOMY != nextBuilding.getCategory()) {
 
                 double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
 
@@ -1291,8 +1290,7 @@ public class Settlement extends Unit implements Temporal,
                     continue;
                 }
 
-                if (distance < leastDistance
-                        && !chamberFull) {
+                if (distance < leastDistance) {
                     result = airlock;
                     leastDistance = distance;
                 }
@@ -1328,16 +1326,25 @@ public class Settlement extends Unit implements Temporal,
             Building building = unitManager.getBuildingByID(bldg);
             Airlock airlock = building.getEVA().getAirlock();
             boolean chamberFull = airlock.isFull();
-            boolean reservedFull = airlock.isReservationFull();
+            boolean reservationFull = airlock.isReservationFull();
             
+
             // Select airlock that fulfill either conditions:
             
             // 1. Chambers are NOT full
             // 2. Chambers are full but the reservation is NOT full
             
-            if ((chamberFull && !reservedFull) || !chamberFull) {
-            	
+            if (!chamberFull || (chamberFull && !reservationFull)) {
+//           	if (!chamberFull) {	
+                
                 double distance = building.getPosition().getDistanceTo(pos);
+                
+                if (result == null) {
+                    result = airlock;
+                    leastDistance = distance;
+                    continue;
+                }
+
                 if (distance < leastDistance) {
                     result = airlock;
                     leastDistance = distance;
@@ -1348,10 +1355,12 @@ public class Settlement extends Unit implements Temporal,
             //          consume a lot of CPU.
             
 //            if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
+//            	
 //                if (result == null) {
 //                    result = airlock;
 //                    continue;
 //                }
+//                
 //                double distance = building.getPosition().getDistanceTo(pos);
 //                if (distance < leastDistance
 //                        && !chamberFull) {
@@ -1380,7 +1389,8 @@ public class Settlement extends Unit implements Temporal,
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-			if (!chamberFull || !reservationFull) {
+            if (!chamberFull || (chamberFull && !reservationFull)) {
+//			if (!chamberFull) {	
 				if (pressurized
 					&& !pressurizedAirlocks.contains(id)) {
 						pressurizedAirlocks.add(id);
@@ -1412,114 +1422,109 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public Airlock getBestWalkableAvailableAirlock(Building building, LocalPosition location, 
 			boolean isIngres) {
-
+		Airlock result = null;
+		
 		double leastDistance = Double.MAX_VALUE;
 		double leastPeople = 4;
 		double leastInnerDoor = 4;
 		double leastOuterDoor = 4;
 		Map<Airlock, Integer> airlockMap = new HashMap<>();
 		
-		List<Building> airlocks = buildingManager.getBuildings(FunctionType.EVA);
-		Collections.sort(airlocks);
-		
+		Set<Building> airlocks = buildingManager.getAirlocks();
+	
 		if (airlocks.isEmpty())
 			return null;
 
         for (Building nextBuilding : airlocks) {
             Airlock airlock = nextBuilding.getEVA().getAirlock();
 
-            
             boolean chamberFull = airlock.isFull();
-            boolean reservedFull = airlock.isReservationFull();
+            boolean reservationFull = airlock.isReservationFull();
             
             // Select airlock that fulfill either conditions:
             
             // 1. Chambers are NOT full
             // 2. Chambers are full but the reservation is NOT full
-            
-            if ( !((chamberFull && !reservedFull) || !chamberFull) ) {
-            	
-                // WARNING: do NOT call hasValidPath() since it will do pathfinding and 
-                //          consume a lot of CPU.
-            	
-            	
-//                    || !buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-            	
+
+            if ((!chamberFull || (chamberFull && !reservationFull))          	
+//            if (!chamberFull   
+                 // WARNING: if hasValidPath() is not used, it will 
+            	 //          mysteriously result in stackoverflow  
+            	 && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+  
                 // Note: may need to eliminate airlocks that are not in the same zone
-            	
-                continue;
-            }
 
-            AirlockMode airlockMode = airlock.getAirlockMode();
-            boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
-            boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
-            // May also consider boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE
+            	AirlockMode airlockMode = airlock.getAirlockMode();
+                boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+                boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+                // May also consider boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE
 
-            int numInnerDoor = airlock.getNumAwaitingInnerDoor();
-            int numOuterDoor = airlock.getNumAwaitingOuterDoor();
-            int numOccupants = airlock.getNumInside();
-            int numEmpty = airlock.getNumEmptied();
+                int numInnerDoor = airlock.getNumAwaitingInnerDoor();
+                int numOuterDoor = airlock.getNumAwaitingOuterDoor();
+                int numOccupants = airlock.getNumInside();
+                int numEmpty = airlock.getNumEmptied();
 
-            // Select an airlock that fulfill these conditions:
-            //
-            // 1. Chambers are NOT full
-            // 2. Least number of occupants in chambers
-            // 3. Least number waiting at outer door
-            // 4. Least number waiting at inner door
-            // 5. Least distance
+                // Select an airlock that fulfill these conditions:
+                //
+                // 1. Chambers are NOT full
+                // 2. Least number of occupants in chambers
+                // 3. Least number waiting at outer door
+                // 4. Least number waiting at inner door
+                // 5. Least distance
 
-            // Note: the use of reservationFull are being put on hold
-            // since it creates excessive logs. Thus it needs to be handled differently
+                // Note: the use of reservationFull are being put on hold
+                // since it creates excessive logs. Thus it needs to be handled differently
 
-            airlockMap.put(airlock, 1);
+                airlockMap.put(airlock, 1);
 
-            // Note that the airlock can be not in use
-            if (isIngressMode == isIngres
-                    || isEgressMode != isIngres
-            ) {
-                airlockMap.put(airlock, 2 + airlockMap.get(airlock));
-            }
-
-            double distance = nextBuilding.getPosition().getDistanceTo(location);
-            if (distance <= leastDistance) {
-                leastDistance = distance;
-                airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-            }
-
-            if (numOccupants <= leastPeople) {
-                leastPeople = numOccupants;
-                airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-            }
-
-            airlockMap.put(airlock, numEmpty + airlockMap.get(airlock));
-
-            if (isIngres) {
-                // If the person is coming in
-                if (numOuterDoor <= leastOuterDoor) {
-                    leastOuterDoor = numOuterDoor;
-                    airlockMap.put(airlock, 1 + (4 - numOuterDoor) + airlockMap.get(airlock));
+                // Note that the airlock can be not in use
+                if (isIngressMode == isIngres
+                        || isEgressMode != isIngres
+                ) {
+                    airlockMap.put(airlock, 2 + airlockMap.get(airlock));
                 }
 
-                if (numInnerDoor <= leastInnerDoor) {
-                    leastInnerDoor = numInnerDoor;
-                    airlockMap.put(airlock, 1 + airlockMap.get(airlock));
-                }
-            } else {
-                // If the person is leaving
-                if (numOuterDoor <= leastOuterDoor) {
-                    leastOuterDoor = numOuterDoor;
+                double distance = nextBuilding.getPosition().getDistanceTo(location);
+                if (distance <= leastDistance) {
+                    leastDistance = distance;
                     airlockMap.put(airlock, 1 + airlockMap.get(airlock));
                 }
 
-                if (numInnerDoor <= leastInnerDoor) {
-                    leastInnerDoor = numInnerDoor;
-                    airlockMap.put(airlock, 1 + (4 - numInnerDoor) + airlockMap.get(airlock));
+                if (numOccupants <= leastPeople) {
+                    leastPeople = numOccupants;
+                    airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+                }
+
+                airlockMap.put(airlock, numEmpty + airlockMap.get(airlock));
+
+                if (isIngres) {
+                    // If the person is coming in
+                    if (numOuterDoor <= leastOuterDoor) {
+                        leastOuterDoor = numOuterDoor;
+                        airlockMap.put(airlock, 1 + (4 - numOuterDoor) + airlockMap.get(airlock));
+                    }
+
+                    if (numInnerDoor <= leastInnerDoor) {
+                        leastInnerDoor = numInnerDoor;
+                        airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+                    }
+                } else {
+                    // If the person is leaving
+                    if (numOuterDoor <= leastOuterDoor) {
+                        leastOuterDoor = numOuterDoor;
+                        airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+                    }
+
+                    if (numInnerDoor <= leastInnerDoor) {
+                        leastInnerDoor = numInnerDoor;
+                        airlockMap.put(airlock, 1 + (4 - numInnerDoor) + airlockMap.get(airlock));
+                    }
                 }
             }
         }
 
 		if (airlockMap.isEmpty())
-			return null;
+			return result;
 		
 		return selectBestScoreAirlock(airlockMap);
 	}
@@ -1544,9 +1549,9 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private boolean hasClosestWalkableAvailableAirlock(Building building) {
         for (Building nextBuilding : buildingManager.getAirlocks()) {
-            boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
-            if (!chamberFull) {
-//                    && buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+//            boolean chamberFull = nextBuilding.getEVA().getAirlock().isFull();
+//            if (!chamberFull
+              if (buildingConnectorManager.hasValidPath(building, nextBuilding)) {
                 return true;
             }
         }

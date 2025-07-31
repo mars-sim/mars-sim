@@ -25,7 +25,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         
         double mass = v.getStoredMass();
         // 10 + 10 + .5 * 10 = 25.0
-//        System.out.println("mass: " + mass);
+        System.out.println("vehicle stored mass: " + mass);
         
         assertGreaterThan("Initial stored mass", 0D, mass);
 
@@ -44,36 +44,35 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         double storedO2Settlement0 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Settlement0: " + storedO2Settlement0);
         
-        double storedO2Person = p.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+//        double storedO2Person = p.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Person: " + storedO2Person);
         
-        double storedO2Vehicle = v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+//        double storedO2Vehicle = v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Vehicle: " + storedO2Vehicle);
         
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 3000);
         
         mass = v.getStoredMass();
-//        System.out.println("mass: " + mass);
+        System.out.println("vehicle stored mass: " + mass);
         
         assertEquals("Final stored mass", 0D, mass);
         assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 
         double storedO2Settlement1 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-//        System.out.println("storedO2Settlement1: " + storedO2Settlement1); 
+        System.out.println("storedO2Settlement1: " + storedO2Settlement1); 
         
         assertLessThan("Oxygen unloaded", storedO2Settlement0 + RESOURCE_AMOUNT, storedO2Settlement1);
         
         double storedFood = s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-//        System.out.println("storedFood: " + storedFood);
+        System.out.println("storedFood: " + storedFood);
         
         assertEquals("Food unloaded", RESOURCE_AMOUNT, storedFood);
         
         int storedGarment = s.getItemResourceStored(ItemResourceUtil.garmentID);
-//        System.out.println("storedGarment: " + storedGarment);
+        System.out.println("storedGarment: " + storedGarment);
         
         assertEquals("Garments unloaded", ITEM_AMOUNT, storedGarment);
-
 
         // Return to base
         EVAOperationTest.executeEVAWalk(this, eva, task);
