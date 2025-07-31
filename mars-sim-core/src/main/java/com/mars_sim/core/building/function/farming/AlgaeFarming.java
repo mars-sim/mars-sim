@@ -645,6 +645,11 @@ public class AlgaeFarming extends Function {
 		}
 	}
 
+	/**
+	 * Adds new algae to the pond.
+	 * 
+	 * @param newAlgae
+	 */
 	public void addAlgae(double newAlgae) {
 		currentAlgae += newAlgae;
 		   

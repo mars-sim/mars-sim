@@ -110,7 +110,8 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
-    public void testWorkshop() {
+    @SuppressWarnings("unchecked")
+	public void testWorkshop() {
 	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 

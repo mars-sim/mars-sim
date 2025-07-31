@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.google.common.math.DoubleMath;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
@@ -179,7 +180,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		// Prepare solar irradiance label
 		radCache = surfaceFeatures.getSolarIrradiance(location);
 		radLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.solarIrradiance.title"),
-							 radCache + " W/m", "Estimated sunlight on top of the greenhouse roof");
+				StyleManager.DECIMAL_W_M2.format(radCache), "Estimated sunlight on top of the greenhouse roof");
 		
 		waterUsageCache = pond.computeDailyAverage(ResourceUtil.WATER_ID);
 		waterUsageLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterUsage.title"),
@@ -217,110 +218,110 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 			initializeUI();
 		
 		double newWaterMass = pond.getWaterMass();
-		if (waterMass != newWaterMass) {
+		if (DoubleMath.fuzzyEquals(waterMass, newWaterMass, 0.1)) {
 			waterMass = newWaterMass;
 			waterMassLabel.setText(StyleManager.DECIMAL_KG2.format(newWaterMass));
 		}
 		
 		double newAlgae = pond.getCurrentAlgae();
-		if (algaeMass != newAlgae) {
+		if (DoubleMath.fuzzyEquals(algaeMass, newAlgae, 0.1)) {
 			algaeMass = newAlgae;
 			algaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newAlgae));
 		}
 		
 		double newIdealAlgae = pond.getIdealAlgae();
-		if (idealAlgaeMass != newIdealAlgae) {
+		if (DoubleMath.fuzzyEquals(idealAlgaeMass, newIdealAlgae, 0.1)) {
 			idealAlgaeMass = newIdealAlgae;
 			idealAlgaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newIdealAlgae));
 		}
 		
 		double newMaxAlgae = pond.getMaxAlgae();
-		if (maxAlgaeMass != newMaxAlgae) {
+		if (DoubleMath.fuzzyEquals(maxAlgaeMass, newMaxAlgae, 0.1)) {
 			maxAlgaeMass = newMaxAlgae;
 			maxAlgaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newMaxAlgae));
 		}
 
 		double newAlgaeHarvested = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		if (algaeHarvestCache != newAlgaeHarvested) {
+		if (DoubleMath.fuzzyEquals(algaeHarvestCache, newAlgaeHarvested, 0.1)) {
 			algaeHarvestCache = newAlgaeHarvested;
 			algaeHarvestLabel.setText(DECIMAL_KG_SOL.format(newAlgaeHarvested));
 		}	
 		
 		double newAlgaeProduced = pond.computeDailyAverage(AlgaeFarming.PRODUCED_ALGAE_ID);
-		if (algaeProducedCache != newAlgaeProduced) {
+		if (DoubleMath.fuzzyEquals(algaeProducedCache, newAlgaeProduced, 0.1)) {
 			algaeProducedCache = newAlgaeProduced;
 			algaeProducedLabel.setText(DECIMAL_KG_SOL.format(newAlgaeProduced));
 		}
 		
 		double newAlgaeWaterRatio = pond.getAlgaeWaterRatio();
-		if (algaeWaterRatio != newAlgaeWaterRatio) {
+		if (DoubleMath.fuzzyEquals(algaeWaterRatio, newAlgaeWaterRatio, 0.1)) {
 			algaeWaterRatio = newAlgaeWaterRatio;
 			algaeWaterRatioLabel.setText(DECIMAL_G_LITER.format(newAlgaeWaterRatio)
 					+ " (" + Math.round(AlgaeFarming.ALGAE_TO_WATER_RATIO *100000.0)/100.0 + ")");
 		}
 		
 		double newFoodMass = pond.getFoodMass();
-		if (foodMass != newFoodMass) {
+		if (DoubleMath.fuzzyEquals(foodMass, newFoodMass, 0.1)) {
 			foodMass = newFoodMass;
 			foodMassLabel.setText(StyleManager.DECIMAL_KG2.format(newFoodMass));
 		}
 		
 		double newFoodDemand = pond.getNutrientDemand();
-		if (foodDemand != newFoodDemand) {
+		if (DoubleMath.fuzzyEquals(foodDemand, newFoodDemand, 0.01)) {
 			foodDemand = newFoodDemand;
 			foodDemandLabel.setText(StyleManager.DECIMAL_PLACES1.format(newFoodDemand));
 		}
 		
 		double newPowerReq = pond.getCombinedPowerLoad();	
-		if (powerReq != newPowerReq) {
+		if (DoubleMath.fuzzyEquals(powerReq, newPowerReq, 0.1)) {
 			powerReq = newPowerReq;
 			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));
 		}
 		
 		double newTemp = building.getCurrentTemperature();
-		if (tempCache != newTemp) {
+		if (DoubleMath.fuzzyEquals(tempCache, newTemp, 0.1)) {
 			tempCache = newTemp;
 			tempLabel.setText(StyleManager.DECIMAL_PLACES1.format(newTemp) + DEGREE_CELSIUS);
 		}
 		
 		// Update solar irradiance label
-		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
-		if (radCache != rad) {
+		double rad = surfaceFeatures.getSolarIrradiance(location);
+		if (DoubleMath.fuzzyEquals(radCache, rad, 0.1)) {
 			radCache = rad;
-			radLabel.setText(String.valueOf(rad) + " W/m");
+			radLabel.setText(StyleManager.DECIMAL_W_M2.format(rad));
 		}
 		
 		// Update the average water usage
 		double newWater = pond.computeDailyAverage(ResourceUtil.WATER_ID);
-		if (waterUsageCache != newWater) {
+		if (DoubleMath.fuzzyEquals(waterUsageCache, newWater, 0.1)) {
 			waterUsageCache = newWater;
 			waterUsageLabel.setText(DECIMAL_KG_SOL.format(newWater));
 		}
 
 		// Update the average O2 generated
 		double newO2 = pond.computeDailyAverage(ResourceUtil.OXYGEN_ID);
-		if (o2Cache != newO2) {
+		if (DoubleMath.fuzzyEquals(o2Cache, newO2, 0.1)) {
 			o2Cache = newO2;
 			o2GenLabel.setText(DECIMAL_KG_SOL.format(newO2));
 		}
 
 		// Update the average CO2 consumed
 		double newCo2 = pond.computeDailyAverage(ResourceUtil.CO2_ID);
-		if (co2Cache != newCo2) {
+		if (DoubleMath.fuzzyEquals(co2Cache, newCo2, 0.1)) {
 			co2Cache = newCo2;
 			co2ConsumedLabel.setText(DECIMAL_KG_SOL.format(newCo2));
 		}
 
 		// Update the average grey water usage
 		double newGreyWater = pond.computeDailyAverage(ResourceUtil.GREY_WATER_ID);
-		if (greyWaterProducedCache != newGreyWater) {
+		if (DoubleMath.fuzzyEquals(greyWaterProducedCache, newGreyWater, 0.1)) {
 			greyWaterProducedCache = newGreyWater;
 			greyWaterLabel.setText(DECIMAL_KG_SOL.format(newGreyWater));
 		}
 		
 		// Update the cumulative work time
 		double workTime = pond.getCumulativeWorkTime()/1000.0;
-		if (workTimeCache != workTime) {
+		if (DoubleMath.fuzzyEquals(workTimeCache, workTime, 0.1)) {
 			workTimeCache = workTime;
 			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}

@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.google.common.math.DoubleMath;
 import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
@@ -179,50 +180,50 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		}
 		
 		double newFishMass = tank.getTotalFishMass();
-		if (fishMass != newFishMass) {
+		if (DoubleMath.fuzzyEquals(fishMass, newFishMass, 0.1)) {
 			fishMass = newFishMass;
 			fishMassLabel.setText(StyleManager.DECIMAL_KG.format(newFishMass));
 		}
 		
 		double newFishHarvest = tank.computeDailyAverage(ResourceUtil.FISH_MEAT_ID);
-		if (fishHarvestedCache != newFishHarvest) {
+		if (DoubleMath.fuzzyEquals(fishHarvestedCache, newFishHarvest, 0.1)) {
 			fishHarvestedCache = newFishHarvest;
 			fishHarvestedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache));
 		}
 		
 		double newAge = tank.getAverageAge()/1000;
-		if (ageCache != newAge) {
+		if (DoubleMath.fuzzyEquals(ageCache, newAge, 0.1)) {
 			ageCache = newAge;
 			ageLabel.setText(StyleManager.DECIMAL2_SOLS.format(newAge));
 		}
 
 		double newWeedMass = tank.getTotalWeedMass();
-		if (weedMass != newWeedMass) {
+		if (DoubleMath.fuzzyEquals(weedMass, newWeedMass, 0.1)) {
 			weedMass = newWeedMass;
 			weedMassLabel.setText(StyleManager.DECIMAL_KG.format(newWeedMass));
 		}
 		
 		double newWeedDemand = tank.getWeedDemand();
-		if (weedDemand != newWeedDemand) {
+		if (DoubleMath.fuzzyEquals(weedDemand, newWeedDemand, 0.1)) {
 			weedDemand = newWeedDemand;
 			weedDemandLabel.setText(StyleManager.DECIMAL_PLACES1.format(newWeedDemand));
 		}
 		
 		double newWaterMass = tank.getWaterMass();
-		if (waterMass != newWaterMass) {
+		if (DoubleMath.fuzzyEquals(waterMass, newWaterMass, 0.1)) {
 			waterMass = newWaterMass;
 			waterMassLabel.setText(StyleManager.DECIMAL_KG2.format(newWaterMass));
 		}
 		
 		double newPowerReq = tank.getCombinedPowerLoad();	
-		if (powerReq != newPowerReq) {
+		if (DoubleMath.fuzzyEquals(powerReq, newPowerReq, 0.1)) {
 			powerReq = newPowerReq;
 			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));
 		}
 		
 		// Update the cumulative work time
 		double workTime = tank.getCumulativeWorkTime()/1000.0;
-		if (workTimeCache != workTime) {
+		if (DoubleMath.fuzzyEquals(workTimeCache, workTime, 0.05)) {
 			workTimeCache = workTime;
 			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}
