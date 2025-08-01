@@ -127,7 +127,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {

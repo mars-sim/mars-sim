@@ -310,13 +310,14 @@ public class BuildingConfig {
 	private static String getDefaultSpotName(FunctionType function) {
 		return switch(function) {
 			case ADMINISTRATION -> "Desk";
+			case COMPUTATION -> "Node";
 			case DINING -> "Seat";
 			case LIVING_ACCOMMODATION -> "Bed";
-			case MANUFACTURE -> "Workbench";
-			case MEDICAL_CARE -> "Sickbay";
+			case MANUFACTURE -> "Slot";
+			case MEDICAL_CARE -> "Bay";
 			case RECREATION -> "Chair";
 			case RESEARCH -> "Bench";
-			case ROBOTIC_STATION -> "Charge Pt";
+			case ROBOTIC_STATION -> "Plug";
 			default -> "";
 		};
 	}

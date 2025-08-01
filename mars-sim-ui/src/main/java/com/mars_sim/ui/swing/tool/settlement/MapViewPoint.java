@@ -13,7 +13,7 @@ import java.awt.geom.AffineTransform;
  * Represents the map view point and can be used for rendering.
  */
 record MapViewPoint(Graphics2D graphics, double xPos, double yPos,
-		int mapWidth, int mapHeight, double rotation, double scale) {
+		int mapWidth, int mapHeight, double rotation, float scale, float scaleMod) {
 
     /**
      * This prepares the graphics for rendering in the map by translating and

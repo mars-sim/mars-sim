@@ -20,10 +20,10 @@ import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
  */
 public class PersonMapLayer extends WorkerMapLayer<Person> {
 	
-	private static final ColorChoice MALE_SELECTED = new ColorChoice(new Color(52, 152, 255), Color.white);
-	private static final ColorChoice FEMALE_SELECTED = new ColorChoice(new Color(236, 0, 70), Color.white);
-	private static final ColorChoice MALE_UNSELECTED = new ColorChoice(new Color(0, 76, 118), Color.white);
-	private static final ColorChoice FEMALE_UNSELECTED = new ColorChoice(new Color(120, 0, 56), Color.white);
+	private static final ColorChoice MALE_UNSELECTED = new ColorChoice(new Color(0, 97, 198), Color.white); // lighter : 52, 152, 255
+	private static final ColorChoice FEMALE_UNSELECTED = new ColorChoice(new Color(165, 0, 49), Color.white); // lighter : 236, 0, 70
+	private static final ColorChoice MALE_SELECTED = new ColorChoice(new Color(0, 76, 118), Color.white);
+	private static final ColorChoice FEMALE_SELECTED = new ColorChoice(new Color(120, 0, 56), Color.white);
 
 	// Data members
 	private SettlementMapPanel mapPanel;

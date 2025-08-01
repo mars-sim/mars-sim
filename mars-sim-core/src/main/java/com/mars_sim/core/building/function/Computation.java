@@ -192,12 +192,21 @@ public class Computation extends Function {
 	}
 
 	/**
-	 * Gets the peak available computing units [in CU].
+	 * Gets the peak CU available computing units [in CU].
 	 * 
 	 * @return
 	 */
 	public double getPeakCU() {
 		return peakCU;
+	}
+	
+	/**
+	 * Sets the free CU available computing units [in CU].
+	 * 
+	 * @param value
+	 */
+	public void setFreeCU(double value) {
+		freeCU = value;
 	}
 	
 	/**

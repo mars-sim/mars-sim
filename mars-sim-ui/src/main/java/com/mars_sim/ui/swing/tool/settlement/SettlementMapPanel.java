@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @date 2021-12-22
+ * @date 2025-08-01
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -890,8 +890,13 @@ public class SettlementMapPanel extends JPanel {
 			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
+			
+	        float scaleMod = 1f; 
+	        if (scale > 1)
+	        	scaleMod = (float)Math.sqrt(scale); 
+
 			// Display all map layers.
-			var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+			var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float)scale, scaleMod);
 			for(SettlementMapLayer layer : mapLayers) {
 				layer.displayLayer(settlement, viewpoint);
 			}

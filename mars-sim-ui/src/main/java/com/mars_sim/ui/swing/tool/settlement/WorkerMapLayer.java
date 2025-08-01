@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WorkerMapLayer.java
- * @date 2023-12-10
+ * @date 2025-08-01
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -19,10 +19,11 @@ import com.mars_sim.core.person.ai.task.util.Worker;
  * It is aware of selected and nonselected Workers and draw accordingly.
  */
 public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer {
-    private static final int LABEL_XOFFSET = 4;
-    private static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 8); 
-    private static final Font DETAILS_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 6); 
-
+    private static final int LABEL_XOFFSET = 1;
+    private static final int LABEL_YOFFSET = -1;
+    private static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 6); 
+    private static final Font TASK_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 6); 
+    private static final Font MISSION_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 6); 
     /**
 	 * Draws workers at a settlement.
 	 * 
@@ -63,7 +64,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         if (showLabels) {
             // Draw label
             drawRightLabel(false, w.getName(), pos, color,
-                        NAME_FONT, LABEL_XOFFSET, 0, viewpoint);
+                        NAME_FONT, LABEL_XOFFSET, LABEL_YOFFSET, viewpoint);
         }
     }
 
@@ -80,28 +81,37 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         
         drawOval(pos, color, viewpoint);
 
-        // Draw label
-        drawRightLabel(true, w.getName(), pos, color,
-                    NAME_FONT, LABEL_XOFFSET, 0, viewpoint);
-            
-        float yoffset = (float)((33 + viewpoint.scale()) / 3);
-
-        // Draw task.
         String taskDesc = w.getTaskDescription();
-        if (!taskDesc.equals("")) {
-            String taskString = "- " + taskDesc; 
-
-            drawRightLabel(true, taskString, w.getPosition(), color,
-                DETAILS_FONT, LABEL_XOFFSET, yoffset, viewpoint);
-        }
-            
-        // Draw mission.
         Mission mission = w.getMission();
-        if (mission != null) {
-            String missionString = "-- " + mission.getName(); 
-            drawRightLabel(true, missionString, w.getPosition(), color,
-                DETAILS_FONT, LABEL_XOFFSET, 2f * yoffset, viewpoint);
+        
+        if (taskDesc.equals("")) {
+        	if (mission != null) {
+                drawRightLabel(true, "-- " + mission.getName(), w.getPosition(), color,
+                	MISSION_FONT, LABEL_XOFFSET, .95f * LABEL_YOFFSET, viewpoint);
+        		drawRightLabel(true, w.getName(), pos, color,
+                        NAME_FONT, LABEL_XOFFSET, 1.9f * LABEL_YOFFSET, viewpoint);
+        	}
+        	else {
+        		drawRightLabel(true, w.getName(), pos, color,
+                        NAME_FONT, LABEL_XOFFSET, LABEL_YOFFSET, viewpoint);
+        	}
         }
+        else {
+        	if (mission != null) {
+                drawRightLabel(true, "-- " + mission.getName(), w.getPosition(), color,
+                    	MISSION_FONT, LABEL_XOFFSET, .95f * LABEL_YOFFSET, viewpoint);
+       		 	drawRightLabel(true, "- " + taskDesc, w.getPosition(), color,
+       	                TASK_FONT, LABEL_XOFFSET, 1.9f * LABEL_YOFFSET, viewpoint);
+        		drawRightLabel(true, w.getName(), pos, color,
+                        NAME_FONT, LABEL_XOFFSET, 3 * LABEL_YOFFSET, viewpoint);
+        	}
+        	else {
+       		 	drawRightLabel(true, "- " + taskDesc, w.getPosition(), color,
+       	                TASK_FONT, LABEL_XOFFSET, .95f * LABEL_YOFFSET, viewpoint);
+        		drawRightLabel(true, w.getName(), pos, color,
+                        NAME_FONT, LABEL_XOFFSET, 1.9f * LABEL_YOFFSET, viewpoint);
+        	}
+       	} 
     }
 
     /**

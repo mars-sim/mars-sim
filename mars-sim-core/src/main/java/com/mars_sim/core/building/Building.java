@@ -1010,9 +1010,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param heatGenerated
 	 */
 	public void dumpExcessHeat(double heatGenerated) {
-		if (heating == null)
+		if (heating == null && furnace != null) {
 			heating = furnace.getHeating();
-		heating.insertExcessHeatComputation(heatGenerated);
+			heating.insertExcessHeatComputation(heatGenerated);
+		}
 	}
 
 	/**

@@ -41,8 +41,8 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
 			tm.executeTask(MSOLS_PER_EXECUTE);
             now = now.addTime(MSOLS_PER_EXECUTE);
 
-            // Due to a mis design in teh Airlock code; the operator is elected via a pulse instead of
-            // propactively in the pre-breathe phase
+            // Due to a mis-design in the Airlock code; the operator is elected via a pulse instead of
+            // proactively in the pre-breathe phase
             var pulse = context.createPulse(now, false, false);
             eva.timePassing(pulse);
 

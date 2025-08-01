@@ -155,7 +155,7 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 		// Create new process button.
 		var newProcessButton = new JButton(ImageLoader.getIconByName("action/add"));
 		newProcessButton.setEnabled(false);
-		newProcessButton.setToolTipText("Add a the Process to the queue"); //-NLS-1$
+		newProcessButton.setToolTipText("Add a Process to the queue"); //-NLS-1$
 		newProcessButton.addActionListener(event -> createNewProcess());
 		addPanel.add(newProcessButton, BorderLayout.EAST);
 

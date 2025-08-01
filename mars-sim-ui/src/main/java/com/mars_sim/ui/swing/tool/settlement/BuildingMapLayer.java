@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingMapLayer.java
- * @date 2023-12-13
+ * @date 2025-08-01
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -56,7 +56,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final Color WHITE_OUTLINE = new Color(255, 255, 255, 190);
 	private static final Color GREY_OUTLINE = new Color(192, 192, 192, 190);
  	private static final ColorChoice BUILDING_COLOR = new ColorChoice(Color.gray.darker(), WHITE_OUTLINE);
-    private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.gray, BLACK_OUTLINE);
+    private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.BLACK, GREY_OUTLINE);
 
 	private static final Map<BuildingCategory,ColorChoice> BUILDING_COLORS = new EnumMap<>(BuildingCategory.class);
 
@@ -151,10 +151,11 @@ public class BuildingMapLayer extends AbstractMapLayer {
     }
 
     /**
-     * Draws the activity spots of a building.
+     * Draws the activity spots of a building function.
      * 
      * @param building
      * @param showSpots
+     * @param viewpoint
      */
     private void drawSpots(Building building, Set<FunctionType> showSpots, MapViewPoint viewpoint) {
         for(Function f : building.getFunctions()) {
@@ -163,7 +164,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
                     drawOval(spot.getPos(), SPOT_COLOR, viewpoint);
                     
                     drawRightLabel(false, spot.getName(), spot.getPos(), SPOT_COLOR,
-                            SPOT_FONT, 1.5f, 1f, viewpoint);
+                            SPOT_FONT, 0.5f, 0.5f, viewpoint);
                 }
             }
         }

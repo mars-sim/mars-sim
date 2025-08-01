@@ -1,11 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * AbstractMapLayer.java
- * @date 2023-12-10
+ * @date 2025-08-01
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.settlement;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -94,29 +95,32 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	/**
 	 * Draws a label to the right of an X, Y location.
 	 * 
-	 * @param g2d the graphics 2D context.
 	 * @param isSelected
 	 * @param label the label string.
 	 * @param loc the location from center of settlement (meters).
 	 * @param labelColor the color of the label.
-	 * @param viewpoint Map view point used for rendering
+	 * @param labelFont
+	 * @param xScale how close the dot relative to the label in x
+	 * @param yScale how close the dot relative to the label in y
+	 * @param viewpoint  Map view point used for rendering
 	 */
 	protected void drawRightLabel(boolean isSelected, String label, LocalPosition loc,
-		ColorChoice labelColor, Font labelFont, float xOffset, float yOffset,
+		ColorChoice labelColor, Font labelFont, float xScale, float yScale,
         MapViewPoint viewpoint) {
 
 		double scale = viewpoint.scale();
 		double rotation = viewpoint.rotation();
 		var g2d = viewpoint.graphics();
-		float fontSizeIncrease = Math.round(scale / 2.5);
+		float newScale = Math.round(scale/2.5);
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 		Font saveFont = g2d.getFont();
 
 		// Get the label image.
-		Font font = new Font(labelFont.getName(), labelFont.getStyle(),
-                             labelFont.getSize() + (int)fontSizeIncrease); 
+		Font font = new Font(labelFont.getName(), 
+							labelFont.getStyle(),
+                             labelFont.getSize() + (int)newScale); 
 		g2d.setFont(font);
 		
 		BufferedImage labelImage = getLabelImage(
@@ -137,24 +141,26 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		g2d.setTransform(newTransform);
 
 		// Gets the width and height offset
-		int widthOffset  = (int)Math.round((centerX + fontSizeIncrease) + xOffset);
-		int heightOffset = (int)Math.round((centerY + fontSizeIncrease) + yOffset);
+		int widthOffset  = (int)Math.round((centerX + newScale) * xScale);
+		int heightOffset = (int)Math.round((centerY + newScale) * yScale);
 		
 		if (isSelected) {
 			// Draw a white background label
-	        g2d.setColor(Color.gray.brighter().brighter().brighter());
+	        g2d.setColor(Color.WHITE);
 
 	        int x = widthOffset; 
 	        int y = heightOffset;
-	       	int w = (int)Math.round(centerX * 2.025);
-	       	int h = (int)Math.round(centerY * 2.2);
+	       	int w = (int)Math.round(centerX * 2.0);
+	       	int h = (int)Math.round(centerY * 2.0);
 	        	       	
-	        int thickness = 2;
+//	        int thickness = 2;
 	
 	        // Draw a frame rect white background label
+	        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f));
 	        g2d.fill3DRect(x, y, w, h, true);
-	        for (int i = 1; i <= thickness; i++)
-	            g2d.draw3DRect(x - i, y - i, w + 2 * i - 1, h + 2 * i - 1, true);
+	        g2d.draw3DRect(x, y, w, h, true);
+//	        for (int i = 1; i < thickness; i++)
+//	            g2d.draw3DRect(x - i, y - i, w + 2 * i - 1, h + 2 * i - 1, true);
 	        
 			// Draw a white background label
 	        g2d.setColor(labelColor.text());

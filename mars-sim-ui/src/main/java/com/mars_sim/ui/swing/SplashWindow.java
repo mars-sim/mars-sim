@@ -112,23 +112,30 @@ public class SplashWindow extends JComponent {
 				
 				int x = splashImage.getWidth(this);
 				
-				if (rand > 1)
+				if (rand == 1)
+					g2d.setColor(Color.BLACK);
+				
+				else if (rand > 1)
 					g2d.setColor(Color.ORANGE);
-				else
-					g2d.setColor(Color.black);
+				
 				
 				g2d.setFont(titleFont);
 				
 				if (rand == 0) {
-					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 70);
+					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 90);
 				}
 				else
 					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 50);
 				
 			
-				if (rand <= 1) {
+				if (rand == 0) {
 					g2d.setFont(versionStringFont);
-					g2d.setColor(Color.ORANGE);
+					g2d.setColor(Color.BLACK);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 100);
+				}
+				else if (rand == 1) {
+					g2d.setFont(versionStringFont);
+					g2d.setColor(Color.BLACK);
 					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
 				}
 				else if (rand == 2) {

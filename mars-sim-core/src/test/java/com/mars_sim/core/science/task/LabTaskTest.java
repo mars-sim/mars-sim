@@ -16,7 +16,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
                                 ScienceType science, JobType researchJob) {
         var study = InviteStudyCollaboratorTest.buildStudyToInvitePhase(s, context, science, researchJob);
 
-        // No collabarators so advance further
+        // No collaborators so advance further
         study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
         assertEquals("Study start phase", StudyStatus.RESEARCH_PHASE, study.getPhase());
         return study;
