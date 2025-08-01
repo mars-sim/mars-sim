@@ -752,7 +752,7 @@ public class MasterClock implements Serializable {
 
 		if (newTaskPulse != oldTaskPulse) {
 			Task.setStandardPulseTime(newTaskPulse);
-			logger.info(5_000L, "Task pulse: " + Math.round(newTaskPulse * 10000.0)/10000.0);
+//			logger.info(5_000L, "Task pulse: " + Math.round(newTaskPulse * 10000.0)/10000.0);
 		}
 
 		// Returns the deviation ratio

@@ -68,6 +68,7 @@ public enum GoodType {
 	VEHICLE_SMALL		("Vehicle Small"),
     
     // For robots
+	ROBOT				("Robot"),
     CHEFBOT				(RobotType.CHEFBOT.getName()),
 	CONSTRUCTIONBOT		(RobotType.CONSTRUCTIONBOT.getName()),
 	DELIVERYBOT			(RobotType.DELIVERYBOT.getName()),

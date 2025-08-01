@@ -12,23 +12,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * This class scores the Robot demans in a Settlement
+ * This class scores the Robot demand in a Settlement
  */
 public class RobotDemand {
-    private static SimLogger logger = SimLogger.getLogger(RobotDemand.class.getName());
+    // May add back private static SimLogger logger = SimLogger.getLogger(RobotDemand.class.getName());
 
     private Settlement target;
     private Map<RobotType,Double> ideal;
 
     /**
-     * Analyse the robot demand for a Settlement.
-     * @param target Settlemetn to analyse
+     * Analyses the robot demand for a Settlement.
+     * 
+     * @param target Settlement to analyse
      */
     public RobotDemand(Settlement target) {
         this.target = target;

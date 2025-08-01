@@ -77,6 +77,7 @@ public class PartGood extends Good {
 	private static final String WIRE_CONNECTOR = "wire connector";
 
 	private static final int VEHICLE_PART_COST = 3;
+	private static final int ROBOT_VALUE = 30;
 	private static final int EVA_PARTS_VALUE = 20;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 0.2;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
@@ -413,6 +414,8 @@ public class PartGood extends Good {
 			+ getPartConstructionSiteDemand(settlement)
 			// Calculate individual EVA suit-related part demand.
 			+ getEVASuitPartsDemand(owner)
+			// Calculate individual bot-related part demand.
+			+ getBotPartsDemand(owner)
 			// Calculate individual attachment part demand.
 			+ getAttachmentPartsDemand(owner)
 			// Calculate kitchen part demand.
@@ -571,6 +574,19 @@ public class PartGood extends Good {
 		return 0;
 	}
 
+	/**
+	 * Gets the bot related demand for a part.
+	 *
+	 * @param part the part.
+	 * @return demand
+	 */
+	private double getBotPartsDemand(GoodsManager owner) {		
+		if (ItemResourceUtil.botPartIDs != null && ItemResourceUtil.botPartIDs.contains(getID())) {
+			return owner.getBotMod() * ROBOT_VALUE * owner.getDemandScore(this) / 3;
+		}
+		return 0;
+	}
+	
     /**
 	 * Gets the demand for a part from construction sites.
 	 *

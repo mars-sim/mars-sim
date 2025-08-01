@@ -24,8 +24,8 @@
 		<part type="microcontroller" number="60" />
 		<part type="communications circuit board" number="6" />
 		<part type="navigation circuit board" number="4" />
-		<part type="Biosensor" number="20" />
-		
+		<part type="Biosensor" number="20" />	
+				
 		<part type="methane fuel cell" number="200"/>
 		<part type="methane fuel cell stack" number="4"/>
 		<part type="methanol fuel cell" number="200"/>
@@ -55,6 +55,10 @@
 		<part type="Motor 30 kW" number="2" />
 		<part type="propeller" number="4"/>
 
+		<part type="Servo motor" number="16" />
+		<part type="Actuator" number="28" />
+		<part type="Gearbox" number="12" />
+		
 	</part-package>
 
 	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2024-07-12
+ * @date 2025-07-31
  * @author Manny Kung
  */
 
@@ -43,6 +43,9 @@ public class ItemResourceUtil {
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
+	/** String name of the manufacturing process of producing a repair bot. */	
+	public static final String ASSEMBLE_A_REPARTBOT = "Assemble a RepairBot";
+	
 	// 3-D printer
 	private static final String SLS_3D_PRINTER = "SLS 3D Printer";
 
@@ -57,7 +60,8 @@ public class ItemResourceUtil {
 	private static Set<Part> partSet;
 	
 	public static Set<Integer> evaSuitPartIDs;
-
+	public static Set<Integer> botPartIDs;
+	
 	/** A set of common parts that will be consumed during a malfunction repair. */
 	public static Set<Integer> consumablePartIDs;
 
@@ -109,6 +113,30 @@ public class ItemResourceUtil {
 
 			if (manufactureProcessInfo == null)
 				logger.config("Unable to find EVA suit part IDs.");
+		}
+	}
+	
+	
+	/**
+	 * Initializes the bot parts.
+	 */
+	public static void initBotParts() {
+		if (botPartIDs == null || botPartIDs.isEmpty()) {
+
+			ManufactureProcessInfo manufactureProcessInfo = null;
+			
+			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
+			
+			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
+				if (info.getName().equals(ASSEMBLE_A_REPARTBOT)) {
+		        	manufactureProcessInfo = info;
+		        	botPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
+		        	break;
+				}
+			}
+
+			if (manufactureProcessInfo == null)
+				logger.config("Unable to find bot part IDs.");
 		}
 	}
 	

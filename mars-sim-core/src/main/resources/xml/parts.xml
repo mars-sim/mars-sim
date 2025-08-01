@@ -332,12 +332,14 @@
 
 	<part name="EVA Antenna" type="EVA" mass=".05" >
 		<maintenance-entity-list>
+			<entity name="robot" probability="5" max-number="1" />
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="EVA Radio" type="EVA" mass="0.25" >
 		<maintenance-entity-list>
+			<entity name="robot" probability="5" max-number="1" />
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -353,6 +355,7 @@
 		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
+			<entity name="robot" probability="2" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -370,6 +373,7 @@
 		 this battery allows traveling a distance of 96.5 km on a single charge.
 		</description>
 		<maintenance-entity-list>
+			<entity name="robot" probability="2" max-number="1" />
 			<entity name="rover" probability="2" max-number="2" />
 			<entity name="light utility vehicle" probability="2" max-number="1" />
 			<entity name="delivery drone" probability="2" max-number="1" />
@@ -436,8 +440,109 @@
 		</maintenance-entity-list>
 	</part>
 
+
+	<part name="Bot Torso" type="robot" mass="6.0">
+		<description>A torso for housing batteries, electronics 
+		 and cables for a bot
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Bot Leg" type="robot" mass="2.0">
+		<description>A mechanical leg for a bot
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Bot Arm" type="robot" mass="2.0">
+		<description>A mechanical arm for a bot
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+			
+	<part name="Bot Head" type="robot" mass="1.0">
+		<description>A mechanical head for housing cmos sensors and 
+		 microcontroller for a bot
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	
+	<part name="Actuator" type="robot" mass="1.0">
+		<description>An actuator in a robot is a device that converts energy into physical 
+		motion, enabling the robot to interact with its environment. Actuators serve as 
+		the "muscles" of a robot, executing movements based on signals from control systems
+		like microcontrollers or software. 
+		
+		They vary in design and function but all share the core purpose of translating 
+		electrical, hydraulic, or pneumatic energy into	mechanical force.
+		
+		The role of actuators extends beyond just movement, as they also contribute to 
+		the robot's ability to sense and respond to its environment by providing feedback 
+		to the control system about the robot's position and movement.
+		
+		Unlike a servo motor, a actuator provides linear motion and operates in a simple
+		on/off manner without position control.
+		
+		Arms: 6 
+		Legs: 4 
+		Torso: 2
+		Neck: 2
+		
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="14" />
+		</maintenance-entity-list>
+	</part>
+	
+	
+	<part name="Servo Motor" type="robot" mass="0.3">
+		<description>A servo motor is used in applications where precise angular
+		control is needed, such as in robotics and RC vehicles, where they can 
+		move to a specific position and hold it. Additionally, servo motors 
+		typically offer higher speed and better torque at higher speeds 
+		compared to stepper motors.
+		
+		Feet: 2 
+		Hands: 6 
+				
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="8" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Gear" type="electrical" mass="0.02">
+		<description>A gear represents a myriad of industrial grade gears 
+			for use inside a gearbox.
+		</description>
+	</part>
+	
+	<part name="Gearbox" type="electrical" mass="0.1">
+		<description>A gearbox ensure smooth motion, high torque, and energy 
+		efficiency, making them essential in robotic systems. Among the most 
+		popular types of gearboxes are planetary gearboxes, strain wave gearboxes 
+		(harmonic drive gearboxes), and RV gearboxes.
+		Read https://newstartgear.com/application/industrial-robotic-application/
+		</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="6" />
+		</maintenance-entity-list>
+	</part>
+		
 	<part name="Stepper Motor" type="electrical" mass="1">
-		<description>A 24 V precision motor for use in 3D printing</description>
+		<description>A 24 V precision motor provides precise positioning, 
+		such as 3D printers and CNC machines, where they can move in small, 
+		controlled increments.
+		</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="1" max-number="2" />
 			<entity name="solar heating source" probability="1" max-number="2" />
@@ -447,9 +552,17 @@
 	</part>
 	
 	<part name="Motor 5 kW" type="electrical" mass="5.0" >
-		<description>A motor with 5 kW power output.</description>
+		<description>A motor with 5 kW power output can be used in hybrid models and 
+		automotive accessories such as power windows, seats, and windshield wipers, 
+		where moderate power is needed. Additionally, 5 kW electric motors are used in 
+		home appliances like refrigerators, air conditioners, and washing machines, 
+		offering good energy efficiency and performance balance. In the case of golf carts,
+		a 5 kW motor can provide sufficient power for the vehicle's operation,
+		</description>
 		<maintenance-entity-list>
-			<entity name="robot" probability="1" max-number="4" />
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="Fuel Heating Source" probability="1" max-number="3" />
+			<entity name="fuel power source" probability="1" max-number="3" />	
 		</maintenance-entity-list>
 	</part>
 
@@ -610,12 +723,16 @@
 		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>
 	</part>
 
-	<part name="Steel Scrap" type="metallic" mass="25.0">
-		<description>A 25 kg piece of salvaged steel scrap.</description>
+	<part name="Iron Scrap" type="metallic" mass="1.0">
+		<description>A 1 kg piece of salvaged steel scrap.</description>
+	</part>
+	
+	<part name="Steel Scrap" type="metallic" mass="1.0">
+		<description>A 1 kg piece of salvaged steel scrap.</description>
 	</part>
 
-	<part name="Aluminum Scrap" type="metallic" mass="5.0">
-		<description>A 5 kg piece of salvaged aluminum scrap.</description>
+	<part name="Aluminum Scrap" type="metallic" mass="1.0">
+		<description>A 1 kg piece of salvaged aluminum scrap.</description>
 	</part>
 
 	<part name="Bore Drill Bit" type="tool" mass="25.0">
@@ -675,6 +792,7 @@
 	<!-- 2014-11-19 Added a microcontroller. -->
 	<part name="Microcontroller" type="electronic" mass="0.1" >
 		<maintenance-entity-list>
+		<entity name="robot" probability="1" max-number="2" />
 		<entity name="farming" probability="1" max-number="1" />
 		<entity name="vehicle" probability="1" max-number="1" />
 		<entity name="manufacture" probability="1" max-number="1" />
@@ -1157,11 +1275,18 @@
 		the 'lock' to combine to form an enzyme and emits a light indicating the presence and 
 		quantity of the target. Useful for pathogen detection, food analysis, medical monitoring,
 		and measurement of pollutants </description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="2" />
+			<entity name="farming" probability="1" max-number="3" />
+		</maintenance-entity-list>
 	</part>
 	
 	<part name="CMOS sensor" type="electronic" mass="0.05">
 		<description>Complementary Metal–Oxide–Semiconductor(CMOS) consists
 		of millions of pixel sensors, each of which includes a photodetector.</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="2" />
+		</maintenance-entity-list>
 	</part>	
 		
 	<part name="Power Panel" type="electrical" mass="5">

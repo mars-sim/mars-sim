@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Robot.java
- * @date 2023-05-09
+ * @date 2025-07-31
  * @author Manny Kung
  */
 
@@ -13,9 +13,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
@@ -35,6 +37,7 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
@@ -46,6 +49,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.robot.ai.BotMind;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -68,6 +72,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private static final  SimLogger logger = SimLogger.getLogger(Robot.class.getName());
 
 	// Static members
+	
+	private static final String REPAIRBOT = "RepairBot";
 	/** The base carrying capacity (kg) of a robot. */
 	private static final double BASE_CAPACITY = 60D;
 	/** Unloaded mass of EVA suit (kg.). */
@@ -79,6 +85,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 
+	/** String name of a robot */	
+	public static final String TYPE = SystemType.ROBOT.getName();
+	
 	private static final String CURRENTLY = "Currently ";
 	
 	/** The string tag of operable. */
@@ -122,6 +131,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 
+	static {
+		// Initialize the parts
+		ItemResourceUtil.initBotParts();
+	}
 
 	/**
 	 * Constructor 1.
@@ -179,6 +192,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Add system type to malfunction manager scope
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
+		// Add TYPE to the standard scope
+		SimulationConfig.instance().getPartConfiguration().addScopes(TYPE);
+
 		// Set up the time stamp for the robot
 		createBirthDate();
 
@@ -191,8 +207,45 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		carryingCapacity = (int)BASE_CAPACITY + strength;
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
+		
+		// Calculate and set the base mass based on parts and inventory content
+		setBaseMass(calculateMass()); 
 	}
 
+	/**
+	 * Calculates the mass of the output of a process.
+	 * 
+	 * @param processName
+	 * @return
+	 */
+    private static double calculateMass() {
+		
+		// Note: it's haphazard to match the string of the manu process since it can change.
+		// Will need to implement a better way in matching and looking for the manu process 
+    	// that assemblies the item of interest.
+		String processName = ItemResourceUtil.ASSEMBLE_A_REPARTBOT;
+	
+	    Optional<ManufactureProcessInfo> found = SimulationConfig.instance().
+	    		getManufactureConfiguration().getManufactureProcessList()
+		 	.stream()
+			.filter(f -> f.getName().equalsIgnoreCase(processName))
+			.findFirst();
+	
+		if (found.isPresent()) {
+			var manufactureProcessInfo = found.get();
+			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
+			var mass = manufactureProcessInfo.calculateTotalInputMass();
+			// Calculate output quantity
+			var quantity = manufactureProcessInfo.calculateOutputQuantity(REPAIRBOT);					
+			// Save the key value pair onto the weights Map
+			return mass/quantity;
+		}
+
+	    logger.severe("The process '" + processName + "' cannot be found.");
+	    		
+		return EMPTY_MASS;
+    }
+    
 	/**
 	 * Create birth time of the robot.
 	 *

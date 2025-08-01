@@ -8,6 +8,7 @@ package com.mars_sim.core.goods;
 
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
@@ -196,8 +197,9 @@ class RobotGood extends Good {
 	 * @return demand
 	 */
 	private double determineRobotDemand(GoodsManager owner, Settlement settlement) {
-		double baseDemand = BASE_DEMAND;
-	
+		double baseDemand = BASE_DEMAND * getWholeBotDemand(owner)
+				 + owner.getBotMod();
+				
 		if (robotType == RobotType.MAKERBOT) {
 			
 			int tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
@@ -256,5 +258,21 @@ class RobotGood extends Good {
 		return baseDemand * settlement.getPopulationFactor();
 	}
 
-		
+	/**
+	 * Gets the bot demand from its part.
+	 *
+	 * @param owner Owner of Goods
+	 * @return demand
+	 */
+	private static double getWholeBotDemand(GoodsManager owner) {
+		double demand = 0;
+	
+		if (ItemResourceUtil.botPartIDs != null && !ItemResourceUtil.botPartIDs.isEmpty()) {
+			for (int id : ItemResourceUtil.botPartIDs) {
+				demand += owner.getDemandScoreWithID(id);
+			}
+		}
+		return demand;
+	}	
+	
 }

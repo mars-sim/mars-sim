@@ -389,7 +389,7 @@ public class EquipmentGood extends Good {
 		}
 		return demand;
 	}
-
+	
 	/**
 	 * Gets the total supply for the equipment.
 	 *

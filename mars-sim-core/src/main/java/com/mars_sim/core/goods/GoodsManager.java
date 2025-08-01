@@ -134,6 +134,7 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_REPAIR_PART = 150;
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;	
+	private static final int BASE_BOT = 1;	
 	private static final int MAX_SUPPLY = 5_000;
 	private static final int MAX_VP = 10_000;
 
@@ -163,6 +164,7 @@ public class GoodsManager implements Serializable {
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
 	private double eVASuitMod = BASE_EVA_SUIT;
+	private double botMod = BASE_BOT;
 	
 	private Map<CommerceType, Double> factors = new EnumMap<>(CommerceType.class);
 
@@ -560,10 +562,14 @@ public class GoodsManager implements Serializable {
 		return computeLevel(maintenanceMod / BASE_MAINT_PART);
 	}
 
+	double getBotMod() {
+		return botMod;
+	}	
+
 	double getEVASuitMod() {
 		return eVASuitMod;
 	}	
-
+	
 	public int getEVASuitLevel() {
 		return computeLevel(eVASuitMod / BASE_EVA_SUIT);
 	}
