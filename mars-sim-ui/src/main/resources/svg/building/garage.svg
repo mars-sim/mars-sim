@@ -76,10 +76,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710678"
-     inkscape:cx="500.6316"
-     inkscape:cy="591.84838"
+     inkscape:cx="503.46003"
+     inkscape:cy="440.52753"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer5"
      showgrid="true"
      showguides="true"
      inkscape:window-width="1264"
@@ -215,7 +215,7 @@
        width="360"
        height="920"
        x="148"
-       y="80"
+       y="74"
        inkscape:label="yellow border left" />
     <rect
        style="display:inline;opacity:0.6;fill:none;stroke:#01ff00;stroke-width:9.6148;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:38.4592, 9.6148;stroke-dashoffset:0;stroke-opacity:1"
@@ -234,7 +234,7 @@
        y="1264.8074"
        inkscape:label="drone border right" />
     <rect
-       y="80"
+       y="74"
        x="688"
        height="920"
        width="360"
@@ -445,7 +445,7 @@
        id="rect8078-8-0"
        width="163.26927"
        height="248.26923"
-       x="105.86535"
+       x="20.865349"
        y="920.86536"
        inkscape:label="drone border 1" />
     <rect
@@ -453,7 +453,7 @@
        id="rect8078-8-0-1"
        width="163.26927"
        height="248.26923"
-       x="930.86536"
+       x="1018.3654"
        y="920.86536"
        inkscape:label="drone border 1" />
   </g>
@@ -496,11 +496,11 @@
      inkscape:label="airlocks"
      style="display:inline">
     <rect
-       style="fill:#272b26;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-opacity:1"
+       style="fill:#272b26;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.87468;stroke-opacity:1"
        id="rect3712"
-       width="1122.6571"
-       height="80"
-       x="37.342907"
-       y="0" />
+       width="1124.1254"
+       height="61.12532"
+       x="37.43734"
+       y="0.43733999" />
   </g>
 </svg>

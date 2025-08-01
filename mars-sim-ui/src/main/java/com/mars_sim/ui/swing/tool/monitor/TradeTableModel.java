@@ -57,22 +57,24 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
 	
 	static {
+		
+		// Note: Number.class creates cast exception. Use Double.class instead
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[GOOD_COL] = new ColumnSpec ("Good", String.class);
 		COLUMNS[CAT_COL] = new ColumnSpec ("Category", String.class);
 		COLUMNS[TYPE_COL] = new ColumnSpec ("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
-		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Number.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Double.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[TRADE_COL] = new ColumnSpec ("Trade", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Number.class, ColumnSpec.STYLE_DIGIT3);	
-		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Number.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class, ColumnSpec.STYLE_DIGIT3);	
+		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Double.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Double.class, ColumnSpec.STYLE_INTEGER);
+		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Integer.class, ColumnSpec.STYLE_INTEGER);
 		COLUMNS[MASS_COL] = new ColumnSpec ("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT1);
-		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Number.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Number.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);

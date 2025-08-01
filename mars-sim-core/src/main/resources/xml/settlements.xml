@@ -152,7 +152,7 @@
 		<resource name="Methanol" reserve="600" max="6000" />
 		<resource name="Water" reserve="800" max="8000" />
 		<resource name="Hydrogen" reserve="800" max="8000" />
-		<resource name="Nitrogen" reserve="60" max="600" />
+		<resource name="Nitrogen" reserve="40" max="400" />
 		<resource name="Carbon Dioxide" reserve="4" max="40" />
 	</essential-resources>
 

@@ -397,12 +397,16 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the total number of people and robots.
+	 * Gets a composite load score from people, robots, buildings and vehicles.
 	 * 
 	 * @return
 	 */
-	public int getMainObjectsCount() {
-		return (int)(lookupPerson.entrySet().stream().count() + lookupRobot.entrySet().stream().count());
+	public double getObjectsLoad() {
+		return (.45 * lookupPerson.entrySet().stream().count() 
+				+ .2 * lookupRobot.entrySet().stream().count()
+				+ .25 * lookupBuilding.entrySet().stream().count()
+				+ .1 * lookupVehicle.entrySet().stream().count()
+				);
 	}
 	
 	/**

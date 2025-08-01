@@ -70,7 +70,7 @@ context of developing human settlements on Mars.
 Each settler is modeled as an intelligent agent possessing a high degree of autonomy and mobility.
 As a conscious agent given a capacity to learn from past experiences, each settler would be assigned 
 with a [job](https://github.com/mars-sim/mars-sim/wiki/Jobs), a [role](https://github.com/mars-sim/mars-sim/wiki/Role), 
-having technical[skills](https://github.com/mars-sim/mars-sim/wiki/Skills), 
+having technical [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), 
 [personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural
 [attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and preferences of tasks.
 Given their [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) with one another, 

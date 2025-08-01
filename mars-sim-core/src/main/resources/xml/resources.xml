@@ -47,7 +47,7 @@
 	  liquid with a faintly sweet pungent odor like that of ethyl alcohol. 
 	  </resource>
 	 
-	<resource name="Nitrogen" type="element" phase="gas">N2 is an odorless gas </resource>
+	<resource name="Nitrogen" type="element" phase="gas" demand="0.25" >N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
 	<resource name="Carbon monoxide" type="compound" phase="gas" demand=".05" />

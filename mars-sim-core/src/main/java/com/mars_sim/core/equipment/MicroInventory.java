@@ -79,7 +79,7 @@ public class MicroInventory implements Serializable {
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MicroInventory.class.getName());
 
-	private static final double SMALL_AMOUNT = 0.000001;
+	private static final double SMALL_AMOUNT = 0.000_001;
 
 	/** The owner of this micro inventory. */
 	private Unit owner;

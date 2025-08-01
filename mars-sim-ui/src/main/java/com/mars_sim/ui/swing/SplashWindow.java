@@ -126,14 +126,15 @@ public class SplashWindow extends JComponent {
 					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 50);
 				
 			
-				if (rand == 0) {
-					g2d.setFont(versionStringFont);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 120);
-				}
-				else if (rand == 1) {
+				if (rand <= 1) {
 					g2d.setFont(versionStringFont);
 					g2d.setColor(Color.ORANGE);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 100);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
+				}
+				else if (rand == 2) {
+					g2d.setFont(versionStringFont);
+					g2d.setColor(Color.ORANGE);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
 				}
 				else {
 					g2d.setFont(versionStringFont1);

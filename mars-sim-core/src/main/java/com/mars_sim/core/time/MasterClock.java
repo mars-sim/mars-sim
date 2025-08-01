@@ -267,9 +267,9 @@ public class MasterClock implements Serializable {
 		Simulation sim = Simulation.instance();
 		
 		if (sim.getUnitManager() != null) {
-			int numObjs = sim.getUnitManager().getMainObjectsCount();
+			double objLoad = sim.getUnitManager().getObjectsLoad();
 			
-			double load = 50 * Math.sqrt(Math.max(1, numObjs/20.0));
+			double load = 50 * Math.sqrt(Math.max(1, objLoad/20.0));
 			
 			cpuLoad = load / coreFactor ; 
 		}
@@ -578,7 +578,7 @@ public class MasterClock implements Serializable {
 				nextPulseDeviation = computePulseDev();
 			}
 		
-			if (nextPulseDeviation > -100.0 ||  nextPulseDeviation < 100.0) {
+			if (nextPulseDeviation > -2.0 ||  nextPulseDeviation < 2.0) {
 				acceptablePulse = true;
 			}
 			
@@ -1204,7 +1204,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the percentage of deviation between the optimal pulse width and the next pulse width.
+	 * Gets the deviation between the optimal pulse width and the next pulse width.
 	 *
 	 * @return
 	 */
