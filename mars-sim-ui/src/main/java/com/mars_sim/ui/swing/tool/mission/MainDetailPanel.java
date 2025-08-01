@@ -50,6 +50,7 @@ import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
+import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.mission.objectives.MiningObjective;
@@ -77,6 +78,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
+import com.mars_sim.ui.swing.tool.mission.objectives.ConstructionPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ExplorationPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.MiningPanel;
@@ -331,12 +333,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		JPanel emptyCustomPanel = new JPanel();
 		missionCustomPane.add(emptyCustomPanel, EMPTY);
 		customInfoPanels = new HashMap<>();
-
-		// Create custom construction mission panel.
-		MissionCustomInfoPanel constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
-		String constructionMissionName = ConstructionMission.class.getName();
-		customInfoPanels.put(constructionMissionName, constructionPanel);
-		missionCustomPane.add(constructionPanel, constructionMissionName);
 
 		// Create custom salvage mission panel.
 		MissionCustomInfoPanel salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
@@ -649,6 +645,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					case ExplorationObjective eo -> new ExplorationPanel(eo);
 					case MiningObjective mo -> new MiningPanel(mo, desktop);
 					case TradeObjective to -> new TradePanel(to, desktop);
+					case ConstructionObjective co -> new ConstructionPanel(co, desktop);
 
 					default -> null;
 				};

@@ -18,18 +18,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionVehicleType;
-import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 
 /**
  * A panel displaying a list of construction sites at a settlement.
@@ -62,7 +60,7 @@ public class ConstructionSitesPanel extends JPanel {
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();
-        sitesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sitesScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(sitesScrollPane, BorderLayout.CENTER);  
         
         // Prepare sites outer list pane.
@@ -127,18 +125,15 @@ public class ConstructionSitesPanel extends JPanel {
      * @param site the construction site.
      * @return construction site panel or null if none found.
      */
-    private ConstructionPanel getConstructionSitePanel(ConstructionSite site) {
-        ConstructionPanel result = null;
-        
+    private ConstructionPanel getConstructionSitePanel(ConstructionSite site) {        
         for (int x = 0; x < sitesListPane.getComponentCount(); x++) {
             Component component = sitesListPane.getComponent(x);
-            if (component instanceof ConstructionPanel) {
-                ConstructionPanel panel = (ConstructionPanel) component;
-                if (panel.getConstructionSite().equals(site)) result = panel;
+            if (component instanceof ConstructionPanel panel && panel.getConstructionSite().equals(site)) {
+                return panel;
             }
         }
         
-        return result;
+        return null;
     }
     
     /**
@@ -178,7 +173,6 @@ public class ConstructionSitesPanel extends JPanel {
             
             // Create the progress bar panel.
             JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//            progressBarPanel.setSize(200, 25);
             add(progressBarPanel, BorderLayout.CENTER);
                         
             // Prepare work progress bar.
@@ -263,79 +257,12 @@ public class ConstructionSitesPanel extends JPanel {
         /**
          * Gets a tool tip string for the panel.
          */
-        private String getToolTipString() {
-            StringBuilder result = new StringBuilder("<html>");
-            result.append(getStatusString()).append("<br>");
-            
+        private String getToolTipString() {            
             ConstructionStage stage = site.getCurrentConstructionStage();
             if (stage != null) {
-                ConstructionStageInfo info = stage.getInfo();
-                result.append("Stage Type: ").append(info.getType()).append("<br>");
-                if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
-                else result.append("Work Type: Construction<br>");
-                String requiredWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getRequiredWorkTime() / 1000D);
-                result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
-                String completedWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getCompletedWorkTime() / 1000D);
-                result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
-                result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
-                
-                // Add remaining construction resources.
-                if ((stage.getMissingResources().size() > 0) && !stage.isSalvaging()) {
-                    result.append("<br>Missing Resources:<br>");
-                    Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
-                    while (i.hasNext()) {
-                    	Integer resource = i.next();
-                        double amount = stage.getMissingResources().get(resource);
-                        result.append("&nbsp;&nbsp;").append(ResourceUtil.findAmountResource(resource)
-                        		.getName()).append(": ").append(amount).append(" kg<br>");
-                    }
-                }
-                
-                // Add remaining construction parts.
-                if (stage.getMissingParts().size() > 0) {
-                    result.append("<br>Missing Parts:<br>");
-                    Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
-                    while (j.hasNext()) {
-                    	Integer part = j.next();
-                        int number = stage.getMissingParts().get(part);
-                        result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(part)
-                        		.getName()).append(": ").append(number).append("<br>");
-                    }
-                }
-                
-                // Add salvage parts.
-                if (!stage.isSalvaging() && (info.getParts().size() > 0)) {
-                    result.append("<br>Salvagable Parts:<br>");
-                    Iterator<Integer> j = info.getParts().keySet().iterator();
-                    while (j.hasNext()) {
-                    	Integer part = j.next();
-                        int number = info.getParts().get(part);
-                        result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(part)
-                        		.getName()).append(": ").append(number).append("<br>");
-                    }
-                }
-                
-                // Add construction vehicles.
-                if (info.getVehicles().size() > 0) {
-                    if (stage.isSalvaging()) result.append("<br>Salvage Vehicles:<br>");
-                    else result.append("<br>Construction Vehicles:<br>");
-                    Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
-                    while (k.hasNext()) {
-                        ConstructionVehicleType vehicle = k.next();
-                        result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
-                        result.append("&nbsp;&nbsp;Attachment Parts:<br>");
-                        Iterator<Integer> l = vehicle.getAttachmentParts().iterator();
-                        while (l.hasNext()) {
-                            result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(
-                            		ItemResourceUtil.findItemResource(l.next()).getName()).append("<br>");
-                        }
-                    }
-                }
+                return ConstructionStageFormat.getTooltip(stage);
             }
-            
-            result.append("</html>");
-            
-            return result.toString();
+            return "";
         }
     }   
     

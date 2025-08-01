@@ -8,8 +8,10 @@ package com.mars_sim.core.building.construction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
@@ -25,12 +27,17 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Manager for construction sites at a settlement.
  */
-public class ConstructionManager
-implements Serializable {
+public class ConstructionManager implements Serializable {
+
+	// Default width and length for variable size buildings if not otherwise
+	// determined.
+	private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 7D;
+	private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -75,18 +82,8 @@ implements Serializable {
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSites() {
-		return new ArrayList<>(sites);
+		return Collections.unmodifiableList(sites);
 	}
-
-	/**
-	 * Returns the instance of all construction sites at the settlement.
-	 * 
-	 * @return list of construction sites.
-	 */
-	public List<ConstructionSite> getSites() {
-		return sites;
-	}
-
 
 	/**
 	 * Gets construction sites needing a construction mission.
@@ -95,9 +92,7 @@ implements Serializable {
 	 */
 	public List<ConstructionSite> getConstructionSitesNeedingConstructionMission() {
 		List<ConstructionSite> result = new ArrayList<>();
-		Iterator<ConstructionSite> i = sites.iterator();
-		while (i.hasNext()) {
-			ConstructionSite site = i.next();
+		for (ConstructionSite site : sites) {
 			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() &&
 					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
@@ -108,7 +103,7 @@ implements Serializable {
 					else if (!currentStage.isSalvaging()) {
 					    boolean workNeeded = currentStage.getCompletableWorkTime() >
 					            currentStage.getCompletedWorkTime();
-					    boolean hasConstructionMaterials = hasMissingConstructionMaterials(currentStage);
+					    boolean hasConstructionMaterials = currentStage.hasMissingConstructionMaterials();
 					    if (workNeeded || hasConstructionMaterials) {
 					        result.add(site);
 					    }
@@ -122,43 +117,7 @@ implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Checks if the settlement has any construction materials needed for the stage.
-	 * 
-	 * @param stage the construction stage.
-	 * @return true if missing materials available.
-	 */
-	public boolean hasMissingConstructionMaterials(ConstructionStage stage) {
-
-	    boolean result = false;
-
-	    Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
-	    while (i.hasNext() && !result) {
-	    	Integer resource = i.next();
-	        double amountRequired = stage.getMissingResources().get(resource);
-	        if (amountRequired > 0D) {
-	            double amountStored = settlement.getSpecificAmountResourceStored(resource);
-	            if (amountStored > 0D) {
-	                result = true;
-	            }
-	        }
-	    }
-
-	    Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
-	    while (j.hasNext() && !result) {
-	    	Integer part = j.next();
-	        int numRequired = stage.getMissingParts().get(part);
-	        if (numRequired > 0) {
-	            int numStored = settlement.getItemResourceStored(part);
-	            if (numStored > 0) {
-	                result = true;
-	            }
-	        }
-	    }
-
-	    return result;
-	}
-
+	
 	/**
 	 * Gets construction sites needing a salvage mission.
 	 * 
@@ -184,7 +143,7 @@ implements Serializable {
 	 * 
 	 * @return newly created construction site.
 	 */
-	public ConstructionSite createNewConstructionSite() {
+	private ConstructionSite createNewConstructionSite() {
 		
 		ConstructionSite site = new ConstructionSite(settlement);
 		sites.add(site);
@@ -318,6 +277,143 @@ implements Serializable {
 		values.clearCache();
 
 		return site;
+	}
+
+	/**
+	 * Determines the construction site based upon profit.
+	 * 
+	 * @param skill
+	 */
+	public ConstructionSite getNextSite(int skill) {
+
+		ConstructionSite site = null;
+		values.clearCache();
+		double existingSitesProfit = values.getAllConstructionSitesProfit(skill);
+		double newSiteProfit = values.getNewConstructionSiteProfit(skill);
+		ConstructionStageInfo info = null;
+
+		logger.info(settlement, "existingSitesProfit: " + existingSitesProfit + "   newSiteProfit: " + newSiteProfit);
+		
+		if (existingSitesProfit > newSiteProfit) {
+			// If there are existing construction sites
+			logger.info(settlement, "Developing an existing construction site.");
+			
+			// Determine which existing construction site to work on.
+			double topSiteProfit = 0D;
+			for (var newSite : getConstructionSitesNeedingConstructionMission()) {
+				double siteProfit = values.getConstructionSiteProfit(newSite, skill);
+				if ((site == null) || (siteProfit > topSiteProfit)) {
+					site = newSite;
+					info = newSite.getStageInfo();
+					topSiteProfit = siteProfit;
+				}
+			}
+			
+			site.setStageInfo(info);
+			
+			determineNewStage(site, info, skill, values);
+		}
+
+		else if (newSiteProfit >= 0D) {
+			// If there aren't any existing construction sites
+			logger.info(settlement, "Creating a new construction site.");
+			
+			// Case 1a: if using GUI			
+			// Case 1b: if not using GUI
+
+			// Create new site.
+			site = createNewConstructionSite();
+			
+			// Determine construction site new stage info via profits probability.
+			info = determineNewStageInfoByProfits(site, skill);
+
+			site.setStageInfo(info);
+			
+			// Determine construction site location and facing.
+			if (info != null) {
+				// Set construction site size.
+				if (info.getWidth() > 0D)
+					site.setWidth(info.getWidth());
+				else
+					// Set initial width value that may be modified later.
+					site.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
+
+				if (info.getLength() > 0D)
+					site.setLength(info.getLength());
+				else
+					// Set initial length value that may be modified later.
+					site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+
+				determineNewStage(site, info, skill, values);
+
+				BuildingPlacement.placeSite(site);
+
+				logger.info(settlement, "New construction site '" + site + "' added.");
+			}
+			
+			else {
+				logger.warning(site, "New construction stage could not be determined.");
+				return null;
+			}
+		}
+		else {
+			logger.info(settlement, "Case 3");
+		}
+
+		return site;
+	}
+
+	
+	/**
+	 * Determines a new stage to work on.
+	 * 
+	 * @param cSite
+	 * @param stageInfo
+	 * @param constructionSkill
+	 * @param values
+	 */
+	private void determineNewStage(ConstructionSite cSite, ConstructionStageInfo stageInfo, int constructionSkill,
+			ConstructionValues values) {
+
+		// Determine new stage to work on.
+		if (cSite.hasUnfinishedStage()) {
+			logger.info(cSite, "Continuing work on existing site at " + settlement.getName());
+		}
+		
+		else {			
+			if (stageInfo == null) {
+				stageInfo = determineNewStageInfoByProfits(cSite, constructionSkill);
+			}
+
+			if (stageInfo != null) {
+				var stage = new ConstructionStage(stageInfo, cSite);
+				cSite.addNewStage(stage);
+				values.clearCache();
+				logger.info(cSite, "Starting a new construction stage '" + stage + ".");
+			} 
+			
+			else {
+				logger.warning(cSite, "Can not determine the next stage");
+			}
+		}
+	}
+
+	/**
+	 * Determines a new construction stage info for a site.
+	 *
+	 * @param site  the construction site.
+	 * @param skill the architect's construction skill.
+	 * @return construction stage info.
+	 * @throws Exception if error determining construction stage info.
+	 */
+	private ConstructionStageInfo determineNewStageInfoByProfits(ConstructionSite site, int skill) {
+		ConstructionStageInfo result = null;
+		Map<ConstructionStageInfo, Double> stageProfits = values.getNewConstructionStageProfits(site, skill);
+		if (!stageProfits.isEmpty()) {
+			result = RandomUtil.getWeightedRandomObject(stageProfits);
+		}
+
+		return result;
 	}
 
 	/**

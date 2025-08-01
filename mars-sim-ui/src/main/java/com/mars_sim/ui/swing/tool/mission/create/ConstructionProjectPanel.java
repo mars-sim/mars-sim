@@ -583,37 +583,13 @@ class ConstructionProjectPanel extends WizardPanel {
      * @return true if enough remaining materials available.
      */
     private boolean hasEnoughConstructionMaterials(ConstructionSite site) {
-        
-        boolean result = true;
-        
-        Settlement settlement = getConstructionSettlement();
- 
+                 
         ConstructionStage stage = site.getCurrentConstructionStage();
         if (stage != null) {
-        
-            // Check amount resources.
-            Iterator<Integer> i = stage.getMissingResources().keySet()
-                    .iterator();
-            while (i.hasNext()) {
-            	Integer resource = i.next();
-                double amount = stage.getMissingResources().get(resource);
-                if (settlement.getSpecificAmountResourceStored(resource) < amount) {
-                    result = false;
-                }
-            }
-
-            // Check parts.
-            Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
-            while (j.hasNext()) {
-            	Integer part = j.next();
-                int number = stage.getMissingParts().get(part);
-                if (settlement.getItemResourceStored(part) < number) {
-                    result = false;
-                }
-            }
+            return !stage.hasMissingConstructionMaterials();
         }
 
-        return result;
+        return false;
     }
 
     /**
