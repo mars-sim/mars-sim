@@ -19,7 +19,6 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.MissionPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
@@ -67,7 +66,6 @@ public class ConstructionSite extends FixedUnit {
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
-    private ConstructionManager constructionManager;
     private ConstructionStageInfo stageInfo;
 
     private MissionPhase phase;
@@ -80,9 +78,7 @@ public class ConstructionSite extends FixedUnit {
     public ConstructionSite(Settlement settlement) {
     	super("Site", settlement);
     	
-    	this.constructionManager = settlement.getConstructionManager();
-
-    	identifier = constructionManager.getUniqueID();
+    	identifier = settlement.getConstructionManager().getUniqueID();
     	
     	createSiteName();
 
@@ -372,7 +368,7 @@ public class ConstructionSite extends FixedUnit {
         manager.addBuilding(newBuilding, true);
 
         // Record completed building name.
-        constructionManager = settlement.getConstructionManager();
+        var constructionManager = settlement.getConstructionManager();
         constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName());
 
         // Clear construction value cache.
@@ -424,16 +420,12 @@ public class ConstructionSite extends FixedUnit {
 	public void relocateSite() {
         var existingPosn = getPosition();
 		// Compute a new position for a site
-		ConstructionMission.positionNewSite(this);
+		BuildingPlacement.placeSite(this);
 		
 		logger.info(this, "Manually relocated by player from " 
 				+ existingPosn + " to "
 				+ getPosition());
 	}
-
-    public ConstructionManager getConstructionManager() {
-    	return constructionManager;
-    }
 
     public void setSkill(int constructionSkill) {
     	this.constructionSkill = constructionSkill;
@@ -533,7 +525,6 @@ public class ConstructionSite extends FixedUnit {
 	    foundationStage = null;
 	    frameStage = null;
 	    buildingStage = null;
-	    constructionManager = null;
 	    stageInfo = null;
 	}
 }

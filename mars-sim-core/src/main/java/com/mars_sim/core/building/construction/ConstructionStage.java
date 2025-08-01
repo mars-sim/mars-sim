@@ -299,6 +299,24 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
+	 * Checks if the settlement has any construction materials needed for the stage.
+	 * 
+	 * @return true if missing materials available.
+	 */
+	public boolean hasMissingConstructionMaterials() {
+        var  settlement = site.getAssociatedSettlement();
+        if (missingResources.entrySet().stream()
+            .anyMatch(e -> (e.getValue() > 0)
+                    && (e.getValue() > settlement.getSpecificAmountResourceStored(e.getKey())))) {
+            return true;
+        }
+
+        return missingParts.entrySet().stream()
+            .anyMatch(e -> (e.getValue() > 0)
+                    && (e.getValue() > settlement.getItemResourceStored(e.getKey())));
+    }
+
+    /**
      * Updates the completable work time available.
      */
     private void updateCompletableWorkTime() {

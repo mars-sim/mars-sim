@@ -7,41 +7,28 @@
 
 package com.mars_sim.core.building.construction;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.structure.MockSettlement;
-import com.mars_sim.core.structure.Settlement;
-
-import junit.framework.TestCase;
+import com.mars_sim.core.AbstractMarsSimUnitTest;
 
 /**
  * Unit test for the ConstructionManager class.
  */
-public class ConstructionManagerTest extends TestCase {
+public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
 
-    // Data members
-    ConstructionManager manager;
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
-        SimulationConfig.loadConfig();
-        Simulation.instance().testRun();
-        
-        Settlement settlement = new MockSettlement();
-        manager = new ConstructionManager(settlement);
+    private ConstructionManager buildManager() {
+        var s = buildSettlement("mgr", true);
+        return new ConstructionManager(s);
     }
-
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionManager.getConstructionSites()'
      */
     public void testGetConstructionSites() {
-        ConstructionSite site = manager.createNewConstructionSite();
-        manager.createNewConstructionSite();
-        assertEquals(2, manager.getConstructionSites().size());
+        var manager = buildManager();
+        ConstructionSite site = manager.getNextSite(1);
+        assertEquals(1, manager.getConstructionSites().size());
         assertEquals(site, manager.getConstructionSites().get(0));
+
+        assertNotNull("Has stage", site.getCurrentConstructionStage());
     }
 
     /*
@@ -49,12 +36,11 @@ public class ConstructionManagerTest extends TestCase {
      * ConstructionManager.getConstructionSitesNeedingMission()'
      */
     public void testGetConstructionSitesNeedingMission() {
-        manager.createNewConstructionSite();
-        ConstructionSite site2 = manager.createNewConstructionSite();
-        manager.createNewConstructionSite();
-        assertEquals(3, manager.getConstructionSitesNeedingConstructionMission().size());
+        var manager = buildManager();
+        ConstructionSite site2 = manager.getNextSite(1);
+        assertEquals(1, manager.getConstructionSitesNeedingConstructionMission().size());
         site2.setUndergoingConstruction(true);
-        assertEquals(2, manager.getConstructionSitesNeedingConstructionMission().size());
+        assertEquals(0, manager.getConstructionSitesNeedingConstructionMission().size());
     }
 
     /*
@@ -62,7 +48,8 @@ public class ConstructionManagerTest extends TestCase {
      * ConstructionManager.createNewConstructionSite()'
      */
     public void testCreateNewConstructionSite() {
-        ConstructionSite site = manager.createNewConstructionSite();
+        var manager = buildManager();
+        ConstructionSite site = manager.getNextSite(1);
         assertNotNull(site);
     }
 
@@ -71,6 +58,7 @@ public class ConstructionManagerTest extends TestCase {
      * ConstructionManager.getConstructionValues()'
      */
     public void testGetConstructionValues() {
+        var manager = buildManager();
         ConstructionValues values = manager.getConstructionValues();
         assertNotNull(values);
     }

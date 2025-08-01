@@ -132,7 +132,7 @@
 		<!-- executor-type governs the type of temporal executor can be used in a Unitmanager -->
 		<!-- Default: shared : Shared thread model using a Callable -->
 		<!-- thread : Each Temporal runs on a permenant dedicated Thread -->
-		<executor-type value="shared" />
+		<executor-type value="thread" />
 	</time-configuration>
 
 	<!-- Lists configuration for missions -->

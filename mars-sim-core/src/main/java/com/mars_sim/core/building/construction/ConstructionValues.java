@@ -147,7 +147,7 @@ implements Serializable {
                 ConstructionStage stage = site.getCurrentConstructionStage();
                 boolean enoughSkill = constructionSkill >= stage.getInfo().getArchitectConstructionSkill();
                 boolean workCompletable = stage.getCompletedWorkTime() < stage.getCompletableWorkTime();
-                boolean availableMaterials = settlement.getConstructionManager().hasMissingConstructionMaterials(stage);
+                boolean availableMaterials = stage.hasMissingConstructionMaterials();
                 if (enoughSkill && (workCompletable || availableMaterials)) {
                     result = getConstructionStageValue(stage.getInfo(), constructionSkill);
                 }
