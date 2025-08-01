@@ -8,11 +8,14 @@ package com.mars_sim.ui.swing.unit_window;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.tool.construction.ConstructionSiteWindow;
 import com.mars_sim.ui.swing.unit_window.equipment.EquipmentUnitWindow;
 import com.mars_sim.ui.swing.unit_window.person.PersonUnitWindow;
 import com.mars_sim.ui.swing.unit_window.robot.RobotUnitWindow;
@@ -38,25 +41,15 @@ public class UnitWindowFactory {
      * @return unit window
      */
     public static UnitWindow getUnitWindow(Unit unit, MainDesktopPane desktop) {
-
-        switch (unit.getUnitType()) {
-        case PERSON:
-            return new PersonUnitWindow(desktop, (Person) unit);
-        case ROBOT:
-            return new RobotUnitWindow(desktop, (Robot) unit);
-        case VEHICLE:
-            return new VehicleUnitWindow(desktop, (Vehicle) unit);
-        case SETTLEMENT:
-            return new SettlementUnitWindow(desktop, unit);
-        case BUILDING:
-            return new BuildingUnitWindow(desktop, (Building) unit);
-        case EVA_SUIT:
-        case CONTAINER:
-            return new EquipmentUnitWindow(desktop, (Equipment) unit);
-// May add back: case CONSTRUCTION
-// May add back: return new ConstructionSiteWindow(desktop, (ConstructionSite) unit)
-        default:
-            return null;
-        }
+        return switch (unit) {
+            case Person p -> new PersonUnitWindow(desktop, p);
+            case Robot r -> new RobotUnitWindow(desktop, r);
+            case Vehicle v -> new VehicleUnitWindow(desktop, v);
+            case Settlement s -> new SettlementUnitWindow(desktop, s);
+            case Building b -> new BuildingUnitWindow(desktop, b);
+            case Equipment e -> new EquipmentUnitWindow(desktop, e);
+            case ConstructionSite cs -> new ConstructionSiteWindow(desktop, cs);
+            default -> null;
+        };
     }
 }

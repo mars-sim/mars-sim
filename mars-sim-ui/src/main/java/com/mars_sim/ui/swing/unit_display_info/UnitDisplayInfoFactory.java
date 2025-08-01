@@ -27,6 +27,8 @@ public final class UnitDisplayInfoFactory {
 	private static UnitDisplayInfo luvBean = new LUVDisplayInfoBean();
 	private static UnitDisplayInfo deliveryDroneBean = new DroneDisplayInfoBean();
 	private static UnitDisplayInfo equipmentBean = new EquipmentDisplayInfoBean();
+	private static UnitDisplayInfo constructionBean = new BuildingDisplayInfoBean();
+
 
 	/**
 	 * Private constructor
@@ -70,10 +72,10 @@ public final class UnitDisplayInfoFactory {
 						return explorerRoverBean;
 				}
 			}
-			case EVA_SUIT:
-			case CONTAINER:
+			case EVA_SUIT, CONTAINER:
 				return equipmentBean;
-
+			case CONSTRUCTION:
+				return constructionBean;
 			default:
 				return null;
 		}

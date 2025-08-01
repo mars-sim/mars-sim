@@ -24,7 +24,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingSpec;
-import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
@@ -37,16 +36,15 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.Construction;
+import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.ConstructBuilding;
-import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.ObjectiveUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.task.DigLocalRegolith;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.GroundVehicle;
@@ -55,7 +53,7 @@ import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
-/**
+/**getAss
  * Mission for construction a stage for a settlement building.
  * strings
  */
@@ -67,8 +65,6 @@ public class ConstructionMission extends AbstractMission
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionMission.class.getName());
-
-	public static final String DIG = "dig";
 	
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.CONSTRUCTION;
@@ -112,15 +108,7 @@ public class ConstructionMission extends AbstractMission
 	/** Minimum length of a building connector (meters). */
 	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
-	// Data members	
-	private Settlement settlement;
-	private ConstructionSite site;
-	private ConstructionStage stage;
-
-	private ConstructionManager manager;
-	
-	private List<GroundVehicle> constructionVehicles;
-	private List<Integer> luvAttachmentParts;
+	private ConstructionObjective objective;
 
 	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	
@@ -133,26 +121,26 @@ public class ConstructionMission extends AbstractMission
 		// Use Mission constructor.
 		super(missionType, startingMember);
 
-		if (!isDone()) {
-			// Sets the settlement.
-			settlement = startingMember.getSettlement();
-
-			// Sets the mission capacity.
-			setMissionCapacity(MAX_PEOPLE);
-
-			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
-
-			// Determine construction site and stage.
-			int constructionSkill = 1;
-			if (startingMember.getUnitType() == UnitType.PERSON) {
-				Person person = (Person) startingMember;
-				constructionSkill += person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-				person.getMind().setMission(this);
-			}
-
-			determineSiteByProfit(constructionSkill);
+		if (isDone()) {
+			return;
 		}
+
+		// Sets the mission capacity.
+		setMissionCapacity(MAX_PEOPLE);
+
+		// Recruit additional members to mission.
+		recruitMembersForMission(startingMember, true, MIN_PEOPLE);
+
+		// Determine construction site and stage.
+		int constructionSkill = 1;
+		if (startingMember.getUnitType() == UnitType.PERSON) {
+			Person person = (Person) startingMember;
+			constructionSkill += person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+			person.getMind().setMission(this);
+		}
+
+		var site = determineSiteByProfit(startingMember.getAssociatedSettlement(), constructionSkill);
+		
 
 		if (!isDone()) {
 			// Set initial mission phase.
@@ -162,12 +150,7 @@ public class ConstructionMission extends AbstractMission
 			}
 
 			else {
-				// Reserve construction vehicles.
-				reserveConstructionVehicles();
-				// Retrieve construction LUV attachment parts.
-				retrieveConstructionLUVParts();
-				
-				setPhase(PREPARE_SITE_PHASE, settlement.getName());
+				createObjectives(site, site.getCurrentConstructionStage(), null);
 			}
 		}
 		
@@ -180,17 +163,30 @@ public class ConstructionMission extends AbstractMission
 	    missionManager.addMission(this);
 	}
 
+	private void createObjectives(ConstructionSite site, ConstructionStage stage, List<GroundVehicle> constructionVehicles) {
+		var settlement = site.getAssociatedSettlement();
+
+		// Reserve construction vehicles.
+		if (constructionVehicles == null) {
+			constructionVehicles = reserveConstructionVehicles(settlement, stage);
+		}
+
+		// Retrieve construction LUV attachment parts.
+		var luvAttachmentParts = retrieveConstructionLUVParts(settlement, stage, constructionVehicles);
+		
+		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
+		addObjective(objective);
+		setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
+	}
 	/**
 	 * Determines the construction site based upon profit.
 	 * 
 	 * @param skill
 	 */
-	public void determineSiteByProfit(int skill) {
-		// Note: a settler starts this mission
-		logger.info(settlement, "Determining sites by profits.");
+	public ConstructionSite determineSiteByProfit(Settlement s, int skill) {
 
-		if (manager == null)
-			manager = settlement.getConstructionManager();
+		ConstructionSite site = null;
+		var manager = s.getConstructionManager();
 				
 		ConstructionValues values = manager.getConstructionValues();
 		values.clearCache();
@@ -198,11 +194,11 @@ public class ConstructionMission extends AbstractMission
 		double newSiteProfit = values.getNewConstructionSiteProfit(skill);
 		ConstructionStageInfo info = null;
 
-		logger.info(settlement, "existingSitesProfit: " + existingSitesProfit + "   newSiteProfit: " + newSiteProfit);
+		logger.info(s, "existingSitesProfit: " + existingSitesProfit + "   newSiteProfit: " + newSiteProfit);
 		
 		if (existingSitesProfit > newSiteProfit) {
 			// If there are existing construction sites
-			logger.info(settlement, "Developing an existing construction site.");
+			logger.info(s, "Developing an existing construction site.");
 			
 			// Determine which existing construction site to work on.
 			double topSiteProfit = 0D;
@@ -211,7 +207,7 @@ public class ConstructionMission extends AbstractMission
 				ConstructionSite _site = i.next();
 				double siteProfit = values.getConstructionSiteProfit(_site, skill);
 				if (siteProfit > topSiteProfit) {
-					this.site = _site;
+					site = _site;
 					info = _site.getStageInfo();
 					topSiteProfit = siteProfit;
 				}
@@ -224,7 +220,7 @@ public class ConstructionMission extends AbstractMission
 
 		else if (newSiteProfit >= 0D) {
 			// If there aren't any existing construction sites
-			logger.info(settlement, "Creating a new construction site.");
+			logger.info(s, "Creating a new construction site.");
 			
 			// Case 1a: if using GUI			
 			// Case 1b: if not using GUI
@@ -233,7 +229,7 @@ public class ConstructionMission extends AbstractMission
 			site = manager.createNewConstructionSite();
 
 			if (site == null)
-				logger.info(settlement, "site is null.");
+				logger.info(s, "site is null.");
 			
 			// Determine construction site new stage info via profits probability.
 			info = determineNewStageInfoByProfits(site, skill);
@@ -259,18 +255,20 @@ public class ConstructionMission extends AbstractMission
 
 				positionNewSite(site);
 
-				logger.info(settlement, "New construction site '" + site + "' added.");
+				logger.info(s, "New construction site '" + site + "' added.");
 			}
 			
 			else {
-				logger.warning(settlement, "New construction stage could not be determined.");
+				logger.warning(s, "New construction stage could not be determined.");
 				endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
-				return;
+				return null;
 			}
 		}
 		else {
-			logger.info(settlement, "Case 3");
+			logger.info(s, "Case 3");
 		}
+
+		return site;
 	}
 
 	/**
@@ -283,43 +281,38 @@ public class ConstructionMission extends AbstractMission
 	 */
 	private void determineNewStage(ConstructionSite cSite, ConstructionStageInfo stageInfo, int constructionSkill,
 			ConstructionValues values) {
-		this.site = cSite;
+		ConstructionStage stage = null;
+		var settlement = cSite.getAssociatedSettlement();
 		logger.info(settlement, "Determining a new stage to work on for " + cSite + ".");
 
-		if (cSite != null) {
-
-			// Determine new stage to work on.
-			if (cSite.hasUnfinishedStage()) {
-				stage = site.getCurrentConstructionStage();
-				logger.info(settlement, "Continuing work on existing site at " + settlement.getName());
+		// Determine new stage to work on.
+		if (cSite.hasUnfinishedStage()) {
+			stage = cSite.getCurrentConstructionStage();
+			logger.info(settlement, "Continuing work on existing site at " + settlement.getName());
+		}
+		
+		else {
+			logger.info(settlement, "Found no unfinished stages at " + cSite + ".");
+			
+			if (stageInfo == null) {
+				stageInfo = determineNewStageInfoByProfits(cSite, constructionSkill);
 			}
+
+			if (stageInfo != null) {
+				stage = new ConstructionStage(stageInfo, cSite);
+				cSite.addNewStage(stage);
+				values.clearCache();
+				logger.info(settlement, "Starting a new construction stage '" + stage + "' for " + cSite + ".");
+			} 
 			
 			else {
-				logger.info(settlement, "Found no unfinished stages at " + cSite + ".");
-				
-				if (stageInfo == null) {
-					stageInfo = determineNewStageInfoByProfits(site, constructionSkill);
-				}
-
-				if (stageInfo != null) {
-					stage = new ConstructionStage(stageInfo, cSite);
-					cSite.addNewStage(stage);
-					values.clearCache();
-					logger.info(settlement, "Starting a new construction stage '" + stage + "' for " + cSite + ".");
-				} 
-				
-				else {
-					endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
-				}
-			}
-
-			// Mark site as undergoing construction.
-			if (stage != null) {
-				cSite.setUndergoingConstruction(true);
+				endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 			}
 		}
-		else {
-			endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+
+		// Mark site as undergoing construction.
+		if (stage != null) {
+			cSite.setUndergoingConstruction(true);
 		}
 	}
 
@@ -336,28 +329,26 @@ public class ConstructionMission extends AbstractMission
 	 * @param vehicles
 	 */
 	public ConstructionMission(Collection<Worker> members, Settlement settlement,
-			ConstructionSite no_site, ConstructionStageInfo stageInfo, 
+			ConstructionSite choosenSite, ConstructionStageInfo stageInfo, 
 			double xLoc, double yLoc, double facing,
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
 		super(missionType, (Worker) members.toArray()[0]);
 
-		this.settlement = settlement;
-		this.constructionVehicles = vehicles;
-
 		// Add mission members.
 		addMembers(members, false);
 		
 		setMissionCapacity(MAX_PEOPLE);
 
-		if (site != null) {
+		ConstructionStage stage = null;
+		if (choosenSite != null) {
 			// site already selected
 			
 			// Case 2a: if using GUI	
 			// Case 2b: if not using GUI
 				
-			site.setStageInfo(stageInfo);
+			choosenSite.setStageInfo(stageInfo);
 
 			if (stageInfo != null) {
 				logger.info(settlement, "Case 2. stageInfo is " + stageInfo.getName());
@@ -365,15 +356,10 @@ public class ConstructionMission extends AbstractMission
 				logger.info(settlement, "Case 2. new construction stageInfo could not be determined.");
 			}
 	
-			setupConstructionStage(site, stageInfo);
+			stage = setupConstructionStage(choosenSite, stageInfo);
 
-			if (!isDone()) {
-				// Reserve construction vehicles.
-				reserveConstructionVehicles();
-				// Retrieve construction LUV attachment parts.
-				retrieveConstructionLUVParts();
-				// Set initial mission phase.
-				setPhase(PREPARE_SITE_PHASE, settlement.getName());
+			if (isDone()) {
+				return;
 			}
 		}
 
@@ -384,47 +370,42 @@ public class ConstructionMission extends AbstractMission
 			// Case 3a: if using GUI to pick a site
 			// Case 3b: if GUI is NOT in use
 
-			if (manager == null)
-				manager = settlement.getConstructionManager();
+			var manager = settlement.getConstructionManager();
 
-			site = manager.createNewConstructionSite();
+			choosenSite = manager.createNewConstructionSite();
 
-			if (site != null) {
+			if (choosenSite != null) {
 
-				site.setStageInfo(stageInfo);
+				choosenSite.setStageInfo(stageInfo);
 				// Set construction site size.
 
 				if (stageInfo.getWidth() > 0D)
-					site.setWidth(stageInfo.getWidth());
+					choosenSite.setWidth(stageInfo.getWidth());
 				else
 					// Set initial width value that may be modified later.
-					site.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
+					choosenSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
 
 				if (stageInfo.getLength() > 0D)
-					site.setLength(stageInfo.getLength());
+					choosenSite.setLength(stageInfo.getLength());
 				else
 					// Set initial length value that may be modified later.
-					site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+					choosenSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 
-				positionNewSite(site);
+				positionNewSite(choosenSite);
 			}
 
 			else {
 				endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 				return;
 			}
-
-			setupConstructionStage(site, stageInfo);
-
-			if (!isDone()) {
-				// Reserve construction vehicles.
-				reserveConstructionVehicles();
-				// Retrieve construction LUV attachment parts.
-				retrieveConstructionLUVParts();
-				// Set initial mission phase.
-				setPhase(PREPARE_SITE_PHASE, settlement.getName());
+		
+			stage = setupConstructionStage(choosenSite, stageInfo);
+			if (isDone()) {
+				return;
 			}
 		}
+
+		createObjectives(choosenSite, stage, vehicles);
 	}
 	
 	/**
@@ -432,48 +413,52 @@ public class ConstructionMission extends AbstractMission
 	 *
 	 * @param modSite
 	 * @param info
+	 * @return 
 	 */
-	public void setupConstructionStage(ConstructionSite modSite, ConstructionStageInfo info) {
-		this.site = modSite;
+	private ConstructionStage setupConstructionStage(ConstructionSite modSite, ConstructionStageInfo info) {
 		logger.info(modSite, 5_000, "Stage Info: " + info.toString());
 
-		if (site.hasUnfinishedStage()) {
-			stage = site.getCurrentConstructionStage();
+		ConstructionStage stage = null;
+		if (modSite.hasUnfinishedStage()) {
+			stage = modSite.getCurrentConstructionStage();
 			logger.info(modSite, 5_000, "Still in the stage '" + stage + "'.");
 		}
 		else {
-			stage = new ConstructionStage(info, site);
+			stage = new ConstructionStage(info, modSite);
 			logger.info(modSite, 5_000, "Starting a new construction stage for '" + stage + "'.");
-			site.addNewStage(stage);
+			modSite.addNewStage(stage);
 		}
 
 		// Mark site as undergoing construction.
 		if (stage != null) {
-			site.setUndergoingConstruction(true);
+			modSite.setUndergoingConstruction(true);
 		}
+
+		return stage;
 	}
 
 	/**
 	 * Reserves construction vehicles for the mission.
 	 */
-	private void reserveConstructionVehicles() {
-		if (stage != null) {
-			// Construct a new list of construction vehicles
-			constructionVehicles = new ArrayList<>();
-			for(ConstructionVehicleType vehicleType : stage.getInfo().getVehicles()) {
-				// Only handle light utility vehicles for now.
-				if (vehicleType.getVehicleType() == VehicleType.LUV) {
-					LightUtilityVehicle luv = reserveLightUtilityVehicle();
-					if (luv != null) {
-						constructionVehicles.add(luv);
-						claimVehicle(luv);
-					} else {
-						logger.warning(settlement, "BuildingConstructionMission : LUV not available");
-						endMission(LUV_NOT_AVAILABLE);
-					}
+	private List<GroundVehicle> reserveConstructionVehicles(Settlement settlement, ConstructionStage stage) {
+		// Construct a new list of construction vehicles
+		List<GroundVehicle> constructionVehicles = new ArrayList<>();
+		for(ConstructionVehicleType vehicleType : stage.getInfo().getVehicles()) {
+			// Only handle light utility vehicles for now.
+			if (vehicleType.getVehicleType() == VehicleType.LUV) {
+				LightUtilityVehicle luv = reserveLightUtilityVehicle(settlement);
+				if (luv != null) {
+					constructionVehicles.add(luv);
+					claimVehicle(luv);
+				} else {
+					logger.warning(settlement, "BuildingConstructionMission : LUV not available");
+					endMission(LUV_NOT_AVAILABLE);
+					return Collections.emptyList();
 				}
 			}
 		}
+
+		return constructionVehicles;
 	}
 	
 	/**
@@ -494,35 +479,32 @@ public class ConstructionMission extends AbstractMission
 	
 	/**
 	 * Retrieves LUV attachment parts from the settlement.
+	 * @return 
 	 */
-	public void retrieveConstructionLUVParts() {
-		if (stage != null) {
-			luvAttachmentParts = new ArrayList<>();
-			int vehicleIndex = 0;
-			Iterator<ConstructionVehicleType> k = stage.getInfo().getVehicles().iterator();
-			while (k.hasNext()) {
-				Vehicle vehicle = null;
-				if (constructionVehicles.size() > vehicleIndex) {
-					vehicle = constructionVehicles.get(vehicleIndex);
-				}
-
-				Iterator<Integer> l = k.next().getAttachmentParts().iterator();
-				while (l.hasNext()) {
-					Integer part = l.next();
-					try {
-						settlement.retrieveItemResource(part, 1);
-						if (vehicle != null) {
-							vehicle.storeItemResource(part, 1);
-						}
-						luvAttachmentParts.add(part);
-					} catch (Exception e) {
-						Part p = ItemResourceUtil.findItemResource(part);
-						endMissionProblem(settlement, "Cannot retreive Part " + p.getName());
-					}
-				}
-				vehicleIndex++;
+	public List<Integer> retrieveConstructionLUVParts(Settlement settlement, ConstructionStage stage, List<GroundVehicle> reserved) {
+		List<Integer> luvAttachmentParts = new ArrayList<>();
+		int vehicleIndex = 0;
+		for(var k : stage.getInfo().getVehicles()) {
+			Vehicle vehicle = null;
+			if (reserved.size() > vehicleIndex) {
+				vehicle = reserved.get(vehicleIndex);
 			}
+
+			for(Integer part : k.getAttachmentParts()) {
+				try {
+					settlement.retrieveItemResource(part, 1);
+					if (vehicle != null) {
+						vehicle.storeItemResource(part, 1);
+					}
+					luvAttachmentParts.add(part);
+				} catch (Exception e) {
+					Part p = ItemResourceUtil.findItemResource(part);
+					endMissionProblem(settlement, "Cannot retreive Part " + p.getName());
+				}
+			}
+			vehicleIndex++;
 		}
+		return luvAttachmentParts;
 	}
 
 	/**
@@ -533,10 +515,9 @@ public class ConstructionMission extends AbstractMission
 	 * @return construction stage info.
 	 * @throws Exception if error determining construction stage info.
 	 */
-	public ConstructionStageInfo determineNewStageInfoByProfits(ConstructionSite site, int skill) {
+	private ConstructionStageInfo determineNewStageInfoByProfits(ConstructionSite site, int skill) {
 		ConstructionStageInfo result = null;
-		if (manager == null)
-			manager = settlement.getConstructionManager();
+		var manager = site.getAssociatedSettlement().getConstructionManager();
 		ConstructionValues values = manager.getConstructionValues();
 		Map<ConstructionStageInfo, Double> stageProfits = values.getNewConstructionStageProfits(site, skill);
 		if (!stageProfits.isEmpty()) {
@@ -578,13 +559,16 @@ public class ConstructionMission extends AbstractMission
 	@Override
 	protected boolean determineNewPhase() {
 		boolean handled = true;
-		if (SELECT_SITE_PHASE.equals(getPhase())) {
+		var phase = getPhase();
+		var stage = objective.getStage();
+
+		if (SELECT_SITE_PHASE.equals(phase)) {
 			setPhase(PREPARE_SITE_PHASE, stage.getInfo().getName());
 		}
-		else if (PREPARE_SITE_PHASE.equals(getPhase())) {
+		else if (PREPARE_SITE_PHASE.equals(phase)) {
 			setPhase(CONSTRUCTION_PHASE, stage.getInfo().getName());
 		}
-		else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+		else if (CONSTRUCTION_PHASE.equals(phase)) {
 			endMission(CONSTRUCTION_ENDED);
 		}
 		else {
@@ -599,7 +583,7 @@ public class ConstructionMission extends AbstractMission
 		if (SELECT_SITE_PHASE.equals(getPhase())) {
 			selectSitePhase();
 		} else if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			prepareSitePhase(member);
+			prepareSitePhase(member, objective.getSite());
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
 			constructionPhase(member);
 		}
@@ -612,59 +596,33 @@ public class ConstructionMission extends AbstractMission
 	 */
 	private void selectSitePhase() {
 		// Need player to acknowledge the site location before proceeding
-		if (site.isSiteLocConfirmed()) {
+		if (objective.getSite().isSiteLocConfirmed()) {
 			setPhaseEnded(true);
 		}
 	}
 	
-	/**
-	 * Checks if the construction materials are ready.
-	 * 
-	 * @return
-	 */
-	private boolean isMaterialReady(Worker member) {
-		boolean available = loadAvailableConstructionMaterials();
-		
-		if (!available) {
-			// If the materials are not ready
-			digRegolith(member);
+	private boolean isPreReqsAvailable(ConstructionSite site) {
+		var settlement = site.getAssociatedSettlement();
+		var stage = objective.getStage();
+
+		if (!loadAvailableConstructionMaterials(settlement, stage)) {
+			logger.info(site, 60_000, "Materials not ready at " + site.getName() + ".");
+			return false;
 		}
-				
-		return available;
-	}
 	
-	/**
-	 * Obtains materials by performing the DigLocalRegolith task.
-	 */
-	private void digRegolith(Worker member) {
-		// If material not available, prompt settlers to dig local regolith
-		Person p = (Person) member;
-		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)) {
-			
-			Task currentTask = p.getMind().getTaskManager().getTask();
-			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(DigLocalRegolith.NAME)) {
-				boolean accepted = p.getMind().getTaskManager().addPendingTask(DigLocalRegolith.SIMPLE_NAME);
-				if (accepted)
-					logger.info(p, 60_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
-			}
-		}		
+		if (!loadAvailableConstructionParts(settlement, stage)) {
+			logger.info(site, 60_000, "Parts not ready at " + site.getName() + ".");
+			return false;
+		}
+		return true;
 	}
-	
 	/**
 	 * Performs the task in 'Prepares site' phase.
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void prepareSitePhase(Worker member) {
-		logger.info(member, 60_000, "Preparing '" + site.getName() + "'.");
-
-		if (!isMaterialReady(member)) {
-			logger.info(member, 60_000, "Materials not ready at " + site.getName() + ".");
-			return;
-		}
-	
-		if (!loadAvailableConstructionParts()) {
-			logger.info(member, 60_000, "Parts not ready at " + site.getName() + ".");
+	private void prepareSitePhase(Worker member, ConstructionSite site) {
+		if (!isPreReqsAvailable(site)) {
 			return;
 		}
 		
@@ -680,45 +638,40 @@ public class ConstructionMission extends AbstractMission
 	/**
 	 * Loads remaining required construction materials into site that are available
 	 * at settlement inventory.
+	 * @param settlement 
 	 * 
 	 * @return true if all resources are available
 	 */
-	private boolean loadAvailableConstructionMaterials() {
-		boolean enough = true;
+	private boolean loadAvailableConstructionMaterials(Settlement settlement, ConstructionStage stage) {
 		// Account for the situation when all the input materials are ready 
 		// but since some processes take time to produce the output materials (the construction materials)
 		// It should simply wait for it to finish, without having to compute if resources are 
 		// missing over and over again.
 		
 		// Load amount resources.
-		Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
-		while (i.hasNext()) {
-			Integer resource = i.next();
-			double amountNeeded = stage.getMissingResources().get(resource);
+		for(var r : stage.getMissingResources().entrySet()) {
+			int resource = r.getKey();
+			double amountNeeded = r.getValue();
 			double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
 			// Load as much of the remaining resource as possible into the construction site
 			// stage.
 			double amountLoading = Math.min(amountAvailable, amountNeeded);
 
-			if (amountLoading > SMALL_AMOUNT) {
+			if (amountLoading > 0) {
 				// Retrieve this materials now
 				settlement.retrieveAmountResource(resource, amountLoading);
 				// Store the materials at this site
 				stage.addResource(resource, amountLoading);
+				amountNeeded -= amountLoading;
 			}
-			else {
-				enough = false;
-				break;
-			}
-			
+
 			// Use a 10% buffer just in case other tasks will consume this materials at the same time
-			if (amountAvailable < amountNeeded * 1.1) {
-				enough = false;
-				break;
+			if (amountNeeded > 0) {
+				return false;
 			}
 		}
 		
-		return enough;
+		return true;
 	}
 		
 		
@@ -728,13 +681,12 @@ public class ConstructionMission extends AbstractMission
 	 * 
 	 * @return true if all parts are available
 	 */
-	private boolean loadAvailableConstructionParts() {
+	private boolean loadAvailableConstructionParts(Settlement settlement, ConstructionStage stage) {
 		boolean enough = true;
 		// Load parts.
-		Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
-		while (j.hasNext()) {
-			Integer part = j.next();
-			int numberNeeded = stage.getMissingParts().get(part);
+		for(var e : stage.getMissingParts().entrySet()) {
+			int part = e.getKey();
+			int numberNeeded = e.getValue();
 			int numberAvailable = settlement.getItemResourceStored(part);
 			// Load as many remaining parts as possible into the construction site stage.
 			int numberLoading = Math.min(numberAvailable, numberNeeded);
@@ -758,14 +710,10 @@ public class ConstructionMission extends AbstractMission
 	 * @param member the mission member performing the phase.
 	 */
 	private void constructionPhase(Worker member) {
-		
-		if (!isMaterialReady(member)) {
-			setPhase(PREPARE_SITE_PHASE, settlement.getName());
-			return;
-		}
-	
-		if (!loadAvailableConstructionParts()) {
-			setPhase(PREPARE_SITE_PHASE, settlement.getName());
+		var site = objective.getSite();
+
+		if (!isPreReqsAvailable(site)) {
+			setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 			return;
 		}
 
@@ -779,6 +727,7 @@ public class ConstructionMission extends AbstractMission
 		}
 
 		// Check if further work can be done on construction stage.
+		var stage = objective.getStage();
 		if (stage.getCompletableWorkTime() <= stage.getCompletedWorkTime()) {
 			setPhaseEnded(true);
 		}
@@ -790,7 +739,7 @@ public class ConstructionMission extends AbstractMission
 			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
 				&& ConstructBuilding.canConstruct(p, site)) {
 
-				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
+				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, objective.getConstructionVehicles()));
 			}
 		}
 		
@@ -799,43 +748,45 @@ public class ConstructionMission extends AbstractMission
 		else
 			logger.info(member, 30_000L, "Not ready to be assigned to construct " + site.getName() + ".");
 		
-		checkConstructionStageComplete();
+		checkConstructionStageComplete(site, stage);
 	}
 
 	/**
 	 * Checks if this construction stage is complete.
+	 * @param site 
+	 * @param constructionStage 
 	 */
-	public void checkConstructionStageComplete() {
+	private void checkConstructionStageComplete(ConstructionSite site, ConstructionStage stage) {
 		if (stage.isComplete()) {
 			setPhaseEnded(true);
-			if (manager == null)
-				manager = settlement.getConstructionManager();
+			var manager = site.getAssociatedSettlement().getConstructionManager();
 			manager.getConstructionValues().clearCache();
 
 			if (site.isAllConstructionComplete()) {
 				// Construct building if all 3 stages of the site construction have been complete.
 				Building building = site.createBuilding();
 				manager.removeConstructionSite(site);
-				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
-				logger.info(settlement, "New building '" + site.getBuildingName() + "' constructed.");
+				site.getAssociatedSettlement().fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
+				logger.info(site, "New building '" + site.getBuildingName() + "' constructed.");
 			}
 			else {
 				// Inform that this stage is finish
-				logger.info(settlement, "'" + site.getStageInfo().getName() + "' was finished.");
+				logger.info(site, "'" + site.getStageInfo().getName() + "' was finished.");
 			}
 		}
 	}
 
 	@Override
 	public void endMission(MissionStatus endStatus) {
+		var site = objective.getSite();
 		// Mark site as not undergoing construction.
 		if (site != null)
 			site.setUndergoingConstruction(false);
 
 		// Unreserve all LUV attachment parts for this mission.
-		unreserveLUVparts();
+		unreserveLUVparts(objective.getLuvAttachmentParts(), site.getAssociatedSettlement());
 
-		for (GroundVehicle v : getConstructionVehicles()) {
+		for (GroundVehicle v : objective.getConstructionVehicles()) {
 			if (v.getMission().equals(this)) {
 				v.setMission(null);
 			}
@@ -843,32 +794,13 @@ public class ConstructionMission extends AbstractMission
 		super.endMission(endStatus);
 	}
 
-	/**
-	 * Gets the settlement associated with the vehicle.
-	 *
-	 * @return settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return settlement;
-	}
-
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-
+		
 		Map<Integer, Number> resources = new HashMap<>();
 
-		// Add construction LUV attachment parts.
-		if (luvAttachmentParts != null) {
-			Iterator<Integer> i = luvAttachmentParts.iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				if (resources.containsKey(part)) {
-					resources.put(part, (resources.get(part).intValue() + 1));
-				} else {
-					resources.put(part, 1);
-				}
-			}
+		for(var part : objective.getLuvAttachmentParts()) {
+		    resources.merge(part, 1, (a,b) -> (a.intValue() + b.intValue()));
 		}
 
 		return resources;
@@ -876,7 +808,7 @@ public class ConstructionMission extends AbstractMission
 
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Integer> equipment = new HashMap<>(1);
+		Map<Integer, Integer> equipment = new HashMap<>();
 		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getMembers().size());
 		return equipment;
 	}
@@ -887,10 +819,8 @@ public class ConstructionMission extends AbstractMission
 	 * @return reserved light utility vehicle or null if none.
 	 */
 	private void showLightUtilityVehicle() {
-
-		Iterator<GroundVehicle> i = constructionVehicles.iterator();
-		while (i.hasNext()) {
-			GroundVehicle vehicle = i.next();
+		var site = objective.getSite();
+		for(GroundVehicle vehicle : objective.getConstructionVehicles()) {
 			LightUtilityVehicle luv = (LightUtilityVehicle) vehicle;
 			// Place light utility vehicles at random location in construction site.
 			LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
@@ -900,45 +830,36 @@ public class ConstructionMission extends AbstractMission
 	
 	/**
 	 * Reserves a light utility vehicle for the mission.
+	 * @param settlement 
 	 *
 	 * @return reserved light utility vehicle or null if none.
 	 */
-	private LightUtilityVehicle reserveLightUtilityVehicle() {
-		LightUtilityVehicle result = null;
-
-		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
-		while (i.hasNext() && (result == null)) {
-			Vehicle vehicle = i.next();
-
-			if (vehicle.getVehicleType() == VehicleType.LUV) {
-				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
+	private LightUtilityVehicle reserveLightUtilityVehicle(Settlement settlement) {
+		for(var vehicle : settlement.getParkedGaragedVehicles()) {
+			if (vehicle instanceof LightUtilityVehicle luvTemp) {
 				if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
-					result = luvTemp;
 					luvTemp.setReservedForMission(true);
+					return luvTemp;
 				}
 			}
 		}
 
-		return result;
+		return null;
 	}
 
 
 	/*
 	 * Unreserves and store back all LUV attachment parts in settlement.
 	 */
-	public void unreserveLUVparts() {
+	private void unreserveLUVparts(List<Integer> parts, Settlement settlement) {
 
-		if (luvAttachmentParts != null) {
-			Iterator<Integer> i = luvAttachmentParts.iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				try {
-					settlement.storeItemResource(part, 1);
-				} catch (Exception e) {
-					logger.severe(settlement, 5_000, 
-							"Error storing attachment part " + ItemResourceUtil.findItemResource(part).getName());
-				}
+		for(Integer part : parts) {
+			try {
+				settlement.storeItemResource(part, 1);
+			} catch (Exception e) {
+				logger.severe(settlement, 5_000, 
+						"Error storing attachment part " + ItemResourceUtil.findItemResource(part).getName());
 			}
 		}
 	}
@@ -950,30 +871,24 @@ public class ConstructionMission extends AbstractMission
 	 */
 	@Override
 	public List<GroundVehicle> getConstructionVehicles() {
-		if (constructionVehicles != null && !constructionVehicles.isEmpty()) {
-			return new ArrayList<>(constructionVehicles);
-		} 
-		
-		return new ArrayList<>();
+		return objective.getConstructionVehicles();
 	}
 
 	@Override
 	protected boolean hasEmergency() {
 		boolean result = super.hasEmergency();
 
-		try {
-			// Cancel construction mission if there are any beacon vehicles within range
-			// that need help.
-			Vehicle vehicleTarget = null;
-			Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
-			if (vehicle != null) {
-				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
-				if (vehicleTarget != null) {
-					if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
-						result = true;
-				}
+		// Cancel construction mission if there are any beacon vehicles within range
+		// that need help.
+		Settlement settlement = getAssociatedSettlement();
+		Vehicle vehicleTarget = null;
+		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+		if (vehicle != null) {
+			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
+			if (vehicleTarget != null) {
+				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
+					result = true;
 			}
-		} catch (Exception e) {
 		}
 
 		return result;
@@ -985,7 +900,7 @@ public class ConstructionMission extends AbstractMission
 	 * @return construction site.
 	 */
 	public ConstructionSite getConstructionSite() {
-		return site;
+		return objective.getSite();
 	}
 
 	/**
@@ -994,10 +909,10 @@ public class ConstructionMission extends AbstractMission
 	 * @return construction stage.
 	 */
 	public ConstructionStage getConstructionStage() {
-		return stage;
+		return objective.getStage();
 	}
 
-	public static boolean positionSameBuildingType(String buildingType, double dist, ConstructionSite site) {
+	private static boolean positionSameBuildingType(String buildingType, double dist, ConstructionSite site) {
 		boolean goodPosition = false;
 		// Try to put building next to the same building type.
 		List<Building> sameBuildings = site.getSettlement().getBuildingManager()
@@ -1009,7 +924,6 @@ public class ConstructionMission extends AbstractMission
 			Building building = j.next();
 			goodPosition = positionNextToBuilding(site, building, Math.round(dist), false);
 			if (goodPosition) {
-//				logger.info("Positioning '" + site + "' next to " + b.getNickName());
 				logger.info(site.getSettlement(), "Case 1. The building type '" 
 						+ buildingType + "' has life support.");
 				break;
@@ -1083,10 +997,6 @@ public class ConstructionMission extends AbstractMission
 		else {
 			// Case 4: building type is null
 			
-			// Determine preferred building type from foundation stage info.
-			// buildingType = determinePreferredConstructedBuildingType(foundationStageInfo,
-			// constructionSkill);
-
 			// Try to put building next to another habitable building.
 			List<Building> habitableBuildings = s.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 			Collections.shuffle(habitableBuildings);
@@ -1550,18 +1460,12 @@ public class ConstructionMission extends AbstractMission
 	
 	@Override
 	protected void setPhase(MissionPhase phase, String s) {
-		site.setPhase(phase);
+		objective.getSite().setPhase(phase);
 		super.setPhase(phase, s);
 	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		settlement = null;
-		site = null;
-		stage = null;
-		constructionVehicles = null;
-		luvAttachmentParts = null;
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return objective.getSite().getAssociatedSettlement();
 	}
 }
