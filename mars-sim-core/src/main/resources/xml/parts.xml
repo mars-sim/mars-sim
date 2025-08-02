@@ -262,7 +262,7 @@
 		<description>a standard set of clothing for indoor use.</description>
 	</part>
 
-	<part name="Liquid Cooling Garment" type="utility" mass="1.5" >
+	<part name="Liquid Cooling Garment" type="EVA" mass="1.5" >
 		<description>The innermost layer of the EVA suit. Provides thermal control
 			by circulating air and water cooled by a sublimator over crew member's
 			body. Can handle peak loads of up to 500 kcal/hr for 15 minutes, 
@@ -1304,6 +1304,29 @@
 	
 	<part name="Metal Oxide Varistor" type="electronic" mass=".2" />				
 	
+	<part name="Water Heater 5kW" type="utility" mass="12.0" >
+		<description>A tankless water heater rated 5kW.</description>
+	</part>
+	
+	<part name="Hand Brush" type="utility" mass=".05" />				
+
+	<part name="Wash Brush" type="utility" mass=".1"  >
+		<description>For manual vehicle cleaning.</description>
+	</part>
+
+	<part name="Hand Towel" type="utility" mass=".05" />				
+
+	<part name="Utility Towel" type="utility" mass=".1" />				
+	
+	<part name="Pressure Washer" type="utility" mass="8.0" >
+		<description>A electric pressure washer provides 2.5 GPM. consumes 1.5 kW</description>
+	</part>
+	
+	<part name="Water Hose" type="utility" mass="2.0" />
+	
+	<part name="Vacuum Cleaner" type="utility" mass="2.0" />				
+	
+	
 <!-- Future:
 	<part name="knife" mass=".5">
 	- utility knife
@@ -1312,12 +1335,8 @@
 			<entity name="cooking" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	water heater 12kW
-	ceramic tile.
-	water heater
+	ceramic tile
 	laser headlights
-
-
 -->
 
 </part-list>
