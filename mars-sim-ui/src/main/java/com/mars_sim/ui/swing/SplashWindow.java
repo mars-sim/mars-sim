@@ -6,7 +6,9 @@
  */
 package com.mars_sim.ui.swing;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -14,7 +16,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.Toolkit;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -78,7 +84,7 @@ public class SplashWindow extends JComponent {
 	private final int versionStringWidth = versionMetrics.stringWidth(VERSION_STRING);
 	
 	/** The font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont1 = new Font("Bell MT", Font.BOLD, 20);
+	private final Font versionStringFont1 = new Font("Bell MT", Font.BOLD, 18);
 	/** Measures the pixels needed to display text. */
 	private final FontMetrics versionMetrics1 = getFontMetrics(versionStringFont1);
 	/** The displayed length of {@link #VERSION_STRING} in pixels. */
@@ -113,7 +119,7 @@ public class SplashWindow extends JComponent {
 				int x = splashImage.getWidth(this);
 				
 				if (rand == 1)
-					g2d.setColor(Color.BLACK);
+					g2d.setColor(Color.DARK_GRAY);
 				
 				else if (rand > 1)
 					g2d.setColor(Color.ORANGE);
@@ -122,21 +128,21 @@ public class SplashWindow extends JComponent {
 				g2d.setFont(titleFont);
 				
 				if (rand == 0) {
-					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 90);
+					paintTextWithOutline(g, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);				
 				}
-				else
-					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 50);
-				
+				else {
+					paintTextWithOutline(g, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);
+				}
 			
 				if (rand == 0) {
-					g2d.setFont(versionStringFont);
-					g2d.setColor(Color.BLACK);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 100);
+					g2d.setFont(versionStringFont1);
+					g2d.setColor(Color.WHITE);
+					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
 				}
 				else if (rand == 1) {
-					g2d.setFont(versionStringFont);
-					g2d.setColor(Color.BLACK);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
+					g2d.setFont(versionStringFont1);
+					g2d.setColor(Color.WHITE);
+					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
 				}
 				else if (rand == 2) {
 					g2d.setFont(versionStringFont);
@@ -193,6 +199,53 @@ public class SplashWindow extends JComponent {
 		window.setVisible(true);
 	}
 
+	public void paintTextWithOutline(Graphics g, String text, Color fillColor, Color outlineColor, Font font, int x, int y) {
+	
+	    BasicStroke outlineStroke = new BasicStroke(2.0f);
+
+	    if (g instanceof Graphics2D) {
+	        Graphics2D g2 = (Graphics2D) g;
+
+	        g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+	        
+	        // remember original settings
+	        Color originalColor = g2.getColor();
+	        Stroke originalStroke = g2.getStroke();
+	        RenderingHints originalHints = g2.getRenderingHints();
+
+	        // create a glyph vector from your text
+	        GlyphVector glyphVector = font.createGlyphVector(g2.getFontRenderContext(), text);
+	        // get the shape object
+	        Shape textShape = glyphVector.getOutline();
+
+	        // activate anti aliasing for text rendering (if you want it to look nice)
+	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	                RenderingHints.VALUE_ANTIALIAS_ON);
+	        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+	                RenderingHints.VALUE_RENDER_QUALITY);
+
+	        AffineTransform saveTransform = g2.getTransform();
+	        
+			// Apply graphic transforms for label.
+			AffineTransform newTransform = new AffineTransform(saveTransform);
+			newTransform.translate(x, y);
+			g2.setTransform(newTransform);
+        
+	        g2.setColor(outlineColor);
+	        g2.setStroke(outlineStroke);
+	        g2.draw(textShape); // draw outline
+
+	        g2.setColor(fillColor);
+	        g2.fill(textShape); // fill the shape
+
+	        // Restore original graphic transforms.
+			g2.setTransform(saveTransform);
+	        g2.setColor(originalColor);
+	        g2.setStroke(originalStroke);
+	        g2.setRenderingHints(originalHints);
+	    }
+	}
+	
 	public void display() {
 		window.setVisible(true);
 	}
@@ -212,4 +265,19 @@ public class SplashWindow extends JComponent {
 	public void destroy() {
 		splashImage = null;
 	}
+	
+	/**
+	 * The main starting method for the application.
+	 *
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		// Create a splash window
+		SplashWindow splashWindow = new SplashWindow();
+
+		splashWindow.setIconImage();
+		splashWindow.display();
+		splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+	}
+	
 }

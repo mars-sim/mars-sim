@@ -995,7 +995,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="4"/>
 				<activity>
-					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
 					<activity-spot xloc="2.18" yloc="-1.74" />	
 					<activity-spot xloc="-1.50" yloc="-1.75" />											
@@ -1067,7 +1067,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
 				<activity>
-					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
 					<activity-spot xloc="2.18" yloc="-1.74" />	
 					<activity-spot xloc="-1.50" yloc="-1.75" />													
@@ -1139,7 +1139,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
 				<activity>
-					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
 					<activity-spot xloc="2.18" yloc="-1.74" />	
 					<activity-spot xloc="-1.50" yloc="-1.75" />													
@@ -1211,7 +1211,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
 				<activity>
-					<activity-spot xloc="2.02" yloc="1.66" />	
+					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
 					<activity-spot xloc="2.18" yloc="-1.74" />	
 					<activity-spot xloc="-1.50" yloc="-1.75" />													
@@ -2607,10 +2607,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</communication>
 			<computation computing-unit="5.0" power-demand="1.0">
 				<activity>
-					<activity-spot xloc="-2.9" yloc="2.33" />
-					<activity-spot xloc="2.9" yloc="2.33" />
-					<activity-spot xloc="-2.9" yloc="-2.33" />
-					<activity-spot xloc="2.9" yloc="-2.33" />
+					<activity-spot xloc="-2.75" yloc="2.33" />
+					<activity-spot xloc="2.75" yloc="2.33" />
+					<activity-spot xloc="-2.75" yloc="-2.33" />
+					<activity-spot xloc="2.75" yloc="-2.33" />
 				</activity>
 			</computation>
 			<life-support capacity="24" power-required="0.6" />
@@ -2756,7 +2756,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<computation computing-unit="5.0" power-demand="1.0">
 				<activity>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="1.55" yloc="-3.0" />
 				</activity>
 			</computation>			
 			<life-support capacity="16" power-required="0.8" />
