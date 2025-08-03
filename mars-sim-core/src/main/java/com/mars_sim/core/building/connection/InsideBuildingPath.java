@@ -7,9 +7,11 @@
 package com.mars_sim.core.building.connection;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.mars_sim.core.map.location.LocalPosition;
 
 /**
  * A path of location navigation objects at a settlement.
@@ -25,26 +27,35 @@ public class InsideBuildingPath implements Serializable {
     /**
      * Constructor.
      */
-    public InsideBuildingPath() {
-        pathLocations = new CopyOnWriteArrayList<>();
-        nextLocationIndex = 0;
+    public InsideBuildingPath(List<InsidePathLocation> path) {
+        pathLocations = path;
+        nextLocationIndex = 1;
     }
 
-    
     /**
-     * Adds a new location object to the path.
-     * 
-     * @param newLocation new location object.
+     * Create an instance by taking the base path and replacing the start and end position
+     * @param basePath
+     * @param startPosition
+     * @param endPosition
      */
-    public void addPathLocation(InsidePathLocation newLocation){
-        if (!pathLocations.contains(newLocation)) {
-            pathLocations.add(newLocation);
+    public InsideBuildingPath(List<InsidePathLocation> basePath, LocalPosition startPosition,
+            LocalPosition endPosition) {
+        pathLocations = new ArrayList<>();
+        var origStart = (BuildingLocation)basePath.get(0);
+        pathLocations.add(new BuildingLocation(origStart.getBuilding(), startPosition));
+
+        int endIndex = basePath.size()-1;
+
+        // Copy over the middle section
+        for(int idx = 1; idx < endIndex; idx++) {
+            pathLocations.add(basePath.get(idx));
         }
-        else {
-            throw new IllegalArgumentException("Path already includes new location object");
-        }
+        var origEnd = (BuildingLocation)basePath.get(endIndex);
+        pathLocations.add(new BuildingLocation(origEnd.getBuilding(), endPosition));
+        nextLocationIndex = 1;
     }
-    
+
+
     /**
      * Checks if the building path contains a given location object.
      * 
@@ -76,7 +87,7 @@ public class InsideBuildingPath implements Serializable {
      */
     public List<InsidePathLocation> getRemainingPathLocations() {
         
-        List<InsidePathLocation> result = new CopyOnWriteArrayList<>();
+        List<InsidePathLocation> result = new ArrayList<>();
         for (int x = nextLocationIndex; x < pathLocations.size(); x++) {
             result.add(pathLocations.get(x));
         }
@@ -127,17 +138,5 @@ public class InsideBuildingPath implements Serializable {
     
     public List<InsidePathLocation> getPathLocations() {
     	return pathLocations;
-    }
-    
-    public int getNextLocationIndex() {
-    	return nextLocationIndex;
-    }
-    
-    /**
-     * Destroys object.
-     */
-    public void destroy() {
-        pathLocations.clear();
-        pathLocations = null;
     }
 }

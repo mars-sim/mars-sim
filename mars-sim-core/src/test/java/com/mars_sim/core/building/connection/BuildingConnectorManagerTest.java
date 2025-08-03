@@ -1,5 +1,7 @@
 package com.mars_sim.core.building.connection;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -80,8 +82,6 @@ public class BuildingConnectorManagerTest extends TestCase {
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
         assertNotNull(manager);
 
-        assertEquals(settlement, manager.getSettlement());
-
         Set<BuildingConnector> connections = manager.getAllBuildingConnections();
         assertNotNull(connections);
         assertEquals(2, connections.size());
@@ -160,7 +160,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         InsideBuildingPath path2 = manager.determineShortestPath( b0, startPosn, b2, endPosn);
 
         assertNotNull(path2);
-        assertPathValidity(path2, b0, b2);
+        assertPathValidity(path2, b0, startPosn, b2, endPosn);
         assertEquals(3, path2.getPathLocations().size());
 
         assertEquals(7.694507207732848D, path2.getPathLength(), SMALL_DELTA);
@@ -219,7 +219,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         var endPosn = new LocalPosition(-10D, 1D);  
         InsideBuildingPath path3 = manager.determineShortestPath(b0, startPosn, b1, endPosn);
         assertNotNull(path3);
-        assertPathValidity(path3, b0, b1);
+        assertPathValidity(path3, b0,startPosn,  b1, endPosn);
         assertEquals(5, path3.getPathLocations().size());
 
         assertEquals(12.269055622550205D, path3.getPathLength(), SMALL_DELTA);
@@ -274,7 +274,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         InsideBuildingPath path1 = manager.determineShortestPath(b0, startPosn, b0, endPosn);
         assertNotNull(path1);
         assertEquals("Path1 length", 2, path1.getPathLocations().size());
-        assertPathValidity(path1, b0, b0);
+        assertPathValidity(path1, b0, startPosn, b0, endPosn);
 
         assertEquals(4.5D, path1.getPathLength(), SMALL_DELTA);
         assertEquals(1, path1.getRemainingPathLocations().size());
@@ -310,12 +310,58 @@ public class BuildingConnectorManagerTest extends TestCase {
         var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
         var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
         assertNotNull("Found route", path);
-        assertPathValidity(path, lHab, lab);
+        assertPathValidity(path, lHab, lHab.getPosition(), lab, lab.getPosition());
 
         var core = bMgr.getBuildingByTemplateID("HC907"); 
         path = manager.determineShortestPath(lHab, lHab.getPosition(), core, core.getPosition());
         assertNotNull("Found route", path);
-        assertPathValidity(path, lHab, core);
+        assertPathValidity(path, lHab, lHab.getPosition(), core, core.getPosition());
+    }
+
+      public void testCachedLargeRoute() {
+        var largeTemplate = SECTOR_BASE_1;
+        List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
+        		.getItem(largeTemplate).getSupplies().getBuildings();
+        Settlement settlement = new MockSettlement();
+
+        for(var bt : buildingTemplates) {
+            addBuildingFromTemplate(settlement, bt);
+        }
+        BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
+
+        var bMgr = settlement.getBuildingManager();
+        var lHab = bMgr.getBuildingByTemplateID("HAB1"); // Lander Hab
+        var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
+        long startTime = System.nanoTime();
+        var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
+        long firstDuration = System.nanoTime() - startTime;
+
+        startTime = System.nanoTime();
+        var path2 = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
+        long secondDuration = System.nanoTime() - startTime;
+
+        // Compare steps
+        var steps = path.getPathLocations();
+        var steps2 = path2.getPathLocations();
+        assertEquals("Steps path", steps, steps2);
+
+        // Check the repeat path finding half the original time to show cachign has worked
+        assertTrue("Reduced time on repeat path", secondDuration < (firstDuration/2));
+
+        // Compare paths
+        assertNotEquals("Cached path different", path, path2);
+        assertPathValidity(path2, lHab, lHab.getPosition(), lab, lab.getPosition());
+
+        var newStart = lHab.getPosition().getPosition(0.01, 0);
+
+        startTime = System.currentTimeMillis();
+        var path3 = manager.determineShortestPath(lHab, newStart, lab, lab.getPosition());
+        long thirdDuration = System.currentTimeMillis() - startTime;
+        assertTrue("Reduced time on changed path", thirdDuration < (firstDuration/2));
+
+        assertNotEquals("Cached path2 different", path, path3);
+        assertPathValidity(path3, lHab, newStart, lab, lab.getPosition());
+
     }
 
     /**
@@ -327,11 +373,17 @@ public class BuildingConnectorManagerTest extends TestCase {
      * @param lHab
      * @param lab
      */
-    public static void assertPathValidity(InsideBuildingPath path, Building start, Building end) {
+    public static void assertPathValidity(InsideBuildingPath path, Building start, LocalPosition startPosn,
+                                Building end, LocalPosition endPosn) {
         var steps = path.getPathLocations();
 
-        assertEquals("First step is start building", start, ((BuildingLocation)steps.get(0)).getBuilding());
-        assertEquals("Last step is end building", end, ((BuildingLocation)steps.get(steps.size()-1)).getBuilding());
+        var startStep = (BuildingLocation)steps.get(0);
+        assertEquals("First step is start building", start, startStep.getBuilding());
+        assertEquals("First step is start position", startPosn, startStep.getPosition());
+
+        var endStep = (BuildingLocation)steps.get(steps.size()-1);
+        assertEquals("Last step is end building", end, endStep.getBuilding());
+        assertEquals("Last step is end position", endPosn, endStep.getPosition());
 
         int i = 0;
         var currentBuilding = start;
