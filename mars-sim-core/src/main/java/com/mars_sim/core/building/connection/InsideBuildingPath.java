@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.mars_sim.core.map.location.LocalPosition;
 
 /**
  * A path of location navigation objects at a settlement.
@@ -33,25 +32,37 @@ public class InsideBuildingPath implements Serializable {
     }
 
     /**
-     * Create an instance by taking the base path and replacing the start and end position
+     * Create an instance by taking the base path and replacing the start and end position.
+     * The base path may be in a reverse order.
      * @param basePath
      * @param startPosition
      * @param endPosition
      */
-    public InsideBuildingPath(List<InsidePathLocation> basePath, LocalPosition startPosition,
-            LocalPosition endPosition) {
+    public InsideBuildingPath(List<InsidePathLocation> basePath, BuildingLocation startPosition,
+            BuildingLocation endPosition) {
+         
         pathLocations = new ArrayList<>();
-        var origStart = (BuildingLocation)basePath.get(0);
-        pathLocations.add(new BuildingLocation(origStart.getBuilding(), startPosition));
+        pathLocations.add(startPosition);
 
-        int endIndex = basePath.size()-1;
-
-        // Copy over the middle section
-        for(int idx = 1; idx < endIndex; idx++) {
-            pathLocations.add(basePath.get(idx));
+        // Is the new end at the start of the base path
+        if (((BuildingLocation)basePath.get(0)).getBuilding().equals(endPosition.getBuilding())) {
+            // base path is in reverse order
+            for(int idx = basePath.size()-2; idx > 0 ; idx--) {
+                pathLocations.add(basePath.get(idx));
+            }
         }
-        var origEnd = (BuildingLocation)basePath.get(endIndex);
-        pathLocations.add(new BuildingLocation(origEnd.getBuilding(), endPosition));
+        else if (!((BuildingLocation)basePath.get(0)).getBuilding().equals(startPosition.getBuilding())) {
+            throw new IllegalArgumentException("Base path for not match either end");
+        }
+        else {
+            // In correct order
+            for(int idx = 1; idx < basePath.size()-1; idx++) {
+                pathLocations.add(basePath.get(idx));
+            }
+        }
+
+        // Add new end
+        pathLocations.add(endPosition);
         nextLocationIndex = 1;
     }
 

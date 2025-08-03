@@ -347,11 +347,17 @@ public class BuildingConnectorManagerTest extends TestCase {
 
         // Check the repeat path finding half the original time to show cachign has worked
         assertTrue("Reduced time on repeat path", secondDuration < (firstDuration/2));
-
-        // Compare paths
         assertNotEquals("Cached path different", path, path2);
         assertPathValidity(path2, lHab, lHab.getPosition(), lab, lab.getPosition());
 
+        // Try reverse path
+        startTime = System.nanoTime();
+        var reversePath = manager.determineShortestPath(lab, lab.getPosition(), lHab, lHab.getPosition());
+        long reverseDuration = System.nanoTime() - startTime;
+        assertTrue("Reduced time on repeat path", reverseDuration < (firstDuration/2));
+        assertPathValidity(reversePath, lab, lab.getPosition(), lHab, lHab.getPosition());
+
+        // Change start position
         var newStart = lHab.getPosition().getPosition(0.01, 0);
 
         startTime = System.currentTimeMillis();
