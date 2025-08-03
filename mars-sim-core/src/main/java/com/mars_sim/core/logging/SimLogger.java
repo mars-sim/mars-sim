@@ -24,20 +24,20 @@ import com.mars_sim.core.Entity;
 public class SimLogger {
 
 	/**
-	 * TimeAndCount keeps track of the between time and the number of times the message has appeared.
+	 * Counts the message blocked until the block expires.
 	 */
-	private static class TimeAndCount {
-		protected long startTime;
+	private static class BlockedCount {
+		protected long expireTime;
 		protected int count;
 
-		TimeAndCount() {
-			this.startTime = System.currentTimeMillis();
-			this.count = 1;
+		BlockedCount(long expireTime) {
+			this.expireTime = expireTime;
+			this.count = 0;
 		}
 	}
 
 	private static Map<String, SimLogger> loggers = new HashMap<>();
-	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
+	private static Map<String, BlockedCount> blockedMsgs = new ConcurrentHashMap<>();
 
 	private static final String REPEAT_BRACKET = " [x";
 	private static final String OPEN_BRACKET = "[";
@@ -51,7 +51,6 @@ public class SimLogger {
 	private static final long DEFAULT_INFO_TIME = 0;
 
 	private String sourceName;
-
 	private Logger rootLogger;
 
 
@@ -121,28 +120,31 @@ public class SimLogger {
 			return;
 		}
 
-		long dTime = timeBetweenLogs;
+		var outputMessage = new StringBuilder(sourceName);
 
-		String uniqueIdentifier = getUniqueIdentifer(actor);
-		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
-		StringBuilder outputMessage = null;
-		if (lastTimeAndCount != null) {
-			synchronized (lastTimeAndCount) {
-				long now = System.currentTimeMillis();
-				if (now - lastTimeAndCount.startTime < dTime) {
-					// Increment count only since the message in the same and is within the time prescribed
-					lastTimeAndCount.count++;
-					return;
+		if (timeBetweenLogs > 0) {
+			long now = System.currentTimeMillis();
+
+			// Check if this message is time blocked
+			String uniqueIdentifier = getUniqueIdentifer(actor);
+			BlockedCount currentBlock = blockedMsgs.get(uniqueIdentifier);
+			if (currentBlock != null) {
+				synchronized (currentBlock) {
+					if (currentBlock.expireTime > now) {
+						// Not expired yet. Block the message and update the count
+						currentBlock.count++;
+						return;
+					}
 				}
-
-				// Print the log statement with counts
-				outputMessage = new StringBuilder(sourceName);
-				outputMessage.append(REPEAT_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
+				
+				// Print the log statement with count of how many blocked as long as expired time is not too long in past
+				if ((now - currentBlock.expireTime) < timeBetweenLogs) {
+					outputMessage.append(REPEAT_BRACKET).append(currentBlock.count).append(CLOSED_BRACKET);
+				}
 			}
-		}
-		else {
-			// First time for this message
-			outputMessage = new StringBuilder(sourceName);
+
+			// Must start blocking subsequence messaages
+			blockedMsgs.put(uniqueIdentifier, new BlockedCount(now + timeBetweenLogs));
 		}
 
 		// Add body, contents Settlement, Unit nickname message"
@@ -167,9 +169,6 @@ public class SimLogger {
 		else {
 			rootLogger.log(level, outputMessage.toString(), t);
 		}
-
-		// Register the message
-		lastLogged.put(uniqueIdentifier, new TimeAndCount());
 	}
 
 	/**

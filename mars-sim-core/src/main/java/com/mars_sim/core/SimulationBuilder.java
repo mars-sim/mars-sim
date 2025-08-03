@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -384,10 +383,7 @@ public class SimulationBuilder {
 		}
 		
 		// Pick a random name
-		List<String> settlementNames = authority.getSettlementNames();
-		// Use shuffle to alter the order of these settlement names
-		Collections.shuffle(settlementNames);
-		
+		List<String> settlementNames = authority.getSettlementNames();		
 		String settlementName = RandomUtil.getRandomElement(settlementNames);
 		
 		logger.info("Starting a single settlement sim using template '" + template
