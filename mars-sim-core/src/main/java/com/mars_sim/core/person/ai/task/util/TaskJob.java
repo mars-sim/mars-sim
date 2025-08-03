@@ -20,13 +20,17 @@ public interface TaskJob extends Rating, Serializable {
 
     /**
      * Creates the task for a person.
-     */
+	 * 
+	 * @param person
+	 * @return
+	 */
     Task createTask(Person person);
 
     /**
      * Creates the task for a Robot.
      * 
-     * @param robot 
+     * @param robot
+	 * @return
      */
     Task createTask(Robot robot);
 

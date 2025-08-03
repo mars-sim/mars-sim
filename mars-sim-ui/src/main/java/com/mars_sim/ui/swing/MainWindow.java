@@ -509,7 +509,7 @@ public class MainWindow
 		
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton("\u23EA");
-		decreaseSpeed.setFont(new Font("Arial", Font.BOLD, 14));
+		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
 		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
@@ -524,7 +524,7 @@ public class MainWindow
 		createPauseSwitch();
 
 		JButton increaseSpeed = new JButton("\u23E9");
-		increaseSpeed.setFont(new Font("Arial", Font.BOLD, 14));
+		increaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		increaseSpeed.setPreferredSize(new Dimension(30, 30));
 		increaseSpeed.setMaximumSize(new Dimension(30, 30));
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
@@ -548,7 +548,7 @@ public class MainWindow
 	 */
 	private void createPauseSwitch() {
 		playPauseSwitch = new JToggleButton("\u23E8");
-		playPauseSwitch.setFont(new Font("Arial", Font.BOLD, 18));
+		playPauseSwitch.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
 		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
 		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
 		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");

@@ -11,7 +11,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
 /**
- * Abstract implement of a Task Job just holding the name & score.
+ * Abstract implementation of a Task Job for holding its name & the rating score.
  */
 public abstract class AbstractTaskJob implements TaskJob {
 
@@ -22,8 +22,9 @@ public abstract class AbstractTaskJob implements TaskJob {
     private String name;
 
     /**
-     * Create an abstract task job.
-     * @param description
+     * Creates an abstract task job.
+     * 
+     * @param name
      * @param score
      */
     protected AbstractTaskJob(String name, RatingScore score) {

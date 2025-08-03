@@ -23,7 +23,7 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
     private static final int MAX_EVA_CALLS = 1500;
 
     /**
-     * Helper method to advance an EVAOperation through an EVA
+     * Helper method to advance an EVAOperation through an EVA.
      * @param context The context to create any entities
      * @param eva The building to use as EVA
      * @param task The EVA operation task to advance

@@ -549,7 +549,7 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Records current task as last task and replaces it with a new task.
+	 * Records the current task as last task and replaces it with a new task.
 	 * 
 	 * @param newTask
 	 */
@@ -568,7 +568,7 @@ public abstract class TaskManager implements Serializable {
 			
 			currentTask.endTask();
 			
-			logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
+			logger.info(worker, 20_000, "Quit '" + des + "' and replace with the new task of '"
 						+ newTask.getName() + "'.");
 		}
 		
