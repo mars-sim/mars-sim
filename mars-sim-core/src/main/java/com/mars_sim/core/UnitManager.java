@@ -401,11 +401,11 @@ public class UnitManager implements Serializable, Temporal {
 	 * 
 	 * @return
 	 */
-	public double getObjectsLoad() {
-		return (.45 * lookupPerson.entrySet().stream().count() 
-				+ .2 * lookupRobot.entrySet().stream().count()
-				+ .25 * lookupBuilding.entrySet().stream().count()
-				+ .1 * lookupVehicle.entrySet().stream().count()
+	public float getObjectsLoad() {
+		return (.45f * lookupPerson.entrySet().stream().count() 
+				+ .2f * lookupRobot.entrySet().stream().count()
+				+ .25f * lookupBuilding.entrySet().stream().count()
+				+ .1f * lookupVehicle.entrySet().stream().count()
 				);
 	}
 	

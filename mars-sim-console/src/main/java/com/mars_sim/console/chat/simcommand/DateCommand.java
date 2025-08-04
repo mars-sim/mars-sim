@@ -50,8 +50,8 @@ public class DateCommand extends ChatCommand {
 		if (context.getRoles().contains(ConversationRole.ADMIN)) {
 			// For Admin user display details about the simulation engine
 			responseText.appendBlankLine();
-			responseText.appendLabelledDigit("Last Pulse execution (msec)", clock.getExecutionTime());
-			responseText.appendLabelledDigit("Last sleep time (msec)", clock.getSleepTime());
+			responseText.appendLabeledString("Last Pulse execution (msec)", "" + clock.getExecutionTime());
+			responseText.appendLabeledString("Last sleep time (msec)", "" + clock.getSleepTime());
 			responseText.appendLabelledDigit("Pulse count", (int) clock.getTotalPulses());
 		}
 

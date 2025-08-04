@@ -77,7 +77,7 @@ public class TimeWindow extends ToolWindow {
 	/** the optimal pulse label string */
 	private final String OPTIMAL = "Optimal Pulse Width";
 	/** the reference pulse label string */
-	private final String REF_PULSE_TIME = "Ref Pulse Width";
+	private final String TASK_PULSE_TIME = "Task Pulse Width";
 	/** the time ratio string */
 	private final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
 	/** the execution time unit */
@@ -131,7 +131,7 @@ public class TimeWindow extends ToolWindow {
 	/** label for next pulse width. */
 	private JLabel nextPulseLabel;
 	/** label for ref pulse width. */
-	private JLabel refPulseLabel;
+	private JLabel taskPulseLabel;
 	/** label for time compression. */
 	private JLabel realTimeClockLabel;
 
@@ -261,7 +261,8 @@ public class TimeWindow extends ToolWindow {
 		// Create the tick spinner
 		createCPUSpinner(masterClock);
 		JPanel tickPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		tickPane.add(new JLabel("CPU Pulse : "));
+		tickPane.add(new JLabel("Pulse Load :"));
+		tickPane.setToolTipText("The smaller the load, the more refined each simulation step");
 		tickPane.add(cpuSpinner);
 		southPane.add(tickPane, BorderLayout.NORTH);
 		
@@ -278,15 +279,15 @@ public class TimeWindow extends ToolWindow {
 		execTimeLabel = paramPane.addTextField(EXEC, "", 
 				"The last execution time of a tick");
 		sleepTimeLabel = paramPane.addTextField(SLEEP_TIME, "", 
-				"The sleep time of the last tick");
-		refPulseLabel = paramPane.addTextField(REF_PULSE_TIME, "", 
-				"How much the reference pulse width is");
+				"The sleep time [ms] of the last tick");
+		taskPulseLabel = paramPane.addTextField(TASK_PULSE_TIME, "", 
+				"How many millisol the task pulse width is");
 		optimalPulseLabel = paramPane.addTextField(OPTIMAL, "", 
-				"How much the optimal pulse width is");
+				"How many millisol the optimal pulse width is");
 		pulseDeviationLabel = paramPane.addTextField(PULSE_DEVIATION, "", 
 				"The percentage of deviation between the optimal pulse width and the next pulse width");
 		nextPulseLabel = paramPane.addTextField(NEXT_PULSE_TIME, "", 
-				"How much the next pulse width will be");
+				"How many millisol the next pulse width will be");
 		actualTRLabel = paramPane.addTextField(ACTUAL_TIME_RATIO, "",
 				"Master clock's actual time ratio");
 		desireTRLabel = paramPane.addTextField(DESIRE_TR, "",
@@ -317,18 +318,17 @@ public class TimeWindow extends ToolWindow {
 	 * @param masterClock
 	 */
 	private void createCPUSpinner(MasterClock masterClock) {
-		// Initializes one more time after  
-		// clockExecutor.getActiveCount() is stabilized
-		masterClock.computeReferencePulse();
-		
-		double cpuValue = Math.round(masterClock.getCpuFactor() * 100.0)/100.0;
-	
-		double min = Math.round(cpuValue / 5 * 10.0)/10.0;
-		double max = Math.round(5 * cpuValue * 10.0)/10.0;
-		
-		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(cpuValue, min, max, cpuValue/20);
 
-		spinnerModel.setValue(cpuValue);
+//		masterClock.computeReferencePulse();
+		
+		double value = masterClock.getPulseLoad();
+	
+		double min = Math.round(value / 5 * 100.0)/100.0;
+		double max = Math.round(5 * value * 100.0)/100.0;
+		
+		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(value, min, max, Math.round(value/20 * 100.0)/100.0);
+
+		spinnerModel.setValue(value);
 		
 		cpuSpinner = new JSpinner(spinnerModel);	
 		// 1. Get the editor component of your spinner:
@@ -336,16 +336,14 @@ public class TimeWindow extends ToolWindow {
 		// 2. Get the text field of your spinner's editor:
 		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
 		// 3. Set a default size to the text field:
-		jftf.setColumns(3);
+		jftf.setColumns(4);
 	
 		jftf.setHorizontalAlignment(JTextField.LEFT);
 		
-		cpuSpinner.setToolTipText("Manually adjust the CPU Utilization associating with # of threads used");
-		
 		cpuSpinner.addChangeListener(e -> {
-			double cpuTicks = ((Number)spinnerModel.getValue()).doubleValue();
-			// Change the CPU factor
-			masterClock.setCPUFactor(cpuTicks);
+			float pulseChoice = spinnerModel.getNumber().floatValue();
+			// Change the pulse load
+			masterClock.setPulseLoad(pulseChoice);
 		});
 	}
 	
@@ -356,37 +354,37 @@ public class TimeWindow extends ToolWindow {
 	 * @param masterClock
 	 */
 	private void updateTimeLabels(MasterClock masterClock) {
-		double cpu = Math.round(masterClock.getCpuFactor() * 100.0)/100.0;
+		float value = masterClock.getPulseLoad();
 		SpinnerNumberModel spinnerModel = (SpinnerNumberModel)(cpuSpinner.getModel());
 		
-		double cpuValue = ((Number)spinnerModel.getValue()).doubleValue();
-		if (cpuValue != cpu) {
+		float cpuValue = spinnerModel.getNumber().floatValue();
+		if (cpuValue != value) {
 		
-			double min = Math.round(cpu / 5 * 10.0)/10.0;
-			double max = Math.round(5 * cpu * 10.0)/10.0;
+			double min = Math.round(value / 5 * 100.0)/100.0;
+			double max = Math.round(5 * value * 100.0)/100.0;
 			
-			spinnerModel.setValue(cpu);
+			spinnerModel.setValue(value);
 			spinnerModel.setMinimum(min);
 			spinnerModel.setMaximum(max);
-			spinnerModel.setStepSize(cpu/20);
+			spinnerModel.setStepSize(Math.round(value/20 * 100.0)/100.0);
 		}
 		
 		// Update execution time label
-		long execTime = masterClock.getExecutionTime();
+		short execTime = masterClock.getExecutionTime();
 		execTimeLabel.setText(execTime + MS);
 
 		// Update sleep time label
-		long sleepTime = masterClock.getSleepTime();
+		float sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		double nextPulse = masterClock.getNextPulseTime();
-		double optPulse = masterClock.getOptPulseTime();
-		double refPulse = masterClock.getReferencePulse();
+		float nextPulse = masterClock.getNextPulseTime();
+		float optPulse = masterClock.getOptPulseTime();
+		float taskPulse = masterClock.geTaskPulseWidth();
 		
-		StringBuilder refPulseText = new StringBuilder();
-		refPulseText.append(StyleManager.DECIMAL_PLACES4.format(refPulse));
-		refPulseLabel.setText(refPulseText.toString());
+		StringBuilder taskPulseText = new StringBuilder();
+		taskPulseText.append(StyleManager.DECIMAL_PLACES4.format(taskPulse));
+		taskPulseLabel.setText(taskPulseText.toString());
 
 		StringBuilder pulseText = new StringBuilder();
 		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulse));
@@ -555,7 +553,7 @@ public class TimeWindow extends ToolWindow {
 		execTimeLabel = null;
 		sleepTimeLabel = null;
 		nextPulseLabel = null;
-		refPulseLabel = null;
+		taskPulseLabel = null;
 		realTimeClockLabel = null;
 		monthLabel = null;
 		weeksolLabel = null;		

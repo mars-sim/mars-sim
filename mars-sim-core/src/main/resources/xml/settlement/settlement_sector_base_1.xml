@@ -648,7 +648,7 @@
     <vehicle type="Long Range Explorer" number="4" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="8" />
+    <vehicle type="Light Utility Vehicle" number="12" />
     <vehicle type="Delivery Drone" number="4" />
     <vehicle type="Cargo Drone" number="4" />
      

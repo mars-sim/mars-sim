@@ -110,8 +110,8 @@ public class SimulationConfig {
 	private String earthStartDate = null;
 
 	private double accuracyBias = 0;
-	private double maxSimulatedPulse = 0;
-	private double minSimulatedPulse = 0;
+	private float maxSimulatedPulse = 0;
+	private float minSimulatedPulse = 0;
 	
 	private int defaultTimePulse = 0; 
 	private int baseTimeRatio = 0;
@@ -283,11 +283,11 @@ public class SimulationConfig {
 	 * @param minValue Minimum allowable value
 	 * @param maxValue Maximum allowable value
 	 */
-	private double loadDoubleValue(Element parent, String child, double minValue, double maxValue) {
+	private float loadDoubleValue(Element parent, String child, double minValue, double maxValue) {
 		String str = loadValue(parent, child);
-		double d = 0;
+		float d = 0;
 		try {
-			d = Double.parseDouble(str);
+			d = Float.parseFloat(str);
 
 		} catch (NumberFormatException nfe) {
 			logger.severe("NumberFormatException found in " + parent.getName() + "->" + child
@@ -321,7 +321,7 @@ public class SimulationConfig {
 	 * @return minimum
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public double getMinSimulatedPulse() {
+	public float getMinSimulatedPulse() {
 		return minSimulatedPulse;
 	}
 
@@ -331,7 +331,7 @@ public class SimulationConfig {
 	 * @return minimum
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public double getMaxSimulatedPulse() {
+	public float getMaxSimulatedPulse() {
 		return maxSimulatedPulse;
 	}
 
