@@ -125,13 +125,14 @@ public class PathFinder {
      * 
      * @return
      */
-    public InsideBuildingPath toPath() {
+    public List<InsidePathLocation> toPath() {
         if (!isValidRoute()) {
             throw new IllegalStateException("No valid route found.");
         }
 
-        InsideBuildingPath newPath = new InsideBuildingPath();
-        newPath.addPathLocation(start);
+        List<InsidePathLocation> path = new ArrayList<>();
+
+        path.add(start);
 
         // Remove start building off the best route
         var finalRoute = new ArrayList<>(bestRoute);
@@ -150,27 +151,25 @@ public class PathFinder {
                 // Add building connector to new path with hatches if needed
                 if (connector.isSplitConnection()) {
                     boolean isCurrentBuilding1 = connector.getBuilding1().equals(current);
-                    newPath.addPathLocation(isCurrentBuilding1 ? connector.getHatch1() : connector.getHatch2());
-                    newPath.addPathLocation(connector);
-                    newPath.addPathLocation(!isCurrentBuilding1 ? connector.getHatch1() : connector.getHatch2());
+                    path.add(isCurrentBuilding1 ? connector.getHatch1() : connector.getHatch2());
+                    path.add(connector);
+                    path.add(!isCurrentBuilding1 ? connector.getHatch1() : connector.getHatch2());
                 } else {
-                    newPath.addPathLocation(connector);
+                    path.add(connector);
                 }
             }
 
             // Last building needs the end position
             if (!b.equals(end.getBuilding())) {
-                newPath.addPathLocation(b);
+                path.add(b);
             }
 
             current = b; // Update current building
         }
 
         // Add the explicit end position
-        newPath.addPathLocation(end);
+        path.add(end);
     
-        newPath.iteratePathLocation(); // This feels wrong but all the calling code is based on this
-        return newPath;
+        return path;
     }
-
 }

@@ -8,8 +8,10 @@ package com.mars_sim.core.building.connection;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -38,6 +42,47 @@ public class BuildingConnectorManager implements Serializable {
 	
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+
+	/**
+	 * This be a bidirectional equality. Ends are stored according to the identfier value.
+	 * A,B == B,A as well as A,B == A,B
+	 */
+	private static class PathKey {
+		private Building lower;
+		private Building upper;
+
+		PathKey(Building start, Building end) {
+			if (start.getIdentifier() < end.getIdentifier()) {
+				this.lower = start;
+				this.upper = end;
+			}
+			else {
+				this.upper = start;
+				this.lower = end;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return lower.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			PathKey other = (PathKey) obj;
+			if (!lower.equals(other.lower))
+				return false;
+			return upper.equals(other.upper);
+		}
+	}
+	
+	private transient Cache<PathKey,List<InsidePathLocation>> learntPaths = buildCache();
 
 	/**
 	 * Inner class for representing a partial building connector.
@@ -310,15 +355,6 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Gets the settlement.
-	 * 
-	 * @return settlement.
-	 */
-	public Settlement getSettlement() {
-		return settlement;
-	}
-
-	/**
 	 * Adds a new building connector.
 	 * 
 	 * @param buildingConnector new building connector.
@@ -419,19 +455,24 @@ public class BuildingConnectorManager implements Serializable {
 	/**
 	 * Checks if there is a valid interior walking path between two buildings.
 	 * 
-	 * @param building1 the first building.
-	 * @param building2 the second building.
+	 * @param startBuilding the first building.
+	 * @param endBuilding the second building.
 	 * @return true if valid interior walking path.
 	 */
-	public boolean hasValidPath(Building building1, Building building2) {
+	public boolean hasValidPath(Building startBuilding, Building endBuilding) {
+		// Check agsint the already learnt paths
+		PathKey key = new PathKey(startBuilding, endBuilding);
+		if (learntPaths.getIfPresent(key) != null) {
+			return true;
+		}
 
-		BuildingLocation start = new BuildingLocation(building1, building1.getPosition());
-		BuildingLocation end = new BuildingLocation(building2, building2.getPosition());
+		BuildingLocation start = new BuildingLocation(startBuilding, startBuilding.getPosition());
+		BuildingLocation end = new BuildingLocation(endBuilding, endBuilding.getPosition());
 		var finder = new PathFinder(this, start, end);
 
 		var result = finder.isValidRoute();
 		if (!result && logger.isLoggable(Level.FINEST)) {
-			logger.fine(building1, "Unable to find valid interior walking path to " + building2);
+			logger.fine(startBuilding, "Unable to find valid interior walking path to " + endBuilding);
 		}
 
 		return result;
@@ -448,13 +489,25 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public InsideBuildingPath determineShortestPath(Building startBuilding, LocalPosition startPosition,
 			Building endBuilding, LocalPosition endPosition) {
-
+		
 		BuildingLocation start = new BuildingLocation(startBuilding, startPosition);
 		BuildingLocation end = new BuildingLocation(endBuilding, endPosition);
 
+		// Check agsint the already learnt paths
+		PathKey key = new PathKey(startBuilding, endBuilding);
+		var foundPath = learntPaths.getIfPresent(key);
+		if (foundPath != null) {
+			// Reuse the found path but alter the start and end posns
+			return new InsideBuildingPath(foundPath, start, end);
+		}
+
 		var finder = new PathFinder(this, start, end);
 		if (finder.isValidRoute()) {
-			return finder.toPath();
+			// Actual path is immutable so it can be shared savely
+			var sharedPath = Collections.unmodifiableList(finder.toPath());
+			learntPaths.put(key, sharedPath);
+
+			return new InsideBuildingPath(sharedPath);
 		}
 		return null;
 	}
@@ -780,12 +833,42 @@ public class BuildingConnectorManager implements Serializable {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		settlement = null;
-		Iterator<BuildingConnector> i = buildingConnections.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
+		buildingConnections.forEach(c -> c.destroy());
 		buildingConnections = null;
 	}
 
+	/**
+	 * Initiase the 
+	 * @param in
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private void readObject(java.io.ObjectInputStream in)
+    	throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		learntPaths = buildCache();
+	}
+
+	/**
+	 * Get a status of the learnt path cache
+	 * @return
+	 */
+	public String getPathCacheStatus() {
+		var stats = learntPaths.stats();
+		return "Size=" + learntPaths.size() + ", Hit rate=" + Math.round(stats.hitRate() * 1000D)/10D
+			+ "%, requests=" + stats.requestCount() + ", evicted=" + stats.evictionCount();
+	}
+
+	/**
+	 * Use a cache that will purge the older paths
+	 * @return
+	 */
+	private static Cache<PathKey, List<InsidePathLocation>> buildCache() {
+		// Set a maximum number of routes to be cached
+		// Use a concurrency of 1 because it's a private Cache for this settlement
+		return CacheBuilder.newBuilder()
+						.recordStats()
+						.concurrencyLevel(1)
+						.maximumSize(100).build();
+	}
 }

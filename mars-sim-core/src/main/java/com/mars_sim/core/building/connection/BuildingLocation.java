@@ -43,4 +43,26 @@ public class BuildingLocation implements Serializable, InsidePathLocation {
     public LocalPosition getPosition() {
     	return pos;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((building == null) ? 0 : building.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BuildingLocation other = (BuildingLocation) obj;
+       if (!building.equals(other.building))
+            return false;
+        return pos.equals(other.pos);
+    }
 }

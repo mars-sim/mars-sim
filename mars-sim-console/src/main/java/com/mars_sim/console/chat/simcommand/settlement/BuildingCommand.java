@@ -9,14 +9,12 @@ package com.mars_sim.console.chat.simcommand.settlement;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.structure.Settlement;
 
@@ -34,10 +32,13 @@ public class BuildingCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
-		BuildingManager bm = settlement.getBuildingManager();
-		List<Building> i = new ArrayList<>(bm.getBuildingSet());
+		var cm = settlement.getBuildingConnectorManager();
+		response.appendLabeledString("Path Cache", cm.getPathCacheStatus());
+
+		var bm = settlement.getBuildingManager();
+		var i = new ArrayList<>(bm.getBuildingSet());
 		Collections.sort(i);
-		
+	
 		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, 
 									"Category", 12, 
 									"Power Mode", 10,

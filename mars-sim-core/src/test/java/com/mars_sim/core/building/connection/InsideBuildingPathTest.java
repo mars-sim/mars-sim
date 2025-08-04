@@ -1,5 +1,7 @@
 package com.mars_sim.core.building.connection;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
@@ -15,9 +17,9 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
 	private static final LocalPosition POSITION_10X10 = new LocalPosition(10D, 10D);
     private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, 20, 20, 0);
 
-	public void testConstructor() {
+	public void testEmptyPath() {
         
-        InsideBuildingPath path = new InsideBuildingPath();
+        InsideBuildingPath path = new InsideBuildingPath(Collections.emptyList());
         assertEquals(0D, path.getPathLength());
         assertNull(path.getNextPathLocation());
         
@@ -27,113 +29,100 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
     }
     
     public void testAddPathLocation() {
-        
-        InsideBuildingPath path = new InsideBuildingPath();
-        assertEquals(0D, path.getPathLength());
-        assertNull(path.getNextPathLocation());
-        
-        List<InsidePathLocation> remainingLocations1 = path.getRemainingPathLocations();
-        assertNotNull(remainingLocations1);
-        assertEquals(0, remainingLocations1.size());
+
         
         MockSettlement settlement = new MockSettlement();
         MockBuilding building = new MockBuilding(settlement, "1", BUILDING_POSN);
         InsidePathLocation location = new BuildingLocation(building, POSITION_5X5);
-        
-        assertFalse(path.containsPathLocation(location));
-        
-        path.addPathLocation(location);
-        
+                
+        List<InsidePathLocation> steps = new ArrayList<>();
+
+        steps.add(location);
+        InsideBuildingPath path = new InsideBuildingPath(steps);
+
         assertTrue(path.containsPathLocation(location));
         
         assertEquals(0D, path.getPathLength());
-        assertEquals(location, path.getNextPathLocation());
+        assertNull(path.getNextPathLocation());
         
         List<InsidePathLocation> remainingLocations2 = path.getRemainingPathLocations();
         assertNotNull(remainingLocations2);
-        assertEquals(1, remainingLocations2.size());
-        assertEquals(location, remainingLocations2.get(0));
+        assertTrue(remainingLocations2.isEmpty());
     }
     
     public void testIteratePathLocation() {
         
-        InsideBuildingPath path = new InsideBuildingPath();
         
         MockSettlement settlement = new MockSettlement();
         MockBuilding building = new MockBuilding(settlement, "1", BUILDING_POSN);
         InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
-        path.addPathLocation(location1);
+
+        List<InsidePathLocation> steps = new ArrayList<>();
+        steps.add(location1);
         
         InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
-        path.addPathLocation(location2);
-        
-        assertEquals(location1, path.getNextPathLocation());
-        
-        path.iteratePathLocation();
+        steps.add(location2);
+        InsideBuildingPath path = new InsideBuildingPath(steps);
         
         assertEquals(location2, path.getNextPathLocation());
     }
     
     public void testGetRemainingLocations() {
         
-        InsideBuildingPath path = new InsideBuildingPath();
         
         MockSettlement settlement = new MockSettlement();
         MockBuilding building = new MockBuilding(settlement, "1", BUILDING_POSN);
         
+        List<InsidePathLocation> steps = new ArrayList<>();
+
         InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
-        path.addPathLocation(location1);
+        steps.add(location1);
         
         InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
-        path.addPathLocation(location2);
+        steps.add(location2);
         
         InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
-        path.addPathLocation(location3);
+        steps.add(location3);
         
+        InsideBuildingPath path = new InsideBuildingPath(steps);
+        assertEquals(3, path.getPathLocations().size());
+
         List<InsidePathLocation> remainingLocations1 = path.getRemainingPathLocations();
         assertNotNull(remainingLocations1);
-        assertEquals(3, remainingLocations1.size());
-        assertEquals(location1, remainingLocations1.get(0));
+        assertEquals(2, remainingLocations1.size());
+        assertEquals(location2, remainingLocations1.get(0));
         
         path.iteratePathLocation();
         
         List<InsidePathLocation> remainingLocations2 = path.getRemainingPathLocations();
         assertNotNull(remainingLocations2);
-        assertEquals(2, remainingLocations2.size());
-        assertEquals(location2, remainingLocations2.get(0));
+        assertEquals(1, remainingLocations2.size());
+        assertEquals(location3, remainingLocations2.get(0));
         
         path.iteratePathLocation();
         
         List<InsidePathLocation> remainingLocations3 = path.getRemainingPathLocations();
         assertNotNull(remainingLocations3);
-        assertEquals(1, remainingLocations3.size());
-        assertEquals(location3, remainingLocations3.get(0));
     }
     
     public void testIsEndOfPath() {
         
-        InsideBuildingPath path = new InsideBuildingPath();
-
         MockSettlement settlement = new MockSettlement();
         MockBuilding building = new MockBuilding(settlement, "1", BUILDING_POSN);
         
+        List<InsidePathLocation> steps = new ArrayList<>();
+
         InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
-        path.addPathLocation(location1);
-        
-        assertTrue(path.isEndOfPath());
+        steps.add(location1);
         
         InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
-        path.addPathLocation(location2);
-        
-        assertFalse(path.isEndOfPath());
-        
+        steps.add(location2);
+                
         InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
-        path.addPathLocation(location3);
+        steps.add(location3);
         
-        assertFalse(path.isEndOfPath());
-        
-        path.iteratePathLocation();
-        
+        InsideBuildingPath path = new InsideBuildingPath(steps);
+
         assertFalse(path.isEndOfPath());
         
         path.iteratePathLocation();
@@ -143,29 +132,26 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
     
     public void testGetPathLength() {
         
-        InsideBuildingPath path = new InsideBuildingPath();
         
         MockSettlement settlement = new MockSettlement();
         MockBuilding building = new MockBuilding(settlement, "1", BUILDING_POSN);
-        
+        List<InsidePathLocation> steps = new ArrayList<>();
+
+
         InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
-        path.addPathLocation(location1);
-        
-        assertEquals(0D, path.getPathLength());
-        
+        steps.add(location1);
+                
         InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
-        path.addPathLocation(location2);
-        
-        assertEquals(5D, path.getPathLength());
-        
+        steps.add(location2);
+                
         InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
-        path.addPathLocation(location3);
-        
-        assertEquals(10D, path.getPathLength());
-        
+        steps.add(location3);
+                
         InsidePathLocation location4 = new BuildingLocation(building, POSITION_5X5);
-        path.addPathLocation(location4);
+        steps.add(location4);
         
+        InsideBuildingPath path = new InsideBuildingPath(steps);
+
         assertEquals(10D + Math.sqrt(50D), path.getPathLength());
     }
 }

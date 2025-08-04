@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-
 
 /**
  * The RandomUtil class is a library of various random-related methods.
@@ -37,12 +35,14 @@ public final class RandomUtil {
 	// See Mersenne Twister in JAVA 
 	// at http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/VERSIONS/JAVA/java.html
 	
-	private static final Random random = ThreadLocalRandom.current();
+	// Initiaise the Ramdom with a seed based oon current time
+	private static ThreadLocal<Random> random = ThreadLocal.withInitial(() -> new Random(System.currentTimeMillis()));
+
 
 	private RandomUtil() {}
 
 	public static Random getRandom() {
-		return random;
+		return random.get();
 	}
 
 
@@ -85,7 +85,7 @@ public final class RandomUtil {
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(int randomLimit) {
-		int rand = random.nextInt(100) + 1;
+		int rand = getRandom().nextInt(100) + 1;
 		return rand < randomLimit;
 	}
 
@@ -96,7 +96,7 @@ public final class RandomUtil {
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(double randomLimit) {
-		double rand = random.nextDouble() * 100;
+		double rand = getRandom().nextDouble() * 100;
 		return rand < randomLimit;
 	}
 
@@ -109,7 +109,7 @@ public final class RandomUtil {
 	public static int getRandomInt(int ceiling) {
 		if (ceiling < 0)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustBePositive") + ceiling); //$NON-NLS-1$
-		return random.nextInt(ceiling + 1);
+		return getRandom().nextInt(ceiling + 1);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public final class RandomUtil {
 	public static int getRandomInt(int base, int ceiling) {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
-		return random.nextInt(ceiling - base + 1) + base;
+		return getRandom().nextInt(ceiling - base + 1) + base;
 	}
 
 	/**
@@ -133,7 +133,7 @@ public final class RandomUtil {
 	 * @return the random number
 	 */
 	public static double getRandomDouble(double ceiling) {
-		return random.nextDouble() * ceiling;
+		return getRandom().nextDouble() * ceiling;
 	}
 
 	/**
@@ -146,7 +146,7 @@ public final class RandomUtil {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
 		// Note: switch from using ThreadLocalRandom.current().nextDouble(base, ceiling)
-		return (random.nextDouble() * (ceiling - base)) + base;
+		return (getRandom().nextDouble() * (ceiling - base)) + base;
 	}
 
 	/**
@@ -157,7 +157,7 @@ public final class RandomUtil {
 	 * @return the random number
 	 */
 	public static double getGaussianDouble() {
-		return random.nextGaussian();
+		return getRandom().nextGaussian();
 	}
 
 	/**
