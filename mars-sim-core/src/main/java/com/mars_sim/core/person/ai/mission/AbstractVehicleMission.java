@@ -508,6 +508,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (loadingPlan.isFailure()) {
 				logger.warning(vehicle, "Loading has failed.");
 				endMission(CANNOT_LOAD_RESOURCES);
+				return false;
 			}
 			return loadingPlan.isCompleted();
 		}
