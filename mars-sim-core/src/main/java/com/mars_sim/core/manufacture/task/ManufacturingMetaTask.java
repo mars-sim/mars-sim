@@ -112,7 +112,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         if (m.getTechLevel() >= lowestTechNeeded) {
             var capacity = m.getCapacity();
 
-            // How many Manufacturing jobs ar on the queue
+            // How many Manufacturing jobs are on the queue
             var queueSize = (int)s.getManuManager().getQueue().stream()
                         .count();
 

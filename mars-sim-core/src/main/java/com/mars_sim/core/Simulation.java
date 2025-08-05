@@ -421,24 +421,21 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
-	
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
 		lunarColonyManager = new LunarColonyManager(lunarWorld);
-	
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
 		weather = new Weather(masterClock, orbitInfo);
-
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
-
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 		// Initialize MedicalManager instance
 		medicalManager = new MedicalManager();
+		
 		MedicalManager.initializeInstances(mc);
 		// Initialize UnitManager instance		
 		eventManager = new HistoricalEventManager(masterClock);

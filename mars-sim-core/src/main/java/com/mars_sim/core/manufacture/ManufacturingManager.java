@@ -187,7 +187,7 @@ public class ManufacturingManager implements Serializable {
         // 1. Tech level
         // 2. Worker skill
         // 3. Type of process
-        // 4. Resoruce are available
+        // 4. Resource are available
         var startableByPri = queue.stream()
                         .filter(q -> (q.info.getTechLevelRequired() <= techLevel)
                                         && (q.info.getSkillLevelRequired() <= skillLevel)
@@ -263,7 +263,7 @@ public class ManufacturingManager implements Serializable {
      * Checks which queued processes have available resources.
      */
     private void updateQueueItems() {
-        // Check resoruces on queue
+        // Check resources on queue
         for(var q : queue) {
             var p = q.getInfo();
             q.setResourcesAvailable(p.isResourcesAvailable(owner));

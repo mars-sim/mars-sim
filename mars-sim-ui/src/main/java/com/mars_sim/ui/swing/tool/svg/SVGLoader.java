@@ -64,7 +64,7 @@ public class SVGLoader {
 			bridgeContext.setDynamic(true);
 			
 			try {
-				
+//				System.out.println("filename: " + fileName);
 				found = new GVTBuilder().build(bridgeContext, f.createDocument(resource.toString()));
 				svgCache.put(name, found);
 			} catch (IOException e) {

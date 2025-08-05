@@ -71,7 +71,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The standard stress effect of a task within a person's job. */
 	private static final double SKILL_STRESS_MODIFIER = .1D;
     /** The standard amount of millisols to be consumed in a phase. */
-	private static double standardPulseTime = MasterClock.MAX_PULSE_WIDTH;
+	private static double standardPulseTime = MasterClock.INITIAL_PULSE_WIDTH;
 
 	// Data members
 	/** True if task is finished. */

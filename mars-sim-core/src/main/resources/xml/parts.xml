@@ -927,63 +927,6 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Pathogen filter" type="utility" mass="3.0">
-		<maintenance-entity-list>
-			<entity name="farming" probability="1" max-number="2" />
-			<entity name="dining" probability="2" max-number="2" />
-			<entity name="living accommodation" probability="2" max-number="2" />
-			<entity name="eva" probability="3" max-number="2" />
-			<entity name="exercise" probability="1" max-number="1" />
-			<entity name="waste processing" probability="3" max-number="1" />
-			<entity name="resource processing" probability="3" max-number="1" />			
-			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="medical care" probability="1" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Charcoal filter" type="utility" mass="1">
-		<maintenance-entity-list>
-			<entity name="farming" probability="1" max-number="2" />
-			<entity name="dining" probability="2" max-number="2" />
-			<entity name="living accommodation" probability="2" max-number="2" />
-			<entity name="eva" probability="3" max-number="2" />
-			<entity name="exercise" probability="1" max-number="1" />
-			<entity name="waste processing" probability="3" max-number="1" />
-			<entity name="resource processing" probability="3" max-number="1" />			
-			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="medical care" probability="1" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Electrostatic Precipitator" type="utility" mass=".7">
-		<description>A filterless device that removes fine particles,
-			like dust and smoke, from a flowing gas using the force of
-			an induced electrostatic charge minimally impeding the
-			flow of gases through the unit</description>
-		<maintenance-entity-list>
-			<entity name="farming" probability="1" max-number="1" />
-			<entity name="dining" probability="2" max-number="1" />
-			<entity name="living accommodation" probability="2" max-number="1" />
-			<entity name="eva" probability="3" max-number="1" />
-			<entity name="waste processing" probability="3" max-number="1" />
-			<entity name="resource processing" probability="3" max-number="1" />			
-			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="medical care" probability="1" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Air Duct" type="utility" mass=".3">
-		<maintenance-entity-list>
-			<entity name="cooking" probability="2" max-number="2" />
-			<entity name="farming" probability="2" max-number="2" />
-			<entity name="manufacture" probability="2" max-number="2" />
-			<entity name="living accommodation" probability="2" max-number="2" />
-			<entity name="life support" probability="2" max-number="2" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Flexible hose" type="utility" mass=".1"/>
-
 	<part name="Polycarbonate roofing" type="construction" mass="1">
 		<description>Assume 2m x 2m, highly transparent, "bullet-resistant" plastic cladding
 			roofing for greenhouses</description>
@@ -1304,6 +1247,67 @@
 	
 	<part name="Metal Oxide Varistor" type="electronic" mass=".2" />				
 	
+	<!-- For cleaning the air -->
+	
+	<part name="Pathogen filter" type="utility" mass="3.0">
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="dining" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
+			<entity name="eva" probability="3" max-number="2" />
+			<entity name="exercise" probability="1" max-number="1" />
+			<entity name="waste processing" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="medical care" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Charcoal filter" type="utility" mass="1">
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="dining" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
+			<entity name="eva" probability="3" max-number="2" />
+			<entity name="exercise" probability="1" max-number="1" />
+			<entity name="waste processing" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="medical care" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Electrostatic Precipitator" type="utility" mass=".7">
+		<description>A filterless device that removes fine particles,
+			like dust and smoke, from a flowing gas using the force of
+			an induced electrostatic charge minimally impeding the
+			flow of gases through the unit</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="1" />
+			<entity name="dining" probability="2" max-number="1" />
+			<entity name="living accommodation" probability="2" max-number="1" />
+			<entity name="eva" probability="3" max-number="1" />
+			<entity name="waste processing" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="medical care" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Air Duct" type="utility" mass=".3">
+		<maintenance-entity-list>
+			<entity name="cooking" probability="2" max-number="2" />
+			<entity name="farming" probability="2" max-number="2" />
+			<entity name="manufacture" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
+			<entity name="life support" probability="2" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<!-- For cleaning other parts, vehicles, buildings, etc. -->
+	
+	<part name="Flexible hose" type="utility" mass=".1"/>
+
 	<part name="Water Heater 5kW" type="utility" mass="12.0" >
 		<description>A tankless water heater rated 5kW.</description>
 	</part>
