@@ -49,6 +49,53 @@
 ]>
 
 <construction>
+
+	<!-- 
+	mars-sim adopts a paradigm of the construction that involves 
+	3 key stages as follows : 
+	
+	A. FOUNDATION : 
+	The Foundation stage is the first physical step in construction, where the 
+	structural base of the home is established.
+	
+	This involves site preparation, including clearing the land, leveling the ground, 
+	and sometimes excavation.
+ 
+ 	Depending on the design and soil conditions, foundations can be concrete slabs, 
+ 	block walls, or poured walls.
+ 	
+	Before pouring the concrete slab, underground services like plumbing and electrical 
+	conduits are often installed.
+ 
+ 	This stage is crucial as it supports the entire structure and ensures stability.
+
+	B. FRAMING :
+	Following the foundation, the Frame stage begins, where the skeleton of the house is 
+	constructed.
+ 
+ 	This involves installing the structural framework for walls, floors, and the roof, 
+ 	using materials like timber or steel.
+ 
+ 	The frame defines the layout and shape of the home, giving a clear visual 
+ 	representation of the rooms and spaces.
+ 
+ 	This stage is often considered a major milestone as the home's basic structure 
+ 	becomes visible.
+
+	C. BULIDING : 
+	The Building stage includes the subsequent phases such as the Lock-up stage, 
+	where external walls, windows, doors, and the roof are installed to make 
+	the home weatherproof.
+	
+	This is followed by the Fixing or Fit-out stage, involving internal components like 
+	electrical wiring, plumbing, insulation, and interior walls.
+	
+	No doubt, the final phase are Completion and Handover, which involve inspections, 
+	cleaning, landscaping, testing systems, and the final walkthrough before the 
+	homeowner receives the keys.	
+	-->
+
+
 	<foundation-list>
 		<!-- work-time in sols, not millisols -->
 		<foundation name="Surface Foundation 2x3" width="2.0" length="3.0" 
@@ -71,6 +118,26 @@
 			</vehicle>
 		</foundation>
 
+		<foundation name="Surface Foundation 3x6" width="3.0" length="6.0" 
+		 north-south-alignment="length" base-level="0"
+		 constructable="true" salvagable="true" work-time="0.6" skill-required="1" >
+			<resource type="concrete" amount="18.0" />
+			<vehicle type="LUV" >
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
+			</vehicle>
+		</foundation>
+
+		<foundation name="Surface Foundation 3x7" width="3.0" length="7.0" 
+		 north-south-alignment="length" base-level="0"
+		 constructable="true" salvagable="true" work-time="0.8" skill-required="1" >
+			<resource type="concrete" amount="21.0" />
+			<vehicle type="LUV" >
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
+			</vehicle>
+		</foundation>
+
 		<foundation name="Surface Foundation 5x10" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
@@ -81,10 +148,32 @@
 			</vehicle>
 		</foundation>
 
-		<!-- surface foundation 7m_x_9m is setting for medium modular frame. work-time = 3.0 -->
-		<foundation name="Surface Foundation 7x9" width="9.0" length="7.0"
+		<!-- surface foundation 6m_x_6m is setting for a modular frame. work-time = 3.0 -->
+		<foundation name="Surface Foundation 6x6" width="6.0" length="6.0"
 		 north-south-alignment="length" base-level="0"
-		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
+			<resource type="concrete" amount="36.0" />
+			<vehicle type="LUV" >
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
+			</vehicle>
+		</foundation>
+		
+		<!-- surface foundation 6m_x_9m is setting for a Modular B Frame. work-time = 3.0 -->
+		<foundation name="Surface Foundation 6x9" width="9.0" length="7.0"
+		 north-south-alignment="length" base-level="0"
+		 constructable="true" salvagable="true" work-time="1.25" skill-required="1" >
+			<resource type="concrete" amount="54.0" />
+			<vehicle type="LUV" >
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
+			</vehicle>
+		</foundation>
+				
+		<!-- surface foundation 7m_x_9m is setting for Modular A Frame. work-time = 3.0 -->
+		<foundation name="Surface Foundation 7x9" width="9.0" length="6.0"
+		 north-south-alignment="length" base-level="0"
+		 constructable="true" salvagable="true" work-time="1.3" skill-required="1" >
 			<resource type="concrete" amount="63.0" />
 			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
@@ -115,7 +204,7 @@
 		<foundation name="Surface Foundation 12x18" width="18.0" length="12.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="2.4" skill-required="1" >
-			<resource type="concrete" amount="216.0" />
+			<resource type="concrete" amount="96.0" />
 			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="soil compactor" />
@@ -124,18 +213,29 @@
 
 		<foundation name="Subsurface Foundation 5x5x3" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1"
-		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
-			<resource type="concrete" amount="45.0" />
+		 constructable="true" salvagable="true" work-time="6.0" skill-required="1" >
+			<resource type="concrete" amount="37.5" />
 			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
 			</vehicle>
 		</foundation>
 
+		<foundation name="Subsurface Foundation 6x6x3" width="6.0" length="6.0"
+		 north-south-alignment="length" base-level="-1"
+		 constructable="true" salvagable="true" work-time="7.0" skill-required="1" >
+			<resource type="concrete" amount="54.0" />
+			<vehicle type="LUV" >
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="backhoe" />
+			</vehicle>
+		</foundation>
+
+
 		<foundation name="Subsurface Foundation 5x10x3" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="-1"
-		 constructable="true" salvagable="true" work-time="12.0" skill-required="1" >
-			<resource type="concrete" amount="80.0" />
+		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
+			<resource type="concrete" amount="75.0" />
 			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
@@ -144,8 +244,8 @@
 
 		<foundation name="Subsurface Foundation 10x10x3" width="10.0" length="10.0"
 		 north-south-alignment="length" base-level="-1"
-		 constructable="true" salvagable="true" work-time="15.0" skill-required="1" >
-			<resource type="concrete" amount="140.0" />
+		 constructable="true" salvagable="true" work-time="10.0" skill-required="1" >
+			<resource type="concrete" amount="150.0" />
 			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
 				<attachment-part type="backhoe" />
@@ -154,7 +254,7 @@
 
 		<foundation name="Ramped Subsurface Foundation 15x18x5" width="18.0" length="15.0"
 		 north-south-alignment="length" base-level="-1"
-		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="12.0" skill-required="1" >
 			<resource type="concrete" amount="369.0" />
 			<vehicle type="LUV" >
 				<attachment-part type="bulldozer blade" />
@@ -164,7 +264,7 @@
 
 		<foundation name="Shallow Borehole Drilling Site" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0"
-		 constructable="true" salvagable="true" work-time="10.0" skill-required="3" >
+		 constructable="true" salvagable="true" work-time="5.0" skill-required="3" >
 		 	<part type="bore drill bit" number="1" />
 		 	<part type="bore drill pipe" number="20" />
 			<vehicle type="LUV" >
@@ -175,7 +275,7 @@
 
 		<foundation name="Deep Borehole Drilling Site" width="10.0" length="15.0"
 		 north-south-alignment="length" base-level="0"
-		 constructable="true" salvagable="true" work-time="15.0" skill-required="4" >
+		 constructable="true" salvagable="true" work-time="10.0" skill-required="4" >
 		 	<part type="bore drill bit" number="4" />
 		 	<part type="bore drill pipe" number="60" />
 			<vehicle type="LUV" >
@@ -261,16 +361,8 @@
 			</vehicle>
 		</frame>
 
-		<frame name="Small Brick Shed Frame" width="5.0" length="5.0"
-		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="1" foundation="Subsurface Foundation 5x5x3" >
-			<resource type="concrete" amount="25.0" />
-			<part type="brick" number="250" />
-			<vehicle type="LUV" >
-				<attachment-part type="crane boom" />
-			</vehicle>
-		</frame>
 
+				
 		<frame name="Round Hab Frame" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 9x9" >
@@ -294,7 +386,7 @@
 
 		<frame name="Inflatable Frame" width="6.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 7x9" >
+		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 6x9" >
 		 	<resource type="concrete" amount="54.0" />
 			<resource type="acetylene" amount="1.25" />		 	
 			<part type="aluminum sheet" number="10" />
@@ -331,11 +423,11 @@
 			<part type="gasket" number="18" />
 		</frame>
 
-		<frame name="Medium Modular Frame" width="7.0" length="9.0"
+		<frame name="Modular A Frame" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 7x9" >
 		 	<resource type="concrete" amount="63.0" />
-			<resource type="acetylene" amount="1.0" />		 	
+			<resource type="acetylene" amount="0.9" />		 	
 			<part type="aluminum sheet" number="8" />
 			<part type="insulation board" number="8" />			
 			<part type="steel truss" number="16" />
@@ -350,11 +442,87 @@
 			<part type="gasket" number="15" />
 		</frame>
 
+		<frame name="Modular B Frame" width="6.0" length="9.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 6x9" >
+		 	<resource type="concrete" amount="54.0" />
+			<resource type="acetylene" amount="0.8" />		 	
+			<part type="aluminum sheet" number="7" />
+			<part type="insulation board" number="8" />			
+			<part type="steel truss" number="16" />
+			<part type="steel post" number="6" />			
+			<part type="steel sheet" number="7" />
+			<part type="plastic sheet" number="15" />
+			<part type="plastic pipe" number="40" />
+			<part type="valve" number="50" />
+			<part type="electrical wire" number="50" />
+			<part type="wire connector" number="50" />
+			<part type="power cable" number="12" />
+			<part type="gasket" number="12" />
+		</frame>
+
+		<frame name="Match Core A Frame" width="6.0" length="6.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 6x6" >
+		 	<resource type="concrete" amount="36.0" />
+			<resource type="acetylene" amount="0.6" />		 	
+			<part type="aluminum sheet" number="5" />
+			<part type="insulation board" number="5" />			
+			<part type="steel truss" number="10" />
+			<part type="steel post" number="4" />			
+			<part type="steel sheet" number="4" />
+			<part type="plastic sheet" number="10" />
+			<part type="plastic pipe" number="20" />
+			<part type="valve" number="30" />
+			<part type="electrical wire" number="30" />
+			<part type="wire connector" number="30" />
+			<part type="power cable" number="8" />
+			<part type="gasket" number="8" />
+		</frame>
+
+		<frame name="Match Core B Frame" width="3.0" length="6.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 3x6" >
+		 	<resource type="concrete" amount="18.0" />
+			<resource type="acetylene" amount="0.3" />		 	
+			<part type="aluminum sheet" number="3" />
+			<part type="insulation board" number="3" />			
+			<part type="steel truss" number="4" />
+			<part type="steel post" number="2" />			
+			<part type="steel sheet" number="2" />
+			<part type="plastic sheet" number="5" />
+			<part type="plastic pipe" number="10" />
+			<part type="valve" number="15" />
+			<part type="electrical wire" number="15" />
+			<part type="wire connector" number="15" />
+			<part type="power cable" number="4" />
+			<part type="gasket" number="4" />
+		</frame>
+	
+		<frame name="Match Core C Frame" width="3.0" length="6.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 3x7" >
+		 	<resource type="concrete" amount="20.0" />
+			<resource type="acetylene" amount="0.3" />		 	
+			<part type="aluminum sheet" number="3" />
+			<part type="insulation board" number="4" />			
+			<part type="steel truss" number="4" />
+			<part type="steel post" number="2" />			
+			<part type="steel sheet" number="3" />
+			<part type="plastic sheet" number="6" />
+			<part type="plastic pipe" number="10" />
+			<part type="valve" number="15" />
+			<part type="electrical wire" number="15" />
+			<part type="wire connector" number="15" />
+			<part type="power cable" number="4" />
+			<part type="gasket" number="4" />
+		</frame>
+						
 		<frame name="Round Frame" width="7.0" length="7.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 7x7" >
 		 	<resource type="concrete" amount="49.0" />
-			<resource type="acetylene" amount="1.0" />		 	
+			<resource type="acetylene" amount="0.7" />		 	
 			<part type="aluminum sheet" number="6" />
 			<part type="insulation board" number="7" />			
 			<part type="steel truss" number="14" />
@@ -656,7 +824,7 @@
 
 		<building name="Manufacturing Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
+		 salvagable="true" work-time="0.5" skill-required="3" frame="Brick A Shed Frame" >
 			<resource type="concrete" amount="75.0" />
 			<part type="aerogel tile" number="90" />
 			<part type="steel pipe" number="3" />
@@ -679,7 +847,7 @@
 
 		<building name="Bunkhouse" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Brick Shed A Frame" >
 		 	<resource type="cement" amount="75.0" />
 		 	<resource type="concrete" amount="57.0" />
 			<part type="aerogel tile" number="90" />
@@ -698,6 +866,74 @@
 				<attachment-part type="crane boom" />
 			</vehicle>
 		</building>
+
+		<building name="Match Core A" width="6.0" length="6.0"
+		 north-south-alignment="length" base-level="-1" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Match Core A Frame" >
+		 	<resource type="cement" amount="108.0" />
+		 	<resource type="concrete" amount="82.0" />
+			<part type="aerogel tile" number="130" />
+			<part type="window" number="2" />				
+			<part type="steel pipe" number="3" />
+			<part type="plastic pipe" number="4" />
+			<part type="valve" number="5" />
+			<part type="gasket" number="5" />
+			<part type="plastic tubing" number="3" />
+			<part type="power cable" number="2" />
+			<part type="electrical wire" number="12" />
+			<part type="wire connector" number="12" />
+			<part type="plastic bottle" number="25" />
+			<part type="air duct" number="3" />				
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+			</vehicle>
+		</building>
+
+
+		<building name="Match Core B" width="3.0" length="6.0"
+		 north-south-alignment="length" base-level="-1" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Match Core B Frame" >
+		 	<resource type="cement" amount="54.0" />
+		 	<resource type="concrete" amount="41.0" />
+			<part type="aerogel tile" number="65" />
+			<part type="window" number="2" />				
+			<part type="steel pipe" number="2" />
+			<part type="plastic pipe" number="2" />
+			<part type="valve" number="3" />
+			<part type="gasket" number="3" />
+			<part type="plastic tubing" number="2" />
+			<part type="power cable" number="1" />
+			<part type="electrical wire" number="6" />
+			<part type="wire connector" number="6" />
+			<part type="plastic bottle" number="12" />
+			<part type="air duct" number="2" />				
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+			</vehicle>
+		</building>
+
+		<building name="Match Core C" width="3.0" length="7.0"
+		 north-south-alignment="length" base-level="-1" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Match Core C Frame" >
+			<resource type="cement" amount="60.0" />
+		 	<resource type="concrete" amount="45.0" />
+			<part type="aerogel tile" number="75" />
+			<part type="window" number="2" />				
+			<part type="steel pipe" number="2" />
+			<part type="plastic pipe" number="2" />
+			<part type="valve" number="3" />
+			<part type="gasket" number="3" />
+			<part type="plastic tubing" number="2" />
+			<part type="power cable" number="1" />
+			<part type="electrical wire" number="6" />
+			<part type="wire connector" number="6" />
+			<part type="plastic bottle" number="12" />
+			<part type="air duct" number="2" />			
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+			</vehicle>
+		</building>
+
 
 		<building name="Large Sabatier Processor" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
@@ -894,7 +1130,7 @@
 		<!-- Residential quarters building project for refitting or salvaging. -->
 		<building name="Residential Quarters" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Medium Modular Frame">
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Modular A Frame">
 			<resource type="polyester resin" amount="25.0" />
 			<resource type="styrene" amount="15.0" />
 			<resource type="polyethylene" amount="50.0" />
@@ -913,7 +1149,7 @@
 		<!-- Lounge building project for refitting or salvaging. -->
 		<building name="Lounge" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Medium Modular Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="5.0" />
 			<resource type="styrene" amount="5.0" />
 			<resource type="polyethylene" amount="10.0" />
@@ -929,7 +1165,7 @@
 		<!-- Infirmary building project for refitting or salvaging. -->
 		<building name="Infirmary" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
+		 salvagable="true" work-time="1.0" skill-required="4" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="25.0" />
 			<resource type="styrene" amount="15.0" />
 			<resource type="polyethylene" amount="50.0" />
@@ -948,7 +1184,7 @@
 		<!-- Command and control building project for refitting or salvaging. -->
 		<building name="Command and Control" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
+		 salvagable="true" work-time="1.0" skill-required="4" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="25.0" />
 			<resource type="styrene" amount="15.0" />
 			<resource type="polyethylene" amount="50.0" />
@@ -967,7 +1203,7 @@
 		<!-- Server Farm building project for refitting or salvaging. -->
 		<building name="Server Farm" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
+		 salvagable="true" work-time="1.0" skill-required="4" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="25.0" />
 			<resource type="styrene" amount="15.0" />
 			<resource type="polyethylene" amount="50.0" />
@@ -1024,7 +1260,7 @@
 		<!-- Laboratory building project for refitting or salvaging. -->
 		<building name="Laboratory" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
+		 salvagable="true" work-time="1.0" skill-required="4" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="25.0" />
 			<resource type="styrene" amount="15.0" />
 			<resource type="polyethylene" amount="50.0" />
@@ -1063,7 +1299,7 @@
 		<!-- Workshop building project for refitting or salvaging. -->
 		<building name="Workshop" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
+		 salvagable="true" work-time="1.0" skill-required="4" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="25.0" />
 			<resource type="styrene" amount="15.0" />
 			<resource type="polyethylene" amount="50.0" />
@@ -1165,7 +1401,7 @@
 
 		<building name="Storage Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
+		 salvagable="true" work-time="0.5" skill-required="3" frame="Brick Shed A Frame" >
 			<resource type="polyester resin" amount="2.0" />
 			<resource type="styrene" amount="1.0" />
 			<resource type="polyethylene" amount="10.0" />
@@ -1205,7 +1441,7 @@
 
 		<building name="Mining Lab" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Brick Shed A Frame" >
 		 	<resource type="cement" amount="50.0" />
 		 	<resource type="concrete" amount="50.0" />		 	
 			<part type="steel pipe" number="3" />

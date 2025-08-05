@@ -793,10 +793,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end for Central Hub Type A -->
 
-	<building type="Life Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Match Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="1000">
-		<description> Life Core A is an utility hub acts as a hallway with amenities such as 
-			with laundry, washer and shower capability.
+		<description> Match Core A is a 3m by 6m utility hub that primarily connects
+		  other modules together
 		</description>
 		<power-required base-power="1.0" base-power-down-power="0.1" />
 
@@ -851,11 +851,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 		</functions>
 	</building>
-	<!-- end of Life Core A -->
+	<!-- end of Match Core A -->
 
-	<building type="Half Core A" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Match Core B" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
-		<description> Half Core A is an utility hallway.
+		<description> Match Core B is a 3m by 6m utility hub that primarily connects
+		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
 
@@ -900,11 +901,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
-	<!-- end of Half Core A -->
+	<!-- end of Match Core B -->
 
-	<building type="Half Core B" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
+	<building type="Match Core C" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
-		<description> Half Core A is an utility hallway.
+		<description> Match Core C is a 3m by 7m utility hub that primarily connects
+		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
 
@@ -950,7 +952,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-	<!-- end of Half Core B -->
+	<!-- end of Match Core C -->
 
 	<building type="Bioreactor H1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
@@ -3257,59 +3259,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="2500">
-		<description> The Manufacturing Shed is a small brick manufacturing
-			building for forming, cutting, coating and glazing bricks for construction projects.
-		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2" />
 
-		<functions>
-			<computation computing-unit="2.0" power-demand="1.0">
-				<activity>
-					<activity-spot xloc="0" yloc="0" />
-				</activity>
-			</computation>			
-			<life-support capacity="4" power-required="0.2" />
-			<manufacture tech-level="3" concurrent-processes="2">
-				<activity>
-					<activity-spot xloc=".95" yloc="1.05" />
-					<activity-spot xloc="-.8" yloc="-.1" />
-					<activity-spot xloc=".2" yloc="-1.1" />
-				</activity>
-				<tooling name="furnace" number="1"/>
-				<tooling name="chemical" number="1"/>
-				<tooling name="metalwork" number="1"/>
-				<tooling name="3D printer" number="1" />
-			</manufacture>
-			<robotic-station capacity="2">
-				<activity>
-					<activity-spot xloc="0.5" yloc="-2" />
-					<activity-spot xloc="0.5" yloc="2" />
-				</activity>
-			</robotic-station>
-			<storage stock-capacity="10000">
-				<resource-capacity type="regolith" amount="1000.0" />
-				<resource-capacity type="carbon" amount="250.0" />
-				<resource-capacity type="iron oxide" amount="250.0" />
-				<resource-capacity type="aluminum oxide" amount="25.0" />
-				<resource-capacity type="sand" amount="1000.0" />
-				<resource-capacity type="iron powder" amount="50.0" />
-				<resource-capacity type="gypsum" amount="50.0" />
-				<resource-capacity type="calcium Carbonate" amount="50.0" />
-				<resource-capacity type="lime" amount="50.0" />
-				<resource-capacity type="cement" amount="500.0" />
-				<resource-capacity type="concrete" amount="500.0" />
-			</storage>
-			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="5.0" />
-				<heat-source type="Electric Heating" capacity="15.0" />
-				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	capacity="20.0" />
-			</thermal-generation>
-		</functions>
-	</building>
-<!-- end of Manufacturing Shed -->
 
 	<building type="Large Sabatier Processor" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="0" base-mass="1500">
@@ -4188,6 +4138,60 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 <!-- end of Mining Lab -->
+
+	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="2500">
+		<description> The Manufacturing Shed is a small brick manufacturing
+			building for forming, cutting, coating and glazing bricks for construction projects.
+		</description>
+		<power-required base-power="2.0" base-power-down-power="0.2" />
+
+		<functions>
+			<computation computing-unit="2.0" power-demand="1.0">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>			
+			<life-support capacity="4" power-required="0.2" />
+			<manufacture tech-level="3" concurrent-processes="2">
+				<activity>
+					<activity-spot xloc=".95" yloc="1.05" />
+					<activity-spot xloc="-.8" yloc="-.1" />
+					<activity-spot xloc=".2" yloc="-1.1" />
+				</activity>
+				<tooling name="furnace" number="1"/>
+				<tooling name="chemical" number="1"/>
+				<tooling name="metalwork" number="1"/>
+				<tooling name="3D printer" number="1" />
+			</manufacture>
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.5" yloc="-2" />
+					<activity-spot xloc="0.5" yloc="2" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="10000">
+				<resource-capacity type="regolith" amount="1000.0" />
+				<resource-capacity type="carbon" amount="250.0" />
+				<resource-capacity type="iron oxide" amount="250.0" />
+				<resource-capacity type="aluminum oxide" amount="25.0" />
+				<resource-capacity type="sand" amount="1000.0" />
+				<resource-capacity type="iron powder" amount="50.0" />
+				<resource-capacity type="gypsum" amount="50.0" />
+				<resource-capacity type="calcium Carbonate" amount="50.0" />
+				<resource-capacity type="lime" amount="50.0" />
+				<resource-capacity type="cement" amount="500.0" />
+				<resource-capacity type="concrete" amount="500.0" />
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="20.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+<!-- end of Manufacturing Shed -->
 
 
 	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" 

@@ -312,7 +312,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, lHab.getPosition(), lab, lab.getPosition());
 
-        var core = bMgr.getBuildingByTemplateID("HC907"); 
+        var core = bMgr.getBuildingByTemplateID("MCC907"); 
         path = manager.determineShortestPath(lHab, lHab.getPosition(), core, core.getPosition());
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, lHab.getPosition(), core, core.getPosition());
