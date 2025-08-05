@@ -1154,7 +1154,7 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Get the manager controllign Manufacturing in Workshops.
+	 * Get the manager controlling Manufacturing in Workshops.
 	 */
 	public ManufacturingManager getManuManager() {
 		return manuManager;

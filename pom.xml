@@ -35,11 +35,11 @@
 		<slf4j.version>2.0.17</slf4j.version>
 		
 		<commons-cli.version>1.10.0</commons-cli.version>
-		<commons-io.version>2.18.0</commons-io.version>
-		<commons-lang3.version>3.17.0</commons-lang3.version>
+		<commons-io.version>2.20.0</commons-io.version>
+		<commons-lang3.version>3.18.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 			
-		<jacoco.version>0.8.12</jacoco.version>
+		<jacoco.version>0.8.13</jacoco.version>
 		
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
