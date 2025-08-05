@@ -249,10 +249,10 @@ public class EnterAirlock extends Task {
 				// Set the person's new position
 				person.setPosition(newPos);
 
-				logger.fine(person, 4000, "Arrived at " + newPos.getShortFormat() + " in " + newZone + ".");
+//				May add back for future testing :logger.fine(person, 4000, "Arrived at " + newPos.getShortFormat() + " in " + newZone + ".");
 				return true;
 			} else {
-				logger.info(person, 4000, "Couldn't enter the chamber in airlock zone " + newZone + ".");
+//				May add back for future testing :logger.info(person, 4000, "Couldn't enter the chamber in airlock zone " + newZone + ".");
 				return false;
 			}
 		}
@@ -261,7 +261,7 @@ public class EnterAirlock extends Task {
 			// Set the person's new position
 			person.setPosition(newPos);
 
-			logger.fine(person, 4000, "Arrived at " + newPos.getShortFormat() + " in " + newZone + "@" + b.getName());
+//			May add back for future testing :logger.fine(person, 4000, "Arrived at " + newPos.getShortFormat() + " in " + newZone + "@" + b.getName());
 			return true;
 		}
 	}
@@ -299,8 +299,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (!airlock.addAwaitingOuterDoor(id)) {
-				logger.info(person, 4_000,
-						"Couldn't get a spot outside the outer door in " + airlock.getEntityName() + ".");
+//				May add back for future testing :logger.info(person, 4_000, "Couldn't get a spot outside the outer door in " + airlock.getEntityName() + ".");
 
 				clearDown();
 
@@ -311,7 +310,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (airlock.isFull()) {
-				logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+//				May add back for future testing :logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
 				clearDown();
@@ -331,8 +330,7 @@ public class EnterAirlock extends Task {
 		else { // For vehicle
 
 			if (!airlock.addAwaitingOuterDoor(id)) {
-				logger.info(person, 4_000,
-						"Couldn't get a spot outside the outer door in " + airlock.getEntityName() + ".");
+//				May add back for future testing :logger.info(person, 4_000, "Couldn't get a spot outside the outer door in " + airlock.getEntityName() + ".");
 
 				clearDown();
 
@@ -343,7 +341,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (airlock.isFull()) {
-				logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+//				May add back for future testing :logger.info(person, 4_000, "Couldn't ingress in " + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
 				clearDown();
@@ -491,7 +489,7 @@ public class EnterAirlock extends Task {
 		// Must check if chambers are full or else getting stuck
 		if (airlock.isFull()) {
 			
-			logger.warning(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+//			May add back for future testing : logger.info(person, 16_000, COULDNT_WALK_TO + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 
 			clearDown();
 
@@ -508,7 +506,7 @@ public class EnterAirlock extends Task {
 		if (inSettlement) {
 
 			if (airlock.isOuterDoorLocked()) {
-				logger.warning(person, 4_000, "Outer door locked in " + airlock.getEntityName() + ".");
+				//			May add back for future testing : logger.info(person, 4_000, "Outer door locked in " + airlock.getEntityName() + ".");
 
 //				clearDown();
 
@@ -526,7 +524,7 @@ public class EnterAirlock extends Task {
 			}
 
 			else {
-				logger.warning(person, 4_000, "Can't enter " + airlock.getEntityName() + ".");
+//				May add back for future testing : logger.info(person, 4_000, "Can't enter " + airlock.getEntityName() + ".");
 
 				clearDown();
 
@@ -891,7 +889,7 @@ public class EnterAirlock extends Task {
 			// Add experience
 			addExperience(time);
 
-			logger.fine(person, 4_000, "Departing " + airlock.getEntity().toString() + ".");
+//			May add back for future testing : logger.fine(person, 4_000, "Departing " + airlock.getEntity().toString() + ".");
 
 			// This completes the EVA ingress through the airlock
 			completeAirlockTask();
@@ -910,8 +908,7 @@ public class EnterAirlock extends Task {
 	public static boolean canEnterAirlock(Person person, Airlock airlock) {
 
 		if (airlock.isFull()) {
-			logger.info(person, 4_000, 
-					COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+//			May add back for future testing : logger.info(person, 4_000, COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 			return false;
 		}
 
@@ -933,11 +930,12 @@ public class EnterAirlock extends Task {
 			// Release the responsibility of being the airlock operator if he's one
 			airlock.releaseOperatorID(id);
 
-			if (inSettlement) {
-				logger.fine(person, 4_000, "Concluded the building airlock operator task.");
-			} else {
-				logger.fine(person, 4_000, "Concluded the vehicle airlock operator task.");
-			}
+//			May add back for future testing :
+//			if (inSettlement) {
+//				logger.fine(person, 4_000, "Concluded the building airlock operator task.");
+//			} else {
+//				logger.fine(person, 4_000, "Concluded the vehicle airlock operator task.");
+//			}
 
 			if (inSettlement) {
 				((ClassicAirlock) airlock).removeFromActivitySpot(person);

@@ -422,25 +422,25 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-			logger.info(worker, 10_000L, getName() + "': too dark already.");
+//			May add back for future testing : logger.info(worker, 10_000L, getName() + "': too dark already.");
 			return true;
 		}
 
 		// Check for any EVA problems.
 		if (hasEVAProblem(person)) {
-			logger.info(worker, 10_000L, getName() + "': EVA problems.");
+//			May add back for testing : logger.info(worker, 10_000L, getName() + "': EVA problems.");
 			return true;
 		}
 
 		// Check if it is at meal time and the person is doubly hungry
 		if (isHungryAtMealTime(person, 0)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': Doubly hungry at meal time.");
+//			May add back for future testing : logger.info(worker, 10_000L, "Ending '" + getName() + "': Doubly hungry at meal time.");
 			return true;
 		}
 
         // Checks if the person is physically drained
 		if (isExhausted(person)) {
-			logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
+//			May add back for future testing : logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
 			return true;
 		}
 		
@@ -523,7 +523,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void endEVA(String reason) {
 		if (reason != null) {
- 			logger.info(worker, 20_000, "Ending EVA '" + getName() + "': " + reason);
+// 			May add back for future testing :logger.info(worker, 20_000, "Ending EVA '" + getName() + "': " + reason);
 		}
 		
 		if (person.isOutside()) {
@@ -540,7 +540,7 @@ public abstract class EVAOperation extends Task {
 	@Override
 	public void endTask() {		
 		if (person.isOutside()) {
-			logger.warning(worker, "Prematurely ending a task during an EVA");
+			logger.warning(worker, "Prematurely ending a task during an EVA.");
             endEVA("Premature endTask");
 		}
     	else

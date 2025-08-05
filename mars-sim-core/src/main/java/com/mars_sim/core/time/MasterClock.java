@@ -83,8 +83,8 @@ public class MasterClock implements Serializable {
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
 //	private static final int NEW_SLEEP = 20;
 	
-	/** The maximum pulse time allowed in one frame for a task phase. */
-	public static final float MAX_PULSE_WIDTH = .082f;
+	/** The initial max pulse time allowed in one frame for a task to execute in its phase. */
+	public static final float INITIAL_PULSE_WIDTH = .082f;
 	
 	/** The ratio between the next pulse width and the task pulse width. */
 	public static final double PULSE_RATIO = 20;
@@ -154,7 +154,7 @@ public class MasterClock implements Serializable {
 	private float nextPulseDeviation;
 	
 	/** The recommended task pulse time allowed in one frame for a task phase. */
-	private float taskPulseWidth = MAX_PULSE_WIDTH;
+	private float taskPulseWidth = INITIAL_PULSE_WIDTH;
 	
 	/** The Martian Clock. */
 	private MarsTime marsTime;
@@ -748,7 +748,7 @@ public class MasterClock implements Serializable {
 		optMilliSolPerPulse = optPulse;
 				
 		// Update the pulse time for use in tasks
-		float newTaskPulseWidth = (float) (.7 * MAX_PULSE_WIDTH + .3 * nextPulse / PULSE_RATIO * pulseLoad);
+		float newTaskPulseWidth = (float) (.7 * INITIAL_PULSE_WIDTH + .3 * nextPulse / PULSE_RATIO * pulseLoad);
 
 		if (taskPulseWidth != newTaskPulseWidth) {
 			taskPulseWidth = newTaskPulseWidth;

@@ -287,11 +287,11 @@ public class Computation extends Function {
 				/*
 				 *  Do NOT delete. For debugging.
 				 */  
-				 	logger.info(getBuilding(), 30_000, "2. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
-				 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
-				 
+//				 	logger.info(getBuilding(), 30_000, "2. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//				 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
+//				 
 				
 				return false;
 			} 
@@ -300,10 +300,10 @@ public class Computation extends Function {
 				/*
 				 *  Do NOT delete. For debugging.
 				 */ 
-				 	logger.info(getBuilding(), 30_000, "2. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
-				 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
+//				 	logger.info(getBuilding(), 30_000, "2. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//				 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
 				 
 				// It is allowed to go beyond within 5%
 			}
@@ -364,10 +364,10 @@ public class Computation extends Function {
 			/*
 			 *  Do NOT delete. For debugging.
 			 */  
-			 	logger.info(getBuilding(), 30_000, "1. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-			 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
-			 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
+//			 	logger.info(getBuilding(), 30_000, "1. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//			 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//			 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
 			 
 				return 0;
 			} 
@@ -376,10 +376,10 @@ public class Computation extends Function {
 			/*
 			 *  Do NOT delete. For debugging.
 			 */ 
-			 	logger.info(getBuilding(), 30_000, "1. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-						+ "  need: " + Math.round(needed * 1000.0)/1000.0
-			 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
+//			 	logger.info(getBuilding(), 30_000, "1. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//						+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//			 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
 			 
 				// It is allowed to go beyond within 5%
 			}

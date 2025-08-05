@@ -3541,13 +3541,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="12" power-required="0.6" />
-			<living-accommodation capacity="5">
+			<living-accommodation capacity="8">
 				<activity>
-					<activity-spot xloc="1.33" yloc="3.11" />
-					<activity-spot xloc="3.27" yloc="0.27" />
-					<activity-spot xloc="3.09" yloc="-1.07" />
-					<activity-spot xloc="-0.2" yloc="-3.44" />
-					<activity-spot xloc="-3.13" yloc="-1.33" />
+					<activity-spot xloc="0.86" yloc="3.65" />
+					<activity-spot xloc="-0.44" yloc="3.75" />
+					<activity-spot xloc="-2.64" yloc="2.72" />
+					<activity-spot xloc="-3.76" yloc="0.60" />
+					
+					<activity-spot xloc="-2.73" yloc="-2.70" />
+					<activity-spot xloc="-0.44" yloc="-3.7" />
+					<activity-spot xloc="0.86" yloc="-3.7" />
+					<activity-spot xloc="3.00" yloc="-2.33" />
 				</activity>			
 			</living-accommodation>
 			<power-generation>
