@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1" default-population="120" description="Sector base 1 for Mars Society"
+        name="Sector Base 1" default-population="136" description="Sector base 1 for Mars Society"
 		number-of-robots="84" sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
@@ -45,8 +45,17 @@
             <connection id="Q002" hatch-facing="west" />
             <connection id="Q003" hatch-facing="east" />
             <connection id="HC101" hatch-facing="north" />
+            <connection id="RHAB1" hatch-facing="south" />
         </connection-list>
     </building>
+
+    
+    <building id="RHAB1" type="Residential Hab" xloc="-30.0" yloc="-7.5" facing="90.0">
+        <connection-list>
+            <connection id="HC001" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
 
     <building id="Q003" type="Compact Quarters" xloc="-36.0" yloc="0.0" facing="90.0">
         <connection-list>
@@ -67,9 +76,18 @@
             <connection id="Q004" hatch-facing="west" />
             <connection id="Q005" hatch-facing="east" />
             <connection id="HC102" hatch-facing="north" />
+            <connection id="RHAB2" hatch-facing="south" />
         </connection-list>
     </building>
+
     
+    <building id="RHAB2" type="Residential Hab" xloc="-51.0" yloc="-7.5" facing="90.0">
+        <connection-list>
+            <connection id="HC002" hatch-facing="north" />
+        </connection-list>
+    </building>
+        
+        
     <building id="Q005" type="Compact Quarters" xloc="-57.0" yloc="0.0" facing="90.0">
         <connection-list>
             <connection id="HC002" hatch-facing="west" />
@@ -186,7 +204,7 @@
     
     <!-- Row 2 : 202 to 299 --> 	
 
-    <building id="HAB1" type="Lander Hab" xloc="0.0" yloc="12.0" facing="0.0">
+    <building id="MHAB1" type="Machinery Hab" xloc="0.0" yloc="12.0" facing="180.0">
         <connection-list>
             <connection id="LC201" hatch-facing="east" />
         </connection-list>
@@ -195,7 +213,7 @@
      <building id="LC201" type="life Core A" xloc="-7.5" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="LC101" hatch-facing="south" />
-            <connection id="HAB1" hatch-facing="west" />
+            <connection id="MHAB1" hatch-facing="west" />
             <connection id="POND201" hatch-facing="east" />
             <connection id="LC301" hatch-facing="north" />
         </connection-list>
@@ -266,12 +284,12 @@
         <connection-list>
             <connection id="LC102" hatch-facing="south" />
            	<connection id="FISH208" hatch-facing="west" />
-            <connection id="HAB2" hatch-facing="east" />  
+            <connection id="MHAB2" hatch-facing="east" />  
             <connection id="LC302" hatch-facing="north" />          	
         </connection-list>
     </building>
 
-    <building id="HAB2" type="Machinery Hab" xloc="-81.0" yloc="12.0" facing="0.0">
+    <building id="MHAB2" type="Machinery Hab" xloc="-81.0" yloc="12.0" facing="0.0">
         <connection-list>
             <connection id="LC202" hatch-facing="west" />
         </connection-list>
