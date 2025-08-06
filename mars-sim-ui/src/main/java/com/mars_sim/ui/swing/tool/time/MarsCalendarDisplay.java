@@ -139,10 +139,12 @@ public class MarsCalendarDisplay extends JComponent {
 
 
 		// If the number of sols in month are 27, black out lower left square
-		if (solsInMonth == 27) {
-			g.setColor(Color.black);
-			g.fillRect(X_OFFSET + 121, Y_OFFSET + 71, X_OFFSET + 138, Y_OFFSET + 93);
-		}
+		
+		// The code below causes black artifact
+//		if (solsInMonth == 27) {
+//			g.setColor(Color.black);
+//			g.fillRect(X_OFFSET + 121, Y_OFFSET + 71, BOX_WIDTH - 2 * Y_OFFSET, 95); // X_OFFSET + 121, Y_OFFSET + 71, X_OFFSET + 138, Y_OFFSET + 93);
+//		}
 
 		// Paint grid lines
 		g.setColor(baseColor);
