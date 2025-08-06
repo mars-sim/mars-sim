@@ -84,7 +84,7 @@
 			<location longitude="114.1535 E" latitude="15.1255 N" />
 		</settlement>
 
-		<settlement name="Foundation" template="Sector Base 1" crew="Founders" persons="120" robots="120" sponsor="MS">
+		<settlement name="Foundation" template="Sector Base 1" crew="Founders" persons="136" robots="84" sponsor="MS">
 			<location longitude="172.29 E" latitude="24.14 N" />
 		</settlement>
 		

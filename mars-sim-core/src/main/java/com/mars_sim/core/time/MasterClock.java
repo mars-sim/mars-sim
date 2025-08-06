@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2025-07-30
+ * @date 2025-08-05
  * @author Scott Davis
  */
 package com.mars_sim.core.time;
@@ -47,9 +47,6 @@ public class MasterClock implements Serializable {
 	/** The mid speed setting. */
 	public static final int TIER_0_TOP = 8;
 	
-	/** The CPU modifier for adjust the ref pulse width. */
-	public static final int CPU_MODIFIER = 4;
-
 	// 1x,    2x, 4x, 8x, 16x,    32x, 64x, 128x, 256x 
 	public static final float LOW_SPEED_RATIO = (float)Math.pow(2.0, 1.0 * TIER_0_TOP); 
 	// 384x, 576x, 864x, 1296x,    1944x, 2916x, 4374x, 6561x
@@ -85,9 +82,14 @@ public class MasterClock implements Serializable {
 	
 	/** The initial max pulse time allowed in one frame for a task to execute in its phase. */
 	public static final float INITIAL_PULSE_WIDTH = .082f;
-	
-	/** The ratio between the next pulse width and the task pulse width. */
-	public static final double PULSE_RATIO = 20;
+	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
+	public static final float INITIAL_TASK_PULSE_DAMPER = 2;
+	/** The initial ref pulse dampener for controlling the speed of the ref pulse width increase. */
+	public static final float INITIAL_REF_PULSE_DAMPER = 2;
+	/** The initial ratio between the next pulse width and the task pulse width. */
+	public static final float INITIAL_TASK_PULSE_RATIO = .5f;
+	/** The initial ratio between the minMilliSolPerPulse and the ref pulse width. */
+	public static final float INITIAL_REF_PULSE_RATIO = .25f;
 	
 	/** The number of milliseconds for each millisol.  */
 	private static final float MILLISECONDS_PER_MILLISOL = (float) (MarsTime.SECONDS_PER_MILLISOL * 1000f);
@@ -142,19 +144,28 @@ public class MasterClock implements Serializable {
 	private final float minMilliSolPerPulse;
 	/** The maximum time span covered by each simulation pulse in millisols. */
 	private final float maxMilliSolPerPulse;
-	/** The original pulse load. */
-	private float originalPulseLoad;
-	/** The pulse load. */
-	private float pulseLoad;
+	/** The original CPU util. */
+	private float originalCPUUtil;
+	/** The current CPU util. */
+	private float cpuUtil;
+	/** The task pulse damper - the higher the number, the slower the task pulse width will increase. */
+	private float taskPulseDamper = INITIAL_TASK_PULSE_DAMPER;
+	/** The ref pulse damper - the higher the number, the slower the ref pulse width will increase. */
+	private float refPulseDamper = INITIAL_REF_PULSE_DAMPER;
+	/** The player adjustable task pulse ratio. */
+	private float taskPulseRatio = INITIAL_TASK_PULSE_RATIO; 
+	/** The player adjustable ref pulse ratio. */
+	private float refPulseRatio = INITIAL_REF_PULSE_RATIO; 
+	
 	/** The optimal time span covered by each simulation pulse in millisols. */
 	private float optMilliSolPerPulse;
 	/** The reference pulse in millisols. */
 	private float referencePulse;
 	/** The next pulse deviation in fraction. */
 	private float nextPulseDeviation;
-	
-	/** The recommended task pulse time allowed in one frame for a task phase. */
+	/** The adjustable task pulse time allowed in one frame for a task phase. */
 	private float taskPulseWidth = INITIAL_PULSE_WIDTH;
+
 	
 	/** The Martian Clock. */
 	private MarsTime marsTime;
@@ -267,46 +278,78 @@ public class MasterClock implements Serializable {
 		
 		if (sim.getUnitManager() != null) {
 			float objLoad = sim.getUnitManager().getObjectsLoad();
-			float load = 50 * (float)Math.sqrt(Math.max(1, objLoad/20.0));
+			float load = .2f * (float)Math.sqrt(Math.max(1, objLoad/20.0));
 			
 			// Save the original pulse load
-			originalPulseLoad = load / cores;
+			originalCPUUtil = cores / load;
 			
-			pulseLoad =  (float)(Math.round((.5 * pulseLoad + .5 * load / cores) * 100.0)/100.0); 
-			logger.config(20_000, "Object Load: " + load + "  Pulse load: " + pulseLoad);
+			cpuUtil =  (float)(Math.round((.5 * cpuUtil + .5 * load / cores) * 100.0)/100.0); 
+			logger.config(20_000, "Object Load: " + load + "  CPU Util: " + cpuUtil);
 		}
 		else {
-			pulseLoad = 50f / cores; 
-			logger.config(20_000, "Pulse load: " + pulseLoad);
+			cpuUtil = cores / .2f; 
+			logger.config(20_000, "CPU Util: " + cpuUtil);
 		}
 	}
 
 	/**
 	 * Computes the reference pulse width and the optimal pulse width according to the desire TR.
 	 */
-	public void computeReferencePulse() {		
+	public void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = (float)(minMilliSolPerPulse 
-				+ Math.max(minMilliSolPerPulse, 
-						minMilliSolPerPulse * Math.pow(desiredTR, 1.25) * pulseLoad / 1200 / CPU_MODIFIER));
+				+ Math.max((1- refPulseRatio) * minMilliSolPerPulse, 
+						refPulseRatio * minMilliSolPerPulse * Math.pow(desiredTR, 1.25) / cpuUtil / 10 / refPulseDamper));
 
 		optMilliSolPerPulse = referencePulse;
 	}
 	
 	/**
-	 * Gets the pulse load.
+	 * Gets the CPU util.
 	 */
-	public float getPulseLoad() {
-		return pulseLoad;
+	public float getCPUUtil() {
+		return cpuUtil;
 	}
 		
 	/**
-	 * Sets the pulse load.
+	 * Sets the CPU util.
 	 */
-	public void setPulseLoad(float value) {
-		pulseLoad = value;
+	public void setCPUUtil(float value) {
+		cpuUtil = value;
 		// Recompute the ref and opt pulses
 		computeReferencePulse();
+	}
+	
+	public void setTaskPulseDamper(float value) {
+		taskPulseDamper = value;
+	}
+	
+	public float getTaskPulseDamper() {
+		return taskPulseDamper;
+	}
+	
+	public void setRefPulseDamper(float value) {
+		refPulseDamper = value;
+	}
+	
+	public float getRefPulseDamper() {
+		return refPulseDamper;
+	}
+	
+	public void setTaskPulseRatio(float value) {
+		taskPulseRatio = value;
+	}
+	
+	public float getTaskPulseRatio() {
+		return taskPulseRatio;
+	}
+	
+	public void setRefPulseRatio(float value) {
+		refPulseRatio = value;
+	}
+	
+	public float getRefPulseRatio() {
+		return refPulseRatio;
 	}
 	
 //	/**
@@ -748,7 +791,8 @@ public class MasterClock implements Serializable {
 		optMilliSolPerPulse = optPulse;
 				
 		// Update the pulse time for use in tasks
-		float newTaskPulseWidth = (float) (.7 * INITIAL_PULSE_WIDTH + .3 * nextPulse / PULSE_RATIO * pulseLoad);
+		float newTaskPulseWidth = (float) ((1-taskPulseRatio) * INITIAL_PULSE_WIDTH 
+				+ taskPulseRatio * nextPulse / taskPulseDamper / cpuUtil);
 
 		if (taskPulseWidth != newTaskPulseWidth) {
 			taskPulseWidth = newTaskPulseWidth;

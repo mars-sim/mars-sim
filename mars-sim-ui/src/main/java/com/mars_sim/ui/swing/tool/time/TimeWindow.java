@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TimeWindow.java
- * @date 2025-07-13
+* @date 2025-08-05
  * @author Scott Davis
  */
 
@@ -11,6 +11,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,6 +23,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+
+import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
@@ -100,8 +105,16 @@ public class TimeWindow extends ToolWindow {
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
 
-	/** The tick spinner */
+	/** The cpu util spinner */
 	private JSpinner cpuSpinner;
+	/** The task pulse damper spinner */
+	private JSpinner taskPulseDamperSpinner;
+	/** The task pulse ratio spinner */
+	private JSpinner taskPulseRatioSpinner;
+	/** The ref pulse ratio spinner */
+	private JSpinner refPulseRatioSpinner;
+	/** The ref pulse damper spinner */
+	private JSpinner refPulseDamperSpinner;
 	/** label for Martian time. */
 	private JLabel martianTimeLabel;
 	/** label for areocentric longitude. */
@@ -254,17 +267,120 @@ public class TimeWindow extends ToolWindow {
 		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
 		lonLabel.setToolTipText("The Areocentric Longitude (L_s) of Mars with respect to the Sun");
 		
-		
 		JPanel southPane = new JPanel(new BorderLayout());
 		seasonPane.add(southPane, BorderLayout.SOUTH);
 
-		// Create the tick spinner
-		createCPUSpinner(masterClock);
-		JPanel tickPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		tickPane.add(new JLabel("Pulse Load :"));
-		tickPane.setToolTipText("The smaller the load, the more refined each simulation step");
-		tickPane.add(cpuSpinner);
-		southPane.add(tickPane, BorderLayout.NORTH);
+		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
+		JXTaskPane actionPane = new JXTaskPane();
+		actionPane.setTitle("Pulse Parameters");
+		actionPane.setSpecial(true); // This can be used to highlight a primary task pane
+		taskPaneContainer.add(actionPane); 	
+		southPane.add(taskPaneContainer, BorderLayout.SOUTH);
+		
+		
+		// Create the cpu spinner
+		float value = Math.round(masterClock.getCPUUtil() * 100.0)/100.0f;
+		float min = Math.round(value / 5 * 100.0)/100.0f;
+		float max = Math.round(5 * value * 100.0)/100.0f;
+		float step = Math.round(value/20 * 100.0)/100.0f;
+		cpuSpinner = createSpinner(masterClock, value, min, max, step);
+		cpuSpinner.addChangeListener(e -> {
+			float cpu = ((SpinnerNumberModel)(cpuSpinner.getModel())).getNumber().floatValue();
+			// Change the pulse load
+			masterClock.setCPUUtil(cpu);
+		});
+		
+		JPanel cpuPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JLabel label = new JLabel(Msg.getString("TimeWindow.cpuUtil")); //$NON-NLS-1$
+		label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		cpuPane.add(label);
+		cpuPane.setToolTipText(Msg.getString("TimeWindow.cpuUtil.tooltip")); //$NON-NLS-1$
+		cpuPane.add(cpuSpinner);
+		actionPane.add(cpuPane);
+		
+		
+		// Create the ref pulse ratio spinner
+		value = Math.round(masterClock.getRefPulseRatio() * 100.0)/100.0f;
+		min = .1f; //Math.round(value / 5 * 100.0)/100.0f;
+		max = 1; //Math.min(1, Math.round(5 * value * 10.0)/10.0f);
+		step = .05f; //Math.round(value/10 * 10.0)/10.0f;
+		refPulseRatioSpinner = createSpinner(masterClock, value, min, max, step);
+		refPulseRatioSpinner.addChangeListener(e -> {
+			float rpr = ((SpinnerNumberModel)(refPulseRatioSpinner.getModel())).getNumber().floatValue();
+			// Change the ref pulse ratio
+			masterClock.setRefPulseRatio(rpr);
+		});
+		
+		JPanel rpRatioPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JLabel label2 = new JLabel(Msg.getString("TimeWindow.refPulseRatio")); //$NON-NLS-1$
+		label2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		rpRatioPane.add(label2);
+		rpRatioPane.setToolTipText(Msg.getString("TimeWindow.refPulseRatio.tooltip")); //$NON-NLS-1$
+		rpRatioPane.add(refPulseRatioSpinner);
+		actionPane.add(rpRatioPane);
+		
+		// Create the ref pulse damper spinner
+		value = Math.round(masterClock.getRefPulseDamper() * 100.0)/100.0f;
+		min = Math.round(value / 5 * 100.0)/100.0f;
+		max = Math.round(5 * value * 100.0)/100.0f;
+		step = 0.1f; //Math.round(value/20 * 100.0)/100.0f;
+		refPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
+		refPulseDamperSpinner.addChangeListener(e -> {
+			float rpd = ((SpinnerNumberModel)(refPulseDamperSpinner.getModel())).getNumber().floatValue();
+			// Change the pulse load
+			masterClock.setRefPulseDamper(rpd);
+		});
+		
+		JPanel rpDamperPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JLabel label1 = new JLabel(Msg.getString("TimeWindow.refPulseDamper")); //$NON-NLS-1$
+		label1.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		rpDamperPane.add(label1);
+		rpDamperPane.setToolTipText(Msg.getString("TimeWindow.refPulseDamper.tooltip")); //$NON-NLS-1$
+		rpDamperPane.add(refPulseDamperSpinner);
+		actionPane.add(rpDamperPane);
+		
+
+		// Create the task pulse ratio spinner
+		value = Math.round(masterClock.getTaskPulseRatio() * 100.0)/100.0f;
+		min = .1f; //Math.round(value / 5 * 100.0)/100.0f;
+		max = 1; //Math.min(1, Math.round(5 * value * 10.0)/10.0f);
+		step = .05f; //Math.round(value/10 * 10.0)/10.0f;
+		taskPulseRatioSpinner = createSpinner(masterClock, value, min, max, step);
+		taskPulseRatioSpinner.addChangeListener(e -> {
+			float tpr = ((SpinnerNumberModel)(taskPulseRatioSpinner.getModel())).getNumber().floatValue();
+			// Change the task pulse ratio
+			masterClock.setTaskPulseRatio(tpr);
+		});
+		
+		JPanel tpRatioPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JLabel label4 = new JLabel(Msg.getString("TimeWindow.taskPulseRatio")); //$NON-NLS-1$
+		label4.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		tpRatioPane.add(label4);
+		tpRatioPane.setToolTipText(Msg.getString("TimeWindow.taskPulseRatio.tooltip")); //$NON-NLS-1$
+		tpRatioPane.add(taskPulseRatioSpinner);
+		actionPane.add(tpRatioPane);
+		
+		
+		// Create the task pulse damper spinner
+		value = Math.round(masterClock.getTaskPulseDamper() * 100.0)/100.0f;
+		min = Math.round(value / 5 * 100.0)/100.0f;
+		max = Math.round(5 * value * 100.0)/100.0f;
+		step = 0.1f; //Math.round(value/20 * 100.0)/100.0f;
+		taskPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
+		taskPulseDamperSpinner.addChangeListener(e -> {
+			float tpd = ((SpinnerNumberModel)(taskPulseDamperSpinner.getModel())).getNumber().floatValue();
+			// Change the ref pulse damper
+			masterClock.setTaskPulseDamper(tpd);
+		});
+		
+		JPanel tpDamperPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JLabel label3 = new JLabel(Msg.getString("TimeWindow.taskPulseDamper")); //$NON-NLS-1$
+		label3.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		tpDamperPane.add(label3);
+		tpDamperPane.setToolTipText(Msg.getString("TimeWindow.taskPulseDamper.tooltip")); //$NON-NLS-1$
+		tpDamperPane.add(taskPulseDamperSpinner);
+		actionPane.add(tpDamperPane);	
+		
 		
 		// Create param panel
 		AttributePanel paramPane = new AttributePanel(13);
@@ -313,26 +429,25 @@ public class TimeWindow extends ToolWindow {
 	}
 
 	/**
-	 * Creates the CPU spinner.
+	 * Creates a spinner.
 	 * 
 	 * @param masterClock
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @return
 	 */
-	private void createCPUSpinner(MasterClock masterClock) {
-
-//		masterClock.computeReferencePulse();
+	private JSpinner createSpinner(MasterClock masterClock, double value, double min, double max, double step) {
 		
-		double value = masterClock.getPulseLoad();
-	
-		double min = Math.round(value / 5 * 100.0)/100.0;
-		double max = Math.round(5 * value * 100.0)/100.0;
-		
-		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(value, min, max, Math.round(value/20 * 100.0)/100.0);
+		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(value, min, max, step);
 
 		spinnerModel.setValue(value);
 		
-		cpuSpinner = new JSpinner(spinnerModel);	
+		JSpinner spinner = new JSpinner(spinnerModel);	
+		
+		spinner.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		// 1. Get the editor component of your spinner:
-		Component spinnerEditor = cpuSpinner.getEditor();
+		Component spinnerEditor = spinner.getEditor();
 		// 2. Get the text field of your spinner's editor:
 		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
 		// 3. Set a default size to the text field:
@@ -340,11 +455,7 @@ public class TimeWindow extends ToolWindow {
 	
 		jftf.setHorizontalAlignment(JTextField.LEFT);
 		
-		cpuSpinner.addChangeListener(e -> {
-			float pulseChoice = spinnerModel.getNumber().floatValue();
-			// Change the pulse load
-			masterClock.setPulseLoad(pulseChoice);
-		});
+		return spinner;
 	}
 	
 	
@@ -354,20 +465,47 @@ public class TimeWindow extends ToolWindow {
 	 * @param masterClock
 	 */
 	private void updateTimeLabels(MasterClock masterClock) {
-		float value = masterClock.getPulseLoad();
-		SpinnerNumberModel spinnerModel = (SpinnerNumberModel)(cpuSpinner.getModel());
 		
-		float cpuValue = spinnerModel.getNumber().floatValue();
-		if (cpuValue != value) {
-		
-			double min = Math.round(value / 5 * 100.0)/100.0;
-			double max = Math.round(5 * value * 100.0)/100.0;
-			
-			spinnerModel.setValue(value);
-			spinnerModel.setMinimum(min);
-			spinnerModel.setMaximum(max);
-			spinnerModel.setStepSize(Math.round(value/20 * 100.0)/100.0);
+		// Update the cpu util spinner
+		float value0 = Math.round(masterClock.getCPUUtil() * 100.0)/100.0f;	
+		SpinnerNumberModel spinnerModel0 = (SpinnerNumberModel)(cpuSpinner.getModel());
+		float spinValue0 = spinnerModel0.getNumber().floatValue();
+		if (spinValue0 != value0) {
+			spinnerModel0.setValue(value0);
 		}
+
+		// Update the ref pulse damper spinner
+		float value2 = Math.round(masterClock.getRefPulseDamper() * 100.0)/100.0f;
+		SpinnerNumberModel spinnerModel2 = (SpinnerNumberModel)(refPulseDamperSpinner.getModel());
+		float spinValue2 = spinnerModel2.getNumber().floatValue();
+		if (spinValue2 != value2) {
+			spinnerModel2.setValue(value2);
+		}
+
+		// Update the ref pulse ratio spinner
+		float value3 = Math.round(masterClock.getRefPulseRatio() * 100.0)/100.0f;
+		SpinnerNumberModel spinnerModel3 = (SpinnerNumberModel)(refPulseRatioSpinner.getModel());
+		float spinValue3 = spinnerModel3.getNumber().floatValue();
+		if (spinValue3 != value3) {
+			spinnerModel3.setValue(value3);
+		}
+		
+		// Update the task pulse damper spinner
+		float value4 = Math.round(masterClock.getTaskPulseDamper() * 100.0)/100.0f;
+		SpinnerNumberModel spinnerModel4 = (SpinnerNumberModel)(taskPulseDamperSpinner.getModel());
+		float spinValue4 = spinnerModel4.getNumber().floatValue();
+		if (spinValue4 != value4) {
+			spinnerModel4.setValue(value4);
+		}
+
+		// Update the task pulse ratio spinner
+		float value5 = Math.round(masterClock.getTaskPulseRatio() * 100.0)/100.0f;
+		SpinnerNumberModel spinnerModel5 = (SpinnerNumberModel)(taskPulseRatioSpinner.getModel());
+		float spinValue5 = spinnerModel5.getNumber().floatValue();
+		if (spinValue5 != value5) {
+			spinnerModel5.setValue(value5);
+		}
+		
 		
 		// Update execution time label
 		short execTime = masterClock.getExecutionTime();
