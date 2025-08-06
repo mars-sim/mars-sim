@@ -240,7 +240,9 @@ public class MissionManager implements Serializable {
 		var selectedMission = missionProbCache.getRandomSelection();
 
 		if (selectedMission == null) {
-			throw new IllegalStateException(person + " could not determine a new mission.");
+			logger.severe(person, "selectedMission is null. Could not determine a new mission.");
+//			throw new IllegalStateException(person + " could not determine a new mission.");
+			return null;
 		}
 
 		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, missionCache);
