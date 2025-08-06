@@ -278,16 +278,18 @@ public class MasterClock implements Serializable {
 		
 		if (sim.getUnitManager() != null) {
 			float objLoad = sim.getUnitManager().getObjectsLoad();
-			float load = .2f * (float)Math.sqrt(Math.max(1, objLoad/20.0));
+			float load = .8f * (float)Math.sqrt(Math.max(1, objLoad/20.0));
 			
 			// Save the original pulse load
-			originalCPUUtil = cores / load;
+			originalCPUUtil = cores / load;	
+			cpuUtil =  (float)(Math.round((.5 * cpuUtil + .5 * originalCPUUtil) * 100.0)/100.0); 
 			
-			cpuUtil =  (float)(Math.round((.5 * cpuUtil + .5 * load / cores) * 100.0)/100.0); 
 			logger.config(20_000, "Object Load: " + load + "  CPU Util: " + cpuUtil);
 		}
 		else {
-			cpuUtil = cores / .2f; 
+			originalCPUUtil = cores / .8f;
+			cpuUtil = originalCPUUtil; 
+			
 			logger.config(20_000, "CPU Util: " + cpuUtil);
 		}
 	}
@@ -320,6 +322,7 @@ public class MasterClock implements Serializable {
 		computeReferencePulse();
 	}
 	
+
 	public void setTaskPulseDamper(float value) {
 		taskPulseDamper = value;
 	}
@@ -327,7 +330,7 @@ public class MasterClock implements Serializable {
 	public float getTaskPulseDamper() {
 		return taskPulseDamper;
 	}
-	
+
 	public void setRefPulseDamper(float value) {
 		refPulseDamper = value;
 	}
@@ -350,6 +353,26 @@ public class MasterClock implements Serializable {
 	
 	public float getRefPulseRatio() {
 		return refPulseRatio;
+	}
+	
+	public void resetCPUUtil() {
+		cpuUtil = originalCPUUtil;
+	}
+	
+	public void resetTaskPulseDamper() {
+		taskPulseDamper = INITIAL_TASK_PULSE_DAMPER;
+	}
+	
+	public void resetRefPulseDamper() {
+		refPulseDamper = INITIAL_REF_PULSE_DAMPER;
+	}
+	
+	public void resetTaskPulseRatio() {
+		taskPulseRatio = INITIAL_TASK_PULSE_RATIO;
+	}
+	
+	public void resetRefPulseRatio() {
+		refPulseRatio = INITIAL_REF_PULSE_RATIO;
 	}
 	
 //	/**

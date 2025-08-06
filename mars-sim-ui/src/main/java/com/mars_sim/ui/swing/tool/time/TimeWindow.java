@@ -27,8 +27,10 @@ import javax.swing.SwingConstants;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
+import com.mars_sim.core.resourceprocess.ResourceProcess.ProcessState;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.ClockUtils;
 import com.mars_sim.core.time.MarsTime;
@@ -290,12 +292,21 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setCPUUtil(cpu);
 		});
 		
-		JPanel cpuPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JPanel cpuPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel label = new JLabel(Msg.getString("TimeWindow.cpuUtil")); //$NON-NLS-1$
 		label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		cpuPane.add(label);
 		cpuPane.setToolTipText(Msg.getString("TimeWindow.cpuUtil.tooltip")); //$NON-NLS-1$
 		cpuPane.add(cpuSpinner);
+		
+		JButton cpuButton = new JButton("\u238c");
+		cpuButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+		cpuButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		cpuButton.addActionListener(e -> {
+             masterClock.resetCPUUtil();
+         });
+		cpuPane.add(cpuButton);
+		
 		actionPane.add(cpuPane);
 		
 		
@@ -311,12 +322,21 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setRefPulseRatio(rpr);
 		});
 		
-		JPanel rpRatioPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JPanel rpRatioPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel label2 = new JLabel(Msg.getString("TimeWindow.refPulseRatio")); //$NON-NLS-1$
 		label2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		rpRatioPane.add(label2);
 		rpRatioPane.setToolTipText(Msg.getString("TimeWindow.refPulseRatio.tooltip")); //$NON-NLS-1$
 		rpRatioPane.add(refPulseRatioSpinner);
+		
+		JButton rprButton = new JButton("\u238c");
+		rprButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+		rprButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		rprButton.addActionListener(e -> {
+             masterClock.resetRefPulseRatio();
+         });
+		rpRatioPane.add(rprButton);
+		
 		actionPane.add(rpRatioPane);
 		
 		// Create the ref pulse damper spinner
@@ -331,12 +351,21 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setRefPulseDamper(rpd);
 		});
 		
-		JPanel rpDamperPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JPanel rpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel label1 = new JLabel(Msg.getString("TimeWindow.refPulseDamper")); //$NON-NLS-1$
 		label1.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		rpDamperPane.add(label1);
 		rpDamperPane.setToolTipText(Msg.getString("TimeWindow.refPulseDamper.tooltip")); //$NON-NLS-1$
 		rpDamperPane.add(refPulseDamperSpinner);
+		
+		JButton rpdButton = new JButton("\u238c");
+		rpdButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+		rpdButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		rpdButton.addActionListener(e -> {
+             masterClock.resetRefPulseDamper();
+         });
+		rpDamperPane.add(rpdButton);
+		
 		actionPane.add(rpDamperPane);
 		
 
@@ -352,12 +381,21 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setTaskPulseRatio(tpr);
 		});
 		
-		JPanel tpRatioPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JPanel tpRatioPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel label4 = new JLabel(Msg.getString("TimeWindow.taskPulseRatio")); //$NON-NLS-1$
 		label4.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		tpRatioPane.add(label4);
 		tpRatioPane.setToolTipText(Msg.getString("TimeWindow.taskPulseRatio.tooltip")); //$NON-NLS-1$
 		tpRatioPane.add(taskPulseRatioSpinner);
+		
+		JButton tprButton = new JButton("\u238c");
+		tprButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+		tprButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		tprButton.addActionListener(e -> {
+             masterClock.resetTaskPulseRatio();
+         });
+		tpRatioPane.add(tprButton);
+	
 		actionPane.add(tpRatioPane);
 		
 		
@@ -373,12 +411,21 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setTaskPulseDamper(tpd);
 		});
 		
-		JPanel tpDamperPane = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JPanel tpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel label3 = new JLabel(Msg.getString("TimeWindow.taskPulseDamper")); //$NON-NLS-1$
 		label3.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		tpDamperPane.add(label3);
 		tpDamperPane.setToolTipText(Msg.getString("TimeWindow.taskPulseDamper.tooltip")); //$NON-NLS-1$
 		tpDamperPane.add(taskPulseDamperSpinner);
+		
+		JButton tpdButton = new JButton("\u238c");
+		tpdButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+		tpdButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		tpdButton.addActionListener(e -> {
+             masterClock.resetTaskPulseDamper();
+         });
+		tpDamperPane.add(tpdButton);
+	
 		actionPane.add(tpDamperPane);	
 		
 		
@@ -451,9 +498,9 @@ public class TimeWindow extends ToolWindow {
 		// 2. Get the text field of your spinner's editor:
 		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
 		// 3. Set a default size to the text field:
-		jftf.setColumns(4);
+		jftf.setColumns(3);
 	
-		jftf.setHorizontalAlignment(JTextField.LEFT);
+		jftf.setHorizontalAlignment(JTextField.RIGHT);
 		
 		return spinner;
 	}
