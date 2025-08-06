@@ -12,15 +12,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
@@ -30,7 +31,6 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
-import com.mars_sim.core.resourceprocess.ResourceProcess.ProcessState;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.ClockUtils;
 import com.mars_sim.core.time.MarsTime;
@@ -179,14 +179,26 @@ public class TimeWindow extends ToolWindow {
 		MarsTime marsTime = masterClock.getMarsTime();
 		orbitInfo = sim.getOrbitInfo();
 		
-		// Get content pane
-		JPanel mainPane = new JPanel();//new BoxLayout(mainPane, BoxLayout.Y_AXIS));//new BorderLayout());
+		// Set up scroll pane
+		var scrollPane = new JScrollPane();
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		setContentPane(scrollPane);
+		
+		// Set up main pane
+		JPanel mainPane = new JPanel(new BorderLayout()); // new BoxLayout(this, BoxLayout.Y_AXIS));//
 		mainPane.setBorder(new MarsPanelBorder());
-		setContentPane(mainPane);
 
+		scrollPane.setViewportView(mainPane);
+		scrollPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		
+		// Set up martian pane
+		JPanel martianPane = new JPanel(new BorderLayout());
+		mainPane.add(martianPane, BorderLayout.NORTH);
+		
 		// Create Martian time panel
 		JPanel martianTimePane = new JPanel(new BorderLayout());
-		mainPane.add(martianTimePane, BorderLayout.NORTH);
+		martianPane.add(martianTimePane, BorderLayout.NORTH);
 	
 		// Create Martian time header label
 		martianTimeLabel = new JLabel();
@@ -209,8 +221,9 @@ public class TimeWindow extends ToolWindow {
 		
 		// Create Martian month panel
 		JPanel martianMonthPane = new JPanel(new BorderLayout());
+		martianMonthPane.setPreferredSize(new Dimension(WIDTH, 160));
 		martianMonthPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianMonth"))); //$NON-NLS-1$
-		mainPane.add(martianMonthPane, BorderLayout.CENTER);
+		martianPane.add(martianMonthPane, BorderLayout.CENTER);
 		
 		// Create Martian calendar label panel
 		AttributePanel labelPane = new AttributePanel(1, 2);
@@ -244,7 +257,7 @@ public class TimeWindow extends ToolWindow {
 
 
 		JPanel seasonPane = new JPanel(new BorderLayout());
-		mainPane.add(seasonPane, BorderLayout.SOUTH);
+		martianPane.add(seasonPane, BorderLayout.SOUTH);
 
 		// Create Martian hemisphere panel
 		AttributePanel hemiPane = new AttributePanel(3);
@@ -273,15 +286,81 @@ public class TimeWindow extends ToolWindow {
 		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
 		lonLabel.setToolTipText("The Areocentric Longitude (L_s) of Mars with respect to the Sun");
 		
-		JPanel southPane = new JPanel(new BorderLayout());
-		seasonPane.add(southPane, BorderLayout.SOUTH);
+		JPanel paramPane = new JPanel(new BorderLayout());
+		mainPane.add(paramPane, BorderLayout.CENTER);
 
+		JPanel attributePane = new JPanel(new BorderLayout());
+		paramPane.add(attributePane, BorderLayout.NORTH);
+		
+		// Create speed panel
+		AttributePanel speedPane = new AttributePanel(8);
+		speedPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
+		attributePane.add(speedPane, BorderLayout.NORTH);
+
+		ticksPerSecLabel = speedPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", //$NON-NLS-1$
+				"The current ticks per sec");
+		averageTPSLabel = speedPane.addTextField(AVERAGE_TPS, "", 
+				"The average ticks per sec");
+		execTimeLabel = speedPane.addTextField(EXEC, "", 
+				"The last execution time of a tick");
+		sleepTimeLabel = speedPane.addTextField(SLEEP_TIME, "", 
+				"The sleep time [ms] of the last tick");
+		
+		
+		actualTRLabel = speedPane.addTextField(ACTUAL_TIME_RATIO, "",
+				"Master clock's actual time ratio");
+		desireTRLabel = speedPane.addTextField(DESIRE_TR, "",
+				"Master clock's desire time ratio");
+		realTimeClockLabel = speedPane.addTextField(Msg.getString("TimeWindow.rtc"), "", 
+				"The amount of simulation time at the passing of each second of the real time"); //$NON-NLS-1$
+		uptimeLabel = speedPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", 
+				"The amount of real time the simulation has been running"); //$NON-NLS-1$
+	
+		// Create pulse panel
+		AttributePanel pulsePane = new AttributePanel(5);
+		pulsePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.pulseParams"))); //$NON-NLS-1$
+		attributePane.add(pulsePane, BorderLayout.CENTER);
+		
+		taskPulseLabel = pulsePane.addTextField(TASK_PULSE_TIME, "", 
+				"How many millisol the task pulse width is");
+		refPulseLabel = pulsePane.addTextField(REFERENCE, "", 
+				"How many millisol the reference pulse width is");
+		optimalPulseLabel = pulsePane.addTextField(OPTIMAL, "", 
+				"How many millisol the optimal pulse width is");
+		pulseDeviationLabel = pulsePane.addTextField(PULSE_DEVIATION, "", 
+				"The percentage of deviation between the optimal pulse width and the next pulse width");
+		nextPulseLabel = pulsePane.addTextField(NEXT_PULSE_TIME, "", 
+				"How many millisol the next pulse width will be");
+	
+		createAdvancePanel(masterClock, paramPane);
+		
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		
+		// Pack window
+		pack();
+
+		// Update the two time labels
+		updateFastLabels(masterClock);
+		updateDateLabels(masterClock);
+		updateTimeLabels(masterClock);
+		
+		// Update season labels
+		updateSeason();
+	}
+	
+	/**
+	 * Creates the advanced panel for adjusting pulse params.
+	 * 
+	 * @param masterClock
+	 * @param pane
+	 */
+	public void createAdvancePanel(MasterClock masterClock, JPanel pane) {
 		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
 		JXTaskPane actionPane = new JXTaskPane();
-		actionPane.setTitle("Pulse Parameters");
+		actionPane.setTitle("Advanced Setting");
 		actionPane.setSpecial(true); // This can be used to highlight a primary task pane
 		taskPaneContainer.add(actionPane); 	
-		southPane.add(taskPaneContainer, BorderLayout.SOUTH);
+		pane.add(taskPaneContainer, BorderLayout.CENTER);
 		
 		
 		// Create the cpu spinner
@@ -296,16 +375,10 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setCPUUtil(cpu);
 		});
 		
-		JPanel cpuPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel label = new JLabel(Msg.getString("TimeWindow.cpuUtil")); //$NON-NLS-1$
-		label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		cpuPane.add(label);
-		cpuPane.setToolTipText(Msg.getString("TimeWindow.cpuUtil.tooltip")); //$NON-NLS-1$
+		JPanel cpuPane = createPane("cpuUtil");
 		cpuPane.add(cpuSpinner);
 		
-		JButton cpuButton = new JButton("\u238c");
-		cpuButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-		cpuButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		JButton cpuButton = createResetButton();
 		cpuButton.addActionListener(e -> {
              masterClock.resetCPUUtil();
          });
@@ -326,16 +399,10 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setRefPulseRatio(rpr);
 		});
 		
-		JPanel rpRatioPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel label2 = new JLabel(Msg.getString("TimeWindow.refPulseRatio")); //$NON-NLS-1$
-		label2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		rpRatioPane.add(label2);
-		rpRatioPane.setToolTipText(Msg.getString("TimeWindow.refPulseRatio.tooltip")); //$NON-NLS-1$
+		JPanel rpRatioPane = createPane("refPulseRatio");
 		rpRatioPane.add(refPulseRatioSpinner);
 		
-		JButton rprButton = new JButton("\u238c");
-		rprButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-		rprButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		JButton rprButton = createResetButton();
 		rprButton.addActionListener(e -> {
              masterClock.resetRefPulseRatio();
          });
@@ -355,16 +422,10 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setRefPulseDamper(rpd);
 		});
 		
-		JPanel rpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel label1 = new JLabel(Msg.getString("TimeWindow.refPulseDamper")); //$NON-NLS-1$
-		label1.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		rpDamperPane.add(label1);
-		rpDamperPane.setToolTipText(Msg.getString("TimeWindow.refPulseDamper.tooltip")); //$NON-NLS-1$
+		JPanel rpDamperPane = createPane("refPulseDamper"); 
 		rpDamperPane.add(refPulseDamperSpinner);
 		
-		JButton rpdButton = new JButton("\u238c");
-		rpdButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-		rpdButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		JButton rpdButton = createResetButton();
 		rpdButton.addActionListener(e -> {
              masterClock.resetRefPulseDamper();
          });
@@ -385,16 +446,10 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setTaskPulseRatio(tpr);
 		});
 		
-		JPanel tpRatioPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel label4 = new JLabel(Msg.getString("TimeWindow.taskPulseRatio")); //$NON-NLS-1$
-		label4.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		tpRatioPane.add(label4);
-		tpRatioPane.setToolTipText(Msg.getString("TimeWindow.taskPulseRatio.tooltip")); //$NON-NLS-1$
+		JPanel tpRatioPane = createPane("taskPulseRatio");
 		tpRatioPane.add(taskPulseRatioSpinner);
 		
-		JButton tprButton = new JButton("\u238c");
-		tprButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-		tprButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		JButton tprButton = createResetButton();
 		tprButton.addActionListener(e -> {
              masterClock.resetTaskPulseRatio();
          });
@@ -415,72 +470,50 @@ public class TimeWindow extends ToolWindow {
 			masterClock.setTaskPulseDamper(tpd);
 		});
 		
-		JPanel tpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel label3 = new JLabel(Msg.getString("TimeWindow.taskPulseDamper")); //$NON-NLS-1$
-		label3.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		tpDamperPane.add(label3);
-		tpDamperPane.setToolTipText(Msg.getString("TimeWindow.taskPulseDamper.tooltip")); //$NON-NLS-1$
+		JPanel tpDamperPane = createPane("taskPulseDamper");
 		tpDamperPane.add(taskPulseDamperSpinner);
 		
-		JButton tpdButton = new JButton("\u238c");
-		tpdButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-		tpdButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); //$NON-NLS-1$
+		JButton tpdButton = createResetButton();
 		tpdButton.addActionListener(e -> {
              masterClock.resetTaskPulseDamper();
          });
 		tpDamperPane.add(tpdButton);
 	
-		actionPane.add(tpDamperPane);	
-		
-		
-		// Create param panel
-		AttributePanel paramPane = new AttributePanel(14);
-		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
-
-		southPane.add(paramPane, BorderLayout.CENTER);
-
-		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", //$NON-NLS-1$
-				"The current ticks per sec");
-		averageTPSLabel = paramPane.addTextField(AVERAGE_TPS, "", 
-				"The average ticks per sec");
-		execTimeLabel = paramPane.addTextField(EXEC, "", 
-				"The last execution time of a tick");
-		sleepTimeLabel = paramPane.addTextField(SLEEP_TIME, "", 
-				"The sleep time [ms] of the last tick");
-		taskPulseLabel = paramPane.addTextField(TASK_PULSE_TIME, "", 
-				"How many millisol the task pulse width is");
-		refPulseLabel = paramPane.addTextField(REFERENCE, "", 
-				"How many millisol the reference pulse width is");
-		optimalPulseLabel = paramPane.addTextField(OPTIMAL, "", 
-				"How many millisol the optimal pulse width is");
-		pulseDeviationLabel = paramPane.addTextField(PULSE_DEVIATION, "", 
-				"The percentage of deviation between the optimal pulse width and the next pulse width");
-		nextPulseLabel = paramPane.addTextField(NEXT_PULSE_TIME, "", 
-				"How many millisol the next pulse width will be");
-		actualTRLabel = paramPane.addTextField(ACTUAL_TIME_RATIO, "",
-				"Master clock's actual time ratio");
-		desireTRLabel = paramPane.addTextField(DESIRE_TR, "",
-				"Master clock's desire time ratio");
-		realTimeClockLabel = paramPane.addTextField(Msg.getString("TimeWindow.rtc"), "", 
-				"The amount of simulation time at the passing of each second of the real time"); //$NON-NLS-1$
-		uptimeLabel = paramPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", 
-				"The amount of real time the simulation has been running"); //$NON-NLS-1$
-	
-
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		
-		// Pack window
-		pack();
-
-		// Update the two time labels
-		updateFastLabels(masterClock);
-		updateDateLabels(masterClock);
-		updateTimeLabels(masterClock);
-		
-		// Update season labels
-		updateSeason();
+		actionPane.add(tpDamperPane);
 	}
 
+	/**
+	 * Creates a pane.
+	 * 
+	 * @param label
+	 * @return
+	 */
+	private JPanel createPane(String label) {
+		String fullStr = "TimeWindow." + label;
+		fullStr = Msg.getString(fullStr); //$NON-NLS-1$
+		JPanel tpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JLabel label3 = new JLabel(fullStr);
+		label3.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		fullStr = "TimeWindow." + label + ".tooltip";
+		fullStr = Msg.getString(fullStr); //$NON-NLS-1$
+		tpDamperPane.add(label3);
+		tpDamperPane.setToolTipText(fullStr); 
+		return tpDamperPane;
+	}
+	
+	/**
+	 * Creates a reset button.
+	 * 
+	 * @return
+	 */
+	private JButton createResetButton() {
+		JButton tpdButton = new JButton("\u238c");
+		tpdButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		tpdButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+		tpdButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); 
+		return tpdButton;
+	}
+	
 	/**
 	 * Creates a spinner.
 	 * 

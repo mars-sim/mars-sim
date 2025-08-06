@@ -1071,7 +1071,7 @@ public class MasterClock implements Serializable {
 		if (listenerExecutor == null 
 				|| listenerExecutor.isShutdown()
 				|| listenerExecutor.isTerminated()) {
-			logger.config(3_000, "Setting up thread(s) for clock listener.");
+			logger.config(0, "Setting up thread(s) for clock listener.");
 			listenerExecutor = Executors.newFixedThreadPool(1,
 					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
 		}
@@ -1084,9 +1084,9 @@ public class MasterClock implements Serializable {
 		if (clockExecutor == null
 				|| clockExecutor.isShutdown()
 				|| clockExecutor.isTerminated()) {
-			int num = 1; // Should only have 1 thread updating the time
-			logger.config(3_000, "Setting up " + num + " thread for clock executor.");
-			clockExecutor = Executors.newFixedThreadPool(num,
+
+			logger.config(0, "Setting up the master clock thread executor.");
+			clockExecutor = Executors.newSingleThreadExecutor(
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 			// Recompute pulse load
 			computePulseLoad();
@@ -1466,16 +1466,16 @@ public class MasterClock implements Serializable {
 					// NOTE: When resuming from power save, executionTime is often very high
 					// Do NOT delete the followings. Very useful for debugging.
 					if (executionTime > EXE_UPPER_LIMIT) {
-				    	logger.severe(10_000, String.format("Abnormal execution time: %d ms.", executionTime));
+				    	logger.severe(EXE_UPPER_LIMIT, String.format("Abnormal execution time: %d ms.", executionTime));
 						// Slow down the time ratio
 						decreaseSpeed();	
 						// Set the sleep time
-						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
+//						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
 					}
 					else if (executionTime > EXE_UPPER_LIMIT / 3) {
-				    	logger.severe(10_000, String.format("Abnormal execution time: %d ms.", executionTime));
+				    	logger.severe(EXE_UPPER_LIMIT / 3, String.format("Abnormal execution time: %d ms.", executionTime));
 						// Set the sleep time
-						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
+//						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
 					}
 				}
 				else if (!isPaused) {

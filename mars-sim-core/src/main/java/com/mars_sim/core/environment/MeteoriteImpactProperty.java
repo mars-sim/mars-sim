@@ -13,14 +13,34 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
+ *  The scientific consensus is that Mars has a significantly higher probability of 
+ *  meteorite impacts than on the Earth or the Moon. This is a result of the proximity 
+ *  of Mars to the asteroid belt, the thin Martian atmosphere and the lack of a Martian
+ *  magnetic field (Boston, 2009; Bland and Smith, 2000; Schroeder et al., 2008). 
+ *  
+ *  It has been calculated that no meteorites smaller than approximately one kilogram 
+ *  in mass are capable of reaching the Martian surface because of protection provided 
+ *  by the atmosphere (Carrermole, 2001). 
+ *  
+ *  This parameter and the risk of meteorites vary with altitude. The precise flux of 
+ *  meteorites and how to calculate these values is still a subject of active debate even 
+ *  on Earth (Zolensky et al., 1990). 
+ *  
+ *  Secondary fragmentation risks would further depend on the impacted terrain. It is 
+ *  anticipated that lava tubes buried by tens of meters of basalt would provide excellent
+ *  protection from most small impacts and secondary fragmentation (Clifford, 1997). 
+ * 
+ * 
  *   Assumptions:
+ *   
  *	 a. Use the research basis that meteorites have a spherical sphere with 8 um radius
- *	 b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that
- *	 particles from 10 to 1000 mm in diameter are slowed
- *	 below 1 km/s before impacting the surface of the planet (Flynn and McKay,
- *	 1990).
+ *
+ *	 b. Velocity of impact < 1 km/s : Atmospheric entry simulations indicate that
+ *	 particles from 10 to 1000 mm in diameter are slowed below 1 km/s before impacting 
+ *   the surface of the planet (Flynn and McKay, 1990).
  *
  *   References:
+ *   
  *	 1. Inflatable Transparent Structures for Mars Greenhouse Applications
  *	 2005-01-2846. SAE International.
  *	 data.spaceappschallenge.org/ICES.pdf
@@ -30,8 +50,10 @@ import com.mars_sim.core.tool.RandomUtil;
  *
  *	 3. Meteorite Accumulations on Mars. P.A.Bland and T.B.Smith. Revised Sep 10 1999
  *	 https://www.researchgate.net/publication/222568152_Meteorite_Accumulations_on_Mars
- * 
- * @author mkhelios
+ *   
+ *   4. ACCESS Mars Final Report Revised 3. Alexandre Sole Carretero
+ *   https://www.academia.edu/4608351/ACCESS_Mars_Final_Report_Revised_3
+ *   
  */
 public class MeteoriteImpactProperty implements Serializable {
 

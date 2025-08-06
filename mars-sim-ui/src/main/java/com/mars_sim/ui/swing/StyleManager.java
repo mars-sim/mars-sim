@@ -154,11 +154,12 @@ public class StyleManager {
     private static final String LABEL_FONT_STYLE = "labelFont";
     private static final String HEADING_FONT_STYLE = "headingFont";
     private static final String SUBHEADING_FONT_STYLE = "subHeadingFont";
+    private static final String SUBTITLE_FONT_STYLE = "subTitleFont";
     private static final String FONT_FAMILY = "family";
     private static final String FONT_STYLE = "style";
     private static final String FONT_SIZE = "size";
 
-    // Constrants for LaF styling
+    // Constraints for LaF styling
     private static final String LAF_STYLE = "Look_and_Feel";
     private static final String LAF_NAME = "name";
 
@@ -166,6 +167,7 @@ public class StyleManager {
     private static Font systemFont;
     private static Font headingFont;
     private static Font subHeadingFont;
+    private static Font subTitleFont;
     private static Font smallFont;
     private static Font smallLabelFont;
 
@@ -199,6 +201,12 @@ public class StyleManager {
         subHeadingProps.setProperty(FONT_SIZE, "+3");
         styles.put(SUBHEADING_FONT_STYLE, subHeadingProps);
 
+        // Sub heading font used inside panels is BOLD & size +4
+        Properties subTitleProps = new Properties();
+        subTitleProps.setProperty(FONT_STYLE, "Italic");
+        subTitleProps.setProperty(FONT_SIZE, "+2");
+        styles.put(SUBTITLE_FONT_STYLE, subTitleProps);
+        
         // Default is the LAF with a Red accent colour
         Properties lafProps = new Properties();
         lafProps.setProperty(LAF_NAME, LIGHT_RED);
@@ -405,7 +413,8 @@ public class StyleManager {
         labelFont = createFont(defaultFont, styles.get(LABEL_FONT_STYLE));
         headingFont = createFont(defaultFont, styles.get(HEADING_FONT_STYLE));
         subHeadingFont = createFont(defaultFont, styles.get(SUBHEADING_FONT_STYLE));
-
+        subTitleFont = createFont(defaultFont, styles.get(SUBTITLE_FONT_STYLE));
+        
         // Smaller font is not user-configurable
         Properties smallProps = new Properties();
         smallProps.setProperty(FONT_SIZE, "-2");
@@ -518,7 +527,7 @@ public class StyleManager {
     }
 
     /**
-     * Creates a Titled border that uses the Label font.
+     * Creates a titled border that uses the sub title font.
      * 
      * @param title
      * @return
@@ -526,7 +535,7 @@ public class StyleManager {
     public static Border createLabelBorder(String title) {
         return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
                                                         TitledBorder.DEFAULT_POSITION,
-                                                        labelFont, (Color)null);
+                                                        subTitleFont, (Color)null);
     }
 
     /**
@@ -561,6 +570,7 @@ public class StyleManager {
     }
 
     /**
+     * Creates a scroll pane with border and title
      * 
      * @param title
      * @param content
