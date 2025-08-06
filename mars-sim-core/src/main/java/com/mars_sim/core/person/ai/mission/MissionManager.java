@@ -220,7 +220,6 @@ public class MissionManager implements Serializable {
 	 * @param person person to find the mission for
 	 * @return new mission
 	 */
-
 	public Mission getNewMission(Person person) {
 		MarsTime marsTime = Simulation.instance().getMasterClock().getMarsTime();
 		CacheCreator<MissionRating> missionProbCache = new CacheCreator<>("Mission", marsTime);

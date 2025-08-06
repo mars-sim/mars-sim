@@ -299,10 +299,12 @@ public class MasterClock implements Serializable {
 	 */
 	public void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
-		referencePulse = (float)(minMilliSolPerPulse 
-				+ Math.max((1- refPulseRatio) * minMilliSolPerPulse, 
-						refPulseRatio * minMilliSolPerPulse * Math.pow(desiredTR, 1.25) / cpuUtil / 10 / refPulseDamper));
-
+//		referencePulse = (float)(minMilliSolPerPulse 
+//				+ Math.max((1 - refPulseRatio) * minMilliSolPerPulse, 
+//						refPulseRatio * minMilliSolPerPulse * Math.pow(desiredTR, 1.25) / cpuUtil / 10 / refPulseDamper));
+		referencePulse = (float) ((1 - refPulseRatio) * minMilliSolPerPulse 
+						+ refPulseRatio * Math.pow(desiredTR, 1.3) / cpuUtil / 1000 / refPulseDamper);
+		
 		optMilliSolPerPulse = referencePulse;
 	}
 	
@@ -814,7 +816,7 @@ public class MasterClock implements Serializable {
 		optMilliSolPerPulse = optPulse;
 				
 		// Update the pulse time for use in tasks
-		float newTaskPulseWidth = (float) ((1-taskPulseRatio) * INITIAL_PULSE_WIDTH 
+		float newTaskPulseWidth = (float) ((1 - taskPulseRatio) * INITIAL_PULSE_WIDTH 
 				+ taskPulseRatio * nextPulse / taskPulseDamper / cpuUtil);
 
 		if (taskPulseWidth != newTaskPulseWidth) {
