@@ -83,11 +83,11 @@ public class MasterClock implements Serializable {
 	/** The initial max pulse time allowed in one frame for a task to execute in its phase. */
 	public static final float INITIAL_PULSE_WIDTH = .082f;
 	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
-	public static final float INITIAL_TASK_PULSE_DAMPER = 2;
+	public static final float INITIAL_TASK_PULSE_DAMPER = 10;
 	/** The initial ref pulse dampener for controlling the speed of the ref pulse width increase. */
-	public static final float INITIAL_REF_PULSE_DAMPER = 2;
+	public static final float INITIAL_REF_PULSE_DAMPER = 10;
 	/** The initial ratio between the next pulse width and the task pulse width. */
-	public static final float INITIAL_TASK_PULSE_RATIO = .5f;
+	public static final float INITIAL_TASK_PULSE_RATIO = .25f;
 	/** The initial ratio between the minMilliSolPerPulse and the ref pulse width. */
 	public static final float INITIAL_REF_PULSE_RATIO = .25f;
 	
@@ -278,7 +278,7 @@ public class MasterClock implements Serializable {
 		
 		if (sim.getUnitManager() != null) {
 			float objLoad = sim.getUnitManager().getObjectsLoad();
-			float load = .8f * (float)Math.sqrt(Math.max(1, objLoad/20.0));
+			float load = .5f * (float)Math.sqrt(Math.max(1, objLoad/20.0));
 			
 			// Save the original pulse load
 			originalCPUUtil = cores / load;	
@@ -287,7 +287,7 @@ public class MasterClock implements Serializable {
 			logger.config(20_000, "Object Load: " + load + "  CPU Util: " + cpuUtil);
 		}
 		else {
-			originalCPUUtil = cores / .8f;
+			originalCPUUtil = cores / .5f;
 			cpuUtil = originalCPUUtil; 
 			
 			logger.config(20_000, "CPU Util: " + cpuUtil);
@@ -299,11 +299,8 @@ public class MasterClock implements Serializable {
 	 */
 	public void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
-//		referencePulse = (float)(minMilliSolPerPulse 
-//				+ Math.max((1 - refPulseRatio) * minMilliSolPerPulse, 
-//						refPulseRatio * minMilliSolPerPulse * Math.pow(desiredTR, 1.25) / cpuUtil / 10 / refPulseDamper));
-		referencePulse = (float) ((1 - refPulseRatio) * minMilliSolPerPulse 
-						+ refPulseRatio * Math.pow(desiredTR, 1.3) / cpuUtil / 1000 / refPulseDamper);
+		referencePulse = (float) ( refPulseRatio * minMilliSolPerPulse 
+						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.3) / cpuUtil / cpuUtil / 5 / refPulseDamper);
 		
 		optMilliSolPerPulse = referencePulse;
 	}
@@ -816,8 +813,8 @@ public class MasterClock implements Serializable {
 		optMilliSolPerPulse = optPulse;
 				
 		// Update the pulse time for use in tasks
-		float newTaskPulseWidth = (float) ((1 - taskPulseRatio) * INITIAL_PULSE_WIDTH 
-				+ taskPulseRatio * nextPulse / taskPulseDamper / cpuUtil);
+		float newTaskPulseWidth = (float) (taskPulseRatio * INITIAL_PULSE_WIDTH 
+				+ (1 - taskPulseRatio) * nextPulse / taskPulseDamper / cpuUtil * 10);
 
 		if (taskPulseWidth != newTaskPulseWidth) {
 			taskPulseWidth = newTaskPulseWidth;
@@ -1382,14 +1379,14 @@ public class MasterClock implements Serializable {
 
 		// Get the desired number of pulses per second
 		float desiredPulsesPerSec = (float) (desiredMsolPerSec / 
-				(0.2 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.5 * referencePulse));
+				(0.3 * optMilliSolPerPulse + 0.4 * nextPulseTime + 0.3 * referencePulse));
 		
 		// Get the milliseconds between each pulse
 		// // Limit the desired pulses to be the minimum of 1 (or at least 1)
 		millisecPerPulse = 1000f / desiredPulsesPerSec;
 	
 		// Update the sleep time that will allow room for the execution time (ms per pulse)
-		sleepTime = (float)(Math.ceil((millisecPerPulse - executionTime) * 10) / 10);
+		sleepTime = (float)(Math.round((millisecPerPulse - executionTime) * 10.0) / 10.0);
 		
 		// if sleepTime is negative continuously, will consider calling Thread.sleep() 
 		// to pause the execution of this thread and allow other threads to complete.
@@ -1453,7 +1450,11 @@ public class MasterClock implements Serializable {
 					// Gauge the total execution time
 					executionTime = (short) (System.currentTimeMillis() - startTime);
 					// Get the sleep time
-					calculateSleepTime();
+					calculateSleepTime();				
+					
+					if (sleepTime > 5) {
+						optMilliSolPerPulse *= 1.0005;
+					}
 					
 //					double tps = getAveragePulsesPerSecond();			
 //					if (tps < TPS_LOWER_LIMIT) {			
@@ -1492,7 +1493,7 @@ public class MasterClock implements Serializable {
 				}
 				
 				// If still going then wait
-				if (keepRunning && !isPaused && sleepTime > 0) {
+				if (keepRunning && !isPaused && sleepTime > .4) {
 					// Pause the execution of this thread 
 					// and allow other threads to complete.
 					try {

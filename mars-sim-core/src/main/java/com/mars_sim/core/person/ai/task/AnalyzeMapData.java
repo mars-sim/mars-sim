@@ -367,7 +367,8 @@ public class AnalyzeMapData extends Task {
 		if (probability > .75)
 			probability = .75;
 				
-		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
+		if (site != null 
+				&& ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability))) {
 		
 			// Improve the mineral concentration estimation
 			ExploreSite.improveSiteEstimates(site, compositeSkill);

@@ -84,6 +84,8 @@ public class TimeWindow extends ToolWindow {
 	/** the optimal pulse label string */
 	private final String OPTIMAL = "Optimal Pulse Width";
 	/** the reference pulse label string */
+	private final String REFERENCE = "Ref Pulse Width";
+	/** the reference pulse label string */
 	private final String TASK_PULSE_TIME = "Task Pulse Width";
 	/** the time ratio string */
 	private final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
@@ -137,8 +139,10 @@ public class TimeWindow extends ToolWindow {
 	private JLabel desireTRLabel;
 	/** label for pulse deviation percent. */
 	private JLabel pulseDeviationLabel;
-	/** label for optimal Pulse Width. */
+	/** label for optimal pulse width. */
 	private JLabel optimalPulseLabel;
+	/** label for rff pulse width. */
+	private JLabel refPulseLabel;
 	/** label for execution time. */
 	private JLabel execTimeLabel;
 	/** label for sleep time. */
@@ -430,7 +434,7 @@ public class TimeWindow extends ToolWindow {
 		
 		
 		// Create param panel
-		AttributePanel paramPane = new AttributePanel(13);
+		AttributePanel paramPane = new AttributePanel(14);
 		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
 
 		southPane.add(paramPane, BorderLayout.CENTER);
@@ -445,6 +449,8 @@ public class TimeWindow extends ToolWindow {
 				"The sleep time [ms] of the last tick");
 		taskPulseLabel = paramPane.addTextField(TASK_PULSE_TIME, "", 
 				"How many millisol the task pulse width is");
+		refPulseLabel = paramPane.addTextField(REFERENCE, "", 
+				"How many millisol the reference pulse width is");
 		optimalPulseLabel = paramPane.addTextField(OPTIMAL, "", 
 				"How many millisol the optimal pulse width is");
 		pulseDeviationLabel = paramPane.addTextField(PULSE_DEVIATION, "", 
@@ -564,6 +570,7 @@ public class TimeWindow extends ToolWindow {
 
 		// Update pulse width label
 		float nextPulse = masterClock.getNextPulseTime();
+		float refPulse = masterClock.getReferencePulse();
 		float optPulse = masterClock.getOptPulseTime();
 		float taskPulse = masterClock.geTaskPulseWidth();
 		
@@ -580,6 +587,10 @@ public class TimeWindow extends ToolWindow {
 		StringBuilder pulseDevText = new StringBuilder();
 		pulseDevText.append(StyleManager.DECIMAL1_PERC.format(percent));
 		pulseDeviationLabel.setText(pulseDevText.toString());
+		
+		StringBuilder refText = new StringBuilder();
+		refText.append(StyleManager.DECIMAL_PLACES4.format(refPulse));
+		refPulseLabel.setText(refText.toString());
 		
 		StringBuilder optimalText = new StringBuilder();
 		optimalText.append(StyleManager.DECIMAL_PLACES4.format(optPulse));
