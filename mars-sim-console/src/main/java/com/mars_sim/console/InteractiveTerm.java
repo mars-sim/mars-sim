@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InteractiveTerm.java
- * @date 2022-11-02
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.console;
@@ -65,10 +65,16 @@ public class InteractiveTerm {
 	private static Dimension setDimension(int w, int h) {
 		return new Dimension(w, h);
 	}
-
+	
+	/*
+	 * Constructor.
+	 * 
+	 * @param restart
+	 */
 	public InteractiveTerm(boolean restart) {
 
 		marsTerminal.init();
+		  
 		// Prevent allow users from arbitrarily close the terminal by clicking top right
 		// close button
 		marsTerminal.registerUserInterruptHandler(term -> {
@@ -83,6 +89,16 @@ public class InteractiveTerm {
 		logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
 	}
 
+	/**
+	 * Initializes functions.
+	 */
+	public void init() {
+		// Add Mars Terminal to the clock listener
+		sim.getMasterClock().addClockListener(marsTerminal, 1000);
+		// Update title
+		marsTerminal.changeTitle(false);
+	}
+	
 	/**
 	 * Asks the player to choose in beryx console main menu.
 	 */

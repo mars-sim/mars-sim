@@ -252,7 +252,7 @@
         </connection-list>
     </building>
     
-    <building id="CC" type="Command and Control" xloc="-29.5" yloc="0" facing="270.0">
+    <building id="CC" type="Command Center" xloc="-29.5" yloc="0" facing="270.0">
         <connection-list>
 			<connection id="111" hatch-facing="west" />
             <connection id="109" hatch-facing="east" />

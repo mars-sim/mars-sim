@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Computation.java
- * @date 2024-07-07
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.core.building.function;
@@ -14,7 +14,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.building.SourceSpec;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 
@@ -26,7 +25,7 @@ public class Computation extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
 	
 	// Configuration properties
 	public static final double ENTROPY_FACTOR = .001;

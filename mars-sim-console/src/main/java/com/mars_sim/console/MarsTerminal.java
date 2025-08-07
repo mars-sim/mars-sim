@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsTerminal.java
- * @date 2024-09-01
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.console;
@@ -101,10 +101,11 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         JTextPane textPane = getTextPane();
         addAction("ctrl C", "Copy", textPane::copy);
         addAction("ctrl V", "Paste", textPane::paste);
+        
         MouseListener popupListener = new PopupListener(popup);
         textPane.addMouseListener(popupListener);
+            
     	frame.toBack();
-    	
     	frame.setAlwaysOnTop(false);
     }
 
@@ -354,7 +355,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// not needed
 	}
 
 	@Override

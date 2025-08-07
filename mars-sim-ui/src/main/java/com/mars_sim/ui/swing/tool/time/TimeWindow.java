@@ -187,6 +187,7 @@ public class TimeWindow extends ToolWindow {
 		
 		// Set up main pane
 		JPanel mainPane = new JPanel(new BorderLayout()); // new BoxLayout(this, BoxLayout.Y_AXIS));//
+		mainPane.setPreferredSize(new Dimension(WIDTH - 5, HEIGHT));
 		mainPane.setBorder(new MarsPanelBorder());
 
 		scrollPane.setViewportView(mainPane);
@@ -356,6 +357,7 @@ public class TimeWindow extends ToolWindow {
 	 */
 	public void createAdvancePanel(MasterClock masterClock, JPanel pane) {
 		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
+		taskPaneContainer.setPreferredSize(new Dimension(WIDTH - 10, HEIGHT));
 		JXTaskPane actionPane = new JXTaskPane();
 		actionPane.setTitle("Advanced Setting");
 		actionPane.setSpecial(true); // This can be used to highlight a primary task pane
@@ -706,7 +708,7 @@ public class TimeWindow extends ToolWindow {
 		String wd = MarsTimeFormat.getSolOfWeekName(mc.getMarsTime());
 		weeksolLabel.setText(wd);
 		
-		// Update the calender
+		// Update the calendar
 		calendarDisplay.update(mc.getMarsTime());
 		// Update areocentric longitude
 		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 10_000.0)/10_000.0 + "");	

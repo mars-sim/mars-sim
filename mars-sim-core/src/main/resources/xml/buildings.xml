@@ -36,6 +36,8 @@
 	<!ATTLIST astronomical-observation power-required CDATA #REQUIRED>
 	<!ELEMENT connection EMPTY>
 	<!ELEMENT communication (activity?)>
+	<!ATTLIST communication tech-level CDATA #REQUIRED>
+	
 	<!ELEMENT computation (activity?)>
 	<!ATTLIST computation computing-unit CDATA #REQUIRED>
 	<!ATTLIST computation power-demand CDATA #REQUIRED>
@@ -200,7 +202,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</administration>
 
 			<!-- The building has communication capabilities. -->
-			<communication>
+			<communication tech-level="1" >
 				<activity>
 					<!-- The left and right seats of the west table -->
 					<activity-spot xloc="3.43" yloc="-1.36" />
@@ -269,7 +271,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodation>
 
-			<!-- The building provides command and control for the population. -->
+			<!-- The building provides management function for the population. -->
 			<!-- capacity: the number of population managed. -->
 			<management capacity="1">
 				<activity>
@@ -2573,12 +2575,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Infirmiry-->
 
 
-	<building type="Command and Control" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
+	<building type="Command Center" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="4000">
 		<description>
-			The Command and Control is a communication facility with networking
-			capability for high speed communications and colony-width connectivity.
-			It also coordinates EVA operations.
+			The Command Center is an administrative, a command control hub and a communication 
+			facility with networking capability for high speed communications and 
+			colony-width connectivity. It also coordinates EVA operations.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
@@ -2601,7 +2603,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.88" yloc="-1.34" />
 				</activity>
 			</administration>
-			<communication>
+			<communication tech-level="3">
 				<activity>
 					<activity-spot xloc="1.75" yloc="1.4" />
 					<activity-spot xloc="1.75" yloc="-1.6" />
@@ -2657,7 +2659,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
-<!-- end of Command and Control -->
+<!-- end of Command Center -->
 
 	<building type="Server Farm" width="9.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="18" base-mass="4000"
@@ -2677,7 +2679,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.12" yloc="2.15" />
 				</activity>
 			</administration>
-			<communication>
+			<communication tech-level="2" >
 				<activity>
 					<activity-spot xloc="1.10" yloc="0.8" />
 					<activity-spot xloc="0.36" yloc="0.8" />
@@ -3719,7 +3721,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.73" yloc="2.67" />
 				</activity>
 			</administration>
-			<communication>
+			<communication tech-level="1" >
 				<activity>
 					<activity-spot xloc="3.2" yloc="-3.6" />
 				</activity>

@@ -51,12 +51,12 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 		COLUMNS[TYPE_COL] =  new ColumnSpec("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] =  new ColumnSpec("Settlement", String.class);
 
-		COLUMNS[LOCAL_DEMAND_COL] = new ColumnSpec("Local Demand", Number.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec("Market Demand", Number.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Number.class);
+		COLUMNS[LOCAL_DEMAND_COL] = new ColumnSpec("Local Demand", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec("Market Demand", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[MASS_COL] = new ColumnSpec("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Number.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Number.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local Value", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[MARKET_VP_COL] = new ColumnSpec("Market Value", Double.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[COST_COL] = new ColumnSpec("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[PRICE_COL] = new ColumnSpec("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 	}

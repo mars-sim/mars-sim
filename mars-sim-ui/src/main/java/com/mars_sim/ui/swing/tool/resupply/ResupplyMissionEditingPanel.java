@@ -791,7 +791,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						// by obtaining the next building id and settlement id
 
 						// NOTE: determine why specifying the coordinate below is needed for
-						// the Command and Control building to be placed properly
+						// the Command Center building to be placed properly
 
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled

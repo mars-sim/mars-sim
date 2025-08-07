@@ -192,6 +192,7 @@ public class MainWindow
 
 		// Set up other elements
 		masterClock = sim.getMasterClock();
+		
 		init();
 
 		// Show frame
@@ -340,7 +341,7 @@ public class MainWindow
 	 */
 	@SuppressWarnings("serial")
 	private void init() {
-
+	
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
@@ -489,6 +490,9 @@ public class MainWindow
 
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this, 1000L);
+		
+		// Add MarsTerminal to the master clock's listener
+		interactiveTerm.init();
 	}
 
 	/**

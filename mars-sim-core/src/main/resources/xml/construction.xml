@@ -1181,8 +1181,8 @@
 			<part type="air duct" number="7" />			
 		</building>
 
-		<!-- Command and control building project for refitting or salvaging. -->
-		<building name="Command and Control" width="7.0" length="9.0"
+		<!-- Command Center building project for refitting or salvaging. -->
+		<building name="Command Center" width="7.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="4" frame="Modular A Frame" >
 			<resource type="polyester resin" amount="25.0" />

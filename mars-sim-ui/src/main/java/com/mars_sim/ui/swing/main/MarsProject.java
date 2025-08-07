@@ -216,24 +216,24 @@ public class MarsProject {
 		}
 
 		options.addOption(Option.builder(DISPLAY_HELP)
-				.desc("Display help options").build());
+				.desc("Display help options").get());
 		options.addOption(Option.builder(NOAUDIO)
-				.desc("Disable the audio").build());
+				.desc("Disable the audio").get());
 		options.addOption(Option.builder(NOGUI)
-				.desc("Disable the main UI").build());
+				.desc("Disable the main UI").get());
 		options.addOption(Option.builder(CLEANUI)
-				.desc("Disable loading stored UI configurations").build());
+				.desc("Disable loading stored UI configurations").get());
 		options.addOption(Option.builder(SANDBOX)
-				.desc("Start in Sandbox Mode").build());
+				.desc("Start in Sandbox Mode").get());
 		options.addOption(Option.builder(NEW)
-				.desc("Enable quick start").build());
+				.desc("Enable quick start").get());
 		options.addOption(Option.builder(SITE_EDITOR)
-				.desc("Start the Scenario Editor").build());
+				.desc("Start the Scenario Editor").get());
 		options.addOption(Option.builder(PROFILE)
-				.desc("Set up the Commander Profile").build());
+				.desc("Set up the Commander Profile").get());
 		options.addOption(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
 				.desc("Load the a previously saved sim. No argument open file selection dialog. '"
-									+ DEFAULT_FILE + "' will use default").build());
+									+ DEFAULT_FILE + "' will use default").get());
 		
 		DefaultParser commandline = new DefaultParser();
 		try {

@@ -598,7 +598,7 @@
         </connection-list>
     </building>
     
-    <building id="CC806" type="Command and Control" xloc="-45.0" yloc="51.5" facing="90.0">
+    <building id="CC806" type="Command Center" xloc="-45.0" yloc="51.5" facing="90.0">
         <connection-list>
             <connection id="MCC807" hatch-facing="east" />
             <connection id="I805" hatch-facing="west" />
