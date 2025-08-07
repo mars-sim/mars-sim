@@ -355,6 +355,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
+		// not needed
 	}
 
 	@Override

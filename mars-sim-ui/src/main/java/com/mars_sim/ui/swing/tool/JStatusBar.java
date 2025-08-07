@@ -76,6 +76,7 @@ public class JStatusBar extends TexturedPanel {
     
     public void addFullBarComponent(JPanel panel, boolean separator) {
     	JPanel fpanel = new JPanel(new BorderLayout());
+    	fpanel.setAlignmentY(CENTER_ALIGNMENT);
         if (separator) {
 //            addBorder(panel);
             fpanel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
@@ -87,6 +88,7 @@ public class JStatusBar extends TexturedPanel {
     public void addLeftComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEFT, 0, leftPadding));
+    	panel.setAlignmentY(CENTER_ALIGNMENT);
         if (separator) {
 //            addBorder(panel);
         	add(new SeparatorPanel(Color.GRAY, Color.WHITE));
@@ -98,6 +100,7 @@ public class JStatusBar extends TexturedPanel {
     public void addCenterComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.CENTER, 0, leftPadding));
+    	panel.setAlignmentY(CENTER_ALIGNMENT);
         if (separator) {
 //            addBorder(panel);
         	add(new SeparatorPanel(Color.GRAY, Color.WHITE));
@@ -110,6 +113,7 @@ public class JStatusBar extends TexturedPanel {
     public void addRightComponent(JComponent component, boolean separator) {
         JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.RIGHT, 0, rightPadding));
+        panel.setAlignmentY(CENTER_ALIGNMENT);
         if (separator) {
 //            addBorder(panel);
         	add(new SeparatorPanel(Color.GRAY, Color.WHITE));

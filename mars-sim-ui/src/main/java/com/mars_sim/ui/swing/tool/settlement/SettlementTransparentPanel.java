@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @date 2022-06-24
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -47,6 +47,9 @@ import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+
+import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
@@ -304,36 +307,26 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private JPanel buildSunPane() {
 	    JPanel sunPane = new JPanel(new BorderLayout(3, 3));
-//	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    sunPane.setBackground(new Color(0, 0, 0, 128));
-//	    sunPane.setOpaque(false);
 	    sunPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210, 105, 30)));
 		
-
-	    JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0))
-	    {
-	        @Override
-	        protected void paintComponent(Graphics g) {
-	           super.paintComponent(g);
-//	           Dimension arcs = new Dimension(20, 20); //Border corners arcs {width,height}, change this to whatever you want
-//	           int width = getWidth();
-//	           int height = getHeight();
-	           Graphics2D graphics = (Graphics2D) g;
-	           graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-	           //Draws the rounded panel with borders.
-	           graphics.setColor(getBackground());
-//	           graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint background
-	           graphics.setColor(getForeground());
-//	           graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint border
-	        }
-	    };
-
+	    JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0));
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
 	    roundPane.setPreferredSize(new Dimension(230, 185)); // (260, 185), (293, 185);
-	    sunPane.add(roundPane, BorderLayout.CENTER);
-  		
+	    
+	    JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
+	    taskPaneContainer.setBackground(new Color(0, 0, 0, 128));
+	    taskPaneContainer.setOpaque(false);
+		JXTaskPane actionPane = new JXTaskPane();
+		actionPane.setBackground(new Color(0, 0, 0, 128));
+		actionPane.setOpaque(false);
+		actionPane.getContentPane().setBackground(new Color(0, 0, 0, 128));
+		actionPane.setTitle("Solar Data");
+	    actionPane.add(roundPane, BorderLayout.CENTER);
+	    taskPaneContainer.add(actionPane); 	
+		sunPane.add(taskPaneContainer, BorderLayout.CENTER);
+		
 	    double []projectSunTime = {0, 0, 0};
 	    if (mapPanel.getSettlement() != null) {
 	    	projectSunTime = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());

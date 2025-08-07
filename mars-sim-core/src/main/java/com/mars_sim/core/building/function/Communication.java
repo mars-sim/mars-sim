@@ -13,27 +13,31 @@ import java.util.List;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * The Communication class is a building function for communication.
  */
 public class Communication extends Function {
-
+	
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+  
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(Communication.class.getName());
+	
 	public class Band implements Serializable {
 		
 		private static final long serialVersionUID = 1L;
-
-		private String name;
 		
 		private int bandwidth;
+		private String name;
 		
 		public Band(String name, int bandwidth) {
 			this.name = name;
 			this.bandwidth = bandwidth;
 		}
-		
-		
 	}
 	
 	public class Channel implements Serializable {
@@ -83,11 +87,11 @@ public class Communication extends Function {
 				}
 			}
 		}
+		
+		public int getNumBand() {
+			return bands.size();
+		}
 	}
-	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-  
 
 	/**
 	 * Available communication modes.
@@ -163,18 +167,33 @@ public class Communication extends Function {
         techLevel = spec.getTechLevel();
         
         if (techLevel >= 1) {
-        	Channel c = new Channel(ChannelType.A);
-        	availableChannels.add(c);
+        	Channel a = new Channel(ChannelType.A);
+        	availableChannels.add(a);
         }
         if (techLevel >= 2) {
-        	Channel c = new Channel(ChannelType.B);
-        	availableChannels.add(c);
+        	Channel b = new Channel(ChannelType.B);
+        	availableChannels.add(b);
         }
         if (techLevel >= 3) {
         	Channel c = new Channel(ChannelType.C);
         	availableChannels.add(c);
         }
+        if (techLevel >= 4) {
+        	Channel d = new Channel(ChannelType.D);
+        	availableChannels.add(d);
+        }
+        if (techLevel >= 5) {
+        	Channel e = new Channel(ChannelType.E);
+        	availableChannels.add(e);
+        }
         
+        int total = 0;
+        for (Channel c: availableChannels) {
+        	total += c.getNumBand();
+        }
+        
+        logger.config(getBuilding(), "comm channels: " + availableChannels.size()
+        		+ "  comm bands: " + total);
     }
 
     /**
