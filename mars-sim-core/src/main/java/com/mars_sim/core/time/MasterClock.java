@@ -626,9 +626,9 @@ public class MasterClock implements Serializable {
 				// Reset the elapsed clock to ignore this pulse
 				logger.config("Skipping this frame. Elapsed real time is zero. Setting it to the expected " + realElapsedMillisec + " ms.");
 			
-				if (actualTR < desiredTR) {
-					increaseSpeed();
-				}
+//				if (actualTR < desiredTR) {
+//					increaseSpeed();
+//				}
 			}
 			
 			else {
