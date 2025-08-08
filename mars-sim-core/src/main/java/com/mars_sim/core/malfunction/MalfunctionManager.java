@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionManager.java
- * @date 2025-08-07
+ * @date 2025-08-08
  * @author Scott Davis
  */
 package com.mars_sim.core.malfunction;
@@ -94,9 +94,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The lower limit factor for malfunction. 1.000_003_351_695 will result in 1 % certainty per orbit. */	
 	private static final double MALFUNCTION_LOWER_LIMIT =  1.000_003_351_695; // 0.000_000_002; //  1.000_003_351_695;
 	/** The lower limit factor for maintenance. 1.000_033_516_95 will result in 10 % certainty per orbit. */	
-	private static final double MAINTENANCE_LOWER_LIMIT = MALFUNCTION_LOWER_LIMIT * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
+	private static final double MAINTENANCE_LOWER_LIMIT = MALFUNCTION_LOWER_LIMIT; // * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
 	/** The upper limit factor for both malfunction and maintenance. 1.000_335_221_5 will result in 100% certainty per orbit. */
-	private static final double UPPER_LIMIT = 1.000_335_221_5;
+	private static final double UPPER_LIMIT = 2;//1.000_335_221_5;
 
 	
 	/** Wear-and-tear points earned from a low quality inspection. */
@@ -677,7 +677,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double maintFactor = (effTimeSinceLastMaint/inspectionWindow) + 1D;
 			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
 			double malfunctionChance = FREQUENCY * time * maintFactor * wearFactor;
-			malfunctionProbability = malfunctionChance;
+//			malfunctionProbability = malfunctionChance;
 //			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 			
 			// For one orbit, log10 (1.000_001) * 1000 * 687 is 0.2984. 
@@ -689,7 +689,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 //			malfunctionChance = Math.log10(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
 			
-			malfunctionChance = Math.log(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
+			malfunctionProbability = Math.log(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
 //			logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 				
 			boolean hasMal = false;
@@ -719,11 +719,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			// Question: when should numberMaintenances be lower ?
 			
-			double maintenanceChance = malfunctionProbability * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
+			double maintenanceChance = malfunctionChance * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
 //			maintenanceProbability = maintenanceChance;
 //			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			
-			maintenanceProbability = MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT);
+			maintenanceProbability = Math.log(MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT));
 //			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			
 			// Check for repair items needed due to lack of maintenance and wear condition.
