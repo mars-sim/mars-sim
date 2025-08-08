@@ -104,7 +104,7 @@ public class PartGood extends Good {
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double BASE_DEMAND = 0.5;
-	private static final double PARTS_MAINTENANCE_VALUE = 1000;
+	private static final double PARTS_MAINTENANCE_VALUE = 2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
 	private static final double AEROGEL_TILE_DEMAND = 0.05;
@@ -425,7 +425,7 @@ public class PartGood extends Good {
 			// Calculate battery cell part demand.
 			+ geFuelCellDemand()
 			// Calculate maintenance part demand.
-			+ getMaintenancePartsDemand(settlement, part);
+			+ getMaintenancePartsDemand(settlement, part, previousDemand);
 		
 		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
 		
@@ -967,16 +967,18 @@ public class PartGood extends Good {
 
 	
 	/**
-	 * Gets the demand from maintenance parts from a particular settlement.
+	 * Gets the new demand from maintenance parts from a particular settlement.
 	 * 
 	 * @param settlement
 	 * @param part
+	 * @param previousDemand
+	 * @return new demand
 	 */
-	private double getMaintenancePartsDemand(Settlement settlement, Part part) {
+	private double getMaintenancePartsDemand(Settlement settlement, Part part, double previousDemand) {
 		double demand = 0;
 		int number = settlement.getBuildingManager().getMaintenanceDemand(part);
 		if (number > 0) {
-			demand = number * PARTS_MAINTENANCE_VALUE;
+			demand = number * previousDemand * PARTS_MAINTENANCE_VALUE;
 			logger.info(settlement, 30_000L, "Triggering " + Math.round(demand * 10.0)/10.0 
 					+" good demand from " + number + " " + part.getName() + ".");
 		}
@@ -995,9 +997,9 @@ public class PartGood extends Good {
 		
 		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
 		
-		double previousTotalDemand = previousDemand * previousNum;
+		double previousTotalDemand = previousDemand * (1 + previousNum);
 		
-		double newAddedDemand = getMaintenancePartsDemand(owner.getSettlement(), part);
+		double newAddedDemand = getMaintenancePartsDemand(owner.getSettlement(), part, previousDemand);
 
 		double newAddedTotalDemand = newAddedDemand * needNum;
 		
@@ -1023,9 +1025,9 @@ public class PartGood extends Good {
 				+ part.getName()
 				+ "  Previous demand: "
 				+ Math.round(previousDemand * 10.0)/10.0 
-				+ " (Quantity: " + previousNum + "}"
+				+ " (Quantity: " + previousNum + ")"
 				+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
-				+ " (Quantity: " + needNum + "}"
+				+ " (Quantity: " + needNum + ")"
 				);	
 	}
 }

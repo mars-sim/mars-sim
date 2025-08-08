@@ -29,6 +29,9 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.goods.Good;
+import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
@@ -87,13 +90,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 5;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MAINT_TO_MAL_RATIO = 50;
+	private static final double MAINT_TO_MAL_RATIO = 25;
 	/** The lower limit factor for malfunction. 1.000_003_351_695 will result in 1 % certainty per orbit. */	
-	private static final double MALFUNCTION_LOWER_LIMIT = 0.000_000_002; //  1.000_003_351_695;
+	private static final double MALFUNCTION_LOWER_LIMIT =  1.000_003_351_695; // 0.000_000_002; //  1.000_003_351_695;
 	/** The lower limit factor for maintenance. 1.000_033_516_95 will result in 10 % certainty per orbit. */	
 	private static final double MAINTENANCE_LOWER_LIMIT = MALFUNCTION_LOWER_LIMIT * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
 	/** The upper limit factor for both malfunction and maintenance. 1.000_335_221_5 will result in 100% certainty per orbit. */
-	private static final double UPPER_LIMIT = 2; //1.000_335_221_5;
+	private static final double UPPER_LIMIT = 1.000_335_221_5;
 
 	
 	/** Wear-and-tear points earned from a low quality inspection. */
@@ -686,7 +689,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 //			malfunctionChance = Math.log10(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
 			
-			malfunctionChance = MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT);
+			malfunctionChance = Math.log(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
 //			logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 				
 			boolean hasMal = false;
@@ -1232,12 +1235,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 			return false;
 		
 		for (Entry<Integer, Integer> entry: parts.entrySet()) {
-			Integer part = entry.getKey();
+			Integer id = entry.getKey();
 			int number = entry.getValue();
-			if (partStore.getItemResourceStored(part) >= number) {
+			if (partStore.getItemResourceStored(id) >= number) {
 				logger.info(entity, 20_000L, "Maintenance parts available: " 
 						+ getPartsString(parts));
 				return true;
+			}
+			else {
+				Good good = GoodsUtil.getGood(id);
+                Part part = ItemResourceUtil.findItemResource(id);
+				// Raise the demand on this item by a certain amount
+				// Inject the demand onto this part
+                ((PartGood)good).injectPartsDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number);
 			}
 		}
 		return false;
@@ -1274,6 +1284,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			// Any part still outstanding record for later
 			if (numMissing > 0) {
+				
+				// Future: raise the demand on this part
+
 				if (numMissing == number) {
 					logger.info(entity, 20_000L, "None available 0/" + number + " " + ItemResourceUtil.findItemResourceName(part));
 

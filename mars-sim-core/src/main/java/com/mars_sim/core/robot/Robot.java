@@ -63,7 +63,6 @@ import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.StatusType;
 
 /**
  * The robot class represents operating a robot on Mars.

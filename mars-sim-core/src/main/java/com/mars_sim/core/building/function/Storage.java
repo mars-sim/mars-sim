@@ -80,22 +80,25 @@ public class Storage extends Function {
 			totalAmount += initialAmount;
 			int resourceId = i.getKey();
 			
-			if (!capResources.containsKey(resourceId)) {
-				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
-				logger.warning(building, 
-						"Lacking specific storage capacity for " + resourceName + ".");
-			}
+			// For future debugging. Please do NOT delete.
+			
+//			if (!capResources.containsKey(resourceId)) {
+//				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
+//				logger.warning(building, "Lacking specific storage capacity for " + resourceName + ".");
+//			}
+			
+			// Future: need to work out a way to store these excess resources into appropriate containers
 			
 			// Stores this resource in this building.
 			double excess = inv.storeAmountResource(resourceId, initialAmount);
-			if (excess > 0D) {
-				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
-				logger.warning(building, 
-						"Still lacking " + excess + " kg "
-						+ resourceName
-						+ " storage space. " + (initialAmount - excess) + " kg stored. "
-						);
-			}
+			
+			// For future debugging. Please do NOT delete
+			
+//			if (excess > 0D) {
+//				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
+//				logger.warning(building, "Still lacking " + excess + " kg " + resourceName
+//						+ " storage space. " + (initialAmount - excess) + " kg stored. " );
+//			}
 		}	
 
 		double totalcap = 0;
@@ -107,8 +110,7 @@ public class Storage extends Function {
 		}
 
 		if (stockCapacity < totalAmount)
-			logger.warning(building, 
-				"Lacking " + Math.round((totalAmount - stockCapacity)*100.0)/100.0 + " kg ");
+			logger.warning(building, "Lacking " + Math.round((totalAmount - stockCapacity)*100.0)/100.0 + " kg ");
 
 		logger.info(building, "Total Initial Specific Amount Resource: " + Math.round(totalAmount*100.0)/100.0 + " kg "
 				+ " Total Specific Capacity: " + Math.round(totalcap*100.0)/100.0 + " kg "

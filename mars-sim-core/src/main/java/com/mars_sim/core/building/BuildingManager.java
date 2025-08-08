@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2025-07-29
+ * @date 2025-08-08
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -171,7 +171,7 @@ public class BuildingManager implements Serializable {
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
 		
-		meteorite = new MeteoriteImpactProperty();
+		meteorite = new MeteoriteImpactProperty(settlement);
 	}
 
 	/**

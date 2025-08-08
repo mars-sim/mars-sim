@@ -302,10 +302,10 @@ public final class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a double to represent longitude for this location. 
+	 * Gets a double to represent longitude for this location in deg. 
 	 * e.g. "-35.60".
 	 *
-	 * @return double longitude
+	 * @return double longitude in deg.
 	 */
 	public double getLongitudeDouble() {
 		double degrees = 0D;
@@ -357,10 +357,10 @@ public final class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a double to represent latitude location. 
+	 * Gets a double to represent latitude location in deg. 
 	 * e.g. "-35.6".
 	 *
-	 * @return latitude double
+	 * @return latitude double in deg.
 	 */
 	public double getLatitudeDouble() {
 		double degrees = 0;
