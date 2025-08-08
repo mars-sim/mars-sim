@@ -68,7 +68,7 @@ public class AttributePanel extends JPanel {
 		if (tooltip != null) {
 			contentLabel.setToolTipText(tooltip);
 		}
-		addLabelledItem(titleLabel, contentLabel);
+		addLabelledItem(titleLabel, contentLabel, tooltip);
 		return contentLabel;
 	}
 	
@@ -102,10 +102,23 @@ public class AttributePanel extends JPanel {
 	 * @param content Content showing the value
 	 */
 	public void addLabelledItem(String titleLabel, JComponent content) {
+		addLabelledItem(titleLabel, content, null);
+	}
+	
+	/**
+	 * Adds a labelled content to the TabPanel. This ensures the styling is common.
+	 * 
+	 * @param titleLabel Label to add
+	 * @param content Content showing the value
+	 * @param tooltip
+	 */
+	public void addLabelledItem(String titleLabel, JComponent content, String tooltip) {
         if ((titleLabel != null) && !titleLabel.endsWith(": ")) {
             titleLabel = titleLabel + " :";
         }
         JLabel title = new JLabel(titleLabel, SwingConstants.RIGHT);
+        if (tooltip != null && !tooltip.equals(""))
+        	title.setToolTipText(tooltip);
         title.setFont(StyleManager.getLabelFont());
 		add(title);
 		add(content);

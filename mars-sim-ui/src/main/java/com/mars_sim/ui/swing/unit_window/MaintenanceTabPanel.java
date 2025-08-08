@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @date 2023-06-15
+ * @date 2025-08-07
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window;
@@ -64,7 +64,8 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	private JLabel partsLabel;
 	private JLabel malPLabel;
 	private JLabel maintPLabel;
-
+	private JLabel numMaintLabel;
+	
 	/** The parts table model. */
 	private PartTableModel tableModel;
 
@@ -106,7 +107,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	
 		JPanel topPanel = new JPanel(new BorderLayout());
 
-		AttributePanel labelPanel = new AttributePanel(6, 1);
+		AttributePanel labelPanel = new AttributePanel(7, 1);
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 		
 		Dimension barSize = new Dimension(100, 15);
@@ -129,6 +130,9 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		currentInspection.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
 		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentInspection"), currentInspection);
 
+		numMaintLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.numMaint"), "",
+				Msg.getString("MaintenanceTabPanel.numMaint.toolTip"));
+		
 		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", null);
 		
 		topPanel.add(new JPanel(), BorderLayout.CENTER);
@@ -136,8 +140,12 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		AttributePanel dataPanel = new AttributePanel(2, 1);
 		topPanel.add(dataPanel, BorderLayout.SOUTH);
 	
-		malPLabel = dataPanel.addTextField(Msg.getString("MaintenanceTabPanel.malfunctionProbaility"), "", null);	
-		maintPLabel = dataPanel.addTextField(Msg.getString("MaintenanceTabPanel.maintenanceProbaility"), "", null);
+		malPLabel = dataPanel.addTextField(
+				Msg.getString("MaintenanceTabPanel.malfunctionChance"), 
+				"", "The percentage of chance of getting a malfunction");	
+		maintPLabel = dataPanel.addTextField(
+				Msg.getString("MaintenanceTabPanel.maintenanceChance"), 
+				"", "The percentage of chance of requiring a maintenance");
 		
 		return topPanel;
 	}
@@ -183,7 +191,10 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		double total = manager.getBaseMaintenanceWorkTime();
 		currentInspection.setValue((int)(100.0 * completed / total));
 
-		// TODO: compare what parts are missing and what parts are 
+		int newNumMaint = manager.getNumberOfMaintenances();
+		numMaintLabel.setText(newNumMaint + "");
+		
+		// Future: need to compare what parts are missing and what parts are 
 		// available for swapping out (just need time)
 		Map<Integer, Integer> parts = manager.getMaintenanceParts();
 		int size = 0; 
@@ -200,9 +211,11 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		// Update tool tip.
 		partsLabel.setToolTipText(tooltip);
 		
-		malPLabel.setText(Math.round(manager.getMalfunctionProbabilityPerOrbit() * 1000.0)/1000.0 + " % Per Orbit");
+		malPLabel.setText(Math.round(manager.getMalfunctionProbability() 
+				* 1_000_000_000.0)/1_000_000_000.0 + " % on each check");
 		
-		maintPLabel.setText(Math.round(manager.getMaintenanceProbabilityPerOrbit() * 1000.0)/1000.0 + " % Per Orbit");
+		maintPLabel.setText(Math.round(manager.getMaintenanceProbability() 
+				* 1_000_000_000.0)/1_000_000_000.0 + " % on each check");
 	}
 
 	/**

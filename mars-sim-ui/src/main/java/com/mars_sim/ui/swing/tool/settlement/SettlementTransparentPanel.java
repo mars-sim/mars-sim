@@ -311,7 +311,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    sunPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210, 105, 30)));
 		
 	    JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0));
-	    roundPane.setBackground(new Color(0,0,0,128));
+	    roundPane.setBackground(new Color(0, 0, 0, 128));
 	    roundPane.setOpaque(false);
 	    roundPane.setPreferredSize(new Dimension(230, 185)); // (260, 185), (293, 185);
 	    
@@ -320,7 +320,9 @@ public class SettlementTransparentPanel extends JComponent {
 	    taskPaneContainer.setOpaque(false);
 		JXTaskPane actionPane = new JXTaskPane();
 		actionPane.setBackground(new Color(0, 0, 0, 128));
+//		actionPane.setBackground(getBackground());
 		actionPane.setOpaque(false);
+//		actionPane.getContentPane().setBackground(getBackground());
 		actionPane.getContentPane().setBackground(new Color(0, 0, 0, 128));
 		actionPane.setTitle("Solar Data");
 	    actionPane.add(roundPane, BorderLayout.CENTER);

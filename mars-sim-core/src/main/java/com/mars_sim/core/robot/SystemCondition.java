@@ -58,8 +58,6 @@ public class SystemCondition implements Serializable {
 	private static final double R_CELL = 0.06; 
 	
     // Data members
-    /** Is the robot operational ? */
-    private boolean operable;
     /** Is the robot charging ? */  
     private boolean isCharging;
     /** Is the robot on power save mode ? */  
@@ -146,8 +144,7 @@ public class SystemCondition implements Serializable {
     public SystemCondition(Robot newRobot, RobotSpec spec) {
         robot = newRobot;
         performance = 1.0D;
-        operable = true;
-
+   
         lowPowerModePercent = spec.getLowPowerModePercent();
         standbykW = spec.getStandbyPowerConsumption();
         powerSavekW = POWER_SAVE_CONSUMPTION * standbykW; 
@@ -245,7 +242,7 @@ public class SystemCondition implements Serializable {
      */
     public boolean timePassing(ClockPulse pulse) {
     	double time = pulse.getElapsed();
-    	if (time < 0.001)
+    	if (time == 0.0)
     		return false;
 		
     	if (pulse.isNewSol()) {
@@ -253,7 +250,7 @@ public class SystemCondition implements Serializable {
     	}
     	else if (pulse.isNewHalfSol()) {
 	        locked = false;
-	        reconditionBattery();
+//	        reconditionBattery();
 	    	diagnoseBattery();
 		}
     	else {
@@ -280,7 +277,7 @@ public class SystemCondition implements Serializable {
     		}
 		}
     	
-        return operable;
+        return true;
     }
 
     /**
@@ -361,6 +358,13 @@ public class SystemCondition implements Serializable {
 	 */
 	public void setCharging(boolean value) {
 		isCharging = value;
+		
+		if (isCharging) {
+			robot.addSecondaryStatus(BotMode.CHARGING);
+		}
+		else {
+			robot.removeSecondaryStatus(BotMode.CHARGING);
+		}
 	}
 
     /**
@@ -377,7 +381,7 @@ public class SystemCondition implements Serializable {
      * 
      * @param newPerformance new performance (between 0 and 1).
      */
-    private void setPerformanceFactor(double newPerformance) {
+    void setPerformanceFactor(double newPerformance) {
         if (newPerformance != performance) {
             performance = newPerformance;
 			if (robot != null)
@@ -392,23 +396,6 @@ public class SystemCondition implements Serializable {
      */
     public double getStress() {
         return systemLoad;
-    }
-
-    /**
-     * Sets this robot to inoperable.
-     */
-    public void setInoperable() {
-        setPerformanceFactor(0D);
-        operable = false;
-    }
-
-    /**
-     * Checks if the robot is inoperable.
-     *
-     * @return true if inoperable
-     */
-    public boolean isInoperable() {
-        return !operable;
     }
 
     /**
@@ -615,7 +602,7 @@ public class SystemCondition implements Serializable {
 				health = health * (1 + PERCENT_BATTERY_RECONDITIONING/100D);
 				if (health > 1)
 					health = 1;
-				logger.info(robot, 10_000, "The battery has just been reconditioned.");
+				logger.info(robot, 0, "The battery has just been reconditioned.");
 			}
 		}
 		

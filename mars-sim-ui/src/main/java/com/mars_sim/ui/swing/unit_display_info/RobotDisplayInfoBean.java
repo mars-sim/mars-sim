@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RobotDisplayInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-07
  * @author Manny Kung
  */
 
@@ -31,6 +31,7 @@ class RobotDisplayInfoBean extends AbstractUnitDisplayInfo {
 
 	/**
 	 * Gets icon for unit button.
+	 * 
 	 * @return icon
 	 */
 	public Icon getButtonIcon(Unit unit) {
@@ -39,26 +40,18 @@ class RobotDisplayInfoBean extends AbstractUnitDisplayInfo {
 
 	/**
 	 * Gets a sound appropriate for this unit.
+	 * 
 	 * @param unit the unit to display.
 	 * @returns sound filepath for unit or empty string if none.
 	 */
 	public String getSound(Unit unit) {
-		Robot robot = (Robot) unit;
 		String result = "";
-		//boolean male = PersonGender.MALE == person.getGender();
-		//int randomSoundNum = RandomUtil.getRandomInt(1, 2);
-		if (robot.getSystemCondition().isInoperable()) result = SoundConstants.SND_PERSON_DEAD;
+
+		if (((Robot) unit).isOperable()) 
+			result = SoundConstants.SND_ROVER_MOVING;
 		else {
-			//if (male) {
-				//if (randomSoundNum == 1)
-					result = SoundConstants.SND_PERSON_MALE1;
-				//else if (randomSoundNum == 2)
-					//result = SoundConstants.SND_PERSON_MALE2;
-			//}
-			//else {
-			//	if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_FEMALE1;
-			//	else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_FEMALE2;
-			//}
+			result = SoundConstants.SND_ROVER_MALFUNCTION;
+
 		}
 		return result;
 	}

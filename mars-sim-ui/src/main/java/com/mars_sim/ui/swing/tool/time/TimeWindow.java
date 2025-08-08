@@ -8,6 +8,7 @@
 package com.mars_sim.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -359,6 +360,10 @@ public class TimeWindow extends ToolWindow {
 		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
 		taskPaneContainer.setPreferredSize(new Dimension(WIDTH - 10, HEIGHT));
 		JXTaskPane actionPane = new JXTaskPane();
+//		actionPane.setBackground(getBackground());
+		actionPane.setBackground(new Color(0, 0, 0, 128));
+		actionPane.setBackground(getBackground());
+		actionPane.setOpaque(false);
 		actionPane.setTitle("Advanced Setting");
 		actionPane.setSpecial(true); // This can be used to highlight a primary task pane
 		taskPaneContainer.add(actionPane); 	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RobotTableModel.java
- * @date 2021-12-07
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -49,7 +49,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final int TYPE = NAME+1;
 	private static final int LOCATION = TYPE+1;
 	private static final int SETTLEMENT = LOCATION+1;
-	private static final int HEALTH = SETTLEMENT+1;
+	private static final int MODE = SETTLEMENT+1;
+	private static final int HEALTH = MODE+1;
 	private static final int BATTERY = HEALTH+1;
 	private static final int PERFORMANCE = BATTERY+1;
 	private static final int JOB = PERFORMANCE+1;
@@ -68,7 +69,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec(Msg.getString("RobotTableModel.column.name"), String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("RobotTableModel.column.type"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("RobotTableModel.column.settlement"), String.class);
+		COLUMNS[MODE] = new ColumnSpec(Msg.getString("RobotTableModel.column.mode"), String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("RobotTableModel.column.health"), String.class);
 		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery"), String.class);
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
@@ -80,6 +82,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		eventColumnMapping = new EnumMap<>(UnitEventType.class);
 		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
 		eventColumnMapping.put(UnitEventType.LOCATION_EVENT, LOCATION);
+		eventColumnMapping.put(UnitEventType.STATUS_EVENT, MODE);
 		eventColumnMapping.put(UnitEventType.BATTERY_EVENT, BATTERY);
 		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
 		eventColumnMapping.put(UnitEventType.JOB_EVENT, JOB);
@@ -249,15 +252,16 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				result = robot.getAssociatedSettlement().getName();
 				break;
 
-			case BATTERY: 
-				if (robot.getSystemCondition().isInoperable())
-					result = null;
-				else
-					result = getBatteryStatus(robot.getSystemCondition().getBatteryLevel());
+			case MODE: 
+				result = robot.printStatusModes();
 				break;
-
+				
+			case BATTERY: 
+				result = getBatteryStatus(robot.getSystemCondition().getBatteryLevel());
+				break;
+		
 			case HEALTH: 
-				if (robot.getSystemCondition().isInoperable())
+				if (!robot.isOperable())
 					result = "Inoperable";
 				else
 					result = "Operable";
@@ -402,7 +406,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		}
 
 		/**
-		 * Catch unit update event.
+		 * Catches unit update event.
 		 *
 		 * @param event the unit event.
 		 */
