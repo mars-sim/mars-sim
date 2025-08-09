@@ -966,7 +966,7 @@ class AmountResourceGood extends Good {
 		// Add demand for resource required as remaining construction material on
 		// construction sites.
 		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
-			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
+			if (site.hasUnfinishedStage() && site.isConstruction()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getMissingResources().containsKey(resourceID)) {
 					double requiredAmount = stage.getMissingResources().get(resourceID);

@@ -43,7 +43,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.MoreMath;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.UIConfig;
@@ -271,17 +270,6 @@ public class SettlementMapPanel extends JPanel {
 			@Override
 			public void mouseExited(MouseEvent evt) {
 				if (!exit)  {
-//					int x = evt.getX();
-//					int y = evt.getY();
-//					
-//					settlementWindow.setPop(getSettlement().getNumCitizens());
-//					// Remove the pixel coordinate of the window panel
-//					// Note: the top left most corner is (0,0)
-//					settlementWindow.setPixelXYCoord(x,y);
-//					// Remove the settlement map coordinate of the hovering mouse pointer
-//					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
-//					// Remove the building coordinate
-//					settlementWindow.setBuildingXYCoord(LocalPosition.DEFAULT_POSITION, true);
 					exit = true;
 				}
 			}
@@ -678,8 +666,7 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	private ConstructionSite selectConstructionSiteAt(LocalPosition settlementPosition) {
 		for (ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
-			if (!ConstructionMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))
-				&& isWithin(settlementPosition, s)) {
+			if (isWithin(settlementPosition, s)) {
 					return s;
 			}
 		}

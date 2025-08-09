@@ -13,7 +13,6 @@ import java.util.Map;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.tool.Conversion;
 
 /**
  * A construction stage of a construction site.
@@ -27,7 +26,7 @@ public class ConstructionStage implements Serializable {
     private static final double SALVAGE_WORK_TIME_MODIFIER = .25D;
 
     // Data members
-    private boolean isSalvaging;
+    private boolean isConstruction;
     
     private double completedWorkTime;
     private double completableWorkTime;
@@ -49,11 +48,11 @@ public class ConstructionStage implements Serializable {
      * 
      * @param info the stage information.
      */
-    public ConstructionStage(ConstructionStageInfo info, ConstructionSite site) {
+    public ConstructionStage(ConstructionStageInfo info, ConstructionSite site, boolean isConstruction) {
         this.info = info;
         this.site = site;
         
-        isSalvaging = false;
+        this.isConstruction = isConstruction;
         
         completedWorkTime = 0D;
         completableWorkTime = 0D;
@@ -114,7 +113,7 @@ public class ConstructionStage implements Serializable {
      */
     public double getRequiredWorkTime() {
         double requiredWorkTime = info.getWorkTime();
-        if (isSalvaging) {
+        if (!isConstruction) {
             requiredWorkTime *= SALVAGE_WORK_TIME_MODIFIER;
         }
         return requiredWorkTime;
@@ -143,24 +142,6 @@ public class ConstructionStage implements Serializable {
      */
     public boolean isComplete() {
         return (completedWorkTime >= getRequiredWorkTime());
-    }
-
-    /**
-     * Checks if the stage is salvaging.
-     * 
-     * @return true if stage is salvaging.
-     */
-    public boolean isSalvaging() {
-        return isSalvaging;
-    }
-
-    /**
-     * Sets if the stage is salvaging.
-     * 
-     * @param isSalvaging true if staging is salvaging.
-     */
-    public void setSalvaging(boolean isSalvaging) {
-        this.isSalvaging = isSalvaging;
     }
 
     /**
@@ -370,10 +351,8 @@ public class ConstructionStage implements Serializable {
 
     @Override
     public String toString() {
-        String result = "";
-        if (isSalvaging) result = Conversion.capitalize("Salvaging " + info.getName());
-        else result = Conversion.capitalize("Constructing " + info.getName());
-        return result;
+        if (isConstruction) return "Constructing " + info.getName();
+        else return "Salvaging " + info.getName();
     }
     
 	/**

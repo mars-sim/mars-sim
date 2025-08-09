@@ -11,8 +11,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,9 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -37,8 +36,8 @@ import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
+import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -59,9 +58,9 @@ class ConstructionProjectPanel extends WizardPanel {
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionProjectPanel.class.getName());
 	
     /** The wizard panel name. */
-    private final static String NAME = "Construction Project";
+    private static final String NAME = "Construction Project";
 
-    private final static String LUV = "Light Utility Vehicle";
+    private static final String LUV = "Light Utility Vehicle";
     
     // Data members
     private JLabel errorMessageTextPane;
@@ -117,7 +116,7 @@ class ConstructionProjectPanel extends WizardPanel {
         // Create scroll pane for site selection list.
         JScrollPane siteListScrollPane = new JScrollPane();
         siteListScrollPane
-        .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         constructionSiteSelectionPane.add(siteListScrollPane,
                 BorderLayout.CENTER);
 
@@ -126,12 +125,10 @@ class ConstructionProjectPanel extends WizardPanel {
         populateSiteListModel();
         siteList = new JList<>(siteListModel);
         siteList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        siteList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent arg0) {
-                getWizard().setButtons(false);
-                errorMessageTextPane.setText(" ");
-                populateProjectListModel();
-            }
+        siteList.addListSelectionListener(arg0 -> {
+            getWizard().setButtons(false);
+            errorMessageTextPane.setText(" ");
+            populateProjectListModel();
         });
         siteListScrollPane.setViewportView(siteList);
 
@@ -150,7 +147,7 @@ class ConstructionProjectPanel extends WizardPanel {
         // Create scroll pane for project selection list.
         JScrollPane projectListScrollPane = new JScrollPane();
         projectListScrollPane
-        .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         constructionProjectSelectionPane.add(projectListScrollPane,
                 BorderLayout.CENTER);
 
@@ -159,27 +156,14 @@ class ConstructionProjectPanel extends WizardPanel {
         populateProjectListModel();
         projectList = new JList<>(projectListModel);
         projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        projectList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent arg0) {
-                materialsTableModel.update();
-                projectSelection();
-            }
+        projectList.addListSelectionListener(arg0 -> {
+            materialsTableModel.update();
+            projectSelection();
         });
         
         // call it a click to next button when user double clicks the table
-        projectList.addMouseListener(new MouseListener() {
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            public void mousePressed(MouseEvent e) {
-            }
-
-            public void mouseExited(MouseEvent e) {
-            }
-
-            public void mouseEntered(MouseEvent e) {
-            }
-
+        projectList.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     wizard.buttonClickedNext();
@@ -202,7 +186,7 @@ class ConstructionProjectPanel extends WizardPanel {
         // Create scroll pane for construction materials table.
         JScrollPane materialsTableScrollPane = new JScrollPane();
         materialsTableScrollPane
-        .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         constructionMaterialsPane.add(materialsTableScrollPane,
                 BorderLayout.CENTER);
 
@@ -217,13 +201,12 @@ class ConstructionProjectPanel extends WizardPanel {
                 new DefaultTableCellRenderer() {
             /** default serial id. */
             private static final long serialVersionUID = 1L;
+            @Override
             public Component getTableCellRendererComponent(
                     JTable table, Object value, boolean isSelected,
                     boolean hasFocus, int row, int column) {
             	// Clear the background from previous error cell
         		super.setBackground(null); 
-
-//              For whole table to be highlighted. Use Component result = super .getTableCellRendererComponent(table, value,  isSelected, hasFocus, row, column);
 
                 JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 
@@ -251,9 +234,8 @@ class ConstructionProjectPanel extends WizardPanel {
      */
     private void projectSelection() {
         
-        String selectedSite = (String) siteList.getSelectedValue();
-        ConstructionStageInfo stageInfo = (ConstructionStageInfo) projectList
-                .getSelectedValue();
+        String selectedSite = siteList.getSelectedValue();
+        ConstructionStageInfo stageInfo = projectList.getSelectedValue();
         projectList.setToolTipText(getToolTipText(stageInfo));
         
         if (stageInfo != null) {
@@ -346,16 +328,13 @@ class ConstructionProjectPanel extends WizardPanel {
 		if (i > 0) {
 	        int existingSiteIndex = i - 1;
 	        site = manager.getConstructionSites().get(existingSiteIndex);
-//    	if (!isTesting) {
 	        getWizard().getMissionData().setConstructionSite(site);
 	        // Get construction stage info.
-	        ConstructionStageInfo selectedInfo = (ConstructionStageInfo) projectList
-	                .getSelectedValue();
+	        ConstructionStageInfo selectedInfo = projectList.getSelectedValue();
 	        getWizard().getMissionData().setConstructionStageInfo(selectedInfo);
 	        getWizard().getMissionData().setDescription(selectedInfo.getName());
 	        
 			return true;
-//    	}
 		}
         return false;
     }
@@ -376,7 +355,6 @@ class ConstructionProjectPanel extends WizardPanel {
      * 
      * @param stageInfo the selected stage info.
      * @return tool tip text.
-     * TODO internationalize the construction process tooltips.
      */
     private String getToolTipText(ConstructionStageInfo stageInfo) {
         String result = null;
@@ -423,23 +401,9 @@ class ConstructionProjectPanel extends WizardPanel {
                     .iterator();
             while (i.hasNext()) {
                 ConstructionSite site = i.next();
-                ConstructionStage stage = site.getCurrentConstructionStage();
-                if (site.isUndergoingConstruction()) {
-                    siteListModel.addElement("Site " + num + " : " + stage
-                            + " - Under Construction");
-                } else if (site.isUndergoingSalvage()) {
-                    siteListModel.addElement("Site " + num + " : " + stage
-                            + " - Under Salvage");
-                } else if (site.hasUnfinishedStage()) {
-                    if (stage.isSalvaging())
-                        siteListModel.addElement("Site " + num + " : " + stage
-                                + " - Salvage Unfinished");
-                    else
-                        siteListModel.addElement("Site " + num + " : " + stage
-                                + " - Construction Unfinished");
-                } else {
-                    siteListModel.addElement("Site " + num + " : " + stage);
-                }
+                String result = "Site " + num + " : " + site.getStatusDescription();
+
+                siteListModel.addElement(result);
             }
         }
     }
@@ -454,18 +418,13 @@ class ConstructionProjectPanel extends WizardPanel {
         String selectedSite = siteList.getSelectedValue();
         if (selectedSite != null) {
             if (selectedSite.equals("New Site")) {
-                try {
-                    // Show all foundation projects.
-                    Iterator<ConstructionStageInfo> ii = getConfig().getConstructionStageInfoList(Stage.FOUNDATION)
-                            .iterator();
-                    while (ii.hasNext()) {
-                        ConstructionStageInfo info = ii.next();
-                        if (info.isConstructable())
-                            projectListModel.addElement(info);
-                    }
-                } catch (Exception e) {
-        			logger.severe(getConstructionSettlement(), 
-        					"Error checking construction stage info: ", e);
+                // Show all foundation projects.
+                Iterator<ConstructionStageInfo> ii = getConfig().getConstructionStageInfoList(Stage.FOUNDATION)
+                        .iterator();
+                while (ii.hasNext()) {
+                    ConstructionStageInfo info = ii.next();
+                    if (info.isConstructable())
+                        projectListModel.addElement(info);
                 }
             } else if (selectedSite.contains(" - Under Construction")) {
             	// May need to fix below : 
@@ -679,14 +638,12 @@ class ConstructionProjectPanel extends WizardPanel {
 
         public Object getValueAt(int row, int col) {
             if ((row < materialsList.size()) && (col < 3)) {
-                if (col == 0) {
-                    return materialsList.get(row).toString();
-                } else if (col == 1) {
-                    return materialsList.get(row).numRequired;
-                } else if (col == 2) {
-                    return materialsList.get(row).numAvailable;
-                } else
-                    return null;
+                return switch (col) {
+                  case 0 -> materialsList.get(row).toString();
+                  case 1 -> materialsList.get(row).numRequired;
+                  case 2 -> materialsList.get(row).numAvailable;
+                  default -> null;
+                };
             } else
                 return null;
         }
@@ -695,7 +652,7 @@ class ConstructionProjectPanel extends WizardPanel {
          * Updates the table.
          */
         private void update() {
-            info = (ConstructionStageInfo) projectList.getSelectedValue();
+            info = projectList.getSelectedValue();
             materialsList.clear();
             populateMaterialsList();
             fireTableStructureChanged();
@@ -862,7 +819,7 @@ class ConstructionProjectPanel extends WizardPanel {
          */
         private void populateMaterialsList() {
 
-            String selectedSite = (String) siteList.getSelectedValue();
+            String selectedSite = siteList.getSelectedValue();
             // Get construction site.
             Settlement settlement = getConstructionSettlement();
             

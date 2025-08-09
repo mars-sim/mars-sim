@@ -7,23 +7,19 @@
 
 package com.mars_sim.core.building.construction;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.ai.mission.MissionPhase;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.FixedUnit;
-import com.mars_sim.core.vehicle.GroundVehicle;
 
 /**
  * A building construction site.
@@ -37,64 +33,45 @@ public class ConstructionSite extends FixedUnit {
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
 
 
-    // Data members
-    private boolean undergoingConstruction;
-    private boolean undergoingSalvage;
-    private boolean manual;
-    
-    /**
-     * Has the site location been confirmed ?
-     */
-    private boolean isSiteLocConfirmed;
+    private boolean isConstruction;
+    private boolean isWorkOnsite;
     
     private boolean isMousePickedUp;
     
 	// Unique identifier
 	private int identifier;
-	
-	/** construction skill for this site. */
-    private int constructionSkill;
 
     private double width;
     private double length;
     private LocalPosition position;
     private double facing;
 
-    private Collection<Worker> members;
-    private List<GroundVehicle> vehicles;
-
-    private ConstructionStage foundationStage;
-    private ConstructionStage frameStage;
-    private ConstructionStage buildingStage;
-    private ConstructionStageInfo stageInfo;
-
-    private MissionPhase phase;
-
-    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+    private String targetBuilding;
+    private ConstructionStage currentStage;
     
     /**
      * Constructor.
      */
-    public ConstructionSite(Settlement settlement) {
+    public ConstructionSite(Settlement settlement, String target, boolean isConstruction,
+                            ConstructionStageInfo initStage,
+                            LocalBoundedObject placement) {
     	super("Site", settlement);
     	
     	identifier = settlement.getConstructionManager().getUniqueID();
     	
     	createSiteName();
 
-    	
-    	width = 0D;
-        length = 0D;
-        position = LocalPosition.DEFAULT_POSITION;
-        facing = 0D;
-        foundationStage = null;
-        frameStage = null;
-        buildingStage = null;
-        undergoingConstruction = false;
-        undergoingSalvage = false;
+        this.isConstruction = isConstruction;
+        this.targetBuilding = target;
+    	this.width = placement.getWidth();
+        this.length = placement.getLength();
+        this.facing = placement.getFacing();
+        this.position = placement.getPosition();
+        this.currentStage = new ConstructionStage(initStage, this, isConstruction);
+
     }
 
-	public void createSiteName() {
+	private void createSiteName() {
 	    if (identifier < 10) {
 			setName(getName() + "00" + identifier);
 		}
@@ -105,19 +82,10 @@ public class ConstructionSite extends FixedUnit {
 			setName(getName() + identifier);
 		}
 	}
-	
+
     @Override
     public double getWidth() {
         return width;
-    }
-
-    /**
-     * Sets the width of the construction site.
-     * 
-     * @param width the width (meters).
-     */
-    public void setWidth(double width) {
-        this.width = width;
     }
 
     @Override
@@ -125,36 +93,14 @@ public class ConstructionSite extends FixedUnit {
         return length;
     }
 
-    /**
-     * Sets the length of the construction site.
-     * 
-     * @param length the length (meters).
-     */
-    public void setLength(double length) {
-        this.length = length;
-    }
-
     @Override
     public LocalPosition getPosition() {
     	return position;
     }
-    
-	public void setPosition(LocalPosition position2) {
-		this.position = position2;
-	}
 	
     @Override
     public double getFacing() {
         return facing;
-    }
-
-    /**
-     * Sets the facing of the construction site.
-     * 
-     * @param facing
-     */
-    public void setFacing(double facing) {
-        this.facing = facing;
     }
 
     /**
@@ -163,7 +109,7 @@ public class ConstructionSite extends FixedUnit {
      * @return true if construction is complete.
      */
     public boolean isAllConstructionComplete() {
-        if ((buildingStage != null) && !undergoingSalvage) return buildingStage.isComplete();
+        if (currentStage.getInfo().getType() == Stage.BUILDING && isConstruction) return currentStage.isComplete();
         else return false;
     }
 
@@ -173,9 +119,9 @@ public class ConstructionSite extends FixedUnit {
      * @return true if salvage is complete.
      */
     public boolean isAllSalvageComplete() {
-        if (undergoingSalvage) {
-            if (foundationStage == null) return true;
-            else return foundationStage.isComplete();
+        if (!isConstruction) {
+            if (currentStage.getInfo().getType() != Stage.FOUNDATION) return false;
+            else return currentStage.isComplete();
         }
         else return false;
     }
@@ -185,43 +131,33 @@ public class ConstructionSite extends FixedUnit {
      * 
      * @return true if undergoing construction.
      */
-    public boolean isUndergoingConstruction() {
-        return undergoingConstruction;
+    public boolean isConstruction() {
+        return isConstruction;
     }
 
     /**
-     * Checks if site is currently undergoing salvage.
-     * 
-     * @return true if undergoing salvage.
+     * Checks if site has work on site
      */
-    public boolean isUndergoingSalvage() {
-        return undergoingSalvage;
+    public boolean isWorkOnSite() {
+        return isWorkOnsite;
     }
 
     /**
-     * Sets if site is currently undergoing construction.
-     * 
-     * @param undergoingConstruction true if undergoing construction.
+     * Sets if site has work on site.
      */
-    public void setUndergoingConstruction(boolean undergoingConstruction) {
-        this.undergoingConstruction = undergoingConstruction;
+    public void setWorkOnSite(boolean active) {
+        this.isWorkOnsite = active;
 
-        UnitEventType eventType = (undergoingConstruction  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
+        UnitEventType eventType;
+        if (isConstruction) {
+            eventType = (isWorkOnsite  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
                                         : UnitEventType.END_CONSTRUCTION_SITE_EVENT);
+        }
+        else {
+            eventType =  (isWorkOnsite ? UnitEventType.START_CONSTRUCTION_SALVAGE_EVENT
+                                        : UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT);
+        }
 
-        fireUnitUpdate(eventType);
-    }
-
-    /**
-     * Sets if site is currently undergoing salvage.
-     * 
-     * @param undergoingSalvage true if undergoing salvage.
-     */
-    public void setUndergoingSalvage(boolean undergoingSalvage) {
-        this.undergoingSalvage = undergoingSalvage;
-        UnitEventType eventType =  (undergoingSalvage ? UnitEventType.START_CONSTRUCTION_SALVAGE_EVENT
-                                                    : UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT);
-        
         fireUnitUpdate(eventType);
     }
 
@@ -231,79 +167,29 @@ public class ConstructionSite extends FixedUnit {
      * @return construction stage.
      */
     public ConstructionStage getCurrentConstructionStage() {
-        ConstructionStage result = null;
-
-        if (buildingStage != null) result = buildingStage;
-        else if (frameStage != null) result = frameStage;
-        else if (foundationStage != null) result = foundationStage;
-
-        return result;
+        return currentStage;
     }
 
     /**
      * Adds a new construction stage to the site.
      * 
-     * @param stage the new construction stage.
+     * @param newStage the new construction stage.
      * @throws Exception if error adding construction stage.
      */
-    public void addNewStage(ConstructionStage stage) {
-        if (ConstructionStageInfo.Stage.FOUNDATION.equals(stage.getInfo().getType())) {
-            if (foundationStage != null) throw new IllegalStateException("Foundation stage already exists.");
-            foundationStage = stage;
-        }
-        else if (ConstructionStageInfo.Stage.FRAME.equals(stage.getInfo().getType())) {
-            if (frameStage != null) throw new IllegalStateException("Frame stage already exists");
-            if (foundationStage == null) throw new IllegalStateException("Foundation stage hasn't been added yet.");
-            frameStage = stage;
-        }
-        else if (ConstructionStageInfo.Stage.BUILDING.equals(stage.getInfo().getType())) {
-            if (buildingStage != null) throw new IllegalStateException("Building stage already exists");
-            if (frameStage == null) throw new IllegalStateException("Frame stage hasn't been added yet.");
-            buildingStage = stage;
-        }
-        else throw new IllegalStateException("Stage type: " + stage.getInfo().getType() + " not valid");
+    public void addNewStage(ConstructionStageInfo newStage) {
+        var stageType = currentStage.getInfo().getType();
+        var newType = newStage.getType();
 
-        // Update construction site dimensions.
-        updateDimensions(stage);
-
-        // Fire construction event.
-        fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, stage);
-    }
-
-    /**
-     * Updates the width and length dimensions to a construction stage.
-     * 
-     * @param stage the construction stage.
-     */
-    private void updateDimensions(ConstructionStage stage) {
-
-        double stageWidth = stage.getInfo().getWidth();
-        double stageLength = stage.getInfo().getLength();
-
-        if (!stage.getInfo().isUnsetDimensions()) {
-            if (stageWidth != width) {
-                width = stageWidth;
-            }
-            if (stageLength != length) {
-                length = stageLength;
-            }
+        // Stage type must move forward
+        if (newType.ordinal() > stageType.ordinal()) {
+            // Fire construction event.
+            currentStage = new ConstructionStage(newStage, this, isConstruction);
+            fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
+            return;
         }
-        else {
-            if ((stageWidth > 0D) && (stageWidth != width)) {
-                width = stageWidth;
-            }
-            else if (width <= 0D) {
-                // Use default width (may be modified later).
-                width = 10D;
-            }
-            if ((stageLength > 0D) && (stageLength != length)) {
-                length = stageLength;
-            }
-            else if (length <= 0D) {
-                // Use default length (may be modified later).
-                length = 10D;
-            }
-        }
+
+        logger.severe(this, "Invalid stage construction change from " + currentStage.getInfo().getName()
+                            + " to " + newStage.getName());
     }
 
     /**
@@ -313,34 +199,19 @@ public class ConstructionSite extends FixedUnit {
      * @throws Exception if error removing the stage.
      */
     public void removeSalvagedStage(ConstructionStage stage) {
-        if (ConstructionStageInfo.Stage.BUILDING.equals(stage.getInfo().getType())) {
-            buildingStage = null;
-        }
-        else if (ConstructionStageInfo.Stage.FRAME.equals(stage.getInfo().getType())) {
-            frameStage = null;
-        }
-        else if (ConstructionStageInfo.Stage.FOUNDATION.equals(stage.getInfo().getType())) {
-            foundationStage = null;
-        }
-        else throw new IllegalStateException("Stage type: " + stage.getInfo().getType() + " not valid");
+        var stageType = currentStage.getInfo().getType();
+        var newType = stage.getInfo().getType();
 
-        // Fire construction event.
-        fireUnitUpdate(UnitEventType.REMOVE_CONSTRUCTION_STAGE_EVENT, stage);
-    }
-
-    /**
-     * Removes the current salvaged construction stage.
-     * 
-     * @throws Exception if error removing salvaged construction stage.
-     */
-    public void removeSalvagedStage() {
-        if (undergoingSalvage) {
-            if (buildingStage != null) buildingStage = null;
-            else if (frameStage != null) frameStage = null;
-            else if (foundationStage != null) foundationStage = null;
-            else throw new IllegalStateException("Construction site has no stage to remove");
+        // Stage type must move backward
+        if (newType.ordinal() < stageType.ordinal()) {
+            // Fire construction event.
+            currentStage = stage;
+            fireUnitUpdate(UnitEventType.REMOVE_CONSTRUCTION_STAGE_EVENT, currentStage);
+            return;
         }
-        else throw new IllegalStateException("Construction site is not undergoing salvage");
+
+        logger.severe(this, "Invalid stage savlage change from " + currentStage.getInfo().getName()
+                            + " to " + stage.getInfo().getName());
     }
 
     /**
@@ -350,17 +221,19 @@ public class ConstructionSite extends FixedUnit {
 
      */
     public Building createBuilding() {
-        if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
+        if (currentStage.getInfo().getType() != Stage.BUILDING) {
+            throw new IllegalStateException("Building stage doesn't exist");
+        }
 
         var settlement = getAssociatedSettlement();
 
         BuildingManager manager = settlement.getBuildingManager();
         int id = manager.getNextTemplateID();
-        String buildingType = buildingStage.getInfo().getName();
+        String buildingType = currentStage.getInfo().getName();
         String uniqueName = manager.getUniqueName(buildingType);
         
         int zone = 0;
-        var spec = buildingConfig.getBuildingSpec(buildingType);
+        var spec = getBuildingSpec(buildingType);
 
         Building newBuilding = new Building(settlement, Integer.toString(id), zone, uniqueName,
         		new BoundedObject(position, width, length, facing), spec);
@@ -369,7 +242,7 @@ public class ConstructionSite extends FixedUnit {
 
         // Record completed building name.
         var constructionManager = settlement.getConstructionManager();
-        constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName());
+        constructionManager.addConstructedBuildingLogEntry(buildingType);
 
         // Clear construction value cache.
         constructionManager.getConstructionValues().clearCache();
@@ -380,14 +253,17 @@ public class ConstructionSite extends FixedUnit {
         return newBuilding;
     }
 
+    private static BuildingSpec getBuildingSpec(String buildingType) {
+        return SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+    }
+
     /**
      * Gets the building name the site will construct.
      * 
      * @return building name or null if undetermined.
      */
     public String getBuildingName() {
-        if (buildingStage != null) return buildingStage.getInfo().getName();
-        else return null;
+        return targetBuilding;
     }
 
     /**
@@ -396,22 +272,7 @@ public class ConstructionSite extends FixedUnit {
      * @return true if stage unfinished.
      */
     public boolean hasUnfinishedStage() {
-        ConstructionStage currentStage = getCurrentConstructionStage();
-        return (currentStage != null) && !currentStage.isComplete();
-    }
-
-    /**
-     * Checks if this site contains a given stage.
-     * 
-     * @param stage the stage info.
-     * @return true if contains stage.
-     */
-    public boolean hasStage(ConstructionStageInfo stage) {
-        if (stage == null) throw new IllegalArgumentException("stage cannot be null");
-
-        return (((foundationStage != null) && foundationStage.getInfo().equals(stage))
-                    || ((frameStage != null) && frameStage.getInfo().equals(stage))
-                    || ((buildingStage != null) && buildingStage.getInfo().equals(stage)));
+        return !currentStage.isComplete();
     }
 
     /**
@@ -419,61 +280,18 @@ public class ConstructionSite extends FixedUnit {
      */
 	public void relocateSite() {
         var existingPosn = getPosition();
+
 		// Compute a new position for a site
-		BuildingPlacement.placeSite(this);
+        var spec = getBuildingSpec(targetBuilding);
+
+		var newPlacement = BuildingPlacement.placeSite(this.getAssociatedSettlement(), spec);
+        position = newPlacement.getPosition();
 		
 		logger.info(this, "Manually relocated by player from " 
 				+ existingPosn + " to "
-				+ getPosition());
-	}
+				+ position);
+        
 
-    public void setSkill(int constructionSkill) {
-    	this.constructionSkill = constructionSkill;
-    }
-
-    public int getSkill() {
-    	return constructionSkill;
-    }
-
-	public void setMembers(Collection<Worker> members) {
-		this.members = members;
-	}
-
-	public void setVehicles(List<GroundVehicle> vehicles) {
-		this.vehicles = vehicles;
-	}
-
-	public Collection<Worker> getMembers() {
-		return members;
-	}
-
-	public List<GroundVehicle> getVehicles() {
-		return vehicles;
-	}
-
-	public ConstructionStageInfo getStageInfo() {
-		return stageInfo;
-	}
-
-	public void setStageInfo(ConstructionStageInfo stageInfo) {
-		this.stageInfo = stageInfo;
-	}
-
-	public boolean getManual() {
-		return manual;
-	}
-
-	public void setManual(boolean manual) {
-		this.manual = manual;
-	}
-
-	// for triggering the alertDialog()
-	public boolean isSiteLocConfirmed() {
-		return isSiteLocConfirmed;
-	}
-
-	public void setSiteLocConfirmed(boolean value) {
-		this.isSiteLocConfirmed = value;
 	}
 
 	public boolean isMousePicked() {
@@ -505,26 +323,29 @@ public class ConstructionSite extends FixedUnit {
 		return result.toString();
 	}
 	
-	public void setPhase(MissionPhase phase) {
-		this.phase = phase;
-	}
-	
-	public MissionPhase getPhase() {
-		return phase;
-	}
-	
 	/**
 	 * Prepares object for garbage collection.
 	 */
     @Override
 	public void destroy() {
         super.destroy();
-		position = null;
-	    members = null;
-	    vehicles = null;
-	    foundationStage = null;
-	    frameStage = null;
-	    buildingStage = null;
-	    stageInfo = null;
+	    currentStage = null;
 	}
+
+    public String getStatusDescription() {
+        String result = currentStage.getInfo().getName();
+        if (isWorkOnsite) {
+            if (isConstruction) {
+                result += " - Active Construction";
+            } else  {
+                result += " - Active Salvage";
+            }
+        } else if (hasUnfinishedStage()) {
+            if (isConstruction)
+                result += " - Construction Unfinished";
+            else
+                result += " - Salvage Unfinished";
+        }
+        return result;
+    }
 }

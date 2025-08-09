@@ -1,6 +1,5 @@
 package com.mars_sim.core.building.construction;
 
-import static org.junit.Assert.assertNotEquals;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -14,12 +13,10 @@ public class BuildingPlacementTest extends AbstractMarsSimUnitTest {
 
         var placement = new BuildingPlacement(s);
 
-        var site = new ConstructionSite(s);
-        var origPosn = site.getPosition();
-
         // Place it so it moves
-        placement.positionSite(site);
+        var greenhouse = getConfig().getBuildingConfiguration().getBuildingSpec("Large Greenhouse");
+        var posn = placement.positionSite(greenhouse);
 
-        assertNotEquals(origPosn, site.getPosition());
+        assertNotNull(posn);
     }
 }

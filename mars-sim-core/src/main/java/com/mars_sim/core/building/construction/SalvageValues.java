@@ -120,7 +120,7 @@ implements Serializable {
 		double result = 0D;
 
 		ConstructionManager manager = settlement.getConstructionManager();
-		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingSalvageMission().iterator();
+		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission(false).iterator();
 		while (i.hasNext()) {
 			double profit = getSalvageSiteProfit(i.next(), constructionSkill);
 			if (profit > result) result = profit;
@@ -150,7 +150,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		if (!site.isUndergoingSalvage()) {
+		if (site.isConstruction()) {
 			ConstructionStage stage = site.getCurrentConstructionStage();
 			ConstructionStageInfo prerequisiteStage = stage.getInfo().getPrerequisiteStage();
 

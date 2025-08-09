@@ -105,86 +105,62 @@ class MissionDataBean {
     	// Note: how to resolve the situation when rover is no longer available ?
     	
 	    Mission mission = null;
-	    if (MissionType.AREOLOGY == missionType) {
-	        mission = new AreologyFieldStudy(mixedMembers, leadResearcher, study,
-	                rover, fieldSite);
-	    }
-	    
-	    else if (MissionType.BIOLOGY == missionType) {
-	        mission = new BiologyFieldStudy(mixedMembers, leadResearcher, study,
-	                rover, fieldSite);
-	    }
-	    
-	    else if (MissionType.METEOROLOGY == missionType) {
-	        mission = new MeteorologyFieldStudy(mixedMembers, leadResearcher, study,
-	                rover, fieldSite);
-	    }
-	    
-	    else if (MissionType.CONSTRUCTION == missionType) {
-	        mission = new ConstructionMission(mixedMembers, constructionSettlement, constructionSite,
-	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
-	                constructionVehicles);
-	    }
+	    switch (missionType) {
+			case MissionType.AREOLOGY ->
+					mission = new AreologyFieldStudy(mixedMembers, leadResearcher, study,
+							rover, fieldSite);
+			case MissionType.BIOLOGY ->
+					mission = new BiologyFieldStudy(mixedMembers, leadResearcher, study,
+							rover, fieldSite);
+			case MissionType.METEOROLOGY ->
+					mission = new MeteorologyFieldStudy(mixedMembers, leadResearcher, study,
+							rover, fieldSite);
+			case MissionType.CONSTRUCTION ->
+					mission = new ConstructionMission(mixedMembers, constructionSettlement, constructionSite,
+							constructionVehicles);
+			case MissionType.COLLECT_ICE -> {
+					List<Coordinates> collectionSites = new ArrayList<>(1);
+					collectionSites.add(iceCollectionSite);
+					mission = new CollectIce(mixedMembers, collectionSites, rover);
+				}
+			case MissionType.COLLECT_REGOLITH -> {
+					List<Coordinates> collectionSites = new ArrayList<>(1);
+					collectionSites.add(regolithCollectionSite);
+					mission = new CollectRegolith(mixedMembers, collectionSites, rover);
+				}
+			case MissionType.DELIVERY -> {
+					Person startingMember = null;
+					for (Worker mm: mixedMembers) {
+						if (mm instanceof Person p)
+							startingMember = p;
+					}
+				
+					mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone,
+							sellGoods, buyGoods);
+				}
+			case MissionType.EMERGENCY_SUPPLY ->
+					mission = new EmergencySupply(mixedMembers, destinationSettlement,
+							emergencyGoods, rover);
+			case MissionType.EXPLORATION -> {
+					List<Coordinates> collectionSites = new ArrayList<>(explorationSites.length);
+					collectionSites.addAll(Arrays.asList(explorationSites));
+					mission = new Exploration(mixedMembers, collectionSites, rover);
+				}
+			case MissionType.MINING ->
+					mission = new Mining(mixedMembers, miningSite, rover, luv);
+			case MissionType.RESCUE_SALVAGE_VEHICLE ->
+					mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover);
+			case MissionType.SALVAGE ->
+					mission = new SalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
+							salvageVehicles);
+			case MissionType.TRADE ->
+					mission = new Trade(mixedMembers, destinationSettlement, rover,
+							sellGoods, buyGoods);
+			case MissionType.TRAVEL_TO_SETTLEMENT ->
+					mission = new TravelToSettlement(mixedMembers, destinationSettlement, rover);
+			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
+		}
 
-	    else if (MissionType.COLLECT_ICE == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<>(1);
-	        collectionSites.add(iceCollectionSite);
-	        mission = new CollectIce(mixedMembers, collectionSites, rover);
-	    }
-	    
-	    else if (MissionType.COLLECT_REGOLITH == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<>(1);
-	        collectionSites.add(regolithCollectionSite);
-	        mission = new CollectRegolith(mixedMembers, collectionSites, rover);
-	    }
-	    
-	    else if (MissionType.DELIVERY == missionType) {
-	    	Person startingMember = null;
-	    	for (Worker mm: mixedMembers) {
-	    		if (mm instanceof Person p)
-	    			startingMember = p;
-	    	}
-		
-	        mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone,
-	                sellGoods, buyGoods);
-	    }	 
-	        
-	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
-	        mission = new EmergencySupply(mixedMembers, destinationSettlement,
-	                emergencyGoods, rover);
-	    }
-	    
-	    else if (MissionType.EXPLORATION == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<>(explorationSites.length);
-	        collectionSites.addAll(Arrays.asList(explorationSites));
-	        mission = new Exploration(mixedMembers, collectionSites, rover);
-	    }
-	    
-	    else if (MissionType.MINING == missionType) {
-	        mission = new Mining(mixedMembers, miningSite, rover, luv);
-	    }
-	    
-	    else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
-	        mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover);
-	    }
-	    
-	    else if (MissionType.SALVAGE == missionType) {
-	        mission = new SalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
-	                salvageVehicles);
-	    }
-	    
-	    else if (MissionType.TRADE == missionType) {
-	        mission = new Trade(mixedMembers, destinationSettlement, rover,
-	                sellGoods, buyGoods);
-	    }  
-	    
-	    else if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
-	        mission = new TravelToSettlement(mixedMembers, destinationSettlement, rover);
-	    }
-	    
-	    else throw new IllegalStateException("Mission type: " + type + " unknown");
-
-//		mission.setName(description);
 	    missionManager.addMission(mission);
 	}
  
@@ -193,25 +169,7 @@ class MissionDataBean {
 	 * @return array of mission type strings.
 	 */
     protected static MissionType[] getMissionTypes() {
-    	MissionType[] result = { 
-    			MissionType.AREOLOGY,
-    			MissionType.BIOLOGY,
-    			MissionType.CONSTRUCTION,
-    			MissionType.SALVAGE,
-    			MissionType.COLLECT_ICE,
-    			
-    			MissionType.COLLECT_REGOLITH,
-    			MissionType.DELIVERY,
-    			MissionType.EMERGENCY_SUPPLY,
-    			MissionType.EXPLORATION,
-    			MissionType.METEOROLOGY,
-    			
-    			MissionType.MINING,
-    			MissionType.RESCUE_SALVAGE_VEHICLE,
-    			MissionType.TRADE,
-    			MissionType.TRAVEL_TO_SETTLEMENT
-    			};
-		return result;
+    	return MissionType.values();
 	}
     
 
@@ -377,15 +335,6 @@ class MissionDataBean {
     protected void setMixedMembers(Collection<Worker> mm) {
     	this.mixedMembers = mm;
 	}
-    
-//	/**
-//	 * Adds the mission members.
-//	 * 
-//	 * @param members the members.
-//	 */
-//    protected void addMixedMembers(Collection<Worker> mm) {
-//    	this.mixedMembers.addAll(mm);
-//	}
     
 	/**
 	 * Gets the destination settlement.
@@ -858,7 +807,7 @@ class MissionDataBean {
 	}
 
 	protected boolean requiresFieldSite() {
-		return isScientificMission();// || isMiningMission() || isExplorationMission() );
+		return isScientificMission();
 	}
 
 	protected boolean requiresDestinationSettlement() {

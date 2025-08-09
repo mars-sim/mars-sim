@@ -54,15 +54,6 @@ implements Serializable {
     /**
      * Gets the overall profit for construction at the settlement.
      * 
-     * @return profit (VP)
-     */
-    public double getSettlementConstructionProfit() {
-        return getSettlementConstructionProfit(Integer.MAX_VALUE);
-    }
-
-    /**
-     * Gets the overall profit for construction at the settlement.
-     * 
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
      */
@@ -108,7 +99,7 @@ implements Serializable {
         double result = 0D;
 
         ConstructionManager manager = settlement.getConstructionManager();
-        Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
+        Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission(true).iterator();
         while (i.hasNext()) {
             double profit = getConstructionSiteProfit(i.next(), constructionSkill);
             if (profit > result) {
@@ -123,24 +114,14 @@ implements Serializable {
      * Gets the profit of an existing construction site at a settlement.
      * 
      * @param site the construction site.
-     * @return profit (VP)
-     */
-    public double getConstructionSiteProfit(ConstructionSite site) {
-        return getConstructionSiteProfit(site, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Gets the profit of an existing construction site at a settlement.
-     * 
-     * @param site the construction site.
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
      */
-    public double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) {
+    private double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) {
 
         double result = 0D;
 
-        if (!site.isUndergoingConstruction()) {
+        if (!site.isConstruction()) {
             if (site.hasUnfinishedStage()) {
                 
                 // Value for finishing construction stage at site.
@@ -206,38 +187,7 @@ implements Serializable {
         return result;
     }
 
-    /**
-     * Gets a map of construction stage infos and their profits for a particular 
-     * construction site.
-     * 
-     * @param site the construction site.
-     * @param constructionSkill the architect's construction skill.
-     * @return map of construction stage infos and their profits (VP).
-     */
-    public Map<ConstructionStageInfo, Double> getNewConstructionStageProfits(
-            ConstructionSite site, int constructionSkill) {
-
-        Map<ConstructionStageInfo, Double> result = new HashMap<>();
-
-        ConstructionStage lastStage = site.getCurrentConstructionStage();
-        if (lastStage != null) {
-            ConstructionStageInfo lastStageInfo = lastStage.getInfo();
-            Iterator<ConstructionStageInfo> i = 
-                            config.getPotentialNextStages(lastStageInfo).iterator();
-            while (i.hasNext()) {
-                ConstructionStageInfo stageInfo = i.next();
-                double profit = getConstructionStageProfit(stageInfo, constructionSkill);
-                result.put(stageInfo, profit);
-            }
-        }
-        else {
-            result = getConstructionStageProfit(ConstructionStageInfo.Stage.FOUNDATION, 
-                    constructionSkill);
-        }
-
-        return result;
-    }
-
+    
     /**
      * Gets a map of construction stage infos and their profits for a given stage type.
      * 
@@ -245,7 +195,7 @@ implements Serializable {
      * @param constructionSkill the architect's construction skill.
      * @return map of construction stage infos and their profits (VP).
      */
-    public Map<ConstructionStageInfo, Double> getConstructionStageProfit(Stage stageType, 
+    private Map<ConstructionStageInfo, Double> getConstructionStageProfit(Stage stageType, 
             int constructionSkill) {
 
         Map<ConstructionStageInfo, Double> result = new HashMap<>();
@@ -456,43 +406,6 @@ implements Serializable {
     /**
      * Inner class for a construction stage info and skill combination map key value.
      */
-    private class ConstructionStageInfoSkillKey implements Serializable {
-        
-        /** default serial id. */
-        private static final long serialVersionUID = 1L;
-        
-        // Data members.
-        ConstructionStageInfo stageInfo;
-        int skill;
-        
-        ConstructionStageInfoSkillKey(ConstructionStageInfo stageInfo, int skill) {
-            this.stageInfo = stageInfo;
-            this.skill = skill;
-        }
-        
-        @Override
-        public boolean equals(Object object) {
-            boolean result = false;
-            
-            if (object instanceof ConstructionStageInfoSkillKey) {
-                ConstructionStageInfoSkillKey objectKey = (ConstructionStageInfoSkillKey) object;
-                if (objectKey.stageInfo.equals(stageInfo) && (objectKey.skill == skill)) {
-                    result = true;
-                }
-            }
-            
-            return result;
-        }
-        
-    	/**
-    	 * Gets the hash code for this object.
-    	 *
-    	 * @return hash code.
-    	 */
-    	@Override
-    	public int hashCode() {
-    		return super.hashCode();
-    	}
-
-    }
+    private record ConstructionStageInfoSkillKey(ConstructionStageInfo stageInfo,
+                                        int skill) implements Serializable {}
 }

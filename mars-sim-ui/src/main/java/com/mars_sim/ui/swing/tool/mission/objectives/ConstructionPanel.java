@@ -95,7 +95,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         processPanel.add(progressBarPanel);
 
         // Add tooltip.
-        processPanel.setToolTipText(ConstructionStageFormat.getTooltip(stage));
+        processPanel.setToolTipText(ConstructionStageFormat.getTooltip(stage, true));
         
         JLabel progressLabel = new JLabel("Site Completion", SwingConstants.CENTER);
         processPanel.add(progressLabel);
@@ -176,7 +176,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         progressBarModel.setValue(workProgress);
         
         // Update the tool tip string.
-        processPanel.setToolTipText(ConstructionStageFormat.getTooltip(stage));
+        processPanel.setToolTipText(ConstructionStageFormat.getTooltip(stage, true));
     }
 
   

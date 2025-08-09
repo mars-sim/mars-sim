@@ -51,17 +51,18 @@ public class TabPanelSiteGeneral extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(3);
+		AttributePanel infoPanel = new AttributePanel();
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
 		
 		String name = constructionSite.getName();
-		ConstructionStageInfo stageInfo = constructionSite.getStageInfo();
+		ConstructionStageInfo stageInfo = constructionSite.getCurrentConstructionStage().getInfo();
 		String stageInfoName = stageInfo.getName();
 		String stageInfoType = stageInfo.getType().name().toLowerCase();
 		
 		infoPanel.addTextField("Site Name", name, null);
+		infoPanel.addTextField("Building Type", constructionSite.getBuildingName(), null);
 		infoPanel.addTextField("Stage Info Name", stageInfoName, null);
 		infoPanel.addTextField("Stage Info Type", stageInfoType, null);
 	}

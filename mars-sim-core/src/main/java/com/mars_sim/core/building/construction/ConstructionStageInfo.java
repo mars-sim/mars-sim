@@ -17,7 +17,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ConstructionStageInfo implements Serializable {
 
-    // Stage 
+    // Stage This MUST be in the order of construction
     public enum Stage {FOUNDATION, FRAME, BUILDING}
 
     // Data members

@@ -15,7 +15,6 @@ import org.apache.batik.gvt.GraphicsNode;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
@@ -90,39 +89,10 @@ public class ConstructionMapLayer extends AbstractMapLayer {
 
         
         if (showLabel) {
-            String[] words = getConstructionLabel(site).split(" ");
+            String[] words = site.getStatusDescription().split(" ");
 
             drawCenteredMultiLabel(words, LABEL_FONT, site.getPosition(),
                                     CONSTRUCTION_COLOR, viewpoint);
         }
     }
-
-    /**
-	 * Gets the label for a construction site.
-	 * 
-	 * @param site the construction site.
-	 * @return the construction label.
-	 */
-	public static String getConstructionLabel(ConstructionSite site) {
-		String label = ""; //$NON-NLS-1$
-		ConstructionStage stage = site.getCurrentConstructionStage();
-		if (stage != null) {
-			if (site.isUndergoingConstruction()) {
-				label = Msg.getString("LabelMapLayer.constructing", stage.getInfo().getName()); //$NON-NLS-1$
-			} else if (site.isUndergoingSalvage()) {
-				label = Msg.getString("LabelMapLayer.salvaging", stage.getInfo().getName()); //$NON-NLS-1$
-			} else if (site.hasUnfinishedStage()) {
-				if (stage.isSalvaging()) {
-					label = Msg.getString("LabelMapLayer.salvagingUnfinished", stage.getInfo().getName()); //$NON-NLS-1$
-				} else {
-					label = Msg.getString("LabelMapLayer.constructingUnfinished", stage.getInfo().getName()); //$NON-NLS-1$
-				}
-			} else {
-				label = Msg.getString("LabelMapLayer.completed", stage.getInfo().getName()); //$NON-NLS-1$
-			}
-		} else {
-			label = Msg.getString("LabelMapLayer.noConstruction"); //$NON-NLS-1$
-		}
-		return label;
-	}
 }
