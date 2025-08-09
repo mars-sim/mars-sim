@@ -701,7 +701,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
 	<process name="Make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
-			tooling="Soldering" power-required=".3">
+			tooling="3d printer" power-required=".3">
 		<inputs>
 			<resource name="Polyester Resin" amount=".5">
 				<alternative name="Polycarbonate Resin" amount=".5" />

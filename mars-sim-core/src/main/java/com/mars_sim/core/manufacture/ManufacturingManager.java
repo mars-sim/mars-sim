@@ -460,7 +460,7 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Gets the mau processed that can be supported by this settlement. It considers
+     * Gets the manu processed that can be supported by this settlement. It considers
      * - MaxTechlevel of any workshops
      * - MaterialScience skill of settlement workers; this is recalculated each time
      * 
@@ -535,7 +535,7 @@ public class ManufacturingManager implements Serializable {
 
     /**
      * Gets the list of resources that could be manufactured based on its workshops.
-     * This does not consider available resources
+     * This does not consider available resources.
      */
     public List<String> getPossibleOutputs() {
         var supported = getSupportedManuProcesses();
@@ -544,6 +544,7 @@ public class ManufacturingManager implements Serializable {
                     .map(ProcessInfo::getOutputList)
                     .flatMap(Collection::stream)
                     .map(m -> m.getName())
+                    .map(String::toLowerCase)
                     .distinct()
                     .sorted()
                     .toList();
