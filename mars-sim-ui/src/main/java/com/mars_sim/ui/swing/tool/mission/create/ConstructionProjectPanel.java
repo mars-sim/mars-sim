@@ -11,8 +11,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,25 +23,21 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.building.construction.ConstructionVehicleType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
@@ -53,9 +47,6 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
  */
 @SuppressWarnings("serial")
 class ConstructionProjectPanel extends WizardPanel {
-
-	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(ConstructionProjectPanel.class.getName());
 	
     /** The wizard panel name. */
     private static final String NAME = "Construction Project";
@@ -64,13 +55,10 @@ class ConstructionProjectPanel extends WizardPanel {
     
     // Data members
     private JLabel errorMessageTextPane;
-    private DefaultListModel<String> siteListModel;
-    private JList<String> siteList;
-    private DefaultListModel<ConstructionStageInfo> projectListModel;
-    private JList<ConstructionStageInfo> projectList;
+    private DefaultListModel<ConstructionSite> siteListModel;
+    private JList<ConstructionSite> siteList;
     private MaterialsTableModel materialsTableModel;
     private JTable materialsTable;
-    private CreateMissionWizard cMWizard;
     
     /**
      * Constructor.
@@ -80,7 +68,6 @@ class ConstructionProjectPanel extends WizardPanel {
     public ConstructionProjectPanel(final CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
-        this.cMWizard  = wizard;
         
         // Set the layout.
         setLayout(new BorderLayout(0, 0));
@@ -115,62 +102,21 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create scroll pane for site selection list.
         JScrollPane siteListScrollPane = new JScrollPane();
-        siteListScrollPane
-        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        constructionSiteSelectionPane.add(siteListScrollPane,
-                BorderLayout.CENTER);
+        siteListScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        constructionSiteSelectionPane.add(siteListScrollPane, BorderLayout.CENTER);
 
         // Create site selection list.
         siteListModel = new DefaultListModel<>();
         populateSiteListModel();
         siteList = new JList<>(siteListModel);
+        siteList.setCellRenderer(new SiteListRenderer());
         siteList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         siteList.addListSelectionListener(arg0 -> {
             getWizard().setButtons(false);
             errorMessageTextPane.setText(" ");
-            populateProjectListModel();
+            selectSite();
         });
         siteListScrollPane.setViewportView(siteList);
-
-        // Create construction project selection panel.
-        JPanel constructionProjectSelectionPane = new JPanel(new BorderLayout(
-                0, 0));
-        constructionProjectSelectionPane.setBorder(new MarsPanelBorder());
-        mainSelectionPane.add(constructionProjectSelectionPane);
-
-        // Create construction project selection label.
-        JLabel constructionProjectSelectionLabel = new JLabel(
-                "Select Construction Project", SwingConstants.CENTER);
-        constructionProjectSelectionPane.add(constructionProjectSelectionLabel,
-                BorderLayout.NORTH);
-
-        // Create scroll pane for project selection list.
-        JScrollPane projectListScrollPane = new JScrollPane();
-        projectListScrollPane
-        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        constructionProjectSelectionPane.add(projectListScrollPane,
-                BorderLayout.CENTER);
-
-        // Create project selection list.
-        projectListModel = new DefaultListModel<>();
-        populateProjectListModel();
-        projectList = new JList<>(projectListModel);
-        projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        projectList.addListSelectionListener(arg0 -> {
-            materialsTableModel.update();
-            projectSelection();
-        });
-        
-        // call it a click to next button when user double clicks the table
-        projectList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && !e.isConsumed()) {
-                    wizard.buttonClickedNext();
-                }
-            }
-        });
-        projectListScrollPane.setViewportView(projectList);
 
         // Create construction materials panel.
         JPanel constructionMaterialsPane = new JPanel(new BorderLayout(0, 0));
@@ -185,8 +131,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create scroll pane for construction materials table.
         JScrollPane materialsTableScrollPane = new JScrollPane();
-        materialsTableScrollPane
-        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        materialsTableScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         constructionMaterialsPane.add(materialsTableScrollPane,
                 BorderLayout.CENTER);
 
@@ -229,81 +174,10 @@ class ConstructionProjectPanel extends WizardPanel {
         add(errorMessageTextPane, BorderLayout.SOUTH);
     }
     
-    /**
-     * Performs project selection action.
-     */
-    private void projectSelection() {
-        
-        String selectedSite = siteList.getSelectedValue();
-        ConstructionStageInfo stageInfo = projectList.getSelectedValue();
-        projectList.setToolTipText(getToolTipText(stageInfo));
-        
-        if (stageInfo != null) {
-        	
-            if (selectedSite.contains(" Unfinished")) {
-                
-                // Get construction site.
-                Settlement settlement = getConstructionSettlement();
-                ConstructionManager manager = settlement.getConstructionManager();
-                ConstructionSite site = null;
-                int i = siteList.getSelectedIndex();
-                if (i > 0) {
-                    int existingSiteIndex = i - 1;
-                    site = manager.getConstructionSites().get(existingSiteIndex);
-                }
-                
-                if (!hasConstructionVehicles(stageInfo)) {
-                    getWizard().setButtons(false);
-                    errorMessageTextPane.setText("Not enough vehicles and/or attachment " +
-                            "parts at settlement for construction project.");
-                }
-                else if (site != null && !hasEnoughConstructionMaterials(site)) {
-                    // Allow construction mission even when insufficient
-                    // materials available to finish stage.
-                    getWizard().setButtons(true);
-                    errorMessageTextPane.setText("Not enough materials at settlement " +
-                            "to finish construction stage, but construction mission " +
-                            "can still be started.");
-                } 
-                else {
-                    getWizard().setButtons(true);
-                    errorMessageTextPane.setText(" ");
-                }
-            }
-            else {
-                try {
-                    if (!hasConstructionVehicles(stageInfo)) {
-                        getWizard().setButtons(false);
-                        errorMessageTextPane.setText("Not enough vehicles and/or attachment " +
-                                "parts at settlement for construction project.");
-                    }
-                    else if (!hasEnoughConstructionMaterials(stageInfo)) {
-                        // Allow construction mission even when insufficient
-                        // materials available to finish stage.
-                        getWizard().setButtons(true);
-                        errorMessageTextPane.setText("Not enough materials at settlement " +
-                                "to finish construction stage, but construction mission " +
-                                "can still be started.");
-                    } 
-                    else {
-                        getWizard().setButtons(true);
-                        errorMessageTextPane.setText(" ");
-                    }
-                } catch (Exception e) {
-        			logger.severe(getConstructionSettlement(), 
-        					"Error with construction materials: ", e);
-                }
-            }
-        } 
-        else {
-            errorMessageTextPane.setText(" ");
-        }
-    }
-
+   
     @Override
     void clearInfo() {
         siteListModel.clear();
-        projectListModel.clear();
         materialsTableModel.update();
         getWizard().setButtons(false);
         errorMessageTextPane.setText(" ");
@@ -319,24 +193,11 @@ class ConstructionProjectPanel extends WizardPanel {
     @Override
     boolean commitChanges(boolean isTesting) {
 
-        Settlement settlement = getConstructionSettlement();
-        ConstructionManager manager = settlement.getConstructionManager();
-
         // Get construction site.
-        ConstructionSite site = null;
-        int i = siteList.getSelectedIndex();
-		if (i > 0) {
-	        int existingSiteIndex = i - 1;
-	        site = manager.getConstructionSites().get(existingSiteIndex);
-	        getWizard().getMissionData().setConstructionSite(site);
-	        // Get construction stage info.
-	        ConstructionStageInfo selectedInfo = projectList.getSelectedValue();
-	        getWizard().getMissionData().setConstructionStageInfo(selectedInfo);
-	        getWizard().getMissionData().setDescription(selectedInfo.getName());
-	        
-			return true;
-		}
-        return false;
+        ConstructionSite site = siteList.getSelectedValue();
+	    getWizard().getMissionData().setConstructionSite(site);
+
+		return true;
     }
 
     @Override
@@ -351,139 +212,65 @@ class ConstructionProjectPanel extends WizardPanel {
     }
 
     /**
-     * Gets the tool tip text for the project list based on the selected stage.
-     * 
-     * @param stageInfo the selected stage info.
-     * @return tool tip text.
-     */
-    private String getToolTipText(ConstructionStageInfo stageInfo) {
-        String result = null;
-        if (stageInfo != null) {
-            if (!stageInfo.getType().equals(ConstructionStageInfo.Stage.BUILDING)) {
-                try {
-                    StringBuilder s = new StringBuilder(Msg.HTML_START); //$NON-NLS1$
-                    s.append("Next possible stages:");
-                    Iterator<ConstructionStageInfo> i = getConfig()
-                            .getPotentialNextStages(stageInfo).iterator();
-                    while (i.hasNext()) {
-                        s.append(Msg.BR)
-                        .append(Msg.NBSP)
-                        .append(Msg.NBSP)
-                        .append(Msg.NBSP)
-                        .append(Msg.NBSP)
-                        .append(i.next().getName());
-                    }
-                    s.append(Msg.HTML_STOP); //$NON-NLS1$
-                    result = s.toString();
-                } catch (Exception e) {
-        			logger.severe(getConstructionSettlement(), 
-        					"Error with setting up tooltip: ", e);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Populates the site list model.
      */
     private void populateSiteListModel() {
         siteListModel.clear();
-        siteListModel.addElement("New Site");
-
-        int num = 1;
         
         Settlement settlement = getConstructionSettlement();
         if (settlement != null) {
             ConstructionManager manager = settlement.getConstructionManager();
-            Iterator<ConstructionSite> i = manager.getConstructionSites()
-                    .iterator();
-            while (i.hasNext()) {
-                ConstructionSite site = i.next();
-                String result = "Site " + num + " : " + site.getStatusDescription();
-
-                siteListModel.addElement(result);
-            }
+            manager.getConstructionSitesNeedingMission(true).forEach(cs -> siteListModel.addElement(cs));
         }
     }
 
     /**
      * Populates the project list model.
      */
-    private void populateProjectListModel() {
-        projectListModel.clear();
+    private void selectSite() {
 
-        int selectedSiteIndex = siteList.getSelectedIndex();
-        String selectedSite = siteList.getSelectedValue();
+        var selectedSite = siteList.getSelectedValue();
         if (selectedSite != null) {
-            if (selectedSite.equals("New Site")) {
-                // Show all foundation projects.
-                Iterator<ConstructionStageInfo> ii = getConfig().getConstructionStageInfoList(Stage.FOUNDATION)
-                        .iterator();
-                while (ii.hasNext()) {
-                    ConstructionStageInfo info = ii.next();
-                    if (info.isConstructable())
-                        projectListModel.addElement(info);
-                }
-            } else if (selectedSite.contains(" - Under Construction")) {
-            	// May need to fix below : 
-            	if (cMWizard.getMissionBean().getAllMembers() == null)
-            		if (cMWizard.getMissionBean().getAllMembers().isEmpty()) {
-            			// Add checking if members of an on-going site were departed
-            			loadSite(selectedSite, selectedSiteIndex);
-            			cMWizard.getMissionWindow().update((ClockPulse) null);
-            		}
-            	else {            	
-	                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");             
-	                // Do nothing.
-            	}
-            } else if (selectedSite.contains(" - Under Salvage")) {
+            if (!selectedSite.isConstruction()) {
                 errorMessageTextPane.setText("Cannot start mission on a site already undergoing salvage.");
                 // Do nothing.
             } else {
-            	loadSite(selectedSite, selectedSiteIndex);
+            	loadSite(selectedSite);
             }
+        }
+        else {
+            materialsTableModel.update();
         }
     }
 
-    private ConstructionConfig getConfig() {
-        return getSimulation().getConfig().getConstructionConfiguration();
-    }
+    private void loadSite(ConstructionSite selectedSite) {
+        var stage = selectedSite.getCurrentConstructionStage();
+        if (stage != null) {
+            var stageInfo = stage.getInfo();
 
-    public void loadSite(String selectedSite, int selectedSiteIndex) {
-        Settlement settlement = getConstructionSettlement();
-        if (settlement != null) {
-            ConstructionManager manager = settlement
-                    .getConstructionManager();
-            int siteNum = selectedSiteIndex - 1;
-            ConstructionSite site = manager.getConstructionSites().get(
-                    siteNum);
-            if (site != null) {
-                if (selectedSite.contains(" Unfinished")) {
-                    // Show current construction stage.
-                    projectListModel.addElement(site
-                            .getCurrentConstructionStage().getInfo());
-                } else {
-                    try {
-                        // Show all possible stage infos.
-                        ConstructionStageInfo info = site
-                                .getCurrentConstructionStage()
-                                .getInfo();
-                        Iterator<ConstructionStageInfo> i = getConfig()
-                                .getPotentialNextStages(info).iterator();
-                        while (i.hasNext()) {
-                            ConstructionStageInfo stageInfo = i.next();
-                            if (stageInfo.isConstructable())
-                                projectListModel.addElement(stageInfo);
-                        }
-                    } catch (Exception e) {
-            			logger.severe(getConstructionSettlement(), 
-            					"Error checking construction stage info: ", e);
-                    }
-                }
+            if (!hasConstructionVehicles(stageInfo)) {
+                getWizard().setButtons(false);
+                errorMessageTextPane.setText("Not enough vehicles and/or attachment " +
+                        "parts at settlement for construction project.");
             }
-        }	
+            else if (stage.hasMissingConstructionMaterials()) {
+                // Allow construction mission even when insufficient
+                // materials available to finish stage.
+                getWizard().setButtons(true);
+                errorMessageTextPane.setText("Not enough materials at settlement " +
+                        "to finish construction stage, but construction mission " +
+                        "can still be started.");
+            } 
+            else {
+                getWizard().setButtons(true);
+                errorMessageTextPane.setText(" ");
+            }
+        } 
+        else {
+            errorMessageTextPane.setText(" ");
+        }
+
+        materialsTableModel.update();
     }
     
     
@@ -497,61 +284,6 @@ class ConstructionProjectPanel extends WizardPanel {
     }
 
     /**
-     * Checks if there are enough construction materials at the settlement to
-     * construct the stage.
-     * 
-     * @param stageInfo
-     *            the stage information.
-     * @return true if enough materials.
-     * @throws Exception
-     *             if error determining construction material availability.
-     */
-    private boolean hasEnoughConstructionMaterials(
-            ConstructionStageInfo stageInfo) {
-
-        boolean result = true;
-
-        Settlement settlement = getConstructionSettlement();
- 
-        // Check amount resources.
-        Iterator<Integer> i = stageInfo.getResources().keySet()
-                .iterator();
-        while (i.hasNext()) {
-        	Integer resource = i.next();
-            double amount = stageInfo.getResources().get(resource);
-            if (settlement.getSpecificAmountResourceStored(resource) < amount)
-                result = false;
-        }
-
-        // Check parts.
-        Iterator<Integer> j = stageInfo.getParts().keySet().iterator();
-        while (j.hasNext()) {
-        	Integer part = j.next();
-            int number = stageInfo.getParts().get(part);
-            if (settlement.getItemResourceStored(part) < number)
-                result = false;
-        }
-
-        return result;
-    }
-    
-    /**
-     * Checks if there are enough construction materials for a construction site.
-     * 
-     * @param site the construction site.
-     * @return true if enough remaining materials available.
-     */
-    private boolean hasEnoughConstructionMaterials(ConstructionSite site) {
-                 
-        ConstructionStage stage = site.getCurrentConstructionStage();
-        if (stage != null) {
-            return !stage.hasMissingConstructionMaterials();
-        }
-
-        return false;
-    }
-
-    /**
      * Checks if needed construction vehicles and attachment parts are available.
      * 
      * @param stageInfo the construction stage.
@@ -561,8 +293,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         boolean result = true;
 
-        Settlement settlement = getWizard().getMissionData()
-                .getConstructionSettlement();
+        Settlement settlement = getConstructionSettlement();
  
         // Check for LUV's.
         int luvsNeeded = stageInfo.getVehicles().size();
@@ -639,9 +370,9 @@ class ConstructionProjectPanel extends WizardPanel {
         public Object getValueAt(int row, int col) {
             if ((row < materialsList.size()) && (col < 3)) {
                 return switch (col) {
-                  case 0 -> materialsList.get(row).toString();
-                  case 1 -> materialsList.get(row).numRequired;
-                  case 2 -> materialsList.get(row).numAvailable;
+                  case 0 -> materialsList.get(row).name();
+                  case 1 -> materialsList.get(row).numRequired();
+                  case 2 -> materialsList.get(row).numAvailable();
                   default -> null;
                 };
             } else
@@ -652,10 +383,9 @@ class ConstructionProjectPanel extends WizardPanel {
          * Updates the table.
          */
         private void update() {
-            info = projectList.getSelectedValue();
             materialsList.clear();
             populateMaterialsList();
-            fireTableStructureChanged();
+            fireTableDataChanged();
         }
 
         /**
@@ -664,154 +394,52 @@ class ConstructionProjectPanel extends WizardPanel {
          * @param settlement
          * @param selectedSite
          */
-        private void populateSiteUnfinished(Settlement settlement, String selectedSite) {
+        private void populateSiteUnfinished(Settlement settlement, ConstructionSite site) {
 
-            try {
-                // For site with stage under construction, display remaining
-                // construction resources and parts.
-                ConstructionManager manager = settlement.getConstructionManager();
-                ConstructionSite site = null;
-                int i = siteList.getSelectedIndex();
-                if (i > 0) {
-                    int existingSiteIndex = i - 1;
-                    site = manager.getConstructionSites().get(existingSiteIndex);
-                }
-                else {
-                    logger.severe(settlement, 
-                            "No site selected for Construction Project");
-                    return;
-                }   
-                ConstructionStage stage = site.getCurrentConstructionStage();
+            ConstructionStage stage = site.getCurrentConstructionStage();
                 
-                // Add resources.
-                Iterator<Integer> ii = stage.getMissingResources().keySet()
-                        .iterator();
-                while (ii.hasNext()) {
-                	Integer resource = ii.next();
-                    double amountRequired = info.getResources().get(
-                            resource);
-                    double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
-                    materialsList.add(new ConstructionMaterial(
-                    		ResourceUtil.findAmountResource(resource).getName(), (int) amountRequired,
-                            (int) amountAvailable, false));
-                }
+            // Add resources.
+            for(var mr : stage.getMissingResources().entrySet()) {
+                Integer resource = mr.getKey();
+                double amountRequired = mr.getValue();
+                double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
+                materialsList.add(new ConstructionMaterial(
+                        ResourceUtil.findAmountResource(resource).getName(), (int) amountRequired,
+                        (int) amountAvailable, false));
+            }
                 
-                // Add parts.
-                Iterator<Integer> jj = stage.getMissingParts().keySet().iterator();
-                while (jj.hasNext()) {
-                	Integer part = jj.next();
-                    int numRequired = info.getParts().get(part);
-                    int numAvailable = settlement.getItemResourceStored(part);
-                    materialsList.add(new ConstructionMaterial(
-                    		ItemResourceUtil.findItemResource(part).getName(), 
-                    		numRequired, numAvailable, false));
+            // Add parts.
+            for (var mp : stage.getMissingParts().entrySet()) {
+                Integer part = mp.getKey();
+                int numRequired = mp.getValue();
+                int numAvailable = settlement.getItemResourceStored(part);
+                materialsList.add(new ConstructionMaterial(
+                        ItemResourceUtil.findItemResource(part).getName(), 
+                        numRequired, numAvailable, false));
+            }
+
+            // Add vehicle attachment parts.
+            Map<Integer,Integer> attachmentParts = new HashMap<>();
+            for (var vehicleType : info.getVehicles()) {
+                for (var part : vehicleType.getAttachmentParts()) {
+                    attachmentParts.merge(part, 1, Integer::sum);
                 }
 
-                // Add vehicle attachment parts.
-                Map<Integer, Integer> attachmentParts = new HashMap<>();
-                Iterator<ConstructionVehicleType> k = info.getVehicles()
-                        .iterator();
-                while (k.hasNext()) {
-                    ConstructionVehicleType vehicleType = k.next();
-                    Iterator<Integer> l = vehicleType.getAttachmentParts()
-                            .iterator();
-                    while (l.hasNext()) {
-                    	Integer part = l.next();
-                        int partNum = 1;
-                        if (attachmentParts.containsKey(part))
-                            partNum += attachmentParts.get(part);
-                        attachmentParts.put(part, partNum);
-                    }
-                }
-                Iterator<Integer> m = attachmentParts.keySet().iterator();
-                while (m.hasNext()) {
-                	Integer part = m.next();
-                    int numRequired = attachmentParts.get(part);
+                for (var ap : attachmentParts.entrySet()) {
+                	Integer part = ap.getKey();
+                    int numRequired = ap.getValue();
                     int numAvailable = settlement.getItemResourceStored(part);
                     materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                             .getName(), numRequired, numAvailable, true));
                 }
-
-                // Add construction vehicles.
-                int numVehiclesRequired = info.getVehicles().size();
-                int numVehiclesAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
-                materialsList.add(new ConstructionMaterial(
-                		LUV, numVehiclesRequired,
-                        numVehiclesAvailable, true));
             }
-            catch (Exception e) {
-    			logger.severe(settlement, 
-    					"Error checking construction stage info: ", e);
-            }
-        }
-        
-        /**
-         * Prepares materials for site stage.
-         * 
-         * @param settlement
-         * @param selectedSite
-         */
-        private void prepareSite(Settlement settlement, String selectedSite) {
-         	
-            try {
-                // Add resources.
-                Iterator<Integer> i = info.getResources().keySet()
-                        .iterator();
-                while (i.hasNext()) {
-                	Integer resource = i.next();
-                    double amountRequired = info.getResources().get(
-                            resource);
-                    double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
-                    materialsList.add(new ConstructionMaterial(ResourceUtil.findAmountResource(resource)
-                            .getName(), (int) amountRequired,
-                            (int) amountAvailable, false));
-                }
 
-                // Add parts.
-                Iterator<Integer> j = info.getParts().keySet().iterator();
-                while (j.hasNext()) {
-                	Integer part = j.next();
-                    int numRequired = info.getParts().get(part);
-                    int numAvailable = settlement.getItemResourceStored(part);
-                    materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
-                            .getName(), numRequired, numAvailable, false));
-                }
-
-                // Add vehicle attachment parts.
-                Map<Integer, Integer> attachmentParts = new HashMap<>();
-                Iterator<ConstructionVehicleType> k = info.getVehicles()
-                        .iterator();
-                while (k.hasNext()) {
-                    ConstructionVehicleType vehicleType = k.next();
-                    Iterator<Integer> l = vehicleType.getAttachmentParts()
-                            .iterator();
-                    while (l.hasNext()) {
-                    	Integer part = l.next();
-                        int partNum = 1;
-                        if (attachmentParts.containsKey(part))
-                            partNum += attachmentParts.get(part);
-                        attachmentParts.put(part, partNum);
-                    }
-                }
-                Iterator<Integer> m = attachmentParts.keySet().iterator();
-                while (m.hasNext()) {
-                	Integer part = m.next();
-                    int numRequired = attachmentParts.get(part);
-                    int numAvailable = settlement.getItemResourceStored(part);
-                    materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
-                            .getName(), numRequired, numAvailable, true));
-                }
-
-                // Add construction vehicles.
-                int numVehiclesRequired = info.getVehicles().size();
-                int numVehiclesAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
-                materialsList.add(new ConstructionMaterial(
-                		LUV, numVehiclesRequired,
-                        numVehiclesAvailable, true));
-            } catch (Exception e) {
-    			logger.severe(settlement, 
-    					"Error preparing for construction resources: ", e);
-            }
+            // Add construction vehicles.
+            int numVehiclesRequired = info.getVehicles().size();
+            int numVehiclesAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
+            materialsList.add(new ConstructionMaterial(
+                    LUV, numVehiclesRequired,
+                    numVehiclesAvailable, true));
         }
         
         /**
@@ -819,19 +447,16 @@ class ConstructionProjectPanel extends WizardPanel {
          */
         private void populateMaterialsList() {
 
-            String selectedSite = siteList.getSelectedValue();
-            // Get construction site.
-            Settlement settlement = getConstructionSettlement();
-            
-            if (info == null) {
-            	return;
+            var selectedSite = siteList.getSelectedValue();
+            if (selectedSite != null) {
+                // Get construction site.
+                Settlement settlement = getConstructionSettlement();
+                info = selectedSite.getCurrentConstructionStage().getInfo();
+    
+                populateSiteUnfinished(settlement, selectedSite);
             }
-                
-            if (selectedSite.indexOf(" Unfinished") > 0) {           
-            	populateSiteUnfinished(settlement, selectedSite);
-            }
-            else {   	
-                prepareSite(settlement, selectedSite);
+            else {
+                materialsList.clear();
             }
         }
 
@@ -886,26 +511,36 @@ class ConstructionProjectPanel extends WizardPanel {
         /**
          * Inner class to represent table rows of construction material.
          */
-        private class ConstructionMaterial {
-
-            // Data members
-            private String name;
-            private int numRequired;
-            private int numAvailable;
-            private boolean isVehicleRelated;
-
-            private ConstructionMaterial(String name, int numRequired,
-                    int numAvailable, boolean isVehicleRelated) {
-                this.name = name;
-                this.numRequired = numRequired;
-                this.numAvailable = numAvailable;
-                this.isVehicleRelated = isVehicleRelated;
-            }
-
-            @Override
-            public String toString() {
-                return name;
-            }
+        private record ConstructionMaterial(String name, int numRequired, int numAvailable, boolean isVehicleRelated) {
         }
     }
+
+    private class SiteListRenderer extends JLabel implements
+        ListCellRenderer<ConstructionSite> {
+
+		public SiteListRenderer() {
+			setOpaque(true);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(
+				JList<? extends ConstructionSite> list,
+				ConstructionSite site, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			this.setFont(list.getFont());
+
+			if (isSelected) {
+				setBackground(list.getSelectionBackground());
+				setForeground(list.getSelectionForeground());
+			} else {
+				setBackground(list.getBackground());
+				setForeground(list.getForeground());
+			}
+
+            this.setText(site.getName() + " building " + site.getBuildingName() + " @ " + site.getStatusDescription());
+
+			return this;
+		}
+	}
 }

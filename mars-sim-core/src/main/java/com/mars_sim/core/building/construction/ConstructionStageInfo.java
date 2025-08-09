@@ -221,4 +221,12 @@ public class ConstructionStageInfo implements Serializable {
     public String toString() {
         return name;
     }
+
+    /**
+     * Get the name of the associated image for this Stage
+     * @return
+     */
+    public String getImageName() {
+        return name.toLowerCase();
+    }
 }

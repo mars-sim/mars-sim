@@ -246,16 +246,25 @@ public class ConstructionManager implements Serializable {
 		// Should select from Q once in place
 		BuildingSpec bestBuilding = getNeededBuilding();
 
+		return createNewBuildingSite(bestBuilding);
+	}
+
+	/**
+	 * Create a new building site to build a building
+	 * @param building
+	 * @return
+	 */
+	public ConstructionSite createNewBuildingSite(BuildingSpec building) {
 		// Place the new building
-		var placement = BuildingPlacement.placeSite(settlement, bestBuilding);
+		var placement = BuildingPlacement.placeSite(settlement, building);
 		if (placement == null) {
-			logger.warning(settlement, "Can not find a placement for " + bestBuilding.getName());
+			logger.warning(settlement, "Can not find a placement for " + building.getName());
 			return null;
 		}
 
 		// Find the first state
-		ConstructionStageInfo initStage = getStageInfo(bestBuilding.getName(), Stage.FOUNDATION);
-		return createNewConstructionSite(bestBuilding.getName(), placement, true, initStage);
+		ConstructionStageInfo initStage = getStageInfo(building.getName(), Stage.FOUNDATION);
+		return createNewConstructionSite(building.getName(), placement, true, initStage);
 	}
 
 	/**

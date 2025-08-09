@@ -69,22 +69,21 @@ public class ConstructionMapLayer extends AbstractMapLayer {
         // Use SVG image for construction site if available.
         GraphicsNode svg = null;
         ConstructionStage stage = site.getCurrentConstructionStage();
-        String stageName = null;
+        String imageName = null;
         if (stage != null) {
-            stageName = stage.getInfo().getName().toLowerCase();
-            svg = SVGMapUtil.getConstructionSiteSVG(stageName);
+            imageName = stage.getInfo().getImageName();
+            svg = SVGMapUtil.getConstructionSiteSVG(imageName);
         }
         
-        Color selectedColor = (site.isMousePicked() ? CONST_SELECTED_COLOR : null);
         if (svg != null) {
             // Determine construction site pattern SVG image if available.
             GraphicsNode patternSVG = SVGMapUtil
-                    .getConstructionSitePatternSVG(stageName);
+                    .getConstructionSitePatternSVG(imageName);
 
-            drawStructure(site, svg, patternSVG, selectedColor, viewpoint);
+            drawStructure(site, svg, patternSVG, CONST_SELECTED_COLOR, viewpoint);
         }
         else {
-            drawRectangle(site, CONST_COLOR, selectedColor, viewpoint);
+            drawRectangle(site, CONST_COLOR, CONST_SELECTED_COLOR, viewpoint);
         }
 
         

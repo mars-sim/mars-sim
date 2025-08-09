@@ -64,6 +64,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	RoleCommand.ROLE,
 																	ScienceCommand.SCIENCE,
 																	ShiftsCommand.SHIFTS,
+																	SiteCommand.SITE,
 																	StudyCommand.STUDY,
 																	TaskCommand.TASK,
 																	VehicleCommand.VEHICLE,

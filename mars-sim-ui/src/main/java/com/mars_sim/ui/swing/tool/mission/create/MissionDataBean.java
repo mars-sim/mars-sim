@@ -16,7 +16,6 @@ import java.util.Map;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
@@ -51,11 +50,6 @@ import com.mars_sim.core.vehicle.Rover;
  */
 class MissionDataBean {
 
-	// Data members.
-    private double constructionSiteXLoc;
-    private double constructionSiteYLoc;
-    private double constructionSiteFacing;
-
     private MissionType missionType;
 	private String type = "";
 	private String description = "";
@@ -80,7 +74,6 @@ class MissionDataBean {
 	private MineralSite miningSite;
     
     private ConstructionSite constructionSite;
-    private ConstructionStageInfo constructionStageInfo;
     private ConstructionSite salvageSite;
     
     private Building salvageBuilding;
@@ -604,78 +597,6 @@ class MissionDataBean {
      */
     protected void setConstructionSite(ConstructionSite constructionSite) {
         this.constructionSite = constructionSite;
-    }
-
-    /**
-     * Gets the construction stage info.
-     * 
-     * @return construction stage info.
-     */
-    protected ConstructionStageInfo getConstructionStageInfo() {
-        return constructionStageInfo;
-    }
-
-    /**
-     * Sets the construction stage info.
-     * 
-     * @param constructionStageInfo the construction stage info.
-     */
-    protected void setConstructionStageInfo(ConstructionStageInfo constructionStageInfo) {
-        this.constructionStageInfo = constructionStageInfo;
-    }
-
-    /**
-     * Gets the construction site X location.
-     * 
-     * @return X location (meters).
-     */
-    protected double getConstructionSiteXLocation() {
-        return constructionSiteXLoc;
-    }
-
-    /**
-     * Sets the construction site X location.
-     * 
-     * @param constructionSiteXLoc X location (meters).
-     */
-    protected void setConstructionSiteXLocation(double constructionSiteXLoc) {
-        this.constructionSiteXLoc = constructionSiteXLoc;
-    }
-
-    /**
-     * Gets the construction site Y location.
-     * 
-     * @return Y location (meters).
-     */
-    protected double getConstructionSiteYLocation() {
-        return constructionSiteYLoc;
-    }
-
-    /**
-     * Sets the construction site Y location.
-     * 
-     * @param constructionSiteYLoc Y Location (meters).
-     */
-    protected void setConstructionSiteYLocation(double constructionSiteYLoc) {
-        this.constructionSiteYLoc = constructionSiteYLoc;
-    }
-
-    /**
-     * Gets the construction site facing.
-     * 
-     * @return the construction site facing (degrees clockwise from North).
-     */
-    protected double getConstructionSiteFacing() {
-        return constructionSiteFacing;
-    }
-
-    /**
-     * Sets the construction site facing.
-     * 
-     * @param constructionSiteFacing facing (degrees clockwise from North).
-     */
-    protected void setConstructionSiteFacing(double constructionSiteFacing) {
-        this.constructionSiteFacing = constructionSiteFacing;
     }
 
     /**

@@ -144,6 +144,10 @@ public class ConstructionStage implements Serializable {
         return (completedWorkTime >= getRequiredWorkTime());
     }
 
+    public double getCompletedPerc() {
+        return completedWorkTime / getRequiredWorkTime();
+    }
+
     /**
      * Gets the original parts needed for construction.
      * 

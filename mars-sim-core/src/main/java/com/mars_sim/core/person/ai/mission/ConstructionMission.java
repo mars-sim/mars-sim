@@ -175,12 +175,13 @@ public class ConstructionMission extends AbstractMission
 
 		// Retrieve construction LUV attachment parts.
 		var luvAttachmentParts = retrieveConstructionLUVParts(settlement, stage, constructionVehicles);
+
+		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
+		addObjective(objective);
 		
 		// Create mission designation
 		createDesignationString();
 
-		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
-		addObjective(objective);
 		setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 	}
 
@@ -484,6 +485,7 @@ public class ConstructionMission extends AbstractMission
 				// Move on to the next one fromm the current one
 				var newStageType = Stage.values()[stage.getInfo().getType().ordinal() + 1];
 				var newStageInfo = ConstructionManager.getStageInfo(site.getBuildingName(), newStageType);
+				site.addNewStage(newStageInfo);
 				logger.info(site, "'" + stage.getInfo().getName() + "' finished advanced to '" + newStageInfo.getName() + "'");
 			}
 		}
@@ -499,7 +501,7 @@ public class ConstructionMission extends AbstractMission
 		unreserveLUVparts(objective.getLuvAttachmentParts(), site.getAssociatedSettlement());
 
 		objective.getConstructionVehicles().stream()
-			.filter(v -> v.getMission().equals(this))
+			.filter(v -> this.equals(v.getMission()))
 			.forEach(v1 -> v1.setMission(null));
 
 		super.endMission(endStatus);

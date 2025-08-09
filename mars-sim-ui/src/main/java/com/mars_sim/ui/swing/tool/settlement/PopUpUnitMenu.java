@@ -67,8 +67,11 @@ public class PopUpUnitMenu extends JPopupMenu {
 			case CONSTRUCTION:
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
-				add(relocateSite((ConstructionSite)unit));
-				add(rotateSite((ConstructionSite)unit));
+				var site = (ConstructionSite) unit;
+				if (site.isUnstarted()) {
+					add(relocateSite(site));
+					add(rotateSite(site));
+				}
 				break;
 
 			default:

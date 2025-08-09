@@ -35,8 +35,7 @@ public class ConstructionSite extends FixedUnit {
 
     private boolean isConstruction;
     private boolean isWorkOnsite;
-    
-    private boolean isMousePickedUp;
+    private boolean unstarted = true;
     
 	// Unique identifier
 	private int identifier;
@@ -48,6 +47,7 @@ public class ConstructionSite extends FixedUnit {
 
     private String targetBuilding;
     private ConstructionStage currentStage;
+
     
     /**
      * Constructor.
@@ -146,6 +146,7 @@ public class ConstructionSite extends FixedUnit {
      * Sets if site has work on site.
      */
     public void setWorkOnSite(boolean active) {
+        this.unstarted = false;
         this.isWorkOnsite = active;
 
         UnitEventType eventType;
@@ -275,6 +276,10 @@ public class ConstructionSite extends FixedUnit {
         return !currentStage.isComplete();
     }
 
+    public boolean isUnstarted() {
+        return unstarted;
+    }
+
     /**
      * Relocates the construction site by changing its coordinates.
      */
@@ -292,14 +297,6 @@ public class ConstructionSite extends FixedUnit {
 				+ position);
         
 
-	}
-
-	public boolean isMousePicked() {
-		return isMousePickedUp;
-	}
-
-	public void setMousePicked(boolean value) {
-		isMousePickedUp = value;
 	}
 
 	@Override
@@ -332,6 +329,10 @@ public class ConstructionSite extends FixedUnit {
 	    currentStage = null;
 	}
 
+    /**
+     * Get a status description of the site.
+     * @return
+     */
     public String getStatusDescription() {
         String result = currentStage.getInfo().getName();
         if (isWorkOnsite) {
