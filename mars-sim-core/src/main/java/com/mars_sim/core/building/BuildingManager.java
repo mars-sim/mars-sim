@@ -2339,7 +2339,7 @@ public class BuildingManager implements Serializable {
 	 /**
 	  * Retrieves maintenance parts from all entities associated with this settlement. 
 	  */
-	private void retrieveMaintPartsFromMalfunctionMgrs() {
+	public void retrieveMaintPartsFromMalfunctionMgrs() {
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
             Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
 

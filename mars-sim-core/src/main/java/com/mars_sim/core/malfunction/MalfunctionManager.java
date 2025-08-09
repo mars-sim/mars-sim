@@ -90,11 +90,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 5;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MAINT_TO_MAL_RATIO = 25;
+	private static final double MAINT_TO_MAL_RATIO = 5;
 	/** The lower limit factor for malfunction. 1.000_003_351_695 will result in 1 % certainty per orbit. */	
 	private static final double MALFUNCTION_LOWER_LIMIT =  1.000_003_351_695; // 0.000_000_002; //  1.000_003_351_695;
 	/** The lower limit factor for maintenance. 1.000_033_516_95 will result in 10 % certainty per orbit. */	
-	private static final double MAINTENANCE_LOWER_LIMIT = MALFUNCTION_LOWER_LIMIT; // * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
+	private static final double MAINTENANCE_LOWER_LIMIT = 0; //MALFUNCTION_LOWER_LIMIT; // * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
 	/** The upper limit factor for both malfunction and maintenance. 1.000_335_221_5 will result in 100% certainty per orbit. */
 	private static final double UPPER_LIMIT = 2;//1.000_335_221_5;
 
@@ -125,8 +125,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final int FREQUENCY = 5;
 	private static final int SCORE_DEFAULT = 50;
 	private static final int MAX_DELAY = 100;
+
+	private static boolean noFailures = false;
 	
 	// Data members
+	
+
+	private boolean supportInsideRepair = true;
+
 	private int delay = 0;
 	/** The number of malfunctions the entity has had so far. */
 	private int numberMalfunctions;
@@ -135,15 +141,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The number of orbits. */
 	private int orbitCache = MarsTime.FIRST_ORBIT;
 	
+	/** Life support modifiers. */
+	private double oxygenFlowModifier = 100D;
 	/** The overall % probability that a maintenance event is triggered by active use on this entity. */
 	private double maintenanceProbability;	
 	/** The overall % probability that a malfunction is triggered by active use on this entity. */
 	private double malfunctionProbability;
 	/** Time passing (in millisols) since last maintenance on entity. */
 	private double timeSinceLastMaint;
-	/**
-	 * Time (millisols) that entity has been actively used since last maintenance.
-	 */
+	/** Time (millisols) that entity has been actively used since last maintenance. */
 	private double effTimeSinceLastMaint;
 	/** The required base work time for each inspection maintenance on entity. */
 	private double baseMaintWorkTime;
@@ -155,19 +161,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double currentWearCondPercent;
 	/** The cumulative time [in millisols] since active use. */
 	private double cumulativeTime;
-	
+	/** The current life time [in millisols] of active use. */
+	private double currentWearLifeTime;
 	/**
 	 * The expected life time [in millisols] of active use before the malfunctionable
 	 * is worn out.
 	 */
 	private final double baseWearLifeTime;
-	/**
-	 * The current life time [in millisols] of active use
-	 */
-	private double currentWearLifeTime;
-
-	// Life support modifiers.
-	private double oxygenFlowModifier = 100D;
+	
 
 	/** The owning entity. */
 	private Malfunctionable entity;
@@ -179,9 +180,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
-	private boolean supportInsideRepair = true;
-
-	private static boolean noFailures = false;
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
@@ -674,9 +672,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 				return;
 			}
 			
-			double maintFactor = (effTimeSinceLastMaint/inspectionWindow) + 1D;
-			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
-			double malfunctionChance = FREQUENCY * time * maintFactor * wearFactor;
+			double inspectFactor = (effTimeSinceLastMaint/inspectionWindow) + .1D;
+			double wearFactor = 100 - currentWearCondPercent; // * WEAR_MALFUNCTION_FACTOR;		
+			double malfunctionChance = time * inspectFactor * wearFactor; // * FREQUENCY
 //			malfunctionProbability = malfunctionChance;
 //			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 			
@@ -687,9 +685,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// If log10 (1.000_335_2215) * 1000 * 687 is 100.0000
 			// This results in 100 % certainty (the upper limit) that it will have a malfunction.
 			
-//			malfunctionChance = Math.log10(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
+			malfunctionProbability = 1.0 - Math.exp(-malfunctionChance) ;
 			
-			malfunctionProbability = Math.log(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
+//			malfunctionProbability = Math.log(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
 //			logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 				
 			boolean hasMal = false;
@@ -719,11 +717,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			// Question: when should numberMaintenances be lower ?
 			
-			double maintenanceChance = malfunctionChance * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
+			double maintenanceChance = malfunctionProbability * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
 //			maintenanceProbability = maintenanceChance;
 //			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
-			
-			maintenanceProbability = Math.log(MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT));
+
+			maintenanceProbability = Math.sqrt(MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT));
 //			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			
 			// Check for repair items needed due to lack of maintenance and wear condition.
@@ -741,6 +739,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty()) {			
 					// Generates the repair parts 
 					generateNewMaintenanceParts();
+					// Retrieves the parts right away
+					entity.getAssociatedSettlement().getBuildingManager().retrieveMaintPartsFromMalfunctionMgrs();
 				}
 			}
 		}

@@ -290,7 +290,7 @@ public class MalfunctionTabPanel extends TabPanel {
 					case NAME: return generateToolTip(model.getMalfunction(rowIndex));
 					case EVA_WORK: return "Number of repairers active on EVA";
 					case INSIDE_WORK: return "Number of repairers active inside";
-					case COMPLETED: return "%age repaired";
+					case COMPLETED: return "Percentage being repaired";
 					default: return "";
 				}
 			}
@@ -314,7 +314,7 @@ public class MalfunctionTabPanel extends TabPanel {
         columnModel.getColumn(EVA_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(INSIDE_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(COMPLETED - offset).setPreferredWidth(50);
-        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageTableCellRenderer.DEFAULT_WIDTH);
+//        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageTableCellRenderer.DEFAULT_WIDTH);
 		columnModel.getColumn(COMPLETED - offset).setCellRenderer(new PercentageTableCellRenderer(true));
         center.add(scrollPanel, BorderLayout.CENTER);
 	}
