@@ -85,7 +85,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** life time in number of sols. */
 	private static final double WEAR_LIFETIME = 334_000D;
 	/** 100 millisols. */
-	private static final double MAINTENANCE_TIME = 100D;
+	private static final double MAINTENANCE_TIME = 50D;
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 

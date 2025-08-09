@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintenanceScope.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-08
  * @author Barry Evans
  */
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
 import com.mars_sim.core.tool.Msg;
 
 /**
- * A class for holding maintenance scope for a Part
+ * A class for holding maintenance scope for a part.
  */
 public class MaintenanceScope implements Serializable {
 

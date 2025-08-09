@@ -787,7 +787,7 @@ public class BuildingManager implements Serializable {
 			meteorite.calculateMeteoriteProbability();
 		}
 
-		if (pulse.isNewIntMillisol()) {
+		if (pulse.getMarsTime().getMissionSol() != 1 && pulse.isNewHalfMillisol()) {
 			// Check if there are any maintenance parts to be submitted
 			retrieveMaintPartsFromMalfunctionMgrs();
 		}
@@ -2348,42 +2348,42 @@ public class BuildingManager implements Serializable {
                 if (!partsMaint.isEmpty()) {
                     Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
                     if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
-                        // Post it
-                        partsMaint.put(entity, parts);
-                        for (int id : parts.keySet()) {
-                            int num = parts.get(id);
-                            Good good = GoodsUtil.getGood(id);
-                            Part part = ItemResourceUtil.findItemResource(id);
-                            // Inject the demand onto this part
-                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-                        }
+                        // Post the parts and inject the demand
+                        postInjectPartsDemand(entity, parts);
                     }
+                    
                     if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
-//						logger.info(entity, 30_000L, "Both are equal : " + partsMaintEntry + " and " + parts);
-                    } else {
-                        // Post it
-                        partsMaint.put(entity, parts);
-                        for (int id : parts.keySet()) {
-                            int num = parts.get(id);
-                            Good good = GoodsUtil.getGood(id);
-                            Part part = ItemResourceUtil.findItemResource(id);
-                            // Inject the demand onto this part
-                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-                        }
-                    }
-                } else {
-                    // Post it
-                    partsMaint.put(entity, parts);
-                    logger.info(parts + " was posted in empty partsMaint.");
-                    for (int id : parts.keySet()) {
-                        int num = parts.get(id);
-                        Good good = GoodsUtil.getGood(id);
-                        Part part = ItemResourceUtil.findItemResource(id);
-                        // Inject the demand onto this part
-                        ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-                    }
+						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
+                    } 
+                    else {
+                        // Post the parts and inject the demand
+                        postInjectPartsDemand(entity, parts);
+                    }   
+                } 
+                else {
+                    logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
+                    // Post the parts and inject the demand
+                    postInjectPartsDemand(entity, parts);
                 }
             }
+        }
+	}
+	
+	/**
+	 * Posts the part and injects the demand.
+	 * 
+	 * @param entity
+	 * @param parts
+	 */
+	public void postInjectPartsDemand(Malfunctionable entity, Map<Integer, Integer> parts) {
+		// Post it
+        partsMaint.put(entity, parts);
+        for (int id : parts.keySet()) {
+            int num = parts.get(id);
+            Good good = GoodsUtil.getGood(id);
+            Part part = ItemResourceUtil.findItemResource(id);
+            // Inject the demand onto this part
+            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
         }
 	}
 	

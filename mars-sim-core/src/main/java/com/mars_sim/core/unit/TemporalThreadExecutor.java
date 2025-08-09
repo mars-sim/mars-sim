@@ -89,12 +89,12 @@ public class TemporalThreadExecutor implements TemporalExecutor {
     public void applyPulse(ClockPulse pulse) {
 
 		// Wakeup each thread by applying the latest Pulse
-		tasks.stream().forEach(s -> s.applyPulse(pulse));
+		tasks.stream().parallel().forEach(s -> s.applyPulse(pulse));
 
 		// Wait for all to apply the new pulse as this is a blocking operation
 		// order of completion does not matter
 		// These must be seperate to applow the Thread to process
-		tasks.stream().forEach(s -> s.awaitPulse());
+		tasks.stream().parallel().forEach(s -> s.awaitPulse());
     }
 
     /**

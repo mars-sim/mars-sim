@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PartGood.java
- * @date 2024-06-29 
+ * @date 2025-08-08 
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -979,8 +979,8 @@ public class PartGood extends Good {
 		int number = settlement.getBuildingManager().getMaintenanceDemand(part);
 		if (number > 0) {
 			demand = number * previousDemand * PARTS_MAINTENANCE_VALUE;
-			logger.info(settlement, 30_000L, "Triggering " + Math.round(demand * 10.0)/10.0 
-					+" good demand from " + number + " " + part.getName() + ".");
+//			logger.info(settlement, 30_000L, "Triggering " + Math.round(demand * 10.0)/10.0 
+//					+" good demand from " + number + " " + part.getName() + ".");
 		}
 		return demand;
 	}
@@ -997,7 +997,10 @@ public class PartGood extends Good {
 		
 		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
 		
-		double previousTotalDemand = previousDemand * (1 + previousNum);
+		if (previousNum == 0)
+			previousNum = 1;
+		
+		double previousTotalDemand = previousDemand * previousNum;
 		
 		double newAddedDemand = getMaintenancePartsDemand(owner.getSettlement(), part, previousDemand);
 
@@ -1006,7 +1009,7 @@ public class PartGood extends Good {
 		double diff = previousTotalDemand - newAddedTotalDemand;
 		
 		double finalDemand = (previousTotalDemand + newAddedTotalDemand) / (previousNum + needNum);
-		String reason = "No change for ";
+		String reason = " - No change. ";
 
 		if (diff < 0) {
 			if (finalDemand < previousDemand) {
@@ -1015,19 +1018,18 @@ public class PartGood extends Good {
 			
 			owner.setDemandScore(this, finalDemand);
 			
-			reason = "Injecting demand for ";
+			reason = " - Injecting Demand: ";
 			// Recalculate settlement good value for this part.
 			owner.determineGoodValue(GoodsUtil.getGood(part.getID()));
 		}
 
 		// Output a detailed message	
-		logger.info(owner.getSettlement(), 30_000L, reason
-				+ part.getName()
-				+ "  Previous demand: "
-				+ Math.round(previousDemand * 10.0)/10.0 
-				+ " (Quantity: " + previousNum + ")"
-				+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
-				+ " (Quantity: " + needNum + ")"
-				);	
+		logger.info(owner.getSettlement(), 30_000L, 
+				part.getName()
+				+ reason
+				+ Math.round(previousDemand * 100.0)/100.0 
+				+ " -> " + Math.round(finalDemand * 100.0)/100.0 
+				+ "  Quantity: " + needNum
+				+ "/" + previousNum + " (needed/previous).");	
 	}
 }

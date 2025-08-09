@@ -694,7 +694,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				
 			boolean hasMal = false;
 			// Check for malfunction due to lack of maintenance and wear condition.
-			if (time > 0 && RandomUtil.lessThanRandPercent(malfunctionChance)) {
+			if (time > 0 && RandomUtil.lessThanRandPercent(malfunctionProbability)) {
 				// Reset delay back to MAX_DELAY. 
 				delay = MAX_DELAY;
 	
@@ -727,7 +727,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			
 			// Check for repair items needed due to lack of maintenance and wear condition.
-			if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceChance)) {
+			if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceProbability)) {
 				// Reset delay back to MAX_DELAY. 
 				delay = MAX_DELAY;
 
@@ -1170,7 +1170,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 		
 		if (!partsNeededForMaintenance.isEmpty())
-			logger.info(entity, 20_000L, "Maintenance parts due: " 
+			logger.info(entity, 20_000L, "Maintenance parts needed: " 
 						+ getPartsString(partsNeededForMaintenance)); 
 	}
 
@@ -1207,8 +1207,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (partsNeededForMaintenance == null)
 			partsNeededForMaintenance = new HashMap<>();
 		if (!partsNeededForMaintenance.isEmpty()) {
-			logger.info(entity, 20_000L, "Maintenance parts posted: " 
-						+ getPartsString(partsNeededForMaintenance));
+			logger.info(entity, 30_000L, "Maintenance parts posted: " + getPartsString(partsNeededForMaintenance));
 		}
 		return partsNeededForMaintenance;
 	}
@@ -1238,7 +1237,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Integer id = entry.getKey();
 			int number = entry.getValue();
 			if (partStore.getItemResourceStored(id) >= number) {
-				logger.info(entity, 20_000L, "Maintenance parts available: " 
+				logger.info(entity, 30_000L, "Maintenance parts available: " 
 						+ getPartsString(parts));
 				return true;
 			}
@@ -1283,7 +1282,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int number = entry.getValue();
 			int numMissing = partStore.retrieveItemResource(part, number);
 			if (numMissing == 0) {
-				logger.info(entity, 20_000L, "Retrieved " + number + " " + ItemResourceUtil.findItemResourceName(part));
+				logger.info(entity, 20_000L, "Retrieved " + number 
+						+ " " + ItemResourceUtil.findItemResourceName(part) + ".");
 			}
 			// Any part still outstanding record for later
 			if (numMissing > 0) {
@@ -1291,11 +1291,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 				// Future: raise the demand on this part
 
 				if (numMissing == number) {
-					logger.info(entity, 20_000L, "None available 0/" + number + " " + ItemResourceUtil.findItemResourceName(part));
+					logger.info(entity, 20_000L, "Coudn't retrieve " + number + " " + ItemResourceUtil.findItemResourceName(part)
+							+ ". None available. ");
 
 				}
 				else {
-					logger.info(entity, 20_000L, "Missing " + numMissing + "/" + number + " " + ItemResourceUtil.findItemResourceName(part));
+					logger.info(entity, 20_000L, "Missing " + numMissing + "/" + number 
+							+ " " + ItemResourceUtil.findItemResourceName(part) + ".");
 				}
 				shortfallParts.put(part, numMissing);
 				shortfall = numMissing;
@@ -1330,7 +1332,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			buf.append(".");
 		} else
-			buf.append(" None.");
+			buf.append("Empty.");
 
 		return buf.toString();
 	}
