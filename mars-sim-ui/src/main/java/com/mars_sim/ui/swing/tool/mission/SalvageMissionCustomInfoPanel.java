@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.mission;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
@@ -22,15 +21,12 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 
 
 /**
@@ -99,9 +95,6 @@ extends MissionCustomInfoPanel implements UnitListener {
 		progressBarModel = progressBar.getModel();
 		progressBar.setStringPainted(true);
 		progressBarPanel.add(progressBar);
-
-		// Add tooltip.
-		setToolTipText(getToolTipString());
 	}
 
 	@Override
@@ -109,17 +102,20 @@ extends MissionCustomInfoPanel implements UnitListener {
 		// Remove as construction listener if necessary.
 		if (site != null) site.removeUnitListener(this);
 
-		if (mission instanceof SalvageMission) {
-			this.mission = (SalvageMission) mission;
+		if (mission instanceof SalvageMission sm) {
+			this.mission = sm;
 			site = this.mission.getConstructionSite();
-			if (site != null) site.addUnitListener(this);
+			if (site != null) {
+				site.addUnitListener(this);
+				
+				// Update the tool tip string.
+				setToolTipText(ConstructionStageFormat.getTooltip(site.getCurrentConstructionStage(), false));
+			}
 
 			settlementButton.setText(mission.getAssociatedSettlement().getName());
 			stageLabel.setText(getStageString());
 			updateProgressBar();
 
-			// Update the tool tip string.
-			setToolTipText(getToolTipString());
 		}
 	}
 
@@ -134,7 +130,7 @@ extends MissionCustomInfoPanel implements UnitListener {
 			updateProgressBar();
 
 			// Update the tool tip string.
-			setToolTipText(getToolTipString());
+			setToolTipText(ConstructionStageFormat.getTooltip(site.getCurrentConstructionStage(), false));
 		}
 	}
 
@@ -174,57 +170,5 @@ extends MissionCustomInfoPanel implements UnitListener {
 	 */
 	private MainDesktopPane getDesktop() {
 		return desktop;
-	}
-
-	/**
-	 * Gets a tool tip string for the panel.
-	 */
-	private String getToolTipString() {
-		StringBuilder result = new StringBuilder("<html>");
-
-		ConstructionStage stage = null;
-		if (site != null) stage = site.getCurrentConstructionStage();
-		if (stage != null) {
-			ConstructionStageInfo info = stage.getInfo();
-			result.append("Status: salvaging ").append(info.getName()).append("<br>");
-			result.append("Stage Type: ").append(info.getType()).append("<br>");
-			if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
-			else result.append("Work Type: Construction<br>");
-			String requiredWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getRequiredWorkTime() / 1000D);
-			result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
-			String completedWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getCompletedWorkTime() / 1000D);
-			result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
-			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
-
-			// Add construction parts.
-			if (!info.getParts().isEmpty()) {
-				result.append("<br>Salvagable Parts:<br>");
-				Iterator<Integer> j = info.getParts().keySet().iterator();
-				while (j.hasNext()) {
-					Integer id = j.next();
-					int number = info.getParts().get(id);
-					result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(id).getName()).append(": ").append(number).append("<br>");
-				}
-			}
-
-			// Add construction vehicles.
-			if (!info.getVehicles().isEmpty()) {
-				result.append("<br>Salvage Vehicles:<br>");
-				Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
-				while (k.hasNext()) {
-					ConstructionVehicleType vehicle = k.next();
-					result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
-					result.append("&nbsp;&nbsp;Attachment Parts:<br>");
-					Iterator<Integer> l = vehicle.getAttachmentParts().iterator();
-					while (l.hasNext()) {
-						result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(l.next()).getName()).append("<br>");
-					}
-				}
-			}
-		}
-
-		result.append("</html>");
-
-		return result.toString();
 	}
 }

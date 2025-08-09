@@ -30,6 +30,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 
 import junit.framework.TestCase;
@@ -115,6 +116,18 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return rover1;
 	}
 	
+	protected LightUtilityVehicle buildLUV(Settlement settlement, String name, LocalPosition parked) {
+	    var rover1 = new LightUtilityVehicle(name, simConfig.getVehicleConfiguration().getVehicleSpec("Light Utility Vehicle"),
+								settlement);
+		if (parked != null) {			
+			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
+	    	rover1.setParkedLocation(parked, 0D);
+		}
+	    unitManager.addUnit(rover1);
+	    
+	    return rover1;
+	}
+
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);

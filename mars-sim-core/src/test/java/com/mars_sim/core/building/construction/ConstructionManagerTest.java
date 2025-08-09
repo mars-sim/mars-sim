@@ -38,9 +38,9 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
     public void testGetConstructionSitesNeedingMission() {
         var manager = buildManager();
         ConstructionSite site2 = manager.getNextSite(1);
-        assertEquals(1, manager.getConstructionSitesNeedingConstructionMission().size());
-        site2.setUndergoingConstruction(true);
-        assertEquals(0, manager.getConstructionSitesNeedingConstructionMission().size());
+        assertEquals(1, manager.getConstructionSitesNeedingMission(true).size());
+        site2.setWorkOnSite(true);
+        assertEquals(0, manager.getConstructionSitesNeedingMission(true).size());
     }
 
     /*

@@ -602,7 +602,7 @@ public class PartGood extends Good {
 		Iterator<ConstructionSite> i = settlement.getConstructionManager().getConstructionSites().iterator();
 		while (i.hasNext()) {
 			ConstructionSite site = i.next();
-			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
+			if (site.hasUnfinishedStage() && site.isConstruction()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getMissingParts().containsKey(id)) {
 					int requiredNum = stage.getMissingParts().get(id);

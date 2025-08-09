@@ -14,16 +14,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingSpec;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.structure.ObjectiveUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -41,140 +38,107 @@ public class BuildingPlacement {
 
     private BuildingManager bldMgr;
     private Settlement settlement;
-
-    private BuildingConfig buildingConfig;
     
     public BuildingPlacement(Settlement associatedSettlement) {
         this.settlement = associatedSettlement;
         this.bldMgr = settlement.getBuildingManager();
-		this.buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
     }
 
-
-    public static void placeSite(ConstructionSite site) {
-        var placer = new BuildingPlacement(site.getAssociatedSettlement());
-        placer.positionSite(site);
+    public static BoundedObject placeSite(Settlement base, BuildingSpec spec) {
+        var placer = new BuildingPlacement(base);
+        return placer.positionSite(spec);
     }
 
-    public void positionSite(ConstructionSite site) {
-		boolean goodPosition = false;
-
-		// Use settlement's objective to determine the desired building type
-		String buildingType = ObjectiveUtil.getBuildingType(settlement.getObjective());
+    public BoundedObject positionSite(BuildingSpec spec) {
 		
-		logger.info(settlement, "Applying building type '" + buildingType + "' as reference for '" + site + "'.");
+		logger.info(settlement, "Applying building type " + spec.getName());
 		
-		if (buildingType != null) {
-						
-			BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
-			site.setWidth(spec.getWidth());
-			site.setLength(spec.getLength());
-			boolean isBuildingConnector = spec.getFunctionSupported().contains(FunctionType.CONNECTION);
-			boolean hasLifeSupport = spec.getFunctionSupported().contains(FunctionType.LIFE_SUPPORT);
+		boolean isBuildingConnector = spec.getFunctionSupported().contains(FunctionType.CONNECTION);
+		boolean hasLifeSupport = spec.getFunctionSupported().contains(FunctionType.LIFE_SUPPORT);
 
-			if (isBuildingConnector) {
-				// Try to find best location to connect two buildings.
-				goodPosition = positionNewBuildingConnectorSite(site, buildingType);
-			} 
-			
-			else if (hasLifeSupport) {
-
-				goodPosition = positionSameBuildingType(buildingType, DEFAULT_FARMING_DISTANCE, site);
-		
-				if (!goodPosition) {
-					// Try to put building next to another habitable building.
-					List<Building> habitableBuildings = site.getSettlement().getBuildingManager()
-							.getBuildings(FunctionType.LIFE_SUPPORT);
-					Collections.shuffle(habitableBuildings);
-					for (Building b : habitableBuildings) {
-						// Match the floor area (e.g look more organize to put all 7m x 9m next to one
-						// another)
-						if (b.getFloorArea() == site.getWidth() * site.getLength()) {
-							goodPosition = positionNextToBuilding(site, b, DEFAULT_HABITABLE_BUILDING_DISTANCE,
-									false);
-							if (goodPosition) {
-								logger.info(settlement, "Case 2. Habitable.");
-								break;
-							}
-						}
-					}
-				}
+		if (isBuildingConnector) {
+			// Try to find best location to connect two buildings.
+			var connectorPosn = positionNewBuildingConnectorSite(spec);
+			if (connectorPosn != null) {
+				return connectorPosn;
 			}
-			else {
-				// Try to put building next to the same building type.
-				logger.info(settlement, "Case 3. Inhabitable.");
-				goodPosition = positionSameBuildingType(buildingType, DEFAULT_INHABITABLE_BUILDING_DISTANCE, site);
-			}
-		}
+		} 
+		
+		else if (hasLifeSupport) {
 
-		else {
-			// Case 4: building type is null
-			
+			var sameBldPosn = positionSameBuildingType(spec, DEFAULT_FARMING_DISTANCE);
+			if (sameBldPosn != null) {
+				return sameBldPosn;
+			}
+	
 			// Try to put building next to another habitable building.
-			List<Building> habitableBuildings = bldMgr.getBuildings(FunctionType.LIFE_SUPPORT);
+			List<Building> habitableBuildings = new ArrayList<>(bldMgr.getBuildings(FunctionType.LIFE_SUPPORT));
 			Collections.shuffle(habitableBuildings);
+
+			double newFloorArea = spec.getWidth() * spec.getLength();
 			for (Building b : habitableBuildings) {
 				// Match the floor area (e.g look more organize to put all 7m x 9m next to one
 				// another)
-				if (b.getFloorArea() == site.getWidth() * site.getLength()) {
-					goodPosition = positionNextToBuilding(site, b, DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
-					if (goodPosition) {
-						logger.info(settlement, "Case 4. Habitable. Building type not given.");
-						break;
+				if (b.getFloorArea() == newFloorArea) {
+					var foundPosn = positionNextToBuilding(b, spec, DEFAULT_HABITABLE_BUILDING_DISTANCE,
+							false);
+					if (foundPosn != null) {
+						logger.info(settlement, "Case 2. Habitable.");
+						return foundPosn;
 					}
 				}
+			}
+		}
+		else {
+			// Try to put building next to the same building type.
+			logger.info(settlement, "Case 3. Inhabitable.");
+			var sameBldPosn = positionSameBuildingType(spec, DEFAULT_INHABITABLE_BUILDING_DISTANCE);
+			if (sameBldPosn != null) {
+				return sameBldPosn;
 			}
 		}
 
-		if (!goodPosition) {
-			// Try to put building next to another building.
-			// If not successful, try again 10m from each building and continue out at 10m
-			// increments
-			// until a location is found.
-			BuildingManager buildingManager = site.getSettlement().getBuildingManager();
-			if (buildingManager.getNumBuildings() > 0) {
-				for (int x = 10; !goodPosition; x += 10) {
-					for (Building b : buildingManager.getBuildingSet()) {
-						goodPosition = positionNextToBuilding(site, b, x, false);
-						if (goodPosition) {
-							logger.info(settlement, "Case 5. Any one of the buildings.");
-							break;
-						}
+		// Try to put building next to another building.
+		// If not successful, try again 10m from each building and continue out at 10m
+		// increments
+		// until a location is found.
+		if (bldMgr.getNumBuildings() > 0) {
+			// Max 10 attempt to place
+			for (int x = 1; x < 10; x++) {
+				for (Building b : bldMgr.getBuildingSet()) {
+					var sameBldPosn = positionNextToBuilding(b, spec, x*10, false);
+					if (sameBldPosn != null) {
+						logger.info(settlement, "Case 5. Any one of the buildings.");
+						return sameBldPosn;
 					}
 				}
-			} 
-			
-			else {
-				logger.info(settlement, "Case 6. No buildings found.");
-				// If no buildings at settlement, position new construction site at (0, 0) with
-				// random facing.
-				int angle = RandomUtil.getRandomInt(4) * 90;
-				site.setFacing(angle);
-				site.setPosition(LocalPosition.DEFAULT_POSITION);
 			}
-		}
+
+			return null;
+		} 
+			
+		logger.info(settlement, "Case 6. No buildings found.");
+		// If no buildings at settlement, position new construction site at (0, 0) with
+		// random facing.
+		int angle = RandomUtil.getRandomInt(4) * 90;
+		return new BoundedObject(LocalPosition.DEFAULT_POSITION, spec.getWidth(), spec.getLength(), angle);
 	}
 
     /**
 	 * Determine the position and length (for variable length sites) for a new
 	 * building connector construction site.
 	 *
-	 * @param site         the construction site.
-	 * @param buildingType the new building type.
-	 * @return true if position/length of construction site could be found, false if
-	 *         not.
+	 * @param spec         the buil,ding type
+	 * @return calculated position
 	 */
-	private boolean positionNewBuildingConnectorSite(ConstructionSite site, String buildingType) {
+	private BoundedObject positionNewBuildingConnectorSite(BuildingSpec spec) {
 
-		boolean result = false;
-
-		List<Building> inhabitableBuildings = bldMgr.getBuildings(FunctionType.LIFE_SUPPORT);
+		List<Building> inhabitableBuildings = new ArrayList<>(bldMgr.getBuildings(FunctionType.LIFE_SUPPORT));
 		Collections.shuffle(inhabitableBuildings);
-
-		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 
 		int baseLevel = spec.getBaseLevel();
 
+		BoundedObject result = null;
 		// Try to find a connection between an inhabitable building without access to
 		// airlock and
 		// another inhabitable building with access to an airlock.
@@ -182,15 +146,10 @@ public class BuildingPlacement {
 
 			double leastDistance = Double.MAX_VALUE;
 
-			Iterator<Building> i = inhabitableBuildings.iterator();
-			while (i.hasNext()) {
-				Building startingBuilding = i.next();
+			for(Building startingBuilding : inhabitableBuildings) {
 				if (!settlement.hasWalkableAvailableAirlock(startingBuilding)) {
-
 					// Find a different inhabitable building that has walkable access to an airlock.
-					Iterator<Building> k = inhabitableBuildings.iterator();
-					while (k.hasNext()) {
-						Building building = k.next();
+					for(Building building : inhabitableBuildings) {
 						if (!building.equals(startingBuilding)) {
 
 							// Check if connector base level matches either building.
@@ -202,10 +161,11 @@ public class BuildingPlacement {
 								if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 
 									// Check that new building can be placed between the two buildings.
-									if (positionConnectorBetweenTwoBuildings(buildingType, site, startingBuilding,
-											building)) {
+									var betweenPosn = positionConnectorBetweenTwoBuildings(spec, startingBuilding,
+											building);
+									if (betweenPosn != null) {
 										leastDistance = distance;
-										result = true;
+										result = betweenPosn;
 									}
 								}
 							}
@@ -214,117 +174,99 @@ public class BuildingPlacement {
 				}
 			}
 		}
-
+		if (result != null) {
+			return result;
+		}
+		
 		// Try to find valid connection location between two inhabitable buildings with
 		// no joining walking path.
-		if (!result) {
+		double leastDistance = Double.MAX_VALUE;
+		for(Building startingBuilding : inhabitableBuildings) {
 
-			double leastDistance = Double.MAX_VALUE;
+			// Find a different inhabitable building.
+			for(Building building : inhabitableBuildings) {
+				boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(startingBuilding,
+						building);
 
-			Iterator<Building> j = inhabitableBuildings.iterator();
-			while (j.hasNext()) {
-				Building startingBuilding = j.next();
+				// Check if connector base level matches either building.
+				boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
+						|| (baseLevel == building.getBaseLevel());
 
-				// Find a different inhabitable building.
-				Iterator<Building> k = inhabitableBuildings.iterator();
-				while (k.hasNext()) {
-					Building building = k.next();
-					boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(startingBuilding,
-							building);
+				if (!building.equals(startingBuilding) && !hasWalkingPath && matchingBaseLevel) {
 
-					// Check if connector base level matches either building.
-					boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
-							|| (baseLevel == building.getBaseLevel());
+					double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
+					if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 
-					if (!building.equals(startingBuilding) && !hasWalkingPath && matchingBaseLevel) {
-
-						double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
-						if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
-
-							// Check that new building can be placed between the two buildings.
-							if (positionConnectorBetweenTwoBuildings(buildingType, site, startingBuilding, building)) {
-								leastDistance = distance;
-								result = true;
-							}
+						// Check that new building can be placed between the two buildings.
+						var posn = positionConnectorBetweenTwoBuildings(spec, startingBuilding, building);
+						if (posn != null) {
+							leastDistance = distance;
+							result = posn;
 						}
 					}
 				}
 			}
+		}
+		if (result != null) {
+			return result;
 		}
 
 		// Try to find valid connection location between two inhabitable buildings that
 		// are not directly connected.
-		if (!result) {
+		leastDistance = Double.MAX_VALUE;
+		for(Building startingBuilding : inhabitableBuildings) {
 
-			double leastDistance = Double.MAX_VALUE;
+			// Find a different inhabitable building.
+			for(Building building : inhabitableBuildings) {
+				boolean directlyConnected = !settlement.getBuildingConnectorManager()
+						.getBuildingConnections(startingBuilding, building).isEmpty();
 
-			Iterator<Building> j = inhabitableBuildings.iterator();
-			while (j.hasNext()) {
-				Building startingBuilding = j.next();
+				// Check if connector base level matches either building.
+				boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
+						|| (baseLevel == building.getBaseLevel());
 
-				// Find a different inhabitable building.
-				Iterator<Building> k = inhabitableBuildings.iterator();
-				while (k.hasNext()) {
-					Building building = k.next();
-					boolean directlyConnected = !settlement.getBuildingConnectorManager()
-							.getBuildingConnections(startingBuilding, building).isEmpty();
+				if (!building.equals(startingBuilding) && !directlyConnected && matchingBaseLevel) {
+					double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
+					if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 
-					// Check if connector base level matches either building.
-					boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
-							|| (baseLevel == building.getBaseLevel());
-
-					if (!building.equals(startingBuilding) && !directlyConnected && matchingBaseLevel) {
-						double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
-						if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
-
-							// Check that new building can be placed between the two buildings.
-							if (positionConnectorBetweenTwoBuildings(buildingType, site, startingBuilding, building)) {
-								leastDistance = distance;
-								result = true;
-							}
+						// Check that new building can be placed between the two buildings.
+						var posn = positionConnectorBetweenTwoBuildings(spec, startingBuilding, building);
+						if (posn != null) {
+							leastDistance = distance;
+							result = posn;
 						}
 					}
 				}
 			}
 		}
+		if (result != null) {
+			return result;
+		}
 
 		// Try to find connection to existing inhabitable building.
-		if (!result) {
+		for(Building building : inhabitableBuildings) {
+			// Make connector building face away from building.
+			var nextPosn = positionNextToBuilding(building, spec, 0D, true);
 
-			// If variable length, set construction site length to default.
-			// if (spec.getLength() == -1D) {
-			// 	site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
-			// }
-
-			Iterator<Building> l = inhabitableBuildings.iterator();
-			while (l.hasNext()) {
-				Building building = l.next();
-				// Make connector building face away from building.
-				result = positionNextToBuilding(site, building, 0D, true);
-
-				if (result) {
-					break;
-				}
+			if (nextPosn != null) {
+				return nextPosn;
 			}
 		}
 
-		return result;
+		return null;
 	}
 
     /**
 	 * Positions a new construction site near an existing building.
 	 *
-	 * @param site               the new construction site.
 	 * @param building           the existing building.
 	 * @param separationDistance the separation distance (meters) from the building.
 	 * @param faceAway           true if new building should face away from other
 	 *                           building.
 	 * @return true if construction site could be positioned, false if not.
 	 */
-	private boolean positionNextToBuilding(ConstructionSite site, Building building, double separationDistance,
+	private BoundedObject positionNextToBuilding(Building building, BuildingSpec spec, double separationDistance,
 			boolean faceAway) {
-
-		boolean goodPosition = false;
 
 		final int front = 0;
 		final int back = 1;
@@ -346,28 +288,28 @@ public class BuildingPlacement {
 			switch (directions.get(x)) {
 			case front:
 				direction = building.getFacing();
-				structureDistance = (building.getLength() / 2D) + (site.getLength() / 2D);
+				structureDistance = (building.getLength() / 2D) + (spec.getLength() / 2D);
 				break;
 			case back:
 				direction = building.getFacing() + 180D;
-				structureDistance = (building.getLength() / 2D) + (site.getLength() / 2D);
+				structureDistance = (building.getLength() / 2D) + (spec.getLength() / 2D);
 				if (faceAway) {
 					rectRotation = building.getFacing() + 180D;
 				}
 				break;
 			case right:
 				direction = building.getFacing() + 90D;
-				structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
+				structureDistance = (building.getWidth() / 2D) + (spec.getWidth() / 2D);
 				if (faceAway) {
-					structureDistance = (building.getWidth() / 2D) + (site.getLength() / 2D);
+					structureDistance = (building.getWidth() / 2D) + (spec.getLength() / 2D);
 					rectRotation = building.getFacing() + 90D;
 				}
 				break;
 			case left:
 				direction = building.getFacing() + 270D;
-				structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
+				structureDistance = (building.getWidth() / 2D) + (spec.getWidth() / 2D);
 				if (faceAway) {
-					structureDistance = (building.getWidth() / 2D) + (site.getLength() / 2D);
+					structureDistance = (building.getWidth() / 2D) + (spec.getLength() / 2D);
 					rectRotation = building.getFacing() + 270D;
 				}
 			}
@@ -383,41 +325,32 @@ public class BuildingPlacement {
 			// Check to see if proposed new site position intersects with any existing
 			// buildings
 			// or construction sites.
-			BoundedObject sitePosition = new BoundedObject(rectCenter, site.getWidth(), site.getLength(), rectRotation);
-			if (bldMgr.isBuildingLocationOpen(sitePosition, site)) {
-				// Set the new site here.
-				site.setPosition(rectCenter);
-				site.setFacing(rectRotation);
-				goodPosition = true;
-				break;
+			BoundedObject sitePosition = new BoundedObject(rectCenter, spec.getWidth(), spec.getLength(), rectRotation);
+			if (bldMgr.isBuildingLocationOpen(sitePosition, null)) {
+				return sitePosition;
 			}
 		}
 
-		return goodPosition;
+		return null;
 	}
     /**
 	 * Determine the position and length (for variable length) for a connector
 	 * building between two existing buildings.
 	 *
-	 * @param buildingType   the new connector building type.
-	 * @param site           the construction site.
+	 * @param spec   the new connector building type.
 	 * @param firstBuilding  the first of the two existing buildings.
 	 * @param secondBuilding the second of the two existing buildings.
 	 * @return true if position/length of construction site could be found, false if
 	 *         not.
 	 */
-	private boolean positionConnectorBetweenTwoBuildings(String buildingType, ConstructionSite site,
+	private BoundedObject positionConnectorBetweenTwoBuildings(BuildingSpec spec,
 			Building firstBuilding, Building secondBuilding) {
-
-		boolean result = false;
 
 		// Determine valid placement lines for connector building.
 		List<Line2D> validLines = new ArrayList<>();
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
-		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
-		double width = spec.getWidth();
 		List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
 		List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
 		
@@ -434,7 +367,7 @@ public class BuildingPlacement {
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
-					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, site.getSettlement().getCoordinates(), false);
+					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, settlement.getCoordinates(), false);
 					if (clearPath) {
 						validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
 					}
@@ -443,13 +376,13 @@ public class BuildingPlacement {
 		}
 
 		if (!validLines.isEmpty()) {
-			result = isLineValid(validLines, site, firstBuilding, secondBuilding, width);
+			return isLineValid(validLines, firstBuilding, secondBuilding, spec.getWidth());
 		}
 
-		return result;
+		return null;
 	}
 	
-	private boolean isLineValid(List<Line2D> validLines, ConstructionSite site,
+	private BoundedObject isLineValid(List<Line2D> validLines,
 			Building firstBuilding, Building secondBuilding, double width) {
 		
 		// Find shortest valid line.
@@ -480,31 +413,25 @@ public class BuildingPlacement {
 		double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
 
 		// Provide the site the position, facing and length
-		site.setPosition(new LocalPosition(centerX, centerY));
-		site.setFacing(facingDegrees);
-		site.setLength(newLength);
-		
-		return true;
+		return new BoundedObject(new LocalPosition(centerX, centerY), width, newLength, facingDegrees);
 	}
 
 
-	private boolean positionSameBuildingType(String buildingType, double dist, ConstructionSite site) {
-		boolean goodPosition = false;
+	private BoundedObject positionSameBuildingType(BuildingSpec spec, double dist) {
 		// Try to put building next to the same building type.
-		List<Building> sameBuildings = bldMgr.getBuildingsOfSameType(buildingType);
+		List<Building> sameBuildings = new ArrayList<>(bldMgr.getBuildingsOfSameType(spec.getName()));
 		
 		Collections.shuffle(sameBuildings);
-		Iterator<Building> j = sameBuildings.iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
-			goodPosition = positionNextToBuilding(site, building, Math.round(dist), false);
-			if (goodPosition) {
+
+		for(Building building : sameBuildings) {
+			var goodPosition = positionNextToBuilding(building, spec, Math.round(dist), false);
+			if (goodPosition != null) {
 				logger.info(settlement, "Case 1. The building type '" 
-						+ buildingType + "' has life support.");
-				break;
+						+ spec.getName() + "' has life support.");
+				return goodPosition;
 			}
 		}
-		return goodPosition;
+		return null;
 	} 
 	
 	/**

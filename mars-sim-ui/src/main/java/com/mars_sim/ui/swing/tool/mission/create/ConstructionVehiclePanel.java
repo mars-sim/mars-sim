@@ -9,8 +9,8 @@ package com.mars_sim.ui.swing.tool.mission.create;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,11 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.ScrollPaneConstants;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.GroundVehicle;
@@ -43,7 +41,7 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 class ConstructionVehiclePanel extends WizardPanel {
 
 	/** The wizard panel name. */
-    private final static String NAME = "Construction Vehicles";
+    private static final String NAME = "Construction Vehicles";
     
     // Data members.
     private VehicleTableModel vehicleTableModel;
@@ -51,6 +49,7 @@ class ConstructionVehiclePanel extends WizardPanel {
     private JLabel requiredLabel;
     private JLabel selectedLabel;
     private JLabel errorMessageLabel;
+    private int requiredVehicles;
     	
     /**
      * Constructor.
@@ -87,7 +86,7 @@ class ConstructionVehiclePanel extends WizardPanel {
          
         // Create scroll panel for vehicle list.
         JScrollPane vehicleScrollPane = new JScrollPane();
-        vehicleScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        vehicleScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         vehiclePane.add(vehicleScrollPane, BorderLayout.CENTER);
         
         // Create the vehicle table model.
@@ -100,41 +99,34 @@ class ConstructionVehiclePanel extends WizardPanel {
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         vehicleTable.getSelectionModel().addListSelectionListener(
-            new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e) {
-                    if (e.getValueIsAdjusting()) {
-                        boolean goodVehicles = false;
-                        errorMessageLabel.setText(" ");
-                        
-                        int requiredVehicles = getWizard().getMissionData().
-                                getConstructionStageInfo().getVehicles().size();
-                        
-                        // Get the selected vehicle index.
-                        int[] indexes = vehicleTable.getSelectedRows();
-                        selectedLabel.setText("Number selected: " + indexes.length);
-                        if (indexes.length >= requiredVehicles) {
-                            goodVehicles = true;
-                            for (int indexe : indexes) {
-                                if (vehicleTableModel.isFailureRow(indexe)) {
-                                    // Set the error message and disable the next button.
-                                    errorMessageLabel.setText("Light Utility Vehicle cannot be " +
-                                            "used on the mission (see red cells).");
-                                    goodVehicles = false;
-                                }
+            e -> {
+                if (e.getValueIsAdjusting()) {
+                    boolean goodVehicles = false;
+                    errorMessageLabel.setText(" ");
+
+                    
+                    // Get the selected vehicle index.
+                    int[] indexes = vehicleTable.getSelectedRows();
+                    selectedLabel.setText("Number selected: " + indexes.length);
+                    if (indexes.length >= requiredVehicles) {
+                        goodVehicles = true;
+                        for (int indexe : indexes) {
+                            if (vehicleTableModel.isFailureRow(indexe)) {
+                                // Set the error message and disable the next button.
+                                errorMessageLabel.setText("Light Utility Vehicle cannot be " +
+                                        "used on the mission (see red cells).");
+                                goodVehicles = false;
                             }
                         }
-                        getWizard().setButtons(goodVehicles);
                     }
+                    getWizard().setButtons(goodVehicles);
                 }
             }
         );
 		// call it a click to final button when user double clicks the table
 		vehicleTable.addMouseListener(
-			new MouseListener() {
-				public void mouseReleased(MouseEvent e) {}
-				public void mousePressed(MouseEvent e) {}
-				public void mouseExited(MouseEvent e) {}
-				public void mouseEntered(MouseEvent e) {}
+			new MouseAdapter() {
+                @Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2 && !e.isConsumed()) {
 						wizard.buttonClickedFinal();
@@ -173,20 +165,14 @@ class ConstructionVehiclePanel extends WizardPanel {
         int[] selectedIndexs = vehicleTable.getSelectedRows();
         if (selectedIndexs.length == 0)
         	return false;
-        
-//        int requiredVehicles = getWizard().getMissionData().
-//                getConstructionStageInfo().getVehicles().size();
-        
+
         for (int x = 0; x < selectedIndexs.length; x++) {
             LightUtilityVehicle selectedVehicle = 
                 (LightUtilityVehicle) vehicleTableModel.getUnit(selectedIndexs[x]);
             constructionVehicles.add(selectedVehicle);
         }
         
-//        if (!isTesting) {
-			getWizard().getMissionData().setConstructionVehicles(constructionVehicles);
-//			return true;
-//		}	
+		getWizard().getMissionData().setConstructionVehicles(constructionVehicles);
 
         return true;
     }
@@ -198,15 +184,14 @@ class ConstructionVehiclePanel extends WizardPanel {
 
     @Override
     void updatePanel() {
+        requiredVehicles = getWizard().getMissionData().
+                                getConstructionSite().getCurrentConstructionStage().getInfo().getVehicles().size();
+        if (requiredVehicles == 0) 
+            getWizard().setButtons(true);
         vehicleTableModel.updateTable();
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
-        ConstructionStageInfo cInfo = getWizard().getMissionData().getConstructionStageInfo();
-        if (cInfo != null) {
-	        int requiredVehicles = cInfo.getVehicles().size();
-	        requiredLabel.setText("Required vehicles: " + requiredVehicles);  
-	        if (requiredVehicles == 0) 
-	        	getWizard().setButtons(true);
-        }
+        requiredLabel.setText("Required vehicles: " + requiredVehicles);  
+
     }
     
     /**
@@ -240,18 +225,15 @@ class ConstructionVehiclePanel extends WizardPanel {
             if (row < units.size()) {
                 LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
                 
-                try {
-                    if (column == 0) 
-                        result = vehicle.getName();
-                    else if (column == 1) 
-                        result = vehicle.printStatusTypes();
-                    else if (column == 2) {
-                        Mission mission = vehicle.getMission();
-                        if (mission != null) result = mission.getName();
-                        else result = "None";
-                    }
+                if (column == 0) 
+                    result = vehicle.getName();
+                else if (column == 1) 
+                    result = vehicle.printStatusTypes();
+                else if (column == 2) {
+                    Mission mission = vehicle.getMission();
+                    if (mission != null) result = mission.getName();
+                    else result = "None";
                 }
-                catch (Exception e) {}
             }
             
             return result;

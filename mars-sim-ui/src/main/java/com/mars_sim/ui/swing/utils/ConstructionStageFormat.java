@@ -29,35 +29,47 @@ public final class ConstructionStageFormat {
     /**
      * Gets a tool tip HTML for a Stage
      */
-    public static String getTooltip(ConstructionStage stage) {
+    public static String getTooltip(ConstructionStage stage, boolean isConstruction) {
         StringBuilder result = new StringBuilder(Msg.HTML_START);
 
         if (stage != null) {
             ConstructionStageInfo info = stage.getInfo();
-            result.append("Status: building ").append(info.getName()).append(Msg.BR);
+            result.append("Status: ").append(isConstruction ? "building " : "salvaging ")
+                                .append(info.getName()).append(Msg.BR);
             result.append("Stage Type: ").append(info.getType()).append(Msg.BR);
-            result.append("Work Type: Construction").append(Msg.BR);
+            if (isConstruction)
+                result.append("Work Type: salvage<br>");
+			else
+                result.append("Work Type: Construction<br>");
             String requiredWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getRequiredWorkTime() / 1000D);
             result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols").append(Msg.BR);
             String completedWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getCompletedWorkTime() / 1000D);
             result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols").append(Msg.BR);
             result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(Msg.BR);
 
-            // Add remaining construction resources.
-            if (!stage.getMissingResources().isEmpty()) {
-                result.append(Msg.BR).append("Missing Construction Resources:").append(Msg.BR);
-                result.append(stage.getMissingResources().entrySet().stream()
-                        .map(e -> Msg.NBSP + ResourceUtil.findAmountResourceName(e.getKey()) + ": " + e.getValue()
-                                        + " kg")
-                        .collect(Collectors.joining(Msg.BR)));
-            }
+            if (isConstruction) {
+                // Add remaining construction resources.
+                if (!stage.getMissingResources().isEmpty()) {
+                    result.append(Msg.BR).append("Missing Construction Resources:").append(Msg.BR);
+                    result.append(stage.getMissingResources().entrySet().stream()
+                            .map(e -> Msg.NBSP + ResourceUtil.findAmountResourceName(e.getKey()) + ": " + e.getValue()
+                                            + " kg")
+                            .collect(Collectors.joining(Msg.BR)));
+                }
 
-            // Add Missing construction parts.
-            if (!stage.getMissingParts().isEmpty()) {
-                result.append(Msg.BR).append("Missing Construction Parts:").append(Msg.BR);
-                result.append(stage.getMissingParts().entrySet().stream()
-                    .map(e -> Msg.NBSP + ItemResourceUtil.findItemResourceName(e.getKey()) + ": " + e.getValue())
-                    .collect(Collectors.joining(Msg.BR)));
+                // Add Missing construction parts.
+                if (!stage.getMissingParts().isEmpty()) {
+                    result.append(Msg.BR).append("Missing Construction Parts:").append(Msg.BR);
+                    result.append(stage.getMissingParts().entrySet().stream()
+                        .map(e -> Msg.NBSP + ItemResourceUtil.findItemResourceName(e.getKey()) + ": " + e.getValue())
+                        .collect(Collectors.joining(Msg.BR)));
+                }
+            }
+            else {
+                result.append("<br>Salvagable Parts:<br>");
+                result.append(info.getParts().entrySet().stream()
+                        .map(e -> Msg.NBSP + ItemResourceUtil.findItemResourceName(e.getKey()) + ": " + e.getValue())
+                        .collect(Collectors.joining(Msg.BR)));
             }
 
             // Add construction vehicles.

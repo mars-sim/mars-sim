@@ -9,12 +9,10 @@ package com.mars_sim.core.building.construction;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -33,11 +31,8 @@ implements Serializable {
 
     private static ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
 
-
     // Data members
     private Settlement settlement;
-    private Map<Integer, Double> settlementConstructionValueCache;
-    private MarsTime settlementConstructionValueCacheTime;
     private Map<ConstructionStageInfoSkillKey, Double> stageInfoValueCache;
     private MarsTime stageInfoValueCacheTime;
     private Map<ConstructionStageInfoSkillKey, Double> allStageInfoValueCache;
@@ -51,214 +46,6 @@ implements Serializable {
         this.settlement = settlement;
     }
 
-    /**
-     * Gets the overall profit for construction at the settlement.
-     * 
-     * @return profit (VP)
-     */
-    public double getSettlementConstructionProfit() {
-        return getSettlementConstructionProfit(Integer.MAX_VALUE);
-    }
-
-    /**
-     * Gets the overall profit for construction at the settlement.
-     * 
-     * @param constructionSkill the architect's construction skill.
-     * @return profit (VP)
-     */
-    public double getSettlementConstructionProfit(int constructionSkill) {
-
-        MarsTime currentTime = Simulation.instance().getMasterClock().getMarsTime();
-        if ((settlementConstructionValueCacheTime == null) || 
-                (currentTime.getTimeDiff(settlementConstructionValueCacheTime) > 1000D)) {
-            if (settlementConstructionValueCache == null) 
-                settlementConstructionValueCache = new HashMap<>();
-            settlementConstructionValueCache.clear();
-            settlementConstructionValueCacheTime = currentTime;
-        }
-
-        if (!settlementConstructionValueCache.containsKey(constructionSkill)) {
-            double profit = 0D;
-
-            double existingSitesProfit = getAllConstructionSitesProfit(constructionSkill);
-            if (existingSitesProfit > profit) {
-                profit = existingSitesProfit;
-            }
-
-            double newSiteProfit = getNewConstructionSiteProfit(constructionSkill);
-            if (newSiteProfit > profit) {
-                profit = newSiteProfit;
-            }
-
-            settlementConstructionValueCache.put(constructionSkill, profit);
-        }
-
-        return settlementConstructionValueCache.get(constructionSkill);
-    }
-
-    /**
-     * Gets the overall profit of all existing construction sites at a settlement
-     * that can be worked on with a given construction skill.
-     * 
-     * @param constructionSkill the architect's construction skill.
-     * @return profit (VP)
-     */
-    public double getAllConstructionSitesProfit(int constructionSkill) {
-
-        double result = 0D;
-
-        ConstructionManager manager = settlement.getConstructionManager();
-        Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
-        while (i.hasNext()) {
-            double profit = getConstructionSiteProfit(i.next(), constructionSkill);
-            if (profit > result) {
-                result = profit;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets the profit of an existing construction site at a settlement.
-     * 
-     * @param site the construction site.
-     * @return profit (VP)
-     */
-    public double getConstructionSiteProfit(ConstructionSite site) {
-        return getConstructionSiteProfit(site, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Gets the profit of an existing construction site at a settlement.
-     * 
-     * @param site the construction site.
-     * @param constructionSkill the architect's construction skill.
-     * @return profit (VP)
-     */
-    public double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) {
-
-        double result = 0D;
-
-        if (!site.isUndergoingConstruction()) {
-            if (site.hasUnfinishedStage()) {
-                
-                // Value for finishing construction stage at site.
-                ConstructionStage stage = site.getCurrentConstructionStage();
-                boolean enoughSkill = constructionSkill >= stage.getInfo().getArchitectConstructionSkill();
-                boolean workCompletable = stage.getCompletedWorkTime() < stage.getCompletableWorkTime();
-                boolean availableMaterials = stage.hasMissingConstructionMaterials();
-                if (enoughSkill && (workCompletable || availableMaterials)) {
-                    result = getConstructionStageValue(stage.getInfo(), constructionSkill);
-                }
-            }
-            else {
-                
-                // Value for starting new construction stage at site.
-                List<ConstructionStageInfo> nextStageInfos = null;
-
-                ConstructionStage lastStage = site.getCurrentConstructionStage();
-                if (lastStage != null) {
-                    nextStageInfos = config.getPotentialNextStages(lastStage.getInfo());
-                }
-                else {
-                    nextStageInfos = ConstructionUtil.getConstructionStageInfoList(
-                            ConstructionStageInfo.Stage.FOUNDATION, constructionSkill);
-                }
-
-                if (nextStageInfos != null) {
-                    Iterator<ConstructionStageInfo> i = nextStageInfos.iterator();
-                    while (i.hasNext()) {
-                        ConstructionStageInfo stageInfo = i.next();
-                        double profit = getConstructionStageProfit(stageInfo, constructionSkill);
-                        if (profit > result) {
-                            result = profit;
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets the profit of creating a new construction site at a settlement.
-     * 
-     * @param constructionSkill the architect's construction skill.
-     * @return profit (VP)
-     */
-    public double getNewConstructionSiteProfit(int constructionSkill) {
-
-        double result = 0D;
-        Map<ConstructionStageInfo, Double> stageProfits = getConstructionStageProfit(
-                ConstructionStageInfo.Stage.FOUNDATION, constructionSkill);
-        Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
-        while (i.hasNext()) {
-            ConstructionStageInfo foundationStage = i.next();
-            double profit = stageProfits.get(foundationStage);
-
-            if (profit > result) {
-                result = profit;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets a map of construction stage infos and their profits for a particular 
-     * construction site.
-     * 
-     * @param site the construction site.
-     * @param constructionSkill the architect's construction skill.
-     * @return map of construction stage infos and their profits (VP).
-     */
-    public Map<ConstructionStageInfo, Double> getNewConstructionStageProfits(
-            ConstructionSite site, int constructionSkill) {
-
-        Map<ConstructionStageInfo, Double> result = new HashMap<>();
-
-        ConstructionStage lastStage = site.getCurrentConstructionStage();
-        if (lastStage != null) {
-            ConstructionStageInfo lastStageInfo = lastStage.getInfo();
-            Iterator<ConstructionStageInfo> i = 
-                            config.getPotentialNextStages(lastStageInfo).iterator();
-            while (i.hasNext()) {
-                ConstructionStageInfo stageInfo = i.next();
-                double profit = getConstructionStageProfit(stageInfo, constructionSkill);
-                result.put(stageInfo, profit);
-            }
-        }
-        else {
-            result = getConstructionStageProfit(ConstructionStageInfo.Stage.FOUNDATION, 
-                    constructionSkill);
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets a map of construction stage infos and their profits for a given stage type.
-     * 
-     * @param stageType the construction stage type.
-     * @param constructionSkill the architect's construction skill.
-     * @return map of construction stage infos and their profits (VP).
-     */
-    public Map<ConstructionStageInfo, Double> getConstructionStageProfit(Stage stageType, 
-            int constructionSkill) {
-
-        Map<ConstructionStageInfo, Double> result = new HashMap<>();
-
-        List<ConstructionStageInfo> nextStages = ConstructionUtil.getConstructionStageInfoList(
-                stageType, constructionSkill);
-        for(ConstructionStageInfo stageInfo : nextStages) {
-            double profit = getConstructionStageProfit(stageInfo, constructionSkill);
-            result.put(stageInfo, profit);
-        }
-
-        return result;
-    }
 
     /**
      * Gets a map of all construction stage infos and their values.
@@ -288,7 +75,7 @@ implements Serializable {
         }
         
         // Create result map with just construction stage infos and their values.
-        Map<ConstructionStageInfo, Double> result = new HashMap<>(allStageInfoValueCache.size());
+        Map<ConstructionStageInfo, Double> result = new HashMap<>();
         Iterator<ConstructionStageInfoSkillKey> j = allStageInfoValueCache.keySet().iterator();
         while (j.hasNext()) {
             ConstructionStageInfoSkillKey key = j.next();
@@ -409,12 +196,6 @@ implements Serializable {
     public void clearCache() {
         MarsTime currentTime = Simulation.instance().getMasterClock().getMarsTime();
 
-        if (settlementConstructionValueCache == null) {
-            settlementConstructionValueCache = new HashMap<>();
-        }
-        settlementConstructionValueCache.clear();
-        settlementConstructionValueCacheTime = currentTime;
-
         if (stageInfoValueCache == null) {
             stageInfoValueCache = new HashMap<>();
         }
@@ -432,13 +213,7 @@ implements Serializable {
      */
     public void destroy() {
         settlement = null;
-        
-        if(settlementConstructionValueCache != null){
-            settlementConstructionValueCache.clear();
-            settlementConstructionValueCache = null;
-            settlementConstructionValueCacheTime = null;
-        }
-        
+
         if(stageInfoValueCache != null){
 
             stageInfoValueCache.clear();
@@ -456,43 +231,6 @@ implements Serializable {
     /**
      * Inner class for a construction stage info and skill combination map key value.
      */
-    private class ConstructionStageInfoSkillKey implements Serializable {
-        
-        /** default serial id. */
-        private static final long serialVersionUID = 1L;
-        
-        // Data members.
-        ConstructionStageInfo stageInfo;
-        int skill;
-        
-        ConstructionStageInfoSkillKey(ConstructionStageInfo stageInfo, int skill) {
-            this.stageInfo = stageInfo;
-            this.skill = skill;
-        }
-        
-        @Override
-        public boolean equals(Object object) {
-            boolean result = false;
-            
-            if (object instanceof ConstructionStageInfoSkillKey) {
-                ConstructionStageInfoSkillKey objectKey = (ConstructionStageInfoSkillKey) object;
-                if (objectKey.stageInfo.equals(stageInfo) && (objectKey.skill == skill)) {
-                    result = true;
-                }
-            }
-            
-            return result;
-        }
-        
-    	/**
-    	 * Gets the hash code for this object.
-    	 *
-    	 * @return hash code.
-    	 */
-    	@Override
-    	public int hashCode() {
-    		return super.hashCode();
-    	}
-
-    }
+    private record ConstructionStageInfoSkillKey(ConstructionStageInfo stageInfo,
+                                        int skill) implements Serializable {}
 }

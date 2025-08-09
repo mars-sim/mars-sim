@@ -12,8 +12,6 @@ import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -22,30 +20,25 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.construction.ConstructionUtil;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 @SuppressWarnings("serial")
 public class SalvageProjectPanel
 extends WizardPanel {
-	// Static members.
- 	private static Logger logger = Logger.getLogger(SalvageProjectPanel.class.getName());
  	
 	/** The wizard panel name. */
-    private final static String NAME = "Salvage Project";
+    private static final String NAME = "Salvage Project";
     
     // Data members
     private JLabel errorMessageLabel;
@@ -87,26 +80,24 @@ extends WizardPanel {
         
         // Create scroll pane for salvage project selection list.
         JScrollPane projectListScrollPane = new JScrollPane();
-        projectListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        projectListScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         projectPane.add(projectListScrollPane, BorderLayout.CENTER);
         
         // Create project selection list.
-        projectListModel = new DefaultListModel<Object>();
+        projectListModel = new DefaultListModel<>();
         populateProjectListModel();
-        projectList = new JList<Object>(projectListModel);
+        projectList = new JList<>(projectListModel);
         projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        projectList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent arg0) {
-                partsTableModel.update();
-                Object project = projectList.getSelectedValue();
-                if (project != null) {
-                    getWizard().setButtons(true);
-                    errorMessageLabel.setText(" ");
-                }
-                else {
-                    getWizard().setButtons(false);
-                    errorMessageLabel.setText(" ");
-                }
+        projectList.addListSelectionListener(arg0 -> {
+            partsTableModel.update();
+            Object project = projectList.getSelectedValue();
+            if (project != null) {
+                getWizard().setButtons(true);
+                errorMessageLabel.setText(" ");
+            }
+            else {
+                getWizard().setButtons(false);
+                errorMessageLabel.setText(" ");
             }
         });
         projectListScrollPane.setViewportView(projectList);
@@ -122,7 +113,7 @@ extends WizardPanel {
         
         // Create scroll pane for parts table.
         JScrollPane partsTableScrollPane = new JScrollPane();
-        partsTableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        partsTableScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         partsPane.add(partsTableScrollPane, BorderLayout.CENTER);
         
         // Create the parts table model.
@@ -157,15 +148,13 @@ extends WizardPanel {
         
         Object project = projectList.getSelectedValue();
         if (project != null) {
-            if (project instanceof Building) {
+            if (project instanceof Building salvageBuilding) {
                 // Set salvage building.
-                Building salvageBuilding = (Building) project;
                 getWizard().getMissionData().setSalvageBuilding(salvageBuilding);
                 return true;
             }
-            else if (project instanceof ConstructionSite) {
+            else if (project instanceof ConstructionSite salvageSite) {
                 // Set salvage site.
-                ConstructionSite salvageSite = (ConstructionSite) project;
                 getWizard().getMissionData().setSalvageSite(salvageSite);
                 return true;
             }
@@ -196,14 +185,13 @@ extends WizardPanel {
         if (salvageSettlement != null) {
             
             // Add settlement buildings to list.
-            java.util.List<Building> buildingList = salvageSettlement.getBuildingManager().getSortedBuildings();//.getACopyOfBuildings();
-            //Collections.sort(buildingList);
+            java.util.List<Building> buildingList = salvageSettlement.getBuildingManager().getSortedBuildings();
             Iterator<Building> i = buildingList.iterator();
             while (i.hasNext()) projectListModel.addElement(i.next());
             
             // Add construction sites.
             Iterator<ConstructionSite> j = salvageSettlement.getConstructionManager().
-                    getConstructionSitesNeedingSalvageMission().iterator();
+                    getConstructionSitesNeedingMission(false).iterator();
             while (j.hasNext()) projectListModel.addElement(j.next());
         }
     }
@@ -248,15 +236,12 @@ extends WizardPanel {
 
         public Object getValueAt(int row, int col) {
             if ((row < partsNumber.keySet().size()) && (col < 2)) {
-//                Part part = (Part) partsNumber.keySet().toArray()[row];
                 Integer part = (int)partsNumber.keySet().toArray()[row];
-                if (col == 0) {
-                    return part.toString();
-                }
-                else if (col == 1) {
-                    return partsNumber.get(part);
-                }
-                else return null;
+                return switch (col) {
+                  case 0 -> part.toString();
+                  case 1 -> partsNumber.get(part);
+                  default -> null;
+                };
             }
             else return null;
         }
@@ -267,17 +252,10 @@ extends WizardPanel {
         private void update() {
             info = null;
             Object project = projectList.getSelectedValue();
-            if (project instanceof Building) {
-                Building salvageBuilding = (Building) project;
-                try {
-                    info = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getBuildingType());
-                }
-                catch (Exception e) {
-        			logger.log(Level.SEVERE, "Issues with updating PartsTableModel: " + e.getMessage());
-                }
+            if (project instanceof Building salvageBuilding) {
+                info = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getBuildingType());
             }
-            else if (project instanceof ConstructionSite) {
-                ConstructionSite salvageSite = (ConstructionSite) project;
+            else if (project instanceof ConstructionSite salvageSite) {
                 info = salvageSite.getCurrentConstructionStage().getInfo();
             }
             partsNumber.clear();
@@ -291,50 +269,32 @@ extends WizardPanel {
         private void populatePartsNumber() {
             
             if (info != null) {
-                try {
-                    // Get average construction skill of mission members.
-                    double totalSkill = 0D;
-                    double averageSkill = 0;
-                    
-                	Person person = null;
-                	Robot robot = null;
-                	
-                    int memberNum = getWizard().getMissionData().getAllMembers().size();
-                    // Add mission members.
-                    Iterator<Worker> i = getWizard().getMissionData().getAllMembers().iterator();
-                    while (i.hasNext()) {
-                     	
-                        // TODO Refactor
-                        Worker member = i.next();
-            	        if (member instanceof Person) {
-            	        	person = (Person) member;
-            	        	int constructionSkill = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-                            totalSkill += constructionSkill;
-            	        }
-            	        else if (member instanceof Robot) {
-            	        	robot = (Robot) member;
-            	        	int constructionSkill = robot.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-                            totalSkill += constructionSkill;
-            	        }    
-                    }
-                    
-                    averageSkill = totalSkill / memberNum;
-                    
-                    // Get chance of salvage.
-                    double salvageChance = 50D + (averageSkill * 5D);
-                    if (salvageChance > 100D) salvageChance = 100D;
-                    
-                    // Estimate parts salvaged.
-                    Iterator<Integer> j = info.getParts().keySet().iterator();
-                    while (j.hasNext()) {
-                        Integer part = j.next();
-                        int maxSalvage = info.getParts().get(part);
-                        int estimatedSalvage = (int) Math.round((double) maxSalvage * (salvageChance / 100D));
-                        partsNumber.put(part, estimatedSalvage);
-                    }
+                // Get average construction skill of mission members.
+                double totalSkill = 0D;
+                double averageSkill = 0;
+                
+                int memberNum = getWizard().getMissionData().getAllMembers().size();
+                // Add mission members.
+                Iterator<Worker> i = getWizard().getMissionData().getAllMembers().iterator();
+                while (i.hasNext()) {                     	
+                    Worker member = i.next();
+                    int constructionSkill = member.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+                    totalSkill += constructionSkill;   
                 }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
+                
+                averageSkill = totalSkill / memberNum;
+                
+                // Get chance of salvage.
+                double salvageChance = 50D + (averageSkill * 5D);
+                if (salvageChance > 100D) salvageChance = 100D;
+                
+                // Estimate parts salvaged.
+                Iterator<Integer> j = info.getParts().keySet().iterator();
+                while (j.hasNext()) {
+                    Integer part = j.next();
+                    int maxSalvage = info.getParts().get(part);
+                    int estimatedSalvage = (int) Math.round(maxSalvage * (salvageChance / 100D));
+                    partsNumber.put(part, estimatedSalvage);
                 }
             }
         }
