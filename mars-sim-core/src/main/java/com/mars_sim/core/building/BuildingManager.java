@@ -787,7 +787,7 @@ public class BuildingManager implements Serializable {
 			meteorite.calculateMeteoriteProbability();
 		}
 
-		if (pulse.getMarsTime().getMissionSol() != 1 && pulse.isNewHalfMillisol()) {
+		if (pulse.getMarsTime().getMissionSol() != 1 && pulse.isNewHalfSol()) {
 			// Check if there are any maintenance parts to be submitted
 			retrieveMaintPartsFromMalfunctionMgrs();
 		}
@@ -2353,7 +2353,7 @@ public class BuildingManager implements Serializable {
                     }
                     
                     if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
-						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
+//						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
                     } 
                     else {
                         // Post the parts and inject the demand
