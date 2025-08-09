@@ -243,6 +243,11 @@ public class ConstructionManager implements Serializable {
 			return site;
 		}
 		
+		// Check if settlement has construction override flag set.
+		// if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
+		// 	return null
+		// }
+
 		// Should select from Q once in place
 		BuildingSpec bestBuilding = getNeededBuilding();
 

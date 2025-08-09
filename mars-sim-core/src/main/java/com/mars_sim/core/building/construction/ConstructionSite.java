@@ -245,9 +245,6 @@ public class ConstructionSite extends FixedUnit {
         var constructionManager = settlement.getConstructionManager();
         constructionManager.addConstructedBuildingLogEntry(buildingType);
 
-        // Clear construction value cache.
-        constructionManager.getConstructionValues().clearCache();
-
         // Fire construction event.
         fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
