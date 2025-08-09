@@ -194,7 +194,13 @@ public final class RandomUtil {
 	 * @return a positive-only random double number.
 	 */
 	public static double getGaussian(double center, double stdDev) {
-		return NormalDistribution.of(center, stdDev).createSampler(rng).sample();
+		double value = 0;
+		
+		do {
+			value = NormalDistribution.of(center, stdDev).createSampler(rng).sample();
+		} while (value <= 0);
+		
+		return value;
 	}
 	
 	/**
