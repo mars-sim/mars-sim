@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PhysicalCondition.java
- * @date 2024-07-21
+ * @date 2025-08-09
  * @author Barry Evans
  */
 package com.mars_sim.core.person;
@@ -275,8 +275,7 @@ public class PhysicalCondition implements Serializable {
 		
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// bodyMassDeviation average around 0.7 to 1.3
-		bodyMassDeviation = Math.sqrt(mass/defaultMass*height/defaultHeight) 
-				* RandomUtil.computeGaussianWithLimit(1, .5, .2);						
+		bodyMassDeviation = RandomUtil.getGaussian(Math.sqrt(mass/defaultMass*height/defaultHeight) , .4);						
 		bmi = mass/heightSquared;
 
 		// Assume a person drinks 10 times a day, each time ~375 mL
@@ -285,10 +284,10 @@ public class PhysicalCondition implements Serializable {
 		waterConsumedPerServing = waterConsumedPerSol / 10; 
 
 		double sTime = personConfig.getStarvationStartTime();
-		starvationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(sTime, 0.3, bodyMassDeviation / 5);
+		starvationStartTime = 1000D * RandomUtil.getGaussian(sTime, bodyMassDeviation / 5);
 		
 		double dTime = personConfig.getDehydrationStartTime();
-		dehydrationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(dTime, 0.3, bodyMassDeviation / 5);
+		dehydrationStartTime = 1000D * RandomUtil.getGaussian(dTime, bodyMassDeviation / 5);
 
 		isStarving = false;
 		isStressedOut = false;

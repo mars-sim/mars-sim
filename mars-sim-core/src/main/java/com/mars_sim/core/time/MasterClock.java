@@ -763,7 +763,7 @@ public class MasterClock implements Serializable {
 					nextPulse = nextPulse + (1 - ratio) * nextPulse / PULSE_STEPS / 2;
 					if (nextPulse > referencePulse * 1.2) {
 						nextPulse = referencePulse * 1.2f;
-						logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
+						logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Limit nextPulse.");
 					}
 					
 					if (ratio < 0.1) {

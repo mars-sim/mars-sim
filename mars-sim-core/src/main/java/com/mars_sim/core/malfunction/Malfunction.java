@@ -338,7 +338,7 @@ public class Malfunction implements Serializable {
 		double t = 0;
 
 		do {
-			t = time + RandomUtil.getGaussianDouble() * time/4D;
+			t = RandomUtil.getGaussian(time, time/2D);
 			if (t < 0)
 				t = -t;
 		}

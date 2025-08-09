@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RadiationExposure.java
- * @date 2023-11-05
+ * @date 2025-08-09
  * @author Manny Kung
  */
 
@@ -10,6 +10,8 @@ package com.mars_sim.core.person.health;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.statistics.distribution.NormalDistribution;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
@@ -540,7 +542,8 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, .1, .1);
+					sep = RandomUtil.getGaussian(mean, .4);
+					
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -557,7 +560,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, .1, .1);
+					sep = RandomUtil.getGaussian(mean, .4);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -608,7 +611,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, .1, .1);
+					sep = RandomUtil.getGaussian(mean, .4);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	

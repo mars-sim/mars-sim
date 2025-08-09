@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScientificStudy.java
- * @date 2022-06-30
+ * @date 2025-08-09
  * @author Scott Davis
  */
 package com.mars_sim.core.science;
@@ -133,7 +133,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		// Gets the average number from scientific_study.json
 		int aveNum = scienceConfig.getAveNumCollaborators();
 		// Compute the number for this particular scientific study
-		maxCollaborators = aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
+		maxCollaborators = (int)RandomUtil.getGaussian(aveNum, aveNum/5D);
 		
 		// Compute the base proposal study time for this particular scientific study
 		baseProposalTime = computeTime(SciencePhaseTime.PROPOSAL) * Math.max(1, difficultyLevel);
@@ -180,7 +180,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		// Gets the average time from scientific_study.json
 		int mean = scienceConfig.getAverageTime(index);
 		// Modify it with random gaussian for this particular scientific study
-		double mod = RandomUtil.getGaussianDouble();
+		double mod = RandomUtil.getGaussian(0, .68);
 		if (mod > 10)
 			mod = 10;
 		// Limit it to not less than 1/4 of the mean 

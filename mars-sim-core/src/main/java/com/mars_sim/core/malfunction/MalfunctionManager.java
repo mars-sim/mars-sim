@@ -114,7 +114,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public static final double AVERAGE_EVA_MALFUNCTION = 2.0;
 
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = .002;
+	private static final double WEAR_MALFUNCTION_FACTOR = .01;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -122,7 +122,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " Caused by '";
 
-	private static final int FREQUENCY = 5;
+	private static final int FREQUENCY = 7;
 	private static final int SCORE_DEFAULT = 50;
 	private static final int MAX_DELAY = 100;
 
@@ -655,13 +655,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 		cumulativeTime += time;
 		effTimeSinceLastMaint += time;
 		timeSinceLastMaint += time;
-		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.5, 1.5);
+		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.75, 1.25);
 		if (currentWearCondPercent < 0D)
 			currentWearCondPercent = 0D;
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
 
 		if (pulse.isNewIntMillisol()
-				&& pulse.getMarsTime().getMillisolInt() % FREQUENCY == 0) {
+				&& pulse.getMarsTime().getMillisolInt() % FREQUENCY * RandomUtil.getRandomInt(-4, 4) == 0) {
 			
 			delay--;
 			
@@ -673,8 +673,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			
 			double inspectFactor = (effTimeSinceLastMaint/inspectionWindow) + .1D;
-			double wearFactor = 100 - currentWearCondPercent; // * WEAR_MALFUNCTION_FACTOR;		
-			double malfunctionChance = time * inspectFactor * wearFactor; // * FREQUENCY
+			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
+			double malfunctionChance = time * inspectFactor * wearFactor; // * FREQUENCY;
 //			malfunctionProbability = malfunctionChance;
 //			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 			
@@ -721,7 +721,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //			maintenanceProbability = maintenanceChance;
 //			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 
-			maintenanceProbability = Math.sqrt(MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT));
+			maintenanceProbability = MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT);
 //			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			
 			// Check for repair items needed due to lack of maintenance and wear condition.
@@ -736,7 +736,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 				// If partsNeededForMaintenance has already been generated,
 				// do NOT do it again so as to allow enough time for 
 				// settlers to respond to the previous maintenance task order
-				if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty()) {			
+				if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty()) {	
+					
+					logger.warning(entity, 0, "Maintenance flagged: " + maintenanceProbability);
 					// Generates the repair parts 
 					generateNewMaintenanceParts();
 					// Retrieves the parts right away
