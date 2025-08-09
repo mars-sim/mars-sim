@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.statistics.distribution.NormalDistribution;
-
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
@@ -542,7 +540,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.getGaussian(mean, .4);
+					sep = RandomUtil.getGaussianPositive(mean, mean / 4);
 					
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
@@ -560,7 +558,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.getGaussian(mean, .4);
+					sep = RandomUtil.getGaussianPositive(mean, mean / 4);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -611,7 +609,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.getGaussian(mean, .4);
+					sep = RandomUtil.getGaussianPositive(mean, mean / 4);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	

@@ -141,17 +141,17 @@ public class MeteoriteImpactProperty implements Serializable {
 		// Based on its past history of these 3 params in this region
 		
 		// a. Update average critical diameter 
-		double cDia = 0.95 * cDiaCache + 0.05 * CRITICAL_DIAMETER * RandomUtil.getGaussian(1, .5);
+		double cDia = 0.95 * cDiaCache + 0.05 * CRITICAL_DIAMETER * RandomUtil.getGaussianPositive(1, .5);
 
 		cDiaCache = cDia;
 		
 		// b. Update average density
-		double aRho = 0.85 * aRhoCache + 0.15 * AVERAGE_DENSITY * RandomUtil.getGaussian(1, .5);
+		double aRho = 0.85 * aRhoCache + 0.15 * AVERAGE_DENSITY * RandomUtil.getGaussianPositive(1, .5);
 		
 		aRhoCache = aRho;
 		
 		// c. Update velocity of impact 
-		double impVel = 0.75 * impVelCache + 0.25 * IMPACT_VELOCITY * RandomUtil.getGaussian(1, .5);	
+		double impVel = 0.75 * impVelCache + 0.25 * IMPACT_VELOCITY * RandomUtil.getGaussianPositive(1, .5);	
 		
 		impVelCache = impVel;
 		

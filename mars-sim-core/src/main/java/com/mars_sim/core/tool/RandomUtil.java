@@ -13,6 +13,8 @@ import java.util.Set;
 
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
+import org.apache.commons.rng.simple.ThreadLocalRandomSource;
+import org.apache.commons.statistics.distribution.ContinuousDistribution.Sampler;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 
 /**
@@ -42,7 +44,7 @@ public final class RandomUtil {
 //	private static ThreadLocal<Random> random = ThreadLocal.withInitial(() -> new Random(System.currentTimeMillis()));
 
 	// Create a uniform random number generator
-	private static UniformRandomProvider rng = RandomSource.WELL_19937_A.create();
+	private static UniformRandomProvider rng = ThreadLocalRandomSource.current(RandomSource.SPLIT_MIX_64);; //RandomSource.WELL_19937_A.create();
 
 	// Create the Ziggurat normalized Gaussian sampler
 //	private static ZigguratNormalizedGaussianSampler sampler = ZigguratNormalizedGaussianSampler.of(rng);
@@ -187,6 +189,25 @@ public final class RandomUtil {
 //	}
 
 	/**
+	 * Computes a positive gaussian random double number.
+	 * 
+	 * @param center - the mean (where the average values will cluster around the random number with one variance
+	 * @param stdDev - the spread of the gaussian distribution
+	 * @return a positive-only random double number.
+	 */
+	public static double getGaussianPositive(double center, double stdDev) {
+		Sampler sampler = NormalDistribution.of(center, stdDev).createSampler(rng);
+		
+		double value = 0;
+		
+		do {
+			value = sampler.sample();
+		} while (value <= 0);
+		
+		return value;
+	}
+	
+	/**
 	 * Computes a gaussian random double number.
 	 * 
 	 * @param center - the mean (where the average values will cluster around the random number with one variance
@@ -194,14 +215,9 @@ public final class RandomUtil {
 	 * @return a positive-only random double number.
 	 */
 	public static double getGaussian(double center, double stdDev) {
-		double value = 0;
-		
-		do {
-			value = NormalDistribution.of(center, stdDev).createSampler(rng).sample();
-		} while (value <= 0);
-		
-		return value;
+		return NormalDistribution.of(center, stdDev).createSampler(rng).sample();
 	}
+	
 	
 	/**
 	 * Returns a random integer from 1 to the given integer. 1 has twice the chance
