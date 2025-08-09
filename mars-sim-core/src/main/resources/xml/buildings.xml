@@ -289,6 +289,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-0.9" yloc="-3.72" />
 				</activity>
 				<tooling name="3D printer" number="2" />
+				<tooling name="soldering" number="2"/>
 			</manufacture>
 
 			<!-- The building has a medical infirmary. -->
@@ -2917,6 +2918,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<tooling name="chemical" number="1"/>
 				<tooling name="metalwork" number="1"/>
 				<tooling name="3D printer" number="2" />
+				<tooling name="soldering" number="2"/>
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -3628,6 +3630,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<tooling name="chemical" number="3"/>
 				<tooling name="metalwork" number="3"/>
 				<tooling name="3D printer" number="3" />
+				<tooling name="soldering" number="2"/>
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -3772,6 +3775,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.43" yloc="-1.87" />
 				</activity>
 				<tooling name="3D printer" number="1" />
+				<tooling name="soldering" number="1"/>
 			</manufacture>
 
 			<medical-care tech-level="2" bed="1">
@@ -4165,6 +4169,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<tooling name="chemical" number="1"/>
 				<tooling name="metalwork" number="1"/>
 				<tooling name="3D printer" number="1" />
+				<tooling name="soldering" number="1"/>
 			</manufacture>
 			<robotic-station capacity="2">
 				<activity>
