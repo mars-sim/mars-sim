@@ -1447,7 +1447,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		masterClock = s.getMasterClock();
 				
 		// Set standard pulse time to a quarter of the value of the current pulse width
-		setStandardPulseTime(Math.min(masterClock.geTaskPulseWidth(), masterClock.getNextPulseTime()));
+		setStandardPulseTime(Math.min(masterClock.geTaskPulseWidth(), masterClock.getLeadPulseTime()));
 		
 		eventManager = s.getEventManager();
 		unitManager = s.getUnitManager();

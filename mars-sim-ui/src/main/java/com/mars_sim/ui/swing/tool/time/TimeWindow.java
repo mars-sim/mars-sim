@@ -78,8 +78,8 @@ public class TimeWindow extends ToolWindow {
 	private final String EXEC = "Execution";
 	/** the sleep time label string */
 	private final String SLEEP_TIME = "Sleep";
-	/** the time pulse width label string */
-	private final String NEXT_PULSE_TIME = "Next Pulse Width";
+	/** the lead time pulse width label string */
+	private final String LEAD_PULSE_TIME = "Lead Pulse Width";
 	/** the pulse deviation label string */
 	private final String PULSE_DEVIATION = "Pulse Deviation";
 	/** the optimal pulse label string */
@@ -148,8 +148,8 @@ public class TimeWindow extends ToolWindow {
 	private JLabel execTimeLabel;
 	/** label for sleep time. */
 	private JLabel sleepTimeLabel;
-	/** label for next pulse width. */
-	private JLabel nextPulseLabel;
+	/** label for lead pulse width. */
+	private JLabel leadPulseLabel;
 	/** label for ref pulse width. */
 	private JLabel taskPulseLabel;
 	/** label for time compression. */
@@ -331,8 +331,8 @@ public class TimeWindow extends ToolWindow {
 				"How many millisol the optimal pulse width is");
 		pulseDeviationLabel = pulsePane.addTextField(PULSE_DEVIATION, "", 
 				"The percentage of deviation between the optimal pulse width and the next pulse width");
-		nextPulseLabel = pulsePane.addTextField(NEXT_PULSE_TIME, "", 
-				"How many millisol the next pulse width will be");
+		leadPulseLabel = pulsePane.addTextField(LEAD_PULSE_TIME, "", 
+				"How many millisol the leading pulse width will be");
 	
 		createAdvancePanel(masterClock, paramPane);
 		
@@ -387,7 +387,7 @@ public class TimeWindow extends ToolWindow {
 		
 		JButton cpuButton = createResetButton();
 		cpuButton.addActionListener(e -> {
-             masterClock.resetCPUUtil();
+             masterClock.computeOriginalCPULoad();
          });
 		cpuPane.add(cpuButton);
 		
@@ -396,7 +396,7 @@ public class TimeWindow extends ToolWindow {
 		
 		// Create the ref pulse ratio spinner
 		value = Math.round(masterClock.getRefPulseRatio() * 100.0)/100.0f;
-		min = .1f; //Math.round(value / 5 * 100.0)/100.0f;
+		min = .05f; //Math.round(value / 5 * 100.0)/100.0f;
 		max = 1; //Math.min(1, Math.round(5 * value * 10.0)/10.0f);
 		step = .05f; //Math.round(value/10 * 10.0)/10.0f;
 		refPulseRatioSpinner = createSpinner(masterClock, value, min, max, step);
@@ -443,7 +443,7 @@ public class TimeWindow extends ToolWindow {
 
 		// Create the task pulse ratio spinner
 		value = Math.round(masterClock.getTaskPulseRatio() * 100.0)/100.0f;
-		min = .1f; //Math.round(value / 5 * 100.0)/100.0f;
+		min = .05f; //Math.round(value / 5 * 100.0)/100.0f;
 		max = 1; //Math.min(1, Math.round(5 * value * 10.0)/10.0f);
 		step = .05f; //Math.round(value/10 * 10.0)/10.0f;
 		taskPulseRatioSpinner = createSpinner(masterClock, value, min, max, step);
@@ -609,7 +609,7 @@ public class TimeWindow extends ToolWindow {
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		float nextPulse = masterClock.getNextPulseTime();
+		float leadPulse = masterClock.getLeadPulseTime();
 		float refPulse = masterClock.getReferencePulse();
 		float optPulse = masterClock.getOptPulseTime();
 		float taskPulse = masterClock.geTaskPulseWidth();
@@ -618,9 +618,9 @@ public class TimeWindow extends ToolWindow {
 		taskPulseText.append(StyleManager.DECIMAL_PLACES4.format(taskPulse));
 		taskPulseLabel.setText(taskPulseText.toString());
 
-		StringBuilder pulseText = new StringBuilder();
-		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulse));
-		nextPulseLabel.setText(pulseText.toString());
+		StringBuilder leadPulseText = new StringBuilder();
+		leadPulseText.append(StyleManager.DECIMAL_PLACES4.format(leadPulse));
+		leadPulseLabel.setText(leadPulseText.toString());
 		
 		// Update pulse deviation label
 		double percent = masterClock.getNextPulseDeviation() * 100;
@@ -788,7 +788,7 @@ public class TimeWindow extends ToolWindow {
 		pulseDeviationLabel = null;
 		execTimeLabel = null;
 		sleepTimeLabel = null;
-		nextPulseLabel = null;
+		leadPulseLabel = null;
 		taskPulseLabel = null;
 		realTimeClockLabel = null;
 		monthLabel = null;
