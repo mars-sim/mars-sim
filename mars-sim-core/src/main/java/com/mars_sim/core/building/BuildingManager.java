@@ -2420,32 +2420,33 @@ public class BuildingManager implements Serializable {
 	}
 
 	
-	/**
-	 * Gets the demand of the parts needed for maintenance.
-	 *
-	 * @return map of parts and their number.
-	 */
-	private Map<Integer, Integer> getMaintenancePartsDemand() {
-		if (partsMaint.isEmpty())
-			return new HashMap<>();
-		Map<Integer, Integer> partsList = new HashMap<>();
-        for (Malfunctionable entity : partsMaint.keySet()) {
-            Map<Integer, Integer> partMap = partsMaint.get(entity);
-
-            for (Entry<Integer, Integer> entry : partMap.entrySet()) {
-                Integer part = entry.getKey();
-                int number = entry.getValue();
-                if (!settlement.getItemResourceIDs().contains(part)) {
-                    if (partsList.containsKey(part)) {
-                        number += partsList.get(part).intValue();
-                    }
-                    partsList.put(part, number);
-                }
-            }
-        }
-		
-		return partsList;
-	}
+//	/**
+//	 * Gets the demand of the parts needed for maintenance.
+//	 *
+//	 * @return map of parts and their number.
+//	 */
+//	private Map<Integer, Integer> getMaintenancePartsDemand() {
+//		if (partsMaint.isEmpty())
+//			return new HashMap<>();
+//		
+//		Map<Integer, Integer> partsList = new HashMap<>();
+//        for (Malfunctionable entity : partsMaint.keySet()) {
+//            Map<Integer, Integer> partMap = partsMaint.get(entity);
+//
+//            for (Entry<Integer, Integer> entry : partMap.entrySet()) {
+//                Integer part = entry.getKey();
+//                int number = entry.getValue();
+//                if (!settlement.getItemResourceIDs().contains(part)) {
+//                    if (partsList.containsKey(part)) {
+//                        number += partsList.get(part).intValue();
+//                    }
+//                    partsList.put(part, number);
+//                }
+//            }
+//        }
+//		
+//		return partsList;
+//	}
 	
 	/**
 	 * Gets the number of maintenance parts from a particular settlement.
@@ -2454,17 +2455,19 @@ public class BuildingManager implements Serializable {
 	 * @param part
 	 */
 	public int getMaintenanceDemand(Part part) {
+
+		if (partsMaint.isEmpty())
+			return 0;
+		
 		int numRequest = 0;
-		Map<Integer, Integer> partMap = getMaintenancePartsDemand();
-		
-		for (Entry<Integer, Integer> entry: partMap.entrySet()) {
-			int p = entry.getKey();
-			int number = entry.getValue();
-			if (part.getID() == p) {
-				numRequest += number;
-			}
-		}
-		
+		int partID = part.getID();
+	
+        for (Malfunctionable entity : partsMaint.keySet()) {
+            Map<Integer, Integer> partMap = partsMaint.get(entity);
+
+            numRequest += partMap.get(partID);
+        }
+
 		return numRequest;
 	}
 

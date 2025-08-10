@@ -104,7 +104,7 @@ public class PartGood extends Good {
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double BASE_DEMAND = 0.5;
-	private static final double PARTS_MAINTENANCE_VALUE = 2;
+	private static final double PARTS_MAINTENANCE_VALUE = 0.1;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
 	private static final double AEROGEL_TILE_DEMAND = 0.05;
@@ -425,7 +425,7 @@ public class PartGood extends Good {
 			// Calculate battery cell part demand.
 			+ geFuelCellDemand()
 			// Calculate maintenance part demand.
-			+ getMaintenancePartsDemand(settlement, part, previousDemand);
+			+ getMaintenancePartsDemand(0, settlement, part, previousDemand);
 		
 		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
 		
@@ -969,20 +969,18 @@ public class PartGood extends Good {
 	/**
 	 * Gets the new demand from maintenance parts from a particular settlement.
 	 * 
+	 * @param previousNum
 	 * @param settlement
 	 * @param part
 	 * @param previousDemand
 	 * @return new demand
 	 */
-	private double getMaintenancePartsDemand(Settlement settlement, Part part, double previousDemand) {
-		double demand = 0;
-		int number = settlement.getBuildingManager().getMaintenanceDemand(part);
-		if (number > 0) {
-			demand = number * previousDemand * PARTS_MAINTENANCE_VALUE;
-//			logger.info(settlement, 30_000L, "Triggering " + Math.round(demand * 10.0)/10.0 
-//					+" good demand from " + number + " " + part.getName() + ".");
-		}
-		return demand;
+	private double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
+		double newDemand = 0;
+		
+		int num = settlement.getBuildingManager().getMaintenanceDemand(part);
+		
+		return newDemand * (1 + num * PARTS_MAINTENANCE_VALUE / (previousNum + 1));
 	}
 	
 	/**
@@ -996,37 +994,15 @@ public class PartGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
-		
-		if (previousNum == 0)
-			previousNum = 1;
-		
-		double previousTotalDemand = previousDemand * previousNum;
-		
-		double newAddedDemand = getMaintenancePartsDemand(owner.getSettlement(), part, previousDemand);
 
-		double newAddedTotalDemand = newAddedDemand * needNum;
+		double finalDemand = getMaintenancePartsDemand(previousNum, owner.getSettlement(), part, previousDemand);
+	
+		owner.setDemandScore(this, finalDemand);
 		
-		double diff = previousTotalDemand - newAddedTotalDemand;
-		
-		double finalDemand = (previousTotalDemand + newAddedTotalDemand) / (previousNum + needNum);
-		String reason = " - No change. ";
-
-		if (diff < 0) {
-			if (finalDemand < previousDemand) {
-				finalDemand = previousDemand + newAddedDemand;
-			}
-			
-			owner.setDemandScore(this, finalDemand);
-			
-			reason = " - Injecting Demand: ";
-			// Recalculate settlement good value for this part.
-			owner.determineGoodValue(GoodsUtil.getGood(part.getID()));
-		}
-
 		// Output a detailed message	
 		logger.info(owner.getSettlement(), 30_000L, 
 				part.getName()
-				+ reason
+				+ " - Injecting Demand: "
 				+ Math.round(previousDemand * 100.0)/100.0 
 				+ " -> " + Math.round(finalDemand * 100.0)/100.0 
 				+ "  Quantity: " + needNum
