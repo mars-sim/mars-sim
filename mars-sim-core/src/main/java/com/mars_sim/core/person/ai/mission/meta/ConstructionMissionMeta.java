@@ -25,8 +25,10 @@ import com.mars_sim.core.structure.Settlement;
  * A meta mission for Construction Mission.
  */
 public class ConstructionMissionMeta extends AbstractMetaMission {
-      
-	private static final double BASE_SCORE = 40D;
+    
+	// Sites have a higher score than queued buildings
+	private static final int SITE_BASE = 40;
+	private static final int QUEUE_BASE = 30;
 		
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
@@ -73,11 +75,17 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 			
-			int need = settlement.getConstructionManager().getConstructionSitesNeedingMission(true).size();
+			var cm = settlement.getConstructionManager();
+			int need = cm.getConstructionSitesNeedingMission(true).size() * SITE_BASE;
 			if (need == 0) {
-				return RatingScore.ZERO_RATING;
+				need = (int) cm.getBuildingSchedule().stream()
+						.filter(s -> s.isReady())
+						.count() * QUEUE_BASE;
+				if (need == 0) {
+					return RatingScore.ZERO_RATING;
+				}
 			}
-			missionProbability = new RatingScore(need * BASE_SCORE);
+			missionProbability = new RatingScore(need);
 	
 			// Modify if construction is the person's favorite activity.
 			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {

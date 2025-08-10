@@ -14,7 +14,6 @@ import java.util.List;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingSpec;
@@ -24,12 +23,13 @@ import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
+import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.ObjectiveUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -37,6 +37,54 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class ConstructionManager implements Serializable {
 
+	public static class BuildingSchedule implements Serializable {
+		// Private handler to schedule the activiation
+		private class Handler implements ScheduledEventHandler {
+			@Override
+			public String getEventDescription() {
+				return "Queue new building " + buildingType;
+			}
+
+			@Override
+			public int execute(MarsTime currentTime) {
+				valid = null;
+				return 0;
+			}
+
+		}
+
+		private String buildingType;
+		private MarsTime valid;
+
+		private BuildingSchedule(String buildingType, MarsTime valid) {
+			this.buildingType = buildingType;
+			this.valid = valid;
+		}
+
+		public String getBuildingType() {
+			return buildingType;
+		}
+
+		public MarsTime getStart() {
+			return valid;
+		}
+
+		/**
+		 * Privbate handler for this queued item
+		 * @return
+		 */
+		public ScheduledEventHandler getHandler() {
+			return new Handler();
+		}
+
+		/**
+		 * Is this schedule ready to start building
+		 * @return
+		 */
+		public boolean isReady() {
+			return valid == null;
+		}
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -53,9 +101,8 @@ public class ConstructionManager implements Serializable {
 	private List<ConstructionSite> sites;
 	private SalvageValues salvageValues;
 	private History<String> constructedBuildingLog;
+	private List<BuildingSchedule> queue = new ArrayList<>();
 
-	private UnitManager unitManager = Simulation.instance().getUnitManager();
-	
 	/**
 	 * Constructor.
 	 * 
@@ -106,10 +153,10 @@ public class ConstructionManager implements Serializable {
 
 	/**
 	 * Creates a new construction site.
-	 * @param placement 
-	 * @param bestBuilding 
-	 * 
-	 * @return newly created construction site.
+	 * @param buildingType Type of building
+	 * @param placement Where the site is placed
+	 * @param isConstruction The site is to create a new building
+	 * @param initStage Where the work starts
 	 */
 	private ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
 						boolean isConstruction, ConstructionStageInfo initStage) {
@@ -117,7 +164,7 @@ public class ConstructionManager implements Serializable {
 
 		ConstructionSite site = new ConstructionSite(settlement, siteName, buildingType, isConstruction, initStage, placement);
 		sites.add(site);
-    	unitManager.addUnit(site);
+    	Simulation.instance().getUnitManager().addUnit(site);
 
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
 		logger.info(site, "Just created and registered in ConstructionManager.");
@@ -127,10 +174,6 @@ public class ConstructionManager implements Serializable {
 		return site;
 	}
 
-	public Settlement getSettlement() {
-		return settlement;
-	}
-
 	/**
 	 * Removes a construction site.
 	 * 
@@ -138,10 +181,7 @@ public class ConstructionManager implements Serializable {
 	 * @throws Exception if site doesn't exist.
 	 */
 	public void removeConstructionSite(ConstructionSite site) {
-		if (sites.contains(site)) {
-			sites.remove(site);
-		}
-		else throw new IllegalStateException("Construction site doesn't exist.");
+		sites.remove(site);
 	}
 
 	/**
@@ -158,9 +198,7 @@ public class ConstructionManager implements Serializable {
 	 * 
 	 * @param buildingName the building name to add.
 	 */
-	void addConstructedBuildingLogEntry(String buildingName) {
-		if (buildingName == null) throw new IllegalArgumentException("buildingName is null");
-		
+	void addConstructedBuildingLogEntry(String buildingName) {		
 		constructedBuildingLog.add(buildingName);
 	}
 
@@ -227,20 +265,23 @@ public class ConstructionManager implements Serializable {
 			logger.info(settlement, "Found existing site to work on " + site);
 			return site;
 		}
-		
-		// Check if settlement has construction override flag set.
-		// if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
-		// 	return null
-		// }
 
 		// Should select from Q once in place
-		BuildingSpec bestBuilding = getNeededBuilding();
-
-		return createNewBuildingSite(bestBuilding);
+		if (!queue.isEmpty()) {
+			var first = queue.stream()
+					.filter(s -> s.isReady())
+					.findFirst().orElse(null);
+			if (first != null) {
+				var bestBuilding = getBuildingSpec(first.getBuildingType());
+				queue.remove(first);
+				return createNewBuildingSite(bestBuilding);
+			}
+		}
+		return null;
 	}
 
 	/**
-	 * Create a new building site to build a building
+	 * Create a new building site to build a building. This bypasses the queue
 	 * @param building
 	 * @return
 	 */
@@ -258,13 +299,46 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Find the best building to create for this settlement
+	 * Check if the settlement needs new Building beyond the Queue
+	 */
+	// private void evaluateNewBuildingNeed() {
+	// 	// Check if settlement has construction override flag set.
+	// 	// if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
+	// 	// 	return null
+	// 	// }
+
+	// 	// This implementation should be enhanced to select a building according to soem rules
+	// 	//e.g. not enought beds then Accomodation
+	// 	String buildingType = ObjectiveUtil.getBuildingType(settlement.getObjective());
+
+	// 	// Make sure the best building is not in the queue already
+	// 	if (queue.stream().noneMatch(s -> s.getBuildingType().equals(buildingType))) {
+	// 		addBuildingToQueue(buildingType, null);
+	// 	}
+	// }
+
+	/**
+	 * Add a building to the queue to be scheduled for construction
+	 * @param buildingType
+	 * @param when This can be null if schedule now
+	 */
+	public void addBuildingToQueue(String buildingType, MarsTime when) {
+		var bs = new BuildingSchedule(buildingType, when);
+		queue.add(bs);
+		if (when != null) {
+			settlement.getFutureManager().addEvent(when, bs.getHandler());
+		}
+	}
+
+	/**
+	 * Get the building schedule
 	 * @return
 	 */
-	private BuildingSpec getNeededBuilding() {
-		// This implementation will be repalced with picking something off the queue
-		String buildingType = ObjectiveUtil.getBuildingType(settlement.getObjective());
+	public List<BuildingSchedule> getBuildingSchedule() {
+		return queue;
+	}
 
+	private static BuildingSpec getBuildingSpec(String buildingType) {
 		return SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
 	}
 
@@ -286,14 +360,11 @@ public class ConstructionManager implements Serializable {
 		return stageInfo;
 	}
 
-
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		settlement = null;
 		sites.clear();
-		sites = null;
 		salvageValues.destroy();
 		salvageValues = null;
 		constructedBuildingLog = null;
