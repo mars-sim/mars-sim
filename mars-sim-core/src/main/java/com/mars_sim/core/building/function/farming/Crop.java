@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Crop.java
- * @date 2025-07-16
+ * @date 2025-08-10
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function.farming;
@@ -32,6 +32,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
+	
+	private static final String LEAVES = "Leaves";
 	
 	/**
 	 * The watt to photon conversion ratio on Mars as defined in crops.xml [in umol
@@ -254,12 +256,42 @@ public class Crop implements Comparable<Crop>, Entity {
 //		double growingDays = cropSpec.getInGroundSols();
 		var category = cropSpec.getCropCategory();
 
+		double waterContent = cropSpec.getEdibleWaterContent();
+				
 		// 5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space,
 		
 		// 1000 kg/ha = .1 kg/m2 = 100 g /m2
 
 		// Note : edible-biomass is [ kg / m^2 ]
 		double edibleBiomass = cropSpec.getEdibleBiomass();
+		
+		double inedibleBiomass = cropSpec.getInedibleBiomass();
+		
+		double totalBiomassPerSol = (edibleBiomass + inedibleBiomass) / totalSols;
+		
+		
+		// Note: Based on https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/crop-biomass
+		// Chemically plant biomass mainly has cellulose, hemicellulose, and lignin as the main components
+		// that vary significantly amongst its sources. Plant biomass is made up of the three most important 
+		// elements, that is, carbon (42%–47%), oxygen (40%–44%), and hydrogen (6%).
+		
+		// Assuming the following ratios
+		//  C : .44
+		//  O : .5
+		//  H : .06 
+		
+		// Thus
+		// H2O : (.06 * 2 + .5) = .62
+		//  O2 : (.5 * 2)       = 1.0
+		// CO2 : (.44 + .5 * 2) = 1.44
+		
+		// Note that the relative ratio below for each category are arbitrary
+		averageWaterNeeded *= .62 * waterContent * totalBiomassPerSol;
+		
+		averageOxygenNeeded *= totalBiomassPerSol;
+		
+		averageCarbonDioxideNeeded *= 1.44 * totalBiomassPerSol;
+
 		// Note : maxHarvest is kg
 		maxHarvest = edibleBiomass * growingArea;
 		// Daily harvest quota is based on maturation & harvest phases
@@ -754,8 +786,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		totalCollected += harvestMass;
 		dailyCollected += harvestMass;
 
-//		if (dailyCollected > 0)
-//			logger.info(this, 20_000, "totalCollected: " + Math.round(totalCollected * 100.0) / 100.0
+//		May add back if (dailyCollected > 0) logger.info(this, 20_000, "totalCollected: " + Math.round(totalCollected * 100.0) / 100.0
 //						+ "  dailyCollected: " + Math.round(dailyCollected * 100.0) / 100.0);
 
 		
@@ -770,12 +801,12 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		// Calculate the amount of leaves and crop wastes that are generated
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
-		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES);
+		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES/2, RATIO_LEAVES);
 		if (cropWaste > 0) {
 			store(cropWaste, ResourceUtil.CROP_WASTE_ID);
 		}
 
-		if (cropSpec.getCropCategory().getName().equalsIgnoreCase("Leaves")) {
+		if (cropSpec.getCropCategory().getName().equalsIgnoreCase(LEAVES)) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
 				store(leaves, ResourceUtil.LEAVES_ID);
@@ -838,7 +869,7 @@ public class Crop implements Comparable<Crop>, Entity {
 													greyFilterRate,
 													temperatureModifier);
 			
-//			logger.info(this, 4_000, "harvestModifier: " + Math.round(harvestModifier * 1000.0) / 1000.0);
+//			May add back logger.info(this, 4_000, "harvestModifier: " + Math.round(harvestModifier * 1000.0) / 1000.0);
 			
 			// Add to the daily harvest.
 			dailyHarvestQuota = harvestPerHarvestDay * harvestModifier;
@@ -928,8 +959,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			sunset = (int)sunTimes[1];
 			sunInterval = (int)sunTimes[2];
 			
-//			logger.info(building.getSettlement(), 10_000, "sunrise: " + sunrise 			
-//					+ " sunset: " + sunset + " sunInterval: " + sunInterval);
+//			May add back  logger.info(building.getSettlement(), 10_000, "sunrise: " + sunrise + " sunset: " + sunset + " sunInterval: " + sunInterval);
 		}
 		
 		double msol = pulse.getMarsTime().getMillisol();
@@ -1067,7 +1097,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
 				
-//				logger.info(this, 0, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
+//				May add back logger.info(this, 0, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
 //				+ "  Outstanding: " + Math.round(deltaPAROutstanding * 100.0)/100.0
 //				+ "  numLamp: " + numLamp
 //				+ "  growingArea: " + growingArea
@@ -1086,7 +1116,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		dailyPARCumulative += effectivePAR;
 		
-//		logger.info(this, 20_000, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
+//		May add back logger.info(this, 20_000, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
 //		+ "  time: " + Math.round(timeInterval * 100.0)/100.0
 //		+ "  uPAR: " + Math.round(uPAR * 100.0)/100.0
 //		+ "  sunlightPAR: " + Math.round(sunlightPAR * 100.0)/100.0
@@ -1159,8 +1189,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		if (resource == ResourceUtil.WATER_ID) {
 			waterHoldingTank = tank;
-//			System.out.println(building.getName() + " " + getName() + " water tank: " + Math.round(tank * 1000.0)/1000.0
-//					+ "  canConsume: " + Math.round(canConsume * 1000.0)/1000.0);
+//			// May add back logger.info(building, getName() + " water tank: " + Math.round(tank * 1000.0)/1000.0 + "  canConsume: " + Math.round(canConsume * 1000.0)/1000.0);
 		}
 		else {
 			fertilizerHoldingTank = tank;
@@ -1338,7 +1367,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		// Min at 0.0001
 		double compositeFactor = Math.min(7, Math.max(.0001, TUNING_FACTOR * needFactor));
 		
-//		logger.info(this, 10_000, "watt: " + Math.round(watt * 100.0)/100.0
+//		May add back logger.info(this, 10_000, "watt: " + Math.round(watt * 100.0)/100.0
 //				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
 //				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
 		
@@ -1491,7 +1520,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * @param cropConfig
 	 */
 	public static void initializeInstances(CropConfig cropConfig) {
-
+		// Note that the following 4 general params will be tuned by individual crop in the constructor
 		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
 		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();

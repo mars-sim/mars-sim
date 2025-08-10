@@ -101,7 +101,7 @@
 		 cellulose into its component glucose molecules.
 
 		</description>						
-		<input resource="Leaves" rate="162.0" />
+		<input resource="Crop Waste" rate="162.0" />
 		<input resource="Water" rate="18.0" />
 		
 		<output resource="Glucose" rate="180.0" />

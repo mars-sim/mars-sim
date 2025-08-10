@@ -317,7 +317,7 @@
 		-->
 
 		<crop name="Basil" growing-sols="27" crop-category="leaves" life-cycle="biennial"
-	    	edible-biomass="1.1" edible-water-content=".2" inedible-biomass="0.2" daily-PAR="17.28" />
+	    	edible-biomass="1.1" edible-water-content=".2" inedible-biomass="2.0" daily-PAR="17.28" />
 
 		<!-- 
 			Grown in a floating hydroponic system, basil had a crop cycle of 27 days.
@@ -326,7 +326,7 @@
 		-->
 
 	   	<crop name="Blueberry" growing-sols="300" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="1.5" edible-water-content=".87" inedible-biomass="4.5" daily-PAR="25.92" />
+	    	edible-biomass="1.5" edible-water-content=".87" inedible-biomass="7.5" daily-PAR="25.92" />
 	    	
 	    <!-- 
 			Assume 15 t/ha -> 1.5 kg/m²
@@ -361,7 +361,7 @@
 
 
 		<crop name="Cabbage" growing-sols="85" crop-category="leaves"  life-cycle="annual"
-	    	edible-biomass="5" edible-water-content=".92" inedible-biomass=".5" daily-PAR="17.28" />
+	    	edible-biomass="5" edible-water-content=".92" inedible-biomass="2.5" daily-PAR="17.28" />
 		<!--
 			assuming 50 t/ha/yr -> 5 kg/m²/yr
 			assuming all 70 is edible biomass		
@@ -409,7 +409,7 @@
 		-->
 
 		<crop name="Celery" growing-sols="75" crop-category="stems" life-cycle="biennial"
-	    	edible-biomass="3.5" edible-water-content=".90" inedible-biomass="0.5" daily-PAR="17.28" />
+	    	edible-biomass="3.5" edible-water-content=".90" inedible-biomass="1.5" daily-PAR="17.28" />
 
 	    <!-- 
 			
@@ -428,7 +428,7 @@
 	    -->
 
 		<crop name="Cilantro" growing-sols="30" crop-category="herbs" life-cycle="annual"
-	    	edible-biomass="2.5" edible-water-content=".76" inedible-biomass="0.5" daily-PAR="34.56" 
+	    	edible-biomass="2.5" edible-water-content=".76" inedible-biomass="1.0" daily-PAR="34.56" 
 	    	seed-name="Coriander" />
 	    <!-- https://rennieorchards.com/is-cilantro-perennial/
 	    
@@ -437,7 +437,7 @@
 		-->
 
 		<crop name="Corn" growing-sols="65" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="0.83" edible-water-content=".76" inedible-biomass="3.0" daily-PAR="34.56" />
+	    	edible-biomass="0.83" edible-water-content=".76" inedible-biomass="10.0" daily-PAR="34.56" />
 
 		<!--
 		http://lib.dr.iastate.edu/cgi/viewcontent.cgi?article=4354&context=etd
@@ -492,7 +492,7 @@
 	    	-->
 
 	   	<crop name="Cucumber" growing-sols="60" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="1.8" edible-water-content=".90" inedible-biomass="18" daily-PAR="25.92" />
+	    	edible-biomass="1.8" edible-water-content=".90" inedible-biomass="8" daily-PAR="25.92" />
 	    	<!--
 				
 			18,000 kg/ha -> 1.8 kg/m2
@@ -506,7 +506,7 @@
 
 
 		<crop name="Dandelion" growing-sols="90" crop-category="flowers" life-cycle="perennial"
-	    	edible-biomass="1.11" edible-water-content=".4" inedible-biomass="0.1" daily-PAR="25" />
+	    	edible-biomass="1.11" edible-water-content=".4" inedible-biomass="0.3" daily-PAR="25" />
 	    	
 	    <!--	
 			In future, separate the dandelion roots from dandelion leaves
@@ -588,7 +588,7 @@
     
 	    
 	    <crop name="Garlic" growing-sols="85" crop-category="bulbs" life-cycle="annual"
-	    	edible-biomass="1.0" edible-water-content=".59" inedible-biomass="1.0" daily-PAR="17.28" />
+	    	edible-biomass="1.0" edible-water-content=".59" inedible-biomass="4.0" daily-PAR="17.28" />
 
 	    	<!--
 	    		
@@ -611,7 +611,7 @@
 
 
 	     <crop name="Ginger" growing-sols="90" crop-category="roots" life-cycle="annual"
-	    	edible-biomass="6.192" edible-water-content=".12" inedible-biomass="2" daily-PAR="17.28" />
+	    	edible-biomass="6.192" edible-water-content=".12" inedible-biomass="4" daily-PAR="17.28" />
 	   
 	    <!--     
 			A yield of 43 tonnes per hectare * 144%	  = 61.92
@@ -643,7 +643,7 @@
 
 
 		<crop name="Green Bell Pepper" growing-sols= "40" crop-category="fruits" life-cycle="annual"
-			edible-biomass= "15.0" edible-water-content= ".45" inedible-biomass="45" daily-PAR="25.92" />
+			edible-biomass= "15.0" edible-water-content= ".45" inedible-biomass="20" daily-PAR="25.92" />
 
 			<!-- 
 				
@@ -693,7 +693,7 @@
 
 
 	    <crop name="Kidney bean" growing-sols="43" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="0.3198" edible-water-content=".10" inedible-biomass="150.0" daily-PAR="25.92" />
+	    	edible-biomass="0.3198" edible-water-content=".10" inedible-biomass="15.0" daily-PAR="25.92" />
 
 		<!--
 			
@@ -734,11 +734,11 @@
 		-->
 
 		<crop name="Morel Mushroom" growing-sols="140" crop-category="fungi" life-cycle="annual"
-	    	edible-biomass="10" edible-water-content=".35" inedible-biomass="10" daily-PAR="5" />
+	    	edible-biomass="10" edible-water-content=".35" inedible-biomass="25" daily-PAR="5" />
 	    	
 	    	<!-- 
 				
-			Assume 10 kg/sqm; 90% edible 
+			Assume 10 kg/sqm; 
 				
 			https://www.mushroomoffice.com/energy-costs-mushroom/
 				
@@ -787,7 +787,7 @@
 
 
 	    <crop name="Peanut" growing-sols="100" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="100" edible-water-content=".056" inedible-biomass="1.0" daily-PAR="32.4" />
+	    	edible-biomass="100" edible-water-content=".056" inedible-biomass="80" daily-PAR="32.4" />
 
 	    	<!--
 				
@@ -827,7 +827,7 @@
 	    	-->
 
 	    <crop name="Peas" growing-sols="75" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="1.4" edible-water-content=".79" inedible-biomass="2.8" daily-PAR="25.92" />
+	    	edible-biomass="1.4" edible-water-content=".79" inedible-biomass="10.8" daily-PAR="25.92" />
 			
 			<!-- 
 				0.68 to 1.36 tonnes per hectare
@@ -837,7 +837,7 @@
 				https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
 
 	    <crop name="Potato" growing-sols="75" crop-category="tubers" life-cycle="annual"
-	    	edible-biomass="2.5" edible-water-content=".79" inedible-biomass="5.0" daily-PAR="34.56" />
+	    	edible-biomass="2.5" edible-water-content=".79" inedible-biomass="15.0" daily-PAR="34.56" />
 
 	    	<!--
 			 
@@ -867,7 +867,7 @@
 	    	-->
 
 	     <crop name="Quinoa" growing-sols="90" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="0.55" edible-water-content=".12" inedible-biomass="1" daily-PAR="69.12" />
+	    	edible-biomass="0.55" edible-water-content=".12" inedible-biomass="7" daily-PAR="69.12" />
 	    	
 	    	<!-- 
 
@@ -911,14 +911,14 @@
 
 
 		<crop name="Radish" growing-sols="25" crop-category="roots" life-cycle="annual"
-	    	edible-biomass="5.0" edible-water-content=".35" inedible-biomass="7.0" daily-PAR="15" />
+	    	edible-biomass="5.0" edible-water-content=".35" inedible-biomass="15.0" daily-PAR="15" />
 
 		<!-- The yield range of 15-20 tons per acre for daikon radishes, this translates to approximately
 		 37-50 tonnes per hectare (since 1 acre is approximately 0.4047 hectares).-->
 		
 		
 	  	<crop name="Red Beet" growing-sols="42" crop-category="roots" life-cycle="annual"
-	    	edible-biomass="2.5" edible-water-content=".75" inedible-biomass="3" daily-PAR="34.56" />
+	    	edible-biomass="2.5" edible-water-content=".75" inedible-biomass="8.3" daily-PAR="34.56" />
 
 		<!-- 
 			
@@ -965,7 +965,7 @@
 		-->
 
 	    <crop name="Sesame" growing-sols="50" crop-category="seeds" life-cycle="annual"
-	    	edible-biomass="0.35" edible-water-content=".4" inedible-biomass="1.5" daily-PAR="17.28"
+	    	edible-biomass="0.35" edible-water-content=".4" inedible-biomass="6.5" daily-PAR="17.28"
 			seed-name="Sesame Seed"/>
 			
 	    <!--
@@ -997,7 +997,7 @@
 
 
 	    <crop name="Soybean" growing-sols="47" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass=".35" edible-water-content=".10" inedible-biomass=".2" daily-PAR="34.56" />
+	    	edible-biomass=".35" edible-water-content=".10" inedible-biomass="5.2" daily-PAR="34.56" />
 
 	    	<!--
 				
@@ -1010,7 +1010,7 @@
 
 
 	   	<crop name="Strawberry" growing-sols="45" crop-category="fruits" life-cycle="annual"
-	    	edible-biomass="12.5" edible-water-content=".92" inedible-biomass="10" daily-PAR="25.92" />
+	    	edible-biomass="12.5" edible-water-content=".92" inedible-biomass="40" daily-PAR="25.92" />
 	    	
 	    	<!-- 
 				
@@ -1040,11 +1040,14 @@
 	    	 -->
 
 	   <crop name="Sugarcane" growing-sols="180" crop-category="grasses" life-cycle="perennial"
-	    	edible-biomass="7.367" edible-water-content=".75" inedible-biomass="2.0" daily-PAR="34.56" />
+	    	edible-biomass="7.367" edible-water-content=".75" inedible-biomass="10.0" daily-PAR="34.56" />
 	    	
 	    	<!-- CANE, SUGAR AND THE ENVIRONMENT from http://www.fao.org/docrep/005/x4988e/x4988e01.htm
-	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants.
-	    	The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
+	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent 
+	    	of the total weight of the plants.
+	    	
+	    	The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while 
+	    	that of sugar beets is between 13 and 18 percent.
 	    	The protein and fat content of both beets and cane is almost nil.
 	    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%)
 
@@ -1071,7 +1074,7 @@
 
 
 	    <crop name="Sweet Potato" growing-sols="90" crop-category="tubers" life-cycle="annual"
-	    	edible-biomass="2.899" edible-water-content=".79" inedible-biomass="3" daily-PAR="34.56" />
+	    	edible-biomass="2.899" edible-water-content=".79" inedible-biomass="6" daily-PAR="34.56" />
 
 		<!-- 
 			
@@ -1103,7 +1106,7 @@
 		-->
 
 		<crop name="Swiss Chard" growing-sols="17" crop-category="leaves" life-cycle="biennial"
-	    	edible-biomass="2" edible-water-content=".92" inedible-biomass="0.1" daily-PAR="17.28" />
+	    	edible-biomass="2" edible-water-content=".92" inedible-biomass="1.1" daily-PAR="17.28" />
 
 		<!-- 
 			
@@ -1124,7 +1127,7 @@
 		-->
 
 	    <crop name="Taro" growing-sols="100" crop-category="corms" life-cycle="perennial"
-	    	edible-biomass="1.26" edible-water-content=".706" inedible-biomass=".5" daily-PAR="34.56" />
+	    	edible-biomass="1.26" edible-water-content=".706" inedible-biomass="3.5" daily-PAR="34.56" />
 
 		<!--  
 			Assume this taro variant takes half the time (200 days -> 100 days)
@@ -1159,7 +1162,7 @@
 		-->
 
 	    <crop name="Tomato" growing-sols="80" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="10" edible-water-content=".948" inedible-biomass="15" daily-PAR="32.4" />
+	    	edible-biomass="10" edible-water-content=".948" inedible-biomass="35" daily-PAR="32.4" />
 	    	<!-- 
 				
 			In outdoor farming, yields on stalked crops are on average 60-100 tonnes per hectare 
@@ -1174,14 +1177,14 @@
 	    	-->
 
 		<crop name="Wheat" growing-sols="80" crop-category="grains" life-cycle="annual"
-	    	edible-biomass="1.6519" edible-water-content=".12" inedible-biomass="1.6" daily-PAR="69.12" />
+	    	edible-biomass="1.6519" edible-water-content=".12" inedible-biomass="2.6" daily-PAR="69.12" />
 			<!-- 
 				The world record wheat yield is 16.519 tonnes per hectare.
 				
 				Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 	  <crop name="White Mustard" growing-sols="41" crop-category="seeds" life-cycle="annual"
-	    	edible-biomass="0.204" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56"
+	    	edible-biomass="0.204" edible-water-content=".7" inedible-biomass="3.02" daily-PAR="34.56"
 	    	seed-name="Mustard Seed" />
 
 		<!--
@@ -1246,7 +1249,7 @@
 		 -->
 
 	    <crop name="White Onion" growing-sols="75" crop-category="bulbs" life-cycle="biennial"
-	    	edible-biomass="3.0" edible-water-content=".89" inedible-biomass="1.0" daily-PAR="17.28" />
+	    	edible-biomass="3.0" edible-water-content=".89" inedible-biomass="3.0" daily-PAR="17.28" />
 	    	
 	    	<!-- 
 	    		Assume this White Onion variant takes half the time (150 days -> 75 days)
@@ -1263,7 +1266,7 @@
 			-->
 
 	    <crop name="Yam" growing-sols="100" crop-category="tubers" life-cycle="annual"
-	    	edible-biomass="2.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
+	    	edible-biomass="2.5" edible-water-content=".79" inedible-biomass="2.1" daily-PAR="34.56" />
 
 			<!-- 
 				For example, white yam typically yields 10–15 tonnes per hectare, while water yam can yield 

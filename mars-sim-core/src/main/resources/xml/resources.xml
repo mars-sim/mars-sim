@@ -92,7 +92,7 @@
 <!-- Wastes -->
 	<resource name="Soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
 	<resource name="Compost" type="waste" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="Crop waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="Crop waste" type="waste" phase="solid">Organic waste from a crop or inedible biomass after harvest. </resource>
 
 	<resource name="Electronic waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
 	<resource name="Food waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
