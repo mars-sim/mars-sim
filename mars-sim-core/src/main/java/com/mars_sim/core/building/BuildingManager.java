@@ -2464,8 +2464,8 @@ public class BuildingManager implements Serializable {
 	
         for (Malfunctionable entity : partsMaint.keySet()) {
             Map<Integer, Integer> partMap = partsMaint.get(entity);
-
-            numRequest += partMap.get(partID);
+            if (partMap.containsKey(partID))
+            	numRequest += partMap.get(partID);
         }
 
 		return numRequest;
