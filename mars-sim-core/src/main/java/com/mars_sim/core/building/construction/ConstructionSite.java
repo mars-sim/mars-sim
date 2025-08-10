@@ -32,13 +32,9 @@ public class ConstructionSite extends FixedUnit {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
 
-
     private boolean isConstruction;
     private boolean isWorkOnsite;
     private boolean unstarted = true;
-    
-	// Unique identifier
-	private int identifier;
 
     private double width;
     private double length;
@@ -52,15 +48,11 @@ public class ConstructionSite extends FixedUnit {
     /**
      * Constructor.
      */
-    public ConstructionSite(Settlement settlement, String target, boolean isConstruction,
+    public ConstructionSite(Settlement settlement, String siteName, String target, boolean isConstruction,
                             ConstructionStageInfo initStage,
                             LocalBoundedObject placement) {
-    	super("Site", settlement);
+    	super(siteName, settlement);
     	
-    	identifier = settlement.getConstructionManager().getUniqueID();
-    	
-    	createSiteName();
-
         this.isConstruction = isConstruction;
         this.targetBuilding = target;
     	this.width = placement.getWidth();
@@ -70,18 +62,6 @@ public class ConstructionSite extends FixedUnit {
         this.currentStage = new ConstructionStage(initStage, this, isConstruction);
 
     }
-
-	private void createSiteName() {
-	    if (identifier < 10) {
-			setName(getName() + "00" + identifier);
-		}
-		else if (identifier < 100) {
-			setName(getName() + "0" + identifier);
-		}
-		else {
-			setName(getName() + identifier);
-		}
-	}
 
     @Override
     public double getWidth() {

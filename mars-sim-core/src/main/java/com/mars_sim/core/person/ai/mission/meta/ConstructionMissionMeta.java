@@ -26,7 +26,7 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class ConstructionMissionMeta extends AbstractMetaMission {
       
-	private static final double BASE_SCORE = 50D;
+	private static final double BASE_SCORE = 40D;
 		
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 

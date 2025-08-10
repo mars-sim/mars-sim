@@ -7,20 +7,12 @@
 package com.mars_sim.core.goods;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionUtil;
-import com.mars_sim.core.building.construction.ConstructionValues;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.cooking.Cooking;
@@ -121,8 +113,6 @@ class AmountResourceGood extends Good {
 	private static final double FARMING_FACTOR = .1;
 
 	private static final double LEAVES_VALUE_MODIFIER = .5;
-
-	private static final double DESSERT_FACTOR = .1;
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
@@ -182,7 +172,6 @@ class AmountResourceGood extends Good {
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
-	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500; 
 	private static final double MAX_MANUFACTURING_DEMAND = 1500;
@@ -568,8 +557,6 @@ class AmountResourceGood extends Good {
 			+ getAvailableMealDemand(settlement)
 			// Tune construction demand.
 			+ getResourceConstructionDemand(settlement)
-			// Tune construction site demand.
-			+ getResourceConstructionSiteDemand(settlement)
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
 
@@ -953,124 +940,22 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for a resource from construction sites.
-	 *
-	 * @return demand (kg)
-	 */
-	private double getResourceConstructionSiteDemand(Settlement settlement) {
-		double base = 0D;
-		int resourceID = getID();
-
-		// Note: Need to filter the construction resources first here
-		
-		// Add demand for resource required as remaining construction material on
-		// construction sites.
-		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
-			if (site.hasUnfinishedStage() && site.isConstruction()) {
-				ConstructionStage stage = site.getCurrentConstructionStage();
-				if (stage.getMissingResources().containsKey(resourceID)) {
-					double requiredAmount = stage.getMissingResources().get(resourceID);
-					base += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
-				}
-			}
-		}
-
-		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
-	}
-
-	/**
 	 * Gets the demand for an amount resource as an input in building construction.
+	 * This is basedon the missing resoruces of a current stage
 	 *
 	 * @return demand (kg)
 	 */
 	private double getResourceConstructionDemand(Settlement settlement) {
 		double base = 0D;
 
-		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
-		int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
-		for(Entry<ConstructionStageInfo, Double> stageDetail : values.getAllConstructionStageValues(bestConstructionSkill).entrySet()) {
-			ConstructionStageInfo stage = stageDetail.getKey();
-			double stageValue = stageDetail.getValue();
-			if (stageValue > 0D && ConstructionStageInfo.Stage.BUILDING.equals(stage.getType())
-					&& isLocallyConstructable(settlement, stage)) {
-				double constructionDemand = getResourceConstructionStageDemand(stage, stageValue);
-				if (constructionDemand > 0D) {
-					base += constructionDemand;
-				}
+		for(var s : settlement.getConstructionManager().getConstructionSites()) {
+			if (s.isConstruction()) {
+				var stage = s.getCurrentConstructionStage();
+				base += stage.getMissingResources().getOrDefault(getID(), 0D);
 			}
 		}
-
 		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
 	}
-
-	/**
-	 * Gets the demand for an amount resources as an input for a particular building
-	 * construction stage.
-	 *
-	 * @param stage      the building construction stage.
-	 * @param stageValue the building construction stage value (VP).
-	 * @return demand (kg)
-	 */
-	private double getResourceConstructionStageDemand(ConstructionStageInfo stage,
-			double stageValue) {
-
-		double demand = 0D;
-		double resourceAmount = getPrerequisiteConstructionResourceAmount(stage);
-
-		if (resourceAmount > 0D) {
-			Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
-			Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
-
-			double totalItems = 0D;
-
-			Iterator<Integer> i = resources.keySet().iterator();
-			while (i.hasNext()) {
-				totalItems += resources.get(i.next());
-			}
-
-			Iterator<Integer> j = parts.keySet().iterator();
-			while (j.hasNext()) {
-				totalItems += parts.get(j.next());
-			}
-
-			if (totalItems > 0 ) {
-				double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
-				demand = (1D / totalItems) * totalInputsValue;
-			}
-		}
-
-		return demand;
-	}
-
-	/**
-	 * Gets the total amount of a given resource required to build a stage.
-	 *
-	 * @param resource the resource.
-	 * @param stage    the stage.
-	 * @return total amount (kg) of the resource.
-	 */
-	private double getPrerequisiteConstructionResourceAmount(ConstructionStageInfo stage) {
-
-		int resourceID = getID();
-
-		// Add resource amount needed for stage.
-		double result = stage.getResources().getOrDefault(resourceID, 0D);
-
-		// Add resource amount needed for first prestage, if any.
-		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
-		if ((preStage1 != null) && preStage1.isConstructable()) {
-			result += preStage1.getResources().getOrDefault(resourceID, 0D);
-
-			// Add resource amount needed for second prestage, if any.
-			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
-			if ((preStage2 != null) && preStage2.isConstructable()) {
-				result += preStage2.getResources().getOrDefault(resourceID, 0D);
-			}
-		}
-
-		return result;
-	}
-
 
 	/**
 	 * Gets the farming demand for the resource.

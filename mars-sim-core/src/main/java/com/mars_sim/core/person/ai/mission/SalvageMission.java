@@ -397,7 +397,6 @@ public class SalvageMission extends AbstractMission
 
 		if (constructionStage.isComplete()) {
 			setPhaseEnded(true);
-			settlement.getConstructionManager().getConstructionValues().clearCache();
 
 			// Remove salvaged construction stage from site.
 			constructionSite.removeSalvagedStage(constructionStage);

@@ -74,7 +74,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
     public void testIsStageComplete() {
         var s = buildSettlement();
 
-        var site = new ConstructionSite(s, WORKSHOP, true, foundationInfo, PLACE);
+        var site = new ConstructionSite(s, "Site1", WORKSHOP, true, foundationInfo, PLACE);
 
         assertEquals("Inital stage", foundationInfo, site.getCurrentConstructionStage().getInfo());
 
@@ -98,7 +98,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
     public void testIsSiteComplete() {
         var s = buildSettlement();
 
-        var site = new ConstructionSite(s, WORKSHOP, true, foundationInfo, PLACE);
+        var site = new ConstructionSite(s, "Site2", WORKSHOP, true, foundationInfo, PLACE);
 
         assertEquals("Inital stage", foundationInfo, site.getCurrentConstructionStage().getInfo());
         site.getCurrentConstructionStage().addWorkTime(10000D);
@@ -126,7 +126,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
     public void testSetWorkOnSite() {
         var s = buildSettlement();
 
-        var site = new ConstructionSite(s, WORKSHOP, true, foundationInfo, PLACE);
+        var site = new ConstructionSite(s, "Site3", WORKSHOP, true, foundationInfo, PLACE);
 
         site.setWorkOnSite(true);
         assertTrue(site.isWorkOnSite());

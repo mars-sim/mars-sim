@@ -111,7 +111,7 @@ public class ConstructionMission extends AbstractMission
 			person.getMind().setMission(this);
 		}
 
-		var site = startingMember.getAssociatedSettlement().getConstructionManager().getNextSite(constructionSkill);
+		var site = startingMember.getAssociatedSettlement().getConstructionManager().getNextConstructionSite(constructionSkill);
 		if (site == null) {
 			endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 			return;

@@ -51,7 +51,6 @@ public class ConstructionManager implements Serializable {
 	private Settlement settlement;
 	/** The settlement's construction sites. */
 	private List<ConstructionSite> sites;
-	private ConstructionValues values;
 	private SalvageValues salvageValues;
 	private History<String> constructedBuildingLog;
 
@@ -65,16 +64,10 @@ public class ConstructionManager implements Serializable {
 	public ConstructionManager(Settlement settlement) {
 		this.settlement = settlement;
 		sites = new ArrayList<>();
-		values = new ConstructionValues(settlement);
 		salvageValues = new SalvageValues(settlement);
 		constructedBuildingLog = new History<>();
 	}
 
-	public int getUniqueID() {
-		uniqueId++;
-		return uniqueId;
-	}
-	
 	/**
 	 * Gets all construction sites at the settlement.
 	 * 
@@ -120,8 +113,9 @@ public class ConstructionManager implements Serializable {
 	 */
 	private ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
 						boolean isConstruction, ConstructionStageInfo initStage) {
-		
-		ConstructionSite site = new ConstructionSite(settlement, buildingType, isConstruction, initStage, placement);
+		String siteName = String.format("Site %s-%03d", settlement.getSettlementCode(), uniqueId++);
+
+		ConstructionSite site = new ConstructionSite(settlement, siteName, buildingType, isConstruction, initStage, placement);
 		sites.add(site);
     	unitManager.addUnit(site);
 
@@ -148,15 +142,6 @@ public class ConstructionManager implements Serializable {
 			sites.remove(site);
 		}
 		else throw new IllegalStateException("Construction site doesn't exist.");
-	}
-
-	/**
-	 * Gets the construction values.
-	 * 
-	 * @return construction values.
-	 */
-	public ConstructionValues getConstructionValues() {
-		return values;
 	}
 
 	/**
@@ -230,7 +215,7 @@ public class ConstructionManager implements Serializable {
 	 * 
 	 * @param skill
 	 */
-	public ConstructionSite getNextSite(int skill) {
+	public ConstructionSite getNextConstructionSite(int skill) {
 
 		var potentials = sites.stream()
 					.filter(s -> s.isConstruction() && !s.isWorkOnSite())
@@ -309,8 +294,6 @@ public class ConstructionManager implements Serializable {
 		settlement = null;
 		sites.clear();
 		sites = null;
-		values.destroy();
-		values = null;
 		salvageValues.destroy();
 		salvageValues = null;
 		constructedBuildingLog = null;

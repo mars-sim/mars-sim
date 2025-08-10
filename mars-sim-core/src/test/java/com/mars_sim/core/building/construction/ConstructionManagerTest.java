@@ -24,7 +24,7 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
      */
     public void testGetConstructionSites() {
         var manager = buildManager();
-        ConstructionSite site = manager.getNextSite(1);
+        ConstructionSite site = manager.getNextConstructionSite(1);
         assertEquals(1, manager.getConstructionSites().size());
         assertEquals(site, manager.getConstructionSites().get(0));
 
@@ -37,7 +37,7 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
      */
     public void testGetConstructionSitesNeedingMission() {
         var manager = buildManager();
-        ConstructionSite site2 = manager.getNextSite(1);
+        ConstructionSite site2 = manager.getNextConstructionSite(1);
         assertEquals(1, manager.getConstructionSitesNeedingMission(true).size());
         site2.setWorkOnSite(true);
         assertEquals(0, manager.getConstructionSitesNeedingMission(true).size());
@@ -49,17 +49,7 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
      */
     public void testCreateNewConstructionSite() {
         var manager = buildManager();
-        ConstructionSite site = manager.getNextSite(1);
+        ConstructionSite site = manager.getNextConstructionSite(1);
         assertNotNull(site);
-    }
-
-    /*
-     * Test method for 'com.mars_sim.simulation.structure.construction.
-     * ConstructionManager.getConstructionValues()'
-     */
-    public void testGetConstructionValues() {
-        var manager = buildManager();
-        ConstructionValues values = manager.getConstructionValues();
-        assertNotNull(values);
     }
 }

@@ -7,15 +7,9 @@
 package com.mars_sim.core.goods;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionUtil;
-import com.mars_sim.core.building.construction.ConstructionValues;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
@@ -408,8 +402,6 @@ public class PartGood extends Good {
 			getPartManufacturingDemand(owner, settlement, part)
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
-			// Add construction demand.
-			+ getPartConstructionDemand(settlement)
 			// Add construction site demand.
 			+ getPartConstructionSiteDemand(settlement)
 			// Calculate individual EVA suit-related part demand.
@@ -595,19 +587,11 @@ public class PartGood extends Good {
 	 */
 	private double getPartConstructionSiteDemand(Settlement settlement) {
 		double base = 0D;
-        int id = getID();
 
-		// Add demand for part required as remaining construction material on
-		// construction sites.
-		Iterator<ConstructionSite> i = settlement.getConstructionManager().getConstructionSites().iterator();
-		while (i.hasNext()) {
-			ConstructionSite site = i.next();
-			if (site.hasUnfinishedStage() && site.isConstruction()) {
-				ConstructionStage stage = site.getCurrentConstructionStage();
-				if (stage.getMissingParts().containsKey(id)) {
-					int requiredNum = stage.getMissingParts().get(id);
-					base += requiredNum * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
-				}
+		for(var s : settlement.getConstructionManager().getConstructionSites()) {
+			if (s.isConstruction()) {
+				var stage = s.getCurrentConstructionStage();
+				base += stage.getMissingParts().getOrDefault(getID(), 0) * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
 			}
 		}
 
@@ -742,110 +726,6 @@ public class PartGood extends Good {
 		}
 
 		return demand;
-	}
-
-    /**
-	 * Gets the construction demand for a part.
-	 *
-	 * @param part the part.
-	 * @return demand (# of parts).
-	 */
-	private double getPartConstructionDemand(Settlement settlement) {
-		double base = 0D;
-
-		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
-		int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
-		Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues(bestConstructionSkill);
-		Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
-		while (i.hasNext()) {
-			ConstructionStageInfo stage = i.next();
-			double stageValue = stageValues.get(stage);
-			if (stageValue > 0D && ConstructionStageInfo.Stage.BUILDING.equals(stage.getType())
-					&& isLocallyConstructable(settlement, stage)) {
-				double constructionStageDemand = getPartConstructionStageDemand(getID(), stage, stageValue);
-				if (constructionStageDemand > 0D) {
-					base += constructionStageDemand;
-				}
-			}
-		}
-
-		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
-	}
-
-	/**
-	 * Gets the demand for a part as an input for a particular building construction
-	 * stage.
-	 *
-	 * @param part       the part.
-	 * @param stage      the building construction stage.
-	 * @param stageValue the building construction stage value (VP).
-	 * @return demand (# of parts).
-	 */
-	private double getPartConstructionStageDemand(int part, ConstructionStageInfo stage, double stageValue) {
-		double demand = 0D;
-
-		int partNumber = getPrerequisiteConstructionPartNum(part, stage);
-
-		if (partNumber > 0) {
-			Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
-			Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
-
-			double totalNumber = 0D;
-
-			Iterator<Integer> i = resources.keySet().iterator();
-			while (i.hasNext())
-				totalNumber += resources.get(i.next());
-
-			Iterator<Integer> j = parts.keySet().iterator();
-			while (j.hasNext())
-				totalNumber += parts.get(j.next());
-
-			if (totalNumber > 0) {
-				double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
-				demand = totalInputsValue * (partNumber / totalNumber);
-			}
-		}
-
-		return demand;
-	}
-
-		/**
-	 * Gets the total number of a given part required to build a stage including all
-	 * pre-stages.
-	 *
-	 * @param part  the part.
-	 * @param stage the stage.
-	 * @return total number of parts required.
-	 */
-	private static int getPrerequisiteConstructionPartNum(Integer part, ConstructionStageInfo stage) {
-
-		int result = 0;
-
-		// Add all parts from stage.
-		Map<Integer, Integer> stageParts = stage.getParts();
-		if (stageParts.containsKey(part)) {
-			result += stageParts.get(part);
-		}
-
-		// Add all parts from first prestage, if any.
-		ConstructionStageInfo preStage1 = stage.getPrerequisiteStage();
-		if ((preStage1 != null) && preStage1.isConstructable()) {
-			Map<Integer, Integer> preStage1Parts = preStage1.getParts();
-			if (preStage1Parts.containsKey(part)) {
-				result += preStage1Parts.get(part);
-			}
-
-			// Add all parts from second prestage, if any.
-			ConstructionStageInfo preStage2 = preStage1.getPrerequisiteStage();
-			if ((preStage2 != null) && preStage2.isConstructable()) {
-				Map<Integer, Integer> preStage2Parts = preStage2.getParts();
-				if (preStage2Parts.containsKey(part)) {
-					result += preStage2Parts.get(part);
-				}
-			}
-		}
-
-		return result;
 	}
 
 	/**
