@@ -26,7 +26,7 @@ class RobotDisplayInfoBean extends AbstractUnitDisplayInfo {
 	 * Constructor.
 	 */
 	RobotDisplayInfoBean() {
-		buttonIcon = ImageLoader.getIconByName("robot");
+		buttonIcon = ImageLoader.getIconByName("svg/robot");
 	}
 
 	/**

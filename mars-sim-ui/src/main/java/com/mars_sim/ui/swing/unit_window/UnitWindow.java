@@ -48,7 +48,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 
 	public static final int WIDTH = 550;
 	public static final int HEIGHT = 620;
-	public static final int STATUS_HEIGHT = 60;
+	public static final int STATUS_HEIGHT = 55;
 	
 	private String unitTitle;
 	
@@ -81,7 +81,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 		this.unit = unit;
 		this.unitTitle = title;
 		
-
 		setFrameIcon(MainWindow.getLanderIcon());
 
 		Dimension windowSize;

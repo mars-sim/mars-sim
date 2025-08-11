@@ -33,8 +33,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;

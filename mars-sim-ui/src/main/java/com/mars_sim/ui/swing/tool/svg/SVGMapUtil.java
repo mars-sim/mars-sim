@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.person.GenderType;
-
 /**
  * Static utility class for mapping settlement map structures, such
  * as buildings and construction sites, with their SVG image views
