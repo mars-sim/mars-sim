@@ -65,7 +65,7 @@ public class Makerbot extends RobotJob {
 			processes += workshop.getMaxProcesses();
 		}
 
-		return processes/PROCESSES_PER_BOT;
+		return processes / PROCESSES_PER_BOT;
 	}
 
 }

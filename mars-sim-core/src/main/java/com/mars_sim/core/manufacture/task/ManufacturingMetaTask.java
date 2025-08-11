@@ -75,10 +75,8 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
 		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST,
 						JobType.ENGINEER, JobType.PHYSICIST, JobType.TECHNICIAN);
                         
-        addPreferredRobot(RobotType.MAKERBOT);
-        addPreferredRobot(RobotType.REPAIRBOT);
-        addPreferredRobot(RobotType.MEDICBOT);
-        addPreferredRobot(RobotType.CONSTRUCTIONBOT);
+        addPreferredRobot(RobotType.MAKERBOT, RobotType.REPAIRBOT, 
+        				RobotType.DELIVERYBOT, RobotType.CONSTRUCTIONBOT);
     }
 
     @Override

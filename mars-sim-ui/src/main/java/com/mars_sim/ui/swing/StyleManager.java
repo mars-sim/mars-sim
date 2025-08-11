@@ -31,9 +31,13 @@ import javax.swing.plaf.ColorUIResource;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.FlatGradiantoDarkFuchsiaIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTLightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialOceanicIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMonokaiProIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMoonlightIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTNightOwlIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedLightIJTheme;
@@ -132,12 +136,17 @@ public class StyleManager {
     public static final String NIGHT_OWL = "Night Owl";
     public static final String MONOKAI_DARK = "Monokai Dark";
     public static final String SOLARIZED_DARK = "Solarized Dark";
+    public static final String GRADIANTO_DARK_FUCHSIA = "Gradianto Dark Fuchsia";
+    public static final String MATERIAL_PALENIGHT = "Material Palenight";
+    public static final String MOONLIGHT = "Moonlight";
+    public static final String ARC_DARK = "Arc Dark";
     
     private static final String [] LAF_LIGHT_STYLES = {
     		SYSTEM, LIGHT_RED, LIGHT_GREEN, LIGHT_BLUE, LIGHT_ORANGE, LIGHT_OWL, SOLARIZED_LIGHT};
     
     private static final String [] LAF_DARK_STYLES = {
-    		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK};
+    		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK, 
+    		GRADIANTO_DARK_FUCHSIA, MATERIAL_PALENIGHT, MOONLIGHT, ARC_DARK};
     
  // Create a new static string array that combines the elements of array1 and array2
     public static String[] LAF_STYLES = new String[LAF_LIGHT_STYLES.length + LAF_DARK_STYLES.length];
@@ -320,6 +329,30 @@ public class StyleManager {
                 	isLightTheme = false;
                 	lafClass = FlatMTSolarizedDarkIJTheme.class.getName();
                 	FlatMTSolarizedDarkIJTheme.setup();
+                    break;
+                    
+                case GRADIANTO_DARK_FUCHSIA:
+                	isLightTheme = false;
+                	lafClass = FlatGradiantoDarkFuchsiaIJTheme.class.getName();
+                	FlatGradiantoDarkFuchsiaIJTheme.setup();
+                    break;
+                    
+                case MATERIAL_PALENIGHT: 
+                	isLightTheme = false;
+                	lafClass = FlatMTMaterialOceanicIJTheme.class.getName();
+                	FlatMTMaterialOceanicIJTheme.setup();
+                    break;
+                    
+                case MOONLIGHT: 
+                	isLightTheme = false;
+                	lafClass = FlatMTMoonlightIJTheme.class.getName();
+                	FlatMTMoonlightIJTheme.setup();
+                    break;
+                    
+                case ARC_DARK:
+                	isLightTheme = false;
+                	lafClass = FlatMTAtomOneDarkIJTheme.class.getName();
+                	FlatMTAtomOneDarkIJTheme.setup();
                     break;
                     
                 case SYSTEM:

@@ -8,8 +8,7 @@ import com.mars_sim.core.tool.RandomUtil;
 
 public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
 	
-    double factor = ManufacturingMetaTask.DEMAND_FACTOR;
-    
+    private double factor = ManufacturingMetaTask.DEMAND_FACTOR;
     
     public void testNewManuProcesses() {
         var s = buildSettlement("Workshop", true);

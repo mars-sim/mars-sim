@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.person.GenderType;
+
 /**
  * Static utility class for mapping settlement map structures, such
  * as buildings and construction sites, with their SVG image views
@@ -134,6 +136,19 @@ public final class SVGMapUtil {
         return getSVGGraphicsNode("construction_stage.pattern", constructionSiteStageName, true);
     }
 
+
+    /**
+     * Gets a SVG node for a person.
+     * 
+     * @param type the unit's type.
+     * @return SVG node or null if none found.
+     */
+    public static GraphicsNode getUnitSVG(String type) {
+
+        return getSVGGraphicsNode("unit", type, true);
+    }
+
+    
     /**
      * Gets a SVG node for a vehicle.
      * 

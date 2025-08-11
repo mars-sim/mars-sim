@@ -1267,6 +1267,11 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return spot;
 	}
 	
+	@Override
+	public String getStringType() {
+		return TYPE.toLowerCase();
+	}
+	
 	/**
 	 * Compares if an object is the same as this robot
 	 *

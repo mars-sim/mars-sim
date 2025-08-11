@@ -1944,6 +1944,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return research;
 	}
 	
+	
+	@Override
+	public String getStringType() {
+		return gender.getName().toLowerCase();
+	}
+	
 	/**
 	 * Reinitialize references after loading from a saved sim.
 	 */

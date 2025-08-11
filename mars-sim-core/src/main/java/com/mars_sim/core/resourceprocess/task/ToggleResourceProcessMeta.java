@@ -140,7 +140,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 
 		addPreferredRobot(RobotType.REPAIRBOT, RobotType.CONSTRUCTIONBOT, 
-				RobotType.MAKERBOT, RobotType.DELIVERYBOT);
+				RobotType.MAKERBOT, RobotType.MEDICBOT, RobotType.DELIVERYBOT);
 	}
 
 	/**

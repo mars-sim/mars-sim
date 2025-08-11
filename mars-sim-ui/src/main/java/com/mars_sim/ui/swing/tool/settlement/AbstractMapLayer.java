@@ -464,6 +464,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
      * @param svg the SVG graphics node.
      * @param patternSVG the pattern SVG graphics node (null if no pattern).
 	 * @param selectedColor the color to draw as selected
+	 * @param viewpoint MapViewPoint
      */
     protected void drawStructure(LocalBoundedObject placement, GraphicsNode svg,
 								GraphicsNode patternSVG, Color selectedColor,
@@ -514,11 +515,11 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         	newTransform1.scale(scalingWidth, scalingLength);
             g2d.transform(newTransform1);
             
-			// Draw the dashed border over the selected building
 			g2d.setPaint(selectedColor);
 
 			// Save original stroke
         	Stroke oldStroke = g2d.getStroke();
+			// Draw the dashed border over the selected 
 			g2d.setStroke(THICK_DASH);                                           
 			g2d.draw(bounds);
 			
