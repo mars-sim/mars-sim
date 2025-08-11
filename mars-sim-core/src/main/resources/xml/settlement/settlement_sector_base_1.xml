@@ -330,14 +330,14 @@
         </connection-list>
     </building>
 
-    <building id="BIOH1305" type="Bioreactor H1" xloc="-36.0" yloc="18.0" facing="0.0">
+    <building id="BIOH1305" type="Bioreactor-F" xloc="-36.0" yloc="18.0" facing="0.0">
         <connection-list>
             <connection id="MCB301" hatch-facing="west" />
             <connection id="BIOH1306" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="BIOH1306" type="Bioreactor H2" xloc="-45.0" yloc="18.0" facing="0.0">
+    <building id="BIOH1306" type="Bioreactor-E" xloc="-45.0" yloc="18.0" facing="0.0">
         <connection-list>
             <connection id="BIOH1305" hatch-facing="west" />
             <connection id="MCB302" hatch-facing="east" />
@@ -423,14 +423,14 @@
         </connection-list>
     </building>
     
-    <building id="BIOM1405" type="Bioreactor M1" xloc="-36.0" yloc="24.0" facing="0.0">
+    <building id="BIOM1405" type="Bioreactor-M" xloc="-36.0" yloc="24.0" facing="0.0">
         <connection-list>
             <connection id="MCB401" hatch-facing="west" />
             <connection id="BIOM1406" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="BIOM1406" type="Bioreactor G1" xloc="-45.0" yloc="24.0" facing="0.0">
+    <building id="BIOM1406" type="Bioreactor-G" xloc="-45.0" yloc="24.0" facing="0.0">
         <connection-list>
             <connection id="BIOM1405" hatch-facing="west" />
             <connection id="MCB402" hatch-facing="east" />

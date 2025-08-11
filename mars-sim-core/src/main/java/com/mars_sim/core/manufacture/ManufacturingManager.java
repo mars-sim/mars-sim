@@ -129,9 +129,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     private static final int REFRESH_TIME = 10;
-    private static final Integer DEFAULT_VALUE = 100;
-    private static final Integer DEFAULT_ADD = 1;
-    private static final Integer DEFAULT_QUEUE_SIZE = 10;
+    private static final Integer DEFAULT_VALUE = 30;
+    private static final Integer DEFAULT_LIMIT = 200;
+    private static final Integer DEFAULT_QUEUE_SIZE = 200;
     public static final String USER_BONUS = "user-bonus";
 
     private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
@@ -158,7 +158,7 @@ public class ManufacturingManager implements Serializable {
         // Add the controlling preferences 
         var pMgr = owner.getPreferences();
         pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_ADD);
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_LIMIT);
         pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
 
     }
@@ -351,7 +351,7 @@ public class ManufacturingManager implements Serializable {
         int maxProcesses = Math.min(getQueueCapacity(),
                                     pMgr.getIntValue(ManufacturingParameters.INSTANCE,
                                                      ManufacturingParameters.NEW_MANU_LIMIT,
-                                                     DEFAULT_ADD));
+                                                     DEFAULT_LIMIT));
         if (maxProcesses > 0) {
 
             var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);

@@ -716,7 +716,7 @@ public class MasterClock implements Serializable {
 		float ratio = 0;
 		
 		// Get the ratio of sleep time to execution time [dimension-less]
-		float d = sleepTime / 1_000 / (1 + executionTime);
+		float d = sleepTime / (1 + executionTime);
 	
 		if (d > 3 && pulseDeviation > -2) {
 			// If sleepTime is +ve, then there's surplus of CPU, decrease leadPulse

@@ -33,6 +33,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -166,9 +168,9 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 		var pMgr = target.getPreferences();
 		var parameterPanel = new AttributePanel();
 		parameterPanel.setBorder(StyleManager.createLabelBorder("Controls"));
-		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_VALUE, 500);
-		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_LIMIT, 10);
-		addParameter(parameterPanel, pMgr, ManufacturingParameters.MAX_QUEUE_SIZE, 20);
+		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_VALUE, 30);
+		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_LIMIT, 200);
+		addParameter(parameterPanel, pMgr, ManufacturingParameters.MAX_QUEUE_SIZE, 200);
 		interactionPanel.add(parameterPanel);
 
 		// Row selection items
@@ -213,7 +215,13 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 		queueTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		queueTable.getSelectionModel().addListSelectionListener(this::queueSelectionChanged);
 
-		queueTable.setAutoCreateRowSorter(true);
+		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
+//		queueTable.setAutoCreateRowSorter(true);
+		
+//		TableRowSorter<TableModel> sorter = new TableRowSorter<>(queueTable.getModel());
+//		sorter.setSortsOnUpdates(true);
+//		queueTable.setRowSorter(sorter);
+		
 		scrollPane.setViewportView(queueTable);
 
 		changeProcessOptions(); // Trigger to populate 2nd drop down

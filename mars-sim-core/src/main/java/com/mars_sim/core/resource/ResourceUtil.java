@@ -375,7 +375,11 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(int id) {
-		return amountResourceById.get(id);
+		AmountResource ar = amountResourceById.get(id);
+		if (ar == null) {
+			throw new IllegalArgumentException("Resource '" + id + "' not found.");
+		}
+		return ar;
 	}
 
 	/**
@@ -386,7 +390,11 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(String name) {
-		return amountResourceByName.get(name.toLowerCase());
+		AmountResource ar = amountResourceByName.get(name.toLowerCase());
+		if (ar == null) {
+			throw new IllegalArgumentException("Resource '" + name + "' not found.");
+		}
+		return ar;
 	}
 
 	/**
@@ -397,11 +405,7 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static final int findIDbyAmountResourceName(String name) {
-		AmountResource ar = findAmountResource(name);
-		if (ar == null) {
-			throw new IllegalArgumentException("Resource '" + name + "' not found.");
-		}
-		return ar.getID();
+		return findAmountResource(name).getID();
 	}
 
 	/**
@@ -447,7 +451,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isDerivedResource(int resource) {
 		return switch (resource) {
-			case GLUCOSE_ID, BRINE_WATER_ID, LEAVES_ID -> true;
+			case GLUCOSE_ID, BRINE_WATER_ID, LEAVES_ID, CROP_WASTE_ID -> true;
 			default -> false;
 		};
 	}

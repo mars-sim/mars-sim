@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
@@ -297,7 +299,15 @@ public class MalfunctionTabPanel extends TabPanel {
 		};
 
 		mTable.setCellSelectionEnabled(false);
-		mTable.setAutoCreateRowSorter(true);
+		
+		// Allow ordering
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+		sorter.setSortsOnUpdates(true);
+		mTable.setRowSorter(sorter);
+		
+		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
+//		mTable.setAutoCreateRowSorter(true);
+		
 		scrollPanel.setViewportView(mTable);
 
         TableColumnModel columnModel = mTable.getColumnModel();

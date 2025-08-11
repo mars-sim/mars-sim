@@ -23,6 +23,35 @@
 
 <process-list>
 
+	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="1.0" >
+		<description>
+		The direct conversion of carbon dioxide to ethylene using cyanobacteria involves an engineered 
+		photosynthetic process. While natural photosynthesis produces glucose and oxygen from carbon 
+		dioxide and water, the engineered system described in research allows cyanobacteria to use 
+		electricity and light to convert carbon dioxide into ethylene (C₂H₄) or acetate.
+		
+ 		The specific chemical reaction for ethylene production is not a standard natural photosynthetic
+ 		equation but results from a modified pathway.
+ 		
+	    2CO2 + 4H+ + 2e- + light energy -> C2H4 + 2O2 
+	     g/mol :                 88 + 4 -> 2*12+ 4 + 2 * 32 
+	                                         28  + 64
+	    
+	    This reaction is driven by an artificial system that replaces photosystem II, allowing electrons 
+	    from an external source (electricity) and light to power the reduction of CO₂ to ethylene via 
+	    photosystem I in engineered cyanobacteria.
+	    
+ 		This approach bypasses the inefficiencies of natural photosynthesis, such as overlapping light 
+ 		absorption spectra and competition between oxygen and carbon dioxide for the carbon-fixing enzyme.
+	     
+		</description>						
+		<input resource="carbon dioxide" rate="88.0" ambient="true" />
+		<input resource="hydrogen" rate="4.0" />
+		
+		<output resource="ethylene" rate="28.0" />
+		<output resource="oxygen" rate="64.0" />
+	</process>
+	
 	<process name="Glucose Fermentation by Cyanobacteria" power-required="0.0" >
 		<description>
          This reaction is not catalysed by single micro-organisms but by syntrophic 
@@ -48,12 +77,16 @@
 	<process name="Photo Fermentation by Chlorella" power-required="0.0" >
 		<description>
                   
+		 The formula given is a general representation of photofermentation, 
+		 commonly associated with certain photosynthetic bacteria or microalgae,
+		 potentially Chlorella vulgaris.          
+				                    
 	     C6H12O6 + 6H2O -> 6CO2 + 12H2
 	     180 g/mol,  6*18 g/mol ->  6*44 g/mol + 12*2 g/mol
 	     
 		</description>						
 		<input resource="Glucose" rate="180.0" />
-		<input resource="Hydrogen" rate="108.0" />	
+		<input resource="water" rate="108.0" />	
 
 		<output resource="Carbon dioxide" rate="264.0" />
 		<output resource="Hydrogen" rate="24.0" />
@@ -101,7 +134,7 @@
 		 cellulose into its component glucose molecules.
 
 		</description>						
-		<input resource="Crop Waste" rate="162.0" />
+		<input resource="Crop waste" rate="162.0" />
 		<input resource="Water" rate="18.0" />
 		
 		<output resource="Glucose" rate="180.0" />
@@ -1077,9 +1110,9 @@
 			and put under pressure in the presence of a catalyst. 
 			Assuming 10% loss during production.
 		</description>
-		<input resource="ethylene" rate="5.0" />
+		<input resource="ethylene" rate="50" />
 		
-		<output resource="polyethylene" rate="4.5" />
+		<output resource="polyethylene" rate="45" />
 	</process>
 
 	<process name="Produce Styrene from Ethylene" power-required=".05" >
@@ -1100,13 +1133,13 @@
 	</process>
 
 	<process name="Produce Polystyrene from Styrene" power-required=".01" >
-		<input resource="styrene" rate="5" />
-		<output resource="polystyrene" rate="4.5" />
+		<input resource="styrene" rate="50" />
+		<output resource="polystyrene" rate="45" />
 	</process>
 
-	<process name="Produce Polypropylene from Prophylene" power-required=".01" >
-		<input resource="Prophylene" rate="5" />
-		<output resource="Polypropylene" rate="4.5" />
+	<process name="Produce Polypropylene from Propylene" power-required=".01" >
+		<input resource="Propylene" rate="50" />
+		<output resource="Polypropylene" rate="45" />
 	</process>
 	
 	<process name="Methanol-to-olefin (MTO) process" power-required=".5" >
@@ -1122,16 +1155,16 @@
 			CH3OH → 2C3H6 + 6H2O 
 			(need to balance it)
 						
-			One MTO base case mass distribution produces 39% prophylene, 41% ethylene,
+			One MTO base case mass distribution produces 39% propylene, 41% ethylene,
 			14% ethane, 5% tailgas  
 			
 		</description>	
-		<input resource="methanol" rate="10" />
+		<input resource="methanol" rate="100" />
 		
-		<output resource="ethane" rate="1.4" />
-		<output resource="water" rate="0.5" />
-		<output resource="ethylene" rate="4.1" />
-		<output resource="prophylene" rate="3.9" />
+		<output resource="ethane" rate="14" />
+		<output resource="water" rate="5" />
+		<output resource="ethylene" rate="42" />
+		<output resource="propylene" rate="39" />
 	</process> <!-- "Methanol-to-olefin (MTO) process" -->
 
 
@@ -1263,11 +1296,15 @@
 		<output resource="carbon" rate="10" />					
 	</process>
 
-	<process name="Soil Generation" power-required=".1" >
-		<input resource="carbon" rate="2" />	
-		<input resource="crop waste" rate="2" />
-		<input resource="compost" rate="2" />
-		<output resource="soil" rate="6" />					
+	<process name="Soil Generation from Compost" power-required=".1" >
+		<input resource="compost" rate="100" />
+		<output resource="soil" rate="100" />					
 	</process>
+	
+	<process name="Soil Generation from Crop Waste" power-required=".1" >	
+		<input resource="crop waste" rate="100" />
+		<output resource="soil" rate="100" />					
+	</process>
+	
 
 </process-list>
