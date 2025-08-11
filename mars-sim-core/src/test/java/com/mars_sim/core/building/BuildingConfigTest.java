@@ -70,7 +70,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * This test is very tied to the building spec of LANDER_HAB
+     * This test is very tied to the building spec of the inflatable greenhouse
      */
     public void testInflatableGreenhouse() {
 	    var simConfig = SimulationConfig.loadConfig();
@@ -91,7 +91,8 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
                                          FunctionType.POWER_GENERATION, FunctionType.POWER_STORAGE,
                                          FunctionType.RECREATION, FunctionType.RESEARCH,
                                          FunctionType.RESOURCE_PROCESSING, FunctionType.ROBOTIC_STATION,
-                                         FunctionType.STORAGE, FunctionType.THERMAL_GENERATION),
+                                         FunctionType.STORAGE, FunctionType.THERMAL_GENERATION, 
+                                         FunctionType.WASTE_PROCESSING),
                                         found.getFunctionSupported());
 
         

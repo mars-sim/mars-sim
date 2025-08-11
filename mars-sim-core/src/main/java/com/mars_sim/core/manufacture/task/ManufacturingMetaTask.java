@@ -33,7 +33,7 @@ import com.mars_sim.core.structure.Settlement;
 public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTask {
 	
 	private static final int BASE_SCORE = 200;
-	private static final int DEMAND_FACTOR = 20;
+	public static final int DEMAND_FACTOR = 20;
 	
     private static class ManufactureJob extends SettlementTask {
 
