@@ -178,9 +178,8 @@ public class LocationTag implements Serializable {
 		if (unit instanceof Vehicle v && v.getSettlement() != null)
 			return v.getSettlement();
 		
-		Coordinates c = unit.getCoordinates();
 
-		return CollectionUtils.findSettlement(c);	
+		return CollectionUtils.findSettlement(unit.getCoordinates());	
 	}
 
 	/**

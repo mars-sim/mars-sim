@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
@@ -60,16 +58,7 @@ public class LoadVehicleEVA extends EVAOperation {
 
 		setMinimumSunlight(LightLevel.NONE);
 
-		// Check fitness - only if it's not in the state of emergency
-		boolean isEmergency = false;
-		Settlement s = person.getSettlement();
-		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
-		}
-		else {
-			isEmergency = s.getRationing().isAtEmergency();
-		}
-		if (!isEmergency && person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 			return;
 		}

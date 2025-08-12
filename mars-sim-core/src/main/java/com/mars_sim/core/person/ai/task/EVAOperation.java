@@ -413,19 +413,9 @@ public abstract class EVAOperation extends Task {
 	 * 
 	 * @return true if EVA operation should end
 	 */
-	protected boolean shouldEndEVAOperation() {
+	public static boolean shouldEndEVAOperation(Person person) {
 
 		boolean result = false;
-
-		// Check end EVA flag.
-		if (endEVARequested)
-			return true;
-
-		// Check for sunlight
-		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-//			May add back for future testing : logger.info(worker, 10_000L, getName() + "': too dark already.");
-			return true;
-		}
 
 		// Check for any EVA problems.
 		if (hasEVASuitProblem(person)) {
@@ -446,6 +436,27 @@ public abstract class EVAOperation extends Task {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Checks if situation requires the EVA operation to end prematurely and the
+	 * person should return to the airlock.
+	 * 
+	 * @return true if EVA operation should end
+	 */
+	protected boolean shouldEndEVAOperation() {
+
+		// Check end EVA flag.
+		if (endEVARequested)
+			return true;
+
+		// Check for sunlight
+		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
+//			May add back for future testing : logger.info(worker, 10_000L, getName() + "': too dark already.");
+			return true;
+		}
+
+		return shouldEndEVAOperation(person);
 	}
 
 	/**
@@ -489,8 +500,7 @@ public abstract class EVAOperation extends Task {
 			return time;
 		}
 		
-		// Check fitness - only if it's not in the state of emergency
-
+		// Check fitness only if it's not in the state of emergency
 		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 			return time;
@@ -617,19 +627,9 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person, int prepTime) {
-		boolean isEmergency = false;
-		// Note: in future, a person may travel to another settlement that's not his home town.
-		//       Not correct calling getAssociatedSettlement() in that use case.
-		Settlement s = person.getSettlement();
-		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
-		}
-		else {
-			isEmergency = s.getRationing().isAtEmergency();
-		}
-		if (isEmergency) {
+		if (isInEmergency(person)) {
 			return false;
-		}	
+		}
 		
         return CookMeal.isMealTime(person.getAssociatedSettlement(), prepTime) 
         		&& person.getPhysicalCondition().isDoubleHungry();
@@ -642,17 +642,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
-		boolean isEmergency = false;
-		// Note: in future, a person may travel to another settlement that's not his home town.
-		//       Not correct calling getAssociatedSettlement() in that use case.
-		Settlement s = person.getSettlement();
-		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
-		}
-		else {
-			isEmergency = s.getRationing().isAtEmergency();
-		}
-		if (isEmergency) {
+		if (isInEmergency(person)) {
 			return false;
 		}	
 		
@@ -710,7 +700,9 @@ public abstract class EVAOperation extends Task {
 		//       Not correct calling getAssociatedSettlement() in that use case.
 		Settlement s = person.getSettlement();
 		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
+			s = CollectionUtils.findSettlement(person.getCoordinates());
+			if (s != null)
+				isEmergency = s.getRationing().isAtEmergency();
 		}
 		else {
 			isEmergency = s.getRationing().isAtEmergency();

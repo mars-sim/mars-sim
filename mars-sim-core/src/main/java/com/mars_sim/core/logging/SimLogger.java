@@ -417,6 +417,17 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method just to log a config message. Message timeout is predefined.
+	 * 
+	 * @param actor
+	 * @param message
+	 */
+	public void config(Entity actor, long timeBetweenLogs, String message) {
+		baseLog(actor, Level.CONFIG, timeBetweenLogs, message, null);
+	}
+
+	
+	/**
 	 * Helper method to log a config message.
 	 * 
 	 * @param timeBetweenLogs

@@ -81,7 +81,7 @@ public class MineSite extends EVAOperation {
 		this.luv = objective.getLUV();
 		operatingLUV = false;
 
-		if (person.isSuperUnfit()) {
+		if (EVAOperation.isSuperUnfit(person)){
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -250,7 +250,7 @@ public class MineSite extends EVAOperation {
 	}
 
 	@Override
-	protected boolean shouldEndEVAOperation() {
+	public boolean shouldEndEVAOperation() {
 		boolean result = super.shouldEndEVAOperation();
 
 		// If operating LUV, check if LUV has malfunction.

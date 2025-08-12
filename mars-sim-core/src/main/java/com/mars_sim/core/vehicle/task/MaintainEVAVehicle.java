@@ -6,14 +6,12 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -54,16 +52,7 @@ public class MaintainEVAVehicle extends EVAOperation {
     public MaintainEVAVehicle(Person person, Vehicle target) {
         super(NAME, person, 100, MAINTAIN_VEHICLE);
 
-		// Check fitness - only if it's not in the state of emergency
-		boolean isEmergency = false;
-		Settlement s = person.getSettlement();
-		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
-		}
-		else {
-			isEmergency = s.getRationing().isAtEmergency();
-		}
-		if (!isEmergency && person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 			return;
 		}

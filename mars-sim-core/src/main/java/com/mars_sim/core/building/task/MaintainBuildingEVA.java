@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.building.task;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -18,7 +17,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -58,16 +56,7 @@ extends EVAOperation {
 	public MaintainBuildingEVA(Person person, Building target) {
 		super(NAME, person, RandomUtil.getRandomDouble(90, 100), MAINTAIN);
 
-		// Check fitness - only if it's not in the state of emergency
-		boolean isEmergency = false;
-		Settlement s = person.getSettlement();
-		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
-		}
-		else {
-			isEmergency = s.getRationing().isAtEmergency();
-		}
-		if (!isEmergency && person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 			return;
 		}

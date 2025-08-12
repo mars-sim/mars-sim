@@ -8,7 +8,6 @@ package com.mars_sim.core.vehicle.task;
 
 import java.util.logging.Level;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
@@ -75,17 +74,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 			endEVA("Vehicle is not ready for ynloading.");
         	return;
 		}
-		
-		// Check fitness only if it's not in the state of emergency
-		boolean isEmergency = false;
-		Settlement s = person.getSettlement();
-		if (s == null) {
-			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
-		}
-		else {
-			isEmergency = s.getRationing().isAtEmergency();
-		}
-		if (!isEmergency && person.isSuperUnfit()) {
+
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 			return;
 		}	
