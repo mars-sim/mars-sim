@@ -49,9 +49,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	/** The average water needed [in kg/sol/m^2) */
 	private static double averageWaterNeeded;
 	/** The average O2 needed [in kg/sol/m^2] */
-	private static double averageOxygenNeeded;
+	private static double averageOxygenReleased;
 	/** The average CO2 needed [in kg/sol/m^2] */
-	private static double averageCarbonDioxideNeeded;
+	private static double averageCO2Consumed;
 	
 	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.findIDbyItemResourceName("mushroom containment kit");
 
@@ -267,9 +267,8 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		double inedibleBiomass = cropSpec.getInedibleBiomass();
 		
-		double totalBiomassPerSol = (edibleBiomass + inedibleBiomass) / totalSols;
-		
-		
+		double totalBiomassPerSol = growingArea * (edibleBiomass + inedibleBiomass) / totalSols;
+			
 		// Note: Based on https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/crop-biomass
 		// Chemically plant biomass mainly has cellulose, hemicellulose, and lignin as the main components
 		// that vary significantly amongst its sources. Plant biomass is made up of the three most important 
@@ -286,12 +285,16 @@ public class Crop implements Comparable<Crop>, Entity {
 		// CO2 : (.44 + .5 * 2) = 1.44
 		
 		// Note that the relative ratio below for each category are arbitrary
-		averageWaterNeeded *= .62 * waterContent * totalBiomassPerSol;
+		averageWaterNeeded = Math.sqrt(averageWaterNeeded/8 + averageWaterNeeded * waterContent * totalBiomassPerSol * .62);
 		
-		averageOxygenNeeded *= totalBiomassPerSol;
+		averageOxygenReleased = Math.sqrt(averageOxygenReleased/8 + averageOxygenReleased * (1 - waterContent) * totalBiomassPerSol);
 		
-		averageCarbonDioxideNeeded *= 1.44 * totalBiomassPerSol;
+		averageCO2Consumed = Math.sqrt(averageCO2Consumed/8 + averageCO2Consumed * (1 - waterContent) * totalBiomassPerSol * 1.44);
 
+		logger.warning(this, 60_000, "H2O: " + averageWaterNeeded
+				+ "  O2: " + averageWaterNeeded
+				+ "  CO2: " + averageCO2Consumed);
+		
 		// Note : maxHarvest is kg
 		maxHarvest = edibleBiomass * growingArea;
 		// Daily harvest quota is based on maturation & harvest phases
@@ -1251,7 +1254,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		// A. During the night when light level is low
 		if (Math.round(watt * 10.0)/10.0 <= 0.1) {
 
-			double o2Required = compositeFactor * averageOxygenNeeded * time * growingArea / 1000;
+			double o2Required = compositeFactor * averageOxygenReleased * time * growingArea / 1000;
 	
 			double o2Available = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
@@ -1274,7 +1277,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			// B. During the day
 
 			// Determine harvest modifier by amount of carbon dioxide available.
-			double cO2Req = compositeFactor * averageCarbonDioxideNeeded * time * growingArea / 1000;
+			double cO2Req = compositeFactor * averageCO2Consumed * time * growingArea / 1000;
 			double cO2Available = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
@@ -1522,8 +1525,8 @@ public class Crop implements Comparable<Crop>, Entity {
 	public static void initializeInstances(CropConfig cropConfig) {
 		// Note that the following 4 general params will be tuned by individual crop in the constructor
 		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
-		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
-		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
+		averageOxygenReleased = cropConfig.getOxygenConsumptionRate();
+		averageCO2Consumed = cropConfig.getCarbonDioxideConsumptionRate();
 		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
 		// Note: conversionFactor is 51.45578648029399
 		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
