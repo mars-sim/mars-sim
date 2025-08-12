@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
@@ -248,7 +249,7 @@ public abstract class EVAOperation extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			if (person.isSuperUnfit()) {
+			if (isSuperUnfit()) {
 				walkBackInsidePhase();
 			}
 			else
@@ -427,7 +428,7 @@ public abstract class EVAOperation extends Task {
 		}
 
 		// Check for any EVA problems.
-		if (hasEVAProblem(person)) {
+		if (hasEVASuitProblem(person)) {
 //			May add back for testing : logger.info(worker, 10_000L, getName() + "': EVA problems.");
 			return true;
 		}
@@ -481,21 +482,26 @@ public abstract class EVAOperation extends Task {
 			endEVA("Task duration ended.");
 			return time;
 		}
+		
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
 			endEVA("Radiation detected.");
 			return time;
 		}
-		// Check fitness
-		if (person.isSuperUnfit()) {
+		
+		// Check fitness - only if it's not in the state of emergency
+
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 			return time;
-		}
+		}	
+
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
 			endEVA("EVA ended prematurely.");
 			return time;
 		}
+		
         // Check time on site
 		if (addTimeOnSite(time)) {
 			endEVA("Time on site expired.");
@@ -548,12 +554,12 @@ public abstract class EVAOperation extends Task {
 	}
 	
 	/**
-	 * Checks if there is an EVA problem for a person.
+	 * Checks if there is an EVA suit problem for a person.
 	 *
 	 * @param person the person.
-	 * @return false if having EVA problem.
+	 * @return false if having EVA suit problem.
 	 */
-	public static boolean hasEVAProblem(Person person) {
+	public static boolean hasEVASuitProblem(Person person) {
 		boolean result = false;
 		EVASuit suit = person.getSuit();
 		if (suit == null) {
@@ -599,17 +605,7 @@ public abstract class EVAOperation extends Task {
 					person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
 			result = true;
 		}
-
-		double perf = person.getPerformanceRating();
-		// Check if person's medical condition is sufficient to continue phase.
-		if (perf < .05) {
-			// Add back to 10% so that the person can walk
-			person.getPhysicalCondition().setPerformanceFactor(0.1);
-			logger.log(person, Level.WARNING, 20_000,
-					person.getTaskDescription() + " ended : low performance.");
-			result = true;
-		}
-
+		
 		return result;
 	}
 
@@ -621,6 +617,20 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person, int prepTime) {
+		boolean isEmergency = false;
+		// Note: in future, a person may travel to another settlement that's not his home town.
+		//       Not correct calling getAssociatedSettlement() in that use case.
+		Settlement s = person.getSettlement();
+		if (s == null) {
+			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
+		}
+		else {
+			isEmergency = s.getRationing().isAtEmergency();
+		}
+		if (isEmergency) {
+			return false;
+		}	
+		
         return CookMeal.isMealTime(person.getAssociatedSettlement(), prepTime) 
         		&& person.getPhysicalCondition().isDoubleHungry();
     }
@@ -632,6 +642,20 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
+		boolean isEmergency = false;
+		// Note: in future, a person may travel to another settlement that's not his home town.
+		//       Not correct calling getAssociatedSettlement() in that use case.
+		Settlement s = person.getSettlement();
+		if (s == null) {
+			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
+		}
+		else {
+			isEmergency = s.getRationing().isAtEmergency();
+		}
+		if (isEmergency) {
+			return false;
+		}	
+		
         return person.getPhysicalCondition().isDoubleHungry() && person.getPhysicalCondition().isDoubleThirsty()
                 && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().isStressed();
     }
@@ -644,9 +668,64 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isEVAFit(Person person) {
+		if (isInEmergency(person)) {
+			return true;
+		}	
+		
 		return person.getPhysicalCondition().isEVAFit() 
 				|| person.getPhysicalCondition().computeHealthScore() > 80;
 	} 
+	
+	/**
+	 * Checks if the person is physically fit for heavy EVA tasks.
+	 *
+	 * @param person
+	 * @return
+	 */
+	public static boolean isSuperUnfit(Person person) {
+		if (isInEmergency(person)) {
+			return false;
+		}	
+		
+		return person.isSuperUnfit();
+	} 
+	
+	/**
+	 * Checks if the person is physically fit for heavy EVA tasks.
+	 *
+	 * @return
+	 */
+	public boolean isSuperUnfit() {
+		return isSuperUnfit(person);
+	} 
+	
+	/**
+	 * Is the person's settlement of interest in emergency ?
+	 * 
+	 * @return
+	 */
+	static boolean isInEmergency(Person person) {
+		boolean isEmergency = false;
+		// Note: in future, a person may travel to another settlement that's not his home town.
+		//       Not correct calling getAssociatedSettlement() in that use case.
+		Settlement s = person.getSettlement();
+		if (s == null) {
+			isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
+		}
+		else {
+			isEmergency = s.getRationing().isAtEmergency();
+		}
+		return isEmergency;
+	}
+	
+	/**
+	 * Is the person's settlement of interest in emergency ?
+	 * 
+	 * @return
+	 */
+	private boolean isInEmergency() {
+		return isInEmergency(person);
+	}
 	
 	/**
 	 * Checks for accident with EVA suit.

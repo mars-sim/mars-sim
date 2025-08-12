@@ -318,7 +318,7 @@ public class LivingAccommodation extends Function {
 		double portion = 1;
 		
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.getWaterRationLevel();
+		int level = settlement.getRationing().getRationingLevel();
 		if (level != 0)
 			portion = 1.0 / level;
 		
@@ -328,7 +328,7 @@ public class LivingAccommodation extends Function {
 		// generated in vehicles on mission
 		double absenteeFactor = 1; 
 
-		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
+		double usage = washWaterUsage * time / 1_000 * numBed * absenteeFactor;
 		
 		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE / 3D, TOILET_CHANCE * 3D) * portion;
 		

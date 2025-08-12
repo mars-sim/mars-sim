@@ -451,7 +451,7 @@ public class Cooking extends Function {
 
 		// If settlement is rationing water, reduce water usage according to its level
 		var s = building.getSettlement();
-		int level = s.getWaterRationLevel();
+		int level = s.getRationing().getRationingLevel();
 		if (level != 0)
 			waterUsage = waterUsage / 1.5D / level;
 		

@@ -339,6 +339,10 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 
+		if (EVAOperation.isInEmergency(person)) {
+	      	return false;
+		}
+		
 		return !person.isEVAFit();
 	}
 	
@@ -367,6 +371,10 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 
+		if (EVAOperation.isInEmergency(person)) {
+	      	return false;
+		}
+		
 		return !person.isNominallyFit();
 	}
 	

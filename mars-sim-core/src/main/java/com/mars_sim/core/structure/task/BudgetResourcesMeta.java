@@ -119,8 +119,8 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		if (settlement.canReviewWaterRatio()) {
-			int levelDiff = settlement.getWaterRatioDiff();
+		if (settlement.getRationing().canReviewRationing()) {
+			int levelDiff = settlement.getRationing().getLevelDiff();
 			if (levelDiff > 0) {
 				RatingScore score = new RatingScore("water.level", levelDiff * BASE_SCORE);
 				tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.SETTLEMENT_WATER));

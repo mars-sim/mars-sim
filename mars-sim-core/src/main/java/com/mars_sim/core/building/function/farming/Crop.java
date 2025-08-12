@@ -291,9 +291,9 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		averageCO2Consumed = Math.sqrt(averageCO2Consumed/8 + averageCO2Consumed * (1 - waterContent) * totalBiomassPerSol * 1.44);
 
-		logger.warning(this, 60_000, "H2O: " + averageWaterNeeded
-				+ "  O2: " + averageWaterNeeded
-				+ "  CO2: " + averageCO2Consumed);
+		logger.warning(this, 60_000, "H2O: " + Math.round(averageWaterNeeded * 1000.0)/1000.0
+				+ "  O2: " + Math.round(averageWaterNeeded * 1000.0)/1000.0
+				+ "  CO2: " + Math.round(averageCO2Consumed * 1000.0)/1000.0);
 		
 		// Note : maxHarvest is kg
 		maxHarvest = edibleBiomass * growingArea;

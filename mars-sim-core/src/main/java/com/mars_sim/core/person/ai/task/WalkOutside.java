@@ -737,7 +737,7 @@ public class WalkOutside extends Task {
 	 * @return true if an EVA problem.
 	 */
 	public boolean hasEVAProblem(Person person) {
-		return EVAOperation.hasEVAProblem(person);
+		return EVAOperation.hasEVASuitProblem(person);
 	}
 
 	/**

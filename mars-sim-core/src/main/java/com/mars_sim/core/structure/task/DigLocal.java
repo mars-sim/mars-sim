@@ -553,8 +553,13 @@ public abstract class DigLocal extends EVAOperation {
 		// Check if person's medical condition will not allow task.
 		if (person.getPerformanceRating() < .2D)
 			return false;
-
-		return !person.isSuperUnfit();
+		
+		// Check for fitness
+		if (isSuperUnfit(person)) {
+	      	return false;
+		}
+		
+		return true;
 	}
 	
 	/**

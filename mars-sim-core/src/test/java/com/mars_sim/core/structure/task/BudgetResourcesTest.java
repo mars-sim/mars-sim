@@ -17,12 +17,12 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         var s = buildSettlement("Budget", true);
         var p = buildPerson("Accountant", s);
 
-        s.isWaterRatioChanged();
-        s.setReviewWaterRatio(true);
-        assertTrue("Settlement water needs review", s.canReviewWaterRatio());
+        s.getRationing().reviewRationingLevel();
+        s.getRationing().setReviewFlag(true);
+        assertTrue("Settlement water needs review", s.getRationing().canReviewRationing());
         var task = new BudgetResources(p, ReviewGoal.SETTLEMENT_WATER);
         assertFalse("Task is active", task.isDone());
-        assertFalse("Settlement water needs no review", s.canReviewWaterRatio());
+        assertFalse("Settlement water needs no review", s.getRationing().canReviewRationing());
 
         // Continue to complete review
         var ph = task.getPhase();
@@ -101,14 +101,14 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
     }
 
     public void testBudgetResourceMeta() {
-        // Build a Settlemnt needing water review
+        // Build a Settlement needing water review
         var s = buildSettlement("Budget", true);
         buildPerson("Accountant", s); // Need at least 1 person for water demand
 
-        s.isWaterRatioChanged();
-        s.setReviewWaterRatio(true);
+        s.getRationing().reviewRationingLevel();
+        s.getRationing().setReviewFlag(true);
 
-        // Build 2 accomodtiom, one for review and the other now
+        // Build 2 accommodations, one for review and the other now
         var bm = s.getBuildingManager();
         var b = buildAccommodation(bm, LocalPosition.DEFAULT_POSITION, 0D, 0);
         var accom = b.getLivingAccommodation();

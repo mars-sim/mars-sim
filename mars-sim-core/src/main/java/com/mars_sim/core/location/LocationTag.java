@@ -207,8 +207,9 @@ public class LocationTag implements Serializable {
 	 * @return true if it is
 	 */
 	public boolean isInSettlementVicinity() {
-		Coordinates c = unit.getCoordinates();
-
-		return (CollectionUtils.findSettlement(c) != null);
+		if (unit.getSettlement() != null)
+			return false;
+	
+		return (CollectionUtils.findSettlement(unit.getCoordinates()) != null);
 	}
 }

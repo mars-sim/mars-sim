@@ -117,6 +117,9 @@ public class Settlement extends Unit implements Temporal,
 	// Static members
 	private static final int NUM_BACKGROUND_IMAGES = 20;
 
+	private static final int MAX_STOCK_CAP = 1_000_000;
+
+	private static final int INITIAL_FREE_OXYGEN_AMOUNT = 5_000;
 	/**
 	 * Shared preference key for Mission limits
 	 */
@@ -136,7 +139,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int ICE_MAX = 4000;
 	private static final int WATER_MAX = 10_000;
 
-	private static final int MIN_WATER_RESERVE = 800; // per person
+	public static final int MIN_WATER_RESERVE = 800; // per person
 	private static final int MIN_ICE_RESERVE = 800; // per person
 
 	/** The settlement sampling resources. */
@@ -189,13 +192,7 @@ public class Settlement extends Unit implements Temporal,
 	private boolean justLoaded = true;
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
-	/** The flag to see if a water ration review is due. */
-	private boolean waterRatioReviewFlag = false;
-	
-	/** The water ratio of the settlement. The higher the more urgent for water resource. */
-	private int waterRatioCache = 1;
-	/** The new water ratio of the settlement. */
-	private int newWaterRatio = 0;
+
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
@@ -284,6 +281,8 @@ public class Settlement extends Unit implements Temporal,
 	private ScheduledEventManager futureEvents;
 	/** The manufacture manager. */
 	private ManufacturingManager manuManager;
+	/** The Rationing manager. */
+	private Rationing rationing;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType = ObjectiveType.BUILDERS_HAVEN;
@@ -381,6 +380,9 @@ public class Settlement extends Unit implements Temporal,
 
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
+		
+		// Initialize the rationing instance
+		rationing = new Rationing(this);
 	}
 
 	/**
@@ -433,6 +435,9 @@ public class Settlement extends Unit implements Temporal,
 			
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
+		
+		// Initialize the rationing instance
+		rationing = new Rationing(this);
 	}
 
 
@@ -502,14 +507,12 @@ public class Settlement extends Unit implements Temporal,
 		areothermalPotential = surfaceFeatures.getAreothermalPotential(location);
 		
 		logger.config(this, "Areothermal Potential: " + Math.round(areothermalPotential * 100.0)/100.0 + " %.");
-		
-		final double GEN_MAX = 1_000_000;
-		// Create EquipmentInventory instance
-		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
-		final double INITIAL_FREE_OXYGEN = 5_000;
+		// Create EquipmentInventory instance
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
+
 		// Stores limited amount of oxygen in this settlement
-		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN);
+		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
 
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
 		SettlementSupplies supplies = sTemplate.getSupplies();
@@ -889,7 +892,7 @@ public class Settlement extends Unit implements Temporal,
 	
 		if (pulse.isNewHalfSol()) {
 			// Reset the flag for water ratio review
-			setReviewWaterRatio(false);
+			rationing.setReviewFlag(false);
 		}
 
 	
@@ -2269,73 +2272,6 @@ public class Settlement extends Unit implements Temporal,
 		}
 	}
 
-	/** 
-	 * Gets the current water level at the settlement. 
-	 */
-	public int getWaterRationLevel() {
-		return waterRatioCache;
-	}
-	
-	/**
-	 * Returns the difference between the new and old water ration level. 
-	 *
-	 * @return level of water ration.
-	 */
-	public int getWaterRatioDiff() {
-		return newWaterRatio - waterRatioCache;
-	}
-
-	/**
-	 * Sets the water ratio.
-	 */
-	public void setWaterRatio() {
-		waterRatioCache = newWaterRatio;
-	}
-	
-	/**
-	 * Sets the flag for reviewing water ratio.
-	 * 
-	 * @param value
-	 */
-	public void setReviewWaterRatio(boolean value) {
-		waterRatioReviewFlag = value;
-	}
-	
-	/**
-	 * Returns if the water ratio has been reviewed.
-	 * 
-	 * @return
-	 */
-	public boolean canReviewWaterRatio() {
-		return waterRatioReviewFlag;
-	}
-	
-	/**
-	 * Computes the water ratio at the settlement.
-	 *
-	 * @return level of water ration.
-	 */
-	public boolean isWaterRatioChanged() {
-		double storedWater = getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-		int reserveWater = getNumCitizens() * MIN_WATER_RESERVE;
-		// Assuming a 90-day supply of water
-		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
-
-		int newRatio = Math.max(1, (int)((requiredWater + reserveWater) / storedWater));
-		if (newRatio < 1)
-			newRatio = 1;
-		else if (newRatio > 1)
-			logger.info(this, 20_000L, "Calculated Water Ratio: " + newRatio);
-		else if (newRatio > 1000)
-			newRatio = 1000;
-
-		if (newRatio > 500)
-			logger.severe(this, 20_000L, "Unsafe Water Ratio: " + newRatio);
-
-		newWaterRatio = newRatio;
-		
-		return waterRatioCache != newRatio;
-	}
 
 	/**
 	 * Sets the objective.
@@ -2475,14 +2411,14 @@ public class Settlement extends Unit implements Temporal,
 			iceDemand = 1;
 		
 		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * waterRatioCache / 10;
+		waterDemand = waterDemand * rationing.getRationingLevel() / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
 		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
-		brineWaterDemand = brineWaterDemand * waterRatioCache / 10;
+		brineWaterDemand = brineWaterDemand * rationing.getRationingLevel() / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
@@ -3283,12 +3219,32 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * The meal time structure supported at this Settlement
+	 * The meal time structure supported at this Settlement.
+	 * 
+	 * @return
 	 */
 	public MealSchedule getMealTimes() {
 		return meals;
 	}
 
+	/**
+	 * Gets the Rationing instance.
+	 * 
+	 * @return
+	 */
+	public Rationing getRationing() {
+		return rationing;
+	}
+	
+	/**
+	 * Gets the water consumption rate.
+	 * 
+	 * @return
+	 */
+	public double getWaterConsumptionRate() {
+		return waterConsumptionRate;
+	}
+	
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */
@@ -3335,6 +3291,10 @@ public class Settlement extends Unit implements Temporal,
 		citizens.forEach(Person::destroy);
 		ownedRobots.forEach(Robot::destroy);
 		ownedVehicles.forEach(Vehicle::destroy);
+		
+		if (rationing != null) {
+			rationing = null;
+		}
 		
 		if (buildingManager != null) {
 			buildingManager.destroy();

@@ -7,6 +7,7 @@
 
 package com.mars_sim.core.mission.task;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EVASuit;
@@ -24,6 +25,7 @@ import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
@@ -96,7 +98,7 @@ public class CollectResources extends EVAOperation {
 
 		setMinimumSunlight(LIGHT_LEVEL);
 		
-		if (person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 	      	return;
 		}
@@ -357,9 +359,19 @@ public class CollectResources extends EVAOperation {
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
 				return false;
-
-			if (person.isSuperUnfit())
+		
+			// Check fitness - only if it's not in the state of emergency
+			boolean isEmergency = false;
+			Settlement s = person.getSettlement();
+			if (s == null) {
+				isEmergency = CollectionUtils.findSettlement(person.getCoordinates()).getRationing().isAtEmergency();
+			}
+			else {
+				isEmergency = s.getRationing().isAtEmergency();
+			}
+			if (!isEmergency && person.isSuperUnfit()) {
 				return false;
+			}	
 			
 			// Checks if the person has an available container with remaining capacity for resource.
 			Container container = ContainerUtil.findLeastFullContainer(person, containerType, resourceType);

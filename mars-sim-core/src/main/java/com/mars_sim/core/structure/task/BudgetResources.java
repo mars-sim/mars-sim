@@ -180,13 +180,13 @@ public class BudgetResources extends Task {
 	 */
 	private boolean budgetSettlementWater() {
 
-		int levelDiff = person.getAssociatedSettlement().getWaterRatioDiff();
+		int levelDiff = person.getAssociatedSettlement().getRationing().getLevelDiff();
 		if (levelDiff > 0) {
 			
 			taskNum = ReviewGoal.SETTLEMENT_WATER;
 			
 			// Set the flag to false for future review
-			person.getAssociatedSettlement().setReviewWaterRatio(false);
+			person.getAssociatedSettlement().getRationing().setReviewFlag(false);
 			
 			return true;
 		}	
@@ -257,9 +257,9 @@ public class BudgetResources extends Task {
 				} break;
 				
 				case SETTLEMENT_WATER: {
-					if (person.getAssociatedSettlement().isWaterRatioChanged()) {
-						// Make the new water ratio the same as the cache
-						person.getAssociatedSettlement().setWaterRatio();
+					if (person.getAssociatedSettlement().getRationing().reviewRationingLevel()) {
+						// Set the new water rationing level
+						person.getAssociatedSettlement().getRationing().enforceNewRationingLevel();
 					}
 				} break;
 			}
