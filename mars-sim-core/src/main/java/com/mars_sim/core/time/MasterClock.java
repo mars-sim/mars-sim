@@ -308,7 +308,7 @@ public class MasterClock implements Serializable {
 	public void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = (float) (refPulseRatio * minMilliSolPerPulse 
-						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / cpuUtil / 10 / refPulseDamper);
+						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / 100 / refPulseDamper);
 		
 		optMilliSolPerPulse = referencePulse;
 	}

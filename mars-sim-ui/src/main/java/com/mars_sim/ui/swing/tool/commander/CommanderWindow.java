@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2024-07-29
+ * @date 2025-08-12
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.commander;
@@ -155,6 +155,10 @@ public class CommanderWindow extends ToolWindow {
 	private JButton prefButton;
 	
 	private JTextField waterLimitTextField;
+	
+	private JLabel clevelLabel;
+	private JLabel iceProbLabel;
+	private JLabel regolithProbLabel;
 	
 	private Map<Colony, Integer> popCaches = new HashMap<>();
 	private Map<Colony, Integer> lodgingCaches = new HashMap<>();
@@ -396,6 +400,8 @@ public class CommanderWindow extends ToolWindow {
 			setupTradingSettlements();
 			// Modify preference settlement in Mission Tab			
 			prefButton.setText("Open " + s.getName() + " Preference tab");
+			
+			update();
 		}
 	}
 
@@ -1034,14 +1040,22 @@ public class CommanderWindow extends ToolWindow {
 		createLogBookPanel(midPanel);
 	}
 
-	private void createEVAOVerride(JPanel topPanel) {
+	/**
+	 * Creates a digging panel.
+	 * 
+	 * @param topPanel
+	 */
+	private void createDiggingOverride(JPanel topPanel) {
+		JPanel borderPanel = new JPanel(new BorderLayout(5, 5));
+		topPanel.add(borderPanel, BorderLayout.NORTH);
+		
 		// Create override panel.
-		JPanel overridePanel = new JPanel(new GridLayout(1, 2));
+		JPanel overridePanel = new JPanel(new GridLayout(2, 1, 5, 0));
 		overridePanel.setAlignmentX(CENTER_ALIGNMENT);		
-		topPanel.add(overridePanel, BorderLayout.NORTH);
+		borderPanel.add(overridePanel, BorderLayout.WEST);
 
 		// Create DIG_LOCAL_REGOLITH override check box.
-		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith");
+		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith   ");
 		overrideDigLocalRegolithCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalRegolithCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalRegolithCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_REGOLITH, overrideDigLocalRegolithCB.isSelected()));
@@ -1049,15 +1063,36 @@ public class CommanderWindow extends ToolWindow {
 		overridePanel.add(overrideDigLocalRegolithCB);
 		
 		// Create DIG_LOCAL_ICE override check box.
-		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice");
+		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice   ");
 		overrideDigLocalIceCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalIceCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalIceCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_ICE, overrideDigLocalIceCB.isSelected()));
 		overrideDigLocalIceCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE));
 		overridePanel.add(overrideDigLocalIceCB);
+		
+		AttributePanel probabilityPanel = new AttributePanel(2);
+		probabilityPanel.setAlignmentX(CENTER_ALIGNMENT);	
+		probabilityPanel.setBorder(new EmptyBorder(2, 5, 2, 5));
+		probabilityPanel.setBorder(BorderFactory.createTitledBorder(" Digging Probability "));
+		probabilityPanel.setToolTipText("The current ice and regolith digging probability score for this settlement");
+		
+		// Get the ice and regolith probability scores
+		double iceProb = settlement.getIceProbabilityValue();
+		double regolithProb = settlement.getRegolithProbabilityValue();
+		iceProbLabel = probabilityPanel.addRow("Ice Probability", "");
+		regolithProbLabel = probabilityPanel.addRow("Regolith Probability", "");
+		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
+		regolithProbLabel.setText(Math.round(regolithProb * 100.0)/100.0 + "");
+		
+		borderPanel.add(probabilityPanel, BorderLayout.CENTER);
 	}
 	
-	public void createEmergencyPanel(JPanel topPanel) {
+	/**
+	 * Creates a water rationing emergency panel.
+	 * 
+	 * @param topPanel
+	 */
+	public void createWaterRationingPanel(JPanel topPanel) {
 		// Create panel.
 		JPanel emerPanel = new JPanel(new BorderLayout());
 		emerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -1071,7 +1106,7 @@ public class CommanderWindow extends ToolWindow {
 			
 		// Get the water rationing 
 		int currentLevel = settlement.getRationing().getRationingLevel();
-		JLabel clevelLabel = currentPanel.addRow("Current Water Rationing Level", "");
+		clevelLabel = currentPanel.addRow("Current Water Rationing Level", "");
 		clevelLabel.setText(currentLevel + "");
 		
 		// Set up a textfield for inputting water rationing emergency limit
@@ -1079,10 +1114,16 @@ public class CommanderWindow extends ToolWindow {
 		waterLimitTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
 		waterLimitTextField.setText(settlement.getRationing().getEmergencyLevel() + "");
 		
-		currentPanel.addLabelledItem("Water Rationing Emergency Level Limit", waterLimitTextField, 
-				"Please input the Water Rationing Emergency Level Limit as an integer");
+		currentPanel.addLabelledItem("Emergency Water Rationing Level", waterLimitTextField, 
+				"Please input the Emergency Water Rationing Level Limit as an integer");
 	}
 	
+	/**
+	 * Is it a double number ?
+	 * 
+	 * @param input
+	 * @return
+	 */
 	public static boolean isDouble(String input) {
 	    try {
 	        Double.parseDouble(input);
@@ -1399,9 +1440,10 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 
 		// Create the checkbox for dig local regolith and ice override
-		createEVAOVerride(topPanel);
+		createDiggingOverride(topPanel);
 		
-		createEmergencyPanel(topPanel);
+		// Create a water rationing panel
+		createWaterRationingPanel(topPanel);
 		
 		// Create a button panel
 		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
@@ -1520,22 +1562,42 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
+		update();
+	}
+	
+	/**
+	 * Updates the window
+	 */ 
+	public void update() {
 
 		// Update list
 		listUpdate();
-		
 		// Update lunar colonies
 		updateLunarPanel();
-		
 		// Update the greenhouse building list
 		updateGreenhouses();
-		
-		
+		// Update the ice and regolith probability scores
+		updateIceRegolithProbability();
+		// Update the water rationing
 		updateWaterRationing();
 	}
 
+	private void updateIceRegolithProbability() {
+		// Get the ice and regolith probability scores 
+		double iceProb = settlement.getIceProbabilityValue();
+		double regolithProb = settlement.getRegolithProbabilityValue();
+		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
+		regolithProbLabel.setText(Math.round(regolithProb * 100.0)/100.0 + "");
+	}
+	
 	private void updateWaterRationing() {
+		
+		// Get the water rationing 
+		int currentLevel = settlement.getRationing().getRationingLevel();
+		clevelLabel.setText(currentLevel + "");
+		
 		int limit = 0;
+
 		
 		if (isDouble(waterLimitTextField.getText())) {
 			double limitDouble = Double.parseDouble(waterLimitTextField.getText());

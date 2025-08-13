@@ -5,7 +5,6 @@
  * @author Manny Kung
  */
 
-
 package com.mars_sim.core.structure;
 
 import java.io.Serializable;
@@ -27,9 +26,9 @@ public class Rationing implements Serializable {
 	/** The flag to see if a rationing review is due. */
 	private boolean reviewFlag = false;
 	/** The previous rationing level of the settlement. The higher the more urgent for that resource. */
-	private int levelCache = 1;
+	private int levelCache = 0;
 	/** The current rationing level of the settlement. */
-	private int currentLevel = 1;
+	private int currentLevel = 0;
 	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
 	private int emergencyLevel = 10;
 	/** The name of the resource to be ration. */
@@ -38,7 +37,7 @@ public class Rationing implements Serializable {
 	private Settlement settlement;
 	
 	
-	// Future: as soon as we apply rationining to other resources,
+	// Future: as soon as we apply rationing to other resources,
 	// this class will become like a RationingManager and will 
 	// track more than one resource
 	

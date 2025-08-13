@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @date 2025-07-23
+ * @date 2025-08-12
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
@@ -381,7 +381,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					// e.g. For CO2, limit the score
 					score += mrate;
 				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
-					score += mrate * MATERIAL_BIAS ;
+					score += mrate * MATERIAL_BIAS * MATERIAL_BIAS * MATERIAL_BIAS;
 				} else if (isRawMaterial(resource)) { // ore, minerals, sand
 					score += mrate / MATERIAL_BIAS;
 				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water

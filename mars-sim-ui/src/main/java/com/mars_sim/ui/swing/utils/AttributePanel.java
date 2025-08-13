@@ -27,7 +27,8 @@ public class AttributePanel extends JPanel {
 	private GridLayout autoLayout = null;
 
 	/**
-	 * Create an Attribute panel that has a single column with fixed number of rows
+	 * Creates an Attribute panel that has a single column with fixed number of rows.
+	 * 
 	 * @param rows Number of rows
 	 */
     public AttributePanel(int rows) {
@@ -35,7 +36,8 @@ public class AttributePanel extends JPanel {
     }
 
 	/**
-	 * Create an Attribute panel that has a fixed number of rows and columns
+	 * Creates an Attribute panel that has a fixed number of rows and columns.
+	 * 
 	 * @param rows Number of rows
 	 * @param cols Number of cols
 	 */
@@ -48,7 +50,7 @@ public class AttributePanel extends JPanel {
     }
 	
 	/**
-	 * Create an Attribute panel that has a single column with variable numnber pf rows
+	 * Creates an Attribute panel that has a single column with a variable number pf rows.
 	 */
 	public AttributePanel() {
 		autoLayout = new GridLayout(1, 2, DEFAULT_GAP, DEFAULT_GAP);
@@ -77,7 +79,7 @@ public class AttributePanel extends JPanel {
 	 * 
 	 * @param titleLabel The fixed label
 	 * @param content Initial content of the text field
-	 * @tooltip
+	 * @param tooltip
 	 * @return The JLabel that can be updated.
 	 */
 	public JLabel addRow(String titleLabel, String content, String tooltip) {
