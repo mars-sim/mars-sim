@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StyleManager.java
- * @date 2025-06-30
+ * @date 2025-08-13
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing;
@@ -90,6 +90,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
 
     public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
+    public static final DecimalFormat DECIMAL2_KG_SOL = new DecimalFormat("#,##0.00 kg/sol");
     public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
 
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");

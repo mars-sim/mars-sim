@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Farming.java
- * @date 2025-07-16
+ * @date 2025-08-13
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function.farming;
@@ -488,7 +488,7 @@ public class Farming extends Function {
 			// Add fertilizer to the soil for the new crop
 			provideFertilizer(cropArea);
 			// Replace some amount of old soil with new soil
-			provideNewSoil(cropArea);
+			provideNewSoil(cropSpec, cropArea);
 
 		}
 
@@ -499,9 +499,10 @@ public class Farming extends Function {
 	/**
 	 * Retrieves new soil when planting new crop.
 	 * 
+	 * @param cropSpec
 	 * @param cropArea
 	 */
-	private void provideNewSoil(double cropArea) {
+	private void provideNewSoil(CropSpec cropSpec, double cropArea) {
 		double rand = RandomUtil.getRandomDouble(0.8, 1.2);
 
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
@@ -509,8 +510,12 @@ public class Farming extends Function {
 		if (amount > MIN) {
 			// Collect some old crop and turn them into crop waste 
 			store(amount, ResourceUtil.CROP_WASTE_ID, "Farming::provideNewSoil");
+			// Note: have the -ve sign before amount to indicate generation
+			addCropUsage(cropSpec.getName(), -amount, ResourceUtil.CROP_WASTE_ID);
 			// Note: adjust how much new soil is needed to replenish the soil bed
 			retrieve(amount, ResourceUtil.SOIL_ID, true);
+			
+			addCropUsage(cropSpec.getName(), amount, ResourceUtil.SOIL_ID);
 		}
 	}
 
@@ -1056,7 +1061,7 @@ public class Farming extends Function {
 	/**
 	 * Gets the farm's current crops.
 	 *
-	 * @return collection of crops
+	 * @return list of crops
 	 */
 	public List<Crop> getCrops() {
 		return cropList;
@@ -1074,7 +1079,7 @@ public class Farming extends Function {
 	 * @param usage    average water consumption in kg/sol
 	 * @Note positive usage amount means consumption 
 	 * @Note negative usage amount means generation
-	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param type resource id (water, o2, co2, grey water, soil, crop waste)
 	 */
 	public void addCropUsage(String cropName, double usage, int type) {
 		SolMetricDataLogger<Integer> crop = cropUsage.get(cropName);
@@ -1089,7 +1094,7 @@ public class Farming extends Function {
 	/**
 	 * Computes the cumulative usage of a resource on all crops.
 	 *
-	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param type resource id (water, o2, co2, grey water, soil, crop waste)
 	 * @param cropName
 	 * @return cumulative consumption in kg/sol
 	 */
@@ -1110,7 +1115,7 @@ public class Farming extends Function {
 	/**
 	 * Computes the cumulative usage of a resource on a crop.
 	 *
-	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param type resource id (water, o2, co2, grey water, soil, crop waste)
 	 * @param cropName
 	 * @return cumulative consumption in kg/sol
 	 */
@@ -1128,7 +1133,7 @@ public class Farming extends Function {
 	/**
 	 * Computes the average daily usage of a resource on a crop.
 	 *
-	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param type resource id (water, o2, co2, grey water, soil, crop waste)
 	 * @param cropName
 	 * @return average daily consumption in kg/sol
 	 */
@@ -1144,7 +1149,7 @@ public class Farming extends Function {
 	/**
 	 * Computes the daily averages usage on all crops.
 	 *
-	 * @type resource type (0 for water, 1 for o2, 2 for co2)
+	 * @type resource type id (water, o2, co2, grey water, soil, crop waste)
 	 * @return consumption in kg/sol
 	 */
 	public double computeAllCropsDailyAverage(int type) {
