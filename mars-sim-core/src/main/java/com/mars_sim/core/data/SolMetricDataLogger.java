@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SolMetricDataLogger.java
- * @date 2022-07-15
+ * @date 2025-08-13
  * @author Barry Evans
  */
 
@@ -65,28 +65,121 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 		double sum = 0;
 		int numSols = 0;
 
-		for (Map<K, Double> oneDay : dailyData) {
+		if (dailyData.size() == 0) {
+			// No data points
+			return 0;
+		}
+		
+		else if (dailyData.size() == 1) {
+			Map<K, Double> oneDay = getTodayData();
+			// Get metric for the day; there may not be any
+			double dailyTotal = 0.0;
+			if (oneDay.containsKey(metric)) {
+				dailyTotal = oneDay.get(metric);
+			}
+			
+			// If there's only one sol of data ,
+			// then it's a partial sum
+			return dailyTotal * currentMillisol / 1_000;
+		}
+		
+		else {
+			for (Map<K, Double> oneDay : dailyData) {
+				// Get metric for the day; there may not be any
+				double dailyTotal = 0.0;
+				if (oneDay.containsKey(metric)) {
+					dailyTotal = oneDay.get(metric);
+				}
+
+				sum += dailyTotal;
+				numSols++;
+			}
+					
+			return sum / numSols;
+		}
+	}
+	
+	/**
+	 * Calculates the cumulative total for a specific metric.
+	 * For the current day the current msol is taken into account to produce an estimate. 
+	 * 
+	 * @param metric Metric requested
+	 * @return cumulative total
+	 */
+	public double getCumulativeTotal(K metric) {
+		double sum = 0;
+
+		if (dailyData.size() == 0) {
+			// No data points
+			return 0;
+		}
+		
+		else if (dailyData.size() == 1) {
+			Map<K, Double> oneDay = getTodayData();
 			// Get metric for the day; there may not be any
 			double dailyTotal = 0.0;
 			if (oneDay.containsKey(metric)) {
 				dailyTotal = oneDay.get(metric);
 			}
 
-			sum += dailyTotal;
-			numSols++;
+			return dailyTotal;
 		}
+		
+		else {
+			for (Map<K, Double> oneDay : dailyData) {
+				// Get metric for the day; there may not be any
+				double dailyTotal = 0.0;
+				if (oneDay.containsKey(metric)) {
+					dailyTotal = oneDay.get(metric);
+				}
 
-		if (numSols == 0) {
+				sum += dailyTotal;
+			}
+			
+			return sum;
+		}
+	}
+	
+	/**
+	 * Returns both the cumulative total and the daily average. for a specific metric.
+	 * For the current day the current msol is taken into account to produce an estimate. 
+	 * 
+	 * @param metric Metric requested
+	 * @return double[cumulative total, daily average]
+	 */
+	public double[] getTotCumulativeDailyAverage(K metric) {
+		double sum = 0;
+		int numSols = 0;
+
+		if (dailyData.size() == 0) {
 			// No data points
-			return 0;
+			return new double[] {sum, sum};
 		}
 		
-		if (numSols == 1) {
-			// If there's only one sol of data ,
-			// then it's a partial sum
-			return sum * currentMillisol / 1_000;
+		else if (dailyData.size() == 1) {
+			Map<K, Double> oneDay = getTodayData();
+			// Get metric for the day; there may not be any
+			double dailyTotal = 0.0;
+			if (oneDay.containsKey(metric)) {
+				dailyTotal = oneDay.get(metric);
+			}
+			
+			return new double[] {dailyTotal, dailyTotal * currentMillisol / 1_000};
 		}
 		
-		return sum / numSols;
+		else {
+			for (Map<K, Double> oneDay : dailyData) {
+				// Get metric for the day; there may not be any
+				double dailyTotal = 0.0;
+				if (oneDay.containsKey(metric)) {
+					dailyTotal = oneDay.get(metric);
+				}
+
+				sum += dailyTotal;
+				numSols++;
+			}
+			
+			return new double[] {sum, sum / numSols};
+		}
 	}
 }

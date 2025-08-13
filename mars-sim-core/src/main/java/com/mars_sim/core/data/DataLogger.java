@@ -82,7 +82,7 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 	
 	/**
-	 * Returns a Map if data entries per missionSol. Map is keyed on sol.
+	 * Returns a Map if data entries per mission sol. Map is keyed on sol.
 	 * 
 	 * @return Sol to daily data entries.
 	 */

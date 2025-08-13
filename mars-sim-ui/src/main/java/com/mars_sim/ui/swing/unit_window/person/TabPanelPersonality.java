@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelPersonality.java
- * @date 2022-07-13
+ * @date 2025-08-12
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.person;
@@ -9,10 +9,9 @@ package com.mars_sim.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.MBTIPersonality;
@@ -58,24 +57,22 @@ public class TabPanelPersonality extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());
+		JPanel infoPanel = new JPanel(new BorderLayout());
 		content.add(infoPanel, BorderLayout.NORTH);
 
-		JPanel scorePanel = new JPanel(new BorderLayout(1, 1));
-		content.add(scorePanel, BorderLayout.CENTER);
+		JPanel scorePanel = new JPanel(new GridLayout(2, 1));
+		infoPanel.add(scorePanel, BorderLayout.NORTH);
 		
 		// Create the text area for displaying the Big Five scores
-		scorePanel.add(createBigFive(), BorderLayout.NORTH);
+		scorePanel.add(createBigFive());
 		// Create the text area for displaying the MBTI scores
-		scorePanel.add(createMBTI(person.getMind().getMBTI()), BorderLayout.CENTER);
+		scorePanel.add(createMBTI(person.getMind().getMBTI()));
 	}
-	
 	
 	/**
 	 * Creates the MBTI text area.
 	 * 
 	 * @param p an instance of MBTIPersonality
-	 * @param content
 	 * @return
 	 */
 	private JPanel createMBTI(MBTIPersonality p) {
@@ -155,7 +152,6 @@ public class TabPanelPersonality extends TabPanel {
 	/**
 	 * Creates the text area for the Big Five.
 	 * 
-	 * @param content
 	 * @return
 	 */
 	private JPanel createBigFive() {

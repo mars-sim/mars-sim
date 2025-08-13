@@ -358,8 +358,9 @@ public class TimeWindow extends ToolWindow {
 	 */
 	public void createAdvancePanel(MasterClock masterClock, JPanel pane) {
 		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
-		taskPaneContainer.setPreferredSize(new Dimension(WIDTH - 10, HEIGHT));
+		taskPaneContainer.setPreferredSize(new Dimension(WIDTH - 10, 180));
 		JXTaskPane actionPane = new JXTaskPane();
+		actionPane.setPreferredSize(new Dimension(WIDTH - 10, 180));
 //		actionPane.setBackground(getBackground());
 		actionPane.setBackground(new Color(0, 0, 0, 128));
 		actionPane.setBackground(getBackground());
@@ -498,7 +499,7 @@ public class TimeWindow extends ToolWindow {
 	private JPanel createPane(String label) {
 		String fullStr = "TimeWindow." + label;
 		fullStr = Msg.getString(fullStr); //$NON-NLS-1$
-		JPanel tpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JPanel tpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 		JLabel label3 = new JLabel(fullStr);
 		label3.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		fullStr = "TimeWindow." + label + ".tooltip";

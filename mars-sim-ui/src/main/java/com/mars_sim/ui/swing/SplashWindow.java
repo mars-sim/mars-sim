@@ -201,10 +201,9 @@ public class SplashWindow extends JComponent {
 
 	public void paintTextWithOutline(Graphics g, String text, Color fillColor, Color outlineColor, Font font, int x, int y) {
 	
-	    BasicStroke outlineStroke = new BasicStroke(4.0f);
+	    BasicStroke outlineStroke = new BasicStroke(2.0f);
 
-	    if (g instanceof Graphics2D) {
-	        Graphics2D g2 = (Graphics2D) g;
+	    if (g instanceof Graphics2D g2) {
 
 	        g2.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 	        

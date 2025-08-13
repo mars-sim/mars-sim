@@ -935,7 +935,7 @@ public class CommanderWindow extends ToolWindow {
 		JPanel buildingPanel = new JPanel(new BorderLayout(20, 20));
 		buildingPanel.setBorder(BorderFactory.createTitledBorder(" Select a Farm : "));	
 		buildingPanel.setToolTipText("Choose a farm from the building combobox in this settlement");
-		topPanel.add(buildingPanel, BorderLayout.WEST);
+		topPanel.add(buildingPanel, BorderLayout.CENTER);
 		
 		greenhouseBldgs = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		
@@ -944,9 +944,8 @@ public class CommanderWindow extends ToolWindow {
 
 		// Create spinner panel
 		JPanel spinnerPanel = new JPanel(new BorderLayout(20, 20));
-		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Area Per Crop (in SM) : "));
-		
-		topPanel.add(spinnerPanel, BorderLayout.CENTER);
+		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Area Per Crop (in sq meters) : "));
+		topPanel.add(spinnerPanel, BorderLayout.EAST);
 		
 		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 50, 1);
 	
@@ -1043,19 +1042,21 @@ public class CommanderWindow extends ToolWindow {
 	/**
 	 * Creates a digging panel.
 	 * 
-	 * @param topPanel
+	 * @return
 	 */
-	private void createDiggingOverride(JPanel topPanel) {
-		JPanel borderPanel = new JPanel(new BorderLayout(5, 5));
-		topPanel.add(borderPanel, BorderLayout.NORTH);
-		
+	private JPanel createDiggingOverride() {
+		JPanel borderPanel = new JPanel(new BorderLayout(0, 0));
+		borderPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		borderPanel.setBorder(BorderFactory.createTitledBorder(" In-Situ Resources "));
+		borderPanel.setToolTipText("Override the ice and regolith digging");
+
 		// Create override panel.
 		JPanel overridePanel = new JPanel(new GridLayout(2, 1, 5, 0));
 		overridePanel.setAlignmentX(CENTER_ALIGNMENT);		
 		borderPanel.add(overridePanel, BorderLayout.WEST);
 
 		// Create DIG_LOCAL_REGOLITH override check box.
-		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith   ");
+		overrideDigLocalRegolithCB = new JCheckBox("Suspend Digging Regolith     ");
 		overrideDigLocalRegolithCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalRegolithCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalRegolithCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_REGOLITH, overrideDigLocalRegolithCB.isSelected()));
@@ -1063,7 +1064,7 @@ public class CommanderWindow extends ToolWindow {
 		overridePanel.add(overrideDigLocalRegolithCB);
 		
 		// Create DIG_LOCAL_ICE override check box.
-		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice   ");
+		overrideDigLocalIceCB = new JCheckBox("Suspend Digging Ice     ");
 		overrideDigLocalIceCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalIceCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalIceCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_ICE, overrideDigLocalIceCB.isSelected()));
@@ -1079,12 +1080,14 @@ public class CommanderWindow extends ToolWindow {
 		// Get the ice and regolith probability scores
 		double iceProb = settlement.getIceProbabilityValue();
 		double regolithProb = settlement.getRegolithProbabilityValue();
-		iceProbLabel = probabilityPanel.addRow("Ice Probability", "");
-		regolithProbLabel = probabilityPanel.addRow("Regolith Probability", "");
+		iceProbLabel = probabilityPanel.addRow("Ice Value", "");
+		regolithProbLabel = probabilityPanel.addRow("Regolith Value", "");
 		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
 		regolithProbLabel.setText(Math.round(regolithProb * 100.0)/100.0 + "");
 		
 		borderPanel.add(probabilityPanel, BorderLayout.CENTER);
+		
+		return borderPanel;
 	}
 	
 	/**
@@ -1092,14 +1095,13 @@ public class CommanderWindow extends ToolWindow {
 	 * 
 	 * @param topPanel
 	 */
-	public void createWaterRationingPanel(JPanel topPanel) {
+	public JPanel createWaterRationingPanel() {
 		// Create panel.
 		JPanel emerPanel = new JPanel(new BorderLayout());
 		emerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		emerPanel.setBorder(BorderFactory.createTitledBorder(" State of Emergency Thresholds "));
 		emerPanel.setToolTipText("Adjust the threshold for triggering the state of emergency for this settlement");
-		topPanel.add(emerPanel, BorderLayout.CENTER);
-		
+	
 		AttributePanel currentPanel = new AttributePanel(2);
 		currentPanel.setAlignmentX(CENTER_ALIGNMENT);	
 		emerPanel.add(currentPanel, BorderLayout.CENTER);
@@ -1116,6 +1118,8 @@ public class CommanderWindow extends ToolWindow {
 		
 		currentPanel.addLabelledItem("Emergency Water Rationing Level", waterLimitTextField, 
 				"Please input the Emergency Water Rationing Level Limit as an integer");
+	
+		return emerPanel;
 	}
 	
 	/**
@@ -1440,10 +1444,10 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 
 		// Create the checkbox for dig local regolith and ice override
-		createDiggingOverride(topPanel);
-		
+		topPanel.add(createDiggingOverride(), BorderLayout.NORTH);
+ 
 		// Create a water rationing panel
-		createWaterRationingPanel(topPanel);
+		topPanel.add(createWaterRationingPanel(), BorderLayout.CENTER);
 		
 		// Create a button panel
 		JPanel buttonPanel = new JPanel(new GridLayout(5,1));

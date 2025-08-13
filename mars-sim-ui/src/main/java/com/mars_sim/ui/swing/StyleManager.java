@@ -88,10 +88,10 @@ public class StyleManager {
     
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
     public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
-    
+
     public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
     public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
-	
+
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL2_KW = new DecimalFormat("#,##0.00 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
@@ -113,7 +113,7 @@ public class StyleManager {
     
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.wattpermetersquared")); //-NLS-1$
+    								+ Msg.getString("unit.wattpermetersquared")); //-NLS-1$ // ("#,##0.0 W/m\u00b2");
     // For air density
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.grampercubicmeter")); //-NLS-1$

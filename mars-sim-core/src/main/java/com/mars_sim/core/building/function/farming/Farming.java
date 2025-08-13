@@ -1087,13 +1087,52 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Computes the average usage of a resource on a crop.
+	 * Computes the cumulative usage of a resource on all crops.
 	 *
 	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
 	 * @param cropName
-	 * @return average water consumption in kg/sol
+	 * @return cumulative consumption in kg/sol
 	 */
-	private double computeUsage(int type, String cropName) {
+	public double[] computeAllCropsCumulativeDailyAverage(int type) {
+		// Note: the value is kg
+		double sum = 0;
+		double average = 0;
+	
+		for (Crop c : cropList) {
+			double[] one = computeCumulativeDailyAverage(type, c.getName());
+			sum += one[0];
+			average += one[1];
+		}
+		
+		return new double[] {sum, average};
+	}
+	
+	/**
+	 * Computes the cumulative usage of a resource on a crop.
+	 *
+	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param cropName
+	 * @return cumulative consumption in kg/sol
+	 */
+	private double[] computeCumulativeDailyAverage(int type, String cropName) {
+		double[] result = new double[] {0, 0};
+		
+		SolMetricDataLogger<Integer> crop = cropUsage.get(cropName);
+		if (crop != null) {
+			result = crop.getTotCumulativeDailyAverage(type);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Computes the average daily usage of a resource on a crop.
+	 *
+	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param cropName
+	 * @return average daily consumption in kg/sol
+	 */
+	private double computeDailyAverageUsage(int type, String cropName) {
 		double result = 0;
 		SolMetricDataLogger<Integer> crop = cropUsage.get(cropName);
 		if (crop != null) {
@@ -1103,17 +1142,17 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Computes the resource usage on all crops.
+	 * Computes the daily averages usage on all crops.
 	 *
 	 * @type resource type (0 for water, 1 for o2, 2 for co2)
-	 * @return water consumption in kg/sol
+	 * @return consumption in kg/sol
 	 */
-	public double computeUsage(int type) {
-		// Note: the value is kg per square meter per sol
+	public double computeAllCropsDailyAverage(int type) {
+		// Note: the value is kg
 		double sum = 0;
 
 		for (Crop c : cropList) {
-			sum += computeUsage(type, c.getName());
+			sum += computeDailyAverageUsage(type, c.getName());
 		}
 		
 		return Math.round(sum * 100.0) / 100.0;
@@ -1125,8 +1164,8 @@ public class Farming extends Function {
 	 *
 	 * @return
 	 */
-	public double getDailyAverageWaterUsage() {
-		return computeUsage(0);
+	public double getAllCropsDailyAverageWaterUsage() {
+		return computeAllCropsDailyAverage(0);
 	}
 
 	public int getNumCrops2Plant() {
