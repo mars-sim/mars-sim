@@ -191,14 +191,14 @@ public class TabPanelOrganization extends TabPanel {
 	
 		// In terms of electing a president, it will take place among all 
 		// the settlements under the same jurisdiction/authority
-		
-//		if (pop >= ChainOfCommand.POPULATION_WITH_PRESIDENT) {
-//			commanderStaffNode.add(getRoleNode(RoleType.PRESIDENT));
-//			commanderStaffNode.add(getRoleNode(RoleType.MAYOR));
-//		}
-//			
+	
 		if (pop >= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			commanderStaffNode.add(getRoleNode(RoleType.MAYOR));
+		}
+		
+		else if (pop >= ChainOfCommand.POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
+			commanderStaffNode.add(getRoleNode(RoleType.ADMINISTRATOR));
+			commanderStaffNode.add(getRoleNode(RoleType.DEPUTY_ADMINISTRATOR));
 		}
 		
 		else if (pop >= ChainOfCommand.POPULATION_WITH_ADMINISTRATOR) {

@@ -60,11 +60,13 @@ public class RecordActivityMeta extends FactoryMetaTask {
         double roleModifier = 1D;
         if (roleType != null) {
             if (roleType == RoleType.PRESIDENT)
-                roleModifier = 0.01D;
-            else if (roleType == RoleType.MAYOR)
                 roleModifier = 0.05D;
+            else if (roleType == RoleType.MAYOR)
+                roleModifier = 0.075D;
             else if (roleType.equals(RoleType.ADMINISTRATOR))
             	roleModifier = 0.1D;
+            else if (roleType.equals(RoleType.DEPUTY_ADMINISTRATOR))
+            	roleModifier = 0.125D;
             else if (roleType == RoleType.COMMANDER)
                 roleModifier = 0.15D;
             else if (roleType == RoleType.SUB_COMMANDER)

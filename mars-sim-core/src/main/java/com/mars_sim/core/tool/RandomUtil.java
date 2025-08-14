@@ -61,7 +61,7 @@ public final class RandomUtil {
 	 * @param n
 	 * @return
 	 */
-	public static int getInt(int n) {
+	private static int getInt(int n) {
 		return rng.nextInt(n);
 	}
 	
@@ -70,7 +70,7 @@ public final class RandomUtil {
 	 * 
 	 * @return
 	 */
-	public static double getDouble() {
+	private static double getDouble() {
 		return rng.nextDouble();	
 	}
 	

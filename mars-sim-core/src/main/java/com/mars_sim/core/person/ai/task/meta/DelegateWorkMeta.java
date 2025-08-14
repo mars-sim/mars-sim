@@ -53,13 +53,15 @@ public class DelegateWorkMeta extends FactoryMetaTask {
            
         double base;
         if (roleType.equals(RoleType.PRESIDENT))
-            base = 60D;
+            base = 45D;
         else if (roleType.equals(RoleType.MAYOR))
-            base = 50D;
-        else if (roleType.equals(RoleType.ADMINISTRATOR))
             base = 40D;
-        else if (roleType.equals(RoleType.COMMANDER))
+        else if (roleType.equals(RoleType.ADMINISTRATOR))
+            base = 35D;
+        else if (roleType.equals(RoleType.DEPUTY_ADMINISTRATOR))
             base = 30D;
+        else if (roleType.equals(RoleType.COMMANDER))
+            base = 25D;
         else if (roleType.equals(RoleType.SUB_COMMANDER))
             base = 20D;
         else if (roleType.isChief())

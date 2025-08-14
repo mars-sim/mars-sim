@@ -355,6 +355,15 @@ public class RoleUtil implements Serializable {
 		else if (pop <= ChainOfCommand.POPULATION_WITH_ADMINISTRATOR) {
 			for (RoleType r : RoleType.values()) {
 				if (r != RoleType.PRESIDENT
+						&& r != RoleType.MAYOR
+						&& r != RoleType.DEPUTY_ADMINISTRATOR)
+					roles.add(r);
+			}
+		}
+		
+		else if (pop <= ChainOfCommand.POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
+			for (RoleType r : RoleType.values()) {
+				if (r != RoleType.PRESIDENT
 						&& r != RoleType.MAYOR)
 					roles.add(r);
 			}

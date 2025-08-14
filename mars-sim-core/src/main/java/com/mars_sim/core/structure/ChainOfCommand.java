@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.Simulation;
@@ -21,7 +22,6 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -30,6 +30,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on
@@ -43,15 +44,17 @@ public class ChainOfCommand implements Serializable {
 	public static final int POPULATION_WITH_COMMANDER = 4;
 	public static final int POPULATION_WITH_SUB_COMMANDER = 12;
 	public static final int POPULATION_WITH_CHIEFS = 24;
-	public static final int POPULATION_WITH_ADMINISTRATOR = 120;
+	public static final int POPULATION_WITH_ADMINISTRATOR = 96;
+	public static final int POPULATION_WITH_DEPUTY_ADMINISTRATOR = 136;
 	public static final int POPULATION_WITH_MAYOR = 480;
 	public static final int POPULATION_WITH_PRESIDENT = 1024;
 	
-	
+	private int pop = 0;
+
 	/** Stores the number for each role. */
-	private Map<RoleType, Integer> roleRegistry;
+	private Map<RoleType, Integer> roleRegistry = new HashMap<>();
 	/** Store the availability of each role. */
-	private Map<RoleType, Integer> roleAvailability;
+	private Map<RoleType, Integer> roleAvailability = new HashMap<>();
 	/** The settlement of interest. */
 	private Settlement settlement;
 
@@ -66,19 +69,16 @@ public class ChainOfCommand implements Serializable {
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
 
-		roleRegistry = new HashMap<>();
-		roleAvailability = new HashMap<>();
-
+		pop = settlement.getInitialPopulation();
+		
 		// Initialize roleAvailability array once only
-		if (roleAvailability.isEmpty())
-			initializeRoleMaps();
+		initializeRoleMaps();
 	}
 
 	/**
 	 * Initializes the role maps.
 	 */
 	public void initializeRoleMaps() {
-		int pop = settlement.getInitialPopulation();
 
 		List<RoleType> roles = null;
 
@@ -149,60 +149,22 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Elects a new person for leadership in a settlement if a mayor, commander,
-	 * sub-commander, or chiefs vacates his/her position.
+	 * Elects a new person for leadership in a settlement if a mayor, administrator,
+	 * deputy administrator, commander, sub-commander, or chiefs vacates his/her position.
 	 *
 	 * @param key {@link RoleType}
 	 */
 	public void reelectLeadership(RoleType key) {
 		if (getNumFilled(key) == 0) {
 
-			int popSize = settlement.getNumCitizens();
+			if (pop == 0)
+				pop = settlement.getNumCitizens();
 
-			if (popSize >= POPULATION_WITH_MAYOR) {
+			if (pop >= POPULATION_WITH_COMMANDER) {
 				if (key.isChief()) {
 					electChief(key);
-				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
-					int pop = settlement.getNumCitizens();
-					electCommanders(pop);
-				} else if (key == RoleType.MAYOR) {
-					electLeader(key);
-				}
-			}
-			
-			else if (popSize >= POPULATION_WITH_ADMINISTRATOR) {
-				if (key.isChief()) {
-					electChief(key);
-				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
-					int pop = settlement.getNumCitizens();
-					electCommanders(pop);
-				} else if (key == RoleType.ADMINISTRATOR) {
-					electLeader(key);
-				}
-			}
-
-			else if (popSize >= POPULATION_WITH_CHIEFS) {
-				if (key.isChief()) {
-					electChief(key);
-				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
-					int pop = settlement.getNumCitizens();
-					electCommanders(pop);
-				}
-			}
-
-			else if (popSize >= POPULATION_WITH_SUB_COMMANDER) {
-				if (key.isChief()) {
-					electChief(key);
-				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
-					int pop = settlement.getNumCitizens();
-					electCommanders(pop);
-				}
-			}
-
-			else {
-				if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
-					int pop = settlement.getNumCitizens();
-					electCommanders(pop);
+				} else if (key.isCouncil()) {
+					electLeader(key, null);
 				}
 			}
 		}
@@ -239,80 +201,82 @@ public class ChainOfCommand implements Serializable {
 				+ 2 * mgr.getAttribute(NaturalAttributeType.ATTRACTIVENESS)
 				+ mgr.getAttribute(NaturalAttributeType.CONVERSATION);
 	}
-	
+
+
 	/**
-	 * Elects the commander. Possibly with a sub-commander.
-	 *
-	 * @param pop
+	 * Establishes the leader in a settlement.
+	 * 
+	 * @param firstRole
+	 * @param secondRole
 	 */
-	private void electCommanders(int pop) {
+	private void electLeader(RoleType firstRole, RoleType secondRole) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person bestCandidate = null;
 		int bestLeadership = 0;
-		int bestCombined = 0;
-
+		int bestComposite = 0;
+		
 		Person secondCandidate = null;
 		int secondLeadership = 0;
-		int seconCombined = 0;
-		// compare their leadership scores
+		int secondComposite = 0;
+		
+		// Compare their leadership scores
 		for (Person candidate : people) {
 			NaturalAttributeManager mgr = candidate.getNaturalAttributeManager();
-			int leadership = mgr.getAttribute(NaturalAttributeType.LEADERSHIP);
-			int combined = (int)(Math.round(computeCompositeScore(mgr, candidate)) / 20);
+			int leadership = (int)(Math.round(.9 * mgr.getAttribute(NaturalAttributeType.LEADERSHIP)));
+			leadership = leadership + (int)(Math.round(.1 * candidate.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING)));
+			int composite = (int)(Math.round(computeCompositeScore(mgr, candidate)) / 20);
 
-			if (leadership > bestLeadership) {
-				if (pop >= POPULATION_WITH_SUB_COMMANDER) {
-					secondLeadership = bestLeadership;
+			if (bestCandidate == null) {
+				bestCandidate = candidate;
+				bestLeadership = leadership;
+				bestComposite = composite;
+			}
+			
+			else if (leadership + composite > bestLeadership + bestComposite) {
+				if (secondRole != null) {
 					secondCandidate = bestCandidate;
-					seconCombined = bestCombined;
+					secondLeadership = bestLeadership;
+					secondComposite = bestComposite;
 				}
 				bestCandidate = candidate;
 				bestLeadership = leadership;
-				bestCombined = combined;
+				bestComposite = composite;
 			}
-			// if this person p has the same leadership score as the previous cc
-			else if (leadership == bestLeadership) {
-				// if this person p has a higher combined score than the
-				// previous cc
-				if (combined > bestCombined) {
-					// this person becomes the cc
-					if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+			
+			else if (composite > bestComposite) {
+				int rand = RandomUtil.getRandomInt(1);
+				// It's 50-50 that he would be considered good
+				if (rand == 1) {
+					if (secondRole != null) {
 						secondCandidate = bestCandidate;
 						secondLeadership = bestLeadership;
-						seconCombined = bestCombined;
+						secondComposite = bestComposite;
 					}
 					bestCandidate = candidate;
 					bestLeadership = leadership;
-					bestCombined = combined;
-				}
-
-			} else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
-
-				if (leadership > secondLeadership) {
-					// this person p becomes the sub-commander
-					secondCandidate = candidate;
-					secondLeadership = leadership;
-					seconCombined = combined;
-				} else if (leadership == secondLeadership) {
-					// compare person p's combined score with the cv's combined
-					// score
-					if (combined > seconCombined) {
-						secondCandidate = candidate;
-						secondLeadership = leadership;
-						seconCombined = combined;
-					}
+					bestComposite = composite;	
 				}
 			}
+			
+			else if (leadership > bestLeadership) {
+				int rand = RandomUtil.getRandomInt(1);
+				// It's 50-50 that he would be considered good
+				if (rand == 1) {
+					if (secondRole != null) {
+						secondCandidate = bestCandidate;
+						secondLeadership = bestLeadership;
+						secondComposite = bestComposite;
+					}
+					bestCandidate = candidate;
+					bestLeadership = leadership;
+					bestComposite = composite;	
+				}			
+			}
 		}
-		// Note: look at other attributes and/or skills when comparing
-		// individuals
 
-		// Check if this settlement is the designated settlement for
-		// housing the player commander
 		if (bestCandidate != null) {
 			if (settlement.hasDesignatedCommander()) {
-				PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-				Commander commander = personConfig.getCommander();
+				Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
 				updateCommander(bestCandidate, commander);
 				logger.config("[" + bestCandidate.getLocationTag().getLocale() + "] " + bestCandidate
 						+ " had been assigned as the commander of " + settlement + ".");
@@ -323,51 +287,12 @@ public class ChainOfCommand implements Serializable {
 			}
 
 			else {
-				bestCandidate.setRole(RoleType.COMMANDER);
+				bestCandidate.setRole(firstRole);
 			}
 		}
-
-		if (secondCandidate != null && pop >= POPULATION_WITH_SUB_COMMANDER) {
-			secondCandidate.setRole(RoleType.SUB_COMMANDER);
-		}
-	}
-
-	/**
-	 * Establishes the leader in a settlement.
-	 *
-	 * @param role
-	 */
-	private void electLeader(RoleType role) {
-		Collection<Person> people = settlement.getAllAssociatedPeople();
-		Person bestCandidate = null;
-		int bestLeaderScore = 0;
-		int bestComposite = 0;
-		// Compare their leadership scores
-		for (Person candidate : people) {
-			NaturalAttributeManager mgr = candidate.getNaturalAttributeManager();
-			int leadership = (int)(Math.round(.85 * mgr.getAttribute(NaturalAttributeType.LEADERSHIP)));
-			int tradeSkill = (int)(Math.round(.15 * candidate.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING)));
-			int composite = (int)(Math.round(computeCompositeScore(mgr, candidate)) / 20);
-
-			if (leadership + tradeSkill + composite > bestLeaderScore) {
-				bestLeaderScore = leadership + tradeSkill;
-				bestCandidate = candidate;
-				bestComposite = composite;
-			}
-			else if (composite > bestComposite) {
-				bestLeaderScore = leadership + tradeSkill;
-				bestCandidate = candidate;
-				bestComposite = composite;				
-			}
-			else if (leadership > bestLeaderScore) {
-				bestLeaderScore = leadership;
-				bestCandidate = candidate;
-				bestComposite = composite;				
-			}
-		}
-
-		if (bestCandidate != null) {
-			bestCandidate.setRole(role);
+		
+		if (secondCandidate != null) {
+			secondCandidate.setRole(secondRole);
 		}
 	}
 	
@@ -439,8 +364,6 @@ public class ChainOfCommand implements Serializable {
 		List<Person> oldlist = new ArrayList<>(settlement.getAllAssociatedPeople());
 		List<Person> plist = new ArrayList<>();
 
-		int pop = settlement.getInitialPopulation();
-		
 		// If a person does not have a (specialist) role, add him/her to the list
 		for (Person p: oldlist) {
 			if (p.getRole().getType() == null)
@@ -482,16 +405,23 @@ public class ChainOfCommand implements Serializable {
 
 		if (popSize >= POPULATION_WITH_MAYOR) {
 			// Elect a mayor
-			electLeader(RoleType.MAYOR);
+			electLeader(RoleType.MAYOR, null);
+		}
+		else if (popSize >= POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
+			// Elect two roles
+			electLeader(RoleType.ADMINISTRATOR, RoleType.DEPUTY_ADMINISTRATOR);
 		}
 		else if (popSize >= POPULATION_WITH_ADMINISTRATOR) {
-			// Elect a mayor
-			electLeader(RoleType.ADMINISTRATOR);
+			// Elect one role
+			electLeader(RoleType.ADMINISTRATOR, null);
 		}
-		// for pop < POPULATION_WITH_MAYOR
-		else if (popSize >= POPULATION_WITH_COMMANDER) {
+		else if (popSize >= POPULATION_WITH_SUB_COMMANDER) {
 			// Elect commander and sub-commander
-			electCommanders(popSize);
+			electLeader(RoleType.COMMANDER, RoleType.SUB_COMMANDER);
+		}
+		else if (popSize >= POPULATION_WITH_COMMANDER) {
+			// Elect commander
+			electLeader(RoleType.COMMANDER, null);
 		}
 	}
 

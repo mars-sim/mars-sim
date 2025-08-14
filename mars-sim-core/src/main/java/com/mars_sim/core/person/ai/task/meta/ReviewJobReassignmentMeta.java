@@ -120,10 +120,11 @@ public class ReviewJobReassignmentMeta extends MetaTask
 				// Take the base score based on the higher seniority
 				RoleType newRole = p.getRole().getType();
 				double newBase = switch(newRole) {
-					case PRESIDENT -> 600;
-					case MAYOR -> 550;
-					case ADMINISTRATOR -> 500;
-					case COMMANDER -> 450;
+					case PRESIDENT -> 525;
+					case MAYOR -> 500;
+					case ADMINISTRATOR -> 475;
+					case DEPUTY_ADMINISTRATOR -> 450;
+					case COMMANDER -> 425;
 					case SUB_COMMANDER -> 400;
 					default -> 350;
 				};

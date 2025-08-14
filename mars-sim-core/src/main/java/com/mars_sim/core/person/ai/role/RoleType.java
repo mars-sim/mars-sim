@@ -38,6 +38,7 @@ public enum RoleType implements Named {
 	PRESIDENT							(RoleLevel.COUNCIL),
 	MAYOR								(RoleLevel.COUNCIL),
 	ADMINISTRATOR						(RoleLevel.COUNCIL),
+	DEPUTY_ADMINISTRATOR				(RoleLevel.COUNCIL),
 	COMMANDER							(RoleLevel.COUNCIL),
 	SUB_COMMANDER						(RoleLevel.COUNCIL)
 	;

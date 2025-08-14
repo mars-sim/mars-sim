@@ -72,6 +72,7 @@ public class ReviewJobReassignment extends Task {
 			if (roleType != null && (roleType == RoleType.PRESIDENT 
 					|| roleType == RoleType.MAYOR
 					|| roleType == RoleType.ADMINISTRATOR
+					|| roleType == RoleType.DEPUTY_ADMINISTRATOR
 					|| roleType == RoleType.COMMANDER 
 					|| roleType == RoleType.SUB_COMMANDER)) {
 

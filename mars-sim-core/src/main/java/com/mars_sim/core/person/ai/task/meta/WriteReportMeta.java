@@ -58,9 +58,10 @@ public class WriteReportMeta extends FactoryMetaTask {
 		
 		RoleType roleType = person.getRole().getType();
 		double base =  switch(roleType) {
-			case PRESIDENT -> 60D;
-			case MAYOR -> 50D;
-			case ADMINISTRATOR -> 40D;
+			case PRESIDENT -> 70D;
+			case MAYOR -> 60D;
+			case ADMINISTRATOR -> 50D;
+			case DEPUTY_ADMINISTRATOR -> 40D;
 			case COMMANDER -> 30D;
 			case SUB_COMMANDER -> 20D;
 			default -> 10D;
