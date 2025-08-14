@@ -1518,6 +1518,14 @@ public class Crop implements Comparable<Crop>, Entity {
 		return (phaseType != PhaseType.INCUBATION) && (phaseType != PhaseType.FINISHED);
 	}
 
+	
+	/** 
+	 * Gets the amount of crop in the holding tank. 
+	 */
+	public double getCropCache() {
+		return cropCache;
+	}
+	
 	/**
 	 * Compares if the object is the same as this crop.
 	 */
