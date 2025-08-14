@@ -71,7 +71,8 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
 		addPreferredRole(RoleType.RESOURCE_SPECIALIST, 1.5D);
-		addPreferredRole(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES, 2);
+		addAllLeadershipRoles();
+		addPreferredRole(RoleType.CHIEF_OF_SUPPLY_RESOURCE, 2);
 		addPreferredRole(RoleType.SUB_COMMANDER, 3);
 		addPreferredRole(RoleType.COMMANDER, 4);
 	}
@@ -98,7 +99,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			RoleType roleType = p.getRole().getType();  
 			double reviewer = switch(roleType) {
 				case RESOURCE_SPECIALIST -> 1.5;
-				case CHIEF_OF_SUPPLY_N_RESOURCES -> 2;
+				case CHIEF_OF_SUPPLY_RESOURCE -> 2;
 				case SUB_COMMANDER -> 3;
 				case COMMANDER -> 4;
 				default -> 1;

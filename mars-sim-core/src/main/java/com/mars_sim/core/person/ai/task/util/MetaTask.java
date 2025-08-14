@@ -22,6 +22,7 @@ import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -197,6 +198,31 @@ public abstract class MetaTask {
 			preferredRoles.put(r, ROLE_BONUS);
 		}
 	}
+
+	/**
+	 * Adds all chief roles for this Task.
+	 * 
+	 * @param jobs
+	 */
+    protected void addAllChiefRoles() {
+		for (RoleType r : RoleUtil.getChiefs()) {
+			preferredRoles.put(r, ROLE_BONUS);
+		}
+	}
+    
+    /**
+	 * Adds all leadership roles to this Task.
+	 * Note: leadership include chiefs and council members
+	 * 
+	 * @param jobs
+	 */
+    protected void addAllLeadershipRoles() {
+		for (RoleType r : RoleUtil.getLeadership()) {
+			preferredRoles.put(r, ROLE_BONUS);
+		}
+	}
+    
+   
     
 	/**
 	 * Gets the associated task name.

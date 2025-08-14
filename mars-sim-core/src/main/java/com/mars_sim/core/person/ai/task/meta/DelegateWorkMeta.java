@@ -33,7 +33,8 @@ public class DelegateWorkMeta extends FactoryMetaTask {
     public DelegateWorkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.ORGANIZATION, TaskTrait.LEADERSHIP);
-
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER);
+		addAllLeadershipRoles();
 	}
 
     @Override
@@ -52,8 +53,10 @@ public class DelegateWorkMeta extends FactoryMetaTask {
            
         double base;
         if (roleType.equals(RoleType.PRESIDENT))
-            base = 50D;
+            base = 60D;
         else if (roleType.equals(RoleType.MAYOR))
+            base = 50D;
+        else if (roleType.equals(RoleType.ADMINISTRATOR))
             base = 40D;
         else if (roleType.equals(RoleType.COMMANDER))
             base = 30D;

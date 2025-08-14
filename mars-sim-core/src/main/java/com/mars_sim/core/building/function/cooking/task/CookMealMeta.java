@@ -16,6 +16,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -66,6 +67,7 @@ public class CookMealMeta extends MetaTask
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.CHEF);
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER);
         addPreferredRobot(RobotType.CHEFBOT);
 	}
 

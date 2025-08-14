@@ -234,19 +234,6 @@ public class Computation extends Function {
 	public double getCoolingDemand() {
 		return coolingDemand;
 	}
-
-//	/**
-//	 * Schedules for a computing tasks.
-//	 * 
-//	 * @param computingTask
-//	 * @return
-//	 */
-//	public boolean scheduleTask(ComputingTask computingTask) {
-//		double demand = computingTask.getComputingPower();
-//		int beginningMSol = computingTask.getStartTime();
-//		int endMSol = beginningMSol + computingTask.getDuration();
-//		return scheduleTask(demand, beginningMSol, endMSol);
-//	}
 	
 	/**
 	 * Schedules for a computing task.

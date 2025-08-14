@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.Person;
@@ -34,9 +36,16 @@ public class RoleUtil implements Serializable {
 	private static Map<JobType, Map<RoleType, Double>> roleWeights
 							= new EnumMap<>(JobType.class);
 
-	private static List<RoleType> specalistsRoles;
+	private static List<RoleType> specalistRoles;
 
 	private static List<RoleType> crewRoles;
+
+	private static List<RoleType> chiefRoles;
+
+	private static List<RoleType> councilRoles;
+	
+	private static List<RoleType> leadershipRoles;
+
 	
 	public RoleUtil() {
 		// nothing
@@ -54,7 +63,7 @@ public class RoleUtil implements Serializable {
 		}
 
 		// Cache the specialists
-		specalistsRoles = Arrays.stream(RoleType.values())
+		specalistRoles = Arrays.stream(RoleType.values())
 								.filter(RoleType::isSpecialist)
 								.toList();
 		
@@ -62,6 +71,21 @@ public class RoleUtil implements Serializable {
 		crewRoles = Arrays.stream(RoleType.values())
 								.filter(RoleType::isCrew)
 								.toList();
+		
+		// Cache the crew roles
+		chiefRoles = Arrays.stream(RoleType.values())
+								.filter(RoleType::isChief)
+								.toList();	
+		
+		// Cache the council roles
+		councilRoles = Arrays.stream(RoleType.values())
+								.filter(RoleType::isCouncil)
+								.toList();
+		
+		// Cache the leadership roles
+		leadershipRoles = Stream.concat(chiefRoles.stream(), 
+								councilRoles.stream())
+                				.collect(Collectors.toList());
 		
 	}
 
@@ -75,7 +99,7 @@ public class RoleUtil implements Serializable {
 	 * @return
 	 */
 	public static List<RoleType> getSpecialists() {
-		return specalistsRoles;
+		return specalistRoles;
 	}
 
 	/**
@@ -85,6 +109,33 @@ public class RoleUtil implements Serializable {
 	 */
 	public static List<RoleType> getCrewRoles() {
 		return crewRoles;
+	}
+	
+	/**
+	 * Returns a list of council roles.
+	 * 
+	 * @return
+	 */
+	public static List<RoleType> getCouncil() {
+		return councilRoles;
+	}
+
+	/**
+	 * Returns a list of chief roles.
+	 * 
+	 * @return
+	 */
+	public static List<RoleType> getChiefs() {
+		return chiefRoles;
+	}
+
+	/**
+	 * Returns a list of leadership roles.
+	 * 
+	 * @return
+	 */
+	public static List<RoleType> getLeadership() {
+		return leadershipRoles;
 	}
 	
 	/**
@@ -117,7 +168,7 @@ public class RoleUtil implements Serializable {
 		}
 		
 		else {
-			types = specalistsRoles;
+			types = specalistRoles;
 		}
 		
 		for (RoleType rt: types) {
@@ -247,7 +298,7 @@ public class RoleUtil implements Serializable {
 	        	candidateType = RoleType.ENGINEERING_SPECIALIST;
 	        	break;
 
-	        case CHIEF_OF_LOGISTICS_N_OPERATIONS:
+	        case CHIEF_OF_LOGISTIC_OPERATION:
 	        	candidateType = RoleType.LOGISTIC_SPECIALIST;
 	        	break;
 
@@ -255,7 +306,7 @@ public class RoleUtil implements Serializable {
 	        	candidateType = RoleType.MISSION_SPECIALIST;
 	        	break;
 
-	        case CHIEF_OF_SAFETY_N_HEALTH:
+	        case CHIEF_OF_SAFETY_HEALTH_SECURITY:
 	        	candidateType = RoleType.SAFETY_SPECIALIST;
 	        	break;
 
@@ -263,7 +314,7 @@ public class RoleUtil implements Serializable {
 	        	candidateType = RoleType.SCIENCE_SPECIALIST;
 	        	break;
 
-	        case CHIEF_OF_SUPPLY_N_RESOURCES:
+	        case CHIEF_OF_SUPPLY_RESOURCE:
 	        	candidateType = RoleType.RESOURCE_SPECIALIST;
 	        	break;
 
@@ -289,16 +340,26 @@ public class RoleUtil implements Serializable {
 		else if (pop <= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
 			roles.add(RoleType.COMMANDER);
 			roles.add(RoleType.SUB_COMMANDER);
-			roles.addAll(specalistsRoles);
+			roles.addAll(specalistRoles);
 		}
 
 		else if (pop <= ChainOfCommand.POPULATION_WITH_CHIEFS) {
 			for (RoleType r : RoleType.values()) {
-				if (r != RoleType.MAYOR || r != RoleType.PRESIDENT)
+				if (r != RoleType.PRESIDENT
+						&& r != RoleType.MAYOR
+						&& r != RoleType.ADMINISTRATOR)
 					roles.add(r);
 			}
 		}
 
+		else if (pop <= ChainOfCommand.POPULATION_WITH_ADMINISTRATOR) {
+			for (RoleType r : RoleType.values()) {
+				if (r != RoleType.PRESIDENT
+						&& r != RoleType.MAYOR)
+					roles.add(r);
+			}
+		}
+		
 		else if (pop <= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			for (RoleType r : RoleType.values()) {
 				if (r != RoleType.PRESIDENT)

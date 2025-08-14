@@ -182,6 +182,7 @@ public class ReviewMissionPlan extends Task {
 					
 					if (role == RoleType.PRESIDENT
 							|| role == RoleType.MAYOR
+							|| role == RoleType.ADMINISTRATOR
 							|| role == RoleType.COMMANDER
 							|| role == RoleType.SUB_COMMANDER)
 						// Perform the executive review 
@@ -331,6 +332,8 @@ public class ReviewMissionPlan extends Task {
 		int reviewerRole = 0;
 		
 		if (role == RoleType.PRESIDENT)
+			reviewerRole = 25;
+		else if (role == RoleType.ADMINISTRATOR)
 			reviewerRole = 20;
 		else if (role == RoleType.MAYOR)
 			reviewerRole = 15;
@@ -340,7 +343,7 @@ public class ReviewMissionPlan extends Task {
 			reviewerRole = 8;
 		else if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
 			reviewerRole = 7;
-		else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+		else if (role == RoleType.CHIEF_OF_LOGISTIC_OPERATION)
 			reviewerRole = 6;
 		else if (role.isChief())
 			reviewerRole = 5;

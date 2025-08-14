@@ -484,7 +484,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		getRole().changeRoleType(type);
 
 		// In case of the role of the Mayor, his job must be set to Politician instead.
-		if (type == RoleType.MAYOR) {
+		if (type == RoleType.PRESIDENT
+			|| type == RoleType.MAYOR
+			|| type == RoleType.ADMINISTRATOR
+				) {
 			// Set the job as Politician
 			mind.assignJob(JobType.POLITICIAN, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}

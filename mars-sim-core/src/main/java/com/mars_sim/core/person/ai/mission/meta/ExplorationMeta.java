@@ -61,7 +61,7 @@ public class ExplorationMeta extends AbstractMetaMission {
  					|| RoleType.SCIENCE_SPECIALIST == roleType
  					|| RoleType.MISSION_SPECIALIST == roleType
  					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
- 					|| RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
+ 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
  					|| RoleType.RESOURCE_SPECIALIST == roleType
  					|| RoleType.COMMANDER == roleType
  					|| RoleType.SUB_COMMANDER == roleType

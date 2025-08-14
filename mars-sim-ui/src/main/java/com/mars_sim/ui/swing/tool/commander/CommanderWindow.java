@@ -35,6 +35,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -84,6 +85,8 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -925,30 +928,32 @@ public class CommanderWindow extends ToolWindow {
 	 * Creates the panel for Agriculture.
 	 */
 	private void createAgriculturePanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		tabPane.add(AGRICULTURE_TAB, panel);
 
-		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		topPanel.setBorder(BorderFactory.createTitledBorder(" Crop Growing Area "));
-		panel.add(topPanel, BorderLayout.NORTH);
+		JPanel topPanel = new JPanel(new BorderLayout());
+		tabPane.add(AGRICULTURE_TAB, topPanel);
 
-		JPanel buildingPanel = new JPanel(new BorderLayout(20, 20));
-		buildingPanel.setBorder(BorderFactory.createTitledBorder(" Select a Farm : "));	
+		JPanel migPanel = new JPanel(new MigLayout());
+		migPanel.setBorder(BorderFactory.createTitledBorder(" Growing Crop "));
+		topPanel.add(migPanel, BorderLayout.CENTER);
+		 
+		JPanel buildingPanel = new JPanel();
+		buildingPanel.setBorder(BorderFactory.createTitledBorder(" Select a Farm "));	
 		buildingPanel.setToolTipText("Choose a farm from the building combobox in this settlement");
-		topPanel.add(buildingPanel, BorderLayout.CENTER);
 		
 		greenhouseBldgs = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		
 		constructBuildingBox(settlement, greenhouseBldgs);
-		buildingPanel.add(buildingBox, BorderLayout.CENTER);
+		buildingPanel.add(buildingBox);
 
-		// Create spinner panel
-		JPanel spinnerPanel = new JPanel(new BorderLayout(20, 20));
-		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Area Per Crop (in sq meters) : "));
-		topPanel.add(spinnerPanel, BorderLayout.EAST);
+		migPanel.add(buildingPanel, "gap unrelated");
 		
-		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 50, 1);
+		// Create spinner panel
+		JPanel spinnerPanel = new JPanel();
+		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Crop Area "));
 	
+		SpinnerModel spinnerModel = new SpinnerNumberModel(10, 1, 50, 1);
+
+		
 		// Go to that selected settlement
 		Building bldg = (Building)buildingBox.getSelectedItem();
 		Farming farm = null;
@@ -960,12 +965,19 @@ public class CommanderWindow extends ToolWindow {
 		spinnerModel.setValue(currentArea);
 				
 		areaSpinner = new JSpinner(spinnerModel);
-		spinnerPanel.add(areaSpinner, BorderLayout.CENTER);
-		spinnerPanel.setToolTipText("Change the growing area for each crop in a selected farm");
+		
+		// 1. Get the editor component of your spinner:
+		Component spinnerEditor = areaSpinner.getEditor();
+		// 2. Get the text field of your spinner's editor:
+		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
+		// 3. Set a default size to the text field:
+		jftf.setColumns(6);
+		spinnerPanel.add(areaSpinner);
+		spinnerPanel.setToolTipText("Change the growing area (in sq meters) for each crop in a selected farm");
 		
 		areaSpinner.addChangeListener(e -> {
 			int newArea = (int)spinnerModel.getValue();
-			logger.info(settlement, "Setting Growing Area per Crop (in SM) to " + newArea + ".");
+			logger.info(settlement, "Setting Growing Area per Crop (in sq meters) to " + newArea + ".");
 			
 			if (!greenhouseBldgs.isEmpty()) {
 				for (Building b: greenhouseBldgs) {
@@ -974,6 +986,9 @@ public class CommanderWindow extends ToolWindow {
 				}
 			}
 		});
+		
+		migPanel.add(spinnerPanel);
+		
 	}
 
 	  

@@ -62,7 +62,8 @@ public class ReviewJobReassignmentMeta extends MetaTask
     public ReviewJobReassignmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
-
+		addAllLeadershipRoles();
+		addAllChiefRoles();
 	}
 
     /**
@@ -121,9 +122,10 @@ public class ReviewJobReassignmentMeta extends MetaTask
 				double newBase = switch(newRole) {
 					case PRESIDENT -> 600;
 					case MAYOR -> 550;
-					case COMMANDER -> 500;
-					case SUB_COMMANDER -> 450;
-					default -> 400;
+					case ADMINISTRATOR -> 500;
+					case COMMANDER -> 450;
+					case SUB_COMMANDER -> 400;
+					default -> 350;
 				};
 				base = Math.max(base, newBase);
 	

@@ -16,6 +16,7 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.PlanMission;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
@@ -58,6 +59,9 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER, RoleType.CHIEF_OF_MISSION_PLANNING,
+				RoleType.MISSION_SPECIALIST);
+		addAllLeadershipRoles();
 	}
 
     /**
