@@ -707,7 +707,7 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Get the Function spec from a Building Type.
+	 * Gets the Function spec from a Building Type.
 	 * 
 	 * @param type Building type
 	 * @param functionType Type of function
@@ -718,7 +718,8 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Get the FunctionTypes that have ActivitySpots assigned
+	 * Gets the FunctionTypes that have ActivitySpots assigned.
+	 * 
 	 * @return
 	 */
     public Set<FunctionType> getActivitySpotFunctions() {

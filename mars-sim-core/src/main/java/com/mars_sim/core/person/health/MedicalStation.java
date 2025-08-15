@@ -9,8 +9,10 @@ package com.mars_sim.core.person.health;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,12 +46,18 @@ public class MedicalStation implements MedicalAid {
 	private List<HealthProblem> problemsBeingTreated;
 	/** List of health problems awaiting treatment. */
 	private List<HealthProblem> problemsAwaitingTreatment;
+	
+	
 	/** List of people resting to recover a health problem. */
 	private List<Person> restingRecoveryPeople;
+	
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
+	
 	/** The set of sick beds. */
 	private Set<LocalPosition> bedSet;
+	
+	private Map<Integer, LocalPosition> bedRegistry;
 	
 	/**
 	 * Constructor.
@@ -67,12 +75,95 @@ public class MedicalStation implements MedicalAid {
 		problemsAwaitingTreatment = new CopyOnWriteArrayList<>();
 		restingRecoveryPeople = new CopyOnWriteArrayList<>();
 
-		var medManager = Simulation.instance().getMedicalManager();
+		bedRegistry = new HashMap<>();
 		
 		// Get all supported treatments at this medical station
-		supportedTreatments = medManager.getSupportedTreatments(level);
+		supportedTreatments =  Simulation.instance().getMedicalManager().getSupportedTreatments(level);
 	}
 
+	
+	/**
+	 * Gets an empty, unoccupied bed.
+	 * 
+	 * @return
+	 */
+	private LocalPosition getEmptyBed() {
+	
+		Collection<LocalPosition> beds = bedRegistry.values();
+		
+		for (LocalPosition pos: bedSet) {
+			if (!beds.contains(pos))
+				return pos;
+		}
+
+		return null;
+	}
+	
+
+	/**
+	 * Adds a patient to a medical bed.
+	 * 
+	 * @return
+	 */
+	public boolean addPatientToBed(Person person) {
+
+		 Set<Integer> patients = bedRegistry.keySet();
+		 
+		 if (patients.contains(person.getIdentifier())) {
+			 return true;
+		 }
+		 else {
+			 LocalPosition aBed = getEmptyBed();
+			 
+			 if (aBed != null) {
+				 bedRegistry.put(person.getIdentifier(), aBed);
+				 return true;
+			 }
+		 }
+		 
+		return false;
+	}
+	
+	/**
+	 * Removes a patient from a medical bed.
+	 * 
+	 * @return
+	 */
+	public boolean removePatientFromBed(Person person) {
+
+		 Set<Integer> patients = bedRegistry.keySet();
+		 
+		 if (patients.contains(person.getIdentifier())) {
+
+			 bedRegistry.remove(person.getIdentifier());
+			 
+			 return true;
+		 }
+		 
+		return false;
+	}
+	
+	/**
+	 * Are there any patients ?
+	 * 
+	 * @return 
+	 */
+	public boolean hasPatients() {
+		if (!bedRegistry.isEmpty())
+			return true;
+		
+		if (!problemsBeingTreated.isEmpty())
+			return true;
+		
+		if (!problemsAwaitingTreatment.isEmpty())
+			return true;
+		
+		if (!restingRecoveryPeople.isEmpty())
+			return true;
+		
+		return false;
+	}
+	
 	/**
 	 * Sets the sick beds.
 	 * 
@@ -124,15 +215,15 @@ public class MedicalStation implements MedicalAid {
 		return getPatients().size();
 	}
 
-	/**
-	 * Checks if there are any empty beds for new patients.
-	 * 
-	 * @return true or false
-	 */
-	public boolean hasEmptyBeds() {
-        return getPatientNum() < getSickBedNum();
-	}
-	
+//	/**
+//	 * Checks if there are any empty beds for new patients.
+//	 * 
+//	 * @return true or false
+//	 */
+//	public boolean hasEmptyBeds() {
+//        return getPatientNum() < getSickBedNum();
+//	}
+//	
 	/**
 	 * Gets the patients at this medical station.
 	 * 
@@ -199,6 +290,10 @@ public class MedicalStation implements MedicalAid {
 		if (canTreatProblem(problem)) {
 			// Add the problem to the waiting queue.
 			problemsAwaitingTreatment.add(problem);
+			if (problem.getSufferer().isInSettlement())
+				// Add the patient to a bed
+				addPatientToBed(problem.getSufferer());
+			
 		} else {
 			logger.info("[" + name + "] " + problem.getComplaint() + " cannot be treated in medical station.");
 		}
@@ -213,7 +308,12 @@ public class MedicalStation implements MedicalAid {
 
 		// Check if problem is being treated here.
 		if (problemsAwaitingTreatment.contains(problem)) {
+			// Remove the problem 
 			problemsAwaitingTreatment.remove(problem);
+			if (problem.getSufferer().isInSettlement())
+				// Remove the patient from a bed
+				removePatientFromBed(problem.getSufferer());
+			
 		} else {
 			logger.severe("[" + name + "] " + "Health problem " + problem.getComplaint()
 					+ " request cannot be canceled as it is not awaiting response.");
@@ -241,10 +341,18 @@ public class MedicalStation implements MedicalAid {
 	public void stopTreatment(HealthProblem problem) {
 
 		if (problemsBeingTreated.contains(problem)) {
+			
 			problem.stopTreatment();
+			
 			problemsBeingTreated.remove(problem);
+			
+			if (problem.getSufferer().isInSettlement())
+				// Remove the patient from a bed
+				removePatientFromBed(problem.getSufferer());
+			
 			var state = problem.getState();
 			boolean dead = problem.getSufferer().getPhysicalCondition().isDead();
+			
 			if ((state != HealthProblemState.CURED) && !dead && (state != HealthProblemState.RECOVERING)) {
 				problemsAwaitingTreatment.add(problem);
 			}
@@ -258,6 +366,11 @@ public class MedicalStation implements MedicalAid {
 
 		if (!restingRecoveryPeople.contains(person)) {
 			restingRecoveryPeople.add(person);
+			
+			if (person.isInSettlement())
+				// Add a patient to a bed
+				addPatientToBed(person);
+			
 		} else {
 			logger.severe(person + " already resting at medical station.");
 		}
@@ -268,6 +381,10 @@ public class MedicalStation implements MedicalAid {
 
 		if (restingRecoveryPeople.contains(person)) {
 			restingRecoveryPeople.remove(person);
+			
+			if (person.isInSettlement())
+				// Add a patient to a bed
+				removePatientFromBed(person);
 		} else {
 			logger.severe(person + " isn't resting at medical station.");
 		}

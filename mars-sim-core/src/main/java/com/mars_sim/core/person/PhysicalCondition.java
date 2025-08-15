@@ -19,12 +19,14 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -119,7 +121,7 @@ public class PhysicalCondition implements Serializable {
 	public static final String DEGREE_CELSIUS = Msg.getString("temperature.sign.degreeCelsius");
 
 	public static final String TBD = "[To Be Determined]";
-	private static final String TRIGGERED_DEATH = "[Player Triggered Death]";
+	private static final String TRIGGERED_DEATH = "Player Triggered Death";
 	
 	private static double o2Consumption;
 	private static double h20Consumption;
@@ -1313,7 +1315,7 @@ public class PhysicalCondition implements Serializable {
 		if (healthLog.get(type) != null)
 			freq = healthLog.get(type);
 		healthLog.put(type, freq + 1);
-		logger.log(person, Level.INFO, 1_000L, "Suffering from " + type.getName() + ".");
+		logger.log(person, Level.INFO, 0, "Suffering from " + type.getName() + ".");
 		recalculatePerformance();
 		return newProblem;
 	}
@@ -1406,15 +1408,15 @@ public class PhysicalCondition implements Serializable {
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 		}
 
-		else {
-			// Is the person suffering from the illness, if so recovery
-			// as the amount has been provided
-			HealthProblem illness = getProblemByType(complaint);
-			if (illness != null) {
-				illness.startRecovery();
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-			}
-		}
+//		else {
+//			// Is the person suffering from the illness, if so recovery
+//			// as the amount has been provided
+//			HealthProblem illness = getProblemByType(complaint);
+//			if (illness != null) {
+//				illness.startRecovery();
+//				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+//			}
+//		}
 		return newProblem;
 	}
 
@@ -1463,6 +1465,8 @@ public class PhysicalCondition implements Serializable {
 		person.setRevived(problem);
 		// Set the mind of the person to active
 		person.getMind().setActive();
+
+		
 		// Starts the recovery
 		problem.startRecovery();
 
@@ -1481,6 +1485,12 @@ public class PhysicalCondition implements Serializable {
 		// Should the person retake the same role ?
 
 		logger.log(person, Level.WARNING, 0, "Person was revived as ordered.");
+		
+		// Send the person to a medical building
+		BuildingManager.addPatientToMedicalBed(person, person.getAssociatedSettlement());
+
+		// Let the person go to sleep
+		person.getTaskManager().replaceTask(new Sleep(person, 500));
 	}
 
 	
@@ -1498,8 +1508,11 @@ public class PhysicalCondition implements Serializable {
 			logger.log(person, Level.WARNING, 0, "Declared dead. Reason: " + reason + ".");
 		}
 
+		setPerformanceFactor(0);
+		
 		// Set the state of the health problem to DEAD
 		problem.setState(HealthProblemState.DEAD);
+		
 		// Set mostSeriousProblem to this problem
 		this.mostSeriousProblem = problem;
 

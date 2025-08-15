@@ -8,6 +8,7 @@ package com.mars_sim.core.person.health.task;
 
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -34,7 +35,10 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
     /** Task phases. */
     private static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(
             "Task.phase.treatingHealthProblem")); //$NON-NLS-1$
-
+    private static final TaskPhase DISPATCH = new TaskPhase(Msg.getString(
+            "Task.phase.medicalDispatch")); //$NON-NLS-1$
+    
+    
     private static final ExperienceImpact IMPACT = new ExperienceImpact(25D,
                             NaturalAttributeType.EXPERIENCE_APTITUDE, PhysicalEffort.NONE,
                             0.1D, SkillType.MEDICINE);
@@ -61,14 +65,21 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             return;
         }
 
-        // Initialize phase.
-        setPhase(TREATMENT);
+        if (doctor.isInSettlement())
+	        // Initialize phase.
+        	setPhase(DISPATCH);
+        else 
+        	// In future, simulate offering telemedicine via mission control
+        	setPhase(TREATMENT);
     }
 
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (DISPATCH.equals(getPhase())) {
+            return dispatchingPhase(time);
         }
         else if (TREATMENT.equals(getPhase())) {
             return treatmentPhase(time);
@@ -78,8 +89,45 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         }
     }
 
+
+    /**
+     * Dispatches to a medical facility in response to a medical need.
+     * 
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left over after performing the phase.
+     */
+    private double dispatchingPhase(double time) {
+
+    	double timeLeft = 0D;
+    	
+		// Check if the doctor is already at a medical activity spot	
+		boolean success = MedicalCare.dispatchToMedical(person);
+
+		if (!success) {
+			// First walk to a medical activity spot
+			success = walkToDoctorStation(true);
+			
+			if (!success) {
+				// If no medical activity spot is available, end the task
+				endTask();
+				
+				return timeLeft / 2;
+			}
+			else {
+				setPhase(TREATMENT);
+			}
+		}
+		else {
+			setPhase(TREATMENT);
+		}
+		
+    	return timeLeft;
+    }
+    
+    
     /**
      * Performs the treatment phase of the task.
+     * 
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left over after performing the phase.
      */
@@ -132,7 +180,7 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
     }
 
     /**
-     * Stop mediical treatment
+     * Stops the medical treatment
      */
     @Override
     protected void clearDown() {

@@ -62,6 +62,8 @@ public class PersonUnitWindow extends UnitWindow {
 
 	private JPanel statusPanel;
 	
+	private TabPanelDeath tabPanelDeath;
+	
 	private Person person;
 
 	/**
@@ -174,7 +176,9 @@ public class PersonUnitWindow extends UnitWindow {
 		if (person.isDeclaredDead()
 				|| person.getPhysicalCondition().isDead()) {
 			deadCache = true;
-			addTabPanel(new TabPanelDeath(person, desktop));
+			
+			tabPanelDeath = new TabPanelDeath(person, desktop);
+			addTabPanel(tabPanelDeath);
 		}
 
 		addTabPanel(new TabPanelFavorite(person, desktop));
@@ -223,6 +227,11 @@ public class PersonUnitWindow extends UnitWindow {
 			|| person.getPhysicalCondition().isDead())) {
 			deadCache = true;
 			addTabPanel(new TabPanelDeath(person, desktop));
+		}
+		
+		if (deadCache && !person.getPhysicalCondition().isDead()) {
+			deadCache = false;
+			removeTabPanel(tabPanelDeath);
 		}
 		
 		statusUpdate();

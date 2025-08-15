@@ -971,14 +971,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		// Check my own position
 		LocalPosition myLoc = person.getPosition();
+		// Allocate it
 		person.setActivitySpot(bed);
 
-		if (myLoc.equals(bed.getAllocated().getPos())) {
+		LocalPosition bedLoc = bed.getAllocated().getPos();
+		if (myLoc.equals(bedLoc)) {
 			return canWalk;
 		}
 	
 		// Create subtask for walking to destination.
-		return createWalkingSubtask(bed.getOwner(), bed.getAllocated().getPos(), allowFail);
+		return createWalkingSubtask(bed.getOwner(), bedLoc, allowFail);
 	}
 
 	/**
@@ -1098,9 +1100,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param rover     the rover.
 	 * @param allowFail true if walking is allowed to fail.
+	 * @return
 	 */
-	protected void walkToPassengerActivitySpotInRover(Rover rover, boolean allowFail) {
-		walkToActivitySpotInRover(rover, rover.getPassengerActivitySpots(), allowFail);
+	protected boolean walkToPassengerActivitySpotInRover(Rover rover, boolean allowFail) {
+		return walkToActivitySpotInRover(rover, rover.getPassengerActivitySpots(), allowFail);
 	}
 
 	/**
@@ -1108,9 +1111,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param rover     the rover.
 	 * @param allowFail true if walking is allowed to fail.
+	 * @return
 	 */
-	protected void walkToLabActivitySpotInRover(Rover rover, boolean allowFail) {
-		walkToActivitySpotInRover(rover, rover.getLabActivitySpots(), allowFail);
+	protected boolean walkToLabActivitySpotInRover(Rover rover, boolean allowFail) {
+		return walkToActivitySpotInRover(rover, rover.getLabActivitySpots(), allowFail);
 	}
 
 	/**
@@ -1118,9 +1122,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param rover     the rover.
 	 * @param allowFail true if walking is allowed to fail.
+     * @return
 	 */
-	protected void walkToSickBayActivitySpotInRover(Rover rover, boolean allowFail) {
-		walkToActivitySpotInRover(rover, rover.getSickBayActivitySpots(), allowFail);
+	protected boolean walkToSickBayActivitySpotInRover(Rover rover, boolean allowFail) {
+		return walkToActivitySpotInRover(rover, rover.getSickBayActivitySpots(), allowFail);
 	}
 
 	/**
@@ -1129,9 +1134,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param rover         the rover.
 	 * @param activitySpots list of activity spots.
 	 * @param allowFail     true if walking is allowed to fail.
+	 * @return
 	 */
-	protected void walkToActivitySpotInRover(Rover rover, List<LocalPosition> activitySpots, boolean allowFail) {
-
+	protected boolean walkToActivitySpotInRover(Rover rover, List<LocalPosition> activitySpots, boolean allowFail) {
+		boolean success = false;
+		
 		// Determine available operator activity spots.
 		LocalPosition activitySpot = null;
 		if (activitySpots != null && !activitySpots.isEmpty()) {
@@ -1152,7 +1159,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 
-		walkToActivitySpotInRover(rover, activitySpot, allowFail);
+		if (activitySpot != null)
+			success = walkToActivitySpotInRover(rover, activitySpot, allowFail);
+		
+		return success;
 	}
 
 	/**
@@ -1194,17 +1204,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param activitySpot the activity spot as a Point2D object.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
-	private void walkToActivitySpotInRover(Rover rover, LocalPosition activitySpot, boolean allowFail) {
-
+	private boolean walkToActivitySpotInRover(Rover rover, LocalPosition activitySpot, boolean allowFail) {
+		boolean success = false;
+		
 		if (activitySpot != null) {
 
 			// Create subtask for walking to destination.
-			createWalkingSubtask(rover, activitySpot, allowFail);
+			success = createWalkingSubtask(rover, activitySpot, allowFail);
 		} else {
 
 			// Walk to a random location in the rover.
-			walkToRandomLocInRover(rover, allowFail);
+			success = walkToRandomLocInRover(rover, allowFail);
 		}
+		
+		return success;
 	}
 
 	/**
@@ -1212,13 +1225,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param rover     the destination rover.
 	 * @param allowFail true if walking is allowed to fail.
+	 * @return
 	 */
-	protected void walkToRandomLocInRover(Rover rover, boolean allowFail) {
-
+	protected boolean walkToRandomLocInRover(Rover rover, boolean allowFail) {
+		boolean success = false;
+		
 		LocalPosition sPos = LocalAreaUtil.getRandomLocalPos(rover);
 
-		// Create subtask for walking to destination.
-		createWalkingSubtask(rover, sPos, allowFail);
+		if (sPos != null)
+			// Create subtask for walking to destination.
+			success = createWalkingSubtask(rover, sPos, allowFail);
+		
+		return success;
 	}
 
 	/**

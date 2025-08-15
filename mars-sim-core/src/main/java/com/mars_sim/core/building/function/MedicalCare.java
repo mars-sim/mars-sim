@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MedicalCare.java
- * @date 2023-11-24
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function;
@@ -13,7 +13,9 @@ import java.util.Set;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -33,6 +35,8 @@ public class MedicalCare extends Function implements MedicalAid {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(MedicalCare.class.getName());
 
 	private MedicalStation medicalStation;
 
@@ -57,7 +61,7 @@ public class MedicalCare extends Function implements MedicalAid {
 		
 		medicalStation.setSickBeds(bedSet);
 	}
-
+	
 	/**
 	 * Gets the value of the function for a named building type.
 	 * 
@@ -92,6 +96,42 @@ public class MedicalCare extends Function implements MedicalAid {
 		return tech * value;
 	}
 
+    
+    /**
+     * Dispatch a person to serve a medical need by occupying an activity spot.
+     * 
+     * @return
+     */
+    public static boolean dispatchToMedical(Person person) {
+    	
+    	boolean success = false;
+    	
+    	Building building = person.getSettlement().getBuildingManager()
+				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
+
+		if (building != null) {
+			
+			// Send this doctor to occupy a physical spot
+			success = BuildingManager.addPersonToActivitySpot(person, building, FunctionType.MEDICAL_CARE);
+				
+			if (success)
+				logger.info(person, 20_000, "Already arrived at " + building.getName() + ".");
+		}
+		else
+			logger.info(person, 0, "Not in a building.");
+		
+	    return success;
+    }
+    
+	/**
+	 * Adds a patient to a medical bed.
+	 * 
+	 * @return
+	 */
+	public boolean addPatientToBed(Person person) {
+		return medicalStation.addPatientToBed(person);
+	}
+	
 	/**
 	 * Gets the number of sick beds.
 	 * 
@@ -111,13 +151,14 @@ public class MedicalCare extends Function implements MedicalAid {
 	}
 	
 	/**
-	 * Checks if there are any empty beds for new patients
+	 * Are there any patients ?
 	 * 
-	 * @return true or false
+	 * @return 
 	 */
-	public boolean hasEmptyBeds() {
-        return getPatientNum() < getSickBedNum();
+	public boolean hasPatients() {
+		return medicalStation.hasPatients();
 	}
+	
 	
 	/**
 	 * Gets the patients at this medical station.
@@ -141,13 +182,13 @@ public class MedicalCare extends Function implements MedicalAid {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Task task = i.next().getMind().getTaskManager().getTask();
-				if (task instanceof TreatMedicalPatient) {
-					MedicalAid aid = ((TreatMedicalPatient) task).getMedicalAid();						
+				if (task instanceof TreatMedicalPatient tmp) {
+					MedicalAid aid = tmp.getMedicalAid();						
 					if ((aid != null) && (aid == this))
 						result++;
 				}
-				else if (task instanceof RequestMedicalTreatment) {
-					MedicalAid aid = ((RequestMedicalTreatment) task).getMedicalAid();						
+				else if (task instanceof RequestMedicalTreatment rmt) {
+					MedicalAid aid = rmt.getMedicalAid();						
 					if ((aid != null) && (aid == this))
 						result++;
 				}	

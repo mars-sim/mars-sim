@@ -259,7 +259,7 @@ public abstract class Function implements Serializable, Temporal {
 							.findFirst();
 		return f.orElse(null);
 	}
-
+	
 	/**
 	 * Returns if a worker has already occupied an activity spot.
 	 *

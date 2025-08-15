@@ -2562,7 +2562,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="5" bed="8">
 				<activity>
-					<activity-spot xloc="1.8" yloc="2.4" />
+					<!-- inner bed :  activity-spot xloc="1.8" yloc="2.4" /-->
+					<activity-spot xloc="-0.98" yloc="3.14" />
+					<activity-spot xloc="-1.72" yloc="3.14" />										
 				</activity>
 				<bed>
 					<bed-location xloc="2.0" yloc="1.35" />					

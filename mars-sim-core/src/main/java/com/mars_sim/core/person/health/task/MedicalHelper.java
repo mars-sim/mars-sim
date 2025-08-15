@@ -1,8 +1,7 @@
-
-/**
+/*
  * Mars Simulation Project
  * MedicalHelper.java
- * @date 2024-06-09
+ * @date 2025-08-14
  * @author Barry Evans
  */
 package com.mars_sim.core.person.health.task;
@@ -33,7 +32,8 @@ public final class MedicalHelper {
     private MedicalHelper() {}
 
     /**
-     * Determine which MedicalAid a person can use to handle a set of problems
+     * Determines which Medical Aid a person can use to handle a set of problems.
+     * 
      * @param p Person looking for aid
      * @param curable What are the problem to cure; if empty then any problem
      */
@@ -49,7 +49,7 @@ public final class MedicalHelper {
     }
 
     /**
-     * Determine a medical aid at a settlement to use for self-treating a health problem.
+     * Determines a medical aid at a settlement to use for self-treating a health problem.
      * 
      * @param settlement Place to search
      * @param curable 
@@ -79,7 +79,8 @@ public final class MedicalHelper {
     }
 
     /**
-     * Can a Medical Aid cure a specific healh problems
+     * Can this Medical Aid cure a specific health problem ?
+     * 
      * @param medicalCare Care center available
      * @param curable Set of problem to cure
      * @return
@@ -99,7 +100,7 @@ public final class MedicalHelper {
     /**
      * Gets a list of health problems the person can self-treat.
      * 
-     * @param healer Perosn doing the healing
+     * @param healer Person doing the healing
      * @param selfHeal Look only for Self heal problems
      * @return list of health problems (may be empty).
      */
@@ -125,7 +126,7 @@ public final class MedicalHelper {
     }
 
     /**
-     * Determine a medical aid on a vehicle to use for self-treating a health problem.
+     * Determines a medical aid on a vehicle to use for self-treating a health problem.
      * 
      * @param v Rover to check
      * @param curable Set of problem being cured

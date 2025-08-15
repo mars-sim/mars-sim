@@ -143,6 +143,17 @@ public abstract class UnitWindow extends ModalInternalFrame
 	}
 
 	/**
+	 * Removes a tab panel to the center panel.
+	 *
+	 * @param panel the tab panel to remove.
+	 */
+	protected final void removeTabPanel(TabPanel panel) {
+		if (tabPanels.contains(panel)) {
+			tabPanels.remove(panel);
+		}
+	}
+	
+	/**
 	 * Adds a tab panel to the center panel.
 	 *
 	 * @param panel the tab panel to add.

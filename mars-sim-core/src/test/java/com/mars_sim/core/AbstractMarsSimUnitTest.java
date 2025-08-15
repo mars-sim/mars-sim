@@ -228,8 +228,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		int rand = RandomUtil.getRandomInt(1);
 		if (rand == 1)
 			gender = GenderType.FEMALE;
-			
-		
+
 		Person person = Person.create(name, settlement, gender)
 				.build();
 		
@@ -240,8 +239,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		unitManager.addUnit(person);
 
 		if (place != null) {
-			BuildingManager.addPersonToActivitySpot(person, place, activity);
+			boolean success = BuildingManager.addPersonToActivitySpot(person, place, activity);
+			
+			if (!success)
+				System.out.println("Unsuccessful in adding " + person + " to a " + activity.getName() + " activity spot.");
+			else 
+				System.out.println("Successful in adding " + person + " to a " + activity.getName() + " activity spot.");
 		}
+		
 		return person;
 	}
 

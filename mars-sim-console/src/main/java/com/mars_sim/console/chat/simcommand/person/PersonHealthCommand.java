@@ -199,7 +199,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 		}
 
-		if (context.getBooleanInput("Caused death")) {
+		if (context.getBooleanInput("Will this cause death ?")) {
 			context.println(person + " is now dead.");
 			person.getPhysicalCondition().recordDead(problem, true, "Act of God");
 		}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExamineBody.java
- * @date 2022-06-30
+ * @date 2025-08-14
  * @author Manny Kung
  */
 package com.mars_sim.core.person.health.task;
@@ -9,6 +9,8 @@ package com.mars_sim.core.person.health.task;
 import java.util.Collections;
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
@@ -39,14 +41,20 @@ public class ExamineBody extends MedicalAidTask {
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase EXAMINING = new TaskPhase(Msg.getString("Task.phase.examineBody.examining")); //$NON-NLS-1$
+	static final TaskPhase PREPARING = new TaskPhase(Msg.getString("Task.phase.examineBody.preparing")); //$NON-NLS-1$
+
+	static final TaskPhase EXAMINING = new TaskPhase(Msg.getString("Task.phase.examineBody.examining")); //$NON-NLS-1$
+	
 	static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.recording")); //$NON-NLS-1$
 
     private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                                false, 1.5,
-												SkillType.MEDICINE);
+                                                false, 1.5, SkillType.MEDICINE);
 
+    private static final double STANDARD_TRANSPORTATION_TIME = 20;
+    
 	// Data members.
+    private double transportRemainingTime = STANDARD_TRANSPORTATION_TIME;
+    
 	private DeathInfo deathInfo;
 	private Person patient;
 	
@@ -63,7 +71,7 @@ public class ExamineBody extends MedicalAidTask {
 	 * Constructor.
 	 * 
 	 * @param examiner the person to perform the task
-	 * @param body Body to examin
+	 * @param body Body to examine
 	 */
 	private ExamineBody(Person examiner, DeathInfo body, MedicalAid aid) {
 		super(NAME, examiner, aid, IMPACT, 0D);
@@ -78,42 +86,22 @@ public class ExamineBody extends MedicalAidTask {
         	endTask();
         	return;
         }
+				
+		patient = body.getPerson();
 
-		// Determine patient and health problem to treat.
+		// Set deathInfo
 		deathInfo = body;
-		if (!deathInfo.getBodyRetrieved()) {
-			retrieveBody();
-		}
-					
-		patient = deathInfo.getPerson();
-
-		// Get the person's medical skill.
-		double skill = examiner.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-		if (skill == 0)
-			skill = .5;
-		// Get the person's emotion stability
-		int stab = examiner.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
-		// Get the person's stress resilience						
-		int resilient = examiner.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-		
-		// Note: Need to refine in determining how long the exam would take. 
-		// Depends on the cause of death ?
-		double durationExam = 150 +  (200 - stab - resilient) / 5D / skill 
-				+ 2 * RandomUtil.getRandomInt(5);
-		
-		deathInfo.setEstTimeExam(durationExam);
-
-		// Walk to medical aid.
-		walkToMedicalAid(false);
 
 		// Initialize phase.
-		setPhase(EXAMINING);
+		setPhase(PREPARING);
 	}
 
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
+		} else if (PREPARING.equals(getPhase())) {
+			return preparingPhase(time);
 		} else if (EXAMINING.equals(getPhase())) {
 			return examiningPhase(time);
 		} else if (RECORDING.equals(getPhase())) {
@@ -123,6 +111,72 @@ public class ExamineBody extends MedicalAidTask {
 		}
 	}
 
+	private double preparingPhase(double time) {
+		double remainingTime = 0;
+		
+		// Check if the doctor is already at a medical activity spot	
+		boolean success = MedicalCare.dispatchToMedical(person);
+
+		if (!success) {
+			// First walk to a medical activity spot
+			success = walkToDoctorStation(true);
+			
+			if (!success) {
+				// If no medical activity spot is available, end the task
+				endTask();
+				
+				return remainingTime;
+			}
+		}
+
+		String name = deathInfo.getDoctorRetrievingBody();
+		
+		if (name == null) {
+			
+			logger.info(person, "Just retrieved the body of " 
+					+ patient.getName() + ".");
+			
+			deathInfo.setDoctorRetrievingBody(person.getName());
+			
+			// The first physician gets to set the estimate exam time
+			
+			// Get the person's medical skill.
+			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			if (skill == 0)
+				skill = .5;
+			// Get the person's emotion stability
+			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
+			// Get the person's stress resilience						
+			int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+			
+			// Note: Need to refine in determining how long the exam would take. 
+			// Depends on the cause of death ?
+			double durationExam = 150 +  (200 - stab - resilient) / 5D / skill 
+					+ 2 * RandomUtil.getRandomInt(5);
+			
+			// Set exam duration time
+			deathInfo.setEstTimeExam(durationExam);
+			
+			logger.info(person, "Set estimated exam time as " + Math.round(durationExam * 10.0)/10.0 + " millisols.");
+			
+		}
+		
+		else {
+			
+			transportRemainingTime = transportRemainingTime - time;
+			
+			if (transportRemainingTime < 0) {
+
+				// Send the person as a patient to a medical bed
+				success = BuildingManager.addPatientToMedicalBed(patient, worker.getSettlement());
+				// Initialize phase.
+				setPhase(EXAMINING);
+			}
+		}
+
+		return remainingTime;
+	}
+	
 	/**
 	 * Performs the examining phase of the task.
 	 * 
@@ -141,24 +195,24 @@ public class ExamineBody extends MedicalAidTask {
 		}
 		
 		// Retrieves the time spent on examining the body
-		double timeExam = deathInfo.getTimeExam();
-		
-		if (timeExam == 0)
-			// Retrieve the body first before beginning the exam
-			deathInfo.getBodyRetrieved();
-		
-		if (timeExam > deathInfo.getEstTimeExam()) {
-			logger.log(worker, Level.WARNING, 20_000, "Postmortem exam done on " 
-						+ patient.getName() + ".");
+		double timeExam = deathInfo.getTimeSpentExam();
 			
-			deathInfo.setExamDone(true);
+		if (timeExam >= deathInfo.getEstTimeExam()
+				&& deathInfo.getDoctorSigningCertificate() == null) {
+			logger.log(worker, Level.INFO, 0, "Postmortem exam on " 
+						+ patient.getName() + " completed.");
 			
+			// Note: there could be multiple physicians performing the exam
+			//       This way, if one physician is no longer available others may
+			//       finish what he has started.
+			
+			deathInfo.setDoctorSigningCertificate(worker.getName());
+					
+			deathInfo.setExamDone(true);			
 			// Check for accident in medical aid.
 			checkForAccident(mal, timeExam, 0.002);
-	
 			// Add experience.
-			addExperience(timeExam);
-			
+			addExperience(timeExam);		
 			// Ready to go to the next task phase
 			setPhase(RECORDING);
 		}
@@ -169,7 +223,10 @@ public class ExamineBody extends MedicalAidTask {
 			if (skill == 0)
 				skill = .5;
 			// Add exam time as modified by skill
-			deathInfo.addTimeExam(time * ( 1 + skill / 4D));
+			deathInfo.addTimeSpentExam(time * ( 1 + skill / 4D));
+			
+			logger.log(worker, Level.INFO, 10_000, "Performing a postmortem exam on " 
+					+ patient.getName() + ".");
 		}
 		
 		return remainingTime;
@@ -183,13 +240,14 @@ public class ExamineBody extends MedicalAidTask {
 	 */
 	private double recordingPhase(double time) {
 
-		double timeLeft = 0D;
+		double remainingTime = 0D;
+		
 		var mal = getMalfunctionable();
 
 		// If medical aid has malfunction, end task.
 		if (mal.getMalfunctionManager().hasMalfunction()) {
 			endTask();
-			return 0;
+			return remainingTime;
 		}
 
 		// Record the cause
@@ -208,19 +266,9 @@ public class ExamineBody extends MedicalAidTask {
 
 		endTask();
 		
-
-		return timeLeft;
+		return remainingTime;
 	}
-
-	/**
-	 * Retrieves the body.
-	 * 
-	 * @param problem
-	 */
-	private void retrieveBody() {
-		deathInfo.setBodyRetrieved(true);
-	}
-
+	
 	/**
 	 * Records the cause of death and creates the medical event.
 	 * 

@@ -888,7 +888,7 @@ public abstract class EVAOperation extends Task {
 	public static void send2Medical(Person p, Settlement s) {
 
 		// Store the person into a medical building
-		BuildingManager.addToMedicalBuilding(p, s);
+		BuildingManager.addPatientToMedicalBed(p, s);
 
 		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
 		

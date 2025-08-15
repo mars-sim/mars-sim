@@ -33,7 +33,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
         var sb = buildMediCare(this, s);
-        var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+        var p = buildPerson("Mr. Physician 0", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
         var hp = addComplaint(this, p, ComplaintType.LACERATION);
@@ -49,10 +49,11 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
         assertFalse("Health problem not treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
 
         // Do the walk; then first step of treatment
-        executeTaskUntilSubTask(p, task, 1000);
+        executeTaskUntilSubTask(p, task, 50);
         executeTask(p, task, 1);
-        assertTrue("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
-        assertFalse("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
+        
+        assertFalse("Health problem still not being treated at Medical care yet", sb.getMedical().getProblemsBeingTreated().contains(hp));
+        assertTrue("Health problem waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
 
         // Complete treatment
         executeTask(p, task, 1000);
@@ -70,7 +71,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Hospital");
         buildMediCare(this, s);  // Build a settlement medical center to make sure there is no teleporting
         var r = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION);
-        var p = buildPerson("Ill", s, JobType.DOCTOR);
+        var p = buildPerson("Mr. Physician 1", s, JobType.DOCTOR);
         p.transfer(r);
         assertTrue("Person starts in Vehicle", p.isInVehicle());
 
@@ -84,6 +85,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
         assertEquals("Complaint in degrading", HealthProblemState.DEGRADING, hp.getState());
 
         var task = SelfTreatHealthProblem.createTask(p);
+        
         assertFalse("Task created", task.isDone());
         assertTrue("Health problem waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
         assertFalse("Health problem not treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
@@ -91,6 +93,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(p, task, 1000);
         executeTask(p, task, 1);
+        
         assertTrue("Health problem treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
         assertFalse("Health problem not waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
 
@@ -109,7 +112,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
     public void testMetaTask() {
         var s = buildSettlement("Hospital");
         var sb = buildMediCare(this, s);
-        var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+        var p = buildPerson("Mr. Physician 2", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var mt = new SelfTreatHealthProblemMeta();
 

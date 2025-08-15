@@ -568,7 +568,7 @@ public abstract class TaskManager implements Serializable {
 			
 			currentTask.endTask();
 			
-			logger.info(worker, 20_000, "Quit '" + des + "' and replace with the new task of '"
+			logger.info(worker, 5_000, "Quit '" + des + "' and replace with the new task of '"
 						+ newTask.getName() + "'.");
 		}
 		

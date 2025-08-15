@@ -62,9 +62,9 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private static MedicalManager medicalManager;
 
     public ExamineBodyMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 
-		setTrait(TaskTrait.MEDICAL);
+		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
 		setPreferredJob(JobType.MEDICS);
 		addPreferredRobot(RobotType.MEDICBOT);
 	}
@@ -107,7 +107,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		List<SettlementTask>  tasks = new ArrayList<>();
 		List<DeathInfo> deaths = medicalManager.getPostmortemExam(settlement);
 
-		if (!deaths.isEmpty() && hasNeedyMedicalAidsAtSettlement(settlement)) {
+		if (!deaths.isEmpty()) { // && hasNeedyMedicalAidsAtSettlement(settlement)) {
 			for(DeathInfo pm : deaths) {
 				if (!pm.getExamDone()) {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);
@@ -133,7 +133,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		// Check all medical care buildings.
 		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
 			// Check if there are any sick beds at building.
-			if (b.getMedical().hasEmptyBeds()) {
+			if (b.getMedical().hasPatients()) {
 				return true;
 			}
 		}

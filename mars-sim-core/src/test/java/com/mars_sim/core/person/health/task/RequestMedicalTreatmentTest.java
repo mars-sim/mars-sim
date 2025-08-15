@@ -8,6 +8,7 @@ import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
 
 public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
+	
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -23,6 +24,7 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(patient, task, 1000);
         executeTask(patient, task, 30);
+        
         assertFalse("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
         assertTrue("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
         assertEquals("Waiting for treatment", RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase());
@@ -30,6 +32,7 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         // Simulate someone helping
         sb.getMedical().startTreatment(hp, recoveryTime);
         executeTask(patient, task, 1);
+        
         assertTrue("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
         assertFalse("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
         assertEquals("Started for treatment", RequestMedicalTreatment.TREATMENT, task.getPhase());
@@ -65,6 +68,7 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(patient, task, 1000);
         executeTask(patient, task, 30);
+        
         assertFalse("Health problem treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
         assertTrue("Health problem not waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
         assertEquals("Waiting for treatment", RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase());
@@ -72,6 +76,7 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         // Simulate someone helping
         sb.startTreatment(hp, recoveryTime);
         executeTask(patient, task, 1);
+        
         assertTrue("Health problem treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
         assertFalse("Health problem not waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
         assertEquals("Started for treatment", RequestMedicalTreatment.TREATMENT, task.getPhase());

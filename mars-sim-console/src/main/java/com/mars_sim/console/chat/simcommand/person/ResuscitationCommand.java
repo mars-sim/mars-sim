@@ -28,12 +28,12 @@ public class ResuscitationCommand extends AbstractPersonCommand {
 	public boolean execute(Conversation context, String input, Person subject) {
 		
 		if (!subject.isDeclaredDead()) {
-			context.println("Person is not dead");
+			context.println("Person is not dead.");
 			return false;
 		}
 		subject.getPhysicalCondition().reviveToLife();
 
-		context.println(subject.getName() + " was just being revived and under recovery.");
+		context.println(subject.getName() + " was just being revived and would be under recovery.");
 		
 		return false;
 	}

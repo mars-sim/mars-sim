@@ -11,9 +11,11 @@ import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.tool.Msg;
 
@@ -30,6 +32,10 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
 
     public SelfTreatHealthProblemMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
+		setPreferredJob(JobType.MEDICS);
+		setPreferredJob(JobType.ACADEMICS);
 	}
 
 

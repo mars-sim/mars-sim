@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RestingMedicalRecovery.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -52,7 +53,8 @@ public class RestingMedicalRecovery extends MedicalAidTask {
     private double restingTime;
 
     /**
-     * Create a resting recovery task for a person
+     * Creates a resting recovery task for a person.
+     * 
      * @param tired Person needing recovery rest
      */
     static RestingMedicalRecovery createTask(Person tired) {
@@ -66,6 +68,7 @@ public class RestingMedicalRecovery extends MedicalAidTask {
 
     /**
      * Constructor.
+     * 
      * @param person the person to perform the task
      * @param aid 
      */
@@ -74,9 +77,14 @@ public class RestingMedicalRecovery extends MedicalAidTask {
 
         // Initialize data members.
         restingTime = 0D;
-
-        walkToMedicalAid(true);        
-
+        
+        if (person.isInSettlement())
+	       	// Send the person as a patient to a medical bed
+	    	BuildingManager.addPatientToMedicalBed(person, worker.getSettlement());
+ 
+    	// Note: Get the doctor approve for taking this person off the work shift for a recovery
+    	person.getShiftSlot().setOnLeave((int)RESTING_DURATION);
+    	
         // Initialize phase.
         setPhase(RESTING);
     }
@@ -96,12 +104,14 @@ public class RestingMedicalRecovery extends MedicalAidTask {
 
     /**
      * Performs the resting phase of the task.
+     * 
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left over after performing the phase.
      */
     private double restingPhase(double time) {
 
         double remainingTime = 0D;
+        
         var aid = getMedicalAid();
         // Add person to medical aid resting recovery people if not already on it.
         if (!aid.getRestingRecoveryPeople().contains(person)) {
@@ -130,6 +140,10 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         // If person has no more health problems requiring bed rest, end task.
         if (resting.isEmpty()) {
 			logger.log(worker, Level.FINE, 0, "Ended the medical leave.");
+			
+	    	// Note: Get the doctor approve for taking this person off the work shift for a recovery
+	    	person.allocateNewShift();
+	    	
             endTask();
         }
 
@@ -145,7 +159,7 @@ public class RestingMedicalRecovery extends MedicalAidTask {
     }
 
     /**
-     * Stop the resting period for this person if still active
+     * Stops the resting period for this person if still active.
      */
     @Override
     protected void clearDown() {
@@ -159,7 +173,8 @@ public class RestingMedicalRecovery extends MedicalAidTask {
     }
 
     /**
-     * Get any active health problems that need bed rest
+     * Gets any active health problems that need bed rest.
+     * 
      * @param person
      * @return
      */

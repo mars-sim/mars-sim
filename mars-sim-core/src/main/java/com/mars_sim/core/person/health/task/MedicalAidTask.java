@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MedicalAidTask.java
- * @date 2024-06-20
+ * @date 2025-08-14
  * @author Barry Evans
  */
 package com.mars_sim.core.person.health.task;
@@ -37,32 +37,40 @@ public abstract class MedicalAidTask extends Task {
     }
 
     /**
-     * Walk to the selected Medical aid and use it as a doctor or patient
-     * @param needBed Use a bed in teh aid
+     * Walks to a medical station as a doctor.
+     * 
+     * @param needBed Use a bed
+     * @return
      */
-    protected void walkToMedicalAid(boolean needBed) {
+    protected boolean walkToDoctorStation(boolean needBed) {
+    	boolean success = false;
+    	
         // Walk to medical aid.
         if (medicalAid instanceof MedicalCare medicalCare) {     
             // Walk to medical care building.
-            walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, false);
+        	success = walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, needBed);
         }
+        
         else if (medicalAid instanceof SickBay sb) {
             // Walk to medical activity spot in rover.
             Vehicle vehicle = sb.getVehicle();
             if (vehicle instanceof Rover r) {
 
                 // Walk to rover sick bay activity spot.
-                walkToSickBayActivitySpotInRover(r, false);
+            	success = walkToSickBayActivitySpotInRover(r, false);
             }
         }
         else {
             logger.severe(person, "Medical aid could not be determined.");
             endTask();
         }
+        
+        return success;
     }
-
+    
     /**
      * Gets the malfunctionable associated with the medical aid.
+     * 
      * @return the associated Malfunctionable
      */
     protected Malfunctionable getMalfunctionable() {
@@ -84,7 +92,7 @@ public abstract class MedicalAidTask extends Task {
     }
 
     /**
-     * Where is this treatment taking place
+     * Gets where this treatment is taking place.
      */
     public MedicalAid getMedicalAid() {
         return medicalAid;

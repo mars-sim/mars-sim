@@ -45,12 +45,11 @@ public class DeathInfo implements Serializable {
 						"I have to move on. Farewell.",
 						"I want to be buried outside the settlement.",
 						"Take care my friend.",
-						"I will be the patron saint for the future Mars generations.",
+						"I will be the patron saint for future Mars generations.",
 						"I'm leaving this world. No more sorrow to bear. See ya."};
 
 	// Data members
-	/** Has the body been retrieved for exam */	
-	private boolean bodyRetrieved = false;	
+
 	/** Is the postmortem exam done ? */	
 	private boolean examDone = false;	
 	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
@@ -67,8 +66,11 @@ public class DeathInfo implements Serializable {
 	private MarsTime timeOfDeath;
 	/** Place of death. */
 	private String placeOfDeath = "";
-	/** Name of the doctor who did the postmortem. */	
-	private String doctorName = "(Not assigned yet)";
+	/** Name of the doctor who sign on to transfer the body to the medical. */	
+	private String doctorRetrievingBody;
+	/** Name of the doctor who sign the death certificate. */	
+	private String doctorSigningCertificate;
+
 	/** Name of task at time of death. */
 	private String task;
 	/** Phase of task at time of death. */
@@ -162,8 +164,6 @@ public class DeathInfo implements Serializable {
 
 		else if (person.isInSettlement()) {
 			placeOfDeath = person.getSettlement().getName();
-			// It's eligible for retrieval
-			bodyRetrieved = true;
 		}
 
 		else if (person.isBuried()) {
@@ -316,15 +316,7 @@ public class DeathInfo implements Serializable {
 		if (malfunction != null)
 			return malfunction;
 		else
-			return "   --";
-	}
-
-	public void setBodyRetrieved(boolean b) {
-		bodyRetrieved = b;
-	}
-
-	public boolean getBodyRetrieved() {
-		return bodyRetrieved;
+			return "None";
 	}
 
 	public void setExamDone(boolean value) {
@@ -359,12 +351,38 @@ public class DeathInfo implements Serializable {
 	}
 	
 	/**
-	 * Gets the doctor's name.
+	 * Gets the name of the doctor retrieving the body.
 	 * 
 	 * @return
 	 */
-	public String getDoctor() {
-		return doctorName;
+	public String getDoctorRetrievingBody() {
+		return doctorRetrievingBody;
+	}
+
+	/**
+	 * Sets the name of the doctor retrieving the body.
+	 * 
+	 * @param name
+	 */
+	public void setDoctorRetrievingBody(String name) {
+		doctorRetrievingBody = name;
+	}
+	/**
+	 * Gets the name of the doctor signing the death certificate.
+	 * 
+	 * @return
+	 */
+	public String getDoctorSigningCertificate() {
+		return doctorSigningCertificate;
+	}
+
+	/**
+	 * Sets the name of the doctor signing the death certificate.
+	 * 
+	 * @param name
+	 */
+	public void setDoctorSigningCertificate(String name) {
+		doctorSigningCertificate = name;
 	}
 	
 	/**
@@ -381,11 +399,11 @@ public class DeathInfo implements Serializable {
 		return robot;
 	}
 	
-	public double getTimeExam() {
+	public double getTimeSpentExam() {
 		return timeSpentExam;
 	}
 
-	public void addTimeExam(double time) {
+	public void addTimeSpentExam(double time) {
 		timeSpentExam += time;
 	}
 	

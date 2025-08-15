@@ -77,6 +77,8 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
+import com.mars_sim.core.person.ai.task.Sleep;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -812,27 +814,55 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person to a random medical building within a settlement.
+	 * Adds a patient to a medical bed within a settlement.
 	 *
-	 * @param unit       the person/robot to add.
-	 * @param s the settlement to find a building.
-	 * @throws BuildingException if person/robot cannot be added to any building.
+	 * @param p the patient
+	 * @param s the settlement with medical beds
+	 * @return
 	 */
-	public static void addToMedicalBuilding(Person p, Settlement s) {
-
+	public static boolean addPatientToMedicalBed(Person p, Settlement s) {
+		boolean success = false;
+		
 		Building building = s.getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-			addPersonToActivitySpot(p, building, FunctionType.MEDICAL_CARE);
-			logger.info(p, 2000, "Brought to " + building.getName() + " for possible treatment.");
+
+			success = building.getMedical().addPatientToBed(p);
+	
+			if (success)
+				logger.info(p, 0, "Sent to " + building.getName() + ".");
+			else {
+				logger.info(p, 0, "Unable to send to " + building.getName() + ".");
+			}
 		}
 
 		else {
+			// Send to his/her registered bed
 			logger.log(p, Level.WARNING, 2000,	"No medical facility available for "
-							+ p.getName() + ". Go to a random building.");
-			addPersonToRandomBuilding(p, s);
+							+ p.getName() + ". Go to his/her bed.");
+			
+			var bed = p.getBed();
+			
+			if (bed == null) {
+				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, true);	
+			}
+			
+			if (bed != null) {
+				
+				// Allocate it to the person
+				p.setActivitySpot(bed);
+				
+				LocalPosition bedLoc = bed.getAllocated().getPos();	
+		
+				p.setPosition(bedLoc);
+				
+			}
+			
+			logger.info(p, 0, "Medical facility not available. Brought to his/her bed for further exam.");
 		}
+		
+		return success;
 	}
 
 	/**
@@ -1439,8 +1469,17 @@ public class BuildingManager implements Serializable {
 			
 			if (functionType != null)  {
 				f = building.getFunction(functionType);
-				if (f != null)
-					loc = f.getAvailableActivitySpot();	
+				
+	
+				if (f != null) {
+					// Check if the person is already occupying an activity spot of this function type
+					if (f.checkWorkerActivitySpot(person)) {
+						return true;
+					}
+					
+					loc = f.getAvailableActivitySpot();
+				}
+	
 			}
 			else {
 				// Find an empty spot in life support

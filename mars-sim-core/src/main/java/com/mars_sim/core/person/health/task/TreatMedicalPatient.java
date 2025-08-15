@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TreatMedicalPatient.java
- * @date 2023-11-16
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -41,8 +41,21 @@ public class TreatMedicalPatient extends TreatHealthProblem {
     private static final String NAME = Msg.getString(
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$
 
+
     /**
-     * Create a task for a Doctor to provide Treatment to someone suffering from a Health Problem.
+     * Constructor.
+     * 
+     * @param healer the person to perform the task
+     * @param station Place treatment is waiting
+     * @param problem Problem being treated
+     */
+    private TreatMedicalPatient(Person healer, MedicalAid station, HealthProblem problem) {
+        super(NAME, healer, station, problem);
+    }
+    
+    /**
+     * Creates a task for a Doctor to provide Treatment to someone suffering from a Health Problem.
+     * 
      * @param doctor
      * @return
      */
@@ -72,7 +85,8 @@ public class TreatMedicalPatient extends TreatHealthProblem {
     }
 
     /**
-     * Find any problem that needs to be treated by a doctor
+     * Finds any problem that needs to be treated by a doctor.
+     * 
      * @param v Vehicle to check
      * @return
      */
@@ -89,7 +103,8 @@ public class TreatMedicalPatient extends TreatHealthProblem {
     }
 
     /**
-     * Find any problem that needs to be treated by a doctor
+     * Finds any problem that needs to be treated by a doctor.
+     * 
      * @param settlement Settlement to check
      * @return
      */
@@ -114,25 +129,13 @@ public class TreatMedicalPatient extends TreatHealthProblem {
     }
 
     /**
-     * Get all the Healthproblem that are waiting treatment by a doctor
-     * @param aid Statino to scan
+     * Gets all the health problem that are waiting treatment by a doctor.
+     * 
+     * @param aid the medical station to scan
      */
     private static List<HealthProblem> getProblemsNeedingTreatment(MedicalAid aid) {
         return aid.getProblemsAwaitingTreatment().stream()
                     .filter(hp -> !hp.getComplaint().getRecoveryTreatment().getSelfAdminister())
                     .toList();
-    }
-
-    /**
-     * Constructor.
-     * @param healer the person to perform the task
-     * @param station Place traetment is waiting
-     * @param problem Problem being treated
-     */
-    private TreatMedicalPatient(Person healer, MedicalAid station, HealthProblem problem) {
-        super(NAME, healer, station, problem);
-
-        // Walk to medical aid.
-        walkToMedicalAid(false);
     }
 }

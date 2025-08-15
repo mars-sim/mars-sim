@@ -10,6 +10,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.tool.Conversion;
 
 /**
  * This class represents the historical action of a medical problem occuring or
@@ -34,7 +35,7 @@ public class MedicalEvent extends HistoricalEvent {
 		super(HistoricalEventCategory.MEDICAL,  
 				eventType, 
 				illness, 
-				illness.getComplaint().getName(),
+				Conversion.capitalize0(illness.getComplaint().getName()),
 				person.getTaskDescription(),
 				person.getName(),
 				person,

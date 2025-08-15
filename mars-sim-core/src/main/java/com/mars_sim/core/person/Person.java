@@ -58,11 +58,13 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.shift.Shift;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -265,6 +267,15 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return new PersonBuilder(name, settlement, gender);
 	}
 
+	
+	/**
+	 * Allocates a new shift.
+	 */
+	public void allocateNewShift() {
+		getSettlement().getShiftManager().assignNewShift(this);
+	}
+	
+	
 	/**
 	 * Computes a person's chromosome map based on the characteristics of their nation.
 	 * 
@@ -640,13 +651,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param problem
 	 */
 	void setRevived(HealthProblem problem) {
-		// Reset declaredDead
-		declaredDead = false;
-		// Set description
-		setDescription("Recovering");
 		// Reset isBuried
-		isBuried = false;
-		
+		isBuried = false;	
 		// Set buried settlement
 		buriedSettlement = -1;
 		// Throw unit event
@@ -655,6 +661,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		MedicalEvent event = new MedicalEvent(this, problem, EventType.MEDICAL_RESUSCITATED);
 		// Register event
 		Simulation.instance().getEventManager().registerNewEvent(event);
+		// Reset declaredDead
+		declaredDead = false;
+		// Set description
+		setDescription("Recovering");
+		// Set performance to 0% awaiting recovering
+		condition.setPerformanceFactor(0);
+		// Set fatigue to 1000 to rest		
+		condition.setFatigue(1000);
 	}
 	
 	/**
@@ -683,8 +697,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 //		long tnow = System.currentTimeMillis();
 		
 		// Check to see if the person has deceased
-		if (condition.getDeathDetails() != null
-				&& condition.getDeathDetails().getBodyRetrieved()) {
+		if (condition.getDeathDetails() != null) {
 			setDeceased();
 		}
 		

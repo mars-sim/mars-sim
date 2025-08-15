@@ -64,9 +64,10 @@ public class Sleep extends Task {
 
 	
 	/**
-	 * Constructor 1.
+	 * Constructor 1. This will require a person to walk to a bed first.
+	 * Note: choose constructor 2 if walking is not required.
 	 *
-	 * @param person the person to perform the task
+	 * @param person
 	 */
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER,
@@ -93,7 +94,7 @@ public class Sleep extends Task {
 
 			// Is schedule sleep longer than allowed ?
 			if (maxSleep < getDuration()) {
-				logger.info(person, 20_000, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
+				logger.info(person, 0, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
 
@@ -107,16 +108,16 @@ public class Sleep extends Task {
 	}
 
 	/**
-	 * Constructor 2.
+	 * Constructor 2. This it for those who were brought in and will not be required to walk to a bed.
 	 *
-	 * @param person the person to perform the task
-	 * @param alarmTime
+	 * @param person
+	 * @param duration pre-defined sleep time
 	 */
 	public Sleep(Person person, int duration) {
 		super(NAME, person, false, false, STRESS_MODIFIER, duration);
 
 		if (person.isOutside()) {
-			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
+			logger.log(person, Level.WARNING, 0, "Not supposed to be falling asleep outside.");
 
 			endTask();
 		}
@@ -125,8 +126,6 @@ public class Sleep extends Task {
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
-
-			walkToDestination();
 		}
 	}
 	
@@ -141,8 +140,10 @@ public class Sleep extends Task {
     }
 
 	/**
+	 * DO NOT DELETE. Will revisit how to safely put a makeshift bed in the EVA Airlock building.
+	 * 
 	 * Refers the person to sleep in a medical bed inside the EVA airlock.
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean sleepInEVAMedicalBed() {

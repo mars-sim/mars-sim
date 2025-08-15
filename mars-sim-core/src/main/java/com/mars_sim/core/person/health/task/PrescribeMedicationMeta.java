@@ -34,7 +34,6 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
 		setPreferredJob(JobType.MEDICS);
-
         addPreferredRobot(RobotType.MEDICBOT);
 	}
     

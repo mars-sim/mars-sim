@@ -9,6 +9,7 @@ package com.mars_sim.core.person.health.task;
 import java.util.Comparator;
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.HealthProblem;
@@ -74,12 +75,16 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
             logger.info(healer, problem + " requesting treatment treatment.");
             aid.requestTreatment(problem);
         }
-
-        walkToMedicalAid(true);
+        
+        if (healer.isInSettlement())
+        	BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement());
+        
+        // In future, simulate offering telemedicine via mission control
     }
 
     /**
      * Determines the most serious health problem to self-treat.
+     * 
      * @param curable Problems that are curable
      * @param aid Medical aid available
      * @return health problem or null if none found.

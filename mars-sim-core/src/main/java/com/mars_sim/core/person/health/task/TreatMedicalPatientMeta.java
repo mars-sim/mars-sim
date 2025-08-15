@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TreatMedicalPatientMeta.java
- * @date 2021-12-22
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -45,7 +45,8 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
     }
 
     /**
-     * Assess this person helping someone with treatment
+     * Assesses this person helping someone with treatment.
+     * 
      * @param person Being assessed
      * @return Potential suitable tasks
      */

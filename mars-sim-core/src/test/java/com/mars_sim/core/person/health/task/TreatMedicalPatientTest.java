@@ -28,7 +28,8 @@ public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
      
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(doctor, task, 1000);
-        executeTask(doctor, task, 1);
+        executeTask(doctor, task, 100);
+        
         assertTrue("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
         assertFalse("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
 

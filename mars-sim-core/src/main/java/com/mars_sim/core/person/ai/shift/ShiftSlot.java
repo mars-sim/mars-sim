@@ -104,6 +104,8 @@ public class ShiftSlot implements ScheduledEventHandler {
 
     /**
      * Changes the assigned shift.
+     * 
+     * @param newShift
      */
     void setShift(Shift newShift) {
         shift.leaveShift();

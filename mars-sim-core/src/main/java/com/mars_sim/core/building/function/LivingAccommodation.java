@@ -66,8 +66,6 @@ public class LivingAccommodation extends Function {
 	/** The daily grey water generated in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger greyWaterGen;
 
-
-
 	/**
 	 * Constructor.
 	 *
@@ -85,11 +83,17 @@ public class LivingAccommodation extends Function {
 
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
-		// Loads the grey to black water ratio
-		double grey2BlackWaterRatio = personConfig.getGrey2BlackWaterRatio();
-		// Calculate the grey water fraction
-		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
 
+		// Loads the grey to black water ratio. It's 80% and 20%, or 4 to 1
+		double grey2BlackWaterRatio = personConfig.getGrey2BlackWaterRatio();
+		// Assume black water has 1 portion
+		double blackWater = 1;
+		// Then grey water has 4 portion
+		double greyWater = grey2BlackWaterRatio;
+
+		// Calculate the grey water fraction
+		greyWaterFraction = greyWater / (greyWater + blackWater);
+		
 		guesthouse = spec.getBoolProperty("guesthouse", false);
 	}
 
