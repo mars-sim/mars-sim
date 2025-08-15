@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SelfTreatMedicalProblemMeta.java
- * @date 2021-12-05
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -35,7 +35,7 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
 		
 		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
 		setPreferredJob(JobType.MEDICS);
-		setPreferredJob(JobType.ACADEMICS);
+		addAllCrewRoles();	
 	}
 
 

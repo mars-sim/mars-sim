@@ -347,6 +347,15 @@ public class HealthProblem implements Serializable {
 	}
 	
 	/**
+	 * Prints the dead status.
+	 * 
+	 * @return
+	 */
+	public String printDeadStatus() {
+		return Conversion.capitalize0(getComplaint().getName());
+	}
+	
+	/**
 	 * This method generates a string representation of this problem. It contains
 	 * the illness and the health rating.
 	 * 

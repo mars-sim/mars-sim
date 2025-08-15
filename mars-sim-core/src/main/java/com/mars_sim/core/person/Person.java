@@ -663,6 +663,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		Simulation.instance().getEventManager().registerNewEvent(event);
 		// Reset declaredDead
 		declaredDead = false;
+		
+		condition.recalculatePerformance();
 		// Set description
 		setDescription("Recovering");
 		// Set performance to 0% awaiting recovering

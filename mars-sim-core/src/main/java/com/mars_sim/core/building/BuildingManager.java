@@ -8,6 +8,7 @@ package com.mars_sim.core.building;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -753,8 +754,9 @@ public class BuildingManager implements Serializable {
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
 		Optional<Building> value = buildings.stream()
 				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-//				.skip(getRandomInt(collection.size()))
-                .findFirst();
+//				.max(Comparator.comparing(Building::getFunction(f1).getNumEmptyActivitySpots, Comparator.reverseOrder()))
+				.findAny();
+//                .findFirst();
 
         return value.orElse(null);
 
@@ -831,9 +833,9 @@ public class BuildingManager implements Serializable {
 			success = building.getMedical().addPatientToBed(p);
 	
 			if (success)
-				logger.info(p, 0, "Sent to " + building.getName() + ".");
+				logger.info(p, 0, "Sent to a medical bed in " + building.getName() + ".");
 			else {
-				logger.info(p, 0, "Unable to send to " + building.getName() + ".");
+				logger.info(p, 0, "Unable to send to a medical bed in " + building.getName() + ".");
 			}
 		}
 
@@ -1452,6 +1454,23 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Adds a worker to the building if possible.
+	 *
+	 * @param worker   the worker to add.
+	 * @param building the building to add.
+	 * @return
+	 */
+	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType functionType) {
+		
+		if (worker instanceof Person person)
+			return addPersonToActivitySpot(person, building, functionType);
+		else if (worker instanceof Robot robot)
+			return addRobotToActivitySpot(robot, building, functionType);
+		
+		return false;
+	}
+	
+	/**
 	 * Adds the person to an activity spot in a building.
 	 *
 	 * @param person   the person to add.
@@ -1468,8 +1487,7 @@ public class BuildingManager implements Serializable {
 			LocalPosition loc = null;
 			
 			if (functionType != null)  {
-				f = building.getFunction(functionType);
-				
+				f = building.getFunction(functionType);			
 	
 				if (f != null) {
 					// Check if the person is already occupying an activity spot of this function type
@@ -1531,25 +1549,44 @@ public class BuildingManager implements Serializable {
 		boolean result = false;
 
 		try {
-			Function f = null;
+			RoboticStation roboticStation = building.getRoboticStation();
+			Function f = roboticStation;
 			LocalPosition loc = null;
-			
-			// Case 1: Gets an empty pos from functionType
+				
 			if (functionType != null)  {
-				var specificF = building.getFunction(functionType);
-				if (specificF == null) {
-					logger.warning(robot, "No " + functionType.getName() + " in " + building.getName() + ".");
-				}
-				else {
-					f = specificF;
-					// Find an empty spot in this function
+				f = building.getFunction(functionType);			
+	
+				if (f != null) {
+					// Case 0: Check if the person is already occupying an activity spot of this function type
+					if (f.checkWorkerActivitySpot(robot)) {
+						return true;
+					}
+					
 					loc = f.getAvailableActivitySpot();
 				}
+	
 			}
+			else {
+				// Case 1: Gets an empty pos from functionType
+
+				loc = roboticStation.getAvailableActivitySpot();
+			}
+
+//			if (functionType != null)  {
+//				var specificF = building.getFunction(functionType);
+//				if (specificF == null) {
+//					logger.warning(robot, "No " + functionType.getName() + " in " + building.getName() + ".");
+//				}
+//				else {
+//					f = specificF;
+//					// Find an empty spot in this function
+//					loc = f.getAvailableActivitySpot();
+//				}
+//			}
 			
 			// Case 2: Gets an empty pos from building's robotic station
 			if (loc == null) {
-				RoboticStation roboticStation = building.getRoboticStation();
+
 				if (roboticStation == null) {
 					logger.warning(robot, "No robotic function in " + building.getName() + ".");
 				}

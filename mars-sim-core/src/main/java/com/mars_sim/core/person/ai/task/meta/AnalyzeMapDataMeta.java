@@ -59,6 +59,8 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		addPreferredRole(RoleType.CHIEF_OF_SCIENCE, 1.25D);
 		addPreferredRole(RoleType.COMPUTING_SPECIALIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 1.5D);	
+		
+		addAllCrewRoles();
 	}
     
     @Override

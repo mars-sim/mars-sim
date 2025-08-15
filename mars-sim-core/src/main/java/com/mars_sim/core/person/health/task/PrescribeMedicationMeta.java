@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PrescribeMedicationMeta.java
- * @date 2021-12-22
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -15,6 +15,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -33,8 +34,11 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
     public PrescribeMedicationMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
-		setPreferredJob(JobType.MEDICS);
+		setTrait(TaskTrait.MEDICAL);
         addPreferredRobot(RobotType.MEDICBOT);
+    	setPreferredJob(JobType.MEDICS);
+		setPreferredJob(JobType.ACADEMICS);
+		addAllCrewRoles();	
 	}
     
     @Override
@@ -44,6 +48,7 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
 
     @Override
     public Task constructInstance(Robot robot) {
+    	// A robot can be the pharmacist
         return new PrescribeMedication(robot);
     }
 

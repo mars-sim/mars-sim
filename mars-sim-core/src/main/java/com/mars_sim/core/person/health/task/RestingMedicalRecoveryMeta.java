@@ -28,6 +28,8 @@ public class RestingMedicalRecoveryMeta extends FactoryMetaTask {
 
     public RestingMedicalRecoveryMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		addAllCrewRoles();
 	}
 
     @Override

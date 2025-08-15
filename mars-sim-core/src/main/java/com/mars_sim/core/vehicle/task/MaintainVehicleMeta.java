@@ -16,11 +16,13 @@ import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.task.MaintainBuildingMeta;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -72,9 +74,12 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
     public MaintainVehicleMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
-		setPreferredJob(JobType.MECHANICS);
-
-		addPreferredRobot(RobotType.REPAIRBOT);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.LOADERS);
+        addPreferredRobot();
+		addPreferredRobot(RobotType.REPAIRBOT, RobotType.DELIVERYBOT);
+		addAllCrewRoles();
 	}
 
     /**

@@ -13,8 +13,8 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.MedicalCare;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
@@ -34,15 +34,15 @@ public final class MedicalHelper {
     /**
      * Determines which Medical Aid a person can use to handle a set of problems.
      * 
-     * @param p Person looking for aid
+     * @param worker Worker looking for aid
      * @param curable What are the problem to cure; if empty then any problem
      */
-    static MedicalAid determineMedicalAid(Person p, Set<HealthProblem> curable) {
+    static MedicalAid determineMedicalAid(Worker worker, Set<HealthProblem> curable) {
         // Choose available medical aid for treatment.
-        if (p.isInSettlement()) {
-            return determineMedicalAidAtSettlement(p.getAssociatedSettlement(), curable);
+        if (worker.isInSettlement()) {
+            return determineMedicalAidAtSettlement(worker.getAssociatedSettlement(), curable);
         }
-        else if (p.isInVehicle() && (p.getVehicle() instanceof Rover r)) {
+        else if (worker.isInVehicle() && (worker.getVehicle() instanceof Rover r)) {
             return determineMedicalAidInRover(r, curable);
         }
         return null;
@@ -100,11 +100,11 @@ public final class MedicalHelper {
     /**
      * Gets a list of health problems the person can self-treat.
      * 
-     * @param healer Person doing the healing
+     * @param healer worker doing the healing
      * @param selfHeal Look only for Self heal problems
      * @return list of health problems (may be empty).
      */
-    static Set<HealthProblem> getTreatableHealthProblems(Person healer, Collection<HealthProblem> problems,
+    static Set<HealthProblem> getTreatableHealthProblems(Worker healer, Collection<HealthProblem> problems,
                                                         boolean selfHeal) {
     
         Set<HealthProblem> result = new HashSet<>();

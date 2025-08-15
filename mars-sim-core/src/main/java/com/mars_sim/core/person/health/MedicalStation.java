@@ -290,6 +290,7 @@ public class MedicalStation implements MedicalAid {
 		if (canTreatProblem(problem)) {
 			// Add the problem to the waiting queue.
 			problemsAwaitingTreatment.add(problem);
+			
 			if (problem.getSufferer().isInSettlement())
 				// Add the patient to a bed
 				addPatientToBed(problem.getSufferer());
@@ -365,6 +366,7 @@ public class MedicalStation implements MedicalAid {
 	public void startRestingRecovery(Person person) {
 
 		if (!restingRecoveryPeople.contains(person)) {
+			
 			restingRecoveryPeople.add(person);
 			
 			if (person.isInSettlement())
@@ -380,6 +382,7 @@ public class MedicalStation implements MedicalAid {
 	public void stopRestingRecovery(Person person) {
 
 		if (restingRecoveryPeople.contains(person)) {
+			
 			restingRecoveryPeople.remove(person);
 			
 			if (person.isInSettlement())

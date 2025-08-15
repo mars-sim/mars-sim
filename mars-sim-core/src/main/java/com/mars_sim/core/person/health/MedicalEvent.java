@@ -1,19 +1,20 @@
 /*
  * Mars Simulation Project
  * MedicalEvent.java
- * @date 2023-11-04
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.person.EventType;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;
 
 /**
- * This class represents the historical action of a medical problem occuring or
+ * This class represents the historical action of a medical problem occurring or
  * being resolved.  Death is also recorded with medical events.
  */
 public class MedicalEvent extends HistoricalEvent {
@@ -21,31 +22,23 @@ public class MedicalEvent extends HistoricalEvent {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private Person person;
-
 	/**
 	 * Constructor.
 	 * 
-	 * @param person the person with the medical problem.
+	 * @param worker the worker with the medical problem.
 	 * @param illness the medical problem.
 	 * @param eventType the medical event type.
 	 */
-	public MedicalEvent(Person person, HealthProblem illness, EventType eventType) {
+	public MedicalEvent(Worker worker, HealthProblem illness, EventType eventType) {
 		// Call HistoricalEvent constructor.
 		super(HistoricalEventCategory.MEDICAL,  
 				eventType, 
 				illness, 
 				Conversion.capitalize0(illness.getComplaint().getName()),
-				person.getTaskDescription(),
-				person.getName(),
-				person,
-				person.getAssociatedSettlement().getName(),
-				person.getCoordinates());
-		
-		this.person = person;
+				worker.getTaskDescription(),
+				worker.getName(),
+				(Unit)worker,
+				worker.getAssociatedSettlement().getName(),
+				worker.getCoordinates());
 	}
-	
-    public Person getPerson() {
-    	return person;
-    }
 }

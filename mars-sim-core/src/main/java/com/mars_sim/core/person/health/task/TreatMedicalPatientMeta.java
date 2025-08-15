@@ -18,6 +18,8 @@ import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
+import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -32,10 +34,12 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$
 
     public TreatMedicalPatientMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
 		setTrait(TaskTrait.MEDICAL);
 		setPreferredJob(JobType.MEDICS);
+		addPreferredRobot(RobotType.MEDICBOT);
+		addAllCrewRoles();
 	}
    
 
@@ -43,7 +47,12 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
     public Task constructInstance(Person person) {
         return TreatMedicalPatient.createTask(person);
     }
-
+    
+    @Override
+    public Task constructInstance(Robot robot) {
+        return TreatMedicalPatient.createTask(robot);
+    }
+    
     /**
      * Assesses this person helping someone with treatment.
      * 
@@ -74,6 +83,35 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
         var result = new RatingScore(VALUE);
         result.addModifier("patients", Math.max(1D, (treatable.size()/0.33)));
         result = assessPersonSuitability(result, person);
+        
+        return createTaskJobs(result);
+    }
+    
+    /**
+     * Assesses this person helping someone with treatment.
+     * 
+     * @param robot Being assessed
+     * @return Potential suitable tasks
+     */
+    @Override
+    public List<TaskJob> getTaskJobs(Robot robot) {
+
+        Map<HealthProblem, MedicalAid> problems = TreatMedicalPatient.findSettlementHealthProblems(robot.getSettlement());
+        
+        if (problems.isEmpty()) {
+            return EMPTY_TASKLIST;
+        }
+
+        // Filter problem to this that this doctor can handle
+        var treatable = MedicalHelper.getTreatableHealthProblems(robot, problems.keySet(), false);
+        if (treatable.isEmpty()) {
+            return EMPTY_TASKLIST;
+        }
+
+        // Get the local medical aids to use.
+        var result = new RatingScore(VALUE);
+        result.addModifier("patients", Math.max(1D, (treatable.size()/0.33)));
+        result = assessRobotSuitability(result, robot);
         
         return createTaskJobs(result);
     }

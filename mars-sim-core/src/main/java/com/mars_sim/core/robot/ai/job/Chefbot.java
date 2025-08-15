@@ -66,8 +66,7 @@ public class Chefbot extends RobotJob {
 		if (settlement.getAllAssociatedPeople().size() >= CHEF_BOT_THRESHOLD) {
 			// Add all kitchen work space in settlement.
 			for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
-				Cooking kitchen = building.getCooking(); 
-				prepArea += kitchen.getCookCapacity();
+				prepArea += building.getCooking().getCookCapacity();
 			}
 		}
 		return (prepArea/PREP_AREA_PER_CHEF);			

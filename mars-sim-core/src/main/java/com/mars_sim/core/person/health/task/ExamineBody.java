@@ -18,10 +18,12 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.MedicalEvent;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -58,6 +60,16 @@ public class ExamineBody extends MedicalAidTask {
 	private DeathInfo deathInfo;
 	private Person patient;
 	
+	
+	static ExamineBody createTask(Robot examiner, DeathInfo body) {
+		MedicalAid aid = MedicalHelper.determineMedicalAid(examiner, Collections.emptySet());
+
+		if (aid == null) {
+			logger.warning(examiner, "Could not find medical aid to examine " + body.getPerson().getName());
+		}
+		return new ExamineBody(examiner, body, aid);
+	}
+	
 	static ExamineBody createTask(Person examiner, DeathInfo body) {
 		MedicalAid aid = MedicalHelper.determineMedicalAid(examiner, Collections.emptySet());
 
@@ -70,10 +82,10 @@ public class ExamineBody extends MedicalAidTask {
 	/**
 	 * Constructor.
 	 * 
-	 * @param examiner the person to perform the task
+	 * @param examiner the worker to perform the task
 	 * @param body Body to examine
 	 */
-	private ExamineBody(Person examiner, DeathInfo body, MedicalAid aid) {
+	private ExamineBody(Worker examiner, DeathInfo body, MedicalAid aid) {
 		super(NAME, examiner, aid, IMPACT, 0D);
 
 		if (!examiner.isInSettlement()) {
@@ -82,7 +94,7 @@ public class ExamineBody extends MedicalAidTask {
 		}
 		
 		// Probability affected by the person's stress and fatigue.
-        if (!examiner.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
+        if (examiner instanceof Person p && !p.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
         	endTask();
         	return;
         }
@@ -115,7 +127,7 @@ public class ExamineBody extends MedicalAidTask {
 		double remainingTime = 0;
 		
 		// Check if the doctor is already at a medical activity spot	
-		boolean success = MedicalCare.dispatchToMedical(person);
+		boolean success = MedicalCare.dispatchToMedical(worker);
 
 		if (!success) {
 			// First walk to a medical activity spot
@@ -133,21 +145,21 @@ public class ExamineBody extends MedicalAidTask {
 		
 		if (name == null) {
 			
-			logger.info(person, "Just retrieved the body of " 
+			logger.info(worker, "Just retrieved the body of " 
 					+ patient.getName() + ".");
 			
-			deathInfo.setDoctorRetrievingBody(person.getName());
+			deathInfo.setDoctorRetrievingBody(worker.getName());
 			
 			// The first physician gets to set the estimate exam time
 			
-			// Get the person's medical skill.
-			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			// Get the worker's medical skill.
+			double skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
 				skill = .5;
-			// Get the person's emotion stability
-			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
-			// Get the person's stress resilience						
-			int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+			// Get the worker's emotion stability
+			int stab = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
+			// Get the worker's stress resilience						
+			int resilient = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
 			
 			// Note: Need to refine in determining how long the exam would take. 
 			// Depends on the cause of death ?
@@ -157,7 +169,7 @@ public class ExamineBody extends MedicalAidTask {
 			// Set exam duration time
 			deathInfo.setEstTimeExam(durationExam);
 			
-			logger.info(person, "Set estimated exam time as " + Math.round(durationExam * 10.0)/10.0 + " millisols.");
+			logger.info(worker, "Set estimated exam time as " + Math.round(durationExam * 10.0)/10.0 + " millisols.");
 			
 		}
 		
@@ -167,7 +179,7 @@ public class ExamineBody extends MedicalAidTask {
 			
 			if (transportRemainingTime < 0) {
 
-				// Send the person as a patient to a medical bed
+				// Send the worker as a patient to a medical bed
 				success = BuildingManager.addPatientToMedicalBed(patient, worker.getSettlement());
 				// Initialize phase.
 				setPhase(EXAMINING);
@@ -218,8 +230,8 @@ public class ExamineBody extends MedicalAidTask {
 		}
 
 		else {
-			// Get the person's medical skill.
-			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			// Get the worker's medical skill.
+			double skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
 				skill = .5;
 			// Add exam time as modified by skill
@@ -256,7 +268,7 @@ public class ExamineBody extends MedicalAidTask {
 		// Bury the body
 		patient.buryBody();
 		
-		getSimulation().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
+		getSimulation().getMedicalManager().addDeathRegistry(worker.getSettlement(), deathInfo);
 				
 		// Check for accident in medical aid.
 		checkForAccident(mal, time, 0.003);
@@ -287,7 +299,7 @@ public class ExamineBody extends MedicalAidTask {
 					+ patient.getName() + ". Cause of death : " + cause);
 
 		// Create medical event for performing an post-mortem exam
-		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_POSTMORTEM_EXAM); 
+		MedicalEvent event = new MedicalEvent(worker, problem, EventType.MEDICAL_POSTMORTEM_EXAM); 
 		// Register event
 		registerNewEvent(event);
 	}

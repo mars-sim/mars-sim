@@ -1460,25 +1460,19 @@ public class PhysicalCondition implements Serializable {
 		alive = true;
 		
 		HealthProblem problem = deathDetails.getProblem();
-		
 		// Reset the declaredDead
 		person.setRevived(problem);
 		// Set the mind of the person to active
 		person.getMind().setActive();
-
-		
+		// Reset the problem back to degrading
+		problem.setState(HealthProblemState.DEGRADING);
 		// Starts the recovery
 		problem.startRecovery();
-
 		// Transfer this person back to home settlement
-		person.getAssociatedSettlement().addACitizen(person);
-		
+		person.getAssociatedSettlement().addACitizen(person);	
 		// Set death detail to null
 		deathDetails = null;
 		
-		// See a doctor for checkup ?
-		// Call medicalManager
-
 		// Note: will automatically get a new role type	
 		
 		// Note: check if the vacated role has been filled or not 
@@ -1583,7 +1577,7 @@ public class PhysicalCondition implements Serializable {
 	 * Calculates how the most mostSeriousProblem problem and other metrics would affect a
 	 * person's performance.
 	 */
-	private void recalculatePerformance() {
+	void recalculatePerformance() {
 
 		double maxPerformance = 1.0D;
 

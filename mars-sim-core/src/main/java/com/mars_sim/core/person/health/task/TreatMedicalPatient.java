@@ -16,8 +16,10 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -49,7 +51,7 @@ public class TreatMedicalPatient extends TreatHealthProblem {
      * @param station Place treatment is waiting
      * @param problem Problem being treated
      */
-    private TreatMedicalPatient(Person healer, MedicalAid station, HealthProblem problem) {
+    private TreatMedicalPatient(Worker healer, MedicalAid station, HealthProblem problem) {
         super(NAME, healer, station, problem);
     }
     
@@ -68,7 +70,7 @@ public class TreatMedicalPatient extends TreatHealthProblem {
             problems = findVehicleHealthProblems(doctor.getVehicle());
         }
         else {
-            logger.warning(doctor, "Cannot determine the Medical station");
+            logger.warning(doctor, "Cannot determine the Medical station. ");
             return null;
         }
 
@@ -84,6 +86,32 @@ public class TreatMedicalPatient extends TreatHealthProblem {
         return new TreatMedicalPatient(doctor, problems.get(healthProblem), healthProblem);
     }
 
+    /**
+     * Creates a task for a Doctor to provide Treatment to someone suffering from a Health Problem.
+     * 
+     * @param doctor
+     * @return
+     */
+    static TreatMedicalPatient createTask(Robot doctor) {
+        Map<HealthProblem,MedicalAid> problems = findSettlementHealthProblems(doctor.getSettlement());
+       
+       if (problems.isEmpty()) {
+            logger.warning(doctor, "Cannot determine the Medical station.");
+            return null;
+        }
+
+        // Filter problem to this that this doctor can handle
+        var treatable = MedicalHelper.getTreatableHealthProblems(doctor, problems.keySet(), false);
+
+        var healthProblem = RandomUtil.getARandSet(treatable);
+        if (healthProblem == null) {
+            logger.warning(doctor, "Cannot find a sutiable patient to treat");
+            return null;
+        }
+
+        return new TreatMedicalPatient(doctor, problems.get(healthProblem), healthProblem);
+    }
+    
     /**
      * Finds any problem that needs to be treated by a doctor.
      * 

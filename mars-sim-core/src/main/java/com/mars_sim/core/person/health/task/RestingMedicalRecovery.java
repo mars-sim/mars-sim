@@ -114,7 +114,7 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         
         var aid = getMedicalAid();
         // Add person to medical aid resting recovery people if not already on it.
-        if (!aid.getRestingRecoveryPeople().contains(person)) {
+        if (aid != null && !aid.getRestingRecoveryPeople().contains(person)) {
             aid.startRestingRecovery(person);
         }
 

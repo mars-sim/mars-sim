@@ -36,7 +36,7 @@ public class Constructionbot extends RobotJob {
 		double result = 0D;
 
 		if (settlement.getObjective() == ObjectiveType.BUILDERS_HAVEN) {
-			result = 1D + (settlement.getAllAssociatedPeople().size() / POP_PER_BOT);
+			result = 1D + (settlement.getNumCitizens() / POP_PER_BOT);
 		}
 		return result;
 	}

@@ -8,6 +8,7 @@
 
 package com.mars_sim.core.person.health;
 
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -45,6 +46,6 @@ public enum ComplaintType {
 	}
 
 	public String getName() {
-		return name.toLowerCase().replaceAll("_", " ");
+		return Conversion.capitalize0(name.toLowerCase().replaceAll("_", " "));
 	}
 }

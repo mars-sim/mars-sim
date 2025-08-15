@@ -1,16 +1,18 @@
 /*
  * Mars Simulation Project
  * TreatHealthProblem.java
- * @date 2024-06-08
+ * @date 2025-08-14
  * @author Barry Evans
  */
 package com.mars_sim.core.person.health.task;
 
 import java.util.logging.Level;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -21,6 +23,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.Treatment;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -101,7 +104,7 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
     	double timeLeft = 0D;
     	
 		// Check if the doctor is already at a medical activity spot	
-		boolean success = MedicalCare.dispatchToMedical(person);
+		boolean success = MedicalCare.dispatchToMedical(worker);
 
 		if (!success) {
 			// First walk to a medical activity spot
@@ -148,12 +151,20 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         if (!aid.getProblemsBeingTreated().contains(healthProblem)) {
             aid.startTreatment(healthProblem, treatmentDuration);
 
-        	logger.log(person, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
+        	logger.log(worker, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
         			+ " for " + healthProblem.getComplaint().getType().getName());
 
             // Create starting task event if needed.
             if (getCreateEvents()) {
-                TaskEvent startingEvent = new TaskEvent(person,
+            	Unit unit = null;
+            	if (worker instanceof Person p) {
+            		unit = p;
+            	}
+            	else if (worker instanceof Robot r) {
+            		unit = r;
+            	}
+            	
+                TaskEvent startingEvent = new TaskEvent(unit,
                 		this, 
                 		healthProblem.getSufferer(),
                 		EventType.TASK_START,

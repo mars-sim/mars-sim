@@ -23,7 +23,7 @@ import com.mars_sim.core.tool.Msg;
  */
 public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 
-	private static final int VALUE = 500;
+	private static final int VALUE = 1000;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -35,6 +35,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
 		setPreferredJob(JobType.MEDICS);
 		setPreferredJob(JobType.ACADEMICS);
+		addAllCrewRoles();
 	}
     
 
@@ -42,7 +43,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
     public Task constructInstance(Person person) {
         return RequestMedicalTreatment.createTask(person);
     }
-
+    
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
 
@@ -64,4 +65,5 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 
         return createTaskJobs(new RatingScore(VALUE));
     }
+
 }

@@ -19,6 +19,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.MedicalStation;
@@ -98,27 +99,28 @@ public class MedicalCare extends Function implements MedicalAid {
 
     
     /**
-     * Dispatch a person to serve a medical need by occupying an activity spot.
+     * Dispatch a worker to serve a medical need by occupying an activity spot.
      * 
+     * @param worker
      * @return
      */
-    public static boolean dispatchToMedical(Person person) {
+    public static boolean dispatchToMedical(Worker worker) {
     	
     	boolean success = false;
     	
-    	Building building = person.getSettlement().getBuildingManager()
+    	Building building = worker.getSettlement().getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-			
+
 			// Send this doctor to occupy a physical spot
-			success = BuildingManager.addPersonToActivitySpot(person, building, FunctionType.MEDICAL_CARE);
+			success = BuildingManager.addToActivitySpot(worker, building, FunctionType.MEDICAL_CARE);
 				
 			if (success)
-				logger.info(person, 20_000, "Already arrived at " + building.getName() + ".");
+				logger.info(worker, 20_000, "Already arrived at " + building.getName() + ".");
 		}
 		else
-			logger.info(person, 0, "Not in a building.");
+			logger.info(worker, 0, "Not in a building.");
 		
 	    return success;
     }

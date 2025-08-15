@@ -80,6 +80,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
         addPreferredRobot(RobotType.DELIVERYBOT);
+		addAllCrewRoles();	
 	}
 
     /**

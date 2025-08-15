@@ -28,7 +28,7 @@ public class TaskEvent extends HistoricalEvent {
 	 * @param description Further description of the event (may be empty string).
 	 */
     // only 5 types of task events so far
-	public TaskEvent(Unit person, Task task, Object source, EventType eventType, String description) {
+	public TaskEvent(Unit unit, Task task, Object source, EventType eventType, String description) {
 	
 		// Use HistoricalEvent constructor.
 		super(HistoricalEventCategory.TASK, 
@@ -36,7 +36,7 @@ public class TaskEvent extends HistoricalEvent {
 				source,
 				"Tracking Task",
 				description,
-				person.getName(),
+				unit.getName(),
 				(Unit)source
 		);
 	}

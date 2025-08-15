@@ -85,9 +85,10 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
-		setPreferredJob(JobType.MECHANICS);
-
+		setPreferredJob(JobType.LOADERS);
 		addPreferredRobot(RobotType.REPAIRBOT);
+		
+		addAllCrewRoles();
     }
 
     /**
