@@ -7,13 +7,10 @@
 package com.mars_sim.core.person.ai.mission.meta;
 
 
-import java.util.Collection;
 import java.util.Set;
 
-import com.mars_sim.core.building.construction.ConstructionValues;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
@@ -21,7 +18,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 
 
@@ -29,11 +25,11 @@ import com.mars_sim.core.structure.Settlement;
  * A meta mission for Construction Mission.
  */
 public class ConstructionMissionMeta extends AbstractMetaMission {
-      
-	private static final int BASE_SCORE = 200;
-	
-	public static final int FIRST_AVAILABLE_SOL = 2;
-	
+    
+	// Sites have a higher score than queued buildings
+	private static final int SITE_BASE = 40;
+	private static final int QUEUE_BASE = 30;
+		
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
 				Set.of(JobType.ARCHITECT, JobType.ENGINEER));
@@ -47,74 +43,50 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
          
-        // No construction until after the x sols of the simulation.
-        if ((getMarsTime().getMissionSol() < FIRST_AVAILABLE_SOL)
-			|| !person.isInSettlement()) {
+        if (!person.isInSettlement()) {
         	return RatingScore.ZERO_RATING;
         }
 	
 		Settlement settlement = person.getSettlement();
 	
 		RoleType roleType = person.getRole().getType();
+		var jobType = person.getMind().getJob();
 		
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
-		if (person.getMind().getJob() == JobType.ARCHITECT
-				|| person.getMind().getJob() == JobType.ENGINEER
+		if (jobType == JobType.ARCHITECT
+				|| jobType == JobType.ENGINEER
 				|| RoleType.CHIEF_OF_ENGINEERING == roleType
 				|| RoleType.ENGINEERING_SPECIALIST == roleType
 				|| RoleType.COMMANDER == roleType
 				|| RoleType.SUB_COMMANDER == roleType
 				) {							
 
-			// Check if settlement has construction override flag set.
-			if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
-				return RatingScore.ZERO_RATING;
-			}
-
-			// Check if available light utility vehicles.
-			if (!ConstructionMission.isLUVAvailable(settlement)) {
-				return RatingScore.ZERO_RATING;
-			}
-			
-			int availablePeopleNum = 0;
-
-			Collection<Person> list = settlement.getIndoorPeople();
-			for (Person member : list) {
-				boolean noMission = !member.getMind().hasActiveMission();
-				boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-				if (noMission && isFit)
-					availablePeopleNum++;
-			}
+			// Fint people not on a misison and healthy		
+			long availablePeopleNum = settlement.getIndoorPeople().stream()
+						.filter(p -> !p.getMind().hasActiveMission()
+									&& !p.getPhysicalCondition().hasSeriousMedicalProblems())
+						.count();
 
 			// Check if enough available people at settlement for mission.
-			if (availablePeopleNum < ConstructionMission.MIN_PEOPLE) {
+			if ((availablePeopleNum < ConstructionMission.MIN_PEOPLE) 
+				|| !ConstructionMission.isLUVAvailable(settlement)
+				|| (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
+					ConstructionMission.MIN_PEOPLE)) {
 				return RatingScore.ZERO_RATING;
 			}
 			
-			// Check if min number of EVA suits at settlement.
-			if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
-					ConstructionMission.MIN_PEOPLE) {
-				return RatingScore.ZERO_RATING;
+			var cm = settlement.getConstructionManager();
+			int need = cm.getConstructionSitesNeedingMission(true).size() * SITE_BASE;
+			if (need == 0) {
+				need = (int) cm.getBuildingSchedule().stream()
+						.filter(s -> s.isReady())
+						.count() * QUEUE_BASE;
+				if (need == 0) {
+					return RatingScore.ZERO_RATING;
+				}
 			}
-			
-			int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
-
-			// Add construction profit for existing or new construction sites.
-			double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-			if (constructionProfit <= 0D) {
-				return RatingScore.ZERO_RATING;
-			}
-			
-			missionProbability = new RatingScore(BASE_SCORE);
-
-			double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
-			double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
-
-			if (newSiteProfit > existingSiteProfit) {
-				missionProbability.addModifier("settlement.demand", getProbability(settlement));
-			}
-
+			missionProbability = new RatingScore(need);
+	
 			// Modify if construction is the person's favorite activity.
 			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
 				missionProbability.addModifier("favourite", 1.1D);
@@ -123,37 +95,9 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			// Job modifier.
 			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
 					
-			// if introvert, score  0 to  50 --> -2 to 0
-			// if extrovert, score 50 to 100 -->  0 to 2
-			// Reduce probability if introvert
-			int extrovert = person.getExtrovertmodifier();
-			missionProbability.addModifier(PERSON_EXTROVERT, -2D + (extrovert/25D));
 			missionProbability.applyRange(0, LIMIT);
 		}
 	
         return missionProbability;
-    }
-
-    /**
-     * Computes probability.
-     * 
-     * @param settlement
-     * @return
-     */
-    private double getProbability(Settlement settlement) {
-
-        double result = 10D;
-        
-        // Consider the num of construction sites
-        int numSites = settlement.getConstructionManager().getConstructionSites().size();
-
-        // Consider the size of the settlement population
-        int numPeople = settlement.getNumCitizens();
-        
-        double limit = Math.max(-1, 6 * numSites - numPeople);
-
-        result = result/Math.pow(10, 2 + limit);
-        
-        return result;
     }
 }

@@ -24,7 +24,6 @@ import javax.swing.SwingConstants;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
@@ -74,8 +73,7 @@ public class ConstructionSitesPanel extends JPanel {
         
         // Create the site panels.
         sitesCache = manager.getConstructionSites();
-        Iterator<ConstructionSite> i = sitesCache.iterator();
-        while (i.hasNext()) sitesListPane.add(new ConstructionPanel(i.next()));
+        sitesCache.forEach(s -> sitesListPane.add(new ConstructionPanel(s)));
     }
     
     /**
@@ -87,17 +85,13 @@ public class ConstructionSitesPanel extends JPanel {
         if (!sitesCache.equals(sites)) {
             
             // Add site panels for new sites.
-            Iterator<ConstructionSite> i = sites.iterator();
-            while (i.hasNext()) {
-                ConstructionSite site = i.next();
+            for (ConstructionSite site : sites) {
                 if (!sitesCache.contains(site)) 
                     sitesListPane.add(new ConstructionPanel(site));
             }
             
             // Remove site panels for old sites.
-            Iterator<ConstructionSite> j = sitesCache.iterator();
-            while (j.hasNext()) {
-                ConstructionSite site = j.next();
+            for (ConstructionSite site : sitesCache) {
                 if (!sites.contains(site)) {
                     ConstructionPanel panel = getConstructionSitePanel(site);
                     if (panel != null) sitesListPane.remove(panel);
@@ -203,7 +197,7 @@ public class ConstructionSitesPanel extends JPanel {
         private void update() {
             
             // Update status label.
-            String statusString = getStatusString();
+            String statusString = site.getStatusDescription();
             
             // Make sure status label isn't too long.
             if (statusString.length() > MAX) statusString = statusString.substring(0, MAX) + "...";
@@ -226,41 +220,12 @@ public class ConstructionSitesPanel extends JPanel {
         }
         
         /**
-         * Gets the status label string.
-         * 
-         * @return status string.
-         */
-        private String getStatusString() {
-            String statusString = "";
-            ConstructionStage stage = site.getCurrentConstructionStage();
-            if (stage != null) {
-            	String name = Conversion.capitalize(stage.getInfo().getName());
-                if (site.isUndergoingConstruction()) 
-                	statusString = " Constructing " +  name;
-                else if (site.isUndergoingSalvage()) 
-                	statusString = " Salvaging " + name;
-                else if (site.hasUnfinishedStage()) {
-                    if (stage.isSalvaging()) 
-                    	statusString = " Salvaging " + name + " (Unfinished)";
-                    else 
-                    	statusString = " Constructing " + name + " (Unfinished)";
-                }
-                else 
-                	statusString = " " + name + " (Completed)";
-            }
-            else 
-            	statusString = "No Construction";
-            
-            return statusString;
-        }
-        
-        /**
          * Gets a tool tip string for the panel.
          */
         private String getToolTipString() {            
             ConstructionStage stage = site.getCurrentConstructionStage();
             if (stage != null) {
-                return ConstructionStageFormat.getTooltip(stage);
+                return ConstructionStageFormat.getTooltip(stage, true);
             }
             return "";
         }

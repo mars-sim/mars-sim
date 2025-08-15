@@ -54,7 +54,7 @@ public class TestSVGMapUtil extends TestCase {
         Iterator<ConstructionStageInfo> i = constructionStages.iterator();
         while (i.hasNext()) {
             ConstructionStageInfo constStageInfo = i.next();
-            String constName = constStageInfo.getName();
+            String constName = constStageInfo.getImageName();
             GraphicsNode svg = SVGMapUtil.getConstructionSiteSVG(constName);
             assertNotNull(constName + " is not mapped to a SVG image.", svg);
         }

@@ -17,7 +17,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ConstructionStageInfo implements Serializable {
 
-    // Stage 
+    // Stage This MUST be in the order of construction
     public enum Stage {FOUNDATION, FRAME, BUILDING}
 
     // Data members
@@ -220,5 +220,13 @@ public class ConstructionStageInfo implements Serializable {
     @Override
     public String toString() {
         return name;
+    }
+
+    /**
+     * Get the name of the associated image for this Stage
+     * @return
+     */
+    public String getImageName() {
+        return name.toLowerCase();
     }
 }

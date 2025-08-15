@@ -20,6 +20,7 @@ import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.robot.Robot;
@@ -120,7 +121,7 @@ implements Serializable {
 		double result = 0D;
 
 		ConstructionManager manager = settlement.getConstructionManager();
-		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingSalvageMission().iterator();
+		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission(false).iterator();
 		while (i.hasNext()) {
 			double profit = getSalvageSiteProfit(i.next(), constructionSkill);
 			if (profit > result) result = profit;
@@ -150,7 +151,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		if (!site.isUndergoingSalvage()) {
+		if (site.isConstruction()) {
 			ConstructionStage stage = site.getCurrentConstructionStage();
 			ConstructionStageInfo prerequisiteStage = stage.getInfo().getPrerequisiteStage();
 
@@ -317,12 +318,14 @@ implements Serializable {
 	 * @throws Exception if error determining value.
 	 */
 	private double getSalvageStageValue(ConstructionStageInfo stageInfo) {
-	    
-	    int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
-	    
+	    	    
 		// Use construction stage value.
-		return settlement.getConstructionManager().getConstructionValues().getConstructionStageValue(
-		        stageInfo, bestConstructionSkill);
+		double value = 0D;
+		for (var r : stageInfo.getResources().entrySet()) {
+			value += r.getValue();
+		}
+
+		return value;
 	}
 
 	/**

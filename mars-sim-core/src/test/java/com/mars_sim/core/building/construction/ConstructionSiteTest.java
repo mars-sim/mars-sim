@@ -7,17 +7,17 @@
 
 package com.mars_sim.core.building.construction;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
@@ -25,19 +25,19 @@ import com.mars_sim.core.vehicle.VehicleType;
  */
 public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
+    private static final String WORKSHOP = "Workshop";
+    private static final BoundedObject PLACE = new BoundedObject(LocalPosition.DEFAULT_POSITION,
+                                        BUILDING_WIDTH, BUILDING_LENGTH, 0);
+
     // Data members
-    ConstructionSite site = null;
-    ConstructionStage foundationStage = null;
-    ConstructionStage frameStage = null;
-    ConstructionStage buildingStage = null;
+    ConstructionStageInfo foundationInfo = null;
+    ConstructionStageInfo frameInfo = null;
+    ConstructionStageInfo buildingInfo = null;
 
     @Override
     public void setUp() {
         super.setUp();
         
-        Settlement settlement = buildSettlement();
-        site = new ConstructionSite(settlement);
-
         Map<Integer, Integer> parts = new HashMap<>(1);
         
         Part ir = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
@@ -47,96 +47,91 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
         resources.put(ResourceUtil.SAND_ID, 1D);
 
-        List<ConstructionVehicleType> vehicles =
-            new ArrayList<>(1);
-        List<Integer> attachments = new ArrayList<>(1);        
         ItemResource atth = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
         parts.put(atth.getID(), 1);
 
-        attachments.add(atth.getID());
+        var attachments = List.of(atth.getID());
 
-        vehicles.add(new ConstructionVehicleType(VehicleType.LUV, attachments));
+        var vehicles = List.of(new ConstructionVehicleType(VehicleType.LUV, attachments));
 
-        ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info",
-                ConstructionStageInfo.Stage.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
+        foundationInfo = new ConstructionStageInfo("test foundation info",
+                ConstructionStageInfo.Stage.FOUNDATION, BUILDING_WIDTH, BUILDING_LENGTH, "length", false, 0, true, false, 10000D, 0, null, parts,
                 resources, vehicles);
-        foundationStage = new ConstructionStage(foundationInfo, site);
 
-        ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info",
-                ConstructionStageInfo.Stage.FRAME, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
+        frameInfo = new ConstructionStageInfo("test frame info",
+                ConstructionStageInfo.Stage.FRAME, BUILDING_WIDTH, BUILDING_LENGTH, "length", false, 0, true, false, 10000D, 0, null, parts,
                 resources, vehicles);
-        frameStage = new ConstructionStage(frameInfo, site);
 
-        ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop",
-                ConstructionStageInfo.Stage.BUILDING, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null, parts,
+        buildingInfo = new ConstructionStageInfo("Workshop",
+                ConstructionStageInfo.Stage.BUILDING, BUILDING_WIDTH, BUILDING_LENGTH, "length", false, 0, true, false, 10000D, 0, null, parts,
                 resources, vehicles);
-        buildingStage = new ConstructionStage(buildingInfo, site);
     }
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionSite.isAllConstructionComplete()'
      */
-    public void testIsAllConstructionComplete() {
+    public void testIsStageComplete() {
+        var s = buildSettlement();
 
-            site.addNewStage(foundationStage);
-            foundationStage.addWorkTime(10000D);
-            assertTrue(foundationStage.isComplete());
+        var site = new ConstructionSite(s, "Site1", WORKSHOP, true, foundationInfo, PLACE);
 
-            site.addNewStage(frameStage);
-            frameStage.addWorkTime(10000D);
-            assertTrue(frameStage.isComplete());
+        assertEquals("Inital stage", foundationInfo, site.getCurrentConstructionStage().getInfo());
 
-            site.addNewStage(buildingStage);
-            buildingStage.addWorkTime(10000D);
-            assertTrue(buildingStage.isComplete());
+        var stage = site.getCurrentConstructionStage();
+        assertEquals("No work time", 0D, stage.getCompletedWorkTime());
+        assertFalse(stage.isComplete());
 
-            assertTrue(site.isAllConstructionComplete());
+        stage.addWorkTime(100D);
+        assertEquals("Some work time", 100D, stage.getCompletedWorkTime());
+        assertFalse(stage.isComplete());
+
+        stage.addWorkTime(100000D);
+        assertEquals("All work time", stage.getRequiredWorkTime(), stage.getCompletedWorkTime());
+        assertTrue(stage.isComplete());
+    }
+
+    /*
+     * Test method for 'com.mars_sim.simulation.structure.construction.
+     * ConstructionSite.isAllConstructionComplete()'
+     */
+    public void testIsSiteComplete() {
+        var s = buildSettlement();
+
+        var site = new ConstructionSite(s, "Site2", WORKSHOP, true, foundationInfo, PLACE);
+
+        assertEquals("Inital stage", foundationInfo, site.getCurrentConstructionStage().getInfo());
+        site.getCurrentConstructionStage().addWorkTime(10000D);
+        assertTrue(site.getCurrentConstructionStage().isComplete());
+        assertFalse(site.isAllConstructionComplete());
+
+        site.addNewStage(frameInfo);
+        assertEquals("Frame stage", frameInfo, site.getCurrentConstructionStage().getInfo());
+        site.getCurrentConstructionStage().addWorkTime(10000D);
+        assertTrue(site.getCurrentConstructionStage().isComplete());
+        assertFalse(site.isAllConstructionComplete());
+
+        site.addNewStage(buildingInfo);
+        assertEquals("Building stage", buildingInfo, site.getCurrentConstructionStage().getInfo());
+        site.getCurrentConstructionStage().addWorkTime(10000D);
+        assertTrue(site.getCurrentConstructionStage().isComplete());
+
+        assertTrue(site.isAllConstructionComplete());
     }
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionSite.setUndergoingConstruction(boolean)'
      */
-    public void testSetUndergoingConstruction() {
-        assertFalse(site.isUndergoingConstruction());
+    public void testSetWorkOnSite() {
+        var s = buildSettlement();
 
-        site.setUndergoingConstruction(true);
-        assertTrue(site.isUndergoingConstruction());
+        var site = new ConstructionSite(s, "Site3", WORKSHOP, true, foundationInfo, PLACE);
 
-        site.setUndergoingConstruction(false);
-        assertFalse(site.isUndergoingConstruction());
-    }
+        site.setWorkOnSite(true);
+        assertTrue(site.isWorkOnSite());
 
-    /*
-     * Test method for 'com.mars_sim.simulation.structure.construction.
-     * ConstructionSite.getCurrentConstructionStage()'
-     */
-    public void testGetCurrentConstructionStage() {
-        assertNull(site.getCurrentConstructionStage());
-
-        site.addNewStage(foundationStage);
-        assertEquals(foundationStage, site.getCurrentConstructionStage());
-
-        site.addNewStage(frameStage);
-        assertEquals(frameStage, site.getCurrentConstructionStage());
-
-        site.addNewStage(buildingStage);
-        assertEquals(buildingStage, site.getCurrentConstructionStage());
-    }
-
-    /*
-     * Test method for 'com.mars_sim.simulation.structure.construction.
-     * ConstructionSite.addNewStage(ConstructionStage)'
-     */
-    public void testAddNewStage() {
-        site.addNewStage(foundationStage);
-        assertEquals(foundationStage, site.getCurrentConstructionStage());
-
-        site.addNewStage(frameStage);
-        assertEquals(frameStage, site.getCurrentConstructionStage());
-
-        site.addNewStage(buildingStage);
-        assertEquals(buildingStage, site.getCurrentConstructionStage());
+        site.setWorkOnSite(false);
+        assertFalse(site.isWorkOnSite());
     }
 }

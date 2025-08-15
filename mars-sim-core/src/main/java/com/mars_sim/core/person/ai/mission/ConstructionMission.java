@@ -18,9 +18,10 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
+import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -110,38 +111,18 @@ public class ConstructionMission extends AbstractMission
 			person.getMind().setMission(this);
 		}
 
-		var site = startingMember.getAssociatedSettlement().getConstructionManager().getNextSite(constructionSkill);
+		var site = startingMember.getAssociatedSettlement().getConstructionManager().getNextConstructionSite(constructionSkill);
 		if (site == null) {
 			endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 			return;
 		}
-		createObjectives(site, site.getCurrentConstructionStage(), null);
+		createObjectives(site, null);
 		
 		// Need to set the description of this mission correctly
 		// e.g. Pouring the foundation, Building the frame, or Constructing the building
 
 		// Call missionManager to add this mission
 	    missionManager.addMission(this);
-	}
-
-	private void createObjectives(ConstructionSite site, ConstructionStage stage, List<GroundVehicle> constructionVehicles) {
-		var settlement = site.getAssociatedSettlement();
-		site.setUndergoingConstruction(true);
-
-		// Reserve construction vehicles.
-		if (constructionVehicles == null) {
-			constructionVehicles = reserveConstructionVehicles(settlement, stage);
-		}
-
-		// Retrieve construction LUV attachment parts.
-		var luvAttachmentParts = retrieveConstructionLUVParts(settlement, stage, constructionVehicles);
-		
-		// Create mission designation
-		createDesignationString();
-
-		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
-		addObjective(objective);
-		setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 	}
 
 	/**
@@ -157,8 +138,7 @@ public class ConstructionMission extends AbstractMission
 	 * @param vehicles
 	 */
 	public ConstructionMission(Collection<Worker> members, Settlement settlement,
-			ConstructionSite choosenSite, ConstructionStageInfo stageInfo, 
-			double xLoc, double yLoc, double facing,
+			ConstructionSite choosenSite,
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
@@ -174,45 +154,35 @@ public class ConstructionMission extends AbstractMission
 		}
 
 		// site already selected
-		choosenSite.setStageInfo(stageInfo);
 		logger.info(settlement, "Case 2. new construction stageInfo could not be determined.");
-
-		var stage = setupConstructionStage(choosenSite, stageInfo);
 
 		if (isDone()) {
 			return;
 		}
 
-		createObjectives(choosenSite, stage, vehicles);
+		createObjectives(choosenSite, vehicles);
 	}
 	
-	/**
-	 * Sets up the construction stage.
-	 *
-	 * @param modSite
-	 * @param info
-	 * @return 
-	 */
-	private ConstructionStage setupConstructionStage(ConstructionSite modSite, ConstructionStageInfo info) {
-		logger.info(modSite, 5_000, "Stage Info: " + info.toString());
+	private void createObjectives(ConstructionSite site, List<GroundVehicle> constructionVehicles) {
+		var settlement = site.getAssociatedSettlement();
+		site.setWorkOnSite(true);
 
-		ConstructionStage stage = null;
-		if (modSite.hasUnfinishedStage()) {
-			stage = modSite.getCurrentConstructionStage();
-			logger.info(modSite, 5_000, "Still in the stage '" + stage + "'.");
-		}
-		else {
-			stage = new ConstructionStage(info, modSite);
-			logger.info(modSite, 5_000, "Starting a new construction stage for '" + stage + "'.");
-			modSite.addNewStage(stage);
+		var stage = site.getCurrentConstructionStage();
+		// Reserve construction vehicles.
+		if (constructionVehicles == null) {
+			constructionVehicles = reserveConstructionVehicles(settlement, stage);
 		}
 
-		// Mark site as undergoing construction.
-		if (stage != null) {
-			modSite.setUndergoingConstruction(true);
-		}
+		// Retrieve construction LUV attachment parts.
+		var luvAttachmentParts = retrieveConstructionLUVParts(settlement, stage, constructionVehicles);
 
-		return stage;
+		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
+		addObjective(objective);
+		
+		// Create mission designation
+		createDesignationString();
+
+		setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 	}
 
 	/**
@@ -339,24 +309,10 @@ public class ConstructionMission extends AbstractMission
 	@Override
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
-		if (SELECT_SITE_PHASE.equals(getPhase())) {
-			selectSitePhase();
-		} else if (PREPARE_SITE_PHASE.equals(getPhase())) {
+		if (PREPARE_SITE_PHASE.equals(getPhase())) {
 			prepareSitePhase(objective.getSite());
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
 			constructionPhase(member);
-		}
-	}
-
-	/**
-	 * Performs the tasks in 'Select site' phase.
-	 * 
-	 * @param member
-	 */
-	private void selectSitePhase() {
-		// Need player to acknowledge the site location before proceeding
-		if (objective.getSite().isSiteLocConfirmed()) {
-			setPhaseEnded(true);
 		}
 	}
 	
@@ -388,9 +344,6 @@ public class ConstructionMission extends AbstractMission
 		
 		// Check if site preparation time has expired
 		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
-			// Automatically confirm the site location after a certain period of time
-			site.setSiteLocConfirmed(true);
-			
 			setPhaseEnded(true);
 		}
 	}
@@ -520,7 +473,6 @@ public class ConstructionMission extends AbstractMission
 		if (stage.isComplete()) {
 			setPhaseEnded(true);
 			var manager = site.getAssociatedSettlement().getConstructionManager();
-			manager.getConstructionValues().clearCache();
 
 			if (site.isAllConstructionComplete()) {
 				// Construct building if all 3 stages of the site construction have been complete.
@@ -530,8 +482,11 @@ public class ConstructionMission extends AbstractMission
 				logger.info(site, "New building '" + site.getBuildingName() + "' constructed.");
 			}
 			else {
-				// Inform that this stage is finish
-				logger.info(site, "'" + site.getStageInfo().getName() + "' was finished.");
+				// Move on to the next one fromm the current one
+				var newStageType = Stage.values()[stage.getInfo().getType().ordinal() + 1];
+				var newStageInfo = ConstructionManager.getStageInfo(site.getBuildingName(), newStageType);
+				site.addNewStage(newStageInfo);
+				logger.info(site, "'" + stage.getInfo().getName() + "' finished advanced to '" + newStageInfo.getName() + "'");
 			}
 		}
 	}
@@ -540,13 +495,13 @@ public class ConstructionMission extends AbstractMission
 	public void endMission(MissionStatus endStatus) {
 		var site = objective.getSite();
 		// Mark site as not undergoing construction.
-		site.setUndergoingConstruction(false);
+		site.setWorkOnSite(false);
 
 		// Unreserve all LUV attachment parts for this mission.
 		unreserveLUVparts(objective.getLuvAttachmentParts(), site.getAssociatedSettlement());
 
 		objective.getConstructionVehicles().stream()
-			.filter(v -> v.getMission().equals(this))
+			.filter(v -> this.equals(v.getMission()))
 			.forEach(v1 -> v1.setMission(null));
 
 		super.endMission(endStatus);
@@ -658,12 +613,6 @@ public class ConstructionMission extends AbstractMission
 		return objective.getStage();
 	}
 	
-	@Override
-	protected void setPhase(MissionPhase phase, String s) {
-		objective.getSite().setPhase(phase);
-		super.setPhase(phase, s);
-	}
-
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return objective.getSite().getAssociatedSettlement();

@@ -9,24 +9,27 @@ package com.mars_sim.core.building.construction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
+import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -34,10 +37,54 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class ConstructionManager implements Serializable {
 
-	// Default width and length for variable size buildings if not otherwise
-	// determined.
-	private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 7D;
-	private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
+	public static class BuildingSchedule implements Serializable {
+		// Private handler to schedule the activiation
+		private class Handler implements ScheduledEventHandler {
+			@Override
+			public String getEventDescription() {
+				return "Queue new building " + buildingType;
+			}
+
+			@Override
+			public int execute(MarsTime currentTime) {
+				valid = null;
+				return 0;
+			}
+
+		}
+
+		private String buildingType;
+		private MarsTime valid;
+
+		private BuildingSchedule(String buildingType, MarsTime valid) {
+			this.buildingType = buildingType;
+			this.valid = valid;
+		}
+
+		public String getBuildingType() {
+			return buildingType;
+		}
+
+		public MarsTime getStart() {
+			return valid;
+		}
+
+		/**
+		 * Privbate handler for this queued item
+		 * @return
+		 */
+		public ScheduledEventHandler getHandler() {
+			return new Handler();
+		}
+
+		/**
+		 * Is this schedule ready to start building
+		 * @return
+		 */
+		public boolean isReady() {
+			return valid == null;
+		}
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -52,12 +99,10 @@ public class ConstructionManager implements Serializable {
 	private Settlement settlement;
 	/** The settlement's construction sites. */
 	private List<ConstructionSite> sites;
-	private ConstructionValues values;
 	private SalvageValues salvageValues;
 	private History<String> constructedBuildingLog;
+	private List<BuildingSchedule> queue = new ArrayList<>();
 
-	private UnitManager unitManager = Simulation.instance().getUnitManager();
-	
 	/**
 	 * Constructor.
 	 * 
@@ -66,16 +111,10 @@ public class ConstructionManager implements Serializable {
 	public ConstructionManager(Settlement settlement) {
 		this.settlement = settlement;
 		sites = new ArrayList<>();
-		values = new ConstructionValues(settlement);
 		salvageValues = new SalvageValues(settlement);
 		constructedBuildingLog = new History<>();
 	}
 
-	public int getUniqueID() {
-		uniqueId++;
-		return uniqueId;
-	}
-	
 	/**
 	 * Gets all construction sites at the settlement.
 	 * 
@@ -86,52 +125,26 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Gets construction sites needing a construction mission.
+	 * Gets construction sites needing a mission.
 	 * 
+	 * @param construction Search for sites under construction not salvage
 	 * @return list of construction sites.
 	 */
-	public List<ConstructionSite> getConstructionSitesNeedingConstructionMission() {
+	public List<ConstructionSite> getConstructionSitesNeedingMission(boolean construction) {
 		List<ConstructionSite> result = new ArrayList<>();
 		for (ConstructionSite site : sites) {
-			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() &&
-					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
+			if (!site.isWorkOnSite() &&
+					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()
+					&& site.isConstruction() == construction) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
-					if (currentStage.isComplete()) {
+					boolean workNeeded = !currentStage.isComplete();
+					
+					// If not construction, i.e. salvage, or has materials then workable
+					workNeeded &= (!site.isConstruction() || currentStage.hasMissingConstructionMaterials());
+					if (workNeeded) {
 					    result.add(site);
 					}
-					else if (!currentStage.isSalvaging()) {
-					    boolean workNeeded = currentStage.getCompletableWorkTime() >
-					            currentStage.getCompletedWorkTime();
-					    boolean hasConstructionMaterials = currentStage.hasMissingConstructionMaterials();
-					    if (workNeeded || hasConstructionMaterials) {
-					        result.add(site);
-					    }
-					}
-				}
-				else {
-				    result.add(site);
-				}
-			}
-		}
-		return result;
-	}
-
-	
-	/**
-	 * Gets construction sites needing a salvage mission.
-	 * 
-	 * @return list of construction sites.
-	 */
-	public List<ConstructionSite> getConstructionSitesNeedingSalvageMission() {
-		List<ConstructionSite> result = new ArrayList<>();
-		for(ConstructionSite site : sites) {
-			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() &&
-					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
-				ConstructionStage currentStage = site.getCurrentConstructionStage();
-				if ((currentStage != null)
-					&& (currentStage.isComplete() || currentStage.isSalvaging())) {
-					result.add(site);
 				}
 			}
 		}
@@ -140,23 +153,25 @@ public class ConstructionManager implements Serializable {
 
 	/**
 	 * Creates a new construction site.
-	 * 
-	 * @return newly created construction site.
+	 * @param buildingType Type of building
+	 * @param placement Where the site is placed
+	 * @param isConstruction The site is to create a new building
+	 * @param initStage Where the work starts
 	 */
-	private ConstructionSite createNewConstructionSite() {
-		
-		ConstructionSite site = new ConstructionSite(settlement);
+	private ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
+						boolean isConstruction, ConstructionStageInfo initStage) {
+		String siteName = String.format("Site %s-%03d", settlement.getSettlementCode(), uniqueId++);
+
+		ConstructionSite site = new ConstructionSite(settlement, siteName, buildingType, isConstruction, initStage, placement);
 		sites.add(site);
-    	unitManager.addUnit(site);
+    	Simulation.instance().getUnitManager().addUnit(site);
 
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
 		logger.info(site, "Just created and registered in ConstructionManager.");
+		logger.info(settlement, "New site created for a " + buildingType + " starting "
+					+ initStage.getName() + " called " + site);
 		
 		return site;
-	}
-
-	public Settlement getSettlement() {
-		return settlement;
 	}
 
 	/**
@@ -166,19 +181,7 @@ public class ConstructionManager implements Serializable {
 	 * @throws Exception if site doesn't exist.
 	 */
 	public void removeConstructionSite(ConstructionSite site) {
-		if (sites.contains(site)) {
-			sites.remove(site);
-		}
-		else throw new IllegalStateException("Construction site doesn't exist.");
-	}
-
-	/**
-	 * Gets the construction values.
-	 * 
-	 * @return construction values.
-	 */
-	public ConstructionValues getConstructionValues() {
-		return values;
+		sites.remove(site);
 	}
 
 	/**
@@ -195,9 +198,7 @@ public class ConstructionManager implements Serializable {
 	 * 
 	 * @param buildingName the building name to add.
 	 */
-	void addConstructedBuildingLogEntry(String buildingName) {
-		if (buildingName == null) throw new IllegalArgumentException("buildingName is null");
-		
+	void addConstructedBuildingLogEntry(String buildingName) {		
 		constructedBuildingLog.add(buildingName);
 	}
 
@@ -226,9 +227,7 @@ public class ConstructionManager implements Serializable {
 		// Move any people in building to somewhere else in the settlement.
 		if (salvagedBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
 			LifeSupport lifeSupport = salvagedBuilding.getLifeSupport();
-			Iterator<Person> i = lifeSupport.getOccupants().iterator();
-			while (i.hasNext()) {
-				Person occupant = i.next();
+			for(Person occupant : new ArrayList<>(lifeSupport.getOccupants())) {
 				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
@@ -237,46 +236,16 @@ public class ConstructionManager implements Serializable {
 		// Move any robot in building to somewhere else in the settlement.
 		if (salvagedBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
 			RoboticStation station = salvagedBuilding.getRoboticStation();
-			Iterator<Robot> i = station.getRobotOccupants().iterator();
-			while (i.hasNext()) {
-				Robot occupant = i.next();
+			for (Robot occupant : new ArrayList<>(station.getRobotOccupants())) {
 				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
 
+		var bldStage = getStageInfo(salvagedBuilding.getBuildingType(), Stage.BUILDING);
+
 		// Add construction site.
-		ConstructionSite site = createNewConstructionSite();
-		site.setPosition(salvagedBuilding.getPosition());
-		site.setFacing(salvagedBuilding.getFacing());
-		ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(salvagedBuilding.getBuildingType());
-		if (buildingStageInfo != null) {
-			ConstructionStageInfo frameStageInfo = buildingStageInfo.getPrerequisiteStage();
-			if (frameStageInfo != null) {
-				ConstructionStageInfo foundationStageInfo = frameStageInfo.getPrerequisiteStage();
-				if (foundationStageInfo != null) {
-					// Add foundation stage.
-					ConstructionStage foundationStage = new ConstructionStage(foundationStageInfo, site);
-					foundationStage.setCompletedWorkTime(foundationStageInfo.getWorkTime());
-					site.addNewStage(foundationStage);
-				}
-
-				// Add frame stage.
-				ConstructionStage frameStage = new ConstructionStage(frameStageInfo, site);
-				frameStage.setCompletedWorkTime(frameStageInfo.getWorkTime());
-				site.addNewStage(frameStage);
-			}
-
-			// Add building stage and prepare for salvage.
-			ConstructionStage buildingStage = new ConstructionStage(buildingStageInfo, site);
-			buildingStage.setSalvaging(true);
-			site.addNewStage(buildingStage);
-		}
-	
-		// Clear construction values cache.
-		values.clearCache();
-
-		return site;
+		return createNewConstructionSite(salvagedBuilding.getBuildingType(), salvagedBuilding, false, bldStage);
 	}
 
 	/**
@@ -284,147 +253,118 @@ public class ConstructionManager implements Serializable {
 	 * 
 	 * @param skill
 	 */
-	public ConstructionSite getNextSite(int skill) {
+	public ConstructionSite getNextConstructionSite(int skill) {
 
-		ConstructionSite site = null;
-		values.clearCache();
-		double existingSitesProfit = values.getAllConstructionSitesProfit(skill);
-		double newSiteProfit = values.getNewConstructionSiteProfit(skill);
-		ConstructionStageInfo info = null;
+		var potentials = sites.stream()
+					.filter(s -> s.isConstruction() && !s.isWorkOnSite())
+					.filter(s -> s.getCurrentConstructionStage().getInfo().getBaseLevel() <= skill)
+					.toList();
 
-		logger.info(settlement, "existingSitesProfit: " + existingSitesProfit + "   newSiteProfit: " + newSiteProfit);
-		
-		if (existingSitesProfit > newSiteProfit) {
-			// If there are existing construction sites
-			logger.info(settlement, "Developing an existing construction site.");
-			
-			// Determine which existing construction site to work on.
-			double topSiteProfit = 0D;
-			for (var newSite : getConstructionSitesNeedingConstructionMission()) {
-				double siteProfit = values.getConstructionSiteProfit(newSite, skill);
-				if ((site == null) || (siteProfit > topSiteProfit)) {
-					site = newSite;
-					info = newSite.getStageInfo();
-					topSiteProfit = siteProfit;
-				}
-			}
-			
-			site.setStageInfo(info);
-			
-			determineNewStage(site, info, skill, values);
+		if (!potentials.isEmpty()) {
+			var site = RandomUtil.getRandomElement(potentials);
+			logger.info(settlement, "Found existing site to work on " + site);
+			return site;
 		}
 
-		else if (newSiteProfit >= 0D) {
-			// If there aren't any existing construction sites
-			logger.info(settlement, "Creating a new construction site.");
-			
-			// Case 1a: if using GUI			
-			// Case 1b: if not using GUI
-
-			// Create new site.
-			site = createNewConstructionSite();
-			
-			// Determine construction site new stage info via profits probability.
-			info = determineNewStageInfoByProfits(site, skill);
-
-			site.setStageInfo(info);
-			
-			// Determine construction site location and facing.
-			if (info != null) {
-				// Set construction site size.
-				if (info.getWidth() > 0D)
-					site.setWidth(info.getWidth());
-				else
-					// Set initial width value that may be modified later.
-					site.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
-
-				if (info.getLength() > 0D)
-					site.setLength(info.getLength());
-				else
-					// Set initial length value that may be modified later.
-					site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
-
-				determineNewStage(site, info, skill, values);
-
-				BuildingPlacement.placeSite(site);
-
-				logger.info(settlement, "New construction site '" + site + "' added.");
-			}
-			
-			else {
-				logger.warning(site, "New construction stage could not be determined.");
-				return null;
+		// Should select from Q once in place
+		if (!queue.isEmpty()) {
+			var first = queue.stream()
+					.filter(s -> s.isReady())
+					.findFirst().orElse(null);
+			if (first != null) {
+				var bestBuilding = getBuildingSpec(first.getBuildingType());
+				queue.remove(first);
+				return createNewBuildingSite(bestBuilding);
 			}
 		}
-		else {
-			logger.info(settlement, "Case 3");
-		}
-
-		return site;
+		return null;
 	}
 
-	
 	/**
-	 * Determines a new stage to work on.
-	 * 
-	 * @param cSite
-	 * @param stageInfo
-	 * @param constructionSkill
-	 * @param values
+	 * Create a new building site to build a building. This bypasses the queue
+	 * @param building
+	 * @return
 	 */
-	private void determineNewStage(ConstructionSite cSite, ConstructionStageInfo stageInfo, int constructionSkill,
-			ConstructionValues values) {
-
-		// Determine new stage to work on.
-		if (cSite.hasUnfinishedStage()) {
-			logger.info(cSite, "Continuing work on existing site at " + settlement.getName());
+	public ConstructionSite createNewBuildingSite(BuildingSpec building) {
+		// Place the new building
+		var placement = BuildingPlacement.placeSite(settlement, building);
+		if (placement == null) {
+			logger.warning(settlement, "Can not find a placement for " + building.getName());
+			return null;
 		}
-		
-		else {			
-			if (stageInfo == null) {
-				stageInfo = determineNewStageInfoByProfits(cSite, constructionSkill);
-			}
 
-			if (stageInfo != null) {
-				var stage = new ConstructionStage(stageInfo, cSite);
-				cSite.addNewStage(stage);
-				values.clearCache();
-				logger.info(cSite, "Starting a new construction stage '" + stage + ".");
-			} 
-			
-			else {
-				logger.warning(cSite, "Can not determine the next stage");
-			}
+		// Find the first state
+		ConstructionStageInfo initStage = getStageInfo(building.getName(), Stage.FOUNDATION);
+		return createNewConstructionSite(building.getName(), placement, true, initStage);
+	}
+
+	/**
+	 * Check if the settlement needs new Building beyond the Queue
+	 */
+	// private void evaluateNewBuildingNeed() {
+	// 	// Check if settlement has construction override flag set.
+	// 	// if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
+	// 	// 	return null
+	// 	// }
+
+	// 	// This implementation should be enhanced to select a building according to soem rules
+	// 	//e.g. not enought beds then Accomodation
+	// 	String buildingType = ObjectiveUtil.getBuildingType(settlement.getObjective());
+
+	// 	// Make sure the best building is not in the queue already
+	// 	if (queue.stream().noneMatch(s -> s.getBuildingType().equals(buildingType))) {
+	// 		addBuildingToQueue(buildingType, null);
+	// 	}
+	// }
+
+	/**
+	 * Add a building to the queue to be scheduled for construction
+	 * @param buildingType
+	 * @param when This can be null if schedule now
+	 */
+	public void addBuildingToQueue(String buildingType, MarsTime when) {
+		var bs = new BuildingSchedule(buildingType, when);
+		queue.add(bs);
+		if (when != null) {
+			settlement.getFutureManager().addEvent(when, bs.getHandler());
 		}
 	}
 
 	/**
-	 * Determines a new construction stage info for a site.
-	 *
-	 * @param site  the construction site.
-	 * @param skill the architect's construction skill.
-	 * @return construction stage info.
-	 * @throws Exception if error determining construction stage info.
+	 * Get the building schedule
+	 * @return
 	 */
-	private ConstructionStageInfo determineNewStageInfoByProfits(ConstructionSite site, int skill) {
-		ConstructionStageInfo result = null;
-		Map<ConstructionStageInfo, Double> stageProfits = values.getNewConstructionStageProfits(site, skill);
-		if (!stageProfits.isEmpty()) {
-			result = RandomUtil.getWeightedRandomObject(stageProfits);
+	public List<BuildingSchedule> getBuildingSchedule() {
+		return queue;
+	}
+
+	private static BuildingSpec getBuildingSpec(String buildingType) {
+		return SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+	}
+
+	/**
+	 * Find the construction stage details in teh chain to create a certain building type
+	 * @param buildingType Type to create
+	 * @param target The type of stage to locate
+	 * @return
+	 */
+	public static ConstructionStageInfo getStageInfo(String buildingType, Stage target) {
+		var consConfig = SimulationConfig.instance().getConstructionConfiguration();
+
+		// Get the top level Building stage and walkbacks
+		var stageInfo = consConfig.getConstructionStageInfoByName(buildingType);
+		while(stageInfo.getType() != target) {
+			stageInfo = stageInfo.getPrerequisiteStage();
 		}
 
-		return result;
+		return stageInfo;
 	}
 
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		settlement = null;
 		sites.clear();
-		sites = null;
-		values.destroy();
-		values = null;
 		salvageValues.destroy();
 		salvageValues = null;
 		constructedBuildingLog = null;

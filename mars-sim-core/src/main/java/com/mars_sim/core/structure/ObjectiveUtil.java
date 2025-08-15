@@ -56,7 +56,7 @@ public final  class ObjectiveUtil {
 		    case TRADE_CENTER -> "Garage"; 
 		    // alternatives : "Storage Shed", Future: "Markets" 
 		    case TOURISM -> "Residential Quarters";
-            default -> null;
+            default -> "Lander Hab";
         };
 	}
 }
