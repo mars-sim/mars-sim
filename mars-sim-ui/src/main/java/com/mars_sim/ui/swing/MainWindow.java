@@ -42,6 +42,7 @@ import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.console.InteractiveTerm;
+import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
@@ -84,7 +85,7 @@ public class MainWindow
 	/** The main window frame. */
 	private static JFrame frame;
 
-	private transient UIConfig configs;
+	private transient UIConfig uiconfigs;
 
 	private static SplashWindow splashWindow;
 
@@ -105,6 +106,8 @@ public class MainWindow
 
 	private Dimension selectedSize;
 
+	private Dimension terminalSize;
+	
 	private Simulation sim;
 	private MasterClock masterClock;
 
@@ -141,13 +144,13 @@ public class MainWindow
 		if (cleanUI) {
 			loadConfig = askScreenConfig();
 		}
-		configs = new UIConfig();
+		uiconfigs = new UIConfig();
 		if (loadConfig) {
-			configs.parseFile();
+			uiconfigs.parseFile();
 		}
 
 		// Set up the look and feel library to be used
-		StyleManager.setStyles(configs.getPropSets());
+		StyleManager.setStyles(uiconfigs.getPropSets());
 
 //		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -178,7 +181,7 @@ public class MainWindow
 		frame.setMinimumSize(new Dimension(640, 640));
 
 		// Set the UI configuration
-		boolean useDefault = configs.useUIDefault();
+		boolean useDefault = uiconfigs.useUIDefault();
 
 		if (useDefault) {
 			logger.config("Will calculate screen size for default display instead.");
@@ -224,7 +227,8 @@ public class MainWindow
 	 * Sets up the screen config used from last saved session.
 	 */
 	private void setUpSavedScreen() {
-		selectedSize = configs.getMainWindowDimension();
+		// For the Main Window	
+		selectedSize = uiconfigs.getMainWindowDimension();
 
 		// Set frame size
 		frame.setSize(selectedSize);
@@ -235,11 +239,31 @@ public class MainWindow
 				+ ".");
 
 		// Display screen at a certain location
-		frame.setLocation(configs.getMainWindowLocation());
-		logger.config("Last saved frame starts at ("
-				+ configs.getMainWindowLocation().x
+		frame.setLocation(uiconfigs.getMainWindowLocation());
+		logger.config("Last saved main window's frame starts at ("
+				+ uiconfigs.getMainWindowLocation().x
 				+ ", "
-				+ configs.getMainWindowLocation().y
+				+ uiconfigs.getMainWindowLocation().y
+				+ ").");
+		
+		
+		// For Mars Terminal
+		terminalSize = uiconfigs.getMarsTerminalDimension();
+
+		// Set frame size
+		getMarsTerminal().getFrame().setSize(terminalSize);
+		logger.config("Last saved window dimension: "
+				+ terminalSize.width
+				+ " x "
+				+ terminalSize.height
+				+ ".");
+
+		// Display screen at a certain location
+		getMarsTerminal().getFrame().setLocation(uiconfigs.getMarsTerminalLocation());
+		logger.config("Last saved terminal's frame starts at ("
+				+ uiconfigs.getMarsTerminalLocation().x
+				+ ", "
+				+ uiconfigs.getMarsTerminalLocation().y
 				+ ").");
 	}
 
@@ -252,12 +276,13 @@ public class MainWindow
 	 * @param useDefaults
 	 */
 	private void setUpDefaultScreen(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefaults) {
-		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults);
+		
+		// Set main window frame size
+		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMainWindowDimension());
 
-		// Set frame size
 		frame.setSize(selectedSize);
 
-		logger.config("Default window dimension: "
+		logger.config("Default main window dimension: "
 				+ selectedSize.width
 				+ " x "
 				+ selectedSize.height
@@ -267,11 +292,34 @@ public class MainWindow
 				((screenWidth - selectedSize.width) / 2),
 				((screenHeight - selectedSize.height) / 2));
 
-		logger.config("Use default configuration to set frame to the center of the screen.");
-		logger.config("The window frame is centered and starts at ("
+		logger.config("Use default configuration to set main window's frame to the center of the screen.");
+		logger.config("The main window frame is centered and starts at ("
 				+ (screenWidth - selectedSize.width) / 2
 				+ ", "
 				+ (screenHeight - selectedSize.height) / 2
+				+ ").");
+		
+		
+		// Set Mars Terminal frame size
+		terminalSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMarsTerminalDimension());
+
+		getMarsTerminal().getFrame().setSize(terminalSize); 
+
+		logger.config("Default terminal dimension: "
+				+ terminalSize.width
+				+ " x "
+				+ terminalSize.height
+				+ ".");
+
+		getMarsTerminal().getFrame().setLocation(
+				((screenWidth - terminalSize.width) / 2),
+				((screenHeight - terminalSize.height) / 2));
+
+		logger.config("Use default configuration to set the terminal's frame to the center of the screen.");
+		logger.config("The terminal frame is centered and starts at ("
+				+ (screenWidth - terminalSize.width) / 2
+				+ ", "
+				+ (screenHeight - terminalSize.height) / 2
 				+ ").");
 	}
 
@@ -283,7 +331,8 @@ public class MainWindow
 	 * @param useDefault
 	 * @return
 	 */
-	private Dimension calculatedScreenSize(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefault) {
+	private Dimension calculatedScreenSize(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefault,
+			Dimension dimension) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
 
 		Dimension frameSize = null;
@@ -293,7 +342,7 @@ public class MainWindow
 			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
 		} else {
 			// Use any stored size
-			frameSize = configs.getMainWindowDimension();
+			frameSize = dimension;
 			logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);
 		}
 
@@ -336,6 +385,16 @@ public class MainWindow
 		return selectedSize;
 	}
 
+	/**
+	 * Get the selected screen size for the Mars Terminal window.
+	 * 
+	 * @return
+	 */
+	Dimension getTerminalSize() {
+		return terminalSize;
+	}
+	
+	
 	/**
 	 * Initializes UI elements for the frame
 	 */
@@ -464,7 +523,7 @@ public class MainWindow
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
 
 		// set the visibility of tool and unit bars from preferences
-		Properties props = configs.getPropSet(MAIN_PROPS);
+		Properties props = uiconfigs.getPropSet(MAIN_PROPS);
 		unitToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_UNIT_BAR, false));
 		toolToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_TOOL_BAR, true));
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
@@ -612,7 +671,7 @@ public class MainWindow
 		sim.requestSave(fileLocn, action -> {
 			if (SimulationListener.SAVE_COMPLETED.equals(action)) {
 				// Save the current main window ui config
-				configs.saveFile(this);
+				uiconfigs.saveFile(this);
 			}
 		});
 
@@ -650,7 +709,7 @@ public class MainWindow
 
 				endSimulation();
 				// Save the UI configuration.
-				configs.saveFile(this);
+				uiconfigs.saveFile(this);
 				masterClock.exitProgram();
 				frame.dispose();
 				destroy();
@@ -760,7 +819,7 @@ public class MainWindow
 	 * Gets the UIConfig for this UI.
 	 */
 	public UIConfig getConfig() {
-		return configs;
+		return uiconfigs;
 	}
 
 	/**
@@ -820,7 +879,17 @@ public class MainWindow
 	}
 
 	/**
-	 * Use the external browser for help
+	 * Returns the reference of the Mars Terminal.
+	 * 
+	 * @return
+	 */
+	public MarsTerminal getMarsTerminal() {
+		return interactiveTerm.getTerminal();
+	}
+	
+	/**
+	 * Uses the external browser for help.
+	 * 
 	 * @param selected
 	 */
 	public void setExternalBrowser(boolean selected) {
@@ -877,7 +946,7 @@ public class MainWindow
 		toolToolbar = null;
 		desktop.destroy();
 		desktop = null;
-		configs = null;
+		uiconfigs = null;
 		splashWindow = null;
 		interactiveTerm.destroy();
 		interactiveTerm = null;

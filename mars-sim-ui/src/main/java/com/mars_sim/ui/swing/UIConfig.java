@@ -34,6 +34,8 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+
+import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
@@ -70,11 +72,19 @@ public class UIConfig {
 	// UI config elements and attributes.
 	private static final String UI = "ui";
 	private static final String USE_DEFAULT = "use-default";
+	
 	private static final String MAIN_WINDOW = "main-window";
 	private static final String LOCATION_X = "location-x";
 	private static final String LOCATION_Y = "location-y";
 	private static final String WIDTH = "width";
 	private static final String HEIGHT = "height";
+	
+	private static final String MARS_TERMINAL = "mars-terminal";
+	private static final String TERMINAL_X = "terminal-x";
+	private static final String TERMINAL_Y = "terminal-y";
+	private static final String TERMINAL_WIDTH = "terminal-width"; 
+	private static final String TERMINAL_HEIGHT = "terminal-height"; 
+	
 	private static final String INTERNAL_WINDOWS = "internal-windows";
 	private static final String WINDOW = "window";
 	private static final String TYPE = "type";
@@ -91,6 +101,9 @@ public class UIConfig {
 	private Point mainWindowPosn = new Point(0,0);
 	private Dimension mainWindowSize = new Dimension(1024, 720);
 
+	private Point marsTerminalPosn = new Point(0,0);
+	private Dimension marsTerminalSize = new Dimension(1024, 720);
+	
 	private boolean useDefault;
 
 	/**
@@ -118,6 +131,10 @@ public class UIConfig {
 				mainWindowSize = parseSize(mainWindow);
 				mainWindowPosn = parsePosition(mainWindow);
 
+				Element terminalWindow = root.getChild(MARS_TERMINAL);
+				marsTerminalSize = parseTSize(terminalWindow);
+				marsTerminalPosn = parseTPosition(terminalWindow);
+				
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
 
@@ -177,6 +194,19 @@ public class UIConfig {
 		return new Point(locationX, locationY);
 	}
 
+	private static Dimension parseTSize(Element window) {
+		int width = Integer.parseInt(window.getAttributeValue(TERMINAL_WIDTH));
+		int height = Integer.parseInt(window.getAttributeValue(TERMINAL_HEIGHT));
+
+		return new Dimension(width, height);
+	}
+
+	private static Point parseTPosition(Element window) {
+		int locationX = Integer.parseInt(window.getAttributeValue(TERMINAL_X));
+		int locationY = Integer.parseInt(window.getAttributeValue(TERMINAL_Y));
+		return new Point(locationX, locationY);
+	}
+	
 	private static boolean parseBoolean(Element item, String attrName) {
 		return Boolean.parseBoolean(item.getAttributeValue(attrName));
 	}
@@ -189,6 +219,8 @@ public class UIConfig {
 	public void saveFile(MainWindow mainWindow) {
 		MainDesktopPane desktop = mainWindow.getDesktop();
 
+		MarsTerminal marsTerminal = mainWindow.getMarsTerminal();
+		
 		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
 
 		// Create save directory if it doesn't exist.
@@ -222,9 +254,15 @@ public class UIConfig {
 		Element mainWindowElement = new Element(MAIN_WINDOW);
 		uiElement.addContent(mainWindowElement);
 
+		Element marsTerminalElement = new Element(MARS_TERMINAL);
+		uiElement.addContent(marsTerminalElement);
+		
 		JFrame realWindow = mainWindow.getFrame();
 		outputWindowCoords(mainWindowElement, realWindow);
 
+		JFrame realTerminal = marsTerminal.getFrame();
+		outputTerminalCoords(marsTerminalElement, realTerminal);
+		
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
 
@@ -290,6 +328,13 @@ public class UIConfig {
 		windowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
 	}
 
+	private void outputTerminalCoords(Element windowElement, Component realWindow) {			
+		windowElement.setAttribute(TERMINAL_X, Integer.toString(realWindow.getX()));
+		windowElement.setAttribute(TERMINAL_Y, Integer.toString(realWindow.getY()));
+		windowElement.setAttribute(TERMINAL_WIDTH, Integer.toString(realWindow.getWidth()));
+		windowElement.setAttribute(TERMINAL_HEIGHT, Integer.toString(realWindow.getHeight()));
+	}
+	
 	private void outputProperties(Element parent, String name, Properties values) {
 		Element propParent = new Element(PROP_SET);
 		parent.addContent(propParent);
@@ -313,7 +358,6 @@ public class UIConfig {
 		return useDefault;
 	}
 
-
 	/**
 	 * Gets the screen location of the main window origin.
 	 *
@@ -332,6 +376,24 @@ public class UIConfig {
 		return mainWindowSize;
 	}
 
+	/**
+	 * Gets the screen location of the Mars Terminal origin.
+	 *
+	 * @return location.
+	 */
+	public Point getMarsTerminalLocation() {
+		return marsTerminalPosn;
+	}
+
+	/**
+	 * Gets the size of the Mars Terminal.
+	 *
+	 * @return size.
+	 */
+	public Dimension getMarsTerminalDimension() {
+		return marsTerminalSize;
+	}
+	
 	/**
 	 * Gets any saved properties of the internal window on the desktop.
 	 *

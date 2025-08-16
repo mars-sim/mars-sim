@@ -163,12 +163,20 @@ public class MainDesktopPane extends JDesktopPane
 		// Prep listeners
 		prepareListeners();
 
-		// Set background paper size
+		// Set the main window's size
 		Dimension selectedSize = mainWindow.getSelectedSize();
 		if (selectedSize != null) {
 			setSize(selectedSize);
 			setPreferredSize(selectedSize);
 			logger.config("Main Window initially set to " + selectedSize);
+		}
+		
+		// Set the Mars Terminal's size
+		Dimension terminalSize = mainWindow.getTerminalSize();
+		if (terminalSize != null) {
+			setSize(terminalSize);
+			setPreferredSize(terminalSize);
+			logger.config("Mars Terminal initially set to " + terminalSize);
 		}
 	}
 
