@@ -66,7 +66,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
                                 .map(NamedPosition::name)
                                 .collect(Collectors.toSet());
         assertTrue("Exercise spot called 'Bike'", names.contains("Bike"));
-        assertTrue("Exercise spot called 'Running Machine'", names.contains("Running Machine"));
+        assertTrue("Exercise spot called 'Running Machine'", names.contains("Weight Lifting"));
     }
 
     /**

@@ -50,10 +50,10 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         
         Building bLoc = p.getBuildingLocation();
         
-        System.out.println("Building: " + bLoc);
+//        System.out.println("Building: " + bLoc);
         
         var clock = getSim().getMasterClock().getMarsTime();
-        System.out.println("1. clock: " + clock);
+//        System.out.println("1. clock: " + clock);
         
 //        b.getComputation().setFreeCU(20);
         
@@ -66,7 +66,7 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
 
         // Check one run
         double origNeed = job.getRemainingNeed();
-        System.out.println("origNeed: " + origNeed);
+//        System.out.println("origNeed: " + origNeed);
         
         Computation center = null;
         double newNeed = 0;
@@ -74,10 +74,10 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         // Run job to consume bulk of power
         for (int i = 0; i < STEPS-1; i++) {
         	double cu = b.getComputation().getCurrentCU();
-            System.out.println("cu: " + cu);
+//            System.out.println("cu: " + cu);
             
             clock = clock.addTime(1);
-            System.out.println("2. clock: " + clock);
+//            System.out.println("2. clock: " + clock);
             
         	center = job.consumeProcessing(center, i * STEPS, clock.getMillisolInt());
   
@@ -88,7 +88,7 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
             center.timePassing(pulse);
             
             newNeed = job.getRemainingNeed();
-            System.out.println("newNeed: " + newNeed);
+//            System.out.println("newNeed: " + newNeed);
             
             // At the first round, newNeed equals origNeed
             // Comment out below for now. Unable to get the mars clock running
@@ -109,7 +109,7 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         // Comment out below for now. Unable to get the mars clock running
 //        assertTrue("Job found compute function end", job.isCompleted());
 
-        System.out.println("1. clock: " + clock);        
+//        System.out.println("1. clock: " + clock);        
     }
 
     public void testNoCompute() {

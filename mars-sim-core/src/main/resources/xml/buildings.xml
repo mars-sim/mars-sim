@@ -196,8 +196,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<!-- The building has administrative capabilities. -->
 			<administration capacity="2" population-support="8">
 				<activity>
+				
+					<activity-spot xloc="2.85" yloc="0.3" />				
 					<activity-spot xloc="2.08" yloc="0.02" />
-					<activity-spot xloc="2.73" yloc="0.26" />
+
 				</activity>
 			</administration>
 
@@ -216,7 +218,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     Note that cooling demand was calculated separately based on this figure.  -->
 			<computation computing-unit="10.0" power-demand="1.0">
 				<activity>
-					<activity-spot xloc="0.0" yloc="0.0" />
+					<!--The 1 seat on the south end of long lab bench sector-->
+					<activity-spot xloc="-2.67" yloc="-2.86" />
+					<!--The inner 2 seats on the long table south of the medical bay-->
+					<activity-spot xloc="2.85" yloc="0.3" />				
+					<activity-spot xloc="2.08" yloc="0.02" />
 				</activity>
 			</computation>
 
@@ -231,19 +237,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has facilities for eating meals. -->
 			<dining capacity="4">
 				<activity>
-					<activity-spot xloc="1.02" yloc="-0.73" />
-					<activity-spot xloc="1.02" yloc="-2.02" />
+					<!-- The top and bottom seats of the East table -->
+					<activity-spot xloc="1.04" yloc="-0.68" />
+					<activity-spot xloc="1.04" yloc="-2.069" />
 					<!-- The left and right seats of the East table -->
-					<activity-spot xloc="1.75" yloc="-1.36" />
-					<activity-spot xloc="0.4" yloc="-1.36" />
+					<activity-spot xloc="1.699" yloc="-1.392" />
+					<activity-spot xloc="0.407" yloc="-1.392" />
 				</activity>
 			</dining>
 
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.4" yloc="2.25" name="Running Machine"/>
-					<activity-spot xloc="2.8" yloc="1.5" name="Bike"/>
+					<activity-spot xloc="3.74" yloc="-0.7" name="Weight Lifting"/>
+					<activity-spot xloc="3.84" yloc="0" name="Bike"/>
 				</activity>
 			</exercise>
 
@@ -262,12 +269,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
-			<living-accommodation capacity="4">
+			<living-accommodation capacity="8">
 				<activity>
-					<activity-spot xloc="1.55" yloc="3.28" />
-					<activity-spot xloc="-0.4" yloc="3.6" />
-					<activity-spot xloc="-3.3" yloc="0.9" />
-					<activity-spot xloc="-3.17" yloc="-1.08" />
+				
+					<!-- Clockwise from right most room to the left most room -->
+					<!-- Room 1 -->
+					<activity-spot xloc="2.056" yloc="3.481" />
+					<activity-spot xloc="1.832" yloc="3.135" />					
+					<!-- Room 2 -->
+					<activity-spot xloc="-0.204" yloc="4.071" />
+					<activity-spot xloc="-0.206" yloc="3.644" />
+					<!-- Room 3 -->
+					<activity-spot xloc="-3.156" yloc="0.753" />
+					<activity-spot xloc="-3.156" yloc="0.316" />
+					<!-- Room 4 -->
+					<activity-spot xloc="-3.156" yloc="-0.244" />
+					<activity-spot xloc="-3.156" yloc="-0.641" />
+					
 				</activity>
 			</living-accommodation>
 
@@ -275,7 +293,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- capacity: the number of population managed. -->
 			<management capacity="1">
 				<activity>
-					<activity-spot xloc="3.4" yloc="0.53" />
+					<activity-spot xloc="3.74" yloc="0.6" />
 				</activity>
 			</management>
 
@@ -285,8 +303,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     can support -->
 			<manufacture tech-level="4" concurrent-processes="2">
 				<activity>
-					<activity-spot xloc="-0.9" yloc="-3.13" />
-					<activity-spot xloc="-0.9" yloc="-3.72" />
+					<activity-spot xloc="-0.9" yloc="-3.22" />
+					<activity-spot xloc="-0.9" yloc="-3.82" />
 				</activity>
 				<tooling name="3D printer" number="2" />
 				<tooling name="soldering" number="2"/>
@@ -295,12 +313,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has a medical infirmary. -->
 			<!-- tech-level: the treatment level capability of the infirmary. (see tech_level.txt) -->
 			<!-- beds: the number of patients the infirmary can support. -->
-			<medical-care tech-level="4" bed="1">
+			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="-2" yloc="2" />
+					<activity-spot xloc="2.15" yloc="1.6" />
+					<activity-spot xloc="2.7" yloc="2" />
 				</activity>
 				<bed>
-					<bed-location xloc="-1.97" yloc="1.83" />
+					<bed-location xloc="2.5" yloc="2.4" />
+					<bed-location xloc="3.6" yloc="1.8" />
 				</bed>
 			</medical-care>
 
@@ -323,6 +343,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="2">
 				<activity>
+					<!-- The 2 seats on the blue couch with yellow lamp facing the outside -->
+					<activity-spot xloc="2.922" yloc="-2.6631" />
+					<activity-spot xloc="2.7063" yloc="-2.8791" />
+				
+					<!-- Top and bottom seats of the west dining table -->
 					<activity-spot xloc="2.76" yloc="-0.69" />
 					<activity-spot xloc="2.76" yloc="-2.01" />
 				</activity>
@@ -343,9 +368,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PSYCHOLOGY" />
 
 				<activity>
-					<activity-spot xloc="-1.47" yloc="-2.0" />
-					<activity-spot xloc="-1.95" yloc="-2.33" />
-					<activity-spot xloc="-2.47"  yloc="-2.67" />
+					<activity-spot xloc="-2.20"  yloc="-2.47" />
+					<activity-spot xloc="-1.69" yloc="-2.15" />
+					<activity-spot xloc="-1.17" yloc="-1.80" />
+
 				</activity>
 			</research>
 
@@ -370,15 +396,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
-					<activity-spot xloc="-0.9" yloc="-2.49" />
+					<activity-spot xloc="-0.9" yloc="-2.02" />
+					<activity-spot xloc="-0.9" yloc="-2.62" />
 				</activity>
 
 			</resource-processing>
 
-			<robotic-station capacity="2">
+			<robotic-station capacity="3">
 				<activity>
-					<activity-spot xloc="0.2" yloc="0.2" />
-					<activity-spot xloc="-0.2" yloc="-0.2" />
+					<activity-spot xloc="0.0" yloc="0.0" />
+					<activity-spot xloc="-0.3" yloc="-1.0" />
+					<activity-spot xloc="-0.3" yloc="-1.4" />
 				</activity>
 			</robotic-station>
 
@@ -3597,7 +3625,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="2.0" yloc="0" />
+					<activity-spot xloc="-0.197" yloc="1.784" />
+					<activity-spot xloc="-0.478" yloc="1.411" />	
+					
 				</activity>
 				<bed>
 					<bed-location xloc="3.55" yloc="-.42" />

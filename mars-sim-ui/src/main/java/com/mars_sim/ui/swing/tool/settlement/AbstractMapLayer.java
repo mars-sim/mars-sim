@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractMapLayer.java
- * @date 2025-08-01
+ * @date 2025-08-15
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -62,18 +62,20 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	protected void drawOval(LocalPosition pos, ColorChoice color,
                             MapViewPoint viewpoint) {
 		
+		double x = pos.getX();
+		double y = pos.getY();
 		double scale = viewpoint.scale();
 		int size = (int)(Math.round(scale / 3.0));
-		size = Math.max(size, 1);
+		size = Math.max(size / 2, 1);
 				
 		double radius = size / 2.0;
-		
+	
 		// Save original graphics transforms.
 		var g2d = viewpoint.graphics();
 		AffineTransform saveTransform = g2d.getTransform();
 
-		double translationX = -1.0 * pos.getX() * scale - radius;
-		double translationY = -1.0 * pos.getY() * scale - radius;
+		double translationX = -1.0 * x * scale - radius;
+		double translationY = -1.0 * y * scale - radius;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -84,9 +86,13 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Set circle color.
 		g2d.setColor(color.text());
 
-		// Draw circle
-		g2d.fillOval(0, 0, size, size);
-
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
+		// Draw circle outline
+		g2d.drawOval(0, 0, size, size);
+	
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 	}
@@ -111,6 +117,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		double scale = viewpoint.scale();
 		double rotation = viewpoint.rotation();
 		var g2d = viewpoint.graphics();
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
 		float newScale = Math.round(scale/2.5);
 		
 		// Save original graphics transforms.
