@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationRuntime.java
- * @date 2024-09-01
+ * @date 2025-08-17
  * @author Barry Evans
  */
 package com.mars_sim.core;
@@ -103,6 +103,10 @@ public class SimulationRuntime {
 	
 	public static String getDataDir() {
 		return dataDir;
+	}
+	
+	public static String getMusicDir() {
+		return dataDir + File.separator + Msg.getString("Simulation.musicFolder");
 	}
 	
 	public static String getUserConfigDir() {

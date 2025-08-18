@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AudioPlayer.java
- * @date 2023-03-30
+ * @date 2025-08-17
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -20,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.UIConfig;
@@ -34,8 +33,7 @@ public class AudioPlayer {
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
 
 	/** music files directory. */
-	public static final String MUSIC_DIR = SimulationRuntime.getDataDir() +
-			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
+	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir(); //$NON-NLS-1$
 	
 	public static final double DEFAULT_VOL = .5;
 
@@ -464,9 +462,19 @@ public class AudioPlayer {
 	public boolean isMusicTrackStopped() {
 		if (currentMusic == null)
 			return true;
-		return currentMusic.stopped();
+		return currentMusic.checkState(); //isStopped();
 	}
 
+	
+	/**
+	 * Loops through the background tracks.
+	 */
+	public void loopThruBackgroundMusic() {
+		if (isMusicTrackStopped()) {
+			playRandomMusicTrack();
+		}		
+	}
+	
 	/**
 	 * Picks a new music track to play
 	 */

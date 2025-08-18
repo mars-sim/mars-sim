@@ -74,6 +74,9 @@ public class PersonUnitWindow extends UnitWindow {
 	 */
 	public PersonUnitWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
+		
+		// Note : variable = (condition) ? expressionTrue : expressionFalse
+		
 		super(desktop, person, person.getName() 
 				+ " of " + 
 				((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())

@@ -94,6 +94,8 @@ public class MainWindow
 	// Data members
 	private boolean isIconified = false;
 
+	private int millisolIntCache;
+	
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
 	/** The tool bar. */
@@ -206,6 +208,15 @@ public class MainWindow
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		
+		try {
+			Thread.sleep(15_000);
+			// Starts a background sound track.
+			desktop.playBackgroundMusic();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -854,6 +865,16 @@ public class MainWindow
 
 			// Cascade the pulse
 			desktop.clockPulse(pulse);
+			
+			
+			int now = pulse.getMarsTime().getMillisolInt();	
+			
+			if (now != millisolIntCache && now != 1000 && now % 10 == 2) {
+
+				desktop.getSoundPlayer().loopThruBackgroundMusic();
+				
+				millisolIntCache = now;
+			}
 		}
 	}
 
@@ -872,6 +893,10 @@ public class MainWindow
 		if (isPaused != playPauseSwitch.isSelected()) {
 			playPauseSwitch.setSelected(isPaused);
 		}
+		if (isPaused)
+			desktop.getSoundPlayer().muteMusic();
+		else
+			desktop.getSoundPlayer().unmuteMusic();
 	}
 
 	public static void setInteractiveTerm(InteractiveTerm i) {
@@ -901,7 +926,8 @@ public class MainWindow
 	}
 
 	/**
-	 * Get the help library
+	 * Gets the help library.
+	 * 
 	 * @param helpPage
 	 */
 	public HelpLibrary getHelp() {
@@ -917,7 +943,8 @@ public class MainWindow
 	}
 
 	/**
-	 * Display a helppage
+	 * Displays a help page.
+	 * 
 	 * @param helpPage
 	 */
 	public void showHelp(String helpPage) {

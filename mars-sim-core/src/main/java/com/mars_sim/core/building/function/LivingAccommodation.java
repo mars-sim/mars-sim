@@ -201,7 +201,7 @@ public class LivingAccommodation extends Function {
 			
 			int now = pulse.getMarsTime().getMillisolInt();	
 			
-			if (now != millisolIntCache && now % 20 == 0) {
+			if (now != millisolIntCache && now != 1000 && now % 20 == 5) {
 				int timeSpan = now - millisolIntCache;
 				if (timeSpan < 0)
 					timeSpan += 1000;

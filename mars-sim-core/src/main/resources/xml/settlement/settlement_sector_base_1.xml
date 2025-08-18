@@ -675,7 +675,7 @@
     <robot name="Dewey Pro" type="GardenBot" model="Advanced"/>
     <robot name="Louie Pro" type="GardenBot" model="Advanced"/>
 
-    <equipment type="EVA Suit" number="120" />
+    <equipment type="EVA Suit" number="156" />
 
     <!-- Containers-->
 	<equipment type="barrel" number="320" />
@@ -683,7 +683,7 @@
 	<equipment type="gas canister" number="320" />		
 	<equipment type="large bag" number="320" />
 	<equipment type="specimen box" number="320" />
-    <equipment type="thermal bottle" number="144" />	
+    <equipment type="thermal bottle" number="156" />	
  	<equipment type="wheelbarrow" number="96" />
 
     <!-- Bins -->

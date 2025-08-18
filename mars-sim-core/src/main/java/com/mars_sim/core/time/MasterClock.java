@@ -887,7 +887,9 @@ public class MasterClock implements Serializable {
 		////////////////////////////////////////////////////////////////////////////////////
 
 		// Identify if this pulse crosses a sol
-		boolean isNewSol = (lastSol != currentSol);
+		final boolean isNewSol = (lastSol != currentSol);
+		
+		// Note : variable = (condition) ? expressionTrue : expressionFalse
 		boolean isNewHalfSol = false;
 		
 		// Updates lastSol
@@ -900,13 +902,12 @@ public class MasterClock implements Serializable {
 			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
 		}
 
-
 		////////////////////////////////////////////////////////////////////////////////////
 		// Part 2: Update isNewIntMillisol and isNewHalfMillisol
 		////////////////////////////////////////////////////////////////////////////////////
 
 		// Checks if this pulse starts a new integer millisol
-		boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
+		final boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
 		boolean isNewHalfMillisol = false;
 		
 		// Updates lastSol
@@ -946,7 +947,7 @@ public class MasterClock implements Serializable {
 		// Part 5: Log the pulse
 		////////////////////////////////////////////////////////////////////////////////////
 
-		long newPulseId = nextPulseId++;
+		final long newPulseId = nextPulseId++;
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 

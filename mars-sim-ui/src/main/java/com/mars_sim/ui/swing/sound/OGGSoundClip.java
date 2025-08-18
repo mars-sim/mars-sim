@@ -203,7 +203,7 @@ public class OGGSoundClip {
 			}
 	    }
 		
-		return stopped();
+		return isStopped();
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class OGGSoundClip {
 	 *
 	 * @return True if the clip has been stopped
 	 */
-	public boolean stopped() {
+	public boolean isStopped() {
 		return ((playerThread == null) || (!playerThread.isAlive()));
 	}
 
@@ -353,7 +353,7 @@ public class OGGSoundClip {
 	 * Stop the clip playing
 	 */
 	public void stop() {
-		if (stopped()) {
+		if (isStopped()) {
 			return;
 		}
 

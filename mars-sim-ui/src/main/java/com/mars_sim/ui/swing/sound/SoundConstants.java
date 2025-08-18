@@ -16,8 +16,7 @@ public interface SoundConstants {
 	public final static String SOUNDS_ROOT_PATH = "audio/";
 
 	/** Sound for splash screen in classic MSP */
-//	public final static String SND_SPLASH = "splash.ogg"; // can perhaps be
-															// deleted
+	public final static String SND_SPLASH = "splash.ogg";
 
 	/** Music tracks */
 //	public final static String ST_FANTASCAPE = "Fantascape.ogg";
