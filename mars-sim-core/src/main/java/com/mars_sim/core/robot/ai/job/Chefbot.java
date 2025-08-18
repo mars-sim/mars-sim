@@ -8,7 +8,6 @@ package com.mars_sim.core.robot.ai.job;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;

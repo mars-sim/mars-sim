@@ -17,12 +17,13 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         var s = buildSettlement("Budget", true);
         var p = buildPerson("Accountant", s);
 
-        s.getRationing().reviewRationingLevel();
-        s.getRationing().setReviewFlag(true);
-        assertTrue("Settlement water needs review", s.getRationing().canReviewRationing());
-        var task = new BudgetResources(p, ReviewGoal.SETTLEMENT_WATER);
+        int diff = s.getRationing().reviewRationingLevel();
+//        System.out.println("diff: " + diff);
+        s.getRationing().setReviewDue(true);
+        assertTrue("Settlement water needs review", s.getRationing().isReviewDue());
+        var task = new BudgetResources(p, ReviewGoal.WATER_RATIONING);
         assertFalse("Task is active", task.isDone());
-        assertFalse("Settlement water needs no review", s.getRationing().canReviewRationing());
+        assertFalse("Settlement water needs no review", s.getRationing().isReviewDue());
 
         // Continue to complete review
         var ph = task.getPhase();
@@ -35,18 +36,19 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         assertTrue("Task is done", task.isDone());
     }
 
-    public void testCreateAccomWaterReviewTask() {
+    public void testCreateIceReviewTask() {
         var s = buildSettlement("Budget", true);
         var b = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
-        var accom = b.getLivingAccommodation();
         var p = buildPerson("Accountant", s);
         BuildingManager.addPersonToActivitySpot(p, b, FunctionType.LIVING_ACCOMMODATION);
 
-        accom.unlockWaterRatioReview();
-        assertTrue("Accom needs review", accom.canReviewWaterRatio());
-        var task = new BudgetResources(p, ReviewGoal.ACCOM_WATER);
+        s.setIceReviewDue(true);
+        assertTrue("Ice Probability needs review", s.isIceReviewDue());
+        var task = new BudgetResources(p, ReviewGoal.ICE_RESOURCE);
+        assertTrue("Ice Cache is not the same as the new Ice Prob", 
+        		s.getIceProbabilityValue() != s.getRecommendedIceValue());
         assertFalse("Task is active", task.isDone());
-        assertFalse("Accom no review", accom.canReviewWaterRatio());
+        assertTrue("Ice Prob review review is done and no longer due", s.isIceReviewDue());
 
         // Continue to complete review
         var ph = task.getPhase();
@@ -57,13 +59,15 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         // Approval
         executeTaskForDuration(p, task, task.getTimeLeft());
         assertTrue("Task is done", task.isDone());
+        // Need to execute ApproveMeasure in order to get the approval
+        assertFalse("Ice Prob review review no approval", s.isIceApprovalDue());
     }
 
     public void testCreateResourceReviewTask() {
         var s = buildSettlement("Budget", true);
         var p = buildPerson("Accountant", s);
 
-        var task = new BudgetResources(p, ReviewGoal.RESOURCE);
+        var task = new BudgetResources(p, ReviewGoal.LIFE_RESOURCE);
         assertFalse("Task is active", task.isDone());
 
         // Continue to complete review
@@ -86,14 +90,14 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         assertGreaterThan("Resources needing review", 0D, resources);
 
         for(int i = 0; i < resources; i++) {
-            var task = new BudgetResources(p, ReviewGoal.RESOURCE);
+            var task = new BudgetResources(p, ReviewGoal.LIFE_RESOURCE);
             assertFalse("Task is active", task.isDone());
             assertLessThan("Resource going down", resources, gm.getResourceReviewDue());
         }
         assertEquals("No resources needing review", 0, gm.getResourceReviewDue());
 
         // Try one more task
-        var task = new BudgetResources(p, ReviewGoal.RESOURCE);
+        var task = new BudgetResources(p, ReviewGoal.LIFE_RESOURCE);
         assertTrue("Task found no resource", task.isDone());
 
         gm.resetEssentialsReview();
@@ -106,22 +110,14 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         buildPerson("Accountant", s); // Need at least 1 person for water demand
 
         s.getRationing().reviewRationingLevel();
-        s.getRationing().setReviewFlag(true);
-
-        // Build 2 accommodations, one for review and the other now
-        var bm = s.getBuildingManager();
-        var b = buildAccommodation(bm, LocalPosition.DEFAULT_POSITION, 0D, 0);
-        var accom = b.getLivingAccommodation();
-        accom.unlockWaterRatioReview();
-        buildAccommodation(bm, new LocalPosition(10,10), 0D, 1);
-
+        s.getRationing().setReviewDue(true);
 
         var mt = new BudgetResourcesMeta();
 
         var tasks = mt.getSettlementTasks(s);
 
         // Expect one per review goal
-        assertEquals("Expecte settlement tasks", 3, tasks.size());
+        assertEquals("Expect settlement tasks", 2, tasks.size());
 
         // Check each task
         Set<ReviewGoal> found = new HashSet<>();
@@ -130,13 +126,14 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
             var goal = brj.getGoal();
             found.add(goal);
             int expect = switch(goal) {
-                case ACCOM_WATER -> 1;
-                case RESOURCE -> s.getGoodsManager().getResourceReviewDue();
-                case SETTLEMENT_WATER -> 1;
+                case ICE_RESOURCE -> 1;
+                case REGOLITH_RESOURCE -> 1;
+                case LIFE_RESOURCE -> s.getGoodsManager().getResourceReviewDue();
+                case WATER_RATIONING -> 1;
             };
 
             assertEquals("Expected demaind for " + goal.name(), expect, brj.getDemand());
         }
-        assertEquals("Found goals", 3, found.size());
+        assertEquals("Found goals", 2, found.size());
     }
 }

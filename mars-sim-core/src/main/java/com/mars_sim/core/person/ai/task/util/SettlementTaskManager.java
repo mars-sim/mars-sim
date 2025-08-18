@@ -68,14 +68,17 @@ public class SettlementTaskManager implements Serializable {
         }
     }
 
-    private Settlement owner;
-    private transient List<SettlementTask> tasks;
+
     private boolean refreshTasks = true;
 
     private int callCount;
     private int buildCount = 0;
     private int executedCount = 0;
 
+    private Settlement owner;
+    
+    private transient List<SettlementTask> tasks;
+    
     public SettlementTaskManager(Settlement owner) {
         this.owner = owner;
     }
@@ -105,6 +108,8 @@ public class SettlementTaskManager implements Serializable {
     /**
      * Gets the current cached Settlement Tasks. 
      * If there is no cache or marked as refresh then a list is created.
+     * 
+     * @return
      */
     private List<SettlementTask> getTasks() {
         if (refreshTasks || (tasks == null)) {

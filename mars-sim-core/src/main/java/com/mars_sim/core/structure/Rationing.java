@@ -9,6 +9,7 @@ package com.mars_sim.core.structure;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -23,12 +24,19 @@ public class Rationing implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Rationing.class.getName());
 	
+	private static final double WASH_WATER_USAGE = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
+	
+	/** The flag to see if a rationing approval is due. */
+	private boolean approvalDue = false;
 	/** The flag to see if a rationing review is due. */
-	private boolean reviewFlag = false;
+	private boolean reviewDue = false;
 	/** The previous rationing level of the settlement. The higher the more urgent for that resource. */
 	private int levelCache = 0;
 	/** The current rationing level of the settlement. */
 	private int currentLevel = 0;
+	/** The newly recommended level just being computed. */
+	private int recommendedLevel;
+	
 	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
 	private int emergencyLevel = 10;
 	/** The name of the resource to be ration. */
@@ -53,38 +61,62 @@ public class Rationing implements Serializable {
 	}
 	
 	/**
-	 * Returns the difference between the new and old rationing level. 
+	 * Returns the difference between cache level and the recommended level. 
 	 *
 	 * @return difference of rationing level
 	 */
 	public int getLevelDiff() {
-		return currentLevel - levelCache;
+		return levelCache - recommendedLevel;
 	}
-
+	
 	/**
 	 * Enforces the new rationing level.
 	 */
 	public void enforceNewRationingLevel() {
+		// Back up the current level to the cache
 		levelCache = currentLevel;
+		// Update the current level to the newly recommended level
+		currentLevel = recommendedLevel;
+		// Set the approval due back to false if it hasn't happened
+		setApprovalDue(false);
 	}
 	
 	/**
-	 * Sets the flag for reviewing rationing.
+	 * Sets if the review is due.
 	 * 
 	 * @param value
 	 */
-	public void setReviewFlag(boolean value) {
-		reviewFlag = value;
+	public void setReviewDue(boolean value) {
+		reviewDue = value;
 	}
 	
 	/**
-	 * Returns if the rationing has been reviewed.
+	 * Returns if the review is due.
 	 * 
 	 * @return
 	 */
-	public boolean canReviewRationing() {
-		return reviewFlag;
+	public boolean isReviewDue() {
+		return reviewDue;
 	}
+
+	/**
+	 * Sets if the approval is due.
+	 * 
+	 * @param value
+	 */
+	public void setApprovalDue(boolean value) {
+		approvalDue = value;
+	}
+	
+	/**
+	 * Returns if the approval is due.
+	 * 
+	 * @return
+	 */
+	public boolean isApprovalDue() {
+		return approvalDue;
+	}
+	
 	
 	/**
 	 * Sets the emergency level.
@@ -115,14 +147,15 @@ public class Rationing implements Serializable {
 	
 	/**
 	 * Computes the rationing level at the settlement.
+	 * Note: do NOT approve the change of level in this method.
 	 *
-	 * @return level of rationing level.
+	 * @return level difference
 	 */
-	public boolean reviewRationingLevel() {
+	public int reviewRationingLevel() {
 		double stored = settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		int reserve = settlement.getNumCitizens() * Settlement.MIN_WATER_RESERVE;
 		// Assuming a 90-day supply of this resource
-		double required = settlement.getWaterConsumptionRate() * settlement.getNumCitizens() * 90;
+		double required = WASH_WATER_USAGE * settlement.getNumCitizens() * 90;
 
 		int newLevel = (int)((required + reserve) / (1 + stored));
 		if (newLevel < 1)
@@ -130,14 +163,15 @@ public class Rationing implements Serializable {
 		else if (newLevel > 0) {
 			 // Note: once other resources are starting to adopt this class, 
 			 //       this method will be changed	
-			logger.info(settlement, 20_000L, "New Rationing Level for water: " + newLevel);
+//			logger.info(settlement, 30_000, "New Water Rationing Level: " + newLevel);
 		}
 		else if (newLevel > 1000)
 			newLevel = 1000;
-
-		currentLevel = newLevel;
 		
-		return levelCache != newLevel;
+		// Record it as the newly recommended level
+		recommendedLevel = newLevel;
+		
+		return levelCache - newLevel;
 	}
 
 }

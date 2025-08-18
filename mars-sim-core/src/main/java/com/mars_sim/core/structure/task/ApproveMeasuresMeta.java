@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * BudgetResourcesMeta.java
+ * ApproveMeasuresMeta.java
  * @date 2025-08-16
  * @author Manny Kung
  */
@@ -9,8 +9,6 @@ package com.mars_sim.core.structure.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -20,24 +18,25 @@ import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.task.BudgetResources.ReviewGoal;
+import com.mars_sim.core.structure.task.ApproveMeasures.ReviewGoal;
 import com.mars_sim.core.tool.Msg;
 
 /**
- * The meta task for budgeting resources.
+ * The meta task for approving measures.
  */
-public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask {
+public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask {
+	
 	/** default logger. */
 
 	/**
-     * Represents a Job to review a specific mission plan
+     * Represents a job to approve measures.
      */
-    static class BudgetResourcesJob extends SettlementTask {
+    static class ApproveMeasuresJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 		private ReviewGoal goal;
 
-        public BudgetResourcesJob(SettlementMetaTask owner, RatingScore score, int demand, ReviewGoal goal) {
+        public ApproveMeasuresJob(SettlementMetaTask owner, RatingScore score, int demand, ReviewGoal goal) {
 			super(owner, getGoalName(goal), null, score);
 			setDemand(demand);
 			this.goal = goal;
@@ -45,16 +44,15 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 
         private static String getGoalName(ReviewGoal goal) {
 			return switch(goal) {
-				case ICE_RESOURCE -> "Budget Ice Resource";
-				case REGOLITH_RESOURCE -> "Budget Regolith Resource";
-				case LIFE_RESOURCE -> "Budget Essential Resources";
-				case WATER_RATIONING -> "Budget Settlement Water";
+				case WATER_RATIONING -> "Approve Water Rationing Measure";
+				case ICE_RESOURCE -> "Approve Ice Resource Probability";
+				case REGOLITH_RESOURCE -> "Approve Regolith Resource Probability";
 			};
 		}
 
 		@Override
         public Task createTask(Person person) {
-            return new BudgetResources(person, goal);
+            return new ApproveMeasures(person, goal);
         }
 
 		public ReviewGoal getGoal() {
@@ -64,11 +62,11 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.budgetResources"); //$NON-NLS-1$
+            "Task.description.approveMeasures"); //$NON-NLS-1$
         
     private static final double BASE_SCORE = 75.0;
 
-    public BudgetResourcesMeta() {
+    public ApproveMeasuresMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
 		addPreferredRole(RoleType.RESOURCE_SPECIALIST, 1.5D);
@@ -122,51 +120,26 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		if (settlement.getRationing().isReviewDue()) {
-//			int levelDiff = settlement.getRationing().reviewRationingLevel();
+		if (settlement.getRationing().isApprovalDue()) {
+//			int levelDiff = settlement.getRationing().getLevelDiff();
 //			if (levelDiff != 0) {
-				RatingScore score = new RatingScore("water.rationing", BASE_SCORE);
-				tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.WATER_RATIONING));
+				RatingScore score = new RatingScore("water.rationing", 5 * BASE_SCORE);
+				tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.WATER_RATIONING));
 //			}
 		}
 		
-		int numResource = settlement.getGoodsManager().getResourceReviewDue();
-		if (numResource > 0) { 
-			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE); 
-			tasks.add(new BudgetResourcesJob(this, score, numResource, ReviewGoal.LIFE_RESOURCE));
-		}
-		
-		boolean iceFlag = settlement.isIceReviewDue();
+		boolean iceFlag = settlement.isIceApprovalDue();
 		if (iceFlag) {
-			RatingScore score = new RatingScore("ice.probability", BASE_SCORE);  
-			tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.ICE_RESOURCE));
-		}
-		
-		boolean regFlag = settlement.isRegolithReviewDue();
-		if (regFlag) {
-			RatingScore score = new RatingScore("regolith.probability", BASE_SCORE);  
-			tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.REGOLITH_RESOURCE));
+			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE);  
+			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 
+		boolean regFlag = settlement.isRegolithApprovalDue();
+		if (regFlag) {
+			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE);  
+			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.REGOLITH_RESOURCE));
+		}
+		
 		return tasks;
     }
-
-		
-	/**
-	 * Gets a number of living accommodations that need waste water review.
-	 *
-	 * @param settlement
-	 * @return the number
-	 */
-	public static List<Building> getAccommodationNeedingWaterReview(Settlement settlement,
-				int targetZone) {
-		return settlement.getBuildingManager().getBuildingSet(FunctionType.LIVING_ACCOMMODATION)
-					.stream()
-					.filter(b -> (targetZone < 0) || (b.getZone() == targetZone))
-					.filter(b -> !b.getMalfunctionManager().hasMalfunction()
-							// True if this quarter needs a review
-							&& b.getLivingAccommodation().canReviewWaterRatio())
-					.toList();
-	}
-	
 }

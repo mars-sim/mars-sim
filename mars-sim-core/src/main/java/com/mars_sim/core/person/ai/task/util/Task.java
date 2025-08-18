@@ -527,6 +527,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Adds a phase to the task's collection of phases.
 	 * 
+	 * @deprecated
 	 * @param newPhase the new phase to add.
 	 */
 	protected void addPhase(TaskPhase newPhase) {
@@ -744,6 +745,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Gets the relevant Impact assessment of doing this Task. It is a temporary measure
 	 * as eventually the impact will come via the constructor.
+	 * 
 	 * @return Impact assessment of doing this Task
 	 */
 	private ExperienceImpact getImpact() {

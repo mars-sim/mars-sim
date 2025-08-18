@@ -42,7 +42,6 @@ import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

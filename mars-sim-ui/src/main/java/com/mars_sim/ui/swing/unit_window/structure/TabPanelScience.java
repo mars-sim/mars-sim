@@ -69,7 +69,7 @@ extends TabPanel {
 		super(
 			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(SCIENCE_ICON),
-			Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
 			settlement, desktop
 		);
 

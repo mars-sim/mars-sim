@@ -419,8 +419,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="toxic waste" amount="500.0" />
 				<resource-capacity type="solid waste" amount="500.0" />
 				<resource-capacity type="food waste" amount="500.0" />
-				<resource-capacity type="grey water" amount="500.0" />
-				<resource-capacity type="black water" amount="500.0" />
+				<resource-capacity type="grey water" amount="5000.0" />
+				<resource-capacity type="black water" amount="5000.0" />
 
 				<resource-capacity type="food" amount="5000.0" />
 				<resource-capacity type="water" amount="10000.0" />
@@ -519,11 +519,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<waste-processing power-down-level="0.0">
 				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="4"/>
+				<process-engine name="Black Water Processor" number-modules="3"/>
 				<process-engine name="Solid Waste Management"/>
 				<process-engine name="Food Waste Management"/>
-				<process-engine name="Soil Generation from Compost"/>
 		
 				<activity>
 					<activity-spot xloc="-1.38" yloc="-3.36" />
@@ -794,7 +793,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="nitrate" amount="500.0" />
 				<resource-capacity type="nitrite" amount="500.0" />
 				
-				<resource-capacity type="grey water" amount="500.0" />
+				<resource-capacity type="grey water" amount="1500.0" />
 				<resource-capacity type="water" amount="2500.0" />					
 
 				<!-- soil related -->
@@ -815,7 +814,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Grey Water Processor" number-modules="10"/>
+				<process-engine name="Black Water Processor" number-modules="6"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="2"/>			
 				<process-engine name= "Soil Generation from Compost" number-modules="2"/>	
 			</waste-processing>
@@ -864,7 +864,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="oxygen" amount="4000.0" />
 				<resource-capacity type="methane" amount="4000.0" />
 				
-				<resource-capacity type="grey water" amount="500.0" />				
+				<resource-capacity type="grey water" amount="4000.0" />				
 
 			</storage>
 			<thermal-generation>
@@ -875,8 +875,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
 			</waste-processing>				
 			
 		</functions>
@@ -919,7 +919,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="oxygen" amount="2000.0" />
 				<resource-capacity type="methane" amount="2000.0" />
 				
-				<resource-capacity type="grey water" amount="200.0" />				
+				<resource-capacity type="grey water" amount="2000.0" />				
 
 			</storage>
 			<thermal-generation>
@@ -968,7 +968,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="oxygen" amount="2000.0" />
 				<resource-capacity type="methane" amount="2000.0" />
 				
-				<resource-capacity type="grey water" amount="200.0" />				
+				<resource-capacity type="grey water" amount="2000.0" />				
 
 			</storage>
 			<thermal-generation>
@@ -1406,7 +1406,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Grey Water Processor" number-modules="4"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="4"/>	
 				<process-engine name= "Soil Generation from Compost" number-modules="2"/>			
 			</waste-processing>
@@ -1568,7 +1568,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 					
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="6"/>
+				<process-engine name="Grey Water Processor" number-modules="10"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="12"/>		
 				<process-engine name= "Soil Generation from Compost" number-modules="6"/>		
 			</waste-processing>
@@ -1995,7 +1995,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="brine water" amount="10000.0" />					
 				<resource-capacity type="water" amount="10000.0" />
 				<resource-capacity type="ice" amount="5000.0" />
-				<resource-capacity type="grey water" amount="2000.0" />				
+				<resource-capacity type="grey water" amount="3000.0" />				
 				<resource-capacity type="rock salt" amount="500.0" />
 				
 				<!-- Payload imported from Earth -->
@@ -2011,7 +2011,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="10"/>
 				<process-engine name="Black Water Processor"/>
 			</waste-processing>	
 			
@@ -2150,7 +2150,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								
 				<resource-capacity type="water" amount="10000.0" />
 				<resource-capacity type="ice" amount="5000.0" />
-				<resource-capacity type="grey water" amount="2000.0" />				
+				<resource-capacity type="grey water" amount="3000.0" />				
 				<resource-capacity type="rock salt" amount="500.0" />
 			</storage>		
 		</functions>
@@ -2231,7 +2231,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="food waste" amount="100.0" />
 				<resource-capacity type="toxic waste" amount="100.0" />
 
-				<resource-capacity type="grey water" amount="1000.0" />
+				<resource-capacity type="grey water" amount="2000.0" />
 				<resource-capacity type="black water" amount="500.0" />
 
 				<resource-capacity type="food" amount="2000.0" />
@@ -2253,7 +2253,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="1"/>
+				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
  			</waste-processing>
@@ -2309,7 +2309,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="food waste" amount="100.0" />
 				<resource-capacity type="toxic waste" amount="100.0" />
 
-				<resource-capacity type="grey water" amount="1000.0" />
+				<resource-capacity type="grey water" amount="2000.0" />
 				<resource-capacity type="black water" amount="500.0" />
 
 				<resource-capacity type="food" amount="2000.0" />
@@ -2332,7 +2332,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
  			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="1"/>
+				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
  			</waste-processing>
@@ -2483,7 +2483,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<resource-capacity type="solid waste" amount="500.0" />
 				<resource-capacity type="food waste" amount="500.0" />
-				<resource-capacity type="grey water" amount="500.0" />
+				<resource-capacity type="grey water" amount="1500.0" />
 				<resource-capacity type="black water" amount="500.0" />
 				
 				<resource-capacity type="carbon dioxide" amount="500.0" />
@@ -2562,8 +2562,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="1"/>
-				<process-engine name="Black Water Processor" number-modules="1"/>
+				<process-engine name="Grey Water Processor" number-modules="3"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
 				<process-engine name= "Food Waste Management" number-modules="2"/>
 				<process-engine name= "Soil Generation from Compost" number-modules="2"/>
@@ -2628,7 +2628,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="1"/>
+				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Hazard Waste Incineration" number-modules="2"/>
 				<process-engine name= "Electronic Waste Disposal"  number-modules="2"/>
@@ -3214,7 +3214,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="ice" amount="6000.0" />
 				<resource-capacity type="water" amount="10000.0" />
 				<resource-capacity type="brine water" amount="2300.0" />
-				<resource-capacity type="grey water" amount="1500.0" />
+				<resource-capacity type="grey water" amount="2000.0" />
 				<resource-capacity type="black water" amount="200.0" />
 			</storage>
 		</functions>
@@ -3592,8 +3592,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="1"/>
-				<process-engine name="Black Water Processor" number-modules="1"/>
+				<process-engine name="Grey Water Processor" number-modules="5"/>
+				<process-engine name="Black Water Processor" number-modules="3"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
 			</waste-processing>
 		</functions>
@@ -3667,7 +3667,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<waste-processing power-down-level="0.0">
 				<process-engine name="Grey Water Processor" number-modules="3"/>
-				<process-engine name="Black Water Processor" number-modules="3"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
 				<process-engine name= "Hazard Waste Incineration" number-modules="3"/>
 				<process-engine name= "Electronic Waste Disposal"  number-modules="3"/>						
 			</waste-processing>
@@ -4011,8 +4011,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="4"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
 				<process-engine name= "Solid Waste Management"/>
 				<process-engine name= "Food Waste Management"/>
 				<process-engine name= "Soil Generation from Compost"/>
@@ -4368,7 +4368,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Grey Water Processor" number-modules="4"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="4"/>	
 				<process-engine name= "Soil Generation from Compost" number-modules="2"/>	
 			</waste-processing>

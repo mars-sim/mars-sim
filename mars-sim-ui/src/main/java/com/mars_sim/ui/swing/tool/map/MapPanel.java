@@ -7,7 +7,6 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -33,13 +32,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.Painter;
 import javax.swing.SwingConstants;
-import javax.swing.UIDefaults;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;

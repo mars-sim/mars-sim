@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.Iterator;
 
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
@@ -17,6 +16,7 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -70,23 +70,21 @@ extends Task {
         
         else if (person.isInVehicle()) {
             // If person is in rover, walk to passenger activity spot.
-            if (person.getVehicle() instanceof Rover) {
-                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+            if (person.getVehicle() instanceof Rover r) {
+                walkToPassengerActivitySpotInRover(r, true);
             }
         }
         
         else if (person.isInSettlement()) {
-        	Building storage = person.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
-        	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
+        	walkToActivitySpotInBuilding(person.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE), 
+        			FunctionType.STORAGE, true);
         }
         
         else {
             logger.severe(person, "Not in a proper location for consolidating containers.");
             endTask();
         }
-        
-        // Add task phase
-        addPhase(CONSOLIDATING);
+
         setPhase(CONSOLIDATING);
     }
     
@@ -107,13 +105,13 @@ extends Task {
         
         if (robot.isInVehicle()) {
             // If robot is in rover, walk to passenger activity spot.
-            if (robot.getVehicle() instanceof Rover) {
-                walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
+            if (robot.getVehicle() instanceof Rover r) {
+                walkToPassengerActivitySpotInRover(r, true);
             }
         }
         else if (robot.isInSettlement()) {
-        	Building storage = robot.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
-        	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
+        	walkToActivitySpotInBuilding(robot.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE), 
+        			FunctionType.STORAGE, true);
         }
         
         else {
@@ -122,7 +120,6 @@ extends Task {
         }
         
         // Add task phase
-        addPhase(CONSOLIDATING);
         setPhase(CONSOLIDATING);
     }    
     
@@ -230,6 +227,8 @@ extends Task {
         
         double remainingTime = (remainingAmountLoading / totalAmountLoading) * time;
         
+        addExperience(time);
+        
         // If nothing has been loaded, end task.
         if (remainingAmountLoading == totalAmountLoading) {
             endTask();
@@ -239,9 +238,10 @@ extends Task {
     }
 
     /**
-     * Transfer resource from a Container into a parent holder. 
+     * Transfers resource from a Container into a parent holder. 
+     * 
      * @param source Source container
-     * @param sourceAmount Amount availble in the source
+     * @param sourceAmount Amount available in the source
      * @param sourceResource Resource being transferred
      * @param transferAmount Maximum amount to be transferred
      * @param target Target resource holder
@@ -267,4 +267,17 @@ extends Task {
         target.storeAmountResource(sourceResource, loadAmount);
         return loadAmount;
     }
+    
+	
+	@Override
+	protected void addExperience(double time) {
+        double newPoints = time / 20D;
+        int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(
+                NaturalAttributeType.EXPERIENCE_APTITUDE);
+        int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
+                NaturalAttributeType.LEADERSHIP);
+        newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
+        newPoints *= getTeachingExperienceModifier();
+        worker.getSkillManager().addExperience(SkillType.ORGANISATION, newPoints, time);
+	}
 }

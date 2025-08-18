@@ -1182,7 +1182,7 @@ public class CommanderWindow extends ToolWindow {
 	private void createTaskCombobox(JPanel panel) {
 		DefaultComboBoxModel<TaskFactory> taskComboBoxModel = new DefaultComboBoxModel<>();
       	// Set up combo box model.
-	    taskComboBoxModel.addAll(MetaTaskUtil.getPersonTaskFactorys());
+	    taskComboBoxModel.addAll(MetaTaskUtil.getPersonTaskFactories());
 
 		// Create comboBox.
 		JComboBoxMW<TaskFactory> taskComboBox = new JComboBoxMW<>(taskComboBoxModel);

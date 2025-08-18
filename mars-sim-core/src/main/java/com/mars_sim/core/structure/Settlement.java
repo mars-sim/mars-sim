@@ -115,6 +115,8 @@ public class Settlement extends Unit implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
+	public static enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
+	
 	private static final int NUM_BACKGROUND_IMAGES = 20;
 
 	private static final int MAX_STOCK_CAP = 1_000_000;
@@ -188,19 +190,27 @@ public class Settlement extends Unit implements Temporal,
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
 
+
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
-
+	/** The flag for the need to review the ice probability value. */
+	private boolean iceReviewDue = false;
+	/** The flag for the need to approve the ice probability value. */
+	private boolean iceApprovalDue = false;
+	/** The flag for the need to review the new regolith probability value. */
+	private boolean regolithReviewDue = false;
+	/** The flag for the need to approve the new regolith probability value. */
+	private boolean regolithApprovalDue = false;
+	
+	
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
 	private int initialNumOfRobots;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
-	/** The factor due to the population. */
-	private double popFactor = 1;
 	/** Numbers of citizens of this settlement. */
 	private int numCitizens = 1;
 	/** Numbers of bots owned by this settlement. */
@@ -212,6 +222,22 @@ public class Settlement extends Unit implements Temporal,
 	/** The time offset of day rise for this settlement. Location based. */
 	private int timeOffset;
 	
+	/** The previous ice prob value. */
+	private double iceProbabilityCache = 400D;
+	/** The current ice prob value. */
+	private double currentIceValue;
+	/** The recommended ice prob value. */
+	private double recommendedIceValue;
+	
+	/** The previous regolith prob value. */
+	private double regolithProbabilityCache = 400D;
+	/** The current regolith prob value. */
+	private double currentRegolithValue;
+	/** The recommended regolith prob value. */
+	private double recommendedRegolithValue;
+	
+	/** The factor due to the population. */
+	private double popFactor = 1;
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
 	/** The average regolith collection rate at this location. */
@@ -230,10 +256,7 @@ public class Settlement extends Unit implements Temporal,
 	private double mealsReplenishmentRate = 0.3;
 	/** The settlement's current dessert replenishment rate. */
 	private double dessertsReplenishmentRate = 0.4;
-	/** The settlement's current probability value for ice. */
-	private double iceProbabilityValue = 400D;
-	/** The settlement's current probability value for regolith. */
-	private double regolithProbabilityValue = 400D;
+
 	/** The settlement's outside temperature. */
 	private double outsideTemperature;
 	/** Total Crop area */
@@ -530,6 +553,7 @@ public class Settlement extends Unit implements Temporal,
 
 		creditManager = new CreditManager(this);
 
+		// Initialize the settlement task manager.
 		taskManager = new SettlementTaskManager(this);
 		
 		// Initialize scientific achievement.
@@ -865,12 +889,12 @@ public class Settlement extends Unit implements Temporal,
 			// Reset justLoaded
 			justLoaded = false;
 
-			iceProbabilityValue = computeIceProbability();
+			iceProbabilityCache = computeIceProbability();
 
-			regolithProbabilityValue = computeRegolithProbability();
+			regolithProbabilityCache = computeRegolithProbability();
 
 			// Initialize the goods manager
-			goodsManager.updateGoodValues();
+			goodsManager.updatedMetrics();
 		}
 		
 		
@@ -879,6 +903,8 @@ public class Settlement extends Unit implements Temporal,
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
+		
+		// Set refreshTasks param to true
 		taskManager.timePassing();
 
 		// Update citizens
@@ -891,8 +917,12 @@ public class Settlement extends Unit implements Temporal,
 		timePassing(pulse, ownedRobots);
 	
 		if (pulse.isNewHalfSol()) {
-			// Reset the flag for water ratio review
-			rationing.setReviewFlag(false);
+			// Reset water rationing review due
+			rationing.setReviewDue(true);
+			// Reset ice review due			
+			iceReviewDue = true;
+			// Reset regolith review due			
+			regolithReviewDue = true;
 		}
 
 	
@@ -942,6 +972,7 @@ public class Settlement extends Unit implements Temporal,
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
+			// Future : Convert sampling resources to a task done by settlers
 			int remainder = msol % RESOURCE_SAMPLING_FREQ;
 			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
@@ -950,21 +981,21 @@ public class Settlement extends Unit implements Temporal,
 				sampleAllResources(pulse.getMarsTime());
 			}
 
+
+			// Future : Convert computing ice/regolith probability to a task done by settlers
+			remainder = msol % RESOURCE_UPDATE_FREQ;
+			if (remainder == 2 || remainder == 9) {
+				
+				setIceReviewDue(true);
+				setRegolithReviewDue(true);
+			}
+			
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
 			remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
 				RadiationStatus newExposed = RadiationStatus.calculateChance(pulse.getElapsed());
 				setExposed(newExposed);
-			}
-
-			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 9) {
-				iceProbabilityValue = computeIceProbability();
-			}
-
-			if (remainder == 8) {
-				regolithProbabilityValue = computeRegolithProbability();
 			}
 		}
 	}
@@ -2339,7 +2370,7 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return probability of finding regolith
 	 */
-	private double computeRegolithProbability() {
+	public double computeRegolithProbability() {
 		double result = 0;
 		double regolithDemand = goodsManager.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
 		if (regolithDemand > REGOLITH_MAX)
@@ -2398,11 +2429,171 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
+	 * Enforces the new ice probability level.
+	 */
+	public void enforceIceProbabilityLevel() {
+		// Back up the current level to the cache
+		iceProbabilityCache = currentIceValue;
+		// Update the current level to the newly recommended level
+		currentIceValue = recommendedIceValue;
+		// Set the approval due back to false if it hasn't happened
+		setIceApprovalDue(false);
+	}
+	
+	/**
+	 * Enforces the new ice probability level.
+	 */
+	public void enforceRegolithProbabilityLevel() {
+		// Back up the current level to the cache
+		regolithProbabilityCache = currentRegolithValue;
+		// Update the current level to the newly recommended level
+		currentRegolithValue = recommendedRegolithValue;
+		// Set the approval due back to false if it hasn't happened
+		setRegolithApprovalDue(false);
+	}
+	
+	/**
+	 * Sets if the ice review is due.
+	 * 
+	 * @param value
+	 */
+	public void setIceReviewDue(boolean value) {
+		iceReviewDue = value;
+	}
+	
+	/**
+	 * Returns if the ice review is due.
+	 * 
+	 * @return
+	 */
+	public boolean isIceReviewDue() {
+		return iceReviewDue;
+	}
+
+	/**
+	 * Sets if the ice approval is due.
+	 * 
+	 * @param value
+	 */
+	public void setIceApprovalDue(boolean value) {
+		iceApprovalDue = value;
+	}
+	
+	/**
+	 * Returns if the ice approval is due.
+	 * 
+	 * @return
+	 */
+	public boolean isIceApprovalDue() {
+		return iceApprovalDue;
+	}
+	
+	/**
+	 * Sets if the regolith review is due.
+	 * 
+	 * @param value
+	 */
+	public void setRegolithReviewDue(boolean value) {
+		regolithReviewDue = value;
+	}
+	
+	/**
+	 * Returns if the regolith review is due.
+	 * 
+	 * @return
+	 */
+	public boolean isRegolithReviewDue() {
+		return regolithReviewDue;
+	}
+
+	/**
+	 * Sets if the regolith approval is due.
+	 * 
+	 * @param value
+	 */
+	public void setRegolithApprovalDue(boolean value) {
+		regolithApprovalDue = value;
+	}
+	
+	/**
+	 * Returns if the regolith approval is due.
+	 * 
+	 * @return
+	 */
+	public boolean isRegolithApprovalDue() {
+		return regolithApprovalDue;
+	}
+	
+	/**
+	 * Reviews the ice probability.
+	 * 
+	 * @return
+	 */
+	public double reviewIce() {
+		
+		double newProb = computeIceProbability() ;
+		
+		recommendedIceValue = newProb;
+		
+		return iceProbabilityCache - newProb;
+	}
+	
+	/**
+	 * Reviews the regolith probability.
+	 * 
+	 * @return
+	 */
+	public double reviewRegolith() {
+		
+		double newProb = computeRegolithProbability() ;
+		
+		recommendedRegolithValue = newProb;
+		
+		return regolithProbabilityCache - newProb;
+	}
+	
+	/**
+	 * Returns the recommended ice probability value.
+	 * 
+	 * @return
+	 */
+	public double getRecommendedIceValue() {
+		return recommendedIceValue;
+	}
+	
+	/**
+	 * Returns the recommended regolith probability value.
+	 * 
+	 * @return
+	 */
+	public double getRecommendedRegolithValue() {
+		return recommendedRegolithValue;
+	}
+	
+	/**
+	 * Returns the cache ice probability value.
+	 * 
+	 * @return
+	 */
+	public double getIceProbabilityValue() {
+		return iceProbabilityCache;
+	}
+
+	/**
+	 * Returns the cache regolith robability value.
+	 * 
+	 * @return
+	 */
+	public double getRegolithProbabilityValue() {
+		return regolithProbabilityCache;
+	}
+
+	/**
 	 * Computes the probability of the presence of ice.
 	 *
 	 * @return probability of finding ice
 	 */
-	private double computeIceProbability() {
+	public double computeIceProbability() {
 		double result = 0;
 		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
 		if (iceDemand > ICE_MAX)
@@ -2486,14 +2677,6 @@ public class Settlement extends Unit implements Temporal,
 
 		if (missionScores.size() > 20)
 			missionScores.remove(0);
-	}
-
-	public double getIceProbabilityValue() {
-		return iceProbabilityValue;
-	}
-
-	public double getRegolithProbabilityValue() {
-		return regolithProbabilityValue;
 	}
 
 	public double getOutsideTemperature() {

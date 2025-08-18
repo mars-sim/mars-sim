@@ -49,17 +49,15 @@ public class LivingAccommodation extends Function {
 	/** The flag to see if a water ration review is due. */
 	private boolean waterRatioReviewFlag = false;
 	
+	/** The cache for the last millisol. */
+	private int millisolIntCache;
+	
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
-	// private double wasteWaterProduced; // Waste water produced by
-	// urination/defecation per person per millisol (avg over Sol).
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction;
-	/** The estimated water usage. */
-	private double estimatedWaterUsed;
-	/** The estimated waste water produced. */
-	private double estimatedWasteWaterProduced;
 
+	
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 	
@@ -200,7 +198,20 @@ public class LivingAccommodation extends Function {
 				// Reset the water ratio flag to allow for next review
 				unlockWaterRatioReview();
 			}
+			
+			int now = pulse.getMarsTime().getMillisolInt();	
+			
+			if (now != millisolIntCache && now % 20 == 0) {
+				int timeSpan = now - millisolIntCache;
+				if (timeSpan < 0)
+					timeSpan += 1000;
+	
+				generateWaste(timeSpan);
+				
+				millisolIntCache = now;
+			}
 		}
+		
 		return valid;
 	}
 	
@@ -275,6 +286,30 @@ public class LivingAccommodation extends Function {
 	 * @param time amount of time passing (millisols)
 	 */
 	public void generateWaste(double time) {
+
+		// Future: need the real data collected by the bathroom. 
+		
+		// Get the # of beds in this building
+		int numBed = getNumAssignedBeds();
+		double portion = 1;
+		
+		// If settlement is rationing water, reduce water usage according to its level
+		int level = building.getSettlement().getRationing().getRationingLevel();
+		if (level != 0)
+			portion = 1.0 / level;
+		
+		// Account for people who are out there in an excursion and NOT in the
+		// settlement
+		double absenteeFactor = 1; 
+		
+		// Note: Will starting using absenteeFactor after accounting for wastes
+		// generated in vehicles on mission
+		
+		double usage = washWaterUsage * time / 1_000 * numBed * absenteeFactor;
+		
+		double estimatedWaterUsed = usage * portion;			
+		
+		double estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
 		
 		// Remove wash water from settlement.
 		if (estimatedWaterUsed > MIN) {
@@ -307,38 +342,6 @@ public class LivingAccommodation extends Function {
 			retrieve(toiletPaperUsageBuilding, ResourceUtil.TOILET_TISSUE_ID, true);
 			store(toiletPaperUsageBuilding, ResourceUtil.TOXIC_WASTE_ID, WASTE_NAME);
 		}
-	}
-
-	/**
-	 * Calculates the water usage level.
-	 * 
-	 * @param time
-	 * @return
-	 */
-	public double[] calculateWaterLevel(double time) {
-		Settlement settlement = building.getSettlement();
-		// Get the # of beds in this building
-		int numBed = getNumAssignedBeds();
-		double portion = 1;
-		
-		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.getRationing().getRationingLevel();
-		if (level != 0)
-			portion = 1.0 / level;
-		
-		// Account for people who are out there in an excursion and NOT in the
-		// settlement
-		// Note: Will starting using absenteeFactor after accounting for wastes
-		// generated in vehicles on mission
-		double absenteeFactor = 1; 
-
-		double usage = washWaterUsage * time / 1_000 * numBed * absenteeFactor;
-		
-		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE / 3D, TOILET_CHANCE * 3D) * portion;
-		
-		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
-		
-		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
 	}
 
 	@Override
