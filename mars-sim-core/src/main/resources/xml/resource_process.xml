@@ -243,7 +243,7 @@
 		</description> 
 		<!-- Note: Set ambient to false to reduce the probability of 
 				overusing hydrogen to produce methanol -->
-		<input resource="carbon dioxide" rate="44.0" ambient="false" />
+		<input resource="carbon dioxide" rate="44.0" ambient="true" />
 		<input resource="hydrogen" rate="4.0"  />
 		
 		<output resource="water" rate="36.0"  />
@@ -470,7 +470,7 @@
 	</description>
 		<!-- Note: Set ambient to false to reduce the probability of 
 				overusing hydrogen to produce methanol -->
-		<input resource="carbon dioxide" rate="44" ambient="false" />
+		<input resource="carbon dioxide" rate="44" ambient="true" />
 		<input resource="hydrogen" rate="6.0"  />				
 		
 		<output resource="water" rate="18.0"  />

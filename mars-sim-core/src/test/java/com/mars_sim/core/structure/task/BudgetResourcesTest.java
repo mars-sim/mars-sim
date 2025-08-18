@@ -48,7 +48,7 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         assertTrue("Ice Cache is not the same as the new Ice Prob", 
         		s.getIceProbabilityValue() != s.getRecommendedIceValue());
         assertFalse("Task is active", task.isDone());
-        assertTrue("Ice Prob review review is done and no longer due", s.isIceReviewDue());
+        assertTrue("Ice Prob review is due", s.isIceReviewDue());
 
         // Continue to complete review
         var ph = task.getPhase();
@@ -59,8 +59,9 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         // Approval
         executeTaskForDuration(p, task, task.getTimeLeft());
         assertTrue("Task is done", task.isDone());
-        // Need to execute ApproveMeasure in order to get the approval
-        assertFalse("Ice Prob review review no approval", s.isIceApprovalDue());
+        assertFalse("Ice Prob review is no longer due", s.isIceReviewDue());
+        // ice approval is now set to be due
+        assertTrue("Ice Prob approval is due", s.isIceApprovalDue());
     }
 
     public void testCreateResourceReviewTask() {

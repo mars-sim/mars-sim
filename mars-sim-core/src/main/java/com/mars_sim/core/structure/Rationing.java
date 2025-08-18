@@ -12,6 +12,7 @@ import java.io.Serializable;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.tool.MathUtils;
 
 /**
 * The Rationing class handles the rationing level of a resource.
@@ -154,17 +155,20 @@ public class Rationing implements Serializable {
 	public int reviewRationingLevel() {
 		double stored = settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		int reserve = settlement.getNumCitizens() * Settlement.MIN_WATER_RESERVE;
-		// Assuming a 90-day supply of this resource
-		double required = WASH_WATER_USAGE * settlement.getNumCitizens() * 90;
-
+		
+		// Assuming a 90-day supply of this resource and including industrial usage 
+		// of WASH_WATER_USAGE
+		double required = (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate())
+				* settlement.getNumCitizens() * 120;
+	
 		int newLevel = (int)((required + reserve) / (1 + stored));
 		if (newLevel < 1)
 			newLevel = 0;
-		else if (newLevel > 0) {
+//		else if (newLevel > 0) {
 			 // Note: once other resources are starting to adopt this class, 
 			 //       this method will be changed	
 //			logger.info(settlement, 30_000, "New Water Rationing Level: " + newLevel);
-		}
+//		}
 		else if (newLevel > 1000)
 			newLevel = 1000;
 		
