@@ -869,7 +869,7 @@ public class MainWindow
 			
 			int now = pulse.getMarsTime().getMillisolInt();	
 			
-			if (now != millisolIntCache && now != 1000 && now % 10 == 2) {
+			if (now != millisolIntCache && now != 1000 && now % 15 == 2) {
 
 				desktop.getSoundPlayer().loopThruBackgroundMusic();
 				
@@ -893,12 +893,20 @@ public class MainWindow
 		if (isPaused != playPauseSwitch.isSelected()) {
 			playPauseSwitch.setSelected(isPaused);
 		}
-		if (isPaused)
-			desktop.getSoundPlayer().muteMusic();
-		else
-			desktop.getSoundPlayer().unmuteMusic();
+		if (isPaused) {
+			desktop.getSoundPlayer().pauseMusic();
+		}
+		else {
+			desktop.getSoundPlayer().setUserMuteMusic(false);
+			desktop.getSoundPlayer().resumeMusic();
+		}
 	}
 
+	/**
+	 * Sets the interactive term.
+	 * 
+	 * @param i
+	 */
 	public static void setInteractiveTerm(InteractiveTerm i) {
 		interactiveTerm = i;
 	}
@@ -921,7 +929,12 @@ public class MainWindow
 		useExternalBrowser = selected;
 	}
 
-	public boolean getUseExternalBrowser() {
+	/**
+	 * Is the external browser being used ?
+	 * 
+	 * @return
+	 */
+	public boolean useExternalBrowser() {
 		return useExternalBrowser;
 	}
 

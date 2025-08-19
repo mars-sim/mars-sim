@@ -73,7 +73,7 @@ public class OGGSoundClip {
 	private Thread playerThread = null;
 
 	/**
-	 * Create a new clip based on a reference into the class path
+	 * Creates a new clip based on a reference into the class path.
 	 *
 	 * @param ref The reference into the class path which the OGG can be read from
 	 * @param true if it is a background music file (Not a sound effect clip)
@@ -100,7 +100,7 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Create a new clip based on a reference into the class path
+	 * Creates a new clip based on a reference into the class path.
 	 *
 	 * @param in The stream from which the OGG can be read from
 	 * @throws IOException Indicated a failure to read from the stream
@@ -110,7 +110,7 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Set the default gain value (default volume)
+	 * Sets the default gain value (default volume).
 	 */
 	public void setDefaultVol() {
 		determineGain(AudioPlayer.DEFAULT_VOL);
@@ -121,7 +121,7 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Compute the gain value for the playback--based on the new value of volume in
+	 * Computes the gain value for the playback--based on the new value of volume in
 	 * the increment or decrement of 0.05f.
 	 * 
 	 * @param volume the volume
@@ -131,10 +131,10 @@ public class OGGSoundClip {
 			volume = 1;
 		else if (volume <= 0) {
 			volume = 0;
-			pause();
+			setPause(true);
 		}
 		else
-			paused = false;
+			setPause(false);
 		
 		this.volume = volume;
 
@@ -189,7 +189,7 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Check the state of the playback
+	 * Checks the state of the playback.
 	 *
 	 * @return True if the playback has been stopped
 	 */
@@ -207,15 +207,15 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Pause the playback
+	 * Pauses or unpauses the playback.
 	 */
-	 public void pause() { 
-		 paused = true; 
+	 public void setPause(boolean value) { 
+		 paused = value; 
 	 }
 
 
 	/**
-	 * Check if the stream is paused
+	 * Checks if the stream is paused.
 	 *
 	 * @return True if the stream is paused
 	 */
@@ -223,32 +223,7 @@ public class OGGSoundClip {
 		return paused;
 	}
 
-	/**
-	 * Resume the playback
-	 */
-	public void resume() {
-		if (!paused) {
-			loop();
-			return;
-		}
 
-		paused = false;
-
-		if (playerThread != null) {
-			synchronized(this){
-				name.notifyAll();
-			}
-		}
-	}
-
-	/**
-	 * Check if the clip has been stopped
-	 *
-	 * @return True if the clip has been stopped
-	 */
-	public boolean isStopped() {
-		return ((playerThread == null) || (!playerThread.isAlive()));
-	}
 
 	/**
 	 * Initialise the OGG clip
@@ -305,18 +280,18 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Loop the clip - for background music
+	 * Loop the clip - for background music.
 	 */
 	public void loop() {
 		stop();
-
+		
 		try {
 			bitStream.reset();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "IOException in OGGSoundClip's loop(). ", e);
 			// ignore if no mark
 		}
-
+		
 		playerThread = new Thread() {
 			public void run() {
 				try {
@@ -345,12 +320,43 @@ public class OGGSoundClip {
 		playerThread.start();
 	}
 
+	/**
+	 * Resumes the playback.
+	 * Note: may need to setPause(false) first.
+	 */
+	public void resume() {
+		if (!paused && !isStopped()) {
+			paused = false;
+			loop();
+			return;
+		}
+		
+		paused = false;
+		
+		setMute(false);
+		
+		if (playerThread != null) {
+			synchronized(this){
+				name.notifyAll();
+			}
+		}
+	}
+
+	/**
+	 * Checks if the clip has been stopped.
+	 *
+	 * @return True if the clip has been stopped
+	 */
+	public boolean isStopped() {
+		return ((playerThread == null) || (!playerThread.isAlive()));
+	}
+	
 	public void disableSound() {
 		AudioPlayer.disableAudio();
 	}
 
 	/**
-	 * Stop the clip playing
+	 * Stops the clip playing.
 	 */
 	public void stop() {
 		if (isStopped()) {
@@ -363,7 +369,7 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Close the stream being played from
+	 * Closes the stream being played.
 	 */
 	public void close() {
 		try {
@@ -687,6 +693,11 @@ public class OGGSoundClip {
 		return mute;
 	}
 
+	/**
+	 * Mutes or unmutes the clip.
+	 * 
+	 * @param mute
+	 */
 	public void setMute(boolean mute) {
 		// Set mute value.
 		this.mute = mute;

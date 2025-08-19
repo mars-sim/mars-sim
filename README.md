@@ -67,13 +67,13 @@ chemistry, biology, economics, psychology, and social science) as possible to si
 and behaviors of people, social structures, physical and mechanical systems, and environments in the 
 context of developing human settlements on Mars.
 
-Each settler is modeled as an intelligent agent possessing a high degree of autonomy and mobility.
-As a conscious agent given a capacity to learn from past experiences, each settler would be assigned 
-with a [job](https://github.com/mars-sim/mars-sim/wiki/Jobs), a [role](https://github.com/mars-sim/mars-sim/wiki/Role), 
-having technical [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), 
-[personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural
-[attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and preferences of tasks.
-Given their [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) with one another, 
+Each settler is modeled as an intelligent agent possessing a reasonably high degree of autonomy and mobility.
+Given a set of rules to live by and a capacity to learn from its past history, each agent acquires experiences
+and survives the conditions upon it. A settler is assigned with a [job](https://github.com/mars-sim/mars-sim/wiki/Jobs), 
+a [role](https://github.com/mars-sim/mars-sim/wiki/Role), having a set of technical [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), 
+owning certain [personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality) and natural
+[attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and preferences on what tasks to take
+and what missions to participate. Given their [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) with one another, 
 they live, dream, explore, and settle down on Mars.
 
 ## Mars Direct Mission Plan 
@@ -81,30 +81,30 @@ they live, dream, explore, and settle down on Mars.
 mars-sim loosely follows the *Mars Direct Mission Plan* (by Robert Zubrin) and has 8 basic
 settlement templates to choose from. The first template is a *Mars Direct Plan (MDP) Phase 1* base
 with 4 settlers. The next template is a *MDP Phase 2* base with 8 settlers. Then a *MDP Phase 3* base
-has 12 settlers. An *Alpha Base* has 24 settlers. A *Hub Base* has 36 settlers. A *Sector Base* has
-120 settlers. Besides, players may build a *Trading Outpost* or a *Mining Depot* 
+has 12 settlers. An *Alpha Base* has 36 settlers. A *Hub Base* has 56 settlers. A *Sector Base* has
+136 settlers. Besides, players may build a *Trading Outpost* or a *Mining Depot* 
 near sites with high mineral concentrations. 
 
-Each country of origin and sponsor has unique template that house various types of buildings. 
-Altogether, there is a total of 32 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+Each sponsoring agency or country of origin has unique templates that house various types of buildings. 
+Altogether, there is a total of 37 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
 to choose from.
 
 ## Settlement Development
 
-The goals in mars-sim include populating Mars with human settlements, outposts, weather station, 
-communication towers, and, in future, road/train network. First, a sponsor decides the 
-location of a landing site and provides initial guidance over the development of its settlements. 
-Eventually, each settlement will evolve and develop its own laws and governance and its 
-previously stated mission agendas and [objectives](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
-
+The goals in mars-sim include populating Mars with human settlements, outposts, weather stations, 
+communication towers, and, in future, transportation corridors such as road/train/plane network. 
+Initially, a sponsor decides the location of a landing site and provides specific guidance over 
+the development of its settlements such as mission agendas and [objectives](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
+. Eventually, settlements will outgrow these goals and develop its own laws and governance 
+and evolve at their own pace. 
 
 ## Economics
 
 In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim 
-implements the **Good Value** system, which keeps track of the supply and demand on each 
+implements the **Value Point** (VP) system, which keeps track of the supply and demand on each 
 good and resource. As there is no standard currency established on Mars yet, settlers barter 
-trades and do deliveries with neighboring settlements by keeping track of the credits and deficit based on the 
-VPs of the exchange of resources in a Trading mission or Delivery mission.
+trades and do deliveries with neighboring settlements by keeping track of credits and deficits 
+based upon the VPs due to the exchange of resources from trading or delivery missions.
 
 ## Authorities
 

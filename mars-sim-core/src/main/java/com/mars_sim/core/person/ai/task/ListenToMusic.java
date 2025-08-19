@@ -38,7 +38,7 @@ extends Task {
             "Task.phase.findingASong")); //$NON-NLS-1$
 
 	// Static members
-	private static final double TIME_FACTOR = 1.2; // NOTE: should vary this factor by person
+	private static final double TIME_FACTOR = 0.9; // NOTE: should vary this factor by person
 	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.9D;

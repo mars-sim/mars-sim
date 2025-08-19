@@ -48,6 +48,9 @@ public class AudioPlayer {
 	private static boolean hasMasterGain = true;
 	private static boolean isVolumeDisabled;
 
+	private boolean userMuteMusic = false;
+	private boolean userMuteSoundEffect = false;
+	
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
 	private static OGGSoundClip currentMusic;
@@ -76,8 +79,10 @@ public class AudioPlayer {
 		Properties props = config.getPropSet(PROPS_NAME);
 		boolean mute = UIConfig.extractBoolean(props, MUTE, true);
 		if (mute) {
-			muteSoundEffect();
-			muteMusic();
+			userMuteMusic = false;
+			userMuteSoundEffect = false;
+//			muteSoundEffect(false);
+//			muteMusic(false);
 			currentMusicVol = 0;
 			currentSoundVol = 0;
 		}
@@ -377,10 +382,7 @@ public class AudioPlayer {
 	 */
 	public void restoreLastSoundEffectGain() {
 		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
-//			if (lastSoundVol == 0)
-				currentSoundClip.determineGain(currentSoundVol);
-//			else
-//				currentSoundClip.determineGain(lastSoundVol);
+			currentSoundClip.determineGain(currentSoundVol);
 		}
 	}
 
@@ -413,28 +415,17 @@ public class AudioPlayer {
 	}
 
 	/**
-	 * Unmute the sound effect
+	 * Unmutes the sound effect.
 	 */
 	public void unmuteSoundEffect() {
-		if (currentSoundClip != null && currentSoundClip.isMute()) {
+		if (!userMuteSoundEffect && currentSoundClip != null && currentSoundClip.isMute()) {
 			currentSoundClip.setMute(false);
 			restoreLastSoundEffectGain();
 		}
 	}
 
 	/**
-	 * Unmute the music
-	 */
-	public void unmuteMusic() {
-		if (currentMusic != null) {
-			currentMusic.setMute(false);
-			restoreLastMusicGain();
-			resumeMusic();
-		}
-	}
-	
-	/**
-	 * Mute the sound Effect
+	 * Mutes the sound Effect.
 	 */
 	public void muteSoundEffect() {
 		if (currentSoundClip != null) {
@@ -444,14 +435,45 @@ public class AudioPlayer {
 	}
 	
 	/**
-	 * Mute the music
+	 * Sets the user mute music.
+	 * 
+	 * @param value
 	 */
-	public void muteMusic() {
+	public void setUserMuteMusic(boolean value) {
+		userMuteMusic = value;
 		if (currentMusic != null && !currentMusic.isMute()) {
 			// Note: should check if it is already mute since 
 			// user may pause and unpause consecutively too fast 
-			currentMusic.setMute(true);
+			currentMusic.setMute(value);
+			restoreLastMusicGain();
 		}
+	}
+
+	/**
+	 * Gets the user mute music.
+	 * 
+	 * @return
+	 */
+	public boolean userMuteMusic() {
+		return userMuteMusic;
+	}
+	
+	/**
+	 * Sets the user mute sound effect.
+	 * 
+	 * @param value
+	 */
+	public void setUserMuteSoundEffect(boolean value) {
+		userMuteSoundEffect = value;
+	}
+	
+	/**
+	 * Gets the user mute sound effect.
+	 * 
+	 * @return
+	 */
+	public boolean userMuteSoundEffect() {
+		return userMuteSoundEffect;
 	}
 
 	/**
@@ -462,9 +484,34 @@ public class AudioPlayer {
 	public boolean isMusicTrackStopped() {
 		if (currentMusic == null)
 			return true;
-		return currentMusic.checkState(); //isStopped();
+		return currentMusic.checkState(); 
 	}
 
+
+	/**
+	 * Resumes playing the music.
+	 */
+	public void resumeMusic() {
+		if (currentMusic != null && !isVolumeDisabled) {
+			currentMusic.setMute(false);
+			restoreLastMusicGain();
+			currentMusic.resume();
+		}
+		else {
+			playRandomMusicTrack();
+		}
+	}
+	
+	/**
+	 * Pauses the music.
+	 */
+	public void pauseMusic() {
+		if (isMusicMute())
+			return;
+		if (currentMusic != null && !isVolumeDisabled) {
+			currentMusic.setPause(true);
+		}
+	}
 	
 	/**
 	 * Loops through the background tracks.
@@ -511,24 +558,9 @@ public class AudioPlayer {
 		}
 
 	}
-
 	
 	/**
-	 * Resume playing the music
-	 */
-	public void resumeMusic() {
-		if (isMusicMute())
-			return;
-		if (currentMusic != null && !isVolumeDisabled) {
-			currentMusic.resume();
-		}
-		else {
-			playRandomMusicTrack();
-		}
-	}
-	
-	/**
-	 * Play a randomly selected music track
+	 * Plays a randomly selected music track.
 	 */
 	public void playRandomMusicTrack() {
 		if (numTracks == 0)
