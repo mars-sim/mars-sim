@@ -667,8 +667,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		setDescription("Recovering");
 		// Set performance to 0% awaiting recovering
 		condition.setPerformanceFactor(0);
-		// Set fatigue to 1000 to rest		
-		condition.setFatigue(1000);
+		// Set fatigue to 3000 to rest		
+		condition.setFatigue(3000);
 	}
 	
 	/**
@@ -749,8 +749,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					// encourage sleep after the work shift
 					circadian.updateSleepCycle(m, true);
 				}
-
-				condition.increaseFatigue(RandomUtil.getRandomInt(333));
 			}
 			else {
 				// Adjust the sleep habit according to the current work shift
@@ -1025,10 +1023,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	public int getSleepWeight(int msol) {
 		return circadian.getSleepWeight(msol);
-	}
-	
-	public void updateSleepCycle(int millisols, boolean updateType) {
-		circadian.updateSleepCycle(millisols, updateType);
 	}
 
 	/**

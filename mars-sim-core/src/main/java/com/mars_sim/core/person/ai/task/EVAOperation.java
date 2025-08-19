@@ -165,7 +165,7 @@ public abstract class EVAOperation extends Task {
 	protected static ExperienceImpact createPhaseImpact(SkillType... extraSkills) {
 		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
 		skills.add(new SkillWeight(SkillType.EVA_OPERATIONS, 1));
-		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.05D, 
+		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.4D, 
 					skills);
 	}
 	
@@ -179,7 +179,7 @@ public abstract class EVAOperation extends Task {
 	protected static ExperienceImpact createPhaseImpact(PhysicalEffort effort, SkillType... extraSkills) {
 		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
 		skills.add(new SkillWeight(SkillType.EVA_OPERATIONS, 1));
-		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, effort, 0.05D, 
+		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, effort, 0.5D, 
 					skills);
 	}
 

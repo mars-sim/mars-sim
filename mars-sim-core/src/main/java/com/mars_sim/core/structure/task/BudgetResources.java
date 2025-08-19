@@ -51,7 +51,7 @@ public class BudgetResources extends Task {
 	
 	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-		false, -0.1D, SkillType.MANAGEMENT) {
+		false, 0.2D, SkillType.MANAGEMENT) {
 			private static final long serialVersionUID = 1L;
 
 			@Override

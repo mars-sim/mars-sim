@@ -51,7 +51,7 @@ public class MaintainGarageVehicle extends Task {
 	private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString("Task.phase.maintainVehicle")); //$NON-NLS-1$
 
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, 
-			NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.1D, SkillType.MECHANICS);
+			NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.2D, SkillType.MECHANICS);
 
 	// Data members
 	/** The maintenance garage. */

@@ -418,7 +418,7 @@ public class PhysicalCondition implements Serializable {
 			double time = pulse.getElapsed();
 			
 			// Check once a day only
-			if (pulse.isNewSol()) {		
+			if (pulse.isNewSol()) {	
 //				int solOfMonth = pulse.getMarsTime().getSolOfMonth();
 //				if (solOfMonth == 1 || solOfMonth == 8 || solOfMonth == 15 || solOfMonth == 22 || solOfMonth == 29) {
 					// Update the personal appetite
@@ -427,39 +427,27 @@ public class PhysicalCondition implements Serializable {
 					updateMaxEnergy();
 //				}
 				// Update the entropy in muscles
-				entropy(time * -20);
-			
+				entropy(time * -20);	
 			}
 			
 			// Check once per msol (millisol integer)
 			if (pulse.isNewIntMillisol()) {
-				// reduce the muscle soreness
-				recoverFromSoreness(1);
-				// Update thirst
-				increaseThirst(bodyMassDeviation * .75);
-				// Update fatigue
-				increaseFatigue(1);
-				// Update hunger
-				increaseHunger(bodyMassDeviation * .75);
-				// Reduce stress
-				reduceStress(time/10);
-				
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
 				// Check radiation 
 				radiation.timePassing(pulse);
 				
-				// Get stress factor due to settlement overcrowding
-				if (person.isInSettlement() && !person.isRestingTask()) {
-					// Note: this stress factor is different from LifeSupport's timePassing's
-					//       stress modifier for each particular building
-					double stressFactor = person.getSettlement().getStressFactor(time);
-					
-					if (stressFactor > 0) {
-						// Update stress
-				        addStress(stressFactor);
-					}
-				}				
+//				// Get stress factor due to settlement overcrowding
+//				if (person.isInSettlement() && !person.isRestingTask()) {
+//					// Note: this stress factor is different from LifeSupport's timePassing's
+//					//       stress modifier for each particular building
+//					double stressFactor = person.getSettlement().getStressFactor(time);
+//					
+//					if (stressFactor > 0) {
+//						// Update stress
+//				        addStress(stressFactor);
+//					}
+//				}				
 				
 				if (stress < STRESS_THRESHOLD) {
 					isStressedOut = false;
@@ -495,8 +483,24 @@ public class PhysicalCondition implements Serializable {
 			// Update the existing health problems
 			checkHealth(pulse);
 			
-			// Update energy via PersonTaskManager's executeTask()
-			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
+			
+			double factor = 1;
+			
+			if (person.isRestingTask()) {
+				// Modify the time factor
+				factor = 2;
+			}
+			
+			// Reduce stress
+			reduceStress(time / 10 * factor);
+			// Reduce the muscle soreness
+			recoverFromSoreness(time * factor);
+			// Update thirst
+			increaseThirst(time * bodyMassDeviation * .75 / factor);
+			// Update fatigue
+			increaseFatigue(time * 1.35 / factor);
+			// Update hunger
+			increaseHunger(time * bodyMassDeviation * .75 / factor);
 		}
 	}
 
@@ -796,8 +800,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceFatigue(double delta) {
 		double f = fatigue - delta;
-		if (f < -100) 
-			f = -100;
+		if (f < -50) 
+			f = -50;
 		
 		fatigue = f;
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);

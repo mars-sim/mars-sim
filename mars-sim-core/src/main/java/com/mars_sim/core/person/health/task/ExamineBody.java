@@ -50,7 +50,7 @@ public class ExamineBody extends MedicalAidTask {
 	static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.recording")); //$NON-NLS-1$
 
     private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                                false, 1.5, SkillType.MEDICINE);
+                                                false, 1.0, SkillType.MEDICINE);
 
     private static final double STANDARD_TRANSPORTATION_TIME = 20;
     

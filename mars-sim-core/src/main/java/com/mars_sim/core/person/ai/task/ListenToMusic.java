@@ -10,6 +10,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.tool.Msg;
@@ -37,6 +38,8 @@ extends Task {
             "Task.phase.findingASong")); //$NON-NLS-1$
 
 	// Static members
+	private static final double TIME_FACTOR = 1.2; // NOTE: should vary this factor by person
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.9D;
 
@@ -122,12 +125,24 @@ extends Task {
 		double remainingTime = 0;
 		    
         setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
-       
-        // Reduce person's fatigue
-        person.getPhysicalCondition().reduceFatigue(.5 * time);
+        
+        PhysicalCondition pc = person.getPhysicalCondition();
+		double perf = pc.getPerformanceFactor();
+        
+		double fractionOfRest = time * TIME_FACTOR;
+		
+		// Reduce person's fatigue
+        pc.reduceFatigue(fractionOfRest);
 
-        person.getPhysicalCondition().reduceStress(time/2); 
+        pc.relaxMuscle(time);
+        
+        pc.reduceStress(time/2); 
   
+        if (perf < 1) {
+        	perf *= (1 + fractionOfRest);
+        	pc.setPerformanceFactor(perf);
+        }
+        
 		return remainingTime;
 	}
 

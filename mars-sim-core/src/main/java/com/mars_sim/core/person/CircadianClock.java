@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CircadianClock.java
- * @date 2022-07-21
+ * @date 2025-08-18
  * @author Manny Kung
  */
 
@@ -28,14 +28,17 @@ public class CircadianClock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Sleep Habit Map resolution. */
-	private static final double SLEEP_INFLATION = 1.15;
-
-	/** Sleep Habit Map resolution. */
 	private static final int SLEEP_MAP_RESOLUTION = 20;
 
 	/** Sleep Habit maximum value. */
 	private static final int SLEEP_MAX_FACTOR = 100;
 
+    private static final int MAX_SUPPRESSION = 100;
+    
+	/** Sleep Habit Map resolution. */
+	private static final double SLEEP_INFLATION = 1.15;
+
+	
 	private boolean awake = true;
 
 	private int solCache;
@@ -344,6 +347,52 @@ public class CircadianClock implements Serializable {
 		}
 	}
 
+	
+    /**
+     * Modifies the probability based on a person's desired sleep habit.
+     * 
+     * @param person
+     * @param result
+     * @param now
+     * @return
+     */
+	public double desireToSleep(Person person, double prob, int now) {
+			double effect = prob;
+        	// Checks the current time against the sleep habit heat map
+	    	int bestSleepTime[] = person.getPreferredSleepHours();
+	    	// is now falling two of the best sleep time ?
+	    	for (int time : bestSleepTime) {
+		    	int diff = time - now;
+		    	effect = prob / (diff + .5);
+	    	}
+	    	return prob + effect;
+	}
+	
+	/**
+     * Adjusts a person's sleep habit based on his/her latest work shift.
+     *
+     * @param now
+     */
+    public void adjustSleepHabit(int now) {
+
+		int habit = getSuppressHabit();
+		int spaceOut = getSpaceOut();
+		// limit adjustment to 10 times and space it out to at least 50 millisols apart
+		if (spaceOut < now && habit < MAX_SUPPRESSION) {
+			// Discourage the person from forming the sleep habit at this time
+			updateSleepCycle(now, false);
+
+			setSuppressHabit(habit + 1);
+			
+			spaceOut = now + 20;
+			if (spaceOut > 1000) {
+				spaceOut = spaceOut - 1000;
+			}
+			
+			setSpaceOut(spaceOut);
+		}
+    }
+    
 	public int getNumSleep() {
 		return numSleep;
 	}

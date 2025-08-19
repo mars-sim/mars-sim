@@ -44,7 +44,7 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
     
     private static final ExperienceImpact IMPACT = new ExperienceImpact(25D,
                             NaturalAttributeType.EXPERIENCE_APTITUDE, PhysicalEffort.NONE,
-                            0.1D, SkillType.MEDICINE);
+                            0.2D, SkillType.MEDICINE);
 
     private HealthProblem healthProblem;
     private double treatmentDuration;

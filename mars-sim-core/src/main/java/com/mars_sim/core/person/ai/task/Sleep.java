@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Sleep.java
- * @date 2023-08-14
+ * @date 2025-08-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -44,8 +44,6 @@ public class Sleep extends Task {
 
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = Sleep.class.getSimpleName();
-		
-    private static final int MAX_SUPPRESSION = 100;
 
 	/** Task name */
 	public static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
@@ -56,11 +54,12 @@ public class Sleep extends Task {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -2.2D;
+	private static final double STRESS_MODIFIER = -2D;
 	/** The base alarm time (millisols) at 0 degrees longitude. */
 	private static final double BASE_ALARM_TIME = 300D;
-	private static final double TIME_FACTOR = 1.7; // NOTE: should vary this factor by person
-	private static final double RESIDUAL_MODIFIER = .005;
+	private static final double TIME_FACTOR = 1.2; // NOTE: should vary this factor by person
+	private static final double RESIDUAL_MODIFIER = .002;
+	private static final double SLEEP_PERIOD = 150;
 
 	
 	/**
@@ -70,8 +69,7 @@ public class Sleep extends Task {
 	 * @param person
 	 */
 	public Sleep(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER,
-				(50 + RandomUtil.getRandomDouble(-5, 5)));
+		super(NAME, person, false, false, STRESS_MODIFIER, RandomUtil.getRandomInt(-20, 20) + SLEEP_PERIOD);
 
 		if (person.isOutside()) {
 			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
@@ -81,7 +79,6 @@ public class Sleep extends Task {
 
 		else {
 			// Initialize phase
-			addPhase(SLEEPING);
 			setPhase(SLEEPING);
 
 			// Adjust the duration so the person does not oversleep
@@ -124,7 +121,6 @@ public class Sleep extends Task {
 
 		else {
 			// Initialize phase
-			addPhase(SLEEPING);
 			setPhase(SLEEPING);
 		}
 	}
@@ -194,7 +190,7 @@ public class Sleep extends Task {
 
 		double f = pc.getFatigue();
 
-		double residualFatigue = f * RESIDUAL_MODIFIER;
+		double residualFatigue = 0;
 		// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
 		// (2) Realistically speaking, the first hour of sleep restore more strength than the
 		//     the last hour.
@@ -203,6 +199,10 @@ public class Sleep extends Task {
 		// (4) The lost hours of sleep is already lost and there's no need to rest on a per
 		//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
 
+		if (getTimeCompleted() < getDuration() / 10) {
+			residualFatigue = f * RESIDUAL_MODIFIER;
+		}
+		
 		pc.reduceFatigue(fractionOfRest + residualFatigue);
 
 		circadian.setAwake(false);
@@ -212,8 +212,9 @@ public class Sleep extends Task {
 		circadian.recordSleep(time);
 
 		if (person.isOnDuty()) {
+	    	int now = getMarsTime().getMillisolInt();
 			// Reduce the probability if it's not the right time to sleep
-			refreshSleepHabit(person, circadian);
+	    	circadian.adjustSleepHabit(now);
 		}
 
 		// Check if fatigue is zero
@@ -373,36 +374,5 @@ public class Sleep extends Task {
 			}
 		}
 		return time;
-	}
-
-	/**
-     * Refreshes a person's sleep habit based on his/her latest work shift
-     *
-     * @param person
-     */
-    public void refreshSleepHabit(Person person, CircadianClock circadian) {
-    	int now = getMarsTime().getMillisolInt();
-
-		// if a person is on shift right now
-		if (person.isOnDuty()) {
-
-			int habit = circadian.getSuppressHabit();
-			int spaceOut = circadian.getSpaceOut();
-			// limit adjustment to 10 times and space it out to at least 50 millisols apart
-			if (spaceOut < now && habit < MAX_SUPPRESSION) {
-				// Discourage the person from forming the sleep habit at this time
-				person.updateSleepCycle(now, false);
-
-				int rand = RandomUtil.getRandomInt(2);
-				if (rand == 2) {
-					circadian.setSuppressHabit(habit+1);
-					spaceOut = now + 20;
-					if (spaceOut > 1000) {
-						spaceOut = spaceOut - 1000;
-					}
-					circadian.setSpaceOut(spaceOut);
-				}
-			}
-		}
     }
 }

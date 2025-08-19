@@ -352,7 +352,7 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Robot> robotsWithin;
 
 	/** A history of completed processes. */
-	private History<CompletedProcess> processHistory = new History<>(40);
+	private History<CompletedProcess> processHistory = new History<>(80);
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();

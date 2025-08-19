@@ -12,7 +12,6 @@ import java.io.Serializable;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.tool.MathUtils;
 
 /**
 * The Rationing class handles the rationing level of a resource.

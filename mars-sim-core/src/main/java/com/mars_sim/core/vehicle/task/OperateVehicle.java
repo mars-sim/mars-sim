@@ -114,7 +114,7 @@ public abstract class OperateVehicle extends Task {
 	private ComputingJob compute;
 	
 	protected static final ExperienceImpact IMPACT = new ExperienceImpact(2D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-								false, 0.2D, SkillType.PILOTING);
+								false, 0.3D, SkillType.PILOTING);
 
 	/**
 	 * Constructor for a human pilot.
