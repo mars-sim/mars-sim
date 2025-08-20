@@ -172,7 +172,7 @@ extends Task {
         double strengthModifier = .1D + (strength * .018D);
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
         double remainingAmountLoading = totalAmountLoading;
-        
+         
         // Go through each container in top inventory.   
         for (Equipment source: parent.getContainerSet()) {
             Container c = (Container)source; 	
@@ -226,6 +226,12 @@ extends Task {
         }
         
         double remainingTime = (remainingAmountLoading / totalAmountLoading) * time;
+        
+        // Assume repetitive actions can increase soreness
+        if (worker instanceof Person p) {
+        	p.getPhysicalCondition().increaseMuscleSoreness((time - remainingTime)/2);
+        }
+       
         
         addExperience(time);
         

@@ -152,17 +152,21 @@ public class PlayHoloGame extends Task {
         // Add experience
         addExperience(time);
         
-		// Either +ve or -ve
-		double rand = RandomUtil.getRandomInt(1);
-		if (rand == 0)
-			rand = -1;
+		double rand = RandomUtil.getRandomInt(-1, 1);
 
 		 // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
 		// May either increase or reduce a person's fatigue level
-		condition.increaseFatigue(2 * time * rand);
+		condition.increaseFatigue(time * rand);
         // Reduce person's stress
         condition.reduceStress(time/2);
+        // Assume poor posture causes muscle health to deteriorate
+        condition.reduceMuscleHealth(time/2);
+        // Research indicates that playing computer games, particularly those requiring 
+        // active engagement, acts as a distraction from pain, leading to higher pain tolerance
+        condition.increasePainTolerance(time/2);
+        // Assume repetitive actions can increase soreness
+        condition.increaseMuscleSoreness(time/2);
         
         if (condition.getHunger() > 666 || condition.getFatigue() > 666) {
 	        endTask();

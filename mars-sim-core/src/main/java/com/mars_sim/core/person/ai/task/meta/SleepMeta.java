@@ -63,6 +63,7 @@ public class SleepMeta extends FactoryMetaTask {
     	double ghrelinS = circadian.getSurplusGhrelin();
     	double leptinS = circadian.getSurplusLeptin();
     	double hunger = pc.getHunger();
+    	double thirst = pc.getThirst();
     	double energy = pc.getEnergy();
     	
     	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
@@ -91,23 +92,24 @@ public class SleepMeta extends FactoryMetaTask {
             double soreness = pc.getMuscleSoreness();
             
         	// the desire to go to bed increase linearly after 6 hours of wake time
-            result += Math.max((1.5 * fatigue - 250), 0) * 10 + stress * 10 
+            result += Math.max((fatigue - 250), 0) * 10 + stress * 10 
             		+ (ghrelin - leptin)
-            		// High hunger makes it harder to fall asleep
-            		// Therefore, limit the hunger contribution to a max of 300
-            		+ Math.min(hunger, 100)
-            		// Note: muscle condition affects the desire to exercise
-            		- soreness/2.5 
+            		// High hunger/thirst makes it harder to fall asleep
+            		// Therefore, limit the contribution to a max of 300
+            		- Math.min(hunger/2, 300)
+            		- Math.min(thirst/2, 300)
+            		// Note: muscle condition affects the desire to sleep
+            		+ soreness/2.5 
             		- sleepMillisols / 2;
-                   
-            double pref = person.getPreference().getPreferenceScore(this);
-            
-         	result += result * pref/12D;                            	
         	
     	    if (result <= 0) {
     	    	return 0;
     	    }
-    	    	
+    	    
+            double pref = person.getPreference().getPreferenceScore(this);
+            
+         	result += result * pref/12D;                            	
+	    	
             // Check if person is an astronomer.
             boolean isAstronomer = (person.getMind().getJob() == JobType.ASTRONOMER);
 

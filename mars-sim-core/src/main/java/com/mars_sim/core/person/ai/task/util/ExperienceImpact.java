@@ -280,7 +280,7 @@ public class ExperienceImpact implements Serializable {
         }
 
         if (effortDriven == PhysicalEffort.HIGH) {
-            p.getPhysicalCondition().stressMuscle(timeElapsed);
+            p.getPhysicalCondition().muscularHypertrophy(timeElapsed);
         }
     }
 

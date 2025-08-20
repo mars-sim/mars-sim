@@ -130,8 +130,7 @@ public class MarsProject {
 				String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 				if (!os.contains("linux")) {
 					System.setProperty("sun.java2d.ddforcevram", "true");
-				}
-				
+				}			
 			}
 
 			// Preload the Config
@@ -146,44 +145,10 @@ public class MarsProject {
 			}
 			else if (simFile != null) {
 				builder.setSimFile(simFile);
-			}
-		
+			}	
 			// Go to console main menu if there is no template well-defined in the startup string
 			else if (!builder.isFullyDefined() && useNew) {
-		
-				// Ask if running in standard sandbox mode or go to Console Menu
-				if (!isSandbox && !bypassConsoleMenuDialog()) {
-					logger.config("Please go to the Console Main Menu to choose an option.");
-					int type = interactiveTerm.startConsoleMainMenu();
-					switch (type) {
-						case 1 -> {
-							logger.config("Start the Scenario Editor...");
-							startScenarioEditor(builder);
-						}
-						case 2 -> {
-							// Load simulation
-							logger.config("Load the sim...");
-							String filePath = selectSimFile();
-							if (filePath != null) {
-								builder.setSimFile(filePath);
-							}
-						}
-						case 3 -> {
-							// Proceed with configuring the society mode
-							logger.config("Configuring the society mode...");
-							
-							builder.startSocietySim();
-	
-							// Start beryx console
-							startConsoleThread();
-							
-							return;
-						}
-						default ->
-							// Check out crew flag
-							builder.setUseCrews(interactiveTerm.getUseCrew());
-     				}
-				}
+				goToConsole(builder);
 			}
 
 			// Build and run the simulator
@@ -202,6 +167,48 @@ public class MarsProject {
 		}
 	}
 
+	/**
+	 * Goes to console for building the sim.
+	 * 
+	 * @param builder
+	 */
+	private void goToConsole(SimulationBuilder builder) {
+
+		// Ask if running in standard sandbox mode or go to Console Menu
+		if (!isSandbox && !bypassConsoleMenuDialog()) {
+			logger.config("Please go to the Console Main Menu to choose an option.");
+			int type = interactiveTerm.startConsoleMainMenu();
+			switch (type) {
+				case 1 -> {
+					logger.config("Start the Scenario Editor...");
+					startScenarioEditor(builder);
+				}
+				case 2 -> {
+					// Load simulation
+					logger.config("Load the sim...");
+					String filePath = selectSimFile();
+					if (filePath != null) {
+						builder.setSimFile(filePath);
+					}
+				}
+				case 3 -> {
+					// Proceed with configuring the society mode
+					logger.config("Configuring the society mode...");
+					
+					builder.startSocietySim();
+
+					// Start beryx console
+					startConsoleThread();
+					
+					return;
+				}
+				default ->
+					// Check out crew flag
+					builder.setUseCrews(interactiveTerm.getUseCrew());
+			}
+		}
+	}
+	
 	/**
 	 * Checks what switches or arguments have been provided.
 	 * 

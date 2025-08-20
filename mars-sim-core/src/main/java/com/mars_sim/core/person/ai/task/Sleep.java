@@ -58,10 +58,11 @@ public class Sleep extends Task {
 	/** The base alarm time (millisols) at 0 degrees longitude. */
 	private static final double BASE_ALARM_TIME = 300D;
 	private static final double TIME_FACTOR = 1.2; // NOTE: should vary this factor by person
-	private static final double RESIDUAL_MODIFIER = .002;
+	private static final double RESIDUAL_MODIFIER = .004;
 	private static final double SLEEP_PERIOD = 150;
 
-	
+	private int numREMCycles;
+	private int cycleLength;
 	/**
 	 * Constructor 1. This will require a person to walk to a bed first.
 	 * Note: choose constructor 2 if walking is not required.
@@ -96,11 +97,15 @@ public class Sleep extends Task {
 			}
 
 			walkToDestination();
-
 			
 			// Finally assign essentials for sleeping
 			person.wearGarment(((EquipmentOwner)person.getContainerUnit()));
 			person.assignThermalBottle();
+			
+			// Note: each REM cycle lasts about 90 to 120 mins or 60 to 80 millisols
+			numREMCycles = (int) (getDuration() / RandomUtil.getRandomInt(60, 80));
+			
+			cycleLength = (int)Math.round(getDuration() / numREMCycles);
 		}
 	}
 
@@ -179,16 +184,16 @@ public class Sleep extends Task {
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
 		CircadianClock circadian = person.getCircadianClock();
-
-		pc.recoverFromSoreness(time);
-		
-		pc.relaxMuscle(time);
+		// Assume sleeping improve the muscular soreness 
+		pc.reduceMuscleSoreness(time/2);
+		// Assume sleeping reduce the muscular health 
+		pc.reduceMuscleHealth(time/2);
 
         pc.reduceStress(time/2); 
         
 		double fractionOfRest = time * TIME_FACTOR;
 
-		double f = pc.getFatigue();
+		double f = pc.getFatigue() * time;
 
 		double residualFatigue = 0;
 		// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
@@ -199,7 +204,25 @@ public class Sleep extends Task {
 		// (4) The lost hours of sleep is already lost and there's no need to rest on a per
 		//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
 
-		if (getTimeCompleted() < getDuration() / 10) {
+		
+		// The first REM cycle is usually the shortest, lasting around 10 mins, or 6.85 millisols
+		// Assume the rest of the cycles last between 90 to 120 minutes
+		
+		
+		if (getTimeCompleted() <= 6.85) {
+			// first REM cycle
+			residualFatigue = f * RESIDUAL_MODIFIER;
+		}
+		else if (getTimeCompleted() <= 6.85 + cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER * 2;
+		}
+		else if (getTimeCompleted() <= 6.85 + 2 * cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER * 3;
+		}
+		else if (getTimeCompleted() <= 6.85 + 3 * cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER * 2;
+		}
+		else if (getTimeCompleted() <= 6.85 + 4 * cycleLength) {
 			residualFatigue = f * RESIDUAL_MODIFIER;
 		}
 		

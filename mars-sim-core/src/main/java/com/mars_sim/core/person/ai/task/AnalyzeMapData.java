@@ -344,6 +344,8 @@ public class AnalyzeMapData extends Task {
         	effort = 0;
         }
 
+		person.getPhysicalCondition().reduceMuscleHealth(time/2);
+		
         // Add experience points
         addExperience(time);
     	

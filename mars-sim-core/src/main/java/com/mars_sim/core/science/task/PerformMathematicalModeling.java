@@ -27,8 +27,11 @@ public class PerformMathematicalModeling extends LabTask {
     private static final long serialVersionUID = 1L;
   
     /** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.performMathematicalModeling"); //$NON-NLS-1$
+    private static final String DESCRIPTION = 
+            "Task.description.performMathematicalModeling";
+    
+    private static final String NAME = Msg.getString(DESCRIPTION); //$NON-NLS-1$
+    
     
     private static final ExperienceImpact IMPACT = new ExperienceImpact(20D,
                         NaturalAttributeType.ACADEMIC_APTITUDE, false, 0.2D,
@@ -63,7 +66,7 @@ public class PerformMathematicalModeling extends LabTask {
 	private PerformMathematicalModeling(Person person, ScientificStudy study, ExperienceImpact impact) {
 		// Use task constructor.
 		super(NAME, person, study, impact, 10D + RandomUtil.getRandomDouble(50D),
-		MODELING, "performMathematicalModeling");
+		MODELING, DESCRIPTION);
 
 	}
 }

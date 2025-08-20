@@ -270,6 +270,8 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * Constructor.
 	 * 
 	 * @param person
+	 * @param massDev
+	 * @param compositeScore
 	 */
 	public RadiationExposure(Person person, double massDev, double compositeScore) {
 		this.person = person;
@@ -294,9 +296,9 @@ public class RadiationExposure implements Serializable, Temporal {
 		cumulativeDoses[BodyRegionType.OCULAR.ordinal()] = ocularDose;
 		cumulativeDoses[BodyRegionType.SKIN.ordinal()] = skinDose;
 		
-		// Vary the dose limit by person's attributes
-		double weightFactor = massDev * 20;
-		double rand = RandomUtil.getRandomDouble(compositeScore - 150 + weightFactor);
+		// Note compositeScore is between 0 and 2
+		double score = massDev * (compositeScore + 1) / 100;
+		double rand = RandomUtil.getRandomDouble(score);
 
 		DoseHistory bfoLimit = doseLimits[0];
 		bfoLimit.addToThirtyDay(rand/10);

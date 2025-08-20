@@ -209,13 +209,14 @@ public class MainWindow
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
+		if (desktop.getSoundPlayer() == null)
+			return;
+		
 		try {
 			Thread.sleep(15_000);
 			// Starts a background sound track.
 			desktop.playBackgroundMusic();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -866,6 +867,8 @@ public class MainWindow
 			// Cascade the pulse
 			desktop.clockPulse(pulse);
 			
+			if (desktop.getSoundPlayer() == null)
+				return;
 			
 			int now = pulse.getMarsTime().getMillisolInt();	
 			
@@ -879,9 +882,7 @@ public class MainWindow
 	}
 
 	/**
-	 * Changes the pause status. 
-	 * Note: called by Masterclock's firePauseChange() since
-	 * TimeWindow is on clocklistener.
+	 * Changes the pause status.
 	 *
 	 * @param isPaused true if set to pause
 	 * @param showPane true if the pane will show up
@@ -893,6 +894,10 @@ public class MainWindow
 		if (isPaused != playPauseSwitch.isSelected()) {
 			playPauseSwitch.setSelected(isPaused);
 		}
+		
+		if (desktop.getSoundPlayer() == null)
+			return;
+		
 		if (isPaused) {
 			desktop.getSoundPlayer().pauseMusic();
 		}

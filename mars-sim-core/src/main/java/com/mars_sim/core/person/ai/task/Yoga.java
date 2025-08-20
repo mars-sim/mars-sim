@@ -89,10 +89,10 @@ public class Yoga extends Task {
 	private double yogaPhase(double time) {
 		// Regulates hormones
 		person.getCircadianClock().exercise(time);
-		//Improves musculoskeletal systems
-		person.getPhysicalCondition().exerciseMuscle(time);
+		//Improves musculoskeletal health
+		person.getPhysicalCondition().improveMuscleHealth(time);
 		// Record the sleep time [in millisols]
-		person.getCircadianClock().recordExercise(time);
+		person.getCircadianClock().recordExercise(time/2);
         // Reduce person's stress
 		person.getPhysicalCondition().reduceStress(time/2);
 		

@@ -155,7 +155,10 @@ extends Task {
 	        // Reduce person's fatigue
 	        pc.reduceFatigue(fractionOfRest);
 	        
-	        pc.relaxMuscle(time);
+	        pc.reduceMuscleSoreness(time/2);
+	        // Assume practicing relaxation techniques and cognitive rehearsal
+	        // to increase pain tolerance
+	        pc.increasePainTolerance(time);
 	        
 	        pc.reduceStress(time/2);   
 	        

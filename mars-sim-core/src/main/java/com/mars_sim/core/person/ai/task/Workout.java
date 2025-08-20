@@ -58,7 +58,6 @@ public class Workout extends Task {
 				gym = gymBuilding.getExercise();
 
 				// Initialize phase
-				addPhase(EXERCISING);
 				setPhase(EXERCISING);
 			}
 			else {
@@ -68,7 +67,6 @@ public class Workout extends Task {
 				    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 				    
 					// Initialize phase
-					addPhase(EXERCISING);
 					setPhase(EXERCISING);
 				}
 				else {
@@ -79,7 +77,6 @@ public class Workout extends Task {
 					}
 	
 					// Initialize phase
-					addPhase(EXERCISING);
 					setPhase(EXERCISING);
 				}
 			}
@@ -108,7 +105,6 @@ public class Workout extends Task {
 	 */
 	private double exercisingPhase(double time) {
 		// Regulates hormones
-		// Improves musculoskeletal systems
 		// Record the exercise time [in millisols]
 		person.getPhysicalCondition().workout(time);
         // Reduce person's stress

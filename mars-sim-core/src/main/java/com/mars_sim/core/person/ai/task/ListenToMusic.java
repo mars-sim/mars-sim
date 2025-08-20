@@ -90,11 +90,6 @@ extends Task {
 		    
         setDescription(NAME);
 	
-    
-		// Initialize phase
-		addPhase(FINDING_A_SONG);
-		addPhase(LISTENING_TO_MUSIC);
-	
 		setPhase(FINDING_A_SONG);
 	
 	}
@@ -134,7 +129,19 @@ extends Task {
 		// Reduce person's fatigue
         pc.reduceFatigue(fractionOfRest);
 
-        pc.relaxMuscle(time);
+        // Research indicates that listening to relaxing music during recovery 
+        // periods significantly accelerates the recovery process of fatigued muscles,
+        // with one study showing a 35% greater recovery of movement smoothness compared
+        // to silence or arousing music.
+        
+        pc.reduceMuscleSoreness(time);
+        // A study found that preferred music significantly 
+        // increased pain tolerance during an ice-water hand immersion test.
+        // The mechanism behind this increase in pain tolerance is believed 
+        // to involve distraction from the pain, the emotional engagement triggered 
+        // by music, and the release of neurotransmitters like dopamine, which can 
+        // improve mood and potentially reduce pain perception.
+        pc.increasePainTolerance(time);
         
         pc.reduceStress(time/2); 
   

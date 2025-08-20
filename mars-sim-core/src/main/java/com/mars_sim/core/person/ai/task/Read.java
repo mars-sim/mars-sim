@@ -166,7 +166,11 @@ public class Read extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reading(double time) {
-
+		// Assume reading gets a person muscle tired
+		person.getPhysicalCondition().reduceMuscleHealth(time/2);
+		// Assume reading gets a person tired
+		person.getPhysicalCondition().increaseFatigue(time/2);
+		
 		// Reading serves to improve skill
 		addExperience(time);
 		
