@@ -1,12 +1,14 @@
 /*
  * Mars Simulation Project
  * LivingAccommodation.java
- * @date 2023-11-24
+ * @date 2025-08-20
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -16,6 +18,7 @@ import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -34,14 +37,15 @@ public class LivingAccommodation extends Function {
 	private static SimLogger logger = SimLogger.getLogger(LivingAccommodation.class.getName());
 
 	public static final int MAX_NUM_SOLS = 14;
-
-	public static final double TOILET_WASTE_PERSON_SOL = .05D;
-	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
-	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.0001;
 	/** The chance of going to a restroom. */
 	public static final int TOILET_CHANCE = 50;
 	
+	public static final double TOILET_WASTE_PERSON_SOL = .05D;
+	
+	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.0001;
+
 	private static final String WASTE_NAME = "LivingAccomodation::generateWaste";
 	
 	/** Can this be used as a bunk house for guests */
@@ -56,11 +60,9 @@ public class LivingAccommodation extends Function {
 	private double washWaterUsage;
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction;
-
 	
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
-	
 	/** The daily grey water generated in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger greyWaterGen;
 
@@ -78,7 +80,6 @@ public class LivingAccommodation extends Function {
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		
 		greyWaterGen = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
-
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
 
@@ -158,32 +159,116 @@ public class LivingAccommodation extends Function {
 	 * Assigns/designates an available bed to a person.
 	 *
 	 * @param person
+	 * @param permanent
+	 * @param bypassGender if this is false and it's a bunk bed, it will select the same gender.
 	 * @return
 	 */
-	private AllocatedSpot assignBed(Person person, boolean permanent) {		
+	private AllocatedSpot assignBed(Person person, boolean permanent, boolean bypassGender) {		
+		List<ActivitySpot> spots = new ArrayList<>(getActivitySpots());
+		if (spots.isEmpty())
+			return null;
+		
+		GenderType type = person.getGender();
 
-		// Note: guest beds are reserved for temporary use and 
-		// are not assigned here for use here
-		Set<ActivitySpot> spots = getActivitySpots();
-		for (var sp : spots) {
+		
+		int size = spots.size();
+		
+		for (int i = 0; i < size; i++) {
+			ActivitySpot sp0 = null;
+			GenderType type0 = null;
+			String bedName0 = null;
+			
+			if (!bypassGender) {
+				if (i - 1 >= 0) {
+					sp0 = spots.get(i);
+					bedName0 = sp0.getName();
+					int id0 = sp0.getID();
+					type0 = getGenderType(person.getSettlement(), id0);
+				}
+			}
+			
+			ActivitySpot sp = spots.get(i);
+			String bedName = sp.getName();
+			boolean goodToGo = false;
+			
 			if (sp.isEmpty()) {
-				// Claim the bed
-				AllocatedSpot bed = sp.claim(person, permanent, building);
-				if (permanent) {
-					person.setBed(bed);
+				if (bypassGender) {
+					goodToGo = true;
+				}
+				else if (sp0 != null && !sp0.isEmpty()) {
+					if (bedName0 != null) {
+						if (bedName0.equals(bedName) && type0 == type) {
+							goodToGo = true;
+						}
+						// goodToGo continues to be false. Go to the next bed
+					} 
+					else {
+						goodToGo = true;
+					}		
+				}
+				else {
+					goodToGo = true;
 				}
 				
-				logger.log(person, Level.INFO, 0, "Assigned with " + sp.getName() + " as "
-							+ (permanent ? "permanent" : "temporary")
-							+ " bed at " + sp.getPos() + " in " + building.getName() + ".");
-	
-				return bed;
+				if (goodToGo) {
+					// Claim the bed
+					boolean isLastOne = (i == size - 1);
+					return getBed(person, permanent, sp, isLastOne);
+				}
 			}
 		}
+			
+		logger.log(person, Level.INFO, 0, "No empty bed available in " + building.getName() + ".");
 
 		return null;
 	}
 
+	/**
+	 * Gets a bed allocated.
+	 * 
+	 * @param person
+	 * @param permanent
+	 * @param sp
+	 * @param isLastOne
+	 * @return
+	 */
+	private AllocatedSpot getBed(Person person, boolean permanent, ActivitySpot sp, boolean isLastOne) {
+		// Claim the bed
+		AllocatedSpot bed = sp.claim(person, permanent, building);
+		if (bed != null) {
+			if (permanent) {
+				person.registerBed(bed);
+				logger.log(person, Level.INFO, 0, "Registered " + sp.getName() 
+					+ " at " + sp.getPos() + " as permanent in " + building.getName() + ".");
+				return bed;
+			}
+			else if (isLastOne) {
+				// This is the very last spot.
+				// Note: if not permanent, do NOT call registerBed 
+				logger.log(person, Level.INFO, 0, "Assigned " + sp.getName() + " as "
+					+ " at " + sp.getPos() + " for temporary use in " + building.getName() + ".");
+			}
+		}
+		return bed;
+	}
+	
+	/**
+	 * Gets the gender type of the person with an id.
+	 * 
+	 * @param s
+	 * @param personID
+	 * @return
+	 */
+	public GenderType getGenderType(Settlement s, int personID) {
+		GenderType type = null;
+		for (Person p: s.getCitizens()) {
+			if (p.getIdentifier() == personID) {
+				return p.getGender();
+			}
+		}
+		return type;
+	}
+	
 	/**
 	 * Time passing for the building.
 	 *
@@ -369,19 +454,40 @@ public class LivingAccommodation extends Function {
 		}
 
 		LivingAccommodation guestHouse = null;
+		AllocatedSpot spot = null;
+		
 		for (Building b : dorms) {
 			// If looking for permanent then find an unassigned ActivitySpot
 			LivingAccommodation lvi = b.getLivingAccommodation();
+
+			
 			if ((lvi.getNumEmptyActivitySpots() > 0)
 				&& (permanent || (guest && lvi.isGuestHouse()))) {
-				return lvi.assignBed(p, permanent);
-			}
-
-			if (lvi.isGuestHouse()) {
-				guestHouse = lvi;
+				// Match the gender when assigning a bed
+				spot = lvi.assignBed(p, permanent, false);
+				return spot;
 			}
 		}
 
+		if (spot == null) {		
+			for (Building b : dorms) {
+				// If looking for permanent then find an unassigned ActivitySpot
+				LivingAccommodation lvi = b.getLivingAccommodation();
+	
+				if (spot == null && (lvi.getNumEmptyActivitySpots() > 0)
+					&& (permanent || (guest && lvi.isGuestHouse()))) {		
+					// Bypass matching the gender when assigning a bed
+					spot = lvi.assignBed(p, permanent, true);
+					return spot;
+				}
+				
+				if (lvi.isGuestHouse()) {
+					guestHouse = lvi;
+				}
+			}
+		}
+		
+		
 		// No bed found
 		if (guestHouse == null) {
 			if (guest) {
@@ -391,13 +497,19 @@ public class LivingAccommodation extends Function {
 			guestHouse = RandomUtil.getARandSet(dorms).getLivingAccommodation();
 		}
 
-		logger.config(p, "No bed assigned.");
+		logger.config(p, "No permanent bed found that can be assigned.");
 
 		// Pick a random bed in the guest house; unlikely to arrive here
-		return RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,
+		AllocatedSpot guestBed = RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,
 									  guestHouse.getBuilding());
+		
+		if (guestBed != null) {
+			logger.config(p, "Given a guest bed at " + guestBed.toString());
+		}
+		
+		return guestBed;
 	}
-
+	
 	/**
 	 * Can guest stay here and squat on allocated beds ?
 	 * 

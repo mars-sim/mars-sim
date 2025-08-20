@@ -54,6 +54,7 @@ import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.Dining;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
@@ -77,6 +78,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -838,27 +840,43 @@ public class BuildingManager implements Serializable {
 
 		else {
 			// Send to his/her registered bed
-			logger.log(p, Level.WARNING, 2000,	"No medical facility available for "
+			logger.log(p, Level.WARNING, 0,	"No medical facility available for "
 							+ p.getName() + ". Go to his/her bed.");
 			
-			var bed = p.getBed();
-			
-			if (bed == null) {
-				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, true);	
-			}
+			AllocatedSpot bed = p.getBed();
 			
 			if (bed != null) {
+					
+				Building b = bed.getOwner();
 				
-				// Allocate it to the person
-				p.setActivitySpot(bed);
+				success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
 				
-				LocalPosition bedLoc = bed.getAllocated().getPos();	
-		
-				p.setPosition(bedLoc);
-				
-			}
+				if (success) {
+					// Allocate it to the person
+					p.setActivitySpot(bed);
+					
+					LocalPosition bedLoc = bed.getAllocated().getPos();	
 			
-			logger.info(p, 0, "Medical facility not available. Brought to his/her bed for further exam.");
+					p.setPosition(bedLoc);
+					
+					logger.log(p, Level.WARNING, 0, "Go to his/her bed.");
+					
+					return success;
+				}
+			}
+
+			// It will look for a permanent bed if possible
+			AllocatedSpot tempBed = Sleep.findABed(s, p);
+			
+			if (tempBed == null) {
+				// Assign a temporary bed to this person
+				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
+				
+				if (bed != null) {
+					success = true;
+					return success;
+				}
+			}	
 		}
 		
 		return success;

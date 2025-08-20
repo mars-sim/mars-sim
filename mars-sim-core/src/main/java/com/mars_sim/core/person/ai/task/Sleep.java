@@ -286,25 +286,30 @@ public class Sleep extends Task {
 				if (person.getBuildingLocation().getZone() == person.getBed().getOwner().getZone()) {
 					// if the person is in the same zone as the building he's in
 					walkToBed(person, effortDriven);
+					
 					return;
 				}
 			}
 
-			AllocatedSpot tempBed = findTempBed(s);
+			AllocatedSpot tempBed = findABed(s, person);
 
 			if (tempBed != null) {
 				createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven);
+			}
+			else {
+				endTask();
+				return;
 			}
 		}
 	}
 
 	/**
-	 * Finds a temporary bed.
+	 * Finds a bed (permanent if possible).
 	 * 
 	 * @param s
 	 * @return
 	 */
-	private AllocatedSpot findTempBed(Settlement s) {
+	public static AllocatedSpot findABed(Settlement s, Person person) {
 		// Find a bed, if at home settlement attempt to make it permanent
 		AllocatedSpot tempBed = LivingAccommodation.allocateBed(s, person,
 						s.equals(person.getAssociatedSettlement()));
@@ -312,11 +317,12 @@ public class Sleep extends Task {
 			tempBed = findSleepRoughLocation(s, person);
 			if (tempBed == null) {
 				logger.severe(person, "Found no spots to sleep, staying awake.");
-				endTask();
-				return null;
+				return tempBed;
 			}
-			logger.warning(person, "No bed found. Sleeping at bed'"
+			else {
+				logger.warning(person, "No permanent bed found. Sleeping at bed'"
 									+ tempBed.getSpotDescription() + "'.");
+			}
 		}
 		return tempBed;
 	}
@@ -328,7 +334,7 @@ public class Sleep extends Task {
 	 * @param p
 	 * @return
 	 */
-	private AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
+	public static AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
 		var buildMgr = s.getBuildingManager();
 		// Find a building in the same zone as the person
 		// Avoid sleeping inside EVA Airlock
@@ -338,9 +344,9 @@ public class Sleep extends Task {
 				for (ActivitySpot as : f.getActivitySpots()) {
 					if (as.isEmpty()) {
 						// Claim this activity spot
-						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);					
+						boolean canClaim = f.claimActivitySpot(as.getPos(), p);					
 						if (canClaim) {
-							return worker.getActivitySpot();
+							return p.getActivitySpot();
 						}
 					}
 				}

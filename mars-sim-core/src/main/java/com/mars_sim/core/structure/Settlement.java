@@ -71,6 +71,7 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -1784,6 +1785,13 @@ public class Settlement extends Unit implements Temporal,
 		return false;
 	}
 
+	/**
+	 *  Gets the citizen.
+	 */
+	public Set<Person> getCitizens() {
+		return citizens;
+	}
+	
 	/**
 	 * Returns the person instance of the commander of this settlement.
 	 * 

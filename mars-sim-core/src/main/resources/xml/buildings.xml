@@ -274,17 +274,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 					<!-- Clockwise from right most room to the left most room -->
 					<!-- Room 1 -->
-					<activity-spot xloc="2.056" yloc="3.491" />
-					<activity-spot xloc="1.832" yloc="3.145" />					
+					<activity-spot xloc="2.056" yloc="3.491" name="Bunk 1" />
+					<activity-spot xloc="1.832" yloc="3.145" name="Bunk 1"/>					
 					<!-- Room 2 -->
-					<activity-spot xloc="0.021" yloc="4.081" />
-					<activity-spot xloc="0.021" yloc="3.654" />
+					<activity-spot xloc="0.021" yloc="4.081" name="Bunk 2"/>
+					<activity-spot xloc="0.021" yloc="3.654" name="Bunk 2"/>
 					<!-- Room 3 -->
-					<activity-spot xloc="-3.156" yloc="0.763" />
-					<activity-spot xloc="-3.156" yloc="0.326" />
+					<activity-spot xloc="-3.156" yloc="0.763" name="Bunk 3"/>
+					<activity-spot xloc="-3.156" yloc="0.326" name="Bunk 3"/>
 					<!-- Room 4 -->
-					<activity-spot xloc="-3.156" yloc="-0.234" />
-					<activity-spot xloc="-3.156" yloc="-0.631" />
+					<activity-spot xloc="-3.156" yloc="-0.234" name="Bunk 4"/>
+					<activity-spot xloc="-3.156" yloc="-0.631" name="Bunk 4"/>
 					
 				</activity>
 			</living-accommodation>
@@ -2194,7 +2194,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="18" power-required="0.9" />
-			<living-accommodation capacity="11" guesthouse="true">
+			<living-accommodation capacity="12" guesthouse="true">
 				<activity>					
 					<activity-spot xloc="2" yloc="3.2" />
 					<activity-spot xloc="2" yloc="1.8" />
@@ -2272,7 +2272,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="18" power-required="0.9" />
-			<living-accommodation capacity="11" guesthouse="true">
+			<living-accommodation capacity="12" guesthouse="true">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.15" />
 					<activity-spot xloc="2.2" yloc="1.7" />

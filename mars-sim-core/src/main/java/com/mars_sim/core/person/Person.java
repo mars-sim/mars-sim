@@ -1035,11 +1035,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Assign a bed to this person.
+	 * Registers a bed for this person.
 	 * 
 	 * @param bed2 The assignment
 	 */
-	public void setBed(AllocatedSpot bed2) {
+	public void registerBed(AllocatedSpot bed2) {
 		this.bed = bed2;	
 	}
 
