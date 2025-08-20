@@ -1869,7 +1869,12 @@ public class PhysicalCondition implements Serializable {
 		return isRadiationPoisoned;
 	}
 	
-	public void workout(double time) {
+	/**
+	 * Tracks the exercise.
+	 * 
+	 * @param time
+	 */
+	public void trackExercise(double time) {
 		// Regulates hormones
 		circadian.exercise(time);
 		// Improves musculoskeletal systems

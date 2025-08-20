@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * WorkoutMeta.java
- * @date 2022-07-20
+ * @date 2025-08-19
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.meta;
@@ -31,7 +31,7 @@ public class WorkoutMeta extends FactoryMetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.workout"); //$NON-NLS-1$
 
-    private static final double FACTOR = 10D;
+    private static final int FACTOR = 5;
 	
     public WorkoutMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
@@ -66,23 +66,27 @@ public class WorkoutMeta extends FactoryMetaTask {
         double hunger = condition.getHunger();
         double soreness = condition.getMuscleSoreness();
         double painTolernce = condition.getMusclePainTolerance();
-
+        double muscleHealth = condition.getMuscleHealth();
+        
         double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
             
-        if (kJ < 1000 || fatigue > 750 || hunger > 750)
+        if (kJ < 2000 || fatigue > 750 || hunger > 750)
             return EMPTY_TASKLIST;
  
-        var result = new RatingScore((kJ/3000 
+        double base = (kJ/3000 
             		// Note: The desire to exercise increases linearly right after waking up
             		// from bed up to the first 333 msols
             		// After the first 333 msols, it decreases linearly for the rest of the day
             		+ Math.max(333 - fatigue, -666)/10
             		// Note: muscle condition affects the desire to exercise
-            		+ painTolernce/2.5 - soreness/2.5 
+            		- painTolernce/2.5 - muscleHealth/2.5 + soreness 
             		+ stress / 10
-            		- exerciseMillisols * 20)/FACTOR); // Why does this use a FACTOR ?
-
+            		- exerciseMillisols * 20)/FACTOR; // Why does this use a FACTOR ?
+       
+        if (base <= 0)
+            return EMPTY_TASKLIST;
         
+        RatingScore result = new RatingScore(base);  // Workout score is divided by 10 as well  
         result = assessPersonSuitability(result, person);
 
         // Get an available gym.

@@ -355,7 +355,7 @@ public abstract class DigLocal extends EVAOperation {
         condition.increaseFatigue(time * fatigueFactor * (1.1D - strengthMod)/skillMod);
 
         // Account for hormone regulation, musculosketetal impact and record exercise time
-        condition.workout(time);
+        condition.trackExercise(time);
 		
         // Add experience points
         addExperience(time);
