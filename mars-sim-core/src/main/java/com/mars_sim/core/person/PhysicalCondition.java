@@ -432,8 +432,6 @@ public class PhysicalCondition implements Serializable {
 					// Update personal max energy
 					updateMaxEnergy();
 //				}
-				// Update the entropy in muscles
-				muscularAtrophy(0.1);	
 			}
 			
 			// Check once per msol (millisol integer)
@@ -505,6 +503,8 @@ public class PhysicalCondition implements Serializable {
 			increaseFatigue(time * 1.1 / factor);
 			// Update hunger
 			increaseHunger(time * bodyMassDeviation * .75 / factor);
+			// Update the entropy in muscles
+//			muscularAtrophy(time / 4);	
 		}
 	}
 
@@ -1909,7 +1909,7 @@ public class PhysicalCondition implements Serializable {
 	public void muscularAtrophy(double time) {
 		// Tether toward attributeCompositeScore
 		double factor = (1 - attributeCompositeScore / 4) * .001 * time;
-		musclePainTolerance = musclePainTolerance - factor; // muscle pain
+		musclePainTolerance -= factor; // muscle pain
 		muscleHealth -= factor; // muscle health
 		// Increase in soreness
 		muscleSoreness += factor; // muscle soreness

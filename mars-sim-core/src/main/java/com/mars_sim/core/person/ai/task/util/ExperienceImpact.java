@@ -214,7 +214,7 @@ public class ExperienceImpact implements Serializable {
     }
     
     /**
-     * Applies the stress to a person.
+     * Applies the changes to the physical health parameters of a person.
      * 
      * @param p
      * @param timeElapsed
@@ -280,7 +280,9 @@ public class ExperienceImpact implements Serializable {
         }
 
         if (effortDriven == PhysicalEffort.HIGH) {
-            p.getPhysicalCondition().muscularHypertrophy(timeElapsed);
+        	// Note: how to convey the idea of good, regular exercises strengthen the muscles
+        	//       while repetitive high effort task task wears out the muscles ?
+            p.getPhysicalCondition().muscularAtrophy(timeElapsed);
         }
     }
 
