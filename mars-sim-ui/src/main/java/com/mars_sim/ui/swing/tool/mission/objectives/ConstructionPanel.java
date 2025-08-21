@@ -97,14 +97,13 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         // Create the construction materials table and model.
         materialsTableModel = new MaterialsTableModel();
         JTable materialsTable = new JTable(materialsTableModel);
-        materialsTable.setPreferredSize(new Dimension(-1, 100));  
         materialsTable.setRowSelectionAllowed(true);
 
         // Create a scroll pane for the remaining construction materials table.
         scrollPane = new JScrollPane();
         remainingMaterialsLabelPane.add(scrollPane);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(-1, 100));  
         scrollPane.setViewportView(materialsTable);
 
         site.addUnitListener(this);    
@@ -205,7 +204,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
          */
         @Override
         public int getColumnCount() {
-            return 4;
+            return 5;
         }
 
         /**
@@ -218,8 +217,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         public String getColumnName(int columnIndex) {
             return switch (columnIndex) {
               case 0 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.material");
-              case 1 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.missing");
-              case 2 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.available");
+              case 1 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.type");
+              case 2 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.missing");
+              case 3 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.available");
               default -> Msg.getString("ConstructionMissionCustomInfoPanel.column.original");
             };
         }
@@ -237,8 +237,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
                 Good good = goodsList.get(row);
                 return switch (column) {
                   case 0 ->  good.getName();
-                  case 1 -> missingMap.get(good);
-                  case 2 -> availableMap.get(good);
+                  case 1 ->  good.getCategory().getName();
+                  case 2 -> missingMap.get(good);
+                  case 3 -> availableMap.get(good);
                   default -> originalMap.get(good);
                 };
             }

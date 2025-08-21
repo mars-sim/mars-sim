@@ -186,8 +186,6 @@ public class Crop implements Comparable<Crop>, Entity {
 	private double fertilizerHoldingTank;
 	/** The amount of water in the holding tank. */
 	private double waterHoldingTank;
-	/** The total amount of light received by this crop. */
-//	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
 	private double massRatio;
 	/** The maximum possible harvest for this crop [in kg]. */
@@ -222,8 +220,6 @@ public class Crop implements Comparable<Crop>, Entity {
 	private double co2Cache = 0;
 	/** The cache for o2. */	
 	private double o2Cache = 0;
-	/** The time accumulated [in millisols] for each crop update call. */
-//	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 	/** The threshold for tracking a gas [in kg] */
 	private final double gasThreshold;
 	
@@ -268,7 +264,6 @@ public class Crop implements Comparable<Crop>, Entity {
 		building = farm.getBuilding();
 
 		int totalSols = cropSpec.getGrowingSols(); 
-//		double growingDays = cropSpec.getInGroundSols();
 		var category = cropSpec.getCropCategory();
 
 		double waterContent = cropSpec.getEdibleWaterContent();
@@ -305,10 +300,6 @@ public class Crop implements Comparable<Crop>, Entity {
 		averageOxygenReleased = Math.sqrt(averageOxygenReleased/8 + averageOxygenReleased * (1 - waterContent) * totalBiomassPerSol);
 		
 		averageCO2Consumed = Math.sqrt(averageCO2Consumed/8 + averageCO2Consumed * (1 - waterContent) * totalBiomassPerSol * 1.44);
-
-//		May add back : logger.config(this, 0, "H2O: " + Math.round(averageWaterNeeded * 1000.0)/1000.0
-//				+ "  O2: " + Math.round(averageWaterNeeded * 1000.0)/1000.0
-//				+ "  CO2: " + Math.round(averageCO2Consumed * 1000.0)/1000.0);
 		
 		// Note : maxHarvest is kg
 		maxHarvest = edibleBiomass * growingArea;
@@ -417,8 +408,6 @@ public class Crop implements Comparable<Crop>, Entity {
 		
 		currentPhase = newPhase;
 		currentPhaseWorkRequired = currentPhase.getWorkRequired() * 1000D;
-
-		logger.info(this, 5_000, "Just entered the new phase of '" + currentPhase.getName() + "'.");
 	}
 
 	/**
@@ -466,7 +455,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		double[] cropWaste = retrieveFromTank(ResourceUtil.CROP_WASTE_ID, building.getSettlement(), 
 				cropWasteCache, cWaste, CROP_WASTE_TANK);
 			
-		// May add back: double cropWasteGen = cropWaste[0];	
+		// May add back: double cropWasteGen = cropWaste[0]	
 		cropWasteCache = cropWaste[1];
 	}
 
@@ -744,7 +733,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				if (totalCollected >= maxHarvest) {
 					double tHarvest = Math.round(totalCollected * 100.0) / 100.0;
 					if (tHarvest > 0)
-						logger.info(this, 4_000, 
+						logger.fine(this, 4_000, 
 							"maxHarvest: " + Math.round(maxHarvest * 100.0) / 100.0 + " kg "
 							+ " Harvested a total of "
 								+ Math.round(tHarvest * 100.0) / 100.0 + " kg during "
@@ -761,7 +750,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				else {
 					double mHarvest = Math.round(modifiedHarvest * 100.0) / 100.0;
 					if (mHarvest > 0)
-						logger.info(this, 4_000, 
+						logger.fine(this, 4_000, 
 							"maxHarvest: " +  Math.round(maxHarvest * 100.0) / 100.0  + 
 							" totalCollected: " +  Math.round(totalCollected * 100.0) / 100.0  +
 							" dailyCollected: " +  Math.round(dailyCollected * 100.0) / 100.0  +
@@ -782,8 +771,6 @@ public class Crop implements Comparable<Crop>, Entity {
 			}
 		}
 		else if (percentageGrowth > 115D)  {
-			logger.fine(this, "At " + percentageGrowth
-					   + "% of growth, setting the phase to FINISHED.");
 			finishCrop(false);
 		}
 
@@ -813,16 +800,13 @@ public class Crop implements Comparable<Crop>, Entity {
 		totalCollected += harvestMass;
 		dailyCollected += harvestMass;
 
-//		May add back if (dailyCollected > 0) logger.info(this, 20_000, "totalCollected: " + Math.round(totalCollected * 100.0) / 100.0
-//						+ "  dailyCollected: " + Math.round(dailyCollected * 100.0) / 100.0);
-		
 		// Deposit main outputs
 		if ((seedID > 0) && harvestMass * massRatio > 0) {
 			
 			double[] seed = storeToTank(seedID, building.getSettlement(), 
 					seedCache, harvestMass * massRatio, SEED_TANK);
 			
-			// May add back: double seedGen = seed[0];	
+			// May add back: double seedGen = seed[0]	
 			seedCache = seed[1];	
 	
 			double[] crop0 = storeToTank(cropID, building.getSettlement(), 
@@ -859,7 +843,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				double[] leaves1 = storeToTank(ResourceUtil.LEAVES_ID, building.getSettlement(), 
 						leavesCache, leaves0, LEAVES_TANK);
 				
-				// May add back: double leavesGen = leaves1[0];	
+				// May add back: double leavesGen = leaves1[0]
 				leavesCache = leaves1[1];	
 			}
 		}
@@ -1008,9 +992,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			double[] sunTimes = Simulation.instance().getOrbitInfo().getSunTimes(building.getCoordinates());
 			sunrise = (int)sunTimes[0];
 			sunset = (int)sunTimes[1];
-			sunInterval = (int)sunTimes[2];
-			
-//			May add back  logger.info(building.getSettlement(), 10_000, "sunrise: " + sunrise + " sunset: " + sunset + " sunInterval: " + sunInterval);
+			sunInterval = (int)sunTimes[2];		
 		}
 		
 		double msol = pulse.getMarsTime().getMillisol();
@@ -1148,12 +1130,6 @@ public class Crop implements Comparable<Crop>, Entity {
 				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
 				
-//				May add back logger.info(this, 0, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
-//				+ "  Outstanding: " + Math.round(deltaPAROutstanding * 100.0)/100.0
-//				+ "  numLamp: " + numLamp
-//				+ "  growingArea: " + growingArea
-//				+ "  supplykW: " + Math.round(supplykW * 100.0)/100.0
-//				+ "  supplied: " + Math.round(deltaPARSupplied * 100.0)/100.0); 
 			}
 			else {
 				
@@ -1166,15 +1142,6 @@ public class Crop implements Comparable<Crop>, Entity {
 		double effectivePAR = deltaPARSupplied + sunlightPAR;
 		
 		dailyPARCumulative += effectivePAR;
-		
-//		May add back logger.info(this, 20_000, "solar: " + Math.round(solarIrradiance * 100.0)/100.0	
-//		+ "  time: " + Math.round(timeInterval * 100.0)/100.0
-//		+ "  uPAR: " + Math.round(uPAR * 100.0)/100.0
-//		+ "  sunlightPAR: " + Math.round(sunlightPAR * 100.0)/100.0
-//		+ "  dli: " + Math.round(dailyLightIntegral * 100.0)/100.0
-//		+ "  Required: " + Math.round(cropSpec.getDailyPAR() * 100.0)/100.0
-//		+ "  effective: " + Math.round(effectivePAR * 100.0)/100.0
-//		+ "  cumulative: " + Math.round(dailyPARCumulative * 100.0)/100.0); 
 		
 		return effectivePAR;
 	}
@@ -1346,7 +1313,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			double[] co2 = storeToTank(ResourceUtil.CO2_ID, building.getSettlement(), 
 					co2Cache, cO2Gen, gasThreshold);
 			
-			// This line is not need for now: double co2Used = co2[0];	
+			// This line is not need for now: double co2Used = co2[0]	
 			co2Cache = co2[1];	
 
 		}
@@ -1383,7 +1350,7 @@ public class Crop implements Comparable<Crop>, Entity {
 			double[] o2 = storeToTank(ResourceUtil.OXYGEN_ID, building.getSettlement(), 
 					o2Cache, o2Gen, gasThreshold);
 			
-			// This line is not need for now: double o2Used = o2[0];	
+			// This line is not need for now: double o2Used = o2[0]	
 			o2Cache = o2[1];
 		}
 	}
@@ -1451,11 +1418,8 @@ public class Crop implements Comparable<Crop>, Entity {
 
 		// Max at 7 
 		// Min at 0.0001
-		double compositeFactor = Math.min(7, Math.max(.0001, TUNING_FACTOR * needFactor));
-		
-//		May add back logger.info(this, 10_000, "watt: " + Math.round(watt * 100.0)/100.0
-//				+ " needFactor: " + Math.round(needFactor * 100.0)/100.0
-//				+ " compositeFactor: " + Math.round(compositeFactor * 10_000.0)/10_000.0);
+		double compositeFactor = Math.clamp(TUNING_FACTOR * needFactor, 0.0001, 7);
+
 		
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
 		computeWaterFertilizer(compositeFactor * WATER_MODIFIER, time, greyFilterRate);

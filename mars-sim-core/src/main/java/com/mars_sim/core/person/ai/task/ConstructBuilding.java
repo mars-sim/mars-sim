@@ -174,7 +174,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public static List<ConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
 
-		List<ConstructionMission> result = new ArrayList<>(); // CopyOnWriteArrayList<>();
+		List<ConstructionMission> result = new ArrayList<>(); 
 
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
