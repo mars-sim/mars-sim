@@ -53,7 +53,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
     public List<TaskJob> getTaskJobs(Person person) {
 
         // Probability affected by the person's stress and fatigue.
-        if (person.isOutside()) {
+        if (!person.isInSettlement()) {
         	return EMPTY_TASKLIST;
         }
         

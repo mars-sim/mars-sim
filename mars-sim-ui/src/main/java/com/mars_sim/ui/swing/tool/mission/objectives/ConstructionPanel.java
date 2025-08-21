@@ -8,12 +8,9 @@ package com.mars_sim.ui.swing.tool.mission.objectives;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +21,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
@@ -51,11 +47,11 @@ import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 @SuppressWarnings("serial")
 public class ConstructionPanel extends JPanel implements MissionListener, ObjectivesPanel, UnitListener {
 
-    private JPanel processPanel;
     private BoundedRangeModel progressBarModel;
     private MaterialsTableModel materialsTableModel;
     private JScrollPane scrollPane;
     private ConstructionObjective objective;
+    private JLabel stageLabel;
 
     /**
      * Constructor.
@@ -71,39 +67,23 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         // Set layout.
         setLayout(new BorderLayout());
 
-        JPanel contentsPanel = new JPanel(new BorderLayout(5, 5));
-        add(contentsPanel, BorderLayout.NORTH);
-
-        // Prepare SpringLayout for info panel.
-     	AttributePanel infoPanel = new AttributePanel();
-     	contentsPanel.add(infoPanel, BorderLayout.NORTH);
+        AttributePanel infoPanel = new AttributePanel();
+        add(infoPanel, BorderLayout.NORTH);
 
         var site = objective.getSite();
 
-        String siteLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.titleLabel"); //$NON-NLS-1$
+        String siteLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.titleLabel"); //-NLS-1$
         infoPanel.addLabelledItem(siteLabelString, new EntityLabel(site, desktop));
 
         var stage = objective.getStage();
-        String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //$NON-NLS-1$
-        infoPanel.addTextField(stageLabelString, stage.getInfo().getName(), null);
-        
-        // Process panel    
-        processPanel = new JPanel(new GridLayout(2, 1));
-        contentsPanel.add(processPanel,  BorderLayout.CENTER);
-          
-        JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        processPanel.add(progressBarPanel);
-
-        // Add tooltip.
-        processPanel.setToolTipText(ConstructionStageFormat.getTooltip(stage));
-        
-        JLabel progressLabel = new JLabel("Site Completion", SwingConstants.CENTER);
-        processPanel.add(progressLabel);
+        String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //-NLS-1$
+        stageLabel = infoPanel.addTextField(stageLabelString, stage.getInfo().getName(),
+                        ConstructionStageFormat.getTooltip(stage, true));
         
         JProgressBar progressBar = new JProgressBar();
         progressBarModel = progressBar.getModel();
         progressBar.setStringPainted(true);
-        progressBarPanel.add(progressBar);
+        infoPanel.addLabelledItem("Site Completion", progressBar);
          
         // Create remaining construction materials label panel.
         JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
@@ -117,16 +97,14 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         // Create the construction materials table and model.
         materialsTableModel = new MaterialsTableModel();
         JTable materialsTable = new JTable(materialsTableModel);
-        materialsTable.setPreferredSize(new Dimension(-1, 100));  
         materialsTable.setRowSelectionAllowed(true);
 
         // Create a scroll pane for the remaining construction materials table.
         scrollPane = new JScrollPane();
         remainingMaterialsLabelPane.add(scrollPane);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(-1, 100));  
         scrollPane.setViewportView(materialsTable);
-
 
         site.addUnitListener(this);    
         
@@ -176,7 +154,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         progressBarModel.setValue(workProgress);
         
         // Update the tool tip string.
-        processPanel.setToolTipText(ConstructionStageFormat.getTooltip(stage));
+        stageLabel.setToolTipText(ConstructionStageFormat.getTooltip(stage, true));
     }
 
   
@@ -190,10 +168,10 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         private static final long serialVersionUID = 1L;
 
         // Data members.
-        protected Map<Good, Integer> missingMap;
-        protected Map<Good, Integer> availableMap;
-        protected Map<Good, Integer> originalMap;
-        protected List<Good> goodsList;
+        private Map<Good, Integer> missingMap;
+        private Map<Good, Integer> availableMap;
+        private Map<Good, Integer> originalMap;
+        private List<Good> goodsList;
 
         /**
          * Constructor.
@@ -226,7 +204,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
          */
         @Override
         public int getColumnCount() {
-            return 4;
+            return 5;
         }
 
         /**
@@ -239,8 +217,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         public String getColumnName(int columnIndex) {
             return switch (columnIndex) {
               case 0 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.material");
-              case 1 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.missing");
-              case 2 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.available");
+              case 1 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.type");
+              case 2 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.missing");
+              case 3 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.available");
               default -> Msg.getString("ConstructionMissionCustomInfoPanel.column.original");
             };
         }
@@ -258,8 +237,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
                 Good good = goodsList.get(row);
                 return switch (column) {
                   case 0 ->  good.getName();
-                  case 1 -> missingMap.get(good);
-                  case 2 -> availableMap.get(good);
+                  case 1 ->  good.getCategory().getName();
+                  case 2 -> missingMap.get(good);
+                  case 3 -> availableMap.get(good);
                   default -> originalMap.get(good);
                 };
             }
@@ -277,65 +257,30 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
             if (stage != null) {
 
                 originalMap = new HashMap<>();
-                
-                // Add original resources.
-                Iterator<Integer> i0 = stage.getOriginalResources().keySet().iterator();
-                while (i0.hasNext()) {
-                	Integer resource = i0.next();
-                    double amount = stage.getOriginalResources().get(resource);
-                    originalMap.put(GoodsUtil.getGood(resource), (int) amount);
-                }
+                stage.getOriginalResources().entrySet().forEach(i0 -> 
+                        originalMap.put(GoodsUtil.getGood(i0.getKey()), (int) i0.getValue().doubleValue()));
+                stage.getOriginalParts().entrySet().forEach(j0 ->
+                        originalMap.put(GoodsUtil.getGood(j0.getKey()), j0.getValue()));
 
-                int size = originalMap.size();
-                if (size > 0)
-                	scrollPane.setPreferredSize(new Dimension(-1, size * 40));
-                
-                // Add original parts.
-                Iterator<Integer> j0 = stage.getOriginalParts().keySet().iterator();
-                while (j0.hasNext()) {
-                	Integer part = j0.next();
-                    int num = stage.getOriginalParts().get(part);
-                    originalMap.put(GoodsUtil.getGood(part), num);
-                }
+                if (!originalMap.isEmpty())
+                	scrollPane.setPreferredSize(new Dimension(-1, originalMap.size() * 40));
 
                 goodsList = new ArrayList<>(originalMap.keySet());
                 Collections.sort(goodsList);
 
                 // Add available resources.
                 availableMap = new HashMap<>();
-                
-                Iterator<Integer> i1 = stage.getAvailableResources().keySet().iterator();
-                while (i1.hasNext()) {
-                	Integer resource = i1.next();
-                    double amount = stage.getAvailableResources().get(resource);
-                    availableMap.put(GoodsUtil.getGood(resource), (int) amount);
-                }
-
-                Iterator<Integer> j1 = stage.getAvailableParts().keySet().iterator();
-                while (j1.hasNext()) {
-                	Integer part = j1.next();
-                    int num = stage.getAvailableParts().get(part);
-                    availableMap.put(GoodsUtil.getGood(part), num);
-                }
-                
+                stage.getAvailableResources().entrySet().forEach(i1 ->
+                    availableMap.put(GoodsUtil.getGood(i1.getKey()), (int) i1.getValue().doubleValue()));
+                stage.getAvailableParts().entrySet().forEach(j1 ->
+                    availableMap.put(GoodsUtil.getGood(j1.getKey()), j1.getValue()));
         
                 // Add missing resources.
                 missingMap = new HashMap<>();
-                
-                Iterator<Integer> i2 = stage.getMissingResources().keySet().iterator();
-                while (i2.hasNext()) {
-                	Integer resource = i2.next();
-                    double amount = stage.getMissingResources().get(resource);
-                    missingMap.put(GoodsUtil.getGood(resource), (int) amount);
-                }
-
-                // Add missing parts.
-                Iterator<Integer> j2 = stage.getMissingParts().keySet().iterator();
-                while (j2.hasNext()) {
-                	Integer part = j2.next();
-                    int num = stage.getMissingParts().get(part);
-                    missingMap.put(GoodsUtil.getGood(part), num);
-                }
+                stage.getMissingResources().entrySet().forEach(i2 ->
+                    missingMap.put(GoodsUtil.getGood(i2.getKey()), (int) i2.getValue().doubleValue()));
+                stage.getMissingParts().entrySet().forEach(j2 ->
+                    missingMap.put(GoodsUtil.getGood(j2.getKey()), j2.getValue()));
             }
 
             fireTableDataChanged();

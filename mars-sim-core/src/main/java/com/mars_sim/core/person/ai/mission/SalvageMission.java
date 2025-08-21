@@ -152,7 +152,6 @@ public class SalvageMission extends AbstractMission
 					constructionStage = constructionSite.getCurrentConstructionStage();
 					if (constructionStage != null) {
 						constructionStage.setCompletedWorkTime(0D);
-						constructionStage.setSalvaging(true);
 						logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
 								, constructionStage.toString()));
 					} else {
@@ -163,7 +162,7 @@ public class SalvageMission extends AbstractMission
 
 				// Mark construction site as undergoing salvage.
 				if (constructionStage != null) {
-					constructionSite.setUndergoingSalvage(true);
+					constructionSite.setWorkOnSite(true);
 				}
 			} else {
 				logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
@@ -222,7 +221,6 @@ public class SalvageMission extends AbstractMission
 				constructionStage = constructionSite.getCurrentConstructionStage();
 				if (constructionStage != null) {
 					constructionStage.setCompletedWorkTime(0D);
-					constructionStage.setSalvaging(true);
 					logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
 							, constructionStage.toString()));
 				} else {
@@ -233,7 +231,7 @@ public class SalvageMission extends AbstractMission
 
 			// Mark construction site as undergoing salvage.
 			if (constructionStage != null)
-				constructionSite.setUndergoingSalvage(true);
+				constructionSite.setWorkOnSite(true);
 		} else {
 			logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
 			endMission(SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
@@ -241,7 +239,7 @@ public class SalvageMission extends AbstractMission
 
 		// Mark site as undergoing salvage.
 		if (constructionStage != null)
-			constructionSite.setUndergoingSalvage(true);
+			constructionSite.setWorkOnSite(true);
 
 		addMembers(members, false);
 
@@ -254,6 +252,7 @@ public class SalvageMission extends AbstractMission
 			// Record the name of this vehicle in Mission
 			if (!settlement.removeVicinityParkedVehicle(vehicle)) {
 				endMissionProblem(vehicle, "Can not remove parked vehicle");
+				return;
 			}
 		}
 
@@ -278,9 +277,7 @@ public class SalvageMission extends AbstractMission
 
 		double topSiteProfit = 0D;
 		ConstructionManager manager = settlement.getConstructionManager();
-		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingSalvageMission().iterator();
-		while (i.hasNext()) {
-			ConstructionSite site = i.next();
+		for (ConstructionSite site :  manager.getConstructionSitesNeedingMission(false)) {
 			double siteProfit = manager.getSalvageValues().getSalvageSiteProfit(site, constructionSkill);
 			if (siteProfit > topSiteProfit) {
 				result = site;
@@ -400,7 +397,6 @@ public class SalvageMission extends AbstractMission
 
 		if (constructionStage.isComplete()) {
 			setPhaseEnded(true);
-			settlement.getConstructionManager().getConstructionValues().clearCache();
 
 			// Remove salvaged construction stage from site.
 			constructionSite.removeSalvagedStage(constructionStage);
@@ -409,7 +405,7 @@ public class SalvageMission extends AbstractMission
 			salvageConstructionParts();
 
 			// Mark construction site as not undergoing salvage.
-			constructionSite.setUndergoingSalvage(false);
+			constructionSite.setWorkOnSite(false);
 
 			// Remove construction site if all salvaging complete.
 			if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.Stage.FOUNDATION)) {
@@ -427,7 +423,7 @@ public class SalvageMission extends AbstractMission
 
 		// Mark site as not undergoing salvage.
 		if (constructionSite != null)
-			constructionSite.setUndergoingSalvage(false);
+			constructionSite.setWorkOnSite(false);
 
 		// Unreserve all mission construction vehicles.
 		unreserveConstructionVehicles();

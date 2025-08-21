@@ -28,8 +28,6 @@ import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.AstronomicalObservation;
 import com.mars_sim.core.building.function.BuildingConnection;
@@ -1782,22 +1780,15 @@ public class BuildingManager implements Serializable {
 			if (result < 0D)
 				result = 0D;
 
-			// Check if a new non-constructable building has a frame that already exists at
-			// the settlement.
+			// Check if a building of this type is already in flight
 			if (newBuilding) {
-				ConstructionStageInfo buildingConstInfo = ConstructionUtil.getConstructionStageInfo(buildingType);
-				if (buildingConstInfo != null) {
-					ConstructionStageInfo frameConstInfo = buildingConstInfo.getPrerequisiteStage();
-					if (frameConstInfo != null) {
-						// Check if frame is not constructable.
-						if (!frameConstInfo.isConstructable()) {
-							// Check if the building's frame exists at the settlement.
-							if (!hasBuildingFrame(frameConstInfo.getName())) {
-								// If frame doesn't exist and isn't constructable, the building has zero value.
-								result = 0D;
-							}
-						}
-					}
+				// Check if the building's frame exists at the settlement.
+				ConstructionManager constManager = settlement.getConstructionManager();
+				boolean hasFrame = constManager.getConstructionSites().stream()
+									.anyMatch(s -> s.getBuildingName().equalsIgnoreCase(buildingType));				
+				if (hasFrame) {
+					// If frame exist the building has zero value.
+					result = 0D;
 				}
 			}
 
@@ -1854,50 +1845,6 @@ public class BuildingManager implements Serializable {
 														   settlement.getCoordinates());
 
 		return goodLocation;
-	}
-
-	/**
-	 * Checks if a building frame exists at the settlement. Either with an existing
-	 * building or at a construction site.
-	 *
-	 * @param frameName the frame's name.
-	 * @return true if frame exists.
-	 */
-	private boolean hasBuildingFrame(String frameName) {
-		boolean result = false;
-
-		// Check if any existing buildings have this frame.
-		for (Building building : buildings) {
-			ConstructionStageInfo buildingStageInfo = ConstructionUtil
-					.getConstructionStageInfo(building.getBuildingType());
-			if (buildingStageInfo != null) {
-				ConstructionStageInfo frameStageInfo = buildingStageInfo.getPrerequisiteStage();
-				if (frameStageInfo != null) {
-					if (frameStageInfo.getName().equals(frameName)) {
-						result = true;
-						break;
-					}
-				}
-			}
-		}
-
-		// Check if any construction projects have this frame.
-		if (!result) {
-			ConstructionStageInfo frameStageInfo = ConstructionUtil.getConstructionStageInfo(frameName);
-			if (frameStageInfo != null) {
-				ConstructionManager constManager = settlement.getConstructionManager();
-				Iterator<ConstructionSite> j = constManager.getConstructionSites().iterator();
-				while (j.hasNext()) {
-					ConstructionSite site = j.next();
-					if (site.hasStage(frameStageInfo)) {
-						result = true;
-						break;
-					}
-				}
-			}
-		}
-
-		return result;
 	}
 
 	/**
