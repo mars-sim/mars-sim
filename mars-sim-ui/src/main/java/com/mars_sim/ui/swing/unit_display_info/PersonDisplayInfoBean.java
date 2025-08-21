@@ -19,12 +19,13 @@ import com.mars_sim.ui.swing.sound.SoundConstants;
 /**
  * Provides display information about a person.
  */
-class PersonDisplayInfoBean extends AbstractUnitDisplayInfo {
+class PersonDisplayInfoBean extends UnitDisplayInfo {
 
 	/**
 	 * Constructor.
 	 */
 	PersonDisplayInfoBean() {
+		super(null);
 	}
 
 	/**
@@ -32,14 +33,15 @@ class PersonDisplayInfoBean extends AbstractUnitDisplayInfo {
 	 * 
 	 * @return icon
 	 */
+	@Override
 	public Icon getButtonIcon(Unit unit) {
 		Icon buttonIcon = null;
 
 		if (unit instanceof Person p) {
 			if (GenderType.MALE == p.getGender()) {
-				buttonIcon = ImageLoader.getIconByName("svg/male");//unit/person_male");
+				buttonIcon = ImageLoader.getIconByName("svg/male");
 			} else {
-				buttonIcon = ImageLoader.getIconByName("svg/female");//unit/person_female");
+				buttonIcon = ImageLoader.getIconByName("svg/female");
 			}
 		}
 		
@@ -52,6 +54,7 @@ class PersonDisplayInfoBean extends AbstractUnitDisplayInfo {
 	 * @param unit the unit to display.
 	 * @returns sound filepath for unit or empty string if none.
 	 */
+	@Override
 	public String getSound(Unit unit) {
 		Person person = (Person) unit;
 		String result = "";
