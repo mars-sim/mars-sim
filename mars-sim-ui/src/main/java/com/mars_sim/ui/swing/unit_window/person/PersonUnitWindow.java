@@ -45,6 +45,8 @@ public class PersonUnitWindow extends UnitWindow {
 	private static final String TWO_SPACES = "  ";
 	private static final String SIX_SPACES = "      ";
 	
+	private static final Font font = StyleManager.getSmallLabelFont();
+	
 	/** Is person dead? */
 	private boolean deadCache = false;
 	
@@ -53,12 +55,14 @@ public class PersonUnitWindow extends UnitWindow {
 	private String oldTown = "";
 	private String oldShift = "";
 	
-	private JLabel townLabel;
-	private JLabel jobLabel;
-	private JLabel roleLabel;
-	private JLabel shiftLabel;
+	private JLabel townLabel = new JLabel();
+	private JLabel jobLabel = new JLabel();
+	private JLabel roleLabel = new JLabel();
+	private JLabel shiftLabel = new JLabel();
 
 	private JPanel statusPanel;
+	
+	private TabPanelDeath tabPanelDeath;
 	
 	private Person person;
 
@@ -70,6 +74,9 @@ public class PersonUnitWindow extends UnitWindow {
 	 */
 	public PersonUnitWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
+		
+		// Note : variable = (condition) ? expressionTrue : expressionFalse
+		
 		super(desktop, person, person.getName() 
 				+ " of " + 
 				((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())
@@ -77,14 +84,6 @@ public class PersonUnitWindow extends UnitWindow {
 				, false);
 		this.person = person;
 
-		// Create status panel
-		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-		statusPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		statusPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		
-		getContentPane().add(statusPanel, BorderLayout.NORTH);	
-		
 		initTopPanel();
 		
 		initTabPanel(person);
@@ -92,8 +91,20 @@ public class PersonUnitWindow extends UnitWindow {
 		statusUpdate();
 	}
 	
+	/**
+	 * Initializes the top panel.
+	 */
 	private void initTopPanel() {
-		statusPanel.setPreferredSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT + 5));
+		
+		// Create status panel
+		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		statusPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		statusPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		
+		getContentPane().add(statusPanel, BorderLayout.NORTH);	
+		
+		statusPanel.setPreferredSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT));
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
@@ -106,8 +117,7 @@ public class PersonUnitWindow extends UnitWindow {
 		namePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		namePane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		namePane.add(nameLabel, BorderLayout.CENTER);
-	
-		Font font = StyleManager.getSmallLabelFont();
+		
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);
@@ -116,67 +126,47 @@ public class PersonUnitWindow extends UnitWindow {
 
 		statusPanel.add(namePane, BorderLayout.WEST);
 
-		JLabel townIconLabel = new JLabel();
-		townIconLabel.setToolTipText("Hometown");
-		setImage(TOWN, townIconLabel);
-
-		JLabel jobIconLabel = new JLabel();
-		jobIconLabel.setToolTipText("Job");
-		setImage(JOB, jobIconLabel);
-
-		JLabel roleIconLabel = new JLabel();
-		roleIconLabel.setToolTipText("Role");
-		setImage(ROLE, roleIconLabel);
-
-		JLabel shiftIconLabel = new JLabel();
-		shiftIconLabel.setToolTipText("Work Shift");
-		setImage(SHIFT, shiftIconLabel);
-
-		JPanel townPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-		townLabel = new JLabel();
-		townLabel.setFont(font);
-
-		jobLabel = new JLabel();
-		jobLabel.setFont(font);
-
-		roleLabel = new JLabel();
-		roleLabel.setFont(font);
-
-		shiftLabel = new JLabel();
-		shiftLabel.setFont(font);
-
-		townPanel.add(townIconLabel);
-		townPanel.add(townLabel);
-		townPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		jobPanel.add(jobIconLabel);
-		jobPanel.add(jobLabel);
-		jobPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		rolePanel.add(roleIconLabel);
-		rolePanel.add(roleLabel);
-		rolePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		shiftPanel.add(shiftIconLabel);
-		shiftPanel.add(shiftLabel);
-		shiftPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 		JPanel gridPanel = new JPanel(new GridLayout(2, 2, 5, 1));		
 		gridPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		gridPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
-		gridPanel.add(townPanel);
-		gridPanel.add(rolePanel);
-		gridPanel.add(shiftPanel);
-		gridPanel.add(jobPanel);
+		gridPanel.add(createTile(TOWN, "Hometown", townLabel));
+		gridPanel.add(createTile(JOB, "Job", jobLabel));
+		gridPanel.add(createTile(ROLE, "Role", roleLabel));
+		gridPanel.add(createTile(SHIFT, "Shift", shiftLabel));
 
 		statusPanel.add(gridPanel, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Creates a tile panel.
+	 * 
+	 * @param title
+	 * @param tooltip
+	 * @param label
+	 * @return
+	 */
+	public JPanel createTile(String title, String tooltip, JLabel label) {
+		JPanel tilePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		
+		JLabel iconLabel = new JLabel();
+		iconLabel.setToolTipText(tooltip);
+		setImage(title, iconLabel);
+
+		label.setFont(font);
+		
+		tilePanel.add(iconLabel);
+		tilePanel.add(label);
+		tilePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		return tilePanel;
+	}
+	
+	/**
+	 * Initializes the tab panels.
+	 * 
+	 * @param person
+	 */
 	public void initTabPanel(Person person) {
 		// Add tab panels	
 		addTabPanel(new TabPanelActivity(person, desktop));
@@ -189,7 +179,9 @@ public class PersonUnitWindow extends UnitWindow {
 		if (person.isDeclaredDead()
 				|| person.getPhysicalCondition().isDead()) {
 			deadCache = true;
-			addTabPanel(new TabPanelDeath(person, desktop));
+			
+			tabPanelDeath = new TabPanelDeath(person, desktop);
+			addTabPanel(tabPanelDeath);
 		}
 
 		addTabPanel(new TabPanelFavorite(person, desktop));
@@ -238,6 +230,11 @@ public class PersonUnitWindow extends UnitWindow {
 			|| person.getPhysicalCondition().isDead())) {
 			deadCache = true;
 			addTabPanel(new TabPanelDeath(person, desktop));
+		}
+		
+		if (deadCache && !person.getPhysicalCondition().isDead()) {
+			deadCache = false;
+			removeTabPanel(tabPanelDeath);
 		}
 		
 		statusUpdate();

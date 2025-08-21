@@ -176,7 +176,7 @@ public class Manufacture extends Function {
 			double bestBuildingProcessValue = getBestManufacturingProcessValue(buildingTech, settlement);
 			double processValueDiff = bestBuildingProcessValue - bestExistingProcessValue;
 
-			processValueDiff = MathUtils.between(processValueDiff, 0D, PROCESS_MAX_VALUE);
+			processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
 
 			result += processValueDiff;
 		}

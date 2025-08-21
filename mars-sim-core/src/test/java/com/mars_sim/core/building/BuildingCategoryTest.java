@@ -29,7 +29,7 @@ public class BuildingCategoryTest extends AbstractMarsSimUnitTest {
     }
    
     public void testCommand() {
-        assertBuildingType("Command and Control", BuildingCategory.COMMAND);
+        assertBuildingType("Command Center", BuildingCategory.COMMAND);
     }
     
     public void testQuarters() {

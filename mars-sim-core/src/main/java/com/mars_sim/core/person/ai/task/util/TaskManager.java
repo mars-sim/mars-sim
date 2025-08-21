@@ -65,7 +65,7 @@ public abstract class TaskManager implements Serializable {
 	 */
 	protected TaskManager(Worker worker) {
 		this.worker = worker;
-		allActivities = new History<>(150);   // Equivalent of 3 days
+		allActivities = new History<>();   // 150 equivalent of 3 days
 		pendingTasks = new CopyOnWriteArrayList<>();
 	}
 
@@ -568,7 +568,7 @@ public abstract class TaskManager implements Serializable {
 			
 			currentTask.endTask();
 			
-			logger.info(worker, 20_000, "Quit '" + des + "' and replace with the new task of '"
+			logger.info(worker, 5_000, "Quit '" + des + "' and replace with the new task of '"
 						+ newTask.getName() + "'.");
 		}
 		

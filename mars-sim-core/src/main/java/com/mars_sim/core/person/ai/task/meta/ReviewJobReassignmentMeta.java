@@ -62,7 +62,8 @@ public class ReviewJobReassignmentMeta extends MetaTask
     public ReviewJobReassignmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
-
+		addAllLeadershipRoles();
+		addAllChiefRoles();
 	}
 
     /**
@@ -119,11 +120,13 @@ public class ReviewJobReassignmentMeta extends MetaTask
 				// Take the base score based on the higher seniority
 				RoleType newRole = p.getRole().getType();
 				double newBase = switch(newRole) {
-					case PRESIDENT -> 600;
-					case MAYOR -> 550;
-					case COMMANDER -> 500;
-					case SUB_COMMANDER -> 450;
-					default -> 400;
+					case PRESIDENT -> 525;
+					case MAYOR -> 500;
+					case ADMINISTRATOR -> 475;
+					case DEPUTY_ADMINISTRATOR -> 450;
+					case COMMANDER -> 425;
+					case SUB_COMMANDER -> 400;
+					default -> 350;
 				};
 				base = Math.max(base, newBase);
 	

@@ -762,9 +762,9 @@ public class EatDrink extends Task {
 			}
 				
 			// Used bottle of none available
-			if (person.isInSettlement() ) {		
-				int level = person.getAssociatedSettlement().getWaterRationLevel();
-				amount = Math.max(MIN, amount / level);
+			if (person.isInSettlement()) {		
+				int level = person.getSettlement().getRationing().getRationingLevel();
+				amount = Math.max(MIN, amount / (1 + level));
 			}
 			else if (person.isInVehicle() ) {
 				// Person will try refraining from eating food while in a vehicle

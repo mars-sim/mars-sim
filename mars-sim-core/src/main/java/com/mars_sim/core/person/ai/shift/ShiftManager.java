@@ -185,6 +185,25 @@ public class ShiftManager implements Serializable {
         }
     }
 
+	/**
+	 * Assigns a person to a new work shift.
+	 * 
+	 * @param person
+	 */
+	public void assignNewShift(Person person) {
+		ShiftSlot candidate = person.getShiftSlot();
+
+        // Find a new Shift but exclude the current one
+        Shift newShift = findSuitableShift(candidate.getShift());
+        if (newShift != null) {
+            candidate.setOnLeave(100);
+            Shift oldShift = candidate.getShift();
+            candidate.setShift(newShift);
+            logger.info(person, "Assigning the change of shift from " + oldShift.getName() 
+        	+ " to " + newShift.getName() + ".");
+        }
+	}
+	
     /**
      * Gets the available Shifts.
      * 

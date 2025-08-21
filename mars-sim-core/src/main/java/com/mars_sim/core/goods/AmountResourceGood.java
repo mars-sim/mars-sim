@@ -1183,7 +1183,7 @@ class AmountResourceGood extends Good {
 		double demand = 0;
 		if (getID() == ResourceUtil.WATER_ID) {
 			// Add the awareness of the water ration level in adjusting the water demand
-			double waterRationLevel = settlement.getWaterRationLevel();
+			double waterRationLevel = settlement.getRationing().getRationingLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			demand = amountNeededSol *  WATER_VALUE_MODIFIER 
 					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);

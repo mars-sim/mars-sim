@@ -69,16 +69,17 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
-
-		if (person.isSuperUnfit()) {
-			endEVA("Super Unfit.");
-        	return;
-		}
+		
 		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {
 			endEVA("Vehicle is not ready for ynloading.");
         	return;
 		}
-		
+
+		if (isSuperUnfit()) {
+			endEVA("Super Unfit.");
+			return;
+		}	
+
 		// Determine location for unloading.
 		setOutsideLocation(vehicle);
 		

@@ -54,23 +54,26 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 		double sum = 0;
 		int numSols = 0;
 
-		for (Double dailyTotal : dailyData) {
-	
-			// First entry is always today
-			if (numSols == 0) {
-				sum += ((dailyTotal/currentMillisol) * 1_000D);
-			}
-			else {
-				sum += dailyTotal;
-			}
-			numSols++;
-		}
-	
-		if (numSols == 0) {
+		if (dailyData.size() == 0) {
 			// No data points
 			return 0;
 		}
-		return sum / numSols;
+		
+		else if (dailyData.size() == 1) {
+			// If there's only one sol of data ,
+			// then it's a partial sum
+			return getTodayDataValue() * currentMillisol / 1_000;
+		}
+		
+		else {
+			for (double dailyTotal : dailyData) {			
+				// First entry is always today
+				sum += dailyTotal;
+				numSols++;
+			}
+			
+			return sum / numSols;
+		}
 	}
 	
 	/**
@@ -82,23 +85,27 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 		double sum = 0;
 		int numSols = 0;
 
-		for (Double dailyTotal : dailyData) {
-	
-			// First entry is always today
-			if (numSols == 0) {
-				sum += ((dailyTotal/currentMillisol) * 1_000D);
-			}
-			else {
-				sum += dailyTotal;
-			}
-			numSols++;
-		}
-	
-		if (numSols == 0) {
+		if (dailyData.size() == 0) {
 			// No data points
 			return new double[] {sum, sum};
 		}
-		else
+		
+		else if (dailyData.size() == 1) {
+			// If there's only one sol of data ,
+			// then it's a partial sum
+			sum = getTodayDataValue();
+			
+			return new double[] {sum, sum * currentMillisol / 1_000};
+		}
+		
+		else {
+			for (double dailyTotal : dailyData) {			
+				// First entry is always today
+				sum += dailyTotal;
+				numSols++;
+			}
+			
 			return new double[] {sum, sum / numSols};
+		}
 	}
 }

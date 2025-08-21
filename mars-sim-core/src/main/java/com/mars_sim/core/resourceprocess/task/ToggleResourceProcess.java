@@ -205,13 +205,14 @@ public class ToggleResourceProcess extends Task {
 		}
 
 		if (worker.getUnitType() == UnitType.PERSON) {
-			double perf = worker.getPerformanceRating();
-			// If worker is incapacitated, enter airlock.
-			if (perf == 0D) {
-				// reset it to 10% so that he can walk inside
-				person.getPhysicalCondition().setPerformanceFactor(.1);
-				clearTask(": poor performance in " + process.getProcessName() + ".");
-			}
+			// Note: still be able to toggle despite low performance
+//			double perf = worker.getPerformanceRating();
+//			// If worker is incapacitated, enter airlock.
+//			if (perf == 0D) {
+//				// reset it to 10% so that he can walk inside
+//				person.getPhysicalCondition().setPerformanceFactor(.1);
+//				clearTask(": poor performance in " + process.getProcessName() + ".");
+//			}
 
 		} else {
 			workTime /= 2;

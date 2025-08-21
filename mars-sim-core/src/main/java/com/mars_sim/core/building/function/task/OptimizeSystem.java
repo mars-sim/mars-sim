@@ -62,9 +62,13 @@ public class OptimizeSystem extends Task {
 			// If person is in a settlement, try to find a server node.
 			node = person.getSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person, true);
 			
-			if (node == null)
+			if (node == null) {
 				endTask();
+				return;
+			}
+				
 			
+			// Note : if node is null, endTask() doesn't stop it right away. getBuilding() below will result in null
 			int bldgZone = node.getBuilding().getZone();
 			int personZone = person.getBuildingLocation().getZone();
 			

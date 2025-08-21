@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Computation.java
- * @date 2024-07-07
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.core.building.function;
@@ -14,7 +14,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.building.SourceSpec;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 
@@ -26,7 +25,7 @@ public class Computation extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
 	
 	// Configuration properties
 	public static final double ENTROPY_FACTOR = .001;
@@ -235,19 +234,6 @@ public class Computation extends Function {
 	public double getCoolingDemand() {
 		return coolingDemand;
 	}
-
-//	/**
-//	 * Schedules for a computing tasks.
-//	 * 
-//	 * @param computingTask
-//	 * @return
-//	 */
-//	public boolean scheduleTask(ComputingTask computingTask) {
-//		double demand = computingTask.getComputingPower();
-//		int beginningMSol = computingTask.getStartTime();
-//		int endMSol = beginningMSol + computingTask.getDuration();
-//		return scheduleTask(demand, beginningMSol, endMSol);
-//	}
 	
 	/**
 	 * Schedules for a computing task.
@@ -287,11 +273,11 @@ public class Computation extends Function {
 				/*
 				 *  Do NOT delete. For debugging.
 				 */  
-				 	logger.info(getBuilding(), 30_000, "2. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
-				 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
-				 
+//				 	logger.info(getBuilding(), 30_000, "2. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//				 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
+//				 
 				
 				return false;
 			} 
@@ -300,10 +286,10 @@ public class Computation extends Function {
 				/*
 				 *  Do NOT delete. For debugging.
 				 */ 
-				 	logger.info(getBuilding(), 30_000, "2. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
-				 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
+//				 	logger.info(getBuilding(), 30_000, "2. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//				 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//				 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//				 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
 				 
 				// It is allowed to go beyond within 5%
 			}
@@ -364,10 +350,10 @@ public class Computation extends Function {
 			/*
 			 *  Do NOT delete. For debugging.
 			 */  
-			 	logger.info(getBuilding(), 30_000, "1. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-			 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
-			 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
+//			 	logger.info(getBuilding(), 30_000, "1. Over 105%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//			 			+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//			 			+ "  delta: " + Math.round(over105 * 1000.0)/1000.0);
 			 
 				return 0;
 			} 
@@ -376,10 +362,10 @@ public class Computation extends Function {
 			/*
 			 *  Do NOT delete. For debugging.
 			 */ 
-			 	logger.info(getBuilding(), 30_000, "1. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
-			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
-						+ "  need: " + Math.round(needed * 1000.0)/1000.0
-			 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
+//			 	logger.info(getBuilding(), 30_000, "1. Over 100%, peakCU: " + Math.round(peakCU * 100.0)/100.0
+//			 			+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+//						+ "  need: " + Math.round(needed * 1000.0)/1000.0
+//			 			+ "  delta: " + Math.round(overZero * 1000.0)/1000.0);
 			 
 				// It is allowed to go beyond within 5%
 			}

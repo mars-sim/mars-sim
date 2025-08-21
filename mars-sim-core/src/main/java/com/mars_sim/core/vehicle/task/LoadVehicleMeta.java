@@ -90,6 +90,7 @@ public class LoadVehicleMeta extends MetaTask
 		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
         addPreferredRobot(RobotType.DELIVERYBOT);
+		addAllCrewRoles();
 	}
 
     /**

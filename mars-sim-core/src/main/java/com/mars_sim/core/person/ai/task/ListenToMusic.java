@@ -10,6 +10,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.tool.Msg;
@@ -37,6 +38,8 @@ extends Task {
             "Task.phase.findingASong")); //$NON-NLS-1$
 
 	// Static members
+	private static final double TIME_FACTOR = 0.9; // NOTE: should vary this factor by person
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.9D;
 
@@ -87,11 +90,6 @@ extends Task {
 		    
         setDescription(NAME);
 	
-    
-		// Initialize phase
-		addPhase(FINDING_A_SONG);
-		addPhase(LISTENING_TO_MUSIC);
-	
 		setPhase(FINDING_A_SONG);
 	
 	}
@@ -122,12 +120,36 @@ extends Task {
 		double remainingTime = 0;
 		    
         setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
-       
-        // Reduce person's fatigue
-        person.getPhysicalCondition().reduceFatigue(.5 * time);
+        
+        PhysicalCondition pc = person.getPhysicalCondition();
+		double perf = pc.getPerformanceFactor();
+        
+		double fractionOfRest = time * TIME_FACTOR;
+		
+		// Reduce person's fatigue
+        pc.reduceFatigue(fractionOfRest);
 
-        person.getPhysicalCondition().reduceStress(time/2); 
+        // Research indicates that listening to relaxing music during recovery 
+        // periods significantly accelerates the recovery process of fatigued muscles,
+        // with one study showing a 35% greater recovery of movement smoothness compared
+        // to silence or arousing music.
+        
+        pc.reduceMuscleSoreness(time);
+        // A study found that preferred music significantly 
+        // increased pain tolerance during an ice-water hand immersion test.
+        // The mechanism behind this increase in pain tolerance is believed 
+        // to involve distraction from the pain, the emotional engagement triggered 
+        // by music, and the release of neurotransmitters like dopamine, which can 
+        // improve mood and potentially reduce pain perception.
+        pc.increasePainTolerance(time);
+        
+        pc.reduceStress(time/2); 
   
+        if (perf < 1) {
+        	perf *= (1 + fractionOfRest);
+        	pc.setPerformanceFactor(perf);
+        }
+        
 		return remainingTime;
 	}
 

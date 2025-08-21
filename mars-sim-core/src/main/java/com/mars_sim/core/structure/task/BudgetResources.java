@@ -1,19 +1,17 @@
 /*
  * Mars Simulation Project
  * BudgetResources.java
- * @date 2024-06-28
+ * @date 2025-08-16
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.task;
-
-import java.util.logging.Level;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.Management;
+import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -23,17 +21,12 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The task for budgeting resources.
  */
 public class BudgetResources extends Task {
 
-	public static final double REVIEW_PERC = .9;
-
-	public enum ReviewGoal {RESOURCE, SETTLEMENT_WATER, ACCOM_WATER}
-	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
@@ -46,15 +39,19 @@ public class BudgetResources extends Task {
 	private static final TaskPhase REVIEWING = new TaskPhase(
 			Msg.getString("Task.phase.budgetResources.reviewing")); //$NON-NLS-1$
 
-	private static final TaskPhase APPROVING = new TaskPhase(
-			Msg.getString("Task.phase.budgetResources.approving")); //$NON-NLS-1$
+	private static final TaskPhase SUBMITTING = new TaskPhase(
+			Msg.getString("Task.phase.budgetResources.submitting")); //$NON-NLS-1$
 
 	// Static members	
 	private static final int STANDARD_DURATION = 40;
 
+	public static final double REVIEW_PERC = .9;
+
+	public static enum ReviewGoal {LIFE_RESOURCE, WATER_RATIONING, ICE_RESOURCE, REGOLITH_RESOURCE}
+	
 	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-		false, -0.1D, SkillType.MANAGEMENT) {
+		false, 0.2D, SkillType.MANAGEMENT) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -70,13 +67,11 @@ public class BudgetResources extends Task {
 	// Data members		
 	private int settlementResource;
 	
-	private double newDemand = 0;
+	private double newValue = 0;
 	
 	/** The administration building the person is using. */
 	private Administration office;
-	
-	private Building building;
-	
+
 	private ReviewGoal taskNum;
 
 	/**
@@ -137,6 +132,20 @@ public class BudgetResources extends Task {
 		setPhase(REVIEWING);
 	}
 
+
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (REVIEWING.equals(getPhase())) {
+			return reviewingPhase(time);
+		} else if (SUBMITTING.equals(getPhase())) {
+			return submittingPhase(time);
+		} else {
+			return time;
+		}
+	}
+
 	/*
 	 * Selects a task.
 	 * 
@@ -144,17 +153,20 @@ public class BudgetResources extends Task {
 	 */
 	private boolean selectTask(ReviewGoal goal) {
 		switch(goal) {
-			case ACCOM_WATER:
-				return budgetAccommodationWater();
-			case RESOURCE:
+			case ICE_RESOURCE:
+				return budgetIceResource();
+			case REGOLITH_RESOURCE:
+				return budgetRegolithResource();
+			case LIFE_RESOURCE:
 				return budgetSettlementResource();
-			case SETTLEMENT_WATER:
+			case WATER_RATIONING:
 				return budgetSettlementWater();
 			default:
 				// Evaluate all 3 one by one
 				return (budgetSettlementResource()
 				|| budgetSettlementWater()
-				|| budgetAccommodationWater());
+				|| budgetIceResource()
+				|| budgetRegolithResource());
 		}
 	}
 	
@@ -166,7 +178,7 @@ public class BudgetResources extends Task {
 	private boolean budgetSettlementResource() {
 		settlementResource = person.getAssociatedSettlement().getGoodsManager().reserveResourceReview();
 		if (settlementResource != -1) {
-			taskNum = ReviewGoal.RESOURCE;
+			taskNum = ReviewGoal.LIFE_RESOURCE;
 			return true;
 		}
 		
@@ -179,14 +191,15 @@ public class BudgetResources extends Task {
 	 * @return
 	 */
 	private boolean budgetSettlementWater() {
-
-		int levelDiff = person.getAssociatedSettlement().getWaterRatioDiff();
-		if (levelDiff > 0) {
+		
+		int levelDiff = person.getAssociatedSettlement().getRationing().getLevelDiff();
+		if (levelDiff != 0) {
 			
-			taskNum = ReviewGoal.SETTLEMENT_WATER;
+			taskNum = ReviewGoal.WATER_RATIONING;
 			
-			// Set the flag to false for future review
-			person.getAssociatedSettlement().setReviewWaterRatio(false);
+			// Set the flag to false to prevent another person from starting a review 
+			// while this person is about to review it
+			person.getAssociatedSettlement().getRationing().setReviewDue(false);
 			
 			return true;
 		}	
@@ -195,43 +208,27 @@ public class BudgetResources extends Task {
 	}
 	
 	/**
-	 * Budgets settlement water for lodging.
+	 * Budgets the ice resource.
 	 * 
 	 * @return
 	 */
-	private boolean budgetAccommodationWater() {
-		// Pick a building that needs review
-		var locn = person.getBuildingLocation();
-		int zone = (locn == null ? -1 : locn.getZone());
-		var found = BudgetResourcesMeta.getAccommodationNeedingWaterReview(person.getAssociatedSettlement(), zone);
-		building = RandomUtil.getRandomElement(found);
-					
-		if (building != null) {
-			
-			taskNum = ReviewGoal.ACCOM_WATER;
-			// Inform others that this quarters' water ratio review flag is locked
-			// and not available for review
-			building.getLivingAccommodation().lockWaterRatioReview();
-			
-			return true;
-		}	
-		
-		return false;
+	private boolean budgetIceResource() {
+		taskNum = ReviewGoal.ICE_RESOURCE;
+	
+		return true;
 	}
 	
-	@Override
-	protected double performMappedPhase(double time) {
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (REVIEWING.equals(getPhase())) {
-			return reviewingPhase(time);
-		} else if (APPROVING.equals(getPhase())) {
-			return approvingPhase(time);
-		} else {
-			return time;
-		}
+	/**
+	 * Budgets the regolith resource.
+	 * 
+	 * @return
+	 */
+	private boolean budgetRegolithResource() {
+		taskNum = ReviewGoal.REGOLITH_RESOURCE;
+	
+		return true;
 	}
-
+	
 	/**
 	 * Performs the reviewing phase.
 	 * 
@@ -239,41 +236,32 @@ public class BudgetResources extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reviewingPhase(double time) {
-		
+
 		if (getTimeCompleted() > REVIEW_PERC * getDuration()) {
+			
 			switch(taskNum) {
-				case ACCOM_WATER: {
-					LivingAccommodation quarters = building.getLivingAccommodation();	
-					// Calculate the new water ration level
-					double[] data = quarters.calculateWaterLevel(time);
-					
-					logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
-						+ "'s water ration level. Water: " + Math.round(data[0]*10.0)/10.0
-							+ ". Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
+				case ICE_RESOURCE: {
+					newValue = person.getAssociatedSettlement().reviewIce();
 				} break;
 				
-				case RESOURCE: {
-					newDemand = person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource);
+				case REGOLITH_RESOURCE: {
+					newValue = person.getAssociatedSettlement().reviewRegolith();
 				} break;
 				
-				case SETTLEMENT_WATER: {
-					if (person.getAssociatedSettlement().isWaterRatioChanged()) {
-						// Make the new water ratio the same as the cache
-						person.getAssociatedSettlement().setWaterRatio();
-					}
+				case LIFE_RESOURCE: {				
+					newValue = person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(settlementResource);					
+				} break;
+				
+				case WATER_RATIONING: {			
+					newValue = person.getAssociatedSettlement().getRationing().reviewRationingLevel();
 				} break;
 			}
 
 			// Add experience
-			addExperience(time);
-	
-			if (newDemand > 0) {
-				person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, newDemand);
-				endTask();
-			}
-			
+			addExperience(getTimeCompleted());
+		
 			// Go to the next phase
-			setPhase(APPROVING);
+			setPhase(SUBMITTING);
 		}
 		
         return 0;
@@ -286,25 +274,58 @@ public class BudgetResources extends Task {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double approvingPhase(double time) {
+	private double submittingPhase(double time) {
 			
 		switch(taskNum) {
-			case ACCOM_WATER:
-				LivingAccommodation quarters = building.getLivingAccommodation();	
-				
-				// Use water and produce waste water
-				quarters.generateWaste(time);
-				
-				logger.info(worker, 0, "Approved a new water waste measure for " 
-						+ building.getName() + ".");
+			case ICE_RESOURCE:
+				if (newValue != 0) {
+					person.getAssociatedSettlement().setIceReviewDue(false);
+					person.getAssociatedSettlement().setIceApprovalDue(true);
+					
+					logger.info(worker, 0, "Submitting a new ice probability for the settlement.");	
+				}
+				else {
+					logger.info(worker, 0, "No need to change the ice probability.");	
+				}
 				break;
 				
-			case RESOURCE:
-				logger.info(worker, 0, "Approved a new resource demand measure for the settlement.");
+			case REGOLITH_RESOURCE:
+				if (newValue != 0) {
+					person.getAssociatedSettlement().setRegolithReviewDue(false);
+					person.getAssociatedSettlement().setRegolithApprovalDue(true);
+					
+					logger.info(worker, 0, "Submitting a new regolith probability for the settlement.");	
+				}
+				else {
+					logger.info(worker, 0, "No need to change the regolith probability.");	
+				}
+
 				break;
 				
-			case SETTLEMENT_WATER:
-				logger.info(worker, 0, "Approved a new water ratio measure for the settlement.");
+			case LIFE_RESOURCE:
+				
+				if (newValue > 0) {
+					
+					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, newValue);
+					
+					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));
+					
+					logger.info(worker, 0, "Submitting a new resource demand measure for the settlement.");	
+				}
+				else {
+					logger.info(worker, 0, "No need to change the resource demand for the settlement.");	
+				}
+				
+				break;
+				
+			case WATER_RATIONING:
+				
+				if (newValue != 0) {		
+					// Submit request and ask for approval
+					person.getAssociatedSettlement().getRationing().setApprovalDue(true);
+				}
+				
+				logger.info(worker, 0, "Submitting a new water rationing measure for the settlement.");
 				break;
 		}
 			
@@ -336,14 +357,13 @@ public class BudgetResources extends Task {
 	 * @return
 	 */
 	public boolean injectDemand() {
-		return newDemand > 0;
+		return newValue > 0;
 	}
 	
 	@Override
 	public void destroy() {
 		super.destroy();
 		office = null;
-		building = null;
 		taskNum = null;
 	}
 	

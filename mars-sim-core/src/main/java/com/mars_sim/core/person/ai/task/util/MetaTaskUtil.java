@@ -71,6 +71,7 @@ import com.mars_sim.core.science.task.PerformMathematicalModelingMeta;
 import com.mars_sim.core.science.task.ProposeScientificStudyMeta;
 import com.mars_sim.core.science.task.RespondToStudyInvitationMeta;
 import com.mars_sim.core.science.task.StudyFieldSamplesMeta;
+import com.mars_sim.core.structure.task.ApproveMeasuresMeta;
 import com.mars_sim.core.structure.task.BudgetResourcesMeta;
 import com.mars_sim.core.structure.task.DigLocalIceMeta;
 import com.mars_sim.core.structure.task.DigLocalRegolithMeta;
@@ -97,7 +98,7 @@ public class MetaTaskUtil {
 	private static Map<String, MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 	private static List<MetaTask> personMetaTasks = null;
-	private static List<TaskFactory> personTaskFactorys;
+	private static List<TaskFactory> personTaskFactories;
 
 	private static ConverseMeta converseMeta = new ConverseMeta();
 	
@@ -120,6 +121,7 @@ public class MetaTaskUtil {
 		// Would be nice to dynamically load based on what is in the package
 		List<MetaTask> allMetaTasks = new ArrayList<>();
 		allMetaTasks.add(new AnalyzeMapDataMeta());
+		allMetaTasks.add(new ApproveMeasuresMeta());
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
 		allMetaTasks.add(new BudgetResourcesMeta());
 		allMetaTasks.add(new ChargeMeta());
@@ -198,7 +200,7 @@ public class MetaTaskUtil {
 		idToMetaTask = allMetaTasks.stream()
 				.collect(Collectors.toMap(MetaTask::getID, Function.identity()));
 
-		// Pick put settlement tasks
+		// Pick out settlement tasks
 		settlementTasks = allMetaTasks.stream()
 				.filter(SettlementMetaTask.class::isInstance)
 				.map(SettlementMetaTask.class::cast)
@@ -209,7 +211,7 @@ public class MetaTaskUtil {
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.PERSON)))
 				.toList();
-		personTaskFactorys = personMetaTasks.stream()
+		personTaskFactories = personMetaTasks.stream()
 				.filter(TaskFactory.class::isInstance)
 				.map(TaskFactory.class::cast)
 				.toList();
@@ -324,8 +326,8 @@ public class MetaTaskUtil {
 		return personMetaTasks;
 	}
 
-    public static List<TaskFactory> getPersonTaskFactorys() {
-        return personTaskFactorys;
+    public static List<TaskFactory> getPersonTaskFactories() {
+        return personTaskFactories;
     }
 
 	public static ConverseMeta getConverseMeta() {

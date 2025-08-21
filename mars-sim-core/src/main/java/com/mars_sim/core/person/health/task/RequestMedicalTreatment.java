@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RequestMedicalTreatment.java
- * @date 2021-12-22
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -9,6 +9,7 @@ package com.mars_sim.core.person.health.task;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -33,6 +34,9 @@ public class RequestMedicalTreatment extends MedicalAidTask {
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
 
     /** Task phases. */
+    
+    static final TaskPhase SHOWING_UP = new TaskPhase(Msg.getString(
+            "Task.phase.showingUpForMedicalTreatment")); //$NON-NLS-1$
     static final TaskPhase WAITING_FOR_TREATMENT = new TaskPhase(Msg.getString(
             "Task.phase.waitingForMedicalTreatment")); //$NON-NLS-1$
     static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(
@@ -65,7 +69,7 @@ public class RequestMedicalTreatment extends MedicalAidTask {
     }
 
     /**
-     * Create a task where a patient requests medical treatment at a medical aid.
+     * Creates a task where a patient requests medical treatment at a medical aid.
      * 
      * @param patient the person to perform the task
      * @param aid Where will teh treatment be done
@@ -74,14 +78,20 @@ public class RequestMedicalTreatment extends MedicalAidTask {
     private RequestMedicalTreatment(Person patient, MedicalAid aid) {
         super(NAME, patient, aid, IMPACT, 0);
 	    
-        walkToMedicalAid(true);
-
-        // Initialize phase.
-        setPhase(WAITING_FOR_TREATMENT);
+    	// Send the person as a patient to a medical bed
+		if (patient.isInSettlement()) {	
+	        // Initialize phase.
+	        setPhase(SHOWING_UP);
+		}
+		else {
+			// Future: will simulate contacting the mission control for medical help			
+			setPhase(WAITING_FOR_TREATMENT);
+		}
     }
 
     /**
-     * Find any health problems that this patient can ask for help.
+     * Finds any health problems that this patient can ask for help.
+     * 
      * @param person
      * @return
      */
@@ -97,6 +107,9 @@ public class RequestMedicalTreatment extends MedicalAidTask {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
+        else if (SHOWING_UP.equals(getPhase())) {
+            return showingUpForTreatmentPhase(time);
+        }
         else if (WAITING_FOR_TREATMENT.equals(getPhase())) {
             return waitingForTreatmentPhase(time);
         }
@@ -109,7 +122,26 @@ public class RequestMedicalTreatment extends MedicalAidTask {
     }
 
     /**
+     * Showing up in a medical facility for treatment phase of the task.
+     * 
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left over after performing the phase.
+     */
+    private double showingUpForTreatmentPhase(double time) {
+
+        double remainingTime = 0D;
+        
+    	// Send the person as a patient to a medical bed
+		if (BuildingManager.addPatientToMedicalBed(person, worker.getSettlement())) {
+			setPhase(WAITING_FOR_TREATMENT);
+		}
+		
+        return remainingTime;
+    }
+    
+    /**
      * Performs the waiting for treatment phase of the task.
+     * 
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left over after performing the phase.
      */
@@ -162,6 +194,7 @@ public class RequestMedicalTreatment extends MedicalAidTask {
 
     /**
      * Performs the treatment phase of the task.
+     * 
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left over after performing the phase.
      */

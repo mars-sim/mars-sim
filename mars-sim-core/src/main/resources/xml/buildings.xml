@@ -36,6 +36,8 @@
 	<!ATTLIST astronomical-observation power-required CDATA #REQUIRED>
 	<!ELEMENT connection EMPTY>
 	<!ELEMENT communication (activity?)>
+	<!ATTLIST communication tech-level CDATA #REQUIRED>
+	
 	<!ELEMENT computation (activity?)>
 	<!ATTLIST computation computing-unit CDATA #REQUIRED>
 	<!ATTLIST computation power-demand CDATA #REQUIRED>
@@ -194,17 +196,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<!-- The building has administrative capabilities. -->
 			<administration capacity="2" population-support="8">
 				<activity>
-					<activity-spot xloc="2.08" yloc="0.02" />
-					<activity-spot xloc="2.73" yloc="0.26" />
+					<!-- Top and bottom seats of the west dining table -->
+					<activity-spot xloc="2.76" yloc="-0.6" />
+					<activity-spot xloc="2.76" yloc="-2.0" />
 				</activity>
 			</administration>
 
 			<!-- The building has communication capabilities. -->
-			<communication>
+			<communication tech-level="1" >
 				<activity>
 					<!-- The left and right seats of the west table -->
-					<activity-spot xloc="3.43" yloc="-1.36" />
-					<activity-spot xloc="2.12" yloc="-1.36" />
+					<activity-spot xloc="3.43" yloc="-1.3" />
+					<activity-spot xloc="2.12" yloc="-1.3" />
 				</activity>
 			</communication>
 
@@ -214,7 +217,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     Note that cooling demand was calculated separately based on this figure.  -->
 			<computation computing-unit="10.0" power-demand="1.0">
 				<activity>
-					<activity-spot xloc="0.0" yloc="0.0" />
+					<!--The 1 seat on the south end of long lab bench sector-->
+					<activity-spot xloc="-2.67" yloc="-2.86" />
+					<!--The inner 2 seats on the long table south of the medical bay-->
+					<activity-spot xloc="2.95" yloc="0.35" />				
+					<activity-spot xloc="2.05" yloc="0.02" />
+					
 				</activity>
 			</computation>
 
@@ -229,19 +237,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has facilities for eating meals. -->
 			<dining capacity="4">
 				<activity>
-					<activity-spot xloc="1.02" yloc="-0.73" />
-					<activity-spot xloc="1.02" yloc="-2.02" />
+					<!-- The top and bottom seats of the East table -->
+					<activity-spot xloc="1.04" yloc="-0.6" />
+					<activity-spot xloc="1.04" yloc="-2.0" />
 					<!-- The left and right seats of the East table -->
-					<activity-spot xloc="1.75" yloc="-1.36" />
-					<activity-spot xloc="0.4" yloc="-1.36" />
+					<activity-spot xloc="1.699" yloc="-1.3" />
+					<activity-spot xloc="0.407" yloc="-1.3" />
 				</activity>
 			</dining>
 
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.4" yloc="2.25" name="Running Machine"/>
-					<activity-spot xloc="2.8" yloc="1.5" name="Bike"/>
+					<activity-spot xloc="3.74" yloc="-0.7" name="Weight Lifting"/>
+					<activity-spot xloc="3.84" yloc="0" name="Bike"/>
 				</activity>
 			</exercise>
 
@@ -260,20 +269,31 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
-			<living-accommodation capacity="4">
+			<living-accommodation capacity="8">
 				<activity>
-					<activity-spot xloc="1.55" yloc="3.28" />
-					<activity-spot xloc="-0.4" yloc="3.6" />
-					<activity-spot xloc="-3.3" yloc="0.9" />
-					<activity-spot xloc="-3.17" yloc="-1.08" />
+				
+					<!-- Clockwise from right most room to the left most room -->
+					<!-- Room 1 -->
+					<activity-spot xloc="2.056" yloc="3.491" name="Bunk 1" />
+					<activity-spot xloc="1.832" yloc="3.145" name="Bunk 1"/>					
+					<!-- Room 2 -->
+					<activity-spot xloc="0.021" yloc="4.081" name="Bunk 2"/>
+					<activity-spot xloc="0.021" yloc="3.654" name="Bunk 2"/>
+					<!-- Room 3 -->
+					<activity-spot xloc="-3.156" yloc="0.763" name="Bunk 3"/>
+					<activity-spot xloc="-3.156" yloc="0.326" name="Bunk 3"/>
+					<!-- Room 4 -->
+					<activity-spot xloc="-3.156" yloc="-0.234" name="Bunk 4"/>
+					<activity-spot xloc="-3.156" yloc="-0.631" name="Bunk 4"/>
+					
 				</activity>
 			</living-accommodation>
 
-			<!-- The building provides command and control for the population. -->
+			<!-- The building provides management function for the population. -->
 			<!-- capacity: the number of population managed. -->
 			<management capacity="1">
 				<activity>
-					<activity-spot xloc="3.4" yloc="0.53" />
+					<activity-spot xloc="3.74" yloc="0.6" />
 				</activity>
 			</management>
 
@@ -283,21 +303,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     can support -->
 			<manufacture tech-level="4" concurrent-processes="2">
 				<activity>
-					<activity-spot xloc="-0.9" yloc="-3.13" />
-					<activity-spot xloc="-0.9" yloc="-3.72" />
+					<activity-spot xloc="-0.85" yloc="-3.22" />
+					<activity-spot xloc="-0.85" yloc="-3.72" />
 				</activity>
 				<tooling name="3D printer" number="2" />
+				<tooling name="soldering" number="2"/>
 			</manufacture>
 
 			<!-- The building has a medical infirmary. -->
 			<!-- tech-level: the treatment level capability of the infirmary. (see tech_level.txt) -->
 			<!-- beds: the number of patients the infirmary can support. -->
-			<medical-care tech-level="4" bed="1">
+			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="-2" yloc="2" />
+					<activity-spot xloc="2.2" yloc="1.7" />
+					<activity-spot xloc="2.65" yloc="2" />
 				</activity>
 				<bed>
-					<bed-location xloc="-1.97" yloc="1.83" />
+					<bed-location xloc="2.5" yloc="2.4" />
+					<bed-location xloc="3.6" yloc="1.8" />
 				</bed>
 			</medical-care>
 
@@ -320,8 +343,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="2">
 				<activity>
-					<activity-spot xloc="2.76" yloc="-0.69" />
-					<activity-spot xloc="2.76" yloc="-2.01" />
+					<!-- The 2 seats on the blue couch with yellow lamp facing the outside -->
+					<activity-spot xloc="2.922" yloc="-2.6631" />
+					<activity-spot xloc="2.7063" yloc="-2.8791" />
 				</activity>
 			</recreation>
 
@@ -340,9 +364,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PSYCHOLOGY" />
 
 				<activity>
-					<activity-spot xloc="-1.47" yloc="-2.0" />
-					<activity-spot xloc="-1.95" yloc="-2.33" />
-					<activity-spot xloc="-2.47"  yloc="-2.67" />
+					<activity-spot xloc="-2.20"  yloc="-2.47" />
+					<activity-spot xloc="-1.69" yloc="-2.15" />
+					<activity-spot xloc="-1.17" yloc="-1.80" />
+
 				</activity>
 			</research>
 
@@ -367,15 +392,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
-					<activity-spot xloc="-0.9" yloc="-2.49" />
+					<activity-spot xloc="-0.85" yloc="-2.17" />
+					<activity-spot xloc="-0.85" yloc="-2.67" />
 				</activity>
 
 			</resource-processing>
 
-			<robotic-station capacity="2">
+			<robotic-station capacity="3">
 				<activity>
-					<activity-spot xloc="0.2" yloc="0.2" />
-					<activity-spot xloc="-0.2" yloc="-0.2" />
+					<activity-spot xloc="0.0" yloc="0.0" />
+					<activity-spot xloc="-0.3" yloc="-1.0" />
+					<activity-spot xloc="-0.3" yloc="-1.4" />
 				</activity>
 			</robotic-station>
 
@@ -392,8 +419,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="toxic waste" amount="500.0" />
 				<resource-capacity type="solid waste" amount="500.0" />
 				<resource-capacity type="food waste" amount="500.0" />
-				<resource-capacity type="grey water" amount="500.0" />
-				<resource-capacity type="black water" amount="500.0" />
+				<resource-capacity type="grey water" amount="5000.0" />
+				<resource-capacity type="black water" amount="5000.0" />
 
 				<resource-capacity type="food" amount="5000.0" />
 				<resource-capacity type="water" amount="10000.0" />
@@ -492,13 +519,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<waste-processing power-down-level="0.0">
 				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
-				<process-engine name= "Solid Waste Management"/>
-				<process-engine name= "Food Waste Management"/>
-				<process-engine name= "Hazard Waste Incineration"/>
-				<process-engine name= "Electronic Waste Disposal"/>
-				<process-engine name= "Soil Generation"/>
+				<process-engine name="Grey Water Processor" number-modules="4"/>
+				<process-engine name="Black Water Processor" number-modules="3"/>
+				<process-engine name="Solid Waste Management"/>
+				<process-engine name="Food Waste Management"/>
 		
 				<activity>
 					<activity-spot xloc="-1.38" yloc="-3.36" />
@@ -769,17 +793,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="nitrate" amount="500.0" />
 				<resource-capacity type="nitrite" amount="500.0" />
 				
-				<resource-capacity type="grey water" amount="500.0" />
+				<resource-capacity type="grey water" amount="1500.0" />
 				<resource-capacity type="water" amount="2500.0" />					
 
 				<!-- soil related -->
 				<resource-capacity type="soil" amount="500.0" />
 				<resource-capacity type="compost" amount="500.0" />
+				<resource-capacity type="glucose" amount="500.0" />
 				<resource-capacity type="crop waste" amount="500.0" />
 
 				<!-- Supplies -->
 				<resource-initial type="carbon dioxide" amount="100.0" />
-
 			</storage>
 
 			<thermal-generation>
@@ -789,14 +813,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="10"/>
+				<process-engine name="Black Water Processor" number-modules="6"/>
+				<process-engine name= "Soil Generation from Crop Waste" number-modules="2"/>			
+				<process-engine name= "Soil Generation from Compost" number-modules="2"/>	
+			</waste-processing>
+						
 		</functions>
 	</building>
 	<!-- end for Central Hub Type A -->
 
-	<building type="Life Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Match Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="1000">
-		<description> Life Core A is an utility hub acts as a hallway with amenities such as 
-			with laundry, washer and shower capability.
+		<description> Match Core A is a 3m by 6m utility hub that primarily connects
+		  other modules together
 		</description>
 		<power-required base-power="1.0" base-power-down-power="0.1" />
 
@@ -833,9 +864,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="oxygen" amount="4000.0" />
 				<resource-capacity type="methane" amount="4000.0" />
 				
-				<resource-capacity type="grey water" amount="1000.0" />				
+				<resource-capacity type="grey water" amount="4000.0" />				
 
-				<resource-capacity type="compost" amount="500.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -845,17 +875,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 			
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
 			</waste-processing>				
 			
 		</functions>
 	</building>
-	<!-- end of Life Core A -->
+	<!-- end of Match Core A -->
 
-	<building type="Half Core A" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Match Core B" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
-		<description> Half Core A is an utility hallway.
+		<description> Match Core B is a 3m by 6m utility hub that primarily connects
+		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
 
@@ -888,9 +919,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="oxygen" amount="2000.0" />
 				<resource-capacity type="methane" amount="2000.0" />
 				
-				<resource-capacity type="grey water" amount="400.0" />				
+				<resource-capacity type="grey water" amount="2000.0" />				
 
-				<resource-capacity type="compost" amount="200.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.5" />
@@ -900,11 +930,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
-	<!-- end of Half Core A -->
+	<!-- end of Match Core B -->
 
-	<building type="Half Core B" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
+	<building type="Match Core C" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
-		<description> Half Core A is an utility hallway.
+		<description> Match Core C is a 3m by 7m utility hub that primarily connects
+		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
 
@@ -937,9 +968,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="oxygen" amount="2000.0" />
 				<resource-capacity type="methane" amount="2000.0" />
 				
-				<resource-capacity type="grey water" amount="400.0" />				
+				<resource-capacity type="grey water" amount="2000.0" />				
 
-				<resource-capacity type="compost" amount="200.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.5" />
@@ -950,12 +980,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-	<!-- end of Half Core B -->
+	<!-- end of Match Core C -->
 
-	<building type="Bioreactor H1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Bioreactor-F" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
-			to produce gases and compounds that are vital to the survival of the settlers.
+		<description> Bioreactor-F hosts fermentation reactions using specialized equipment and 
+			racks and cyanobacteria and chorella that consumes glucose to produce hydrogen.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
@@ -993,7 +1023,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="4"/>
+				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
+				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
+				
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
@@ -1022,12 +1054,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>		
 		</functions>
 	</building>
-	<!-- end of Bioreactor H1 -->
+	<!-- end of Bioreactor-F -->
 
-	<building type="Bioreactor H2" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Bioreactor-E" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
-			to produce gases and compounds that are vital to the survival of the settlers.
+		<description> Bioreactor-E host specialized equipment and racks for utilizing cynobacteria 
+			to produce ethylene gas.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
@@ -1065,7 +1097,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="4"/>
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
@@ -1081,10 +1113,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="8000">	
-				<resource-capacity type="glucose" amount="1000.0" />
-				<resource-capacity type="water" amount="1000.0" />
+				<resource-capacity type="oxygen" amount="1000.0" />
+				<resource-capacity type="ethylene" amount="5000.0" />
 				<resource-capacity type="Carbon dioxide" amount="1000.0" />
-				<resource-capacity type="hydrogen" amount="4000.0" />							
+				<resource-capacity type="hydrogen" amount="500.0" />							
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -1094,12 +1126,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>		
 		</functions>
 	</building>
-	<!-- end of Bioreactor H2 -->
+	<!-- end of Bioreactor-E -->
 	
-	<building type="Bioreactor M1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Bioreactor-M" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
-			to produce gases and compounds that are vital to the survival of the settlers.
+		<description> Bioreactor-M hosts specialized equipment and racks for utilizing methanogenic 
+		 archaea to convert methanol into methane and water.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
@@ -1166,12 +1198,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>		
 		</functions>
 	</building>
-	<!-- end of Bioreactor M1 -->
+	<!-- end of Bioreactor-M -->
 
-	<building type="Bioreactor G1" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Bioreactor-G" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor A houses specialized equipment and racks for utilizing bio-organisms 
-			to produce gases and compounds that are vital to the survival of the settlers.
+		<description> Bioreactor A hosts specialized equipment and racks for utilizing bio-organisms 
+			to convert fiber into glucose. 
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
@@ -1209,7 +1241,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="10"/>
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
@@ -1225,7 +1257,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="8000">
-				<resource-capacity type="Leaves" amount="3200.0" />
+				<resource-capacity type="Crop waste" amount="3200.0" />
 				<resource-capacity type="Water" amount="360.0" />
 				<resource-capacity type="Glucose" amount="3600.0" />
 			</storage>
@@ -1237,7 +1269,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>		
 		</functions>
 	</building>
-	<!-- end of Bioreactor G1 -->
+	<!-- end of Bioreactor-G -->
 		
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
 		construction="INFLATABLE" base-level="0"
@@ -1345,9 +1377,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="water" amount="2500.0" />					
 
 				<!-- soil related -->
-				<resource-capacity type="soil" amount="500.0" />
-				<resource-capacity type="compost" amount="500.0" />
-				<resource-capacity type="crop waste" amount="500.0" />
+				<resource-capacity type="soil" amount="1000.0" />
+				<resource-capacity type="glucose" amount="1000.0" />
+				<resource-capacity type="compost" amount="1000.0" />
+				<resource-capacity type="crop waste" amount="1000.0" />
 
 				<!-- Supplies -->
 				<resource-initial type="carbon dioxide" amount="100.0" />
@@ -1371,6 +1404,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 1 kW_t for 1.5960 g/millisol or kg/sol
 				 -->
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="4"/>
+				<process-engine name= "Soil Generation from Crop Waste" number-modules="4"/>	
+				<process-engine name= "Soil Generation from Compost" number-modules="2"/>			
+			</waste-processing>
+			
 		</functions>
 	</building>
 <!-- end for inflatable greenhouse -->
@@ -1509,9 +1549,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="grey water" amount="1000.0" />
 
 				<!-- soil related -->
-				<resource-capacity type="soil" amount="1000.0" />
-				<resource-capacity type="compost" amount="1000.0" />
-				<resource-capacity type="crop waste" amount="1000.0" />
+				<resource-capacity type="soil" amount="2500.0" />
+				<resource-capacity type="compost" amount="2500.0" />
+				<resource-capacity type="glucose" amount="2500.0" />
+				<resource-capacity type="crop waste" amount="2500.0" />
 
 				<!-- Supplies -->
 				<resource-initial type="carbon dioxide" amount="200.0" />
@@ -1525,6 +1566,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="40.0" />
 			</thermal-generation>
+					
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="10"/>
+				<process-engine name= "Soil Generation from Crop Waste" number-modules="12"/>		
+				<process-engine name= "Soil Generation from Compost" number-modules="6"/>		
+			</waste-processing>
+			
 		</functions>
 	</building>
 <!-- end for large greenhouse -->
@@ -1868,10 +1916,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								
 				<!-- 6 industrial chemical ingredients -->	
 				<process-engine name="Produce Ethylene" number-modules="2"/>
-				<process-engine name="Produce Polyethylene from Ethylene" number-modules="50"/>
+				<process-engine name="Produce Polyethylene from Ethylene" number-modules="10"/>
 				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
 				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
-				<process-engine name="Produce Polypropylene from Prophylene" number-modules="10"/>
+				<process-engine name="Produce Polypropylene from Propylene" number-modules="10"/>
 				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="10"/>
 									
 			</resource-processing>
@@ -1947,7 +1995,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="brine water" amount="10000.0" />					
 				<resource-capacity type="water" amount="10000.0" />
 				<resource-capacity type="ice" amount="5000.0" />
-				<resource-capacity type="grey water" amount="2000.0" />				
+				<resource-capacity type="grey water" amount="3000.0" />				
 				<resource-capacity type="rock salt" amount="500.0" />
 				
 				<!-- Payload imported from Earth -->
@@ -1963,7 +2011,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="10"/>
 				<process-engine name="Black Water Processor"/>
 			</waste-processing>	
 			
@@ -2102,21 +2150,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								
 				<resource-capacity type="water" amount="10000.0" />
 				<resource-capacity type="ice" amount="5000.0" />
-				<resource-capacity type="grey water" amount="2000.0" />				
+				<resource-capacity type="grey water" amount="3000.0" />				
 				<resource-capacity type="rock salt" amount="500.0" />
-			</storage>
-			
-			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor" number-modules="3"/>
-				<process-engine name="Black Water Processor" number-modules="3"/>
-				<process-engine name= "Solid Waste Management" number-modules="3"/>
-				<process-engine name= "Food Waste Management" number-modules="4"/>
-				<process-engine name= "Hazard Waste Incineration" number-modules="4"/>
-				<process-engine name= "Electronic Waste Disposal"  number-modules="3"/>
-				<process-engine name= "Soil Generation" number-modules="3"/>
-								
-			</waste-processing>
-						
+			</storage>		
 		</functions>
 	</building>
 <!-- end of Atmospheric Processor -->
@@ -2158,7 +2194,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="18" power-required="0.9" />
-			<living-accommodation capacity="11" guesthouse="true">
+			<living-accommodation capacity="12" guesthouse="true">
 				<activity>					
 					<activity-spot xloc="2" yloc="3.2" />
 					<activity-spot xloc="2" yloc="1.8" />
@@ -2195,7 +2231,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="food waste" amount="100.0" />
 				<resource-capacity type="toxic waste" amount="100.0" />
 
-				<resource-capacity type="grey water" amount="1000.0" />
+				<resource-capacity type="grey water" amount="2000.0" />
 				<resource-capacity type="black water" amount="500.0" />
 
 				<resource-capacity type="food" amount="2000.0" />
@@ -2207,7 +2243,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="toilet tissue" amount="100.0" />
 				<resource-initial type="paper" amount="100.0" />
 				<resource-initial type="napkin" amount="100.0" />
-
 			</storage>
 
 			<thermal-generation>
@@ -2216,6 +2251,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Black Water Processor" number-modules="1"/>
+				<process-engine name= "Solid Waste Management" number-modules="1"/>
+ 			</waste-processing>
+ 			
 		</functions>
 	</building>
 <!-- end of Compact Quarters -->
@@ -2230,7 +2272,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="18" power-required="0.9" />
-			<living-accommodation capacity="11" guesthouse="true">
+			<living-accommodation capacity="12" guesthouse="true">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.15" />
 					<activity-spot xloc="2.2" yloc="1.7" />
@@ -2267,7 +2309,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="food waste" amount="100.0" />
 				<resource-capacity type="toxic waste" amount="100.0" />
 
-				<resource-capacity type="grey water" amount="1000.0" />
+				<resource-capacity type="grey water" amount="2000.0" />
 				<resource-capacity type="black water" amount="500.0" />
 
 				<resource-capacity type="food" amount="2000.0" />
@@ -2288,6 +2330,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
+			
+ 			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Black Water Processor" number-modules="1"/>
+				<process-engine name= "Solid Waste Management" number-modules="1"/>
+ 			</waste-processing>
+ 						
 		</functions>
 	</building>
 <!-- end of Residential Quarters -->
@@ -2434,9 +2483,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<resource-capacity type="solid waste" amount="500.0" />
 				<resource-capacity type="food waste" amount="500.0" />
-				<resource-capacity type="grey water" amount="500.0" />
+				<resource-capacity type="grey water" amount="1500.0" />
 				<resource-capacity type="black water" amount="500.0" />
-
+				
 				<resource-capacity type="carbon dioxide" amount="500.0" />
 				<resource-capacity type="carbon monoxide" amount="500.0" />
 				<resource-capacity type="chlorine" amount="100.0" />
@@ -2511,6 +2560,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="3"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
+				<process-engine name= "Solid Waste Management" number-modules="1"/>
+				<process-engine name= "Food Waste Management" number-modules="2"/>
+				<process-engine name= "Soil Generation from Compost" number-modules="2"/>
+			</waste-processing>
+						
 		</functions>
 	</building>
 <!-- end of Lounge -->
@@ -2528,7 +2586,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="5" bed="8">
 				<activity>
-					<activity-spot xloc="1.8" yloc="2.4" />
+					<!-- inner bed :  activity-spot xloc="1.8" yloc="2.4" /-->
+					<activity-spot xloc="-0.98" yloc="3.14" />
+					<activity-spot xloc="-1.72" yloc="3.14" />										
 				</activity>
 				<bed>
 					<bed-location xloc="2.0" yloc="1.35" />					
@@ -2566,17 +2626,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="2"/>
+				<process-engine name="Black Water Processor" number-modules="1"/>
+				<process-engine name= "Hazard Waste Incineration" number-modules="2"/>
+				<process-engine name= "Electronic Waste Disposal"  number-modules="2"/>
+			</waste-processing>
+			
 		</functions>
 	</building>
 <!-- end of Infirmiry-->
 
 
-	<building type="Command and Control" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
+	<building type="Command Center" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="4000">
 		<description>
-			The Command and Control is a communication facility with networking
-			capability for high speed communications and colony-width connectivity.
-			It also coordinates EVA operations.
+			The Command Center is an administrative, a command control hub and a communication 
+			facility with networking capability for high speed communications and 
+			colony-width connectivity. It also coordinates EVA operations.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
@@ -2599,7 +2667,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.88" yloc="-1.34" />
 				</activity>
 			</administration>
-			<communication>
+			<communication tech-level="3">
 				<activity>
 					<activity-spot xloc="1.75" yloc="1.4" />
 					<activity-spot xloc="1.75" yloc="-1.6" />
@@ -2655,7 +2723,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
-<!-- end of Command and Control -->
+<!-- end of Command Center -->
 
 	<building type="Server Farm" width="9.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="18" base-mass="4000"
@@ -2675,7 +2743,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.12" yloc="2.15" />
 				</activity>
 			</administration>
-			<communication>
+			<communication tech-level="2" >
 				<activity>
 					<activity-spot xloc="1.10" yloc="0.8" />
 					<activity-spot xloc="0.36" yloc="0.8" />
@@ -2913,6 +2981,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<tooling name="chemical" number="1"/>
 				<tooling name="metalwork" number="1"/>
 				<tooling name="3D printer" number="2" />
+				<tooling name="soldering" number="2"/>
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -3113,7 +3182,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="Ethylene" amount="3000.0" />
 				<resource-capacity type="Polypropylene" amount="3000.0" />
 				<resource-capacity type="Polystyrene" amount="3000.0" />
-				<resource-capacity type="Prophylene" amount="3000.0" />
+				<resource-capacity type="Propylene" amount="3000.0" />
 				<resource-capacity type="Styrene" amount="2000.0" />
 			</storage>
 		</functions>
@@ -3145,7 +3214,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="ice" amount="6000.0" />
 				<resource-capacity type="water" amount="10000.0" />
 				<resource-capacity type="brine water" amount="2300.0" />
-				<resource-capacity type="grey water" amount="1500.0" />
+				<resource-capacity type="grey water" amount="2000.0" />
 				<resource-capacity type="black water" amount="200.0" />
 			</storage>
 		</functions>
@@ -3257,59 +3326,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="2500">
-		<description> The Manufacturing Shed is a small brick manufacturing
-			building for forming, cutting, coating and glazing bricks for construction projects.
-		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2" />
 
-		<functions>
-			<computation computing-unit="2.0" power-demand="1.0">
-				<activity>
-					<activity-spot xloc="0" yloc="0" />
-				</activity>
-			</computation>			
-			<life-support capacity="4" power-required="0.2" />
-			<manufacture tech-level="3" concurrent-processes="2">
-				<activity>
-					<activity-spot xloc=".95" yloc="1.05" />
-					<activity-spot xloc="-.8" yloc="-.1" />
-					<activity-spot xloc=".2" yloc="-1.1" />
-				</activity>
-				<tooling name="furnace" number="1"/>
-				<tooling name="chemical" number="1"/>
-				<tooling name="metalwork" number="1"/>
-				<tooling name="3D printer" number="1" />
-			</manufacture>
-			<robotic-station capacity="2">
-				<activity>
-					<activity-spot xloc="0.5" yloc="-2" />
-					<activity-spot xloc="0.5" yloc="2" />
-				</activity>
-			</robotic-station>
-			<storage stock-capacity="10000">
-				<resource-capacity type="regolith" amount="1000.0" />
-				<resource-capacity type="carbon" amount="250.0" />
-				<resource-capacity type="iron oxide" amount="250.0" />
-				<resource-capacity type="aluminum oxide" amount="25.0" />
-				<resource-capacity type="sand" amount="1000.0" />
-				<resource-capacity type="iron powder" amount="50.0" />
-				<resource-capacity type="gypsum" amount="50.0" />
-				<resource-capacity type="calcium Carbonate" amount="50.0" />
-				<resource-capacity type="lime" amount="50.0" />
-				<resource-capacity type="cement" amount="500.0" />
-				<resource-capacity type="concrete" amount="500.0" />
-			</storage>
-			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="5.0" />
-				<heat-source type="Electric Heating" capacity="15.0" />
-				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	capacity="20.0" />
-			</thermal-generation>
-		</functions>
-	</building>
-<!-- end of Manufacturing Shed -->
 
 	<building type="Large Sabatier Processor" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="0" base-mass="1500">
@@ -3541,13 +3558,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="12" power-required="0.6" />
-			<living-accommodation capacity="5">
+			<living-accommodation capacity="8">
 				<activity>
-					<activity-spot xloc="1.33" yloc="3.11" />
-					<activity-spot xloc="3.27" yloc="0.27" />
-					<activity-spot xloc="3.09" yloc="-1.07" />
-					<activity-spot xloc="-0.2" yloc="-3.44" />
-					<activity-spot xloc="-3.13" yloc="-1.33" />
+					<activity-spot xloc="0.86" yloc="3.65" />
+					<activity-spot xloc="-0.44" yloc="3.75" />
+					<activity-spot xloc="-2.64" yloc="2.72" />
+					<activity-spot xloc="-3.76" yloc="0.60" />
+					
+					<activity-spot xloc="-2.73" yloc="-2.70" />
+					<activity-spot xloc="-0.44" yloc="-3.7" />
+					<activity-spot xloc="0.86" yloc="-3.7" />
+					<activity-spot xloc="3.00" yloc="-2.33" />
 				</activity>			
 			</living-accommodation>
 			<power-generation>
@@ -3569,6 +3590,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0"/>
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="5"/>
+				<process-engine name="Black Water Processor" number-modules="3"/>
+				<process-engine name= "Solid Waste Management" number-modules="1"/>
+			</waste-processing>
 		</functions>
 	</building>
 <!-- end of Residential Hab-->
@@ -3594,7 +3621,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="2.0" yloc="0" />
+					<activity-spot xloc="-0.197" yloc="1.784" />
+					<activity-spot xloc="-0.478" yloc="1.411" />	
+					
 				</activity>
 				<bed>
 					<bed-location xloc="3.55" yloc="-.42" />
@@ -3635,6 +3664,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0"/>
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="3"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
+				<process-engine name= "Hazard Waste Incineration" number-modules="3"/>
+				<process-engine name= "Electronic Waste Disposal"  number-modules="3"/>						
+			</waste-processing>
+			
 		</functions>
 	</building>
 <!-- end of Medical Hab-->
@@ -3672,6 +3709,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<tooling name="chemical" number="3"/>
 				<tooling name="metalwork" number="3"/>
 				<tooling name="3D printer" number="3" />
+				<tooling name="soldering" number="2"/>
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -3765,7 +3803,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.73" yloc="2.67" />
 				</activity>
 			</administration>
-			<communication>
+			<communication tech-level="1" >
 				<activity>
 					<activity-spot xloc="3.2" yloc="-3.6" />
 				</activity>
@@ -3816,6 +3854,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.43" yloc="-1.87" />
 				</activity>
 				<tooling name="3D printer" number="1" />
+				<tooling name="soldering" number="1"/>
 			</manufacture>
 
 			<medical-care tech-level="2" bed="1">
@@ -3972,13 +4011,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 
 			<waste-processing power-down-level="0.0">
-				<process-engine name="Grey Water Processor"/>
-				<process-engine name="Black Water Processor"/>
+				<process-engine name="Grey Water Processor" number-modules="4"/>
+				<process-engine name="Black Water Processor" number-modules="2"/>
 				<process-engine name= "Solid Waste Management"/>
 				<process-engine name= "Food Waste Management"/>
-				<process-engine name= "Hazard Waste Incineration"/>
-				<process-engine name= "Electronic Waste Disposal"/>
-				<process-engine name= "Soil Generation"/>
+				<process-engine name= "Soil Generation from Compost"/>
 			</waste-processing>			
 			
 		</functions>
@@ -4185,6 +4222,61 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Mining Lab -->
 
+	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="2500">
+		<description> The Manufacturing Shed is a small brick manufacturing
+			building for forming, cutting, coating and glazing bricks for construction projects.
+		</description>
+		<power-required base-power="2.0" base-power-down-power="0.2" />
+
+		<functions>
+			<computation computing-unit="2.0" power-demand="1.0">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>			
+			<life-support capacity="4" power-required="0.2" />
+			<manufacture tech-level="3" concurrent-processes="2">
+				<activity>
+					<activity-spot xloc=".95" yloc="1.05" />
+					<activity-spot xloc="-.8" yloc="-.1" />
+					<activity-spot xloc=".2" yloc="-1.1" />
+				</activity>
+				<tooling name="furnace" number="1"/>
+				<tooling name="chemical" number="1"/>
+				<tooling name="metalwork" number="1"/>
+				<tooling name="3D printer" number="1" />
+				<tooling name="soldering" number="1"/>
+			</manufacture>
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.5" yloc="-2" />
+					<activity-spot xloc="0.5" yloc="2" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="10000">
+				<resource-capacity type="regolith" amount="1000.0" />
+				<resource-capacity type="carbon" amount="250.0" />
+				<resource-capacity type="iron oxide" amount="250.0" />
+				<resource-capacity type="aluminum oxide" amount="25.0" />
+				<resource-capacity type="sand" amount="1000.0" />
+				<resource-capacity type="iron powder" amount="50.0" />
+				<resource-capacity type="gypsum" amount="50.0" />
+				<resource-capacity type="calcium Carbonate" amount="50.0" />
+				<resource-capacity type="lime" amount="50.0" />
+				<resource-capacity type="cement" amount="500.0" />
+				<resource-capacity type="concrete" amount="500.0" />
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="20.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+<!-- end of Manufacturing Shed -->
+
 
 	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
@@ -4260,6 +4352,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- soil related -->
 				<resource-capacity type="soil" amount="500.0" />
 				<resource-capacity type="compost" amount="500.0" />
+				<resource-capacity type="glucose" amount="500.0" />
 				<resource-capacity type="crop waste" amount="500.0" />
 
 				<!-- Supplies -->
@@ -4273,6 +4366,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0"/>
 			</thermal-generation>
+			
+			<waste-processing power-down-level="0.0">
+				<process-engine name="Grey Water Processor" number-modules="4"/>
+				<process-engine name= "Soil Generation from Crop Waste" number-modules="4"/>	
+				<process-engine name= "Soil Generation from Compost" number-modules="2"/>	
+			</waste-processing>
+						
 		</functions>
 	</building>
 <!-- end for inground greenhouse -->

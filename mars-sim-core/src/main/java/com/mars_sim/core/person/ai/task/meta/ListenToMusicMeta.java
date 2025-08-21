@@ -60,8 +60,14 @@ public class ListenToMusicMeta extends FactoryMetaTask {
 		// Probability affected by the person's stress and fatigue.
 		PhysicalCondition condition = person.getPhysicalCondition();
 		double stress = condition.getStress();
+		
+		double soreness = condition.getMuscleSoreness();
+		double painTol = condition.getMusclePainTolerance();
+		
+		double compositeScore = soreness + painTol; 
+		
 		if (pref > 0) {
-			result.addModifier(STRESS_MODIFIER, stress); Math.max(1, stress/20);
+			result.addModifier(STRESS_MODIFIER, (1 + compositeScore + stress) / 50);
 		}
 		
 		if (person.isInSettlement()) {

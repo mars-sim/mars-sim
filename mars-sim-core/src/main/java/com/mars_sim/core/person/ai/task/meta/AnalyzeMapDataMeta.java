@@ -46,18 +46,23 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.RESEARCH, FavoriteType.OPERATION);
 		setTrait(TaskTrait.ACADEMIC);
 		
-		setPreferredJob(JobType.AREOLOGIST, JobType.PHYSICIST, 
+		setPreferredJob(JobType.AREOLOGIST, 
+				JobType.PHYSICIST, 
 				JobType.ENGINEER,
-				JobType.MATHEMATICIAN, JobType.PILOT);
+				JobType.MATHEMATICIAN, 
+				JobType.PILOT);
 		addPreferredJob(JobType.COMPUTER_SCIENTIST, 1.5D);
 		
-		setPreferredRole(RoleType.CREW_ENGINEER, RoleType.SCIENCE_SPECIALIST,
+		setPreferredRole(RoleType.CREW_ENGINEER, 
+				RoleType.SCIENCE_SPECIALIST,
 				RoleType.CREW_OPERATION_OFFICER);
 		addPreferredRole(RoleType.CHIEF_OF_SCIENCE, 1.25D);
 		addPreferredRole(RoleType.COMPUTING_SPECIALIST, 1.5D);
-		addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 1.5D);
+		addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 1.5D);	
 		
+		addAllCrewRoles();
 	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new AnalyzeMapData(person);

@@ -15,6 +15,7 @@ import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Conversion;
 
 /**
  * This class represents a Health problem being suffered by a Person. The class
@@ -342,7 +343,16 @@ public class HealthProblem implements Serializable {
 	 * @return
 	 */
 	public String printStatus() {
-		return getComplaint().getName() + ": " + getState().getName();
+		return Conversion.capitalize0(getComplaint().getName()) + ". " + getState().getName();
+	}
+	
+	/**
+	 * Prints the dead status.
+	 * 
+	 * @return
+	 */
+	public String printDeadStatus() {
+		return Conversion.capitalize0(getComplaint().getName());
 	}
 	
 	/**

@@ -35,7 +35,7 @@ import com.mars_sim.core.tool.Msg;
 @SuppressWarnings("serial")
 public abstract class JHistoryPanel<T> extends JPanel {
 
-	private static final int TIME_WIDTH = 90;
+	private static final int TIME_WIDTH = 100;
 
 	/**
      * Table model that holds the items in the history

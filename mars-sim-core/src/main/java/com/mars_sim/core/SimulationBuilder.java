@@ -161,32 +161,32 @@ public class SimulationBuilder {
 		List<Option> options = new ArrayList<>();
 
 		options.add(Option.builder(CONFIG_ARG).argName("directory").hasArg()
-						.desc("Directory for configurations").build());
+						.desc("Directory for configurations").get());
 		options.add(Option.builder(LOG_ARG)
-					.desc("Enable file logging").build());
+					.desc("Enable file logging").get());
 		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
-								.desc("Define the time ratio of the simulation").build());
+								.desc("Define the time ratio of the simulation").get());
 		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg()
-				.desc("Path to the data directory for simulation files (defaults to user.home)").build());
+				.desc("Path to the data directory for simulation files (defaults to user.home)").get());
 		options.add(Option.builder(BASEURL_ARG).argName("URL to remote content").hasArg()
-				.desc("URL to the remote content repository (defaults to master in GitHub)").build());
+				.desc("URL to the remote content repository (defaults to master in GitHub)").get());
 		
 		options.add(Option.builder(NEW_ARG)
-						.desc("Create a new simulation if one is not present").build());
+						.desc("Create a new simulation if one is not present").get());
 		options.add(Option.builder(SCENARIO_ARG).argName("scenario name").hasArg()
-				.desc("New simulation from a scenario").build());
+				.desc("New simulation from a scenario").get());
 		options.add(Option.builder(TEMPLATE_ARG).argName("template name").hasArg()
-						.desc("New simulation from a template").build());
+						.desc("New simulation from a template").get());
 		options.add(Option.builder(SPONSOR_ARG).argName(SPONSOR_ARG).hasArg()
-						.desc("Set the sponsor for the settlement template").build());		
+						.desc("Set the sponsor for the settlement template").get());		
 		options.add(Option.builder(LATITUDE_ARG).argName("latitude").hasArg()
-				.desc("Set the latitude of the new template Settlement").build());	
+				.desc("Set the latitude of the new template Settlement").get());	
 		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg()
-				.desc("Set the longitude of the new template Settlement").build());	
+				.desc("Set the longitude of the new template Settlement").get());	
 		options.add(Option.builder(CREW_ARG).argName("true|false").hasArg()
-				.desc("Enable or disable use of the crews").build());	
+				.desc("Enable or disable use of the crews").get());	
 		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg()
-				.desc("Enable diagnositics modules").build());	
+				.desc("Enable diagnositics modules").get());	
 		return options;
 	}
 

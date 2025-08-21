@@ -1,6 +1,5 @@
 /*
  * Mars Simulation Project
-
  * HelpRunner.java
  * @date 2024-02-17
  * @author Barry Evans
@@ -43,8 +42,6 @@ public class HelpRunner {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
-
         // Setup commands
         Options options = new Options();
         
@@ -87,7 +84,6 @@ public class HelpRunner {
                 for(var s : scopes) {
                     var typeGen = context.getGenerator(s);
                     typeGen.generateAll(output);
-
                 }
             }
 		} catch (IOException e) {

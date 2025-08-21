@@ -171,6 +171,8 @@ public final class ActivitySpot implements Serializable {
 
 	/**
 	 * Gets the name of the spot.
+	 * @apiNote Do NOT use getName for finding if two activity spots are the same. 
+	 * e.g. For a bunk bed that has upper and lower deck, there are two activity spots designated with the same name such as 'bunk 1'  
 	 * 
 	 * @return Name of the spot
 	 */

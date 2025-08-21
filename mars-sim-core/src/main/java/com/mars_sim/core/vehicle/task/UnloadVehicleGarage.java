@@ -42,7 +42,7 @@ public class UnloadVehicleGarage extends Task {
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
 
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(0.1D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-										PhysicalEffort.HIGH, 0.01D, SkillType.MECHANICS);
+										PhysicalEffort.HIGH, 0.2D, SkillType.MECHANICS);
 	
 	/**
 	 * The amount of resources (kg) one person of average strength can unload per

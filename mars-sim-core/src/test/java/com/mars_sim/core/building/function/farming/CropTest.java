@@ -85,8 +85,11 @@ public class CropTest extends AbstractMarsSimUnitTest{
         }
 
         var harvested = crop.getHarvest();
+        
+        double cropCache = crop.getCropCache();
+        
         // assertTrue(cropName + " crop harvested over 10%", (harvested.value()/harvested.max()) > 0.5D);
-        assertEquals(cropName + " stored", s.getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01);
+        assertEquals(cropName + " stored", cropCache + s.getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01);
    
         return crop;
     }

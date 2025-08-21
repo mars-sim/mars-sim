@@ -57,10 +57,10 @@ public class MissionPlanning implements Serializable {
 			case CHIEF_OF_AGRICULTURE:
 			case CHIEF_OF_COMPUTING:
 			case CHIEF_OF_ENGINEERING:
-			case CHIEF_OF_LOGISTICS_N_OPERATIONS:
-			case CHIEF_OF_SAFETY_N_HEALTH:
+			case CHIEF_OF_LOGISTIC_OPERATION:
+			case CHIEF_OF_SAFETY_HEALTH_SECURITY:
 			case CHIEF_OF_SCIENCE:
-			case CHIEF_OF_SUPPLY_N_RESOURCES:
+			case CHIEF_OF_SUPPLY_RESOURCE:
 			case MISSION_SPECIALIST:
 				weight = 1.5;  break;
 			default:

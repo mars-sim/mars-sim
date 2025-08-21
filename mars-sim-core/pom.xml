@@ -32,6 +32,32 @@
 			<version>1.1.4</version>
 		</dependency>
 		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-rng-simple</artifactId>
+		    <version>1.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-rng-sampling</artifactId>
+		    <version>1.6</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-statistics-descriptive</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-statistics-distribution</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-statistics-inference</artifactId>
+			<version>1.1</version>
+		</dependency>		
+			
+		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>
 		    <version>${commons-io.version}</version>
@@ -85,7 +111,7 @@
 			<plugin>
 				<groupId>io.github.git-commit-id</groupId>
 				<artifactId>git-commit-id-maven-plugin</artifactId>
-			    <version>9.0.1</version>
+			    <version>9.0.2</version>
 			    <executions>
 			        <execution>
                         <id>get-the-git-infos</id>

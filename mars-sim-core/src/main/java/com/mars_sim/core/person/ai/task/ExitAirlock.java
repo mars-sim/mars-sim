@@ -339,6 +339,10 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 
+		if (EVAOperation.isInEmergency(person)) {
+	      	return false;
+		}
+		
 		return !person.isEVAFit();
 	}
 	
@@ -367,6 +371,10 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 
+		if (EVAOperation.isInEmergency(person)) {
+	      	return false;
+		}
+		
 		return !person.isNominallyFit();
 	}
 	
@@ -383,7 +391,7 @@ public class ExitAirlock extends Task {
 
 		clearDown();
 		
-		logger.info(person, 16_000, reason);
+//		May add back for future testing :logger.info(person, 16_000, reason);
 
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
@@ -1268,14 +1276,12 @@ public class ExitAirlock extends Task {
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 	
 		if (airlock.isFull()) {
-			logger.info(person, 4_000, 
-					COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
+//			May add back for future testing :logger.info(person, 4_000, COULDNT_ENTER + airlock.getEntityName() + ". " + ALL_CHAMBERS_OCCUPIED);
 			return false;
 		}
 		
 		if (EVAOperation.isHungryAtMealTime(person, 20)) {
-			logger.info(person, 4_000,
-					"Too close to starting meal time and is doubly hungry.");
+//			May add back for future testing :logger.info(person, 4_000, "Too close to starting meal time and is doubly hungry.");
 			return false;
 		}
 		

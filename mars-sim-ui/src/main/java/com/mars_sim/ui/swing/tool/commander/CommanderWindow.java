@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2024-07-29
+ * @date 2025-08-12
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.commander;
@@ -35,14 +35,17 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -82,6 +85,8 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+
+import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -151,6 +156,12 @@ public class CommanderWindow extends ToolWindow {
 	private JRadioButton r4;
 
 	private JButton prefButton;
+	
+	private JTextField waterLimitTextField;
+	
+	private JLabel clevelLabel;
+	private JLabel iceProbLabel;
+	private JLabel regolithProbLabel;
 	
 	private Map<Colony, Integer> popCaches = new HashMap<>();
 	private Map<Colony, Integer> lodgingCaches = new HashMap<>();
@@ -392,6 +403,8 @@ public class CommanderWindow extends ToolWindow {
 			setupTradingSettlements();
 			// Modify preference settlement in Mission Tab			
 			prefButton.setText("Open " + s.getName() + " Preference tab");
+			
+			update();
 		}
 	}
 
@@ -915,31 +928,32 @@ public class CommanderWindow extends ToolWindow {
 	 * Creates the panel for Agriculture.
 	 */
 	private void createAgriculturePanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		tabPane.add(AGRICULTURE_TAB, panel);
 
-		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		topPanel.setBorder(BorderFactory.createTitledBorder(" Crop Growing Area "));
-		panel.add(topPanel, BorderLayout.NORTH);
+		JPanel topPanel = new JPanel(new BorderLayout());
+		tabPane.add(AGRICULTURE_TAB, topPanel);
 
-		JPanel buildingPanel = new JPanel(new BorderLayout(20, 20));
-		buildingPanel.setBorder(BorderFactory.createTitledBorder(" Select a Farm : "));	
+		JPanel migPanel = new JPanel(new MigLayout());
+		migPanel.setBorder(BorderFactory.createTitledBorder(" Growing Crop "));
+		topPanel.add(migPanel, BorderLayout.CENTER);
+		 
+		JPanel buildingPanel = new JPanel();
+		buildingPanel.setBorder(BorderFactory.createTitledBorder(" Select a Farm "));	
 		buildingPanel.setToolTipText("Choose a farm from the building combobox in this settlement");
-		topPanel.add(buildingPanel, BorderLayout.WEST);
 		
 		greenhouseBldgs = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		
 		constructBuildingBox(settlement, greenhouseBldgs);
-		buildingPanel.add(buildingBox, BorderLayout.CENTER);
+		buildingPanel.add(buildingBox);
 
+		migPanel.add(buildingPanel, "gap unrelated");
+		
 		// Create spinner panel
-		JPanel spinnerPanel = new JPanel(new BorderLayout(20, 20));
-		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Area Per Crop (in SM) : "));
-		
-		topPanel.add(spinnerPanel, BorderLayout.CENTER);
-		
-		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 50, 1);
+		JPanel spinnerPanel = new JPanel();
+		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Crop Area "));
 	
+		SpinnerModel spinnerModel = new SpinnerNumberModel(10, 1, 50, 1);
+
+		
 		// Go to that selected settlement
 		Building bldg = (Building)buildingBox.getSelectedItem();
 		Farming farm = null;
@@ -951,12 +965,19 @@ public class CommanderWindow extends ToolWindow {
 		spinnerModel.setValue(currentArea);
 				
 		areaSpinner = new JSpinner(spinnerModel);
-		spinnerPanel.add(areaSpinner, BorderLayout.CENTER);
-		spinnerPanel.setToolTipText("Change the growing area for each crop in a selected farm");
+		
+		// 1. Get the editor component of your spinner:
+		Component spinnerEditor = areaSpinner.getEditor();
+		// 2. Get the text field of your spinner's editor:
+		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
+		// 3. Set a default size to the text field:
+		jftf.setColumns(6);
+		spinnerPanel.add(areaSpinner);
+		spinnerPanel.setToolTipText("Change the growing area (in sq meters) for each crop in a selected farm");
 		
 		areaSpinner.addChangeListener(e -> {
 			int newArea = (int)spinnerModel.getValue();
-			logger.info(settlement, "Setting Growing Area per Crop (in SM) to " + newArea + ".");
+			logger.info(settlement, "Setting Growing Area per Crop (in sq meters) to " + newArea + ".");
 			
 			if (!greenhouseBldgs.isEmpty()) {
 				for (Building b: greenhouseBldgs) {
@@ -965,6 +986,9 @@ public class CommanderWindow extends ToolWindow {
 				}
 			}
 		});
+		
+		migPanel.add(spinnerPanel);
+		
 	}
 
 	  
@@ -1030,14 +1054,24 @@ public class CommanderWindow extends ToolWindow {
 		createLogBookPanel(midPanel);
 	}
 
-	private void createEVAOVerride(JPanel panel) {
+	/**
+	 * Creates a digging panel.
+	 * 
+	 * @return
+	 */
+	private JPanel createDiggingOverride() {
+		JPanel borderPanel = new JPanel(new BorderLayout(0, 0));
+		borderPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		borderPanel.setBorder(BorderFactory.createTitledBorder(" In-Situ Resources "));
+		borderPanel.setToolTipText("Override the ice and regolith digging");
+
 		// Create override panel.
-		JPanel overridePanel = new JPanel(new GridLayout(1, 2));
+		JPanel overridePanel = new JPanel(new GridLayout(2, 1, 5, 0));
 		overridePanel.setAlignmentX(CENTER_ALIGNMENT);		
-		panel.add(overridePanel, BorderLayout.NORTH);
+		borderPanel.add(overridePanel, BorderLayout.WEST);
 
 		// Create DIG_LOCAL_REGOLITH override check box.
-		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith");
+		overrideDigLocalRegolithCB = new JCheckBox("Suspend Digging Regolith     ");
 		overrideDigLocalRegolithCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalRegolithCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalRegolithCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_REGOLITH, overrideDigLocalRegolithCB.isSelected()));
@@ -1045,13 +1079,79 @@ public class CommanderWindow extends ToolWindow {
 		overridePanel.add(overrideDigLocalRegolithCB);
 		
 		// Create DIG_LOCAL_ICE override check box.
-		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice");
+		overrideDigLocalIceCB = new JCheckBox("Suspend Digging Ice     ");
 		overrideDigLocalIceCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalIceCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalIceCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_ICE, overrideDigLocalIceCB.isSelected()));
 		overrideDigLocalIceCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE));
 		overridePanel.add(overrideDigLocalIceCB);
+		
+		AttributePanel probabilityPanel = new AttributePanel(2);
+		probabilityPanel.setAlignmentX(CENTER_ALIGNMENT);	
+		probabilityPanel.setBorder(new EmptyBorder(2, 5, 2, 5));
+		probabilityPanel.setBorder(BorderFactory.createTitledBorder(" Digging Probability "));
+		probabilityPanel.setToolTipText("The current ice and regolith digging probability score for this settlement");
+		
+		// Get the ice and regolith probability scores
+		double iceProb = settlement.getIceProbabilityValue();
+		double regolithProb = settlement.getRegolithProbabilityValue();
+		iceProbLabel = probabilityPanel.addRow("Ice Value", "");
+		regolithProbLabel = probabilityPanel.addRow("Regolith Value", "");
+		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
+		regolithProbLabel.setText(Math.round(regolithProb * 100.0)/100.0 + "");
+		
+		borderPanel.add(probabilityPanel, BorderLayout.CENTER);
+		
+		return borderPanel;
 	}
+	
+	/**
+	 * Creates a water rationing emergency panel.
+	 * 
+	 * @param topPanel
+	 */
+	public JPanel createWaterRationingPanel() {
+		// Create panel.
+		JPanel emerPanel = new JPanel(new BorderLayout());
+		emerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		emerPanel.setBorder(BorderFactory.createTitledBorder(" State of Emergency Thresholds "));
+		emerPanel.setToolTipText("Adjust the threshold for triggering the state of emergency for this settlement");
+	
+		AttributePanel currentPanel = new AttributePanel(2);
+		currentPanel.setAlignmentX(CENTER_ALIGNMENT);	
+		emerPanel.add(currentPanel, BorderLayout.CENTER);
+			
+		// Get the water rationing 
+		int currentLevel = settlement.getRationing().getRationingLevel();
+		clevelLabel = currentPanel.addRow("Current Water Rationing Level", "");
+		clevelLabel.setText(currentLevel + "");
+		
+		// Set up a textfield for inputting water rationing emergency limit
+		waterLimitTextField = new JTextField(10); 
+		waterLimitTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+		waterLimitTextField.setText(settlement.getRationing().getEmergencyLevel() + "");
+		
+		currentPanel.addLabelledItem("Emergency Water Rationing Level", waterLimitTextField, 
+				"Please input the Emergency Water Rationing Level Limit as an integer");
+	
+		return emerPanel;
+	}
+	
+	/**
+	 * Is it a double number ?
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static boolean isDouble(String input) {
+	    try {
+	        Double.parseDouble(input);
+	        return true;
+	    } catch (NumberFormatException e) {
+	        return false;
+	    }
+	}
+	
 	/**
 	 * Creates the person combo box.
 	 *
@@ -1082,7 +1182,7 @@ public class CommanderWindow extends ToolWindow {
 	private void createTaskCombobox(JPanel panel) {
 		DefaultComboBoxModel<TaskFactory> taskComboBoxModel = new DefaultComboBoxModel<>();
       	// Set up combo box model.
-	    taskComboBoxModel.addAll(MetaTaskUtil.getPersonTaskFactorys());
+	    taskComboBoxModel.addAll(MetaTaskUtil.getPersonTaskFactories());
 
 		// Create comboBox.
 		JComboBoxMW<TaskFactory> taskComboBox = new JComboBoxMW<>(taskComboBoxModel);
@@ -1359,11 +1459,14 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 
 		// Create the checkbox for dig local regolith and ice override
-		createEVAOVerride(topPanel);
+		topPanel.add(createDiggingOverride(), BorderLayout.NORTH);
+ 
+		// Create a water rationing panel
+		topPanel.add(createWaterRationingPanel(), BorderLayout.CENTER);
 		
 		// Create a button panel
 		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
-		topPanel.add(buttonPanel, BorderLayout.CENTER);
+		topPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		buttonPanel.setBorder(BorderFactory.createTitledBorder(" Pausing Interval"));
 		buttonPanel.setToolTipText("Select the time interval for automatic simulation pausing");
@@ -1478,17 +1581,60 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
+		update();
+	}
+	
+	/**
+	 * Updates the window
+	 */ 
+	public void update() {
 
 		// Update list
 		listUpdate();
-		
 		// Update lunar colonies
 		updateLunarPanel();
-		
 		// Update the greenhouse building list
 		updateGreenhouses();
+		// Update the ice and regolith probability scores
+		updateIceRegolithProbability();
+		// Update the water rationing
+		updateWaterRationing();
 	}
 
+	private void updateIceRegolithProbability() {
+		// Get the ice and regolith probability scores 
+		double iceProb = settlement.getIceProbabilityValue();
+		double regolithProb = settlement.getRegolithProbabilityValue();
+		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
+		regolithProbLabel.setText(Math.round(regolithProb * 100.0)/100.0 + "");
+	}
+	
+	private void updateWaterRationing() {
+		
+		// Get the water rationing 
+		int currentLevel = settlement.getRationing().getRationingLevel();
+		clevelLabel.setText(currentLevel + "");
+		
+		int limit = 0;
+
+		
+		if (isDouble(waterLimitTextField.getText())) {
+			double limitDouble = Double.parseDouble(waterLimitTextField.getText());
+			limit = (int)limitDouble;
+		}
+		else {
+			try {
+				limit = Integer.parseInt(waterLimitTextField.getText());
+			    settlement.getRationing().setEmergencyLevel(limit);
+			} catch (NumberFormatException e) {
+			    JOptionPane.showMessageDialog(this, 
+			    		"Please enter a valid integer for the emergency water rationing level", 
+			    		"Input Error", JOptionPane.ERROR_MESSAGE);  
+			}
+		}
+	}
+	
+	
 	/**
 	 * Updates the greenhouse list.
 	 */

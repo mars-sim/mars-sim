@@ -130,8 +130,7 @@ public class MarsProject {
 				String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 				if (!os.contains("linux")) {
 					System.setProperty("sun.java2d.ddforcevram", "true");
-				}
-				
+				}			
 			}
 
 			// Preload the Config
@@ -146,44 +145,10 @@ public class MarsProject {
 			}
 			else if (simFile != null) {
 				builder.setSimFile(simFile);
-			}
-		
+			}	
 			// Go to console main menu if there is no template well-defined in the startup string
 			else if (!builder.isFullyDefined() && useNew) {
-		
-				// Ask if running in standard sandbox mode or go to Console Menu
-				if (!isSandbox && !bypassConsoleMenuDialog()) {
-					logger.config("Please go to the Console Main Menu to choose an option.");
-					int type = interactiveTerm.startConsoleMainMenu();
-					switch (type) {
-						case 1 -> {
-							logger.config("Start the Scenario Editor...");
-							startScenarioEditor(builder);
-						}
-						case 2 -> {
-							// Load simulation
-							logger.config("Load the sim...");
-							String filePath = selectSimFile();
-							if (filePath != null) {
-								builder.setSimFile(filePath);
-							}
-						}
-						case 3 -> {
-							// Proceed with configuring the society mode
-							logger.config("Configuring the society mode...");
-							
-							builder.startSocietySim();
-	
-							// Start beryx console
-							startConsoleThread();
-							
-							return;
-						}
-						default ->
-							// Check out crew flag
-							builder.setUseCrews(interactiveTerm.getUseCrew());
-     				}
-				}
+				goToConsole(builder);
 			}
 
 			// Build and run the simulator
@@ -203,6 +168,48 @@ public class MarsProject {
 	}
 
 	/**
+	 * Goes to console for building the sim.
+	 * 
+	 * @param builder
+	 */
+	private void goToConsole(SimulationBuilder builder) {
+
+		// Ask if running in standard sandbox mode or go to Console Menu
+		if (!isSandbox && !bypassConsoleMenuDialog()) {
+			logger.config("Please go to the Console Main Menu to choose an option.");
+			int type = interactiveTerm.startConsoleMainMenu();
+			switch (type) {
+				case 1 -> {
+					logger.config("Start the Scenario Editor...");
+					startScenarioEditor(builder);
+				}
+				case 2 -> {
+					// Load simulation
+					logger.config("Load the sim...");
+					String filePath = selectSimFile();
+					if (filePath != null) {
+						builder.setSimFile(filePath);
+					}
+				}
+				case 3 -> {
+					// Proceed with configuring the society mode
+					logger.config("Configuring the society mode...");
+					
+					builder.startSocietySim();
+
+					// Start beryx console
+					startConsoleThread();
+					
+					return;
+				}
+				default ->
+					// Check out crew flag
+					builder.setUseCrews(interactiveTerm.getUseCrew());
+			}
+		}
+	}
+	
+	/**
 	 * Checks what switches or arguments have been provided.
 	 * 
 	 * @param builder
@@ -216,24 +223,24 @@ public class MarsProject {
 		}
 
 		options.addOption(Option.builder(DISPLAY_HELP)
-				.desc("Display help options").build());
+				.desc("Display help options").get());
 		options.addOption(Option.builder(NOAUDIO)
-				.desc("Disable the audio").build());
+				.desc("Disable the audio").get());
 		options.addOption(Option.builder(NOGUI)
-				.desc("Disable the main UI").build());
+				.desc("Disable the main UI").get());
 		options.addOption(Option.builder(CLEANUI)
-				.desc("Disable loading stored UI configurations").build());
+				.desc("Disable loading stored UI configurations").get());
 		options.addOption(Option.builder(SANDBOX)
-				.desc("Start in Sandbox Mode").build());
+				.desc("Start in Sandbox Mode").get());
 		options.addOption(Option.builder(NEW)
-				.desc("Enable quick start").build());
+				.desc("Enable quick start").get());
 		options.addOption(Option.builder(SITE_EDITOR)
-				.desc("Start the Scenario Editor").build());
+				.desc("Start the Scenario Editor").get());
 		options.addOption(Option.builder(PROFILE)
-				.desc("Set up the Commander Profile").build());
+				.desc("Set up the Commander Profile").get());
 		options.addOption(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
 				.desc("Load the a previously saved sim. No argument open file selection dialog. '"
-									+ DEFAULT_FILE + "' will use default").build());
+									+ DEFAULT_FILE + "' will use default").get());
 		
 		DefaultParser commandline = new DefaultParser();
 		try {

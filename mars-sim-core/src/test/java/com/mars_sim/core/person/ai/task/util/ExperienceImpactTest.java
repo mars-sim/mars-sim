@@ -212,6 +212,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         var origSoreness = cond.getMuscleSoreness();
         var origHealth = cond.getMuscleHealth();
 
+//        System.out.println("origSoreness: " + origSoreness);
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                           PhysicalEffort.HIGH, 0);
@@ -219,6 +220,8 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         noEffort.apply(p, 10, 1, 1);
 
+//        System.out.println("new Soreness: " + cond.getMuscleSoreness());
+        
         assertLessThan("Energy reduced", origEnergy, cond.getEnergy());
         assertGreaterThan("Muscle soreness inceased", origSoreness, cond.getMuscleSoreness());
         assertLessThan("Muscle health decreased", origHealth, cond.getMuscleHealth());

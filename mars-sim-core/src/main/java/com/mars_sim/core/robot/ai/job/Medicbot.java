@@ -19,7 +19,7 @@ public class Medicbot extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	private static final double POP_PER_BOT = 15;
+	private static final double POP_PER_BOT = 24;
 
 	/** Constructor. */
 	public Medicbot() {
@@ -29,6 +29,7 @@ public class Medicbot extends RobotJob {
 
 	/**
 	 * Gets a robot's capability to perform this job.
+	 * 
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
@@ -49,18 +50,18 @@ public class Medicbot extends RobotJob {
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
 	@Override
 	public double getOptimalCount(Settlement settlement) {
 
-		// Add (tech level / 2) for all medical infirmaries.
-		double result = settlement.getAllAssociatedPeople().size()/POP_PER_BOT;
+		double result = settlement.getNumCitizens()/POP_PER_BOT;
 
 		// Put a lower limit
 		if (result < 1D) {
-			result = 0D;
+			result = 1D;
 		}
 		return result;
 	}

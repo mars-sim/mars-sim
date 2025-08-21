@@ -82,18 +82,18 @@ public class MarsProjectHeadless {
 		}
 
 		options.addOption(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
-				.desc("Load the a previously saved sim. No argument then the default is used").build());
+				.desc("Load the a previously saved sim. No argument then the default is used").get());
 		options.addOption(Option.builder(DISPLAYHELP)
-				.desc("Help of the options").build());
+				.desc("Help of the options").get());
 		OptionGroup remoteGrp = new OptionGroup();
 		remoteGrp.setRequired(false); // REMOTE is the internal default
 		remoteGrp.addOption(Option.builder(REMOTE).argName("port number").hasArg().optionalArg(true)
-								.desc("Run the remote console service [default]").build());
+								.desc("Run the remote console service [default]").get());
 		remoteGrp.addOption(Option.builder(NOREMOTE)
-				.desc("Do not start a remote console service").build());
+				.desc("Do not start a remote console service").get());
 		options.addOptionGroup(remoteGrp);
 		options.addOption(Option.builder(RESETADMIN)
-				.desc("Reset the internal admin password").build());
+				.desc("Reset the internal admin password").get());
 
 		CommandLineParser commandline = new DefaultParser();
 		boolean resetAdmin = false;

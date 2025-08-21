@@ -82,7 +82,7 @@ public class Management extends Function {
 	/**
 	 * Gets an available building with the management function.
 	 *
-	 * @param person the person looking for the command and control station.
+	 * @param person the person looking for the management station.
 	 * @return an available office space or null if none found.
 	 */
 	public static Building getAvailableStation(Person person) {

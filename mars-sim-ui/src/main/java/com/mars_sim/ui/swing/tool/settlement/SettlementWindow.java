@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementWindow.java
- * @date 2023-05-14
+ * @date 2025-08-07
  * @author Lars Naesbye Christensen
  */
 
@@ -32,6 +32,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.SpotlightLayerUI;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
@@ -45,7 +46,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	private static final int HORIZONTAL = 800;
 	private static final int VERTICAL = 800;
-	private static final int HEIGHT_STATUS_BAR = 20;
+	private static final int HEIGHT_STATUS_BAR = 18;
 	
 	public static final String NAME = "settlement_map";
 	public static final String ICON = "settlement_map";
@@ -69,8 +70,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
-	private Font font0 = new Font(Font.MONOSPACED, Font.PLAIN, 11);
-	
 	/**
 	 * Constructor.
 	 *
@@ -83,39 +82,13 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
 		setBackground(Color.BLACK);
-
+		
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		setContentPane(mainPanel);
 
-		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new JStatusBar(1, 1, HEIGHT_STATUS_BAR);
-        statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+		statusBar = createStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
-        popLabel = new JLabel();
-        popLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        popLabel.setFont(font0);
-          
-	    buildingXYLabel = new JLabel();
-	    buildingXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	    buildingXYLabel.setFont(font0);
-  		
-	    windowXYLabel = new JLabel();
-	    windowXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	    windowXYLabel.setFont(font0);
-    
-	    mapXYLabel = new JLabel();
-	    mapXYLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-	    mapXYLabel.setFont(font0);
-    
-        JPanel gridPanel = new JPanel(new GridLayout(1, 4));
-        gridPanel.setAlignmentX(CENTER_ALIGNMENT);
-	    gridPanel.add(popLabel);
-	    gridPanel.add(windowXYLabel);
-	    gridPanel.add(mapXYLabel);
-	    gridPanel.add(buildingXYLabel);
-	    statusBar.addFullBarComponent(gridPanel, true);
-	    
         // Create subPanel for housing the settlement map
 		subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
@@ -139,6 +112,52 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setVisible(true);
 	}
 
+	private JStatusBar createStatusBar() {
+		Font font = StyleManager.getSmallFont();
+		// Creates the status bar for showing the x/y coordinates and population
+		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
+        statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+
+        popLabel = new JLabel();
+        popLabel.setPreferredSize(new Dimension(100, HEIGHT_STATUS_BAR));
+        popLabel.setVerticalAlignment(SwingConstants.CENTER);
+        popLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        popLabel.setFont(font);
+          
+	    buildingXYLabel = new JLabel();
+	    buildingXYLabel.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
+	    buildingXYLabel.setVerticalAlignment(SwingConstants.CENTER);
+	    buildingXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    buildingXYLabel.setFont(font);
+  		
+	    windowXYLabel = new JLabel();
+	    windowXYLabel.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
+	    windowXYLabel.setVerticalAlignment(SwingConstants.CENTER);
+	    windowXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    windowXYLabel.setFont(font);
+    
+	    mapXYLabel = new JLabel();
+	    mapXYLabel.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
+	    mapXYLabel.setVerticalAlignment(SwingConstants.CENTER);
+	    mapXYLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	    mapXYLabel.setFont(font);
+    
+	    statusBar.addLeftComponent(popLabel, false);
+	    
+	    statusBar.addCenterComponent(buildingXYLabel, false);
+	    
+        JPanel gridPanel = new JPanel(new GridLayout(1, 2));
+        gridPanel.setPreferredSize(new Dimension(300, HEIGHT_STATUS_BAR));
+        gridPanel.setAlignmentY(CENTER_ALIGNMENT);
+        gridPanel.setAlignmentX(CENTER_ALIGNMENT);
+	    gridPanel.add(windowXYLabel);
+	    gridPanel.add(mapXYLabel);
+	    
+	    statusBar.addRightComponent(gridPanel, false);
+
+	    return statusBar;
+	}
+	
 	private String format1(double x, double y) {
 		return (int)x + ", " + (int)y;
 	}
@@ -313,7 +332,5 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		
 		mapPanel = null;
 		desktop = null;
-
-		font0 = null;
 	}
 }

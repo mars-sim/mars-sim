@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StyleManager.java
- * @date 2025-06-30
+ * @date 2025-08-13
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing;
@@ -31,9 +31,13 @@ import javax.swing.plaf.ColorUIResource;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.FlatGradiantoDarkFuchsiaIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTLightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialOceanicIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMonokaiProIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMoonlightIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTNightOwlIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedLightIJTheme;
@@ -84,10 +88,11 @@ public class StyleManager {
     
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
     public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
-    
+
     public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
+    public static final DecimalFormat DECIMAL2_KG_SOL = new DecimalFormat("#,##0.00 kg/sol");
     public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
-	
+
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL2_KW = new DecimalFormat("#,##0.00 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
@@ -109,7 +114,7 @@ public class StyleManager {
     
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.wattpermetersquared")); //-NLS-1$
+    								+ Msg.getString("unit.wattpermetersquared")); //-NLS-1$ // ("#,##0.0 W/m\u00b2");
     // For air density
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.grampercubicmeter")); //-NLS-1$
@@ -132,12 +137,17 @@ public class StyleManager {
     public static final String NIGHT_OWL = "Night Owl";
     public static final String MONOKAI_DARK = "Monokai Dark";
     public static final String SOLARIZED_DARK = "Solarized Dark";
+    public static final String GRADIANTO_DARK_FUCHSIA = "Gradianto Dark Fuchsia";
+    public static final String MATERIAL_PALENIGHT = "Material Palenight";
+    public static final String MOONLIGHT = "Moonlight";
+    public static final String ARC_DARK = "Arc Dark";
     
     private static final String [] LAF_LIGHT_STYLES = {
     		SYSTEM, LIGHT_RED, LIGHT_GREEN, LIGHT_BLUE, LIGHT_ORANGE, LIGHT_OWL, SOLARIZED_LIGHT};
     
     private static final String [] LAF_DARK_STYLES = {
-    		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK};
+    		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK, 
+    		GRADIANTO_DARK_FUCHSIA, MATERIAL_PALENIGHT, MOONLIGHT, ARC_DARK};
     
  // Create a new static string array that combines the elements of array1 and array2
     public static String[] LAF_STYLES = new String[LAF_LIGHT_STYLES.length + LAF_DARK_STYLES.length];
@@ -154,11 +164,12 @@ public class StyleManager {
     private static final String LABEL_FONT_STYLE = "labelFont";
     private static final String HEADING_FONT_STYLE = "headingFont";
     private static final String SUBHEADING_FONT_STYLE = "subHeadingFont";
+    private static final String SUBTITLE_FONT_STYLE = "subTitleFont";
     private static final String FONT_FAMILY = "family";
     private static final String FONT_STYLE = "style";
     private static final String FONT_SIZE = "size";
 
-    // Constrants for LaF styling
+    // Constraints for LaF styling
     private static final String LAF_STYLE = "Look_and_Feel";
     private static final String LAF_NAME = "name";
 
@@ -166,6 +177,7 @@ public class StyleManager {
     private static Font systemFont;
     private static Font headingFont;
     private static Font subHeadingFont;
+    private static Font subTitleFont;
     private static Font smallFont;
     private static Font smallLabelFont;
 
@@ -199,6 +211,12 @@ public class StyleManager {
         subHeadingProps.setProperty(FONT_SIZE, "+3");
         styles.put(SUBHEADING_FONT_STYLE, subHeadingProps);
 
+        // Sub heading font used inside panels is BOLD & size +4
+        Properties subTitleProps = new Properties();
+        subTitleProps.setProperty(FONT_STYLE, "Italic");
+        subTitleProps.setProperty(FONT_SIZE, "+2");
+        styles.put(SUBTITLE_FONT_STYLE, subTitleProps);
+        
         // Default is the LAF with a Red accent colour
         Properties lafProps = new Properties();
         lafProps.setProperty(LAF_NAME, LIGHT_RED);
@@ -314,6 +332,30 @@ public class StyleManager {
                 	FlatMTSolarizedDarkIJTheme.setup();
                     break;
                     
+                case GRADIANTO_DARK_FUCHSIA:
+                	isLightTheme = false;
+                	lafClass = FlatGradiantoDarkFuchsiaIJTheme.class.getName();
+                	FlatGradiantoDarkFuchsiaIJTheme.setup();
+                    break;
+                    
+                case MATERIAL_PALENIGHT: 
+                	isLightTheme = false;
+                	lafClass = FlatMTMaterialOceanicIJTheme.class.getName();
+                	FlatMTMaterialOceanicIJTheme.setup();
+                    break;
+                    
+                case MOONLIGHT: 
+                	isLightTheme = false;
+                	lafClass = FlatMTMoonlightIJTheme.class.getName();
+                	FlatMTMoonlightIJTheme.setup();
+                    break;
+                    
+                case ARC_DARK:
+                	isLightTheme = false;
+                	lafClass = FlatMTAtomOneDarkIJTheme.class.getName();
+                	FlatMTAtomOneDarkIJTheme.setup();
+                    break;
+                    
                 case SYSTEM:
                 	isLightTheme = true;
                     lafClass = UIManager.getSystemLookAndFeelClassName();
@@ -405,7 +447,8 @@ public class StyleManager {
         labelFont = createFont(defaultFont, styles.get(LABEL_FONT_STYLE));
         headingFont = createFont(defaultFont, styles.get(HEADING_FONT_STYLE));
         subHeadingFont = createFont(defaultFont, styles.get(SUBHEADING_FONT_STYLE));
-
+        subTitleFont = createFont(defaultFont, styles.get(SUBTITLE_FONT_STYLE));
+        
         // Smaller font is not user-configurable
         Properties smallProps = new Properties();
         smallProps.setProperty(FONT_SIZE, "-2");
@@ -518,7 +561,7 @@ public class StyleManager {
     }
 
     /**
-     * Creates a Titled border that uses the Label font.
+     * Creates a titled border that uses the sub title font.
      * 
      * @param title
      * @return
@@ -526,7 +569,7 @@ public class StyleManager {
     public static Border createLabelBorder(String title) {
         return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
                                                         TitledBorder.DEFAULT_POSITION,
-                                                        labelFont, (Color)null);
+                                                        subTitleFont, (Color)null);
     }
 
     /**
@@ -561,6 +604,7 @@ public class StyleManager {
     }
 
     /**
+     * Creates a scroll pane with border and title
      * 
      * @param title
      * @param content

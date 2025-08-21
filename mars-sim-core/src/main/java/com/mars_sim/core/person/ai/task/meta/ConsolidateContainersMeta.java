@@ -16,6 +16,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.ConsolidateContainers;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
@@ -64,6 +65,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 		
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.STRENGTH, TaskTrait.ORGANIZATION, TaskTrait.DISCIPLINE);
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER);
 		addPreferredRobot(RobotType.MEDICBOT);
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}

@@ -173,7 +173,7 @@ public class ItemResourceUtil {
 	}
 
 	/**
-	 * Converts a array of string names into their equivalent IDs.
+	 * Converts a array of string item names into their equivalent IDs.
 	 * Note: Currently, it will look for parts only.
 	 * 
 	 * @param name array
@@ -182,17 +182,9 @@ public class ItemResourceUtil {
 	public static Set<Integer> convertNameArray2ResourceIDs(String [] names) {
 		Set<Integer> ids = new HashSet<>();
 		for (String n : names) {
-			
-			AmountResource ar = ResourceUtil.findAmountResource(n);
-			if (ar != null) {
-				// Not including amount resources
-//				ids.add(ar.getID());
-			}		
-			else {
-				ItemResource item = findItemResource(n);
-				if (item != null) {
-					ids.add(item.getID());
-				}
+			ItemResource item = findItemResource(n);
+			if (item != null) {
+				ids.add(item.getID());
 			}
 		}
 		return ids;

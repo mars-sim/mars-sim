@@ -421,24 +421,21 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
-	
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
 		lunarColonyManager = new LunarColonyManager(lunarWorld);
-	
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
 		weather = new Weather(masterClock, orbitInfo);
-
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
-
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 		// Initialize MedicalManager instance
 		medicalManager = new MedicalManager();
+		
 		MedicalManager.initializeInstances(mc);
 		// Initialize UnitManager instance		
 		eventManager = new HistoricalEventManager(masterClock);
@@ -446,8 +443,8 @@ public class Simulation implements ClockListener, Serializable {
 		transportManager = new TransportManager(this);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-		// Compute the pulse load after unit manager is done
-		masterClock.computePulseLoad();
+		// Compute the cpu load after unit manager is done
+		masterClock.computeOriginalCPULoad();
 		
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
@@ -562,8 +559,6 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock = new MasterClock(simulationConfig, userTimeRatio);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-		// Compute the pulse load after unit manager is done
-		masterClock.computePulseLoad();
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 	}

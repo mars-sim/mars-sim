@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVAMission.java
- * @date 2022-07-16
+ * @date 2025-08-17
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
@@ -243,9 +243,8 @@ abstract class EVAMission extends RoverMission {
 
 		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
-			// Report any "teleported" members
-			checkTeleported();
 			
+			// Check below if anyone has been "teleported"
 			if (isEveryoneInRover()) {
 				// End phase
 				phaseEVAEnded();
@@ -260,9 +259,9 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Ensures no "teleported" person is still a member of this mission.
-	 * Remove the person if found.
+	 * Note: still investigating the cause and how to handle this.
 	 */
-	private void checkTeleported() {
+	void checkTeleported() {
 
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
@@ -272,7 +271,7 @@ abstract class EVAMission extends RoverMission {
 				|| p.isInSettlementVicinity()
 				|| p.isRightOutsideSettlement())) {
 
-				logger.severe(p, 20_000, "Invalid 'teleportation' detected. Current location: " 
+				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				
 				// Use Iterator's remove() method

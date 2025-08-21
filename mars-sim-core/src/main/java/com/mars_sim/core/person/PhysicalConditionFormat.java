@@ -46,8 +46,8 @@ public final class PhysicalConditionFormat {
     private static final String PERF_LEVEL_5 = Msg.getString("PersonTableModel.column.performance.level5");
 
 	private static final String WELL = "Well";
-	private static final String DEAD_COLON = "Dead : ";
-	private static final String SICK_COLON = "Sick : ";
+	private static final String DEAD_COLON = "Dead: ";
+	private static final String SICK_COLON = "Sick: ";
 
     /**
      * Helper cannot be created
@@ -195,8 +195,12 @@ public final class PhysicalConditionFormat {
 	 */
 	public static String getHealthSituation(PhysicalCondition pc) {
 		String situation = WELL;
+	
         var mostSeriousProblem = pc.getMostSerious();
-		if (mostSeriousProblem != null) {
+    	if (pc.isDead()) {
+			situation = DEAD_COLON + mostSeriousProblem.printDeadStatus();
+		}
+    	else if (mostSeriousProblem != null) {
 			situation = SICK_COLON + mostSeriousProblem.printStatus();
 		}
 		return situation;

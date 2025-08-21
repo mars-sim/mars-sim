@@ -7,6 +7,9 @@ import com.mars_sim.core.manufacture.ManufacturingManagerTest;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
+	
+    private double factor = ManufacturingMetaTask.DEMAND_FACTOR;
+    
     public void testNewManuProcesses() {
         var s = buildSettlement("Workshop", true);
         
@@ -86,8 +89,9 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
         (new ManufactureProcess(p, m)).startProcess();
 
         var tasks = mt.getSettlementTasks(s);
+        
         assertEquals("Tasks for running Processes", 1, tasks.size());
-        assertEquals("Demand for task", 2, tasks.get(0).getDemand());
+        assertEquals("Demand for task", factor + 1, 1.0 * tasks.get(0).getDemand());
         assertEquals("Target for task", b, tasks.get(0).getFocus());
 
     }
@@ -121,10 +125,10 @@ public class ManufacturingMetaTaskTest extends AbstractMarsSimUnitTest {
         // Fail due to only 2 3D printers
         assertFalse("Start process without printers", (new ManufactureProcess(p, m)).startProcess());
 
-
         var tasks = mt.getSettlementTasks(s);
+  
         assertEquals("Tasks for running Processes", 1, tasks.size());
-        assertEquals("Demand for task", capacity, tasks.get(0).getDemand());
+        assertEquals("Demand for task", capacity * factor, 1.0 * tasks.get(0).getDemand());
         assertEquals("Target for task", b, tasks.get(0).getFocus());
 
     }

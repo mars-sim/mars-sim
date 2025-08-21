@@ -1,6 +1,7 @@
 package com.mars_sim.core.building;
 
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,8 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
     private static final String LANDER_HAB = "Lander Hab";
 
+    private static final String BUNK = "Bunk";
+    
     public void testLanderHabFunctions() {
         var bc = simConfig.getBuildingConfiguration();
 
@@ -40,13 +43,53 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         FunctionSpec beds = spec.getFunctionSpec(FunctionType.LIVING_ACCOMMODATION);
         assertTrue("Has beds in " + LANDER_HAB, !beds.getActivitySpots().isEmpty());
 
-        for(var b : beds.getActivitySpots()) {
-            assertTrue("Bed name", b.name().startsWith(Conversion.capitalize(FunctionSpec.BED)));
+        Map<String, Integer> bedNames = new HashMap<>();
+        for (var b : beds.getActivitySpots()) { 
+        	String name = b.name();
+        	if (bedNames.containsKey(name)) {
+//        		System.out.println("0 " + name);
+    			int num = bedNames.get(name);
+    			bedNames.put(name, ++num);
+//    			System.out.println(bedNames.toString());
+    		}
+    		else {
+//    			System.out.println("1 " + name);
+    			bedNames.put(name, 1);
+    		}	
         }
+        
+//        System.out.println(bedNames.toString());
+        
+        int totalNum = 0;
+        
+        for (int i: bedNames.values()) {
+        	totalNum += i;
+        } 
+        
+//        System.out.println("totalNum: " + totalNum);
+//        System.out.println("bedNames size: " + bedNames.size());
+        
+        boolean hasBunkBeds = false;
+        for (String n: bedNames.keySet()) {
+        	if (n.startsWith(BUNK)) {
+        		hasBunkBeds = true;
+        		break;
+        	}
+        }
+        
+        if (!hasBunkBeds)
+        	assertEquals("Number of unique beds names", beds.getActivitySpots().size(), bedNames.size());      
+        else
+        	assertEquals("Number of beds including bunk beds", beds.getActivitySpots().size(), totalNum);   
+        
+        
         Set<String> names = beds.getActivitySpots().stream()
                                 .map(NamedPosition::name)
                                 .collect(Collectors.toSet());
-        assertEquals("Number of unique beds names", beds.getActivitySpots().size(), names.size());
+             
+        // Note: Each bunk bed will have 2 activity spots. Thus activity spots' names may NOT be unique 
+        
+        assertEquals("Number of unique names", names.size(), bedNames.keySet().size());
     }
 
     /**
@@ -66,11 +109,11 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
                                 .map(NamedPosition::name)
                                 .collect(Collectors.toSet());
         assertTrue("Exercise spot called 'Bike'", names.contains("Bike"));
-        assertTrue("Exercise spot called 'Running Machine'", names.contains("Running Machine"));
+        assertTrue("Exercise spot called 'Running Machine'", names.contains("Weight Lifting"));
     }
 
     /**
-     * This test is very tied to the building spec of LANDER_HAB
+     * This test is very tied to the building spec of the inflatable greenhouse
      */
     public void testInflatableGreenhouse() {
 	    var simConfig = SimulationConfig.loadConfig();
@@ -91,7 +134,8 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
                                          FunctionType.POWER_GENERATION, FunctionType.POWER_STORAGE,
                                          FunctionType.RECREATION, FunctionType.RESEARCH,
                                          FunctionType.RESOURCE_PROCESSING, FunctionType.ROBOTIC_STATION,
-                                         FunctionType.STORAGE, FunctionType.THERMAL_GENERATION),
+                                         FunctionType.STORAGE, FunctionType.THERMAL_GENERATION, 
+                                         FunctionType.WASTE_PROCESSING),
                                         found.getFunctionSupported());
 
         

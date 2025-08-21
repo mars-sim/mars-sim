@@ -23,10 +23,10 @@ public class ConstructionConfigTest extends AbstractMarsSimUnitTest {
     public void testPotentialNextStages() {
         var cConfig = getConfig().getConstructionConfiguration();
 
-        String selectedStage = "Small Brick Shed Frame";
+        String selectedStage = "Round Hab Frame";
         var selected = cConfig.getConstructionStageInfoByName(selectedStage);
         var found = cConfig.getPotentialNextStages(selected);
-        assertEquals("Number of later stages for " + selectedStage, 4, found.size());
+        assertEquals("Number of later stages for " + selectedStage, 6, found.size());
     }
 
     public void testSteelFrameTower() {

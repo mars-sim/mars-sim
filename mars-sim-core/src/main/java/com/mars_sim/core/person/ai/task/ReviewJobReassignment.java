@@ -69,8 +69,12 @@ public class ReviewJobReassignment extends Task {
 		
 		if (person.isInSettlement()) {
 
-			if (roleType != null && roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
-					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {
+			if (roleType != null && (roleType == RoleType.PRESIDENT 
+					|| roleType == RoleType.MAYOR
+					|| roleType == RoleType.ADMINISTRATOR
+					|| roleType == RoleType.DEPUTY_ADMINISTRATOR
+					|| roleType == RoleType.COMMANDER 
+					|| roleType == RoleType.SUB_COMMANDER)) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);

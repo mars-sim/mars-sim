@@ -189,13 +189,20 @@ public class TabPanelOrganization extends TabPanel {
 	private DefaultMutableTreeNode buildCommandNode(int pop) {
 		var commanderStaffNode = new DefaultMutableTreeNode("(A). Command Staff");
 	
-		if (pop >= ChainOfCommand.POPULATION_WITH_PRESIDENT) {
-			commanderStaffNode.add(getRoleNode(RoleType.PRESIDENT));
+		// In terms of electing a president, it will take place among all 
+		// the settlements under the same jurisdiction/authority
+	
+		if (pop >= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			commanderStaffNode.add(getRoleNode(RoleType.MAYOR));
 		}
 		
-		else if (pop >= ChainOfCommand.POPULATION_WITH_MAYOR) {
-			commanderStaffNode.add(getRoleNode(RoleType.MAYOR));
+		else if (pop >= ChainOfCommand.POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
+			commanderStaffNode.add(getRoleNode(RoleType.ADMINISTRATOR));
+			commanderStaffNode.add(getRoleNode(RoleType.DEPUTY_ADMINISTRATOR));
+		}
+		
+		else if (pop >= ChainOfCommand.POPULATION_WITH_ADMINISTRATOR) {
+			commanderStaffNode.add(getRoleNode(RoleType.ADMINISTRATOR));
 		}
 
 		else if (pop >= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
@@ -242,11 +249,11 @@ public class TabPanelOrganization extends TabPanel {
 			agricultureNode.add(getRoleNode(RoleType.CHIEF_OF_AGRICULTURE));
 			computingNode.add(getRoleNode(RoleType.CHIEF_OF_COMPUTING));
 			engineeringNode.add(getRoleNode(RoleType.CHIEF_OF_ENGINEERING));
-			logisticNode.add(getRoleNode(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS));
+			logisticNode.add(getRoleNode(RoleType.CHIEF_OF_LOGISTIC_OPERATION));
 			missionNode.add(getRoleNode(RoleType.CHIEF_OF_MISSION_PLANNING));
-			safetyNode.add(getRoleNode(RoleType.CHIEF_OF_SAFETY_N_HEALTH));
+			safetyNode.add(getRoleNode(RoleType.CHIEF_OF_SAFETY_HEALTH_SECURITY));
 			scienceNode.add(getRoleNode(RoleType.CHIEF_OF_SCIENCE));
-			supplyNode.add(getRoleNode(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES));
+			supplyNode.add(getRoleNode(RoleType.CHIEF_OF_SUPPLY_RESOURCE));
 		}
 
 		agricultureNode.add(getRoleNode(RoleType.AGRICULTURE_SPECIALIST));

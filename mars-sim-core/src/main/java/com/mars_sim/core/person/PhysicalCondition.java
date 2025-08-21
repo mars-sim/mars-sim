@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PhysicalCondition.java
- * @date 2024-07-21
+ * @date 2025-08-09
  * @author Barry Evans
  */
 package com.mars_sim.core.person;
@@ -19,12 +19,14 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -119,7 +121,7 @@ public class PhysicalCondition implements Serializable {
 	public static final String DEGREE_CELSIUS = Msg.getString("temperature.sign.degreeCelsius");
 
 	public static final String TBD = "[To Be Determined]";
-	private static final String TRIGGERED_DEATH = "[Player Triggered Death]";
+	private static final String TRIGGERED_DEATH = "Player Triggered Death";
 	
 	private static double o2Consumption;
 	private static double h20Consumption;
@@ -187,6 +189,8 @@ public class PhysicalCondition implements Serializable {
 	
 	private double waterConsumedPerSol;
 
+	private double attributeCompositeScore;
+	
 	/** Person owning this physical. */
 	private Person person;
 	/** Details of persons death. */
@@ -259,14 +263,16 @@ public class PhysicalCondition implements Serializable {
 		agility = naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY);
 
 		// Computes the adjustment from a person's natural attributes
-		double compositeScore = (1.5*endurance + .75*strength + .75*agility) / 300D;
+		// value is between 0 and 2
+		attributeCompositeScore = (1.5 * endurance + .75 * strength + .75 * agility) / 150;
 
 		// Note: may incorporate real world parameters such as areal density in g cm−2,
 		// T-score and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
-		musclePainTolerance = RandomUtil.getRandomInt(-10, 10) + compositeScore; // pain tolerance
-		muscleHealth = 50D; // muscle health index; 50 being the average
-		muscleSoreness = RandomUtil.getRandomRegressionInteger(20); // muscle soreness
 
+		musclePainTolerance = (.5 + RandomUtil.getRandomDouble(.5)) * (50 * attributeCompositeScore); 
+		muscleSoreness = (.5 + RandomUtil.getRandomDouble(.5)) * (100 - musclePainTolerance); 
+		muscleHealth = (.5 + RandomUtil.getRandomDouble(.5)) * (50 + musclePainTolerance + muscleSoreness); 
+		
 		double height = person.getHeight();
 		double heightSquared = height*height/100/100;
 		double defaultHeight = personConfig.getDefaultPhysicalChars().getAverageHeight();
@@ -275,8 +281,7 @@ public class PhysicalCondition implements Serializable {
 		
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// bodyMassDeviation average around 0.7 to 1.3
-		bodyMassDeviation = Math.sqrt(mass/defaultMass*height/defaultHeight) 
-				* RandomUtil.computeGaussianWithLimit(1, .5, .2);						
+		bodyMassDeviation = RandomUtil.getGaussianPositive(Math.sqrt(mass/defaultMass*height/defaultHeight), .4);						
 		bmi = mass/heightSquared;
 
 		// Assume a person drinks 10 times a day, each time ~375 mL
@@ -285,10 +290,10 @@ public class PhysicalCondition implements Serializable {
 		waterConsumedPerServing = waterConsumedPerSol / 10; 
 
 		double sTime = personConfig.getStarvationStartTime();
-		starvationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(sTime, 0.3, bodyMassDeviation / 5);
+		starvationStartTime = 1000D * RandomUtil.getGaussianPositive(sTime, bodyMassDeviation / 5);
 		
 		double dTime = personConfig.getDehydrationStartTime();
-		dehydrationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(dTime, 0.3, bodyMassDeviation / 5);
+		dehydrationStartTime = 1000D * RandomUtil.getGaussianPositive(dTime, bodyMassDeviation / 5);
 
 		isStarving = false;
 		isStressedOut = false;
@@ -304,7 +309,7 @@ public class PhysicalCondition implements Serializable {
 		consumption.increaseDataPoint(3, 0.0);
 		consumption.increaseDataPoint(4, 0.0);
 		
-		radiation = new RadiationExposure(newPerson, bodyMassDeviation, compositeScore);
+		radiation = new RadiationExposure(newPerson, bodyMassDeviation, attributeCompositeScore);
 
 		initialize();
 	}
@@ -358,7 +363,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	void updateMaxEnergy() {
 		// Update personal max energy
-		personalMaxEnergy = Math.max(STANDARD_DAILY_ENERGY_INTAKE / 2, Math.min(STANDARD_DAILY_ENERGY_INTAKE * 2, personalMaxEnergy * (1 + appetite)));
+		personalMaxEnergy = MathUtils.between(STANDARD_DAILY_ENERGY_INTAKE * (1 + appetite/2),
+				STANDARD_DAILY_ENERGY_INTAKE / 10, STANDARD_DAILY_ENERGY_INTAKE * 2);;
 	}
 	
 	/**
@@ -380,9 +386,9 @@ public class PhysicalCondition implements Serializable {
 		// Get eating pref 
 		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta)/10.0;
 		// Derive the appetite
-		appetite = Math.min(35.0, ageFactor)/70.0 + massFactor + eatingPref + mod;
+		appetite = (35.0 + ageFactor)/70.0 + massFactor + eatingPref + mod;
 		// Limit to between 0 and 1
-		appetite = Math.max(0, Math.min(1, appetite));
+		appetite = MathUtils.between(appetite, 0, 1);
 	}
 	
 	/**
@@ -412,12 +418,13 @@ public class PhysicalCondition implements Serializable {
 	 * @return True still alive.
 	 */
 	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
+		
 		if (alive) {
 			
 			double time = pulse.getElapsed();
 			
 			// Check once a day only
-			if (pulse.isNewSol()) {		
+			if (pulse.isNewSol()) {	
 //				int solOfMonth = pulse.getMarsTime().getSolOfMonth();
 //				if (solOfMonth == 1 || solOfMonth == 8 || solOfMonth == 15 || solOfMonth == 22 || solOfMonth == 29) {
 					// Update the personal appetite
@@ -425,40 +432,26 @@ public class PhysicalCondition implements Serializable {
 					// Update personal max energy
 					updateMaxEnergy();
 //				}
-				// Update the entropy in muscles
-				entropy(time * -20);
-			
 			}
 			
 			// Check once per msol (millisol integer)
 			if (pulse.isNewIntMillisol()) {
-				// reduce the muscle soreness
-				recoverFromSoreness(1);
-				// Update thirst
-				increaseThirst(bodyMassDeviation * .75);
-				// Update fatigue
-				increaseFatigue(1);
-				// Update hunger
-				increaseHunger(bodyMassDeviation * .75);
-				// Reduce stress
-				reduceStress(time/10);
-				
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
 				// Check radiation 
 				radiation.timePassing(pulse);
 				
-				// Get stress factor due to settlement overcrowding
-				if (person.isInSettlement() && !person.isRestingTask()) {
-					// Note: this stress factor is different from LifeSupport's timePassing's
-					//       stress modifier for each particular building
-					double stressFactor = person.getSettlement().getStressFactor(time);
-					
-					if (stressFactor > 0) {
-						// Update stress
-				        addStress(stressFactor);
-					}
-				}				
+//				// Get stress factor due to settlement overcrowding
+//				if (person.isInSettlement() && !person.isRestingTask()) {
+//					// Note: this stress factor is different from LifeSupport's timePassing's
+//					//       stress modifier for each particular building
+//					double stressFactor = person.getSettlement().getStressFactor(time);
+//					
+//					if (stressFactor > 0) {
+//						// Update stress
+//				        addStress(stressFactor);
+//					}
+//				}				
 				
 				if (stress < STRESS_THRESHOLD) {
 					isStressedOut = false;
@@ -494,8 +487,24 @@ public class PhysicalCondition implements Serializable {
 			// Update the existing health problems
 			checkHealth(pulse);
 			
-			// Update energy via PersonTaskManager's executeTask()
-			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
+			
+			double factor = 1;
+			
+			if (person.isRestingTask()) {
+				// Modify the time factor
+				factor = 2;
+			}
+			
+			// Reduce stress
+			reduceStress(time / 10 * factor);
+			// Update thirst
+			increaseThirst(time * bodyMassDeviation * .75 / factor);
+			// Update fatigue
+			increaseFatigue(time * 1.1 / factor);
+			// Update hunger
+			increaseHunger(time * bodyMassDeviation * .75 / factor);
+			// Update the entropy in muscles
+//			muscularAtrophy(time / 4);	
 		}
 	}
 
@@ -688,7 +697,8 @@ public class PhysicalCondition implements Serializable {
 		// Each meal (0.155 kg = 0.62 kg daily / a total of 4 meals) has an average of 2525 kJ
 
 		// Note: FOOD_COMPOSITION_ENERGY_RATIO = 16290
-		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO * (.75 + .75 * appetite) / ENERGY_FACTOR;
+		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO 
+				* (.75 + .75 * appetite) / ENERGY_FACTOR;
 
 		if (hunger <= 0)
 			kJoules = personalMaxEnergy;
@@ -747,7 +757,13 @@ public class PhysicalCondition implements Serializable {
 	 * @param newPerformance new performance (between 0 and 1).
 	 */
 	public void setPerformanceFactor(double p) {
-		double pp = p;
+		double pp = 0;
+		// Muscle soreness impacts the physical performance
+		if (p < 0)
+			pp = p / getPainSorenessFactor();
+		else if (p > 0)
+			pp = p * getPainSorenessFactor();
+
 		if (pp > 1D)
 			pp = 1D;
 		else if (pp < 0)
@@ -758,6 +774,7 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	
 	/**
 	 * Sets the fatigue value for this person.
 	 *
@@ -795,8 +812,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceFatigue(double delta) {
 		double f = fatigue - delta;
-		if (f < -100) 
-			f = -100;
+		if (f < -50) 
+			f = -50;
 		
 		fatigue = f;
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
@@ -906,10 +923,15 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Sets the person's stress level.
 	 *
-	 * @param newStress the new stress level (0.0 to 100.0)
+	 * @param s the new stress level (0.0 to 100.0)
 	 */
 	public void setStress(double s) {
-		double ss = s;
+		double ss = 0;
+		// Muscle pain tolerance may impact the stress level
+		if (s < 0)
+			ss = s / getPainToleranceFactor();
+		else if (s > 0)
+			ss = s * getPainToleranceFactor();
 		if (ss > 100)
 			ss = 100;
 		else if (ss < 0
@@ -929,8 +951,9 @@ public class PhysicalCondition implements Serializable {
 		if (stress > 95) {
 			logger.warning(person, 30_000, "stress: " + Math.round(stress * 1000.0)/1000.0 + "  d: " + Math.round(d * 1000.0)/1000.0);
 		}
-		
-		double ss = stress + d;
+		// Note: Some research findings indicate that individuals 
+		// with depression often exhibit lower pain tolerance.
+		double ss = stress + d / getPainToleranceFactor();
 		if (ss > 100)
 			ss = 100;
 		else if (ss < 0
@@ -947,7 +970,8 @@ public class PhysicalCondition implements Serializable {
 	 * @param d
 	 */
 	public void reduceStress(double d) {
-		double ss = stress - d;
+		// Assume high pain tolerance may be associated with low depression/stress. 
+		double ss = stress - d * getPainToleranceFactor();
 		if (ss > 100)
 			ss = 100;
 		else if (ss < 0
@@ -1314,7 +1338,7 @@ public class PhysicalCondition implements Serializable {
 		if (healthLog.get(type) != null)
 			freq = healthLog.get(type);
 		healthLog.put(type, freq + 1);
-		logger.log(person, Level.INFO, 1_000L, "Suffering from " + type.getName() + ".");
+		logger.log(person, Level.INFO, 0, "Suffering from " + type.getName() + ".");
 		recalculatePerformance();
 		return newProblem;
 	}
@@ -1407,15 +1431,15 @@ public class PhysicalCondition implements Serializable {
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 		}
 
-		else {
-			// Is the person suffering from the illness, if so recovery
-			// as the amount has been provided
-			HealthProblem illness = getProblemByType(complaint);
-			if (illness != null) {
-				illness.startRecovery();
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-			}
-		}
+//		else {
+//			// Is the person suffering from the illness, if so recovery
+//			// as the amount has been provided
+//			HealthProblem illness = getProblemByType(complaint);
+//			if (illness != null) {
+//				illness.startRecovery();
+//				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+//			}
+//		}
 		return newProblem;
 	}
 
@@ -1459,29 +1483,31 @@ public class PhysicalCondition implements Serializable {
 		alive = true;
 		
 		HealthProblem problem = deathDetails.getProblem();
-		
 		// Reset the declaredDead
 		person.setRevived(problem);
 		// Set the mind of the person to active
 		person.getMind().setActive();
+		// Reset the problem back to degrading
+		problem.setState(HealthProblemState.DEGRADING);
 		// Starts the recovery
 		problem.startRecovery();
-
 		// Transfer this person back to home settlement
-		person.getAssociatedSettlement().addACitizen(person);
-		
+		person.getAssociatedSettlement().addACitizen(person);	
 		// Set death detail to null
 		deathDetails = null;
 		
-		// See a doctor for checkup ?
-		// Call medicalManager
-
 		// Note: will automatically get a new role type	
 		
 		// Note: check if the vacated role has been filled or not 
 		// Should the person retake the same role ?
 
 		logger.log(person, Level.WARNING, 0, "Person was revived as ordered.");
+		
+		// Send the person to a medical building
+		BuildingManager.addPatientToMedicalBed(person, person.getAssociatedSettlement());
+
+		// Let the person go to sleep
+		person.getTaskManager().replaceTask(new Sleep(person, 500));
 	}
 
 	
@@ -1499,8 +1525,11 @@ public class PhysicalCondition implements Serializable {
 			logger.log(person, Level.WARNING, 0, "Declared dead. Reason: " + reason + ".");
 		}
 
+		setPerformanceFactor(0);
+		
 		// Set the state of the health problem to DEAD
 		problem.setState(HealthProblemState.DEAD);
+		
 		// Set mostSeriousProblem to this problem
 		this.mostSeriousProblem = problem;
 
@@ -1571,7 +1600,7 @@ public class PhysicalCondition implements Serializable {
 	 * Calculates how the most mostSeriousProblem problem and other metrics would affect a
 	 * person's performance.
 	 */
-	private void recalculatePerformance() {
+	void recalculatePerformance() {
 
 		double maxPerformance = 1.0D;
 
@@ -1840,38 +1869,33 @@ public class PhysicalCondition implements Serializable {
 		return isRadiationPoisoned;
 	}
 	
-	public void workout(double time) {
+	/**
+	 * Tracks the exercise.
+	 * 
+	 * @param time
+	 */
+	public void trackExercise(double time) {
 		// Regulates hormones
 		circadian.exercise(time);
 		// Improves musculoskeletal systems
-		exerciseMuscle(time);
+		muscularHypertrophy(time);
 		// Record the sleep time [in millisols]
 		circadian.recordExercise(time);
 	}
 	
 	/**
-	 * Stress out the musculoskeletal systems.
-	 * 
-	 * @param duration
-	 */
-	public void stressMuscle(double duration) {
-		muscleHealth -= .01 * duration; // musculoskeletal health
-		if (muscleHealth < 0)
-			muscleHealth = 0;
-		muscleSoreness += .005 * duration; // musculoskeletal soreness
-		if (muscleSoreness > 100)
-			muscleSoreness = 100;
-	}
-	
-	/**
-	 * Works out the musculoskeletal systems.
+	 * Represents an increase in muscle mass resulting in 
+	 * an enlargement of skeletal muscle cells.
 	 * 
 	 * @param time
 	 */
-	public void exerciseMuscle(double duration) {
-		musclePainTolerance += .001 * duration; // musculoskeletal pain tolerance
-		muscleHealth += .01 * duration; // musculoskeletal health
-		muscleSoreness -= .001 * duration; // musculoskeletal soreness
+	public void muscularHypertrophy(double time) {
+		// Tether toward attributeCompositeScore
+		double factor = (1 + attributeCompositeScore / 4) * .001 * time;
+		musclePainTolerance += factor; // musculoskeletal pain tolerance
+		muscleHealth += factor; // musculoskeletal health
+		// Decrease in soreness
+		muscleSoreness -= factor; // musculoskeletal soreness
 		if (musclePainTolerance > 100)
 			musclePainTolerance = 100;
 		if (muscleHealth > 100)
@@ -1879,30 +1903,22 @@ public class PhysicalCondition implements Serializable {
 		if (muscleSoreness < 0)
 			muscleSoreness = 0;
 		// Increase thirst
-		increaseThirst(-duration/4.5); 
-	}
-
-	/**
-	 * Puts the muscle to rest.
-	 * 
-	 * @param time
-	 */
-	public void relaxMuscle(double time) {
-		muscleHealth += .01 * time; // musculoskeletal health
-		muscleSoreness -= .01 * time; // musculoskeletal soreness
-		if (muscleHealth > 100)
-			muscleHealth = 100;
-		if (muscleSoreness < 0)
-			muscleSoreness = 0;
+		increaseThirst(time/5); 
 	}
 	
 	/**
-	 * Represent the deterioration of musculoskeletal systems.
+	 * Represents the deterioration of musculoskeletal systems.
+	 * 
+	 * @param time
 	 */
-	public void entropy(double time) {
-		musclePainTolerance -= .001 * time; // muscle health
-		muscleHealth -= .001 * time; // muscle health
-		muscleSoreness += .001 * time; // muscle health
+	public void muscularAtrophy(double time) {
+		// Tether toward attributeCompositeScore
+		double factor = (1 - attributeCompositeScore / 4) * .001 * time;
+		musclePainTolerance -= factor; // muscle pain
+		muscleHealth -= factor; // muscle health
+		// Increase in soreness
+		muscleSoreness += factor; // muscle soreness
+		
 		if (muscleSoreness > 100)
 			muscleSoreness = 100;
 		if (muscleHealth < 0)
@@ -1911,23 +1927,78 @@ public class PhysicalCondition implements Serializable {
 			musclePainTolerance = 0;
 	}
 	
-
 	/**
-	 * Reduces the muscle soreness.
+	 * Gets the pain tolerance factor.
 	 * 
-	 * @param value
+	 * @return
 	 */
-	public void recoverFromSoreness(double value) {
-		// Reduce the muscle soreness by 1 point at the end of the day
-		double soreness = muscleSoreness;
-		soreness = soreness - value;
-		if (soreness < 0)
-			soreness = 0;
-		else if (soreness > 100)
-			soreness = 100;
-		muscleSoreness = soreness;
+	public double getPainToleranceFactor() {
+		return (1 + musclePainTolerance/200);
 	}
-
+	
+	/**
+	 * Gets the pain soreness factor.
+	 * 
+	 * @return
+	 */
+	public double getPainSorenessFactor() {
+		return (1 + muscleSoreness/200);
+	}
+	
+	/**
+	 * Gets the muscle health factor.
+	 * 
+	 * @return
+	 */
+	public double getMusleHealthFactor() {
+		return (1 + muscleHealth/200);
+	}
+	
+	/**
+	 * Reduces the pain soreness.
+	 * 
+	 * @return
+	 */
+	public void reduceMuscleSoreness(double time) {
+		muscleSoreness -= .001 * time;
+	}
+	
+	/**
+	 * Increases the pain soreness.
+	 * 
+	 * @return
+	 */
+	public void increaseMuscleSoreness(double time) {
+		muscleSoreness += .001 * time;
+	}
+	
+	/**
+	 * Increases the pain tolerance.
+	 * 
+	 * @return
+	 */
+	public void increasePainTolerance(double time) {
+		musclePainTolerance += .001 * time;
+	}
+	
+	/**
+	 * Reduces the muscle health.
+	 * 
+	 * @return
+	 */
+	public void reduceMuscleHealth(double time) {
+		muscleHealth -= .001 * time;
+	}
+	
+	/**
+	 * Improves the muscle health.
+	 * 
+	 * @return
+	 */
+	public void improveMuscleHealth(double time) {
+		muscleHealth += .001 * time;
+	}
+	
 	/**
 	 * Checks if it passes the hunger x2 threshold
 	 *
@@ -1980,7 +2051,9 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isStressed() {
-		return stress > STRESS_THRESHOLD;
+		// Research findings indicate that individuals 
+		// with depression often exhibit lower pain tolerance
+		return stress > STRESS_THRESHOLD * getPainToleranceFactor();
 	}
 
 	public double getStrengthMod() {

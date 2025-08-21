@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingMapLayer.java
- * @date 2025-08-01
+ * @date 2025-08-15
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -42,7 +42,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final String T = "T";
 	
     // Static members
-    private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 5); 
+    private static final Font SPOT_FONT = new Font(Font.SERIF, Font.ITALIC, 3); 
     private static final Color BLDG_COLOR = Color.GREEN;
     
     private static final Color BLDG_SELECTED_COLOR = Color.WHITE;//new Color(119, 85, 0); // dark orange

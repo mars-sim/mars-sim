@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MetaTask.java
- * @date 2022-06-24
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.util;
@@ -22,7 +22,10 @@ import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.role.RoleUtil;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -57,6 +60,7 @@ public abstract class MetaTask {
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
 	protected static final String ROLE_MODIFIER = "role";
+	protected static final String TYPE_MODIFIER = "type";
 	protected static final String SCIENCE_MODIFIER = "science";
 	protected static final String SKILL_MODIFIER = "skill";
     protected static final String STRESS_MODIFIER = "stress";
@@ -74,6 +78,7 @@ public abstract class MetaTask {
 				TaskTrait.MEDICAL);
 	
 	/** Probability penalty for starting a non-job-related task. */
+	private static final double TYPE_BONUS = 1.25D;  // Default preferred role bonus
 	private static final double ROLE_BONUS = 1.25D;  // Default preferred role bonus
 	private static final double NON_ROLE_PENALTY = .25D;  // Weight if not preferred role
 	protected static final double JOB_BONUS = 1D;  // Default preferred job bonus
@@ -197,6 +202,42 @@ public abstract class MetaTask {
 			preferredRoles.put(r, ROLE_BONUS);
 		}
 	}
+
+	/**
+	 * Adds all chief roles for this Task.
+	 * 
+	 * @param jobs
+	 */
+    protected void addAllCrewRoles() {
+		for (RoleType r : RoleUtil.getCrewRoles()) {
+			preferredRoles.put(r, ROLE_BONUS);
+		}
+	}
+    
+	/**
+	 * Adds all chief roles for this Task.
+	 * 
+	 * @param jobs
+	 */
+    protected void addAllChiefRoles() {
+		for (RoleType r : RoleUtil.getChiefs()) {
+			preferredRoles.put(r, ROLE_BONUS);
+		}
+	}
+    
+    /**
+	 * Adds all leadership roles to this Task.
+	 * Note: leadership include chiefs and council members
+	 * 
+	 * @param jobs
+	 */
+    protected void addAllLeadershipRoles() {
+		for (RoleType r : RoleUtil.getLeadership()) {
+			preferredRoles.put(r, ROLE_BONUS);
+		}
+	}
+    
+   
     
 	/**
 	 * Gets the associated task name.
@@ -316,6 +357,24 @@ public abstract class MetaTask {
 	}
 
 	/**
+     * Gets the score for a Settlement task for a robot.
+     * 
+	 * @param t Task being scored
+	 * @param robot Robot requesting work.
+	 * @return The score for this person
+	 * @see #assessRobotSuitability(RatingScore, Robot)
+     */
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
+        RatingScore factor = RatingScore.ZERO_RATING;
+        if (robot.isInSettlement()) {
+			factor = new RatingScore(t.getScore());
+			factor = assessRobotSuitability(factor, robot);
+		}
+		return factor;
+	}
+
+	
+	/**
 	 * Assesses the suitability of this person to do Tasks of this MetaType. It does not consider
 	 * any of the specific details of the actual Task.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
@@ -362,8 +421,38 @@ public abstract class MetaTask {
 	}
 
 	/**
+	 * Assesses the suitability of this robot to do Tasks of this MetaType. It does not consider
+	 * any of the specific details of the actual Task.
+	 * 
+	 * @param robot Robot being assessed
+	 * @param score The base rating score that is adjusted to this person
+	 * @return
+	 */
+	protected RatingScore assessRobotSuitability(RatingScore score, Robot robot) {
+
+        // Job modifier. If not my job suitable then a penalty.
+		RobotJob job = robot.getBotMind().getRobotJob();
+        if ((job != null) && !preferredRobots.isEmpty()) {
+			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(job, NON_JOB_PENALTY));
+        }
+		
+		// Role modifier. If suitable role then add a bonus
+		RobotType type = robot.getRobotType();
+        if ((type != null) && !preferredRobots.isEmpty()) {
+			score.addModifier(TYPE_MODIFIER, TYPE_BONUS);
+        }
+
+		// Apply the home base modifier
+		score.addModifier("settlement", robot.getAssociatedSettlement().getPreferences()
+							.getDoubleValue(TaskParameters.INSTANCE, getID(), 1D));
+		
+		return score;
+	}
+	
+	/**
 	 * Assess if this Person is in a moving vehicle. If the Person is in a Vehicle and it is moving
 	 * then apply the moving vehicle bonus as a modifier.
+	 * 
 	 * @param result Current score
 	 * @param person Being assessed
 	 * @return

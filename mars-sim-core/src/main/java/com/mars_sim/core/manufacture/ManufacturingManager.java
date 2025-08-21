@@ -129,9 +129,9 @@ public class ManufacturingManager implements Serializable {
     }
 
     private static final int REFRESH_TIME = 10;
-    private static final Integer DEFAULT_VALUE = 100;
-    private static final Integer DEFAULT_ADD = 1;
-    private static final Integer DEFAULT_QUEUE_SIZE = 10;
+    private static final Integer DEFAULT_VALUE = 30;
+    private static final Integer DEFAULT_LIMIT = 200;
+    private static final Integer DEFAULT_QUEUE_SIZE = 200;
     public static final String USER_BONUS = "user-bonus";
 
     private static SimLogger logger = SimLogger.getLogger(ManufacturingManager.class.getName());
@@ -158,7 +158,7 @@ public class ManufacturingManager implements Serializable {
         // Add the controlling preferences 
         var pMgr = owner.getPreferences();
         pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_ADD);
+        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_LIMIT);
         pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
 
     }
@@ -187,7 +187,7 @@ public class ManufacturingManager implements Serializable {
         // 1. Tech level
         // 2. Worker skill
         // 3. Type of process
-        // 4. Resoruce are available
+        // 4. Resource are available
         var startableByPri = queue.stream()
                         .filter(q -> (q.info.getTechLevelRequired() <= techLevel)
                                         && (q.info.getSkillLevelRequired() <= skillLevel)
@@ -263,7 +263,7 @@ public class ManufacturingManager implements Serializable {
      * Checks which queued processes have available resources.
      */
     private void updateQueueItems() {
-        // Check resoruces on queue
+        // Check resources on queue
         for(var q : queue) {
             var p = q.getInfo();
             q.setResourcesAvailable(p.isResourcesAvailable(owner));
@@ -351,7 +351,7 @@ public class ManufacturingManager implements Serializable {
         int maxProcesses = Math.min(getQueueCapacity(),
                                     pMgr.getIntValue(ManufacturingParameters.INSTANCE,
                                                      ManufacturingParameters.NEW_MANU_LIMIT,
-                                                     DEFAULT_ADD));
+                                                     DEFAULT_LIMIT));
         if (maxProcesses > 0) {
 
             var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
@@ -460,7 +460,7 @@ public class ManufacturingManager implements Serializable {
     }
 
     /**
-     * Gets the mau processed that can be supported by this settlement. It considers
+     * Gets the manu processed that can be supported by this settlement. It considers
      * - MaxTechlevel of any workshops
      * - MaterialScience skill of settlement workers; this is recalculated each time
      * 
@@ -535,7 +535,7 @@ public class ManufacturingManager implements Serializable {
 
     /**
      * Gets the list of resources that could be manufactured based on its workshops.
-     * This does not consider available resources
+     * This does not consider available resources.
      */
     public List<String> getPossibleOutputs() {
         var supported = getSupportedManuProcesses();
@@ -544,6 +544,7 @@ public class ManufacturingManager implements Serializable {
                     .map(ProcessInfo::getOutputList)
                     .flatMap(Collection::stream)
                     .map(m -> m.getName())
+                    .map(String::toLowerCase)
                     .distinct()
                     .sorted()
                     .toList();

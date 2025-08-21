@@ -1,8 +1,7 @@
-
-/**
+/*
  * Mars Simulation Project
  * MedicalHelper.java
- * @date 2024-06-09
+ * @date 2025-08-14
  * @author Barry Evans
  */
 package com.mars_sim.core.person.health.task;
@@ -14,8 +13,8 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.MedicalCare;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
@@ -33,23 +32,24 @@ public final class MedicalHelper {
     private MedicalHelper() {}
 
     /**
-     * Determine which MedicalAid a person can use to handle a set of problems
-     * @param p Person looking for aid
+     * Determines which Medical Aid a person can use to handle a set of problems.
+     * 
+     * @param worker Worker looking for aid
      * @param curable What are the problem to cure; if empty then any problem
      */
-    static MedicalAid determineMedicalAid(Person p, Set<HealthProblem> curable) {
+    static MedicalAid determineMedicalAid(Worker worker, Set<HealthProblem> curable) {
         // Choose available medical aid for treatment.
-        if (p.isInSettlement()) {
-            return determineMedicalAidAtSettlement(p.getAssociatedSettlement(), curable);
+        if (worker.isInSettlement()) {
+            return determineMedicalAidAtSettlement(worker.getAssociatedSettlement(), curable);
         }
-        else if (p.isInVehicle() && (p.getVehicle() instanceof Rover r)) {
+        else if (worker.isInVehicle() && (worker.getVehicle() instanceof Rover r)) {
             return determineMedicalAidInRover(r, curable);
         }
         return null;
     }
 
     /**
-     * Determine a medical aid at a settlement to use for self-treating a health problem.
+     * Determines a medical aid at a settlement to use for self-treating a health problem.
      * 
      * @param settlement Place to search
      * @param curable 
@@ -79,7 +79,8 @@ public final class MedicalHelper {
     }
 
     /**
-     * Can a Medical Aid cure a specific healh problems
+     * Can this Medical Aid cure a specific health problem ?
+     * 
      * @param medicalCare Care center available
      * @param curable Set of problem to cure
      * @return
@@ -99,11 +100,11 @@ public final class MedicalHelper {
     /**
      * Gets a list of health problems the person can self-treat.
      * 
-     * @param healer Perosn doing the healing
+     * @param healer worker doing the healing
      * @param selfHeal Look only for Self heal problems
      * @return list of health problems (may be empty).
      */
-    static Set<HealthProblem> getTreatableHealthProblems(Person healer, Collection<HealthProblem> problems,
+    static Set<HealthProblem> getTreatableHealthProblems(Worker healer, Collection<HealthProblem> problems,
                                                         boolean selfHeal) {
     
         Set<HealthProblem> result = new HashSet<>();
@@ -125,7 +126,7 @@ public final class MedicalHelper {
     }
 
     /**
-     * Determine a medical aid on a vehicle to use for self-treating a health problem.
+     * Determines a medical aid on a vehicle to use for self-treating a health problem.
      * 
      * @param v Rover to check
      * @param curable Set of problem being cured

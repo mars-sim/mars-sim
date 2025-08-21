@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
@@ -58,10 +57,10 @@ public class LoadVehicleEVA extends EVAOperation {
 		super(NAME, person, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
 
 		setMinimumSunlight(LightLevel.NONE);
-		
-		if (person.isSuperUnfit()) {
+
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
-        	return;
+			return;
 		}
 		
 		if (unitManager == null)

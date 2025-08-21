@@ -27,7 +27,8 @@ public class AttributePanel extends JPanel {
 	private GridLayout autoLayout = null;
 
 	/**
-	 * Create an Attribute panel that has a single column with fixed number of rows
+	 * Creates an Attribute panel that has a single column with fixed number of rows.
+	 * 
 	 * @param rows Number of rows
 	 */
     public AttributePanel(int rows) {
@@ -35,7 +36,8 @@ public class AttributePanel extends JPanel {
     }
 
 	/**
-	 * Create an Attribute panel that has a fixed number of rows and columns
+	 * Creates an Attribute panel that has a fixed number of rows and columns.
+	 * 
 	 * @param rows Number of rows
 	 * @param cols Number of cols
 	 */
@@ -48,7 +50,7 @@ public class AttributePanel extends JPanel {
     }
 	
 	/**
-	 * Create an Attribute panel that has a single column with variable numnber pf rows
+	 * Creates an Attribute panel that has a single column with a variable number pf rows.
 	 */
 	public AttributePanel() {
 		autoLayout = new GridLayout(1, 2, DEFAULT_GAP, DEFAULT_GAP);
@@ -68,7 +70,7 @@ public class AttributePanel extends JPanel {
 		if (tooltip != null) {
 			contentLabel.setToolTipText(tooltip);
 		}
-		addLabelledItem(titleLabel, contentLabel);
+		addLabelledItem(titleLabel, contentLabel, tooltip);
 		return contentLabel;
 	}
 	
@@ -77,7 +79,7 @@ public class AttributePanel extends JPanel {
 	 * 
 	 * @param titleLabel The fixed label
 	 * @param content Initial content of the text field
-	 * @tooltip
+	 * @param tooltip
 	 * @return The JLabel that can be updated.
 	 */
 	public JLabel addRow(String titleLabel, String content, String tooltip) {
@@ -102,10 +104,23 @@ public class AttributePanel extends JPanel {
 	 * @param content Content showing the value
 	 */
 	public void addLabelledItem(String titleLabel, JComponent content) {
+		addLabelledItem(titleLabel, content, null);
+	}
+	
+	/**
+	 * Adds a labelled content to the TabPanel. This ensures the styling is common.
+	 * 
+	 * @param titleLabel Label to add
+	 * @param content Content showing the value
+	 * @param tooltip
+	 */
+	public void addLabelledItem(String titleLabel, JComponent content, String tooltip) {
         if ((titleLabel != null) && !titleLabel.endsWith(": ")) {
             titleLabel = titleLabel + " :";
         }
         JLabel title = new JLabel(titleLabel, SwingConstants.RIGHT);
+        if (tooltip != null && !tooltip.equals(""))
+        	title.setToolTipText(tooltip);
         title.setFont(StyleManager.getLabelFont());
 		add(title);
 		add(content);

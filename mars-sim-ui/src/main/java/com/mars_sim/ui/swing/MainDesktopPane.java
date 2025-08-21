@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainDesktopPane.java
- * @date 2021-08-28
+ * @date 2025-08-17
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
@@ -50,6 +50,7 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -119,11 +120,17 @@ public class MainDesktopPane extends JDesktopPane
 		this.mainWindow = mainWindow;
 		this.sim = sim;
 
-		// Initialize data members
+		// Initialize sound player
 		if (!AudioPlayer.isAudioDisabled()) {
 			soundPlayer = new AudioPlayer(this);
-			soundPlayer.playRandomMusicTrack();
 		}
+		
+		// Play the splash sound
+		String soundFilePath = SoundConstants.SND_SPLASH;
+		if (soundFilePath != null && soundFilePath.length() != 0 && soundPlayer != null) {
+			soundPlayer.playSound(soundFilePath);
+		}
+		
 		// Prepare unit windows.
 		unitWindows = new ArrayList<>();
 
@@ -163,15 +170,31 @@ public class MainDesktopPane extends JDesktopPane
 		// Prep listeners
 		prepareListeners();
 
-		// Set background paper size
+		// Set the main window's size
 		Dimension selectedSize = mainWindow.getSelectedSize();
 		if (selectedSize != null) {
 			setSize(selectedSize);
 			setPreferredSize(selectedSize);
 			logger.config("Main Window initially set to " + selectedSize);
 		}
+		
+		// Set the Mars Terminal's size
+		Dimension terminalSize = mainWindow.getTerminalSize();
+		if (terminalSize != null) {
+			setSize(terminalSize);
+			setPreferredSize(terminalSize);
+			logger.config("Mars Terminal initially set to " + terminalSize);
+		}
 	}
 
+	/**
+	 * Starts a background sound track.
+	 */
+	public void playBackgroundMusic() {
+		// Play a random music track
+		soundPlayer.playRandomMusicTrack();
+	}
+	
 	/**
 	 * Creates background tile when MainDesktopPane is first displayed. Center
 	 * logoLabel on MainWindow and set backgroundLabel to the size of

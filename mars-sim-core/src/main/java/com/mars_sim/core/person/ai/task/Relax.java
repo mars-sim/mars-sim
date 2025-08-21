@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Relax.java
- * @date 2025-07-30
+ * @date 2025-08-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -38,6 +38,8 @@ extends Task {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double DURATION = 20D;
+	
+	private static final double TIME_FACTOR = 0.9; // NOTE: should vary this factor by person
 	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1D;
@@ -115,7 +117,6 @@ extends Task {
 		}
 
 		// Initialize phase
-		addPhase(RELAXING);
 		setPhase(RELAXING);
 	}
 
@@ -145,16 +146,19 @@ extends Task {
 		if (person != null) {
 			
 	        // Obtain the fractionOfRest to restore fatigue faster in high fatigue case.	   
-			double fractionOfRest = time/1000;
-		
-			PhysicalCondition pc = person.getPhysicalCondition();
-			double f =  pc.getFatigue();
-			double perf = pc.getPerformanceFactor();		
 			
+			double fractionOfRest = time * TIME_FACTOR;
+			
+			PhysicalCondition pc = person.getPhysicalCondition();
+			double perf = pc.getPerformanceFactor();		
+
 	        // Reduce person's fatigue
-	        pc.reduceFatigue(f * fractionOfRest);
+	        pc.reduceFatigue(fractionOfRest);
 	        
-	        pc.relaxMuscle(time);
+	        pc.reduceMuscleSoreness(time/2);
+	        // Assume practicing relaxation techniques and cognitive rehearsal
+	        // to increase pain tolerance
+	        pc.increasePainTolerance(time);
 	        
 	        pc.reduceStress(time/2);   
 	        

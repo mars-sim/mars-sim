@@ -355,7 +355,7 @@ public abstract class DigLocal extends EVAOperation {
         condition.increaseFatigue(time * fatigueFactor * (1.1D - strengthMod)/skillMod);
 
         // Account for hormone regulation, musculosketetal impact and record exercise time
-        condition.workout(time);
+        condition.trackExercise(time);
 		
         // Add experience points
         addExperience(time);
@@ -553,8 +553,13 @@ public abstract class DigLocal extends EVAOperation {
 		// Check if person's medical condition will not allow task.
 		if (person.getPerformanceRating() < .2D)
 			return false;
-
-		return !person.isSuperUnfit();
+		
+		// Check for fitness
+		if (isSuperUnfit(person)) {
+	      	return false;
+		}
+		
+		return true;
 	}
 	
 	/**

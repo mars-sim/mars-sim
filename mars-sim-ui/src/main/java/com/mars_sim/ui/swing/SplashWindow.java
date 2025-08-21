@@ -203,10 +203,9 @@ public class SplashWindow extends JComponent {
 	
 	    BasicStroke outlineStroke = new BasicStroke(2.0f);
 
-	    if (g instanceof Graphics2D) {
-	        Graphics2D g2 = (Graphics2D) g;
+	    if (g instanceof Graphics2D g2) {
 
-	        g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+	        g2.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 	        
 	        // remember original settings
 	        Color originalColor = g2.getColor();
@@ -223,7 +222,7 @@ public class SplashWindow extends JComponent {
 	                RenderingHints.VALUE_ANTIALIAS_ON);
 	        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
 	                RenderingHints.VALUE_RENDER_QUALITY);
-
+	        
 	        AffineTransform saveTransform = g2.getTransform();
 	        
 			// Apply graphic transforms for label.

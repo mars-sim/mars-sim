@@ -319,12 +319,19 @@ public abstract class CollectResourcesMission extends EVAMission
 		
 		else if (!person.isEVAFit()) {
 			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
+			
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
-			boolean canSleep = assignTask(person, new Sleep(person));
-        	if (canSleep) {
-        		logger.log(person, Level.INFO, 4_000,
-            			"Instructed to sleep in " + getVehicle() + ".");
+			
+			// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
+			double fatigue = person.getPhysicalCondition().getFatigue();
+			if (fatigue > 500) {				
+				boolean canSleep = assignTask(person, new Sleep(person));
+	        	if (canSleep) {
+	        		logger.log(person, Level.INFO, 4_000,
+	            			"Instructed to sleep in " + getVehicle() + ".");
+	        	}
         	}
+			
         	// Do NOT return false or else it will end EVAMission for everyone
 //			return false;
 		}

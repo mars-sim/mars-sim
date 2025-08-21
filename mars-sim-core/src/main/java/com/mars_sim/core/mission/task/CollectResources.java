@@ -96,7 +96,7 @@ public class CollectResources extends EVAOperation {
 
 		setMinimumSunlight(LIGHT_LEVEL);
 		
-		if (person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
 	      	return;
 		}
@@ -357,8 +357,8 @@ public class CollectResources extends EVAOperation {
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
 				return false;
-
-			if (person.isSuperUnfit())
+		
+			if (EVAOperation.isSuperUnfit(person))
 				return false;
 			
 			// Checks if the person has an available container with remaining capacity for resource.

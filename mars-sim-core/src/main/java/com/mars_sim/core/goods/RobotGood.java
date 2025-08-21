@@ -20,10 +20,10 @@ class RobotGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
-    private static final double INITIAL_ROBOT_DEMAND = 10;
-    private static final double INITIAL_ROBOT_SUPPLY = 10;
+    private static final double INITIAL_ROBOT_DEMAND = 2;
+    private static final double INITIAL_ROBOT_SUPPLY = 2;
 
-    private static final int BASE_DEMAND = 10;
+    private static final int BASE_DEMAND = 2;
 	private static final int ROBOT_COST_MOD = 200;
 	
 	private static final double ROBOT_FLATTENING_FACTOR = 1.1;

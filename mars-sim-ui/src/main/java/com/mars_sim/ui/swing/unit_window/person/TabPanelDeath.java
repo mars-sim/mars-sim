@@ -28,6 +28,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.health.DeathInfo;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -48,6 +49,8 @@ extends TabPanel {
 
 	/** The Person instance. */
 	private Person person = null;
+	
+	private JTextField doctorRetrievingBodyTF;
 	
 	private JTextField examinerTF;
 
@@ -88,9 +91,9 @@ extends TabPanel {
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         var causeTF = new JTextField();
-        causeTF.setText(death.getIllness().getName());
+        causeTF.setText(Conversion.capitalize0(death.getIllness().getName()));
         causeTF.setEditable(false);
-        causeTF.setColumns(20);
+        causeTF.setColumns(24);
         wrapper1.add(causeTF);
         deathLabelPanel.add(wrapper1);
 
@@ -102,23 +105,34 @@ extends TabPanel {
         var timeTF = new JTextField();
         timeTF.setText(death.getTimeOfDeath().getTruncatedDateTimeStamp());
         timeTF.setEditable(false);
-        timeTF.setColumns(20);
+        timeTF.setColumns(24);
         wrapper2.add(timeTF);
         deathLabelPanel.add(wrapper2);
 
+ 
+        // Prepare examiner label
+ 		JLabel retrievingBodyLabel = new JLabel(Msg.getString("TabPanelDeath.retrievingBody"), SwingConstants.LEFT); //$NON-NLS-1$
+ 		deathLabelPanel.add(retrievingBodyLabel);
+
+ 		JPanel wrapper3a = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+ 		doctorRetrievingBodyTF = new JTextField();
+ 		String text = death.getDoctorRetrievingBody();
+ 		doctorRetrievingBodyTF.setText(text);
+ 		doctorRetrievingBodyTF.setEditable(false);
+ 		doctorRetrievingBodyTF.setColumns(24);
+        wrapper3a.add(doctorRetrievingBodyTF);
+        deathLabelPanel.add(wrapper3a);
+        
 		// Prepare examiner label
 		JLabel examinerLabel = new JLabel(Msg.getString("TabPanelDeath.examiner"), SwingConstants.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(examinerLabel);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		examinerTF = new JTextField();
-		String text = "";
-		if (death.getExamDone()) {
-			text = death.getDoctor();
-		}
-		examinerTF.setText(text);
+		String text3 = death.getDoctorSigningCertificate();
+		examinerTF.setText(text3);
 		examinerTF.setEditable(false);
-		examinerTF.setColumns(20);
+		examinerTF.setColumns(24);
         wrapper3.add(examinerTF);
         deathLabelPanel.add(wrapper3);
         
@@ -130,13 +144,13 @@ extends TabPanel {
 		var malTF = new JTextField();
         malTF.setText(death.getMalfunction());
         malTF.setEditable(false);
-        malTF.setColumns(20);
+        malTF.setColumns(24);
         wrapper4.add(malTF);        
         deathLabelPanel.add(wrapper4);
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(deathLabelPanel,
-		                                4, 2, //rows, cols
+		                                5, 2, //rows, cols
 		                                50, 5,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
@@ -180,7 +194,7 @@ extends TabPanel {
 			JTextField tf4 = new JTextField();
 	        tf4.setText(death.getPlaceOfDeath());
 	        tf4.setEditable(false);
-	        tf4.setColumns(20);
+	        tf4.setColumns(24);
 	        wrapper41.add(tf4);
 	        locationLabelPanel.add(wrapper41);
 		}
@@ -237,9 +251,14 @@ extends TabPanel {
 	@Override
 	public void update() {
 		
+		if (death.getDoctorRetrievingBody() != null) {
+			String text = death.getDoctorRetrievingBody();
+			doctorRetrievingBodyTF.setText(text);
+		}	
+		
 		if (death.getExamDone()) {
-			String text = death.getDoctor() + " [" 
-				+ death.getTimePostMortemExam().getTruncatedDateTimeStamp() + "]";
+			String text = death.getDoctorSigningCertificate() + " done @ " 
+				+ death.getTimePostMortemExam().getTruncatedDateTimeStamp();
 			examinerTF.setText(text);
 		}	
 	}

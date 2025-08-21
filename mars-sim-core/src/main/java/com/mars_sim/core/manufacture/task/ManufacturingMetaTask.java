@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufacturingMetaTask.java
- * @date 2025=01-04
+ * @date 2025-08-10
  * @author Barry Evans
  */
 package com.mars_sim.core.manufacture.task;
@@ -27,14 +27,18 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * This create SettlementTasks that manage any Manufacturing Tasks that can be worked on at
+ * This creates a SettlementTask that manages any Manufacturing Tasks that can be worked on at
  * a Workshop Function.
  */
 public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTask {
 	
+	private static final int BASE_SCORE = 200;
+	public static final int DEMAND_FACTOR = 20;
+	
     private static class ManufactureJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
+
         private int minSkill;
 
         public ManufactureJob(SettlementMetaTask owner, Building target,
@@ -71,10 +75,8 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
 		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST,
 						JobType.ENGINEER, JobType.PHYSICIST, JobType.TECHNICIAN);
                         
-        addPreferredRobot(RobotType.MAKERBOT);
-        addPreferredRobot(RobotType.REPAIRBOT);
-        addPreferredRobot(RobotType.MEDICBOT);
-        addPreferredRobot(RobotType.CONSTRUCTIONBOT);
+        addPreferredRobot(RobotType.MAKERBOT, RobotType.REPAIRBOT, 
+        				RobotType.DELIVERYBOT, RobotType.CONSTRUCTIONBOT);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
     }
 
     /**
-     * Assess whether a Manufacture building needs assistent either for new or existing
+     * Assesses whether a Manufacture building needs assistant either for new or existing
      * manufacturing processes.
      * 
      * @param s
@@ -104,7 +106,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
     private void addManuProcesses(Settlement s, Building w, int lowestTechNeeded,
                     List<SettlementTask> results) {
         int demand = 0;
-        int base = 100;
+        int base = BASE_SCORE;
         var m = w.getManufacture();
         int lowestSkillNeeded = 0;
         
@@ -112,7 +114,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         if (m.getTechLevel() >= lowestTechNeeded) {
             var capacity = m.getCapacity();
 
-            // How many Manufacturing jobs ar on the queue
+            // How many Manufacturing jobs are on the queue
             var queueSize = (int)s.getManuManager().getQueue().stream()
                         .count();
 
@@ -124,9 +126,10 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         var active = m.getProcesses().stream()
                             .filter(p -> p.getWorkTimeRemaining() > 0D)
                             .toList();
+        
         if (!active.isEmpty()) {
-            demand += active.size();
-            base += 100;
+            demand += DEMAND_FACTOR * active.size();
+            base += BASE_SCORE / 5;
             lowestSkillNeeded = active.stream()
                                     .mapToInt(p -> p.getInfo().getSkillLevelRequired())
                                     .min().orElse(0);

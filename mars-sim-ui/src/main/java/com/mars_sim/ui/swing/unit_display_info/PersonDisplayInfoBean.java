@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonDisplayInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-11
  * @author Scott Davis
  */
 
@@ -29,25 +29,26 @@ class PersonDisplayInfoBean extends AbstractUnitDisplayInfo {
 
 	/**
 	 * Gets icon for unit button.
+	 * 
 	 * @return icon
 	 */
 	public Icon getButtonIcon(Unit unit) {
 		Icon buttonIcon = null;
 
-		if (unit instanceof Person) {
-			Person person = (Person) unit;
-			if (GenderType.MALE == person.getGender()) {
-				buttonIcon = ImageLoader.getIconByName("unit/person_male");
+		if (unit instanceof Person p) {
+			if (GenderType.MALE == p.getGender()) {
+				buttonIcon = ImageLoader.getIconByName("svg/male");//unit/person_male");
 			} else {
-				buttonIcon = ImageLoader.getIconByName("unit/person_female");
+				buttonIcon = ImageLoader.getIconByName("svg/female");//unit/person_female");
 			}
-		 }
-
+		}
+		
 		return buttonIcon;
 	}
 
 	/**
 	 * Gets a sound appropriate for this unit.
+	 * 
 	 * @param unit the unit to display.
 	 * @returns sound filepath for unit or empty string if none.
 	 */

@@ -121,27 +121,9 @@ public class ExploreSite extends EVAOperation {
 	public static boolean canExploreSite(Worker member) {
 
 		if (member instanceof Person person) {
-
-			if (EVAOperation.isGettingDark(person)) {
-				logger.fine(person, "Ended exploring site due to getting dark.");
+			if (EVAOperation.shouldEndEVAOperation(person)) {
 				return false;
 			}
-
-			if (EVAOperation.isHungryAtMealTime(person, 0)) {
-				logger.fine(person, "Ended exploring site due to being doubly hungry and is at meal time.");
-				return false;
-			}
-
-			if (EVAOperation.isExhausted(person)) {
-				logger.fine(person, "Ended exploring site due to being exhausted.");
-				return false;
-			}
-
-			if (person.getPhysicalCondition().computeFitnessLevel() < 3)
-				return false;
-
-			// Check if person's medical condition will not allow task.
-            return (person.getPerformanceRating() >= .2D);
 		}
 
 		return true;

@@ -56,9 +56,9 @@ extends EVAOperation {
 	public MaintainBuildingEVA(Person person, Building target) {
 		super(NAME, person, RandomUtil.getRandomDouble(90, 100), MAINTAIN);
 
-		if (person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
-        	return;
+			return;
 		}
         
 		// Check suitability

@@ -81,7 +81,7 @@
             <connection id="10" hatch-facing="east" />
         </connection-list>
     </building>
-    <building id="10" type="Command and Control" xloc="-12.0"
+    <building id="10" type="Command Center" xloc="-12.0"
         yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="9" hatch-facing="west" />

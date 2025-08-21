@@ -530,7 +530,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Checks if this vehicle has already been tagged with a status type.
+	 * Checks if this vehicle has already been tagged with a particular status type.
 	 *
 	 * @param status the status type of interest
 	 * @return yes if it has it

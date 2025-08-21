@@ -32,13 +32,14 @@ public class DoInventoryMeta extends FactoryMetaTask {
 	/** default logger. */
 	// May add back private static SimLogger logger = SimLogger.getLogger(DoInventoryMeta.class.getName())
 
-	
     public DoInventoryMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 	
 		setPreferredRole(RoleType.RESOURCE_SPECIALIST, 
-				RoleType.CHIEF_OF_SUPPLY_N_RESOURCES,
+				RoleType.LOGISTIC_SPECIALIST,
+				RoleType.CHIEF_OF_LOGISTIC_OPERATION,
+				RoleType.CHIEF_OF_SUPPLY_RESOURCE,
 				RoleType.CREW_OPERATION_OFFICER);
     }
     

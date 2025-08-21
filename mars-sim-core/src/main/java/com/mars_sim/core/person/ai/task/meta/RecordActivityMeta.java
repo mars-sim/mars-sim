@@ -34,6 +34,7 @@ public class RecordActivityMeta extends FactoryMetaTask {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.REPORTER);
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER);
 	}
 
     @Override
@@ -61,7 +62,11 @@ public class RecordActivityMeta extends FactoryMetaTask {
             if (roleType == RoleType.PRESIDENT)
                 roleModifier = 0.05D;
             else if (roleType == RoleType.MAYOR)
-                roleModifier = 0.1D;
+                roleModifier = 0.075D;
+            else if (roleType.equals(RoleType.ADMINISTRATOR))
+            	roleModifier = 0.1D;
+            else if (roleType.equals(RoleType.DEPUTY_ADMINISTRATOR))
+            	roleModifier = 0.125D;
             else if (roleType == RoleType.COMMANDER)
                 roleModifier = 0.15D;
             else if (roleType == RoleType.SUB_COMMANDER)

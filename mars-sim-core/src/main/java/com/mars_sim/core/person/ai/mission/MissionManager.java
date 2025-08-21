@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionManager.java
- * @date 2025-07-06
+ * @date 2025-08-13
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -220,7 +220,6 @@ public class MissionManager implements Serializable {
 	 * @param person person to find the mission for
 	 * @return new mission
 	 */
-
 	public Mission getNewMission(Person person) {
 		MarsTime marsTime = Simulation.instance().getMasterClock().getMarsTime();
 		CacheCreator<MissionRating> missionProbCache = new CacheCreator<>("Mission", marsTime);
@@ -241,7 +240,8 @@ public class MissionManager implements Serializable {
 		var selectedMission = missionProbCache.getRandomSelection();
 
 		if (selectedMission == null) {
-			throw new IllegalStateException(person + " could not determine a new mission.");
+			logger.severe(person, 20_000L, "selectedMission is null. Could not determine a new mission.");
+			return null;
 		}
 
 		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, missionCache);
@@ -290,7 +290,7 @@ public class MissionManager implements Serializable {
 
 
 	/**
-	 * Gets the number of particular missions that are active
+	 * Gets the number of particular missions that are active.
 	 *
 	 * @param mType
 	 * @param settlement

@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
@@ -290,14 +292,22 @@ public class MalfunctionTabPanel extends TabPanel {
 					case NAME: return generateToolTip(model.getMalfunction(rowIndex));
 					case EVA_WORK: return "Number of repairers active on EVA";
 					case INSIDE_WORK: return "Number of repairers active inside";
-					case COMPLETED: return "%age repaired";
+					case COMPLETED: return "Percentage being repaired";
 					default: return "";
 				}
 			}
 		};
 
 		mTable.setCellSelectionEnabled(false);
-		mTable.setAutoCreateRowSorter(true);
+		
+		// Allow ordering
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+		sorter.setSortsOnUpdates(true);
+		mTable.setRowSorter(sorter);
+		
+		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
+//		mTable.setAutoCreateRowSorter(true);
+		
 		scrollPanel.setViewportView(mTable);
 
         TableColumnModel columnModel = mTable.getColumnModel();
@@ -314,7 +324,7 @@ public class MalfunctionTabPanel extends TabPanel {
         columnModel.getColumn(EVA_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(INSIDE_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(COMPLETED - offset).setPreferredWidth(50);
-        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageTableCellRenderer.DEFAULT_WIDTH);
+//        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageTableCellRenderer.DEFAULT_WIDTH);
 		columnModel.getColumn(COMPLETED - offset).setCellRenderer(new PercentageTableCellRenderer(true));
         center.add(scrollPanel, BorderLayout.CENTER);
 	}

@@ -48,7 +48,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 
 	public static final int WIDTH = 550;
 	public static final int HEIGHT = 620;
-	public static final int STATUS_HEIGHT = 60;
+	public static final int STATUS_HEIGHT = 55;
 	
 	private String unitTitle;
 	
@@ -81,7 +81,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 		this.unit = unit;
 		this.unitTitle = title;
 		
-
 		setFrameIcon(MainWindow.getLanderIcon());
 
 		Dimension windowSize;
@@ -143,6 +142,17 @@ public abstract class UnitWindow extends ModalInternalFrame
 		label.setIcon(imageIcon);
 	}
 
+	/**
+	 * Removes a tab panel to the center panel.
+	 *
+	 * @param panel the tab panel to remove.
+	 */
+	protected final void removeTabPanel(TabPanel panel) {
+		if (tabPanels.contains(panel)) {
+			tabPanels.remove(panel);
+		}
+	}
+	
 	/**
 	 * Adds a tab panel to the center panel.
 	 *

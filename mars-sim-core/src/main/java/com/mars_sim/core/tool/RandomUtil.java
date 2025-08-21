@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomUtil.java
- * @date 2021-12-02
+ * @date 2025-08-09
  * @author Scott Davis
  */
 package com.mars_sim.core.tool;
@@ -9,8 +9,13 @@ package com.mars_sim.core.tool;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
+
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
+import org.apache.commons.rng.simple.ThreadLocalRandomSource;
+import org.apache.commons.statistics.distribution.ContinuousDistribution.Sampler;
+import org.apache.commons.statistics.distribution.NormalDistribution;
 
 /**
  * The RandomUtil class is a library of various random-related methods.
@@ -35,17 +40,40 @@ public final class RandomUtil {
 	// See Mersenne Twister in JAVA 
 	// at http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/VERSIONS/JAVA/java.html
 	
-	// Initiaise the Ramdom with a seed based oon current time
-	private static ThreadLocal<Random> random = ThreadLocal.withInitial(() -> new Random(System.currentTimeMillis()));
+	// Initiaise the Ramdom with a seed based on current time
+//	private static ThreadLocal<Random> random = ThreadLocal.withInitial(() -> new Random(System.currentTimeMillis()));
 
+	// Create a uniform random number generator
+	private static UniformRandomProvider rng = ThreadLocalRandomSource.current(RandomSource.SPLIT_MIX_64);; //RandomSource.WELL_19937_A.create();
 
+	// Create the Ziggurat normalized Gaussian sampler
+//	private static ZigguratNormalizedGaussianSampler sampler = ZigguratNormalizedGaussianSampler.of(rng);
+	
 	private RandomUtil() {}
 
-	public static Random getRandom() {
-		return random.get();
+	public static UniformRandomProvider getRNG() {
+		return rng;
 	}
-
-
+	
+	/**
+	 * Uses Apache Commons RNG library to get a double.
+	 * 
+	 * @param n
+	 * @return
+	 */
+	private static int getInt(int n) {
+		return rng.nextInt(n);
+	}
+	
+	/**
+	 * Uses Apache Commons RNG library to get a double.
+	 * 
+	 * @return
+	 */
+	private static double getDouble() {
+		return rng.nextDouble();	
+	}
+	
 	/**
 	 * Returns a random element from a set.
 	 * 
@@ -85,7 +113,7 @@ public final class RandomUtil {
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(int randomLimit) {
-		int rand = getRandom().nextInt(100) + 1;
+		int rand = getInt(100) + 1;
 		return rand < randomLimit;
 	}
 
@@ -96,7 +124,7 @@ public final class RandomUtil {
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(double randomLimit) {
-		double rand = getRandom().nextDouble() * 100;
+		double rand = getDouble() * 100;
 		return rand < randomLimit;
 	}
 
@@ -109,7 +137,7 @@ public final class RandomUtil {
 	public static int getRandomInt(int ceiling) {
 		if (ceiling < 0)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustBePositive") + ceiling); //$NON-NLS-1$
-		return getRandom().nextInt(ceiling + 1);
+		return getInt(ceiling + 1);
 	}
 
 	/**
@@ -123,7 +151,7 @@ public final class RandomUtil {
 	public static int getRandomInt(int base, int ceiling) {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
-		return getRandom().nextInt(ceiling - base + 1) + base;
+		return getInt(ceiling - base + 1) + base;
 	}
 
 	/**
@@ -133,7 +161,7 @@ public final class RandomUtil {
 	 * @return the random number
 	 */
 	public static double getRandomDouble(double ceiling) {
-		return getRandom().nextDouble() * ceiling;
+		return getDouble() * ceiling;
 	}
 
 	/**
@@ -146,42 +174,50 @@ public final class RandomUtil {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
 		// Note: switch from using ThreadLocalRandom.current().nextDouble(base, ceiling)
-		return (getRandom().nextDouble() * (ceiling - base)) + base;
+		return (getDouble() * (ceiling - base)) + base;
 	}
 
 	/**
-	 * Returns a random double number (-infi to +infi) under Gaussian ("normally") distributed with
-	 * mean 0.0 and standard deviation 1.0 from this random number generator's
-	 * sequence
-	 *
-	 * @return the random number
-	 */
-	public static double getGaussianDouble() {
-		return getRandom().nextGaussian();
-	}
+//	 * Returns a random double number (-infi to +infi) under Gaussian ("normally") distributed with
+//	 * mean 0.0 and standard deviation 1.0 from this random number generator's
+//	 * sequence
+//	 *
+//	 * @return the random number
+//	 */
+//	public static double getGaussianDouble() {
+//		return getRandom().nextGaussian();
+//	}
 
 	/**
-	 * Compute the gaussian random double number.
+	 * Computes a positive gaussian random double number.
 	 * 
-	 * @param center - the mean (where the average values will cluster around)of the random number with one variance
-	 * @param fraction - the fraction of the mean
-	 * @param variance - the spread of the gaussian distribution
+	 * @param center - the mean (where the average values will cluster around the random number with one variance
+	 * @param stdDev - the spread of the gaussian distribution
 	 * @return a positive-only random double number.
 	 */
-	public static double computeGaussianWithLimit(double center, double fraction, double variance) {
-		double delay = 0;
+	public static double getGaussianPositive(double center, double stdDev) {
+		Sampler sampler = NormalDistribution.of(center, stdDev).createSampler(rng);
+		
+		double value = 0;
 		
 		do {
-			double value = RandomUtil.getGaussianDouble() * variance;
-			if (value > 0)
-				delay = (center + Math.min(center * fraction, value));
-			else
-				delay = (center - Math.min(center * fraction, -value));
-			// Note: The do while loop to enforce the return of a positive only random double number.
-		} while (delay <= 0);
+			value = sampler.sample();
+		} while (value <= 0);
 		
-		return delay;
+		return value;
 	}
+	
+	/**
+	 * Computes a gaussian random double number.
+	 * 
+	 * @param center - the mean (where the average values will cluster around the random number with one variance
+	 * @param stdDev - the spread of the gaussian distribution
+	 * @return a positive-only random double number.
+	 */
+	public static double getGaussian(double center, double stdDev) {
+		return NormalDistribution.of(center, stdDev).createSampler(rng).sample();
+	}
+	
 	
 	/**
 	 * Returns a random integer from 1 to the given integer. 1 has twice the chance

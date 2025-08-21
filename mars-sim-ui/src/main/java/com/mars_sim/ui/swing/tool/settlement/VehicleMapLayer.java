@@ -74,6 +74,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * Draws a vehicle on the map.
 	 * 
 	 * @param vehicle the vehicle.
+	 * @param showLabel
+	 * @param viewpoint
 	 */
 	private void drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
 

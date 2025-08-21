@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base 2" shift-pattern="Long 3 Shift" 
-        default-population="24" number-of-robots="24" sponsor="RKA"
+        default-population="36" number-of-robots="24" sponsor="RKA"
         description="Large Base" objective="CROP_FARM">
         
     <!-- zone 0 -->        

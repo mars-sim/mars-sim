@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Sleep.java
- * @date 2023-08-14
+ * @date 2025-08-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -44,8 +44,6 @@ public class Sleep extends Task {
 
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = Sleep.class.getSimpleName();
-		
-    private static final int MAX_SUPPRESSION = 100;
 
 	/** Task name */
 	public static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
@@ -56,21 +54,23 @@ public class Sleep extends Task {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -2.2D;
+	private static final double STRESS_MODIFIER = -2D;
 	/** The base alarm time (millisols) at 0 degrees longitude. */
 	private static final double BASE_ALARM_TIME = 300D;
-	private static final double TIME_FACTOR = 1.7; // NOTE: should vary this factor by person
-	private static final double RESIDUAL_MODIFIER = .005;
+	private static final double TIME_FACTOR = 1.2; // NOTE: should vary this factor by person
+	private static final double RESIDUAL_MODIFIER = .004;
+	private static final double SLEEP_PERIOD = 150;
 
-	
+	private int numREMCycles;
+	private int cycleLength;
 	/**
-	 * Constructor 1.
+	 * Constructor 1. This will require a person to walk to a bed first.
+	 * Note: choose constructor 2 if walking is not required.
 	 *
-	 * @param person the person to perform the task
+	 * @param person
 	 */
 	public Sleep(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER,
-				(50 + RandomUtil.getRandomDouble(-5, 5)));
+		super(NAME, person, false, false, STRESS_MODIFIER, RandomUtil.getRandomInt(-20, 20) + SLEEP_PERIOD);
 
 		if (person.isOutside()) {
 			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
@@ -80,7 +80,6 @@ public class Sleep extends Task {
 
 		else {
 			// Initialize phase
-			addPhase(SLEEPING);
 			setPhase(SLEEPING);
 
 			// Adjust the duration so the person does not oversleep
@@ -93,40 +92,41 @@ public class Sleep extends Task {
 
 			// Is schedule sleep longer than allowed ?
 			if (maxSleep < getDuration()) {
-				logger.info(person, 20_000, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
+				logger.info(person, 0, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
 
 			walkToDestination();
-
 			
 			// Finally assign essentials for sleeping
 			person.wearGarment(((EquipmentOwner)person.getContainerUnit()));
 			person.assignThermalBottle();
+			
+			// Note: each REM cycle lasts about 90 to 120 mins or 60 to 80 millisols
+			numREMCycles = (int) (getDuration() / RandomUtil.getRandomInt(60, 80));
+			
+			cycleLength = (int)Math.round(getDuration() / numREMCycles);
 		}
 	}
 
 	/**
-	 * Constructor 2.
+	 * Constructor 2. This it for those who were brought in and will not be required to walk to a bed.
 	 *
-	 * @param person the person to perform the task
-	 * @param alarmTime
+	 * @param person
+	 * @param duration pre-defined sleep time
 	 */
 	public Sleep(Person person, int duration) {
 		super(NAME, person, false, false, STRESS_MODIFIER, duration);
 
 		if (person.isOutside()) {
-			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
+			logger.log(person, Level.WARNING, 0, "Not supposed to be falling asleep outside.");
 
 			endTask();
 		}
 
 		else {
 			// Initialize phase
-			addPhase(SLEEPING);
 			setPhase(SLEEPING);
-
-			walkToDestination();
 		}
 	}
 	
@@ -141,8 +141,10 @@ public class Sleep extends Task {
     }
 
 	/**
+	 * DO NOT DELETE. Will revisit how to safely put a makeshift bed in the EVA Airlock building.
+	 * 
 	 * Refers the person to sleep in a medical bed inside the EVA airlock.
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean sleepInEVAMedicalBed() {
@@ -182,18 +184,18 @@ public class Sleep extends Task {
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
 		CircadianClock circadian = person.getCircadianClock();
-
-		pc.recoverFromSoreness(time);
-		
-		pc.relaxMuscle(time);
+		// Assume sleeping improve the muscular soreness 
+		pc.reduceMuscleSoreness(time/2);
+		// Assume sleeping reduce the muscular health 
+		pc.reduceMuscleHealth(time/2);
 
         pc.reduceStress(time/2); 
         
 		double fractionOfRest = time * TIME_FACTOR;
 
-		double f = pc.getFatigue();
+		double f = pc.getFatigue() * time;
 
-		double residualFatigue = f * RESIDUAL_MODIFIER;
+		double residualFatigue = 0;
 		// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
 		// (2) Realistically speaking, the first hour of sleep restore more strength than the
 		//     the last hour.
@@ -202,6 +204,28 @@ public class Sleep extends Task {
 		// (4) The lost hours of sleep is already lost and there's no need to rest on a per
 		//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
 
+		
+		// The first REM cycle is usually the shortest, lasting around 10 mins, or 6.85 millisols
+		// Assume the rest of the cycles last between 90 to 120 minutes
+		
+		
+		if (getTimeCompleted() <= 6.85) {
+			// first REM cycle
+			residualFatigue = f * RESIDUAL_MODIFIER;
+		}
+		else if (getTimeCompleted() <= 6.85 + cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER * 2;
+		}
+		else if (getTimeCompleted() <= 6.85 + 2 * cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER * 3;
+		}
+		else if (getTimeCompleted() <= 6.85 + 3 * cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER * 2;
+		}
+		else if (getTimeCompleted() <= 6.85 + 4 * cycleLength) {
+			residualFatigue = f * RESIDUAL_MODIFIER;
+		}
+		
 		pc.reduceFatigue(fractionOfRest + residualFatigue);
 
 		circadian.setAwake(false);
@@ -211,8 +235,9 @@ public class Sleep extends Task {
 		circadian.recordSleep(time);
 
 		if (person.isOnDuty()) {
+	    	int now = getMarsTime().getMillisolInt();
 			// Reduce the probability if it's not the right time to sleep
-			refreshSleepHabit(person, circadian);
+	    	circadian.adjustSleepHabit(now);
 		}
 
 		// Check if fatigue is zero
@@ -261,25 +286,30 @@ public class Sleep extends Task {
 				if (person.getBuildingLocation().getZone() == person.getBed().getOwner().getZone()) {
 					// if the person is in the same zone as the building he's in
 					walkToBed(person, effortDriven);
+					
 					return;
 				}
 			}
 
-			AllocatedSpot tempBed = findTempBed(s);
+			AllocatedSpot tempBed = findABed(s, person);
 
 			if (tempBed != null) {
 				createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven);
+			}
+			else {
+				endTask();
+				return;
 			}
 		}
 	}
 
 	/**
-	 * Finds a temporary bed.
+	 * Finds a bed (permanent if possible).
 	 * 
 	 * @param s
 	 * @return
 	 */
-	private AllocatedSpot findTempBed(Settlement s) {
+	public static AllocatedSpot findABed(Settlement s, Person person) {
 		// Find a bed, if at home settlement attempt to make it permanent
 		AllocatedSpot tempBed = LivingAccommodation.allocateBed(s, person,
 						s.equals(person.getAssociatedSettlement()));
@@ -287,11 +317,12 @@ public class Sleep extends Task {
 			tempBed = findSleepRoughLocation(s, person);
 			if (tempBed == null) {
 				logger.severe(person, "Found no spots to sleep, staying awake.");
-				endTask();
-				return null;
+				return tempBed;
 			}
-			logger.warning(person, "No bed found. Sleeping at bed'"
+			else {
+				logger.warning(person, "No permanent bed found. Sleeping at bed'"
 									+ tempBed.getSpotDescription() + "'.");
+			}
 		}
 		return tempBed;
 	}
@@ -303,7 +334,7 @@ public class Sleep extends Task {
 	 * @param p
 	 * @return
 	 */
-	private AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
+	public static AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
 		var buildMgr = s.getBuildingManager();
 		// Find a building in the same zone as the person
 		// Avoid sleeping inside EVA Airlock
@@ -313,9 +344,9 @@ public class Sleep extends Task {
 				for (ActivitySpot as : f.getActivitySpots()) {
 					if (as.isEmpty()) {
 						// Claim this activity spot
-						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);					
+						boolean canClaim = f.claimActivitySpot(as.getPos(), p);					
 						if (canClaim) {
-							return worker.getActivitySpot();
+							return p.getActivitySpot();
 						}
 					}
 				}
@@ -372,36 +403,5 @@ public class Sleep extends Task {
 			}
 		}
 		return time;
-	}
-
-	/**
-     * Refreshes a person's sleep habit based on his/her latest work shift
-     *
-     * @param person
-     */
-    public void refreshSleepHabit(Person person, CircadianClock circadian) {
-    	int now = getMarsTime().getMillisolInt();
-
-		// if a person is on shift right now
-		if (person.isOnDuty()) {
-
-			int habit = circadian.getSuppressHabit();
-			int spaceOut = circadian.getSpaceOut();
-			// limit adjustment to 10 times and space it out to at least 50 millisols apart
-			if (spaceOut < now && habit < MAX_SUPPRESSION) {
-				// Discourage the person from forming the sleep habit at this time
-				person.updateSleepCycle(now, false);
-
-				int rand = RandomUtil.getRandomInt(2);
-				if (rand == 2) {
-					circadian.setSuppressHabit(habit+1);
-					spaceOut = now + 20;
-					if (spaceOut > 1000) {
-						spaceOut = spaceOut - 1000;
-					}
-					circadian.setSpaceOut(spaceOut);
-				}
-			}
-		}
     }
 }

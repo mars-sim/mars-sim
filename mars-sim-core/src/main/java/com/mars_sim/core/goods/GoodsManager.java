@@ -60,7 +60,7 @@ public class GoodsManager implements Serializable {
 		 */
 		@Override
 		public int execute(MarsTime now) {
-			updateGoodValues();
+			updatedMetrics();
 			return UPDATE_GOODS_PERIOD;
 		}	
 	}
@@ -138,6 +138,8 @@ public class GoodsManager implements Serializable {
 	private static final int MAX_SUPPLY = 5_000;
 	private static final int MAX_VP = 10_000;
 
+	public static final double THROTTLING = .25;
+	
 	static final double MIN_VP = 0.01;
 	public static final double MAX_FINAL_VP = 5_000D;
 	static final int MAX_DEMAND = 10_000;
@@ -295,33 +297,41 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Updates the good values for all good.
+	 * Updates the metrics for all good.
 	 */
-	public void updateGoodValues() {
+	public void updatedMetrics() {
 
- 		// Update the goods value gradually with the use of buffers
+ 		// Update the metrics on all goods 
 		for (Good g: GoodsUtil.getGoodsList()) {
-			MarketData mv = marketMap.get(g);
-			double localValue = determineGoodValue(g);
-			
-			double localDemand = demandCache.get(g.getID());
-	
-			double localCost = g.computeAdjustedCost();
-			
-			double localPrice = g.calculatePrice(settlement, localValue);
-			
-			mv.updateDemand(localDemand);	
-			mv.updateGoodValue(localValue);	
-			mv.setCost(localCost);
-			mv.setPrice(localPrice);
-			
-			settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, g);				
-			settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, g);
-			settlement.fireUnitUpdate(UnitEventType.MARKET_COST_EVENT, g);
-			settlement.fireUnitUpdate(UnitEventType.MARKET_PRICE_EVENT, g);
+			updateOneGood(g);
 		}				
 	}
 
+	/**
+	 * Updates a particular good.
+	 * 
+	 * @param g
+	 */
+	public void updateOneGood(Good g) {
+		MarketData mv = marketMap.get(g);
+		double localValue = determineGoodValue(g);
+		
+		double localDemand = demandCache.get(g.getID());
+
+		double localCost = g.computeAdjustedCost();
+		
+		double localPrice = g.calculatePrice(settlement, localValue);
+		
+		mv.updateDemand(localDemand);	
+		mv.updateGoodValue(localValue);	
+		mv.setCost(localCost);
+		mv.setPrice(localPrice);
+		
+		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, g);				
+		settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, g);
+		settlement.fireUnitUpdate(UnitEventType.MARKET_COST_EVENT, g);
+		settlement.fireUnitUpdate(UnitEventType.MARKET_PRICE_EVENT, g);
+	}
 	
 	/**
 	 * Determines the value of a good. This recalculates the supply & demand.
@@ -753,7 +763,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * How many resources need reviewing?
+	 * Gets the number of resources that need reviewing.
 	 * 
 	 * @return
 	 */
@@ -788,12 +798,12 @@ public class GoodsManager implements Serializable {
     }
 
 	/**
-	 * Checks if the demand for a resource is met.
+	 * Checks if the demand for a life support resource is met.
 	 *
 	 * @param resourceID
-	 * @return zero if no need of injecting change
+	 * @return the new demand 
 	 */
-	public double checkResourceDemand(int resourceID) {
+	public double moderateLifeResourceDemand(int resourceID) {
 		double lacking = 0;
 
 		var limits = resLimits.get(resourceID);
@@ -801,34 +811,34 @@ public class GoodsManager implements Serializable {
 			throw new IllegalArgumentException("Resource is not essential " + resourceID);
 		}
 		int reservePerPop = limits.reserve();
-		int optimalPerPop = limits.max();
+		int optimalPerPop = limits.optimal();
 		int pop = settlement.getNumCitizens();
 		
-		double limit = optimalPerPop * pop;
+		double optimal = optimalPerPop * pop;
+		double reserve = reservePerPop * pop;
 		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen
 		double supply = getSupplyScore(resourceID);
 
-		double stored = settlement.getSpecificAmountResourceStored(resourceID);
+		double stored = settlement.getAllAmountResourceStored(resourceID);
 	
-		if (stored > limit) {
+		if (stored > optimal) {
 			// Thus no need of demand adjustment
 			return 0;
 		}
+			
+		lacking = MathUtils.between(optimal - reserve - stored, 0, optimal - reserve);
 
-		stored = MathUtils.between(stored, 1, limit);
+		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		
-		lacking = MathUtils.between((optimalPerPop - reservePerPop) * pop - stored, 0, optimalPerPop);
-
-		// Note: may need to further limit each increase to avoid an abrupt rise or drop in demand 
-
-		// Warning: make sure stored is not zero so that delta is not infinite
-		double delta = lacking / stored * demand - demand;
+		// Multiply by THROTTLING to limit the speed of increase to avoid an abrupt rise in demand
+		double delta = demand * (lacking / (1 + stored) - 1) * THROTTLING;
+ 
 		
 		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(resourceID);
-			logger.info(settlement, 30_000L,
+			logger.info(settlement, 10_000L,
 					gasName + " - " 
 					+ "Injecting Demand: " + Math.round(demand * 100.0)/100.0 
 					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
@@ -838,7 +848,7 @@ public class GoodsManager implements Serializable {
 					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
 					+ ".");
 
-			return delta;
+			return delta * demand;
 		}
 		
 		return 0;

@@ -57,7 +57,7 @@ public class TradeMeta extends AbstractMetaMission {
 	
 			RoleType roleType = person.getRole().getType();
 			
-			if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
+			if (RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 					|| RoleType.RESOURCE_SPECIALIST == roleType
 		 			|| RoleType.MISSION_SPECIALIST == roleType
 		 			|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType	

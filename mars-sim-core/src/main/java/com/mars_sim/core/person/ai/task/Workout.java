@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Workout.java
- * @date 2022-08-04
+ * @date 2025-08-19
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -45,8 +45,8 @@ public class Workout extends Task {
 	 */
 	public Workout(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER,
-				10.0 + RandomUtil.getRandomInt(-7, 7));
+		super(NAME, person, false, false, STRESS_MODIFIER,
+				15.0 + RandomUtil.getRandomInt(-5, 5));
 
 		if (person.isInSettlement()) {
 
@@ -58,7 +58,6 @@ public class Workout extends Task {
 				gym = gymBuilding.getExercise();
 
 				// Initialize phase
-				addPhase(EXERCISING);
 				setPhase(EXERCISING);
 			}
 			else {
@@ -68,7 +67,6 @@ public class Workout extends Task {
 				    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 				    
 					// Initialize phase
-					addPhase(EXERCISING);
 					setPhase(EXERCISING);
 				}
 				else {
@@ -79,7 +77,6 @@ public class Workout extends Task {
 					}
 	
 					// Initialize phase
-					addPhase(EXERCISING);
 					setPhase(EXERCISING);
 				}
 			}
@@ -108,9 +105,8 @@ public class Workout extends Task {
 	 */
 	private double exercisingPhase(double time) {
 		// Regulates hormones
-		// Improves musculoskeletal systems
 		// Record the exercise time [in millisols]
-		person.getPhysicalCondition().workout(time);
+		person.getPhysicalCondition().trackExercise(time);
         // Reduce person's stress
 		person.getPhysicalCondition().reduceStress(time/2);
 		return 0;

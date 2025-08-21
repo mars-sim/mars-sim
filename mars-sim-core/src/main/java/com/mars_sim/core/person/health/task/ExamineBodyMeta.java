@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExamineBodyMeta.java
- * @date 2021-12-22
+ * @date 2025-08-14
  * @author Manny Kung
  */
 package com.mars_sim.core.person.health.task;
@@ -22,6 +22,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.MedicalManager;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -48,6 +49,11 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
         public Task createTask(Person person) {
             return ExamineBody.createTask(person, patient);
         }
+        
+        @Override
+        public Task createTask(Robot robot) {
+            return ExamineBody.createTask(robot, patient);
+        }
     }
 
 	/** Task name */
@@ -57,38 +63,40 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private static final double DEFAULT_SCORE = 500D;
 
 	// Extra score for every day body not examined
-	private static final double MOD_SCORE = 0.1;
+	private static final double MOD_SCORE = 2;
 
 	private static MedicalManager medicalManager;
 
     public ExamineBodyMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.ROBOT, TaskScope.ANY_HOUR);
 
-		setTrait(TaskTrait.MEDICAL);
+		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
 		setPreferredJob(JobType.MEDICS);
 		addPreferredRobot(RobotType.MEDICBOT);
+		
+		addAllCrewRoles();
 	}
 
 	/**
      * Gets the score for a Settlement task for a person. to examine a body based on Job & Skill.
      * 
 	 * @param t Task being scored
-	 * @parma p Person requesting work.
+	 * @param person Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+	public RatingScore assessPersonSuitability(SettlementTask t, Person person) {
         RatingScore factor = RatingScore.ZERO_RATING;
-        if (p.isInSettlement() &&
-				p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+        if (person.isInSettlement() &&
+				person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 
 			// Effort-driven task modifier.
-			factor = super.assessPersonSuitability(t, p);
+			factor = super.assessPersonSuitability(t, person);
 			if (factor.getScore() == 0) {
 				return factor;
 			}
 
-			double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
 				skill = 0.01D;
 			factor.addModifier(SKILL_MODIFIER, skill);
@@ -96,6 +104,31 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		return factor;
 	}
 
+	/**
+     * Gets the score for a Settlement task for a robot. to examine a body based on Job & Skill.
+     * 
+	 * @param t Task being scored
+	 * @param robot Robot requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
+        RatingScore factor = RatingScore.ZERO_RATING;
+        if (robot.isInSettlement()) {
+
+			// Effort-driven task modifier.
+			factor = super.assessRobotSuitability(t, robot);
+			if (factor.getScore() == 0) {
+				return factor;
+			}
+
+			double skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			if (skill == 0)
+				skill = 0.01D;
+			factor.addModifier(SKILL_MODIFIER, skill);
+		}
+		return factor;
+	}
 
 	/**
 	 * Scans the settlement for any post mortems that are needed.
@@ -107,7 +140,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		List<SettlementTask>  tasks = new ArrayList<>();
 		List<DeathInfo> deaths = medicalManager.getPostmortemExam(settlement);
 
-		if (!deaths.isEmpty() && hasNeedyMedicalAidsAtSettlement(settlement)) {
+		if (!deaths.isEmpty()) { // && hasNeedyMedicalAidsAtSettlement(settlement)) {
 			for(DeathInfo pm : deaths) {
 				if (!pm.getExamDone()) {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);
@@ -133,7 +166,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		// Check all medical care buildings.
 		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
 			// Check if there are any sick beds at building.
-			if (b.getMedical().hasEmptyBeds()) {
+			if (b.getMedical().hasPatients()) {
 				return true;
 			}
 		}

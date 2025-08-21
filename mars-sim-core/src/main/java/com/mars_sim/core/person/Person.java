@@ -265,6 +265,15 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return new PersonBuilder(name, settlement, gender);
 	}
 
+	
+	/**
+	 * Allocates a new shift.
+	 */
+	public void allocateNewShift() {
+		getSettlement().getShiftManager().assignNewShift(this);
+	}
+	
+	
 	/**
 	 * Computes a person's chromosome map based on the characteristics of their nation.
 	 * 
@@ -483,8 +492,13 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public void setRole(RoleType type) {
 		getRole().changeRoleType(type);
 
-		// In case of the role of the Mayor, his job must be set to Politician instead.
-		if (type == RoleType.MAYOR) {
+		// For a councils role's above commanders and sub-commander, 
+		// his job must be set to Politician instead.
+		if (type == RoleType.PRESIDENT
+			|| type == RoleType.MAYOR
+			|| type == RoleType.ADMINISTRATOR
+			|| type == RoleType.DEPUTY_ADMINISTRATOR
+				) {
 			// Set the job as Politician
 			mind.assignJob(JobType.POLITICIAN, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
@@ -635,13 +649,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param problem
 	 */
 	void setRevived(HealthProblem problem) {
-		// Reset declaredDead
-		declaredDead = false;
-		// Set description
-		setDescription("Recovering");
 		// Reset isBuried
-		isBuried = false;
-		
+		isBuried = false;	
 		// Set buried settlement
 		buriedSettlement = -1;
 		// Throw unit event
@@ -650,6 +659,16 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		MedicalEvent event = new MedicalEvent(this, problem, EventType.MEDICAL_RESUSCITATED);
 		// Register event
 		Simulation.instance().getEventManager().registerNewEvent(event);
+		// Reset declaredDead
+		declaredDead = false;
+		
+		condition.recalculatePerformance();
+		// Set description
+		setDescription("Recovering");
+		// Set performance to 0% awaiting recovering
+		condition.setPerformanceFactor(0);
+		// Set fatigue to 3000 to rest		
+		condition.setFatigue(3000);
 	}
 	
 	/**
@@ -678,8 +697,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 //		long tnow = System.currentTimeMillis();
 		
 		// Check to see if the person has deceased
-		if (condition.getDeathDetails() != null
-				&& condition.getDeathDetails().getBodyRetrieved()) {
+		if (condition.getDeathDetails() != null) {
 			setDeceased();
 		}
 		
@@ -731,8 +749,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					// encourage sleep after the work shift
 					circadian.updateSleepCycle(m, true);
 				}
-
-				condition.increaseFatigue(RandomUtil.getRandomInt(333));
 			}
 			else {
 				// Adjust the sleep habit according to the current work shift
@@ -1008,10 +1024,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public int getSleepWeight(int msol) {
 		return circadian.getSleepWeight(msol);
 	}
-	
-	public void updateSleepCycle(int millisols, boolean updateType) {
-		circadian.updateSleepCycle(millisols, updateType);
-	}
 
 	/**
 	 * Gets the settlement location of this bed.
@@ -1023,11 +1035,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Assign a bed to this person.
+	 * Registers a bed for this person.
 	 * 
 	 * @param bed2 The assignment
 	 */
-	public void setBed(AllocatedSpot bed2) {
+	public void registerBed(AllocatedSpot bed2) {
 		this.bed = bed2;	
 	}
 
@@ -1942,6 +1954,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	public ResearchStudy getResearchStudy() {
 		return research;
+	}
+	
+	
+	@Override
+	public String getStringType() {
+		return gender.getName().toLowerCase();
 	}
 	
 	/**

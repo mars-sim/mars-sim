@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Worker.java
- * @date 2021-08-15
+ * @date 2025-08-10
  * @author Barry Evans
  */
 
@@ -103,6 +103,14 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, Mobil
 	 * @return
 	 */
 	public UnitType getUnitType();
+
+
+	/**
+	 * Gets the unit type in string.
+	 *
+	 * @return
+	 */
+	public String getStringType();
 	
 	/**
 	 * Assigns an activity spot to a Worker.

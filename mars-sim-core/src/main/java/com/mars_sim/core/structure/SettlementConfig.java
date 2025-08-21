@@ -32,7 +32,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  */
 public class SettlementConfig {
 
-	public record ResourceLimits(int reserve, int max) {}
+	public record ResourceLimits(int reserve, int optimal) {}
 
 	// Element names
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
@@ -65,7 +65,7 @@ public class SettlementConfig {
 
     private static final String ESSENTIAL_RESOURCES = "essential-resources";
 	private static final String RESERVE = "reserve";
-	private static final String MAX = "max";
+	private static final String OPTIMAL = "optimal";
 
 	private static final String ACTIVITIES = "activities";
 	private static final String SCHEDULE = "schedule";
@@ -228,9 +228,9 @@ public class SettlementConfig {
 			}
 
 			int reserve = Integer.parseInt(node.getAttributeValue(RESERVE));
-			int max = Integer.parseInt(node.getAttributeValue(MAX));
+			int optimal = Integer.parseInt(node.getAttributeValue(OPTIMAL));
 
-			resLimits.put(resId, new ResourceLimits(reserve, max));
+			resLimits.put(resId, new ResourceLimits(reserve, optimal));
 		}
 	}
 

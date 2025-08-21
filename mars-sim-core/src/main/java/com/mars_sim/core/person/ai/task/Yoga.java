@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Yoga.java
- * @date 2022-08-04
+ * @date 2025-08-19
  * @author Sebastien Venot
  */
 package com.mars_sim.core.person.ai.task;
@@ -32,7 +32,7 @@ public class Yoga extends Task {
 	private static final TaskPhase DOING_YOGA = new TaskPhase(Msg.getString("Task.phase.doingYoga")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.5D;
+	private static final double STRESS_MODIFIER = -.75D;
 
 	/** The exercise building the person is using. */
 	private Exercise gym;
@@ -43,7 +43,8 @@ public class Yoga extends Task {
 	 * @param person the person to perform the task
 	 */
 	public Yoga(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomDouble(30D));
+		super(NAME, person, false, false, STRESS_MODIFIER, 
+				7D + RandomUtil.getRandomInt(-3, 3));
 	
 		if (person.isInSettlement()) {
 			// If person is in a settlement, try to find a gym.
@@ -64,7 +65,6 @@ public class Yoga extends Task {
 			endTask();
 
 		// Initialize phase
-		addPhase(DOING_YOGA);
 		setPhase(DOING_YOGA);
 	}
 
@@ -89,10 +89,10 @@ public class Yoga extends Task {
 	private double yogaPhase(double time) {
 		// Regulates hormones
 		person.getCircadianClock().exercise(time);
-		//Improves musculoskeletal systems
-		person.getPhysicalCondition().exerciseMuscle(time);
 		// Record the sleep time [in millisols]
 		person.getCircadianClock().recordExercise(time);
+		//Improves musculoskeletal health
+		person.getPhysicalCondition().muscularHypertrophy(time/2);
         // Reduce person's stress
 		person.getPhysicalCondition().reduceStress(time/2);
 		

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * YogaMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-19
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.meta;
@@ -60,20 +60,24 @@ public class YogaMeta extends FactoryMetaTask {
         double fatigue = condition.getFatigue();
         double kJ = condition.getEnergy();
         double hunger = condition.getHunger();
-        double musclePain = condition.getMusclePainTolerance();
-        double muscleSoreness = condition.getMuscleSoreness();
-
+        double painTolernce = condition.getMusclePainTolerance();
+        double soreness = condition.getMuscleSoreness();
+        double muscleHealth = condition.getMuscleHealth();
+        
+        if (kJ < 1500 || fatigue > 750 || hunger > 750)
+            return EMPTY_TASKLIST;
+        
         double base = kJ/2000 
             		// Note: The desire to exercise increases linearly right after waking up
             		// from bed up to the first 333 msols
             		// After the first 333 msols, it decreases linearly for the rest of the day
             		+ Math.max(333 - fatigue, -666)
             		// Note: muscle condition affects the desire to exercise
-            		+ musclePain/2.5 - muscleSoreness/2.5
+            		- painTolernce/2.5 - muscleHealth/2.5 + soreness 
             		+ stress / 10
             		- person.getCircadianClock().getTodayExerciseTime() * 5;
 
-        if (kJ < 500 || fatigue > 750 || hunger > 750 || base <= 0)
+        if (base <= 0)
             return EMPTY_TASKLIST;
 
         RatingScore result = new RatingScore(base/10D);  // Workout score is divided by 10 as well  

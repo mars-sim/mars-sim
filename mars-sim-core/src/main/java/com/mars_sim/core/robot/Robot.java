@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Robot.java
- * @date 2025-07-31
+ * @date 2025-08-07
  * @author Manny Kung
  */
 
@@ -12,13 +12,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -78,10 +82,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private static final double BASE_CAPACITY = 60D;
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 80D;
-	/** 334 Sols (1/2 orbit). */
+	/** life time in number of sols. */
 	private static final double WEAR_LIFETIME = 334_000D;
 	/** 100 millisols. */
-	private static final double MAINTENANCE_TIME = 100D;
+	private static final double MAINTENANCE_TIME = 50D;
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 
@@ -95,6 +99,16 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The string tag of inoperable. */
 	private static final String INOPERABLE = "Inoperable";
 
+	/** The status modes available. */
+	private static final List<BotMode> AVAILABLE_MODES = Arrays.asList(
+			BotMode.CHARGING ,
+			BotMode.MAINTENANCE,
+			BotMode.MALFUNCTION,
+			BotMode.OUT_OF_POWER,
+			BotMode.POWER_SAVE,
+			BotMode.NOMINAL 
+			);
+	
 	// Data members
 	/** Is the robot is inoperable. */
 	private boolean isInoperable;
@@ -110,12 +124,16 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 	private String model;
 	
+	/** The Robot status mode. */
+	private BotMode primaryMode; 
+	/** The Robot Type. */
+	private RobotType robotType;
+	
 	/** The spot assigned to the Robot */
 	private AllocatedSpot spot;
 	/** The year of birth of this robot. */
 	private LocalDate birthDate;
-	/** The Robot Type. */
-	private RobotType robotType;
+
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for robot's natural attributes. */
@@ -131,6 +149,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 
+	/** List of status modes. */
+	private Set<BotMode> botModes = new HashSet<>();
+	
+	
 	static {
 		// Initialize the parts
 		ItemResourceUtil.initBotParts();
@@ -149,6 +171,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Initialize data members.
 		this.robotType = spec.getRobotType();
 		this.model = spec.getMakeModel();
+		
+		primaryMode = BotMode.NOMINAL;
 		
 		// Set base mass
 		setBaseMass(spec.getMass());
@@ -258,6 +282,132 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		updateAge(masterClock.getEarthTime());
 	}
 
+
+	/**
+	 * Prints a string list of status modes.
+	 *
+	 * @return
+	 */
+	public String printStatusModes() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(primaryMode.getName());
+
+		for (BotMode m : botModes) {
+			builder.append(", ").append(m.getName());
+		}
+		return builder.toString();
+	}
+
+
+	/**
+	 * Is the robot currently fit for use ?
+	 * 
+	 * @return
+	 */
+	public boolean isFit() {
+		return isRobotReady();
+	}
+
+	/**
+	 * Checks if this bot has already been tagged with a particular status mode.
+	 *
+	 * @param status the status mode of interest
+	 * @return yes if it has it
+	 */
+	public boolean haveStatusType(BotMode status) {
+        return (primaryMode == status) || botModes.contains(status);
+    }
+
+	/**
+	 * Checks if this bot has no issues and is ready.
+	 *
+	 * @return
+	 */
+	public boolean isRobotReady() {
+	    for (BotMode m : botModes) {
+			if (m == BotMode.NOMINAL
+					|| m == BotMode.POWER_SAVE)
+				return true;
+	    }
+
+	    return false;
+	}
+
+	public BotMode getPrimaryStatus() {
+		return primaryMode;
+	}
+
+	/**
+	 * Sets the Primary status of a Vehicle that represents it's situation.
+	 * 
+	 * @param newStatus Must be a primary status value
+	 */
+	public void setPrimaryStatus(BotMode newStatus) {
+		setPrimaryStatus(newStatus, null);
+	}
+
+	/**
+	 * Sets the Primary status of a bot that represents its situation. Also there is 
+	 * a secondary status on why the primary has changed.
+	 * 
+	 * @param newStatus Must be a primary status value
+	 * @param secondary Reason for the change; can be null be none given
+	 */
+	public void setPrimaryStatus(BotMode newStatus, BotMode secondary) {
+		if (!newStatus.isPrimary()) {
+			throw new IllegalArgumentException("Status mode is not primary " + newStatus.getName());
+		}
+
+		boolean doEvent = false;
+		if (primaryMode != newStatus) {
+			primaryMode = newStatus;
+			doEvent = true;
+		}
+
+		// Secondary is optional
+		if ((secondary != null) && !botModes.contains(secondary)) {
+			botModes.add(secondary);
+			doEvent = true;
+		}
+
+		if (doEvent) {
+//			writeLog();
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+		}
+	}
+
+	/**
+	 * Adds a Secondary status type for this vehicle.
+	 *
+	 * @param newStatus the status to be added
+	 */
+	public void addSecondaryStatus(BotMode newStatus) {
+		if (newStatus.isPrimary()) {
+			throw new IllegalArgumentException("Status mode is not secondary " + newStatus.getName());
+		}
+
+		// Update status based on current situation.
+		if (!botModes.contains(newStatus)) {
+			botModes.add(newStatus);
+//			writeLog();
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+		}
+	}
+
+	/**
+	 * Removes a Secondary status type for this vehicle.
+	 *
+	 * @param oldStatus the status to be removed
+	 */
+	public void removeSecondaryStatus(BotMode oldStatus) {
+		// Update status based on current situation.
+		if (botModes.contains(oldStatus)) {
+			botModes.remove(oldStatus);
+//			writeLog();
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, oldStatus);
+		}
+	}
+	
 	/**
 	 * Is the robot outside of a settlement but within its vicinity
 	 *
@@ -277,6 +427,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// set description for this robot
 		super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
 		botMind.setInactive();
+		health.setPerformanceFactor(0);
+//		this.setPrimaryStatus(BotMode.MALFUNCTION);
 		toBeSalvaged();
 	}
 
@@ -295,19 +447,36 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			return false;
 		}
 
-		// If robot is dead, then skip
-		if (health != null && !health.isInoperable()) {
-			if (health.timePassing(pulse)) {
-				// Mental changes with time passing.
-				if (botMind != null)
-					botMind.timePassing(pulse);
-			} else {
-				// robot has died as a result of physical condition
-				setInoperable();
+		if (pulse.isNewIntMillisol()) {
+			
+			if (haveStatusType(BotMode.MALFUNCTION)
+					&& malfunctionManager.getMalfunctions().isEmpty()) {
+				// Remove the malfunction status
+				removeSecondaryStatus(BotMode.MALFUNCTION);
+			}	
+			
+			if (!isInoperable) {
+				malfunctionManager.timePassing(pulse);
 			}
 		}
 
-		malfunctionManager.timePassing(pulse);
+		
+		// If robot is dead, then skip
+		if (health != null) {
+			if (health.timePassing(pulse)) {
+				// Mental changes with time passing.
+				if (botMind != null) {
+					botMind.timePassing(pulse);
+					
+					// Note: Call activeTimePassing only when in use
+					if (primaryMode == BotMode.NOMINAL) {
+						malfunctionManager.activeTimePassing(pulse);
+					}	
+				}
+			} else {
+				setInoperable();
+			}
+		}
 
 		if (pulse.isNewSol()) {
 			// Check if age should be updated
@@ -546,14 +715,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return age;
 	}
 
-	public boolean isFit() {
-		return !health.isInoperable();
-	}
-
-
 	/**
-	 * Generate a unique name for the Robot. Generated based on
-	 * the type of Robot.
+	 * Generates a unique name for the Robot based on the type.
 	 * @param robotType
 	 * @return
 	 */
@@ -1102,6 +1265,11 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	@Override
 	public AllocatedSpot getActivitySpot() {
 		return spot;
+	}
+	
+	@Override
+	public String getStringType() {
+		return TYPE.toLowerCase();
 	}
 	
 	/**

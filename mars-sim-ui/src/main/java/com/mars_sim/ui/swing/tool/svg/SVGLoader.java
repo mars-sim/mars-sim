@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SVGLoader.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-17
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.svg;
@@ -11,17 +11,19 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory; // for batik-transcoder1.8 and 1.9
+//For batik-transcoder 1.7, use
+//import org.apache.batik.dom.svg.SAXSVGDocumentFactory; 
+//For batik-transcoder up to 1.6, use
+//import org.apache.batik.dom.util.SAXDocumentFactory;
+//For batik-transcoder1.8 and 1.9, use 
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory; 
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
-//import org.apache.batik.dom.svg.SAXSVGDocumentFactory; // for batik-transcoder 1.7
-//import org.apache.batik.dom.util.SAXDocumentFactory; // up to 1.6
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
-
 
 
 /**
@@ -30,17 +32,21 @@ import org.apache.batik.util.XMLResourceDescriptor;
 public class SVGLoader {
 
 	// Static members
+	public static final String SVG_DIR = "/svg/";
+	public static final String SLASH = "/";
+	public static final String DOT = ".";
+	
 	private static Map<String, GraphicsNode> svgCache;
-	public final static String SVG_DIR = "/svg/";
-
+	
 	/**
 	 * Private constructor for utility class.
 	 */
 	private SVGLoader() {}
 
 	/**
-	 * Load the SVG image with the specified name. This operation may either
+	 * Loads the SVG image with the specified name. This operation may either
 	 * create a new graphics node of returned a previously created one.
+	 * 
 	 * @param name Name of the SVG file to load.
 	 * @return GraphicsNode containing SVG image or null if none found.
 	 */
@@ -52,8 +58,8 @@ public class SVGLoader {
 		
 		if (found == null) {
 			
-			String subPath = prefix.replace(".", "/");
-			String fileName = SVG_DIR + subPath + "/" + name;
+			String subPath = prefix.replace(DOT, SLASH);
+			String fileName = SVG_DIR + subPath + SLASH + name;
 			URL resource = SVGLoader.class.getResource(fileName);
 			
 			String parser = XMLResourceDescriptor.getXMLParserClassName();
@@ -64,7 +70,6 @@ public class SVGLoader {
 			bridgeContext.setDynamic(true);
 			
 			try {
-				
 				found = new GVTBuilder().build(bridgeContext, f.createDocument(resource.toString()));
 				svgCache.put(name, found);
 			} catch (IOException e) {

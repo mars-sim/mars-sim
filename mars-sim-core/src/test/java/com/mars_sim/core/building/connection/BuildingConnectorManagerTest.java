@@ -306,13 +306,13 @@ public class BuildingConnectorManagerTest extends TestCase {
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
 
         var bMgr = settlement.getBuildingManager();
-        var lHab = bMgr.getBuildingByTemplateID("HAB1"); // Lander Hab
+        var lHab = bMgr.getBuildingByTemplateID("RHAB1"); // Residential Hab
         var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
         var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, lHab.getPosition(), lab, lab.getPosition());
 
-        var core = bMgr.getBuildingByTemplateID("HC907"); 
+        var core = bMgr.getBuildingByTemplateID("MCC907"); 
         path = manager.determineShortestPath(lHab, lHab.getPosition(), core, core.getPosition());
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, lHab.getPosition(), core, core.getPosition());
@@ -330,7 +330,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
 
         var bMgr = settlement.getBuildingManager();
-        var lHab = bMgr.getBuildingByTemplateID("HAB1"); // Lander Hab
+        var lHab = bMgr.getBuildingByTemplateID("RHAB1"); // Residential Hab
         var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
         long startTime = System.nanoTime();
         var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());

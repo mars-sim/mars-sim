@@ -71,6 +71,7 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -115,8 +116,13 @@ public class Settlement extends Unit implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
+	public static enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
+	
 	private static final int NUM_BACKGROUND_IMAGES = 20;
 
+	private static final int MAX_STOCK_CAP = 1_000_000;
+
+	private static final int INITIAL_FREE_OXYGEN_AMOUNT = 5_000;
 	/**
 	 * Shared preference key for Mission limits
 	 */
@@ -125,7 +131,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int ICE_PROB_FACTOR = 10;
+	private static final int ICE_PROB_FACTOR = 5;
 	private static final int REGOLITH_PROB_FACTOR = 15;
 	
 	private static final int MAX_PROB = 5000;
@@ -136,8 +142,8 @@ public class Settlement extends Unit implements Temporal,
 	private static final int ICE_MAX = 4000;
 	private static final int WATER_MAX = 10_000;
 
-	private static final int MIN_WATER_RESERVE = 800; // per person
-	private static final int MIN_ICE_RESERVE = 800; // per person
+	public static final int MIN_WATER_RESERVE = 800; // per person
+	private static final int MIN_ICE_RESERVE = 400; // per person
 
 	/** The settlement sampling resources. */
 	private static final int[] samplingResources;
@@ -185,25 +191,27 @@ public class Settlement extends Unit implements Temporal,
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
 
+
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
-	/** The flag to see if a water ration review is due. */
-	private boolean waterRatioReviewFlag = false;
+	/** The flag for the need to review the ice probability value. */
+	private boolean iceReviewDue = false;
+	/** The flag for the need to approve the ice probability value. */
+	private boolean iceApprovalDue = false;
+	/** The flag for the need to review the new regolith probability value. */
+	private boolean regolithReviewDue = false;
+	/** The flag for the need to approve the new regolith probability value. */
+	private boolean regolithApprovalDue = false;
 	
-	/** The water ratio of the settlement. The higher the more urgent for water resource. */
-	private int waterRatioCache = 1;
-	/** The new water ratio of the settlement. */
-	private int newWaterRatio = 0;
+	
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
 	private int initialNumOfRobots;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
-	/** The factor due to the population. */
-	private double popFactor = 1;
 	/** Numbers of citizens of this settlement. */
 	private int numCitizens = 1;
 	/** Numbers of bots owned by this settlement. */
@@ -215,6 +223,22 @@ public class Settlement extends Unit implements Temporal,
 	/** The time offset of day rise for this settlement. Location based. */
 	private int timeOffset;
 	
+	/** The previous ice prob value. */
+	private double iceProbabilityCache = 400D;
+	/** The current ice prob value. */
+	private double currentIceValue;
+	/** The recommended ice prob value. */
+	private double recommendedIceValue;
+	
+	/** The previous regolith prob value. */
+	private double regolithProbabilityCache = 400D;
+	/** The current regolith prob value. */
+	private double currentRegolithValue;
+	/** The recommended regolith prob value. */
+	private double recommendedRegolithValue;
+	
+	/** The factor due to the population. */
+	private double popFactor = 1;
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
 	/** The average regolith collection rate at this location. */
@@ -233,10 +257,7 @@ public class Settlement extends Unit implements Temporal,
 	private double mealsReplenishmentRate = 0.3;
 	/** The settlement's current dessert replenishment rate. */
 	private double dessertsReplenishmentRate = 0.4;
-	/** The settlement's current probability value for ice. */
-	private double iceProbabilityValue = 400D;
-	/** The settlement's current probability value for regolith. */
-	private double regolithProbabilityValue = 400D;
+
 	/** The settlement's outside temperature. */
 	private double outsideTemperature;
 	/** Total Crop area */
@@ -284,6 +305,8 @@ public class Settlement extends Unit implements Temporal,
 	private ScheduledEventManager futureEvents;
 	/** The manufacture manager. */
 	private ManufacturingManager manuManager;
+	/** The Rationing manager. */
+	private Rationing rationing;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType = ObjectiveType.BUILDERS_HAVEN;
@@ -330,7 +353,7 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Robot> robotsWithin;
 
 	/** A history of completed processes. */
-	private History<CompletedProcess> processHistory = new History<>(40);
+	private History<CompletedProcess> processHistory = new History<>(80);
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -381,6 +404,9 @@ public class Settlement extends Unit implements Temporal,
 
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
+		
+		// Initialize the rationing instance
+		rationing = new Rationing(this);
 	}
 
 	/**
@@ -433,6 +459,9 @@ public class Settlement extends Unit implements Temporal,
 			
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
+		
+		// Initialize the rationing instance
+		rationing = new Rationing(this);
 	}
 
 
@@ -502,14 +531,12 @@ public class Settlement extends Unit implements Temporal,
 		areothermalPotential = surfaceFeatures.getAreothermalPotential(location);
 		
 		logger.config(this, "Areothermal Potential: " + Math.round(areothermalPotential * 100.0)/100.0 + " %.");
-		
-		final double GEN_MAX = 1_000_000;
-		// Create EquipmentInventory instance
-		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
-		final double INITIAL_FREE_OXYGEN = 5_000;
+		// Create EquipmentInventory instance
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
+
 		// Stores limited amount of oxygen in this settlement
-		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN);
+		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
 
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
 		SettlementSupplies supplies = sTemplate.getSupplies();
@@ -527,6 +554,7 @@ public class Settlement extends Unit implements Temporal,
 
 		creditManager = new CreditManager(this);
 
+		// Initialize the settlement task manager.
 		taskManager = new SettlementTaskManager(this);
 		
 		// Initialize scientific achievement.
@@ -862,12 +890,12 @@ public class Settlement extends Unit implements Temporal,
 			// Reset justLoaded
 			justLoaded = false;
 
-			iceProbabilityValue = computeIceProbability();
+			iceProbabilityCache = computeIceProbability();
 
-			regolithProbabilityValue = computeRegolithProbability();
+			regolithProbabilityCache = computeRegolithProbability();
 
 			// Initialize the goods manager
-			goodsManager.updateGoodValues();
+			goodsManager.updatedMetrics();
 		}
 		
 		
@@ -876,6 +904,8 @@ public class Settlement extends Unit implements Temporal,
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
+		
+		// Set refreshTasks param to true
 		taskManager.timePassing();
 
 		// Update citizens
@@ -888,8 +918,12 @@ public class Settlement extends Unit implements Temporal,
 		timePassing(pulse, ownedRobots);
 	
 		if (pulse.isNewHalfSol()) {
-			// Reset the flag for water ratio review
-			setReviewWaterRatio(false);
+			// Reset water rationing review due
+			rationing.setReviewDue(true);
+			// Reset ice review due			
+			iceReviewDue = true;
+			// Reset regolith review due			
+			regolithReviewDue = true;
 		}
 
 	
@@ -939,6 +973,7 @@ public class Settlement extends Unit implements Temporal,
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
+			// Future : Convert sampling resources to a task done by settlers
 			int remainder = msol % RESOURCE_SAMPLING_FREQ;
 			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
@@ -947,21 +982,21 @@ public class Settlement extends Unit implements Temporal,
 				sampleAllResources(pulse.getMarsTime());
 			}
 
+
+			// Future : Convert computing ice/regolith probability to a task done by settlers
+			remainder = msol % RESOURCE_UPDATE_FREQ;
+			if (remainder == 2 || remainder == 9) {
+				
+				setIceReviewDue(true);
+				setRegolithReviewDue(true);
+			}
+			
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
 			remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
 				RadiationStatus newExposed = RadiationStatus.calculateChance(pulse.getElapsed());
 				setExposed(newExposed);
-			}
-
-			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 9) {
-				iceProbabilityValue = computeIceProbability();
-			}
-
-			if (remainder == 8) {
-				regolithProbabilityValue = computeRegolithProbability();
 			}
 		}
 	}
@@ -1154,7 +1189,7 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Get the manager controllign Manufacturing in Workshops.
+	 * Get the manager controlling Manufacturing in Workshops.
 	 */
 	public ManufacturingManager getManuManager() {
 		return manuManager;
@@ -1751,6 +1786,13 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
+	 *  Gets the citizen.
+	 */
+	public Set<Person> getCitizens() {
+		return citizens;
+	}
+	
+	/**
 	 * Returns the person instance of the commander of this settlement.
 	 * 
 	 * @return
@@ -2269,73 +2311,6 @@ public class Settlement extends Unit implements Temporal,
 		}
 	}
 
-	/** 
-	 * Gets the current water level at the settlement. 
-	 */
-	public int getWaterRationLevel() {
-		return waterRatioCache;
-	}
-	
-	/**
-	 * Returns the difference between the new and old water ration level. 
-	 *
-	 * @return level of water ration.
-	 */
-	public int getWaterRatioDiff() {
-		return newWaterRatio - waterRatioCache;
-	}
-
-	/**
-	 * Sets the water ratio.
-	 */
-	public void setWaterRatio() {
-		waterRatioCache = newWaterRatio;
-	}
-	
-	/**
-	 * Sets the flag for reviewing water ratio.
-	 * 
-	 * @param value
-	 */
-	public void setReviewWaterRatio(boolean value) {
-		waterRatioReviewFlag = value;
-	}
-	
-	/**
-	 * Returns if the water ratio has been reviewed.
-	 * 
-	 * @return
-	 */
-	public boolean canReviewWaterRatio() {
-		return waterRatioReviewFlag;
-	}
-	
-	/**
-	 * Computes the water ratio at the settlement.
-	 *
-	 * @return level of water ration.
-	 */
-	public boolean isWaterRatioChanged() {
-		double storedWater = getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-		int reserveWater = getNumCitizens() * MIN_WATER_RESERVE;
-		// Assuming a 90-day supply of water
-		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
-
-		int newRatio = Math.max(1, (int)((requiredWater + reserveWater) / storedWater));
-		if (newRatio < 1)
-			newRatio = 1;
-		else if (newRatio > 1)
-			logger.info(this, 20_000L, "Calculated Water Ratio: " + newRatio);
-		else if (newRatio > 1000)
-			newRatio = 1000;
-
-		if (newRatio > 500)
-			logger.severe(this, 20_000L, "Unsafe Water Ratio: " + newRatio);
-
-		newWaterRatio = newRatio;
-		
-		return waterRatioCache != newRatio;
-	}
 
 	/**
 	 * Sets the objective.
@@ -2403,7 +2378,7 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return probability of finding regolith
 	 */
-	private double computeRegolithProbability() {
+	public double computeRegolithProbability() {
 		double result = 0;
 		double regolithDemand = goodsManager.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
 		if (regolithDemand > REGOLITH_MAX)
@@ -2462,11 +2437,171 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
+	 * Enforces the new ice probability level.
+	 */
+	public void enforceIceProbabilityLevel() {
+		// Back up the current level to the cache
+		iceProbabilityCache = currentIceValue;
+		// Update the current level to the newly recommended level
+		currentIceValue = recommendedIceValue;
+		// Set the approval due back to false if it hasn't happened
+		setIceApprovalDue(false);
+	}
+	
+	/**
+	 * Enforces the new ice probability level.
+	 */
+	public void enforceRegolithProbabilityLevel() {
+		// Back up the current level to the cache
+		regolithProbabilityCache = currentRegolithValue;
+		// Update the current level to the newly recommended level
+		currentRegolithValue = recommendedRegolithValue;
+		// Set the approval due back to false if it hasn't happened
+		setRegolithApprovalDue(false);
+	}
+	
+	/**
+	 * Sets if the ice review is due.
+	 * 
+	 * @param value
+	 */
+	public void setIceReviewDue(boolean value) {
+		iceReviewDue = value;
+	}
+	
+	/**
+	 * Returns if the ice review is due.
+	 * 
+	 * @return
+	 */
+	public boolean isIceReviewDue() {
+		return iceReviewDue;
+	}
+
+	/**
+	 * Sets if the ice approval is due.
+	 * 
+	 * @param value
+	 */
+	public void setIceApprovalDue(boolean value) {
+		iceApprovalDue = value;
+	}
+	
+	/**
+	 * Returns if the ice approval is due.
+	 * 
+	 * @return
+	 */
+	public boolean isIceApprovalDue() {
+		return iceApprovalDue;
+	}
+	
+	/**
+	 * Sets if the regolith review is due.
+	 * 
+	 * @param value
+	 */
+	public void setRegolithReviewDue(boolean value) {
+		regolithReviewDue = value;
+	}
+	
+	/**
+	 * Returns if the regolith review is due.
+	 * 
+	 * @return
+	 */
+	public boolean isRegolithReviewDue() {
+		return regolithReviewDue;
+	}
+
+	/**
+	 * Sets if the regolith approval is due.
+	 * 
+	 * @param value
+	 */
+	public void setRegolithApprovalDue(boolean value) {
+		regolithApprovalDue = value;
+	}
+	
+	/**
+	 * Returns if the regolith approval is due.
+	 * 
+	 * @return
+	 */
+	public boolean isRegolithApprovalDue() {
+		return regolithApprovalDue;
+	}
+	
+	/**
+	 * Reviews the ice probability.
+	 * 
+	 * @return
+	 */
+	public double reviewIce() {
+		
+		double newProb = computeIceProbability() ;
+		
+		recommendedIceValue = newProb;
+		
+		return iceProbabilityCache - newProb;
+	}
+	
+	/**
+	 * Reviews the regolith probability.
+	 * 
+	 * @return
+	 */
+	public double reviewRegolith() {
+		
+		double newProb = computeRegolithProbability() ;
+		
+		recommendedRegolithValue = newProb;
+		
+		return regolithProbabilityCache - newProb;
+	}
+	
+	/**
+	 * Returns the recommended ice probability value.
+	 * 
+	 * @return
+	 */
+	public double getRecommendedIceValue() {
+		return recommendedIceValue;
+	}
+	
+	/**
+	 * Returns the recommended regolith probability value.
+	 * 
+	 * @return
+	 */
+	public double getRecommendedRegolithValue() {
+		return recommendedRegolithValue;
+	}
+	
+	/**
+	 * Returns the cache ice probability value.
+	 * 
+	 * @return
+	 */
+	public double getIceProbabilityValue() {
+		return iceProbabilityCache;
+	}
+
+	/**
+	 * Returns the cache regolith robability value.
+	 * 
+	 * @return
+	 */
+	public double getRegolithProbabilityValue() {
+		return regolithProbabilityCache;
+	}
+
+	/**
 	 * Computes the probability of the presence of ice.
 	 *
 	 * @return probability of finding ice
 	 */
-	private double computeIceProbability() {
+	public double computeIceProbability() {
 		double result = 0;
 		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
 		if (iceDemand > ICE_MAX)
@@ -2475,14 +2610,14 @@ public class Settlement extends Unit implements Temporal,
 			iceDemand = 1;
 		
 		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * waterRatioCache / 10;
+		waterDemand = waterDemand * rationing.getRationingLevel() / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
 		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
-		brineWaterDemand = brineWaterDemand * waterRatioCache / 10;
+		brineWaterDemand = brineWaterDemand * rationing.getRationingLevel() / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
@@ -2550,14 +2685,6 @@ public class Settlement extends Unit implements Temporal,
 
 		if (missionScores.size() > 20)
 			missionScores.remove(0);
-	}
-
-	public double getIceProbabilityValue() {
-		return iceProbabilityValue;
-	}
-
-	public double getRegolithProbabilityValue() {
-		return regolithProbabilityValue;
 	}
 
 	public double getOutsideTemperature() {
@@ -3283,12 +3410,32 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * The meal time structure supported at this Settlement
+	 * The meal time structure supported at this Settlement.
+	 * 
+	 * @return
 	 */
 	public MealSchedule getMealTimes() {
 		return meals;
 	}
 
+	/**
+	 * Gets the Rationing instance.
+	 * 
+	 * @return
+	 */
+	public Rationing getRationing() {
+		return rationing;
+	}
+	
+	/**
+	 * Gets the water consumption rate.
+	 * 
+	 * @return
+	 */
+	public double getWaterConsumptionRate() {
+		return waterConsumptionRate;
+	}
+	
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */
@@ -3335,6 +3482,10 @@ public class Settlement extends Unit implements Temporal,
 		citizens.forEach(Person::destroy);
 		ownedRobots.forEach(Robot::destroy);
 		ownedVehicles.forEach(Vehicle::destroy);
+		
+		if (rationing != null) {
+			rationing = null;
+		}
 		
 		if (buildingManager != null) {
 			buildingManager.destroy();

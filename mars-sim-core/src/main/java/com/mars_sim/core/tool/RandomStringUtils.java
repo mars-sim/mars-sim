@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomStringUtils.java
- * @date 2021-12-05
+ * @date 2025-08-09
  * @author Manny Kung
  */
 
@@ -57,13 +57,15 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class RandomStringUtils {
 
+	private static ThreadLocal<Random> random = ThreadLocal.withInitial(() -> new Random(System.currentTimeMillis()));
+
     /**
      * <p>Random object used by random method. This has to be not local
      * to the random method so as to not return the same value in the
      * same millisecond.</p>
      */
 
-	private static final Random RANDOM = RandomUtil.getRandom();
+	private static final Random RANDOM = random.get();
 
     /**
      * <p>{@code RandomStringUtils} instances should NOT be constructed in

@@ -606,7 +606,7 @@ public class MicroInventory implements Serializable {
 			shortfall = -remainingQ;
 			if (shortfall > 0) {
 				String name = ItemResourceUtil.findItemResourceName(resource);
-				logger.warning(owner, "Attempting to retrieve " + quantity + "x " + name
+				logger.warning(owner, 10_000L, "Attempting to retrieve " + quantity + "x " + name
 					+ " but lacking " + shortfall + "x " + name + ".");
 			}
 			remainingQ = 0;

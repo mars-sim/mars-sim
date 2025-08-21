@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SleepMeta.java
- * @date 2022-07-19
+ * @date 2025-08-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.meta;
@@ -63,6 +63,7 @@ public class SleepMeta extends FactoryMetaTask {
     	double ghrelinS = circadian.getSurplusGhrelin();
     	double leptinS = circadian.getSurplusLeptin();
     	double hunger = pc.getHunger();
+    	double thirst = pc.getThirst();
     	double energy = pc.getEnergy();
     	
     	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
@@ -85,29 +86,30 @@ public class SleepMeta extends FactoryMetaTask {
     	}
     	
         if (proceed) {
-			double ghrelin = person.getCircadianClock().getGhrelin();
-			double leptin = person.getCircadianClock().getLeptin();
-		    double sleepMillisols = person.getCircadianClock().getTodaySleepTime();
-            double soreness = person.getPhysicalCondition().getMuscleSoreness();
+			double ghrelin = circadian.getGhrelin();
+			double leptin = circadian.getLeptin();
+		    double sleepMillisols = circadian.getTodaySleepTime();
+            double soreness = pc.getMuscleSoreness();
             
         	// the desire to go to bed increase linearly after 6 hours of wake time
-            result += Math.max((1.5 * fatigue - 250), 0) * 10 + stress * 10 
+            result += Math.max((fatigue - 250), 0) * 10 + stress * 10 
             		+ (ghrelin - leptin)
-            		// High hunger makes it harder to fall asleep
-            		// Therefore, limit the hunger contribution to a max of 300
-            		+ Math.min(hunger, 300)
-            		// Note: muscle condition affects the desire to exercise
-            		- soreness/2.5 
+            		// High hunger/thirst makes it harder to fall asleep
+            		// Therefore, limit the contribution to a max of 300
+            		- Math.min(hunger/2, 300)
+            		- Math.min(thirst/2, 300)
+            		// Note: muscle condition affects the desire to sleep
+            		+ soreness/2.5 
             		- sleepMillisols / 2;
-                   
-            double pref = person.getPreference().getPreferenceScore(this);
-            
-         	result += result * pref/12D;                            	
         	
     	    if (result <= 0) {
     	    	return 0;
     	    }
-    	    	
+    	    
+            double pref = person.getPreference().getPreferenceScore(this);
+            
+         	result += result * pref/12D;                            	
+	    	
             // Check if person is an astronomer.
             boolean isAstronomer = (person.getMind().getJob() == JobType.ASTRONOMER);
 
@@ -142,8 +144,9 @@ public class SleepMeta extends FactoryMetaTask {
         	int sol = getMarsTime().getMissionSol();
         	
         	// Skip the first sol since the sleep time pattern has not been established
-            if (sol <= 1 && person.getCircadianClock().getNumSleep() <= MAX_NUM_SLEEP) {
-            	result = modifiedBySleepHabit(person, result);
+            if (sol > 1 && circadian.getNumSleep() <= MAX_NUM_SLEEP) {
+	        	int now = getMarsTime().getMillisolInt();
+            	result = circadian.desireToSleep(person, result, now);
             }
             
     	    if (result < 0)
@@ -155,31 +158,4 @@ public class SleepMeta extends FactoryMetaTask {
 
         return result;
     }
-	
-    /**
-     * Modifies the probability based on a person's sleep habit.
-     * 
-     * @param person
-     * @param result
-     * @return
-     */
-	private double modifiedBySleepHabit(Person person, double result) {
-        	// Checks the current time against the sleep habit heat map
-	    	int bestSleepTime[] = person.getPreferredSleepHours();
-	    	// is now falling two of the best sleep time ?
-	    	for (int time : bestSleepTime) {
-	        	int now = getMarsTime().getMillisolInt();
-		    	int diff = time - now;
-		    	if (diff < 30 || diff > -30) {
-		    		result = result*5;
-		    		return result;
-		    	}
-		    	else {
-		    		// Reduce the probability by a factor of 10
-		    		result = result/5;
-		    		return result;
-		    	}
-	    	}
-	    	return result;
-	}
 }

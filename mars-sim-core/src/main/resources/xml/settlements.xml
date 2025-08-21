@@ -38,7 +38,7 @@
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
 	<!ATTLIST resource reserve CDATA #REQUIRED>
-	<!ATTLIST resource max CDATA #REQUIRED>
+	<!ATTLIST resource optimal CDATA #REQUIRED>
 
 	<!ELEMENT shifts (shift-pattern*)>
 	<!ELEMENT shift-pattern (shift*)>
@@ -144,16 +144,19 @@
 
 	</life-support-requirements>
 
-	<!-- Define the limits for essential resources per Person-->
+	<!-- Define the reserve and optimal amount of essential resources per person
+		 Note: reserve is being the recommended minimum amount
+		       optimal is the being recommended level amount  
+	-->
 	<essential-resources>
-		<resource name="Food" reserve="100" max="1000" />
-		<resource name="Oxygen" reserve="800" max="8000" />
-		<resource name="Methane" reserve="800" max="8000" />
-		<resource name="Methanol" reserve="600" max="6000" />
-		<resource name="Water" reserve="800" max="8000" />
-		<resource name="Hydrogen" reserve="800" max="8000" />
-		<resource name="Nitrogen" reserve="40" max="400" />
-		<resource name="Carbon Dioxide" reserve="4" max="40" />
+		<resource name="Food" reserve="100" optimal="1000" />
+		<resource name="Oxygen" reserve="800" optimal="8000" />
+		<resource name="Methane" reserve="800" optimal="8000" />
+		<resource name="Methanol" reserve="600" optimal="6000" />
+		<resource name="Water" reserve="800" optimal="8000" />
+		<resource name="Hydrogen" reserve="800" optimal="8000" />
+		<resource name="Nitrogen" reserve="40" optimal="400" />
+		<resource name="Carbon Dioxide" reserve="4" optimal="40" />
 	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 

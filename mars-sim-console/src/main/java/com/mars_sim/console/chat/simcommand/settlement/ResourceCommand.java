@@ -120,7 +120,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(ResourceUtil.CO2_ID);
+			usage += f.computeAllCropsDailyAverage(ResourceUtil.CO2_ID);
 			totalArea += f.getGrowingArea();
 		}
 		totalArea = (totalArea != 0 ? totalArea: 0.1D); // Guard against divide by zero
@@ -145,7 +145,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(id);
+			usage += f.computeAllCropsDailyAverage(id);
 			totalArea += f.getGrowingArea();
 		}
 
@@ -163,7 +163,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		
 		double net = 0;
 		double greenhouseUsage = farms.stream()
-							.mapToDouble(b -> b.getFarming().getDailyAverageWaterUsage())
+							.mapToDouble(b -> b.getFarming().getAllCropsDailyAverageWaterUsage())
 							.sum();
 		response.appendTableRow("Greenhouse", Math.round(greenhouseUsage * 100.0) / 100.0);
 		net = net + greenhouseUsage;
@@ -243,7 +243,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(ResourceUtil.OXYGEN_ID);
+			usage += f.computeAllCropsDailyAverage(ResourceUtil.OXYGEN_ID);
 			totalArea += f.getGrowingArea();
 		}
 

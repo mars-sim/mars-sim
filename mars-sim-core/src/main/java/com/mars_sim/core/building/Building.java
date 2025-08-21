@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2025-07-26
+ * @date 2025-08-08
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -57,6 +57,7 @@ import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerStorage;
+import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEvent;
@@ -75,7 +76,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -96,6 +96,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
+	
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
 	private static final double HEIGHT = 2.5;
@@ -110,6 +111,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
 	
+	private int momentOfImpact = 1000;
 	/** The designated zone where this building is located at. */
 	private int zone;
 	/** Unique template id assigned for the settlement template of this building belong. */
@@ -1209,55 +1211,81 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		if (pulse.isNewSol()) {
 			// Determine if a meteorite impact will occur within the new sol
-			checkForMeteoriteImpact(pulse);
+			momentOfImpact = checkImpactProbability(pulse);
 		}
-
+		
+		if (isImpactImminent && pulse.isNewIntMillisol()) {
+			// The impact is not or no longer imminent.
+			// Note: if the impact has already once. isImpactImminent will be set back to false.
+			checkImpactSeverity(pulse);
+		}
+		
 		inTransportMode = false;
 		return true;
 	}
 
-	public List<Function> getFunctions() {
-		return functions;
-	}
-
-	/*
-	 * Checks for possible meteorite impact for this building.
+	/**
+	 * Checks for probability of a meteorite impact for this building in a sol.
+	 * 
+	 * @param pulse
+	 * @return momentOfImpact in millisol
 	 */
-	private void checkForMeteoriteImpact(ClockPulse pulse) {
+	private int checkImpactProbability(ClockPulse pulse) {
 		// Reset the impact time
-		int momentOfImpact = 0;
+		int momentOfImpact = 1000;
+		
 		var meteorite = getBuildingManager().getMeteorite();
 
-		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		// Note: Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
-		double probability = floorArea * meteorite.getProbabilityOfImpactPerSQMPerSol();
+		// Note: if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
+		// Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
+	
+		// Vary the angle
+		double angleDegree = meteorite.getStandardIncidentAngle() * RandomUtil.getRandomDouble(.75, 1.25);
+		
+		double angularFactor = Math.sin(Math.toRadians(angleDegree)) ;
+		
+		// Note: vary the angle of impact will reduce the floorArea 
+		
+		double probability = angularFactor * floorArea * meteorite.getProbabilityOfImpactPerSQMPerSol();
+
 		// Probability is in percentage unit between 0% and 100%
-		if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
+		if (probability > RandomUtil.getRandomDouble(100)) {
+			// Set to true that an impact is about to occur for this sol
 			isImpactImminent = true;
 			// Set a time for the impact to happen any time between 0 and 1000 milisols
-			momentOfImpact = RandomUtil.getRandomInt(999);
-		}
-
-		if (!isImpactImminent) {
-			// The impact is not or no longer imminent.
-			// Note: if the impact has already once. isImpactImminent will be set back to false.
-			return;
-		}
-		
-		int now = pulse.getMarsTime().getMillisolInt();
-		// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
-		// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-		int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
-		
-		if (pulse.isNewIntMillisol()
-				&& now > momentOfImpact - 2 * delta && now < momentOfImpact + 2 * delta) {
-			// Yes the impact event occurs in the vicinity
+			momentOfImpact = RandomUtil.getRandomInt(1, 999);
 			
-			logger.log(this, Level.INFO, 10_000, "A meteorite impact event was imminent.");
+			logger.log(this, Level.INFO, 0, 
+					"A meteorite impact event was imminent (prob:" + Math.round(probability * 100_000.0)/100_000.0 
+						+ "), forecasting at " + momentOfImpact + " millisols.");
+		}
+		else {
+			// Set to false that an impact is about to occur for this sol
+			isImpactImminent = false;
+			
+			// No the impact does not occur in the vicinity
+//			logger.log(this, Level.INFO, 30_000, "Meteorite Impact event observed but occurred in settlement vicinity.");
+		}
+		
+		return momentOfImpact;
+	}
+	
+	/**
+	 * Checks for the severity of a meteorite impact for this building.
+	 * 
+	 * @param pulse
+	 */
+	public void checkImpactSeverity(ClockPulse pulse) {
+	
+		int now = pulse.getMarsTime().getMillisolInt();
+
+		if (now >= momentOfImpact) {
 
 			// Reset the boolean immediately for keeping track of whether 
 			// the impact has occurred
 			isImpactImminent = false;
+				
+			MeteoriteImpactProperty meteorite = getBuildingManager().getMeteorite();
 			
 			// Find the length this meteorite can penetrate
 			double penetratedLength = meteorite.getWallPenetration();
@@ -1274,13 +1302,15 @@ public class Building extends FixedUnit implements Malfunctionable,
 			
 			if (penetratedLength < wallThick) {
 				// Case A: No. it's not breached
-				logger.warning(this, 10_000, "Meteorite Impact event observed. Building wall not breached but damaged. "
+				logger.warning(this, 0, "Meteorite Impact event observed. Building wall not breached but damaged. "
 						+ "Penetration fraction: " + Math.round(reductionFraction * 10.0)/10.0 + ".");
+				
+				// Future: need to set up a maintenance task to replace possibly broken external wall
 				
 				return ;
 			}
 	
-			logger.warning(this, 10_000, "Meteorite Impact event observed. Building wall penetrated.");
+			logger.warning(this, 0, "Meteorite Impact event observed. Building wall penetrated.");
 			
 			// Case B: Yes it's breached !	
 			
@@ -1289,10 +1319,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 					.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
 					true, this);
 
-			logger.log(this, Level.INFO, 10_000, mal.getName() + " registered.");
+			logger.log(this, Level.INFO, 0, mal.getName() + " registered.");
 			
 			String victimNames = null;
-			var settlement = getAssociatedSettlement();
+//			var settlement = getAssociatedSettlement();
 
 			// check if someone under this roof may have seen/affected by the impact
 			for (Person person : getInhabitants()) {
@@ -1311,7 +1341,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 					double stressFactor = 10 + RandomUtil.getRandomDouble(10) - resilience / 10D - courage / 10D;
 					PhysicalCondition pc = person.getPhysicalCondition();
 					if (stressFactor > 0) {
-			            logger.info(person, 10_000, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
+			            logger.info(person, 0, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
 						pc.addStress(stressFactor);
 					}
 						
@@ -1322,23 +1352,28 @@ public class Building extends FixedUnit implements Malfunctionable,
 					
 					mal.setTraumatized(victimNames);
 
-					// Store the meteorite fragment in the settlement
-					settlement.storeAmountResource(ResourceUtil.METEORITE_ID, floorArea * meteorite.getDebrisMass());
-
-					logger.info(this, 10_000, "Found " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
-							+ " kg of meteorite fragments");
-
 					if (pc.getStress() > 50)
-						logger.warning(this, 10_000, victimNames + " was traumatized by the meteorite impact");
+						logger.warning(this, 0, victimNames + " was traumatized by the meteorite impact");
 
 				} // check if this person happens to be inside the affected building
 				
 			} // loop for persons
 
+			// Future: 
+			// 1. Record this amount in the landscape in the settlement vicinity
+			// 2. Send a person out to pick them up during a MaintainEVABuilding task
+			
+			// Store the meteorite fragment in the settlement
+//			settlement.storeAmountResource(ResourceUtil.METEORITE_ID, floorArea * meteorite.getDebrisMass());
+
+			logger.info(this, 0, "Estimated " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
+					+ " kg of meteorite fragments in settlement vicinity");
+
 
 			if (victimNames == null)
 				victimNames = "";
 				
+			// Pick the last person who witness this event in the affected building. Could be no one.
 			HistoricalEvent hEvent = new HazardEvent(
 					EventType.HAZARD_ACTS_OF_GOD,
 					this,
@@ -1354,27 +1389,26 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 			fireUnitUpdate(UnitEventType.METEORITE_EVENT);
 		}
-		
-		else {
-			// No the impact does not occur in the vicinity
-			logger.log(this, Level.INFO, 30_000, "Meteorite Impact event observed but occurred in settlement vicinity.");
-		}
 	}
 
 	/**
-	 * Get the wall thickness based on the constructionType type.
+	 * Gets the wall thickness based on the constructionType type.
 	 */
 	private double getWallThickness() {
 		return switch(constructionType) {
-			case PRE_FABRICATED -> 0.0000254;
-			case INFLATABLE -> 0.0000018;
-			case SEMI_ENGINEERED -> 0.0000100;
+			case PRE_FABRICATED 	-> 0.000_025_4;
+			case INFLATABLE 		-> 0.000_001_8;
+			case SEMI_ENGINEERED 	-> 0.000_010_0;
 			default -> 0;
 		};
 	}
 
 	public ConstructionType getConstruction() {
 		return constructionType;
+	}
+
+	public List<Function> getFunctions() {
+		return functions;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BotMembersPanel.java
- * @date 2021-12-22
+ * @date 2025-08-07
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.mission.create;
@@ -345,7 +345,7 @@ implements ActionListener {
 					else if (column == 3) 
 						result = (int) (robot.getPerformanceRating() * 100D) + "%";
 					else if (column == 4){			
-						if (robot.getSystemCondition().isInoperable())
+						if (!robot.isOperable())
 							result = "Inoperable";
 						else 
 							result = "Operable";
@@ -474,7 +474,7 @@ implements ActionListener {
 					}
 					case 3 -> result = (int) (robot.getPerformanceRating() * 100D) + "%";
 					case 4 -> {			
-						if (robot.getSystemCondition().isInoperable())
+						if (!robot.isOperable())
 							result = "Inoperable";
 						else 
 							result = "Operable";

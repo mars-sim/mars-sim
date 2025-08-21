@@ -7,7 +7,6 @@
 
 package com.mars_sim.ui.swing.tool.map;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -33,13 +32,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.Painter;
 import javax.swing.SwingConstants;
-import javax.swing.UIDefaults;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.map.MapData;
@@ -160,26 +156,26 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private void buildZoomSlider() {
 
-		UIDefaults sliderDefaults = new UIDefaults();
+//		UIDefaults sliderDefaults = new UIDefaults();
 
-        sliderDefaults.put("Slider.thumbWidth", 15);
-        sliderDefaults.put("Slider.thumbHeight", 15);
-        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
-		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		    g.setStroke(new BasicStroke(2f));
-		    g.setColor(Color.BLACK);
-		    g.fillOval(1, 1, w-1, h-1);
-		    g.setColor(Color.WHITE);
-		    g.drawOval(1, 1, w-1, h-1);
-		});
-        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
-		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		    g.setStroke(new BasicStroke(2f));
-		    g.setColor(Color.BLACK);
-		    g.fillRoundRect(0, 6, w, 6, 6, 6);
-		    g.setColor(Color.WHITE);
-		    g.drawRoundRect(0, 6, w, 6, 6, 6);
-		});
+//        sliderDefaults.put("Slider.thumbWidth", 15);
+//        sliderDefaults.put("Slider.thumbHeight", 15);
+//        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
+//		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		    g.setStroke(new BasicStroke(2f));
+//		    g.setColor(Color.BLACK);
+//		    g.fillOval(1, 1, w-1, h-1);
+//		    g.setColor(Color.WHITE);
+//		    g.drawOval(1, 1, w-1, h-1);
+//		});
+//        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
+//		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		    g.setStroke(new BasicStroke(2f));
+//		    g.setColor(Color.BLACK);
+//		    g.fillRoundRect(0, 6, w, 6, 6, 6);
+//		    g.setColor(Color.WHITE);
+//		    g.drawRoundRect(0, 6, w, 6, 6, 6);
+//		});
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));

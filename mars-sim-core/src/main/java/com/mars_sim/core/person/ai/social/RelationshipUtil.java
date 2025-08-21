@@ -455,7 +455,7 @@ public class RelationshipUtil implements Serializable {
 		// Random with bell curve around 50.
 		int numberOfIterations = RandomUtil.getRandomInt(10);
 		for (int x = 0; x < numberOfIterations; x++)
-			result += RandomUtil.computeGaussianWithLimit(50, .15, .3);
+			result += RandomUtil.getGaussianPositive(50, 3);
 		result /= numberOfIterations;
 
 		if (result > 100) {

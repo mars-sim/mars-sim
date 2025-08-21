@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2024-07-14
+ * @date 2025-08-17
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -235,6 +235,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Rover r = getRover();
 		for (Worker m : getMembers()) {
 			Person p = (Person) m;
+			
+			// Check below if anyone has been "teleported"
+			if (p.isInSettlement() 
+				|| p.isInSettlementVicinity()
+				|| p.isRightOutsideSettlement()) {
+
+				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
+							+ p.getLocationTag().getExtendedLocation() + ".");
+				return false;
+			}
+					
 			if (!r.isCrewmember(p)) {
 				return false;
 			}
@@ -245,7 +256,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Checks that no one in the mission is aboard the rover.
 	 *
@@ -820,8 +831,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				logger.info(p, "Unable to do emergency transfer to " + s + ".");
 		}
 
-		// Store the person into a medical building
-		BuildingManager.addToMedicalBuilding(p, s);
+		// Send the person to a medical building
+		BuildingManager.addPatientToMedicalBed(p, s);
 
 		// Register the historical event
 		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,

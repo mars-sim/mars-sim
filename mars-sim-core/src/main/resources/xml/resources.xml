@@ -34,7 +34,6 @@
 	<resource name="Brine Water" type="compound" phase="liquid">
 		Brine water comes from melted mineral ice or from underground water reserve.</resource>
 
-
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
 	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="0.75" />
@@ -52,47 +51,11 @@
 	
 	<resource name="Carbon monoxide" type="compound" phase="gas" demand=".05" />
 	<resource name="Chlorine" type="element" phase="gas"/>
-	<resource name="Ethane" type="compound" phase="gas"> Ethane is a naturally
-		occurring organic chemical compound with chemical formula C2H6. 
-		and has a molecular mass of 30.07 g/mol. At standard temperature 
-		and pressure, ethane is a colorless, odorless gas. It can be used as
-		a fuel for power generation in power plants or used as a feedstock for
-		the production of ethylene.
-	</resource>		
-	<resource name="Ethylene" type="compound" phase="gas" demand=".1" >
-		Ethylene is a colorless, flammable gas with a sweet and musky odor. 
-		It is a hydrocarbon with the chemical formula C2H4, also known as ethene 
-		or polyethylene. Ethylene is widely used in the chemical industry and is 
-		a natural plant hormone that plays a crucial role in plant growth and 
-		development.
-	</resource>
-	<resource name="Acetylene" type="compound" phase="gas" demand=".01" >
-		Acetylene is a colorless gas that has a strong garlic-like odor. When 
-		combined with oxygen, it becomes very hot and is classified as the 
-		hottest fuel gas. 
-	 	It is also the only fuel gas that can weld and cut steel, making it 
-	 	the preferred choice for welders. The welding process that uses 
-	 	acetylene is known as oxy-fuel cutting or gas cutting. 
-	 	Acetylene is probably the hottest burning fuel gas available to us. 
-	 	Acetylene releases almost 40% of its heat in the inner flame cone. 
-	 	Acetylene is also commonly used for the production of other chemicals used 
-	 	in perfumes, vitamins, polymers, solvents and other materials due to its 
-	 	versatility and ease of reactive control in comparison to other gases. 
-	 	It combines nicely with a variety of elements and compounds, making it 
-	 	the most important of starting materials for 
-	 	organic synthesis.</resource>
-	 
-	<resource name="Prophylene" type="chemical" phase="gas" demand=".01">
-		The common name for the organic chemical compound propene. An alkene which is a 
-		colorless gaseous (at room temperature and pressure) hydrocarbon with the chemical
-		formula C3H6. It's a colorless gas with a faint petroleum-like odor and is 
-		flammable, and is often used as fuel.
-		</resource>
 
 <!-- Wastes -->
 	<resource name="Soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
 	<resource name="Compost" type="waste" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="Crop waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="Crop waste" type="waste" phase="solid">Organic waste from a crop or inedible biomass after harvest. </resource>
 
 	<resource name="Electronic waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
 	<resource name="Food waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
@@ -307,9 +270,6 @@
 		antioxidant or an antimicrobial agent, as a treatment for allergies,
 		in cancer treatment and cancer prevention.	</resource>
 
-<!-- Chemical food resources -->
-	<resource name="Baking powder" type="chemical" phase="solid" edible="true">
-		Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
 
 <!-- Salt resources -->
 	<resource name="Table salt" type="chemical" phase="solid" demand=".15" edible="true">
@@ -345,8 +305,26 @@
 		and human exploration missions.
 		</resource>		
 	
-		
-<!-- Chemical for utility -->
+
+<!-- Home use chemicals -->
+	<resource name="Baking powder" type="chemical" phase="solid" edible="true">
+		Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="Activated charcoal" type="chemical" phase="solid"> 
+		Activated charcoal's main use is as an
+	antidote in poisoning and in constructing water filter</resource>
+	<resource name="Fertilizer" type="chemical" phase="solid" demand="4.5"> 
+		Inorganic nutrients for crop growth </resource>	
+	<resource name="Lime" type="chemical" phase="solid" demand=".01"> 
+		Lime is a calcium-containing inorganic
+		material in which carbonates, oxides, and hydroxides predominate. In the
+		strict sense of the term, lime is CaO or Ca(OH)2.</resource>	
+	<resource name="Sodium hypochlorite" type="chemical" phase="liquid">
+		Sodium Hypochlorite is
+		one of the bleaching chemical for sanitizing soybean as well as pulp
+		bleaching during paper making </resource>
+	
+			
+<!-- Industrial chemicals -->
 	<resource name="Acetic acid" type="chemical" phase="solid">
 		Acetic acid is a weak acid, and the defining ingredient in vinegar. 
 		Aside from its common use in food, acetic acid is an important 
@@ -354,56 +332,57 @@
 		it has been used as a medicine to reduce headaches and act 
 		as a weak blood thinner.</resource>
 
-	<resource name="Terephthalic acid"  type="chemical" phase="solid">
-		Terephthalic acid is an organic compound with formula C6H4(CO2H)2. 
-		This white solid is a commodity chemical, used principally as a precursor 
-		to the polyester PET, used to make clothing and plastic bottles. 
-	</resource>
+	<resource name="Acetylene" type="chemical" phase="gas" demand=".01" >
+		Acetylene is a colorless gas that has a strong garlic-like odor. When 
+		combined with oxygen, it becomes very hot and is classified as the 
+		hottest fuel gas. 
+	 	It is also the only fuel gas that can weld and cut steel, making it 
+	 	the preferred choice for welders. The welding process that uses 
+	 	acetylene is known as oxy-fuel cutting or gas cutting. 
+	 	Acetylene is probably the hottest burning fuel gas available to us. 
+	 	Acetylene releases almost 40% of its heat in the inner flame cone. 
+	 	Acetylene is also commonly used for the production of other chemicals used 
+	 	in perfumes, vitamins, polymers, solvents and other materials due to its 
+	 	versatility and ease of reactive control in comparison to other gases. 
+	 	It combines nicely with a variety of elements and compounds, making it 
+	 	the most important of starting materials for 
+	 	organic synthesis.</resource>
+	
+	<resource name="Bisphenol-a" type="chemical" phase="solid"> 
+		The chemical used for reinforcing
+		plastic and for making polycarbonate</resource>
+		<resource name="Bleaching chemical" type="chemical" phase="liquid">
+		Bleaching chemical
+		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
+	
+	<resource name="Ceramic electrolyte" type="chemical" phase="solid"> 
+		The ceramic electrolyte 
+		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
+		This solid metal oxide is an insulator that will not conduct electricity. However, it 
+		is capable of conducting oxygen ions and suitable for cell reactions. </resource>
+
 	<resource name="Dimethyl terephthalate"  type="chemical" phase="liquid">
 		Dimethyl terephthalate (DMT) is an organic compound with the formula C6H4(COOCH3)2. 
 		It is the diester formed from terephthalic acid and methanol.	
 		It is a white solid that melts to give a distillable colourless liquid.
 	</resource>
-	<resource name="Sodium hypochlorite" type="chemical" phase="liquid">
-		Sodium Hypochlorite is
-		one of the bleaching chemical for sanitizing soybean as well as pulp
-		bleaching during paper making </resource>
-	<resource name="Bleaching chemical" type="chemical" phase="liquid">
-		Bleaching chemical
-		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	<resource name="Activated charcoal" type="chemical" phase="solid"> 
-		Activated charcoal's main use is as an
-	antidote in poisoning and in constructing water filter</resource>
-	<resource name="Fertilizer" type="chemical" phase="solid" demand="4.5"> 
-		Inorganic nutrients for crop growth </resource>
-	<resource name="Lime" type="chemical" phase="solid" demand=".01"> 
-		Lime is a calcium-containing inorganic
-		material in which carbonates, oxides, and hydroxides predominate. In the
-		strict sense of the term, lime is CaO or Ca(OH)2.</resource>
-	<resource name="Polycarbonate resin" type="chemical" phase="solid" demand="1.5"> 
-		These are partially bio-based
-		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
-		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They
-		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
-	<resource name="Polyurethane" type="chemical" phase="solid" demand="10">
-		These bio-based polyurethane made
-		use of natural-oil polyols (NOPs) produced from renewable
-		raw materials such as soybean or vegetable oil. Polyurethanes are used
-		in the manufacturing of foot wears, solid plastic items, foams for
-		bedding and upholstery. </resource>
-	<resource name="Polyester resin" type="chemical" phase="liquid" demand="0.015">
-		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
-	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
-	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
-	 The most common, highest volume produced polyester is Polyethylene terephthalate (PET), a 
-	 saturated polyester that finds utilization in such applications as fibers for clothing and 
-	 carpet, food and liquid containers (such as a water/soda bottles), as well as films. 
-	 PET’s non-reactance with many foods makes it an ideal packaging material. Because 
-	 of its easy application and durability, polyester resin is also applied to patch cracks 
-	 and holes that need to remain watertight. See comparison between polyester resin and 
-	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
-	</resource> 
-	<resource name="Ethylene glycol" type="compound" phase="liquid" demand=".1"> 
+	
+	<resource name="Ethane" type="chemical" phase="gas"> Ethane is a naturally
+		occurring organic chemical compound with chemical formula C2H6. 
+		and has a molecular mass of 30.07 g/mol. At standard temperature 
+		and pressure, ethane is a colorless, odorless gas. It can be used as
+		a fuel for power generation in power plants or used as a feedstock for
+		the production of ethylene.
+	</resource>		
+	
+	<resource name="Ethylene" type="chemical" phase="gas" demand=".1" >
+		Ethylene is a colorless, flammable gas with a sweet and musky odor. 
+		It is a hydrocarbon with the chemical formula C2H4, also known as ethene 
+		or polyethylene. Ethylene is widely used in the chemical industry and is 
+		a natural plant hormone that plays a crucial role in plant growth and 
+		development.
+	</resource>
+	<resource name="Ethylene glycol" type="chemical" phase="liquid" demand=".1"> 
 		Ethylene glycol is a colorless, odorless, flammable, and viscous liquid.
 		
 		It's commonly used in various industrial and consumer products, including antifreeze, 
@@ -420,41 +399,79 @@
 		applications such as HVAC systems, plastic mould making, food, and pharmaceutical
 		processes.
 	</resource>
-	<resource name="Propylene" type="chemical" phase="gas" demand=".01">
-		Propylene is a colorless, flammable gas with the chemical formula C3H6 
-		at room temperature and pressure, with a faint petroleum-like odor. It is a 
-		product of combustion and a unsaturated organic compound with one double bond. 
-		It is the second simplest member of the alkene class of hydrocarbons.
-		It is widely used in the production of various chemicals, plastics, and fuels.
-		As plastics such as production of resins, fibers, and elastomers (polyolefins).
-		As chemical products such as polypropylene, polyethylene, and polyvinyl chloride (PVC).
-		As fuel for industrial processes and as a component of gasoline and 
-		for production of antifreeze and other industrial chemicals.
-		</resource>	
+
+	<resource name="Polycarbonate resin" type="chemical" phase="solid" demand="1.5"> 
+		These are partially bio-based
+		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
+		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They
+		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
+
+	<resource name="Polyester resin" type="chemical" phase="liquid" demand="0.015">
+		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
+	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
+	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
+	 The most common, highest volume produced polyester is Polyethylene terephthalate (PET), a 
+	 saturated polyester that finds utilization in such applications as fibers for clothing and 
+	 carpet, food and liquid containers (such as a water/soda bottles), as well as films. 
+	 PET’s non-reactance with many foods makes it an ideal packaging material. Because 
+	 of its easy application and durability, polyester resin is also applied to patch cracks 
+	 and holes that need to remain watertight. See comparison between polyester resin and 
+	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
+	</resource> 
+
+	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
+		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
+	
 	<resource name="Polypropylene" type="chemical" phase="solid" demand=".01">
 		A thermoplastic polymer stiffer than polyethylene. Characterized by a more 
 		transparent appearance and higher tensile strength, polypropylene bags 
 		offer a higher heat and chemical resistance than polyethylene bags, as well 
 		as rigid protective edges to prevent scratches. Polypropylene is a soft, 
 		flexible type of plastic that is considered safer than other plastics.</resource>		
-	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
-		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
-	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
-		Synthetic styrene, which is chemically identical to naturally occurring styrene, 
-		is manufactured as a chemical building block for
-		materials used to make packaging, insulation </resource>
+	
 	<resource name="Polystyrene" type="chemical" phase="solid" demand="2.5">
 		When styrene molecules are linked together into a polymer, polystyrene (C8H8)n is created. Polystyrene is an inert plastic that can
 		be used to make many products, such as disposable plates, cups and other foodservice
 		packaging products. </resource>
-	<resource name="Bisphenol-a" type="chemical" phase="solid"> 
-		The chemical used for reinforcing
-		plastic and for making polycarbonate</resource>
-	<resource name="Ceramic electrolyte" type="chemical" phase="solid"> 
-		The ceramic electrolyte 
-		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
-		This solid metal oxide is an insulator that will not conduct electricity. However, it 
-		is capable of conducting oxygen ions and suitable for cell reactions. </resource>
+	
+	<resource name="Polyurethane" type="chemical" phase="solid" demand="10">
+		These bio-based polyurethane made
+		use of natural-oil polyols (NOPs) produced from renewable
+		raw materials such as soybean or vegetable oil. Polyurethanes are used
+		in the manufacturing of foot wears, solid plastic items, foams for
+		bedding and upholstery. </resource>
+ 
+	<resource name="Propylene" type="chemical" phase="gas" demand=".01">
+		The common name for the organic chemical compound propene. An alkene which is a 
+		colorless gaseous (at room temperature and pressure) hydrocarbon with the chemical
+		formula C3H6. 
+		
+		It's a colorless gas with a faint petroleum-like odor and is flammable, and is 
+		often used as fuel at room temperature and pressure, with a faint petroleum-like odor. 
+		
+		It is a product of combustion and a unsaturated organic compound with one double bond. 
+
+		It is widely used in the production of various chemicals, plastics, and fuels.
+		
+		As plastics such as production of resins, fibers, and elastomers (polyolefins).
+		
+		As chemical products such as polypropylene, polyethylene, and polyvinyl chloride (PVC).
+		
+		As fuel for industrial processes and as a component of gasoline and for production 
+		of antifreeze and other industrial chemicals.
+		</resource>
+
+	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
+		Synthetic styrene, which is chemically identical to naturally occurring styrene, 
+		is manufactured as a chemical building block for
+		materials used to make packaging, insulation </resource>
+
+	<resource name="Terephthalic acid"  type="chemical" phase="solid">
+		Terephthalic acid is an organic compound with formula C6H4(CO2H)2. 
+		This white solid is a commodity chemical, used principally as a precursor 
+		to the polyester PET, used to make clothing and plastic bottles. 
+	</resource>
+
 
 <!-- Regolith and its directly derived ore deposits
      https://en.wikipedia.org/wiki/Martian_soil

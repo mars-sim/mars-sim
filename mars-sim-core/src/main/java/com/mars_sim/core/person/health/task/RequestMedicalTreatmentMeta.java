@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RequestMedicalTreatmentMeta.java
- * @date 2021-12-22
+ * @date 2025-08-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health.task;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
@@ -22,7 +23,7 @@ import com.mars_sim.core.tool.Msg;
  */
 public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 
-	private static final int VALUE = 500;
+	private static final int VALUE = 1000;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -31,7 +32,10 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
     public RequestMedicalTreatmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		
-		setTrait(TaskTrait.TREATMENT);
+		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
+		setPreferredJob(JobType.MEDICS);
+		setPreferredJob(JobType.ACADEMICS);
+		addAllCrewRoles();
 	}
     
 
@@ -39,7 +43,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
     public Task constructInstance(Person person) {
         return RequestMedicalTreatment.createTask(person);
     }
-
+    
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
 
@@ -61,4 +65,5 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 
         return createTaskJobs(new RatingScore(VALUE));
     }
+
 }

@@ -31,6 +31,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import com.mars_sim.console.MarsTerminal;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
@@ -574,14 +575,17 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case MUSIC_MUTE:
 				if (selectedItem.isSelected()) {
 					// mute the music
-					soundPlayer.muteMusic();
+					soundPlayer.setUserMuteMusic(true);
 					musicVolumeSlider.setEnabled(false);
 					musicMuteItem.revalidate();
 					musicMuteItem.repaint();
 				}
 				else {
 					// unmute the music
-					soundPlayer.unmuteMusic();
+					soundPlayer.setUserMuteMusic(false);
+					if (!Simulation.instance().getMasterClock().isPaused())
+//						soundPlayer.unmuteMusic();
+						soundPlayer.resumeMusic();
 					musicVolumeSlider.setEnabled(true);
 					musicMuteItem.revalidate();
 					musicMuteItem.repaint();
@@ -590,11 +594,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case EFFECT_MUTE:
 				if (selectedItem.isSelected()) {
 					// mute the sound effect
+					soundPlayer.setUserMuteSoundEffect(true);
 					soundPlayer.muteSoundEffect();
 					effectVolumeSlider.setEnabled(false);
 				} else {
-					// unmute the sound effect
-					soundPlayer.unmuteSoundEffect();
+					// player unmute the sound effect
+					soundPlayer.setUserMuteSoundEffect(false);
+					if (!Simulation.instance().getMasterClock().isPaused())
+						soundPlayer.unmuteSoundEffect();
 					effectVolumeSlider.setEnabled(true);
 				}
 				break;
@@ -640,17 +647,17 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	
 		showUnitBarItem.setSelected(mainWindow.getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(mainWindow.getToolToolBar().isVisible());
-		useExternalBrowser.setSelected(mainWindow.getUseExternalBrowser());
+		useExternalBrowser.setSelected(mainWindow.useExternalBrowser());
 
 		if (soundPlayer != null) {
 			musicVolumeSlider.setValue((int) Math.round(soundPlayer.getMusicVolume() * 10));
-			musicVolumeSlider.setEnabled(!AudioPlayer.isMusicMute());
+			musicVolumeSlider.setEnabled(!soundPlayer.userMuteMusic());
 
 			effectVolumeSlider.setValue((int) Math.round(soundPlayer.getEffectVolume() * 10));
-			effectVolumeSlider.setEnabled(!AudioPlayer.isEffectMute());
+			effectVolumeSlider.setEnabled(!soundPlayer.userMuteSoundEffect());
 
-			musicMuteItem.setSelected(AudioPlayer.isMusicMute());
-			effectMuteItem.setSelected(AudioPlayer.isEffectMute());
+			musicMuteItem.setSelected(soundPlayer.userMuteMusic());
+			effectMuteItem.setSelected(soundPlayer.userMuteSoundEffect());
 		}
 	}
 

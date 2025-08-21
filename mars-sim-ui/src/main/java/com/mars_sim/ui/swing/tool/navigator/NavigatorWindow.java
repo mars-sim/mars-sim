@@ -374,7 +374,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	    
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
-		coordLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
+		coordLabel.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(coordLabel, BorderLayout.WEST);

@@ -7,8 +7,12 @@
 package com.mars_sim.core.vehicle.task;
 
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.fav.FavoriteType;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
@@ -23,6 +27,13 @@ public class ReturnLightUtilityVehicleMeta extends FactoryMetaTask {
     
     public ReturnLightUtilityVehicleMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.LOADERS);
+        addPreferredRobot(RobotType.DELIVERYBOT);
+        
+		addAllCrewRoles();	
 	}
 
     @Override

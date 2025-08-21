@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2025-07-29
+ * @date 2025-08-08
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -53,6 +52,7 @@ import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.Dining;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
@@ -76,6 +76,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -169,7 +170,7 @@ public class BuildingManager implements Serializable {
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
 		
-		meteorite = new MeteoriteImpactProperty();
+		meteorite = new MeteoriteImpactProperty(settlement);
 	}
 
 	/**
@@ -750,8 +751,9 @@ public class BuildingManager implements Serializable {
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
 		Optional<Building> value = buildings.stream()
 				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-//				.skip(getRandomInt(collection.size()))
-                .findFirst();
+//				.max(Comparator.comparing(Building::getFunction(f1).getNumEmptyActivitySpots, Comparator.reverseOrder()))
+				.findAny();
+//                .findFirst();
 
         return value.orElse(null);
 
@@ -785,7 +787,7 @@ public class BuildingManager implements Serializable {
 			meteorite.calculateMeteoriteProbability();
 		}
 
-		if (pulse.isNewIntMillisol()) {
+		if (pulse.getMarsTime().getMissionSol() != 1 && pulse.isNewHalfSol()) {
 			// Check if there are any maintenance parts to be submitted
 			retrieveMaintPartsFromMalfunctionMgrs();
 		}
@@ -811,27 +813,71 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person to a random medical building within a settlement.
+	 * Adds a patient to a medical bed within a settlement.
 	 *
-	 * @param unit       the person/robot to add.
-	 * @param s the settlement to find a building.
-	 * @throws BuildingException if person/robot cannot be added to any building.
+	 * @param p the patient
+	 * @param s the settlement with medical beds
+	 * @return
 	 */
-	public static void addToMedicalBuilding(Person p, Settlement s) {
-
+	public static boolean addPatientToMedicalBed(Person p, Settlement s) {
+		boolean success = false;
+		
 		Building building = s.getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-			addPersonToActivitySpot(p, building, FunctionType.MEDICAL_CARE);
-			logger.info(p, 2000, "Brought to " + building.getName() + " for possible treatment.");
+
+			success = building.getMedical().addPatientToBed(p);
+	
+			if (success)
+				logger.info(p, 0, "Sent to a medical bed in " + building.getName() + ".");
+			else {
+				logger.info(p, 0, "Unable to send to a medical bed in " + building.getName() + ".");
+			}
 		}
 
 		else {
-			logger.log(p, Level.WARNING, 2000,	"No medical facility available for "
-							+ p.getName() + ". Go to a random building.");
-			addPersonToRandomBuilding(p, s);
+			// Send to his/her registered bed
+			logger.log(p, Level.WARNING, 0,	"No medical facility available for "
+							+ p.getName() + ". Go to his/her bed.");
+			
+			AllocatedSpot bed = p.getBed();
+			
+			if (bed != null) {
+					
+				Building b = bed.getOwner();
+				
+				success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
+				
+				if (success) {
+					// Allocate it to the person
+					p.setActivitySpot(bed);
+					
+					LocalPosition bedLoc = bed.getAllocated().getPos();	
+			
+					p.setPosition(bedLoc);
+					
+					logger.log(p, Level.WARNING, 0, "Go to his/her bed.");
+					
+					return success;
+				}
+			}
+
+			// It will look for a permanent bed if possible
+			AllocatedSpot tempBed = Sleep.findABed(s, p);
+			
+			if (tempBed == null) {
+				// Assign a temporary bed to this person
+				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
+				
+				if (bed != null) {
+					success = true;
+					return success;
+				}
+			}	
 		}
+		
+		return success;
 	}
 
 	/**
@@ -1421,6 +1467,23 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Adds a worker to the building if possible.
+	 *
+	 * @param worker   the worker to add.
+	 * @param building the building to add.
+	 * @return
+	 */
+	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType functionType) {
+		
+		if (worker instanceof Person person)
+			return addPersonToActivitySpot(person, building, functionType);
+		else if (worker instanceof Robot robot)
+			return addRobotToActivitySpot(robot, building, functionType);
+		
+		return false;
+	}
+	
+	/**
 	 * Adds the person to an activity spot in a building.
 	 *
 	 * @param person   the person to add.
@@ -1437,9 +1500,17 @@ public class BuildingManager implements Serializable {
 			LocalPosition loc = null;
 			
 			if (functionType != null)  {
-				f = building.getFunction(functionType);
-				if (f != null)
-					loc = f.getAvailableActivitySpot();	
+				f = building.getFunction(functionType);			
+	
+				if (f != null) {
+					// Check if the person is already occupying an activity spot of this function type
+					if (f.checkWorkerActivitySpot(person)) {
+						return true;
+					}
+					
+					loc = f.getAvailableActivitySpot();
+				}
+	
 			}
 			else {
 				// Find an empty spot in life support
@@ -1491,25 +1562,44 @@ public class BuildingManager implements Serializable {
 		boolean result = false;
 
 		try {
-			Function f = null;
+			RoboticStation roboticStation = building.getRoboticStation();
+			Function f = roboticStation;
 			LocalPosition loc = null;
-			
-			// Case 1: Gets an empty pos from functionType
+				
 			if (functionType != null)  {
-				var specificF = building.getFunction(functionType);
-				if (specificF == null) {
-					logger.warning(robot, "No " + functionType.getName() + " in " + building.getName() + ".");
-				}
-				else {
-					f = specificF;
-					// Find an empty spot in this function
+				f = building.getFunction(functionType);			
+	
+				if (f != null) {
+					// Case 0: Check if the person is already occupying an activity spot of this function type
+					if (f.checkWorkerActivitySpot(robot)) {
+						return true;
+					}
+					
 					loc = f.getAvailableActivitySpot();
 				}
+	
 			}
+			else {
+				// Case 1: Gets an empty pos from functionType
+
+				loc = roboticStation.getAvailableActivitySpot();
+			}
+
+//			if (functionType != null)  {
+//				var specificF = building.getFunction(functionType);
+//				if (specificF == null) {
+//					logger.warning(robot, "No " + functionType.getName() + " in " + building.getName() + ".");
+//				}
+//				else {
+//					f = specificF;
+//					// Find an empty spot in this function
+//					loc = f.getAvailableActivitySpot();
+//				}
+//			}
 			
 			// Case 2: Gets an empty pos from building's robotic station
 			if (loc == null) {
-				RoboticStation roboticStation = building.getRoboticStation();
+
 				if (roboticStation == null) {
 					logger.warning(robot, "No robotic function in " + building.getName() + ".");
 				}
@@ -2286,7 +2376,7 @@ public class BuildingManager implements Serializable {
 	 /**
 	  * Retrieves maintenance parts from all entities associated with this settlement. 
 	  */
-	private void retrieveMaintPartsFromMalfunctionMgrs() {
+	public void retrieveMaintPartsFromMalfunctionMgrs() {
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
             Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
 
@@ -2295,42 +2385,42 @@ public class BuildingManager implements Serializable {
                 if (!partsMaint.isEmpty()) {
                     Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
                     if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
-                        // Post it
-                        partsMaint.put(entity, parts);
-                        for (int id : parts.keySet()) {
-                            int num = parts.get(id);
-                            Good good = GoodsUtil.getGood(id);
-                            Part part = ItemResourceUtil.findItemResource(id);
-                            // Inject the demand onto this part
-                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-                        }
+                        // Post the parts and inject the demand
+                        postInjectPartsDemand(entity, parts);
                     }
+                    
                     if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
-//						logger.info(entity, 30_000L, "Both are equal : " + partsMaintEntry + " and " + parts);
-                    } else {
-                        // Post it
-                        partsMaint.put(entity, parts);
-                        for (int id : parts.keySet()) {
-                            int num = parts.get(id);
-                            Good good = GoodsUtil.getGood(id);
-                            Part part = ItemResourceUtil.findItemResource(id);
-                            // Inject the demand onto this part
-                            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-                        }
-                    }
-                } else {
-                    // Post it
-                    partsMaint.put(entity, parts);
-                    logger.info(parts + " was posted in empty partsMaint.");
-                    for (int id : parts.keySet()) {
-                        int num = parts.get(id);
-                        Good good = GoodsUtil.getGood(id);
-                        Part part = ItemResourceUtil.findItemResource(id);
-                        // Inject the demand onto this part
-                        ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
-                    }
+//						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
+                    } 
+                    else {
+                        // Post the parts and inject the demand
+                        postInjectPartsDemand(entity, parts);
+                    }   
+                } 
+                else {
+                    logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
+                    // Post the parts and inject the demand
+                    postInjectPartsDemand(entity, parts);
                 }
             }
+        }
+	}
+	
+	/**
+	 * Posts the part and injects the demand.
+	 * 
+	 * @param entity
+	 * @param parts
+	 */
+	public void postInjectPartsDemand(Malfunctionable entity, Map<Integer, Integer> parts) {
+		// Post it
+        partsMaint.put(entity, parts);
+        for (int id : parts.keySet()) {
+            int num = parts.get(id);
+            Good good = GoodsUtil.getGood(id);
+            Part part = ItemResourceUtil.findItemResource(id);
+            // Inject the demand onto this part
+            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
         }
 	}
 	
@@ -2367,32 +2457,33 @@ public class BuildingManager implements Serializable {
 	}
 
 	
-	/**
-	 * Gets the demand of the parts needed for maintenance.
-	 *
-	 * @return map of parts and their number.
-	 */
-	private Map<Integer, Integer> getMaintenancePartsDemand() {
-		if (partsMaint.isEmpty())
-			return new HashMap<>();
-		Map<Integer, Integer> partsList = new HashMap<>();
-        for (Malfunctionable entity : partsMaint.keySet()) {
-            Map<Integer, Integer> partMap = partsMaint.get(entity);
-
-            for (Entry<Integer, Integer> entry : partMap.entrySet()) {
-                Integer part = entry.getKey();
-                int number = entry.getValue();
-                if (!settlement.getItemResourceIDs().contains(part)) {
-                    if (partsList.containsKey(part)) {
-                        number += partsList.get(part).intValue();
-                    }
-                    partsList.put(part, number);
-                }
-            }
-        }
-		
-		return partsList;
-	}
+//	/**
+//	 * Gets the demand of the parts needed for maintenance.
+//	 *
+//	 * @return map of parts and their number.
+//	 */
+//	private Map<Integer, Integer> getMaintenancePartsDemand() {
+//		if (partsMaint.isEmpty())
+//			return new HashMap<>();
+//		
+//		Map<Integer, Integer> partsList = new HashMap<>();
+//        for (Malfunctionable entity : partsMaint.keySet()) {
+//            Map<Integer, Integer> partMap = partsMaint.get(entity);
+//
+//            for (Entry<Integer, Integer> entry : partMap.entrySet()) {
+//                Integer part = entry.getKey();
+//                int number = entry.getValue();
+//                if (!settlement.getItemResourceIDs().contains(part)) {
+//                    if (partsList.containsKey(part)) {
+//                        number += partsList.get(part).intValue();
+//                    }
+//                    partsList.put(part, number);
+//                }
+//            }
+//        }
+//		
+//		return partsList;
+//	}
 	
 	/**
 	 * Gets the number of maintenance parts from a particular settlement.
@@ -2401,17 +2492,19 @@ public class BuildingManager implements Serializable {
 	 * @param part
 	 */
 	public int getMaintenanceDemand(Part part) {
+
+		if (partsMaint.isEmpty())
+			return 0;
+		
 		int numRequest = 0;
-		Map<Integer, Integer> partMap = getMaintenancePartsDemand();
-		
-		for (Entry<Integer, Integer> entry: partMap.entrySet()) {
-			int p = entry.getKey();
-			int number = entry.getValue();
-			if (part.getID() == p) {
-				numRequest += number;
-			}
-		}
-		
+		int partID = part.getID();
+	
+        for (Malfunctionable entity : partsMaint.keySet()) {
+            Map<Integer, Integer> partMap = partsMaint.get(entity);
+            if (partMap.containsKey(partID))
+            	numRequest += partMap.get(partID);
+        }
+
 		return numRequest;
 	}
 

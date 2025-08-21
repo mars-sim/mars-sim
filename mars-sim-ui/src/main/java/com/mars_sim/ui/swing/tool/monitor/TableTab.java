@@ -119,9 +119,13 @@ public class TableTab extends MonitorTab {
 
 		// Allow ordering
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-		table.setRowSorter(sorter);
 		sorter.setSortsOnUpdates(true);
+		table.setRowSorter(sorter);
+		
+		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
+//		setAutoCreateRowSorter(true);
 
+		
 		// Set single selection mode if necessary.
 		if (singleSelection)
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

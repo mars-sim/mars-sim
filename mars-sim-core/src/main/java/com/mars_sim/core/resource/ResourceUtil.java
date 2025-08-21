@@ -125,8 +125,10 @@ public class ResourceUtil {
 	public static final int FISH_MEAT_ID = NAPKIN_ID + 1;
 	public static final int SPIRULINA_ID = FISH_MEAT_ID + 1;
 
+	public static final int CARBON_ID = SPIRULINA_ID + 1;
+	
 	// Must be one after the last fixed resource
-	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = SPIRULINA_ID + 1;
+	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = CARBON_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
@@ -219,6 +221,7 @@ public class ResourceUtil {
 		fixedResources.put("toilet tissue", TOILET_TISSUE_ID);
 		fixedResources.put("toxic waste", TOXIC_WASTE_ID);
 		fixedResources.put("water", WATER_ID);
+		fixedResources.put("carbon", CARBON_ID);
 
 		// This check will only fail if a new resource has not been added correctly
 		int expectedSize = FIRST_AMOUNT_FREE_RESOURCE_ID - FIRST_AMOUNT_RESOURCE_ID;
@@ -375,7 +378,11 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(int id) {
-		return amountResourceById.get(id);
+		AmountResource ar = amountResourceById.get(id);
+		if (ar == null) {
+			throw new IllegalArgumentException("Resource '" + id + "' not found.");
+		}
+		return ar;
 	}
 
 	/**
@@ -386,7 +393,11 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(String name) {
-		return amountResourceByName.get(name.toLowerCase());
+		AmountResource ar = amountResourceByName.get(name.toLowerCase());
+		if (ar == null) {
+			throw new IllegalArgumentException("Resource '" + name + "' not found.");
+		}
+		return ar;
 	}
 
 	/**
@@ -397,11 +408,7 @@ public class ResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static final int findIDbyAmountResourceName(String name) {
-		AmountResource ar = findAmountResource(name);
-		if (ar == null) {
-			throw new IllegalArgumentException("Resource '" + name + "' not found.");
-		}
-		return ar.getID();
+		return findAmountResource(name).getID();
 	}
 
 	/**
@@ -427,6 +434,22 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * Is this a waste resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isWaste(int resource) {
+		return switch (resource) {
+			case GREY_WATER_ID, BLACK_WATER_ID, SOLID_WASTE_ID, TOXIC_WASTE_ID, 
+				COMPOST_ID, FOOD_WASTE_ID, CROP_WASTE_ID -> true;
+			default -> false;
+		};
+	}
+	
+	
+	
+	/**
 	 * Is this tier 1 resource ?
 	 * 
 	 * @param resource
@@ -447,10 +470,24 @@ public class ResourceUtil {
 	 */
 	public static boolean isDerivedResource(int resource) {
 		return switch (resource) {
-			case GLUCOSE_ID, BRINE_WATER_ID, LEAVES_ID -> true;
+			case GLUCOSE_ID, BRINE_WATER_ID, LEAVES_ID, SOIL_ID -> true;
 			default -> false;
 		};
 	}
+	
+	/**
+	 * Is this derived resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isRawElement(int resource) {
+		return switch (resource) {
+			case CARBON_ID -> true;
+			default -> false;
+		};
+	}
+	
 	
 	/**
 	 * Is this a raw material resource ?

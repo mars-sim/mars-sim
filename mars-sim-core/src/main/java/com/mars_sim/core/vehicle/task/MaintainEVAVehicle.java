@@ -52,10 +52,11 @@ public class MaintainEVAVehicle extends EVAOperation {
     public MaintainEVAVehicle(Person person, Vehicle target) {
         super(NAME, person, 100, MAINTAIN_VEHICLE);
 
-		if (person.isSuperUnfit()) {
+		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
-        	return;
+			return;
 		}
+		
         setMinimumSunlight(LightLevel.NONE);
 
      	var settlement = person.getAssociatedSettlement();

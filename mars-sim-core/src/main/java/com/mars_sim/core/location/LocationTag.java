@@ -178,9 +178,8 @@ public class LocationTag implements Serializable {
 		if (unit instanceof Vehicle v && v.getSettlement() != null)
 			return v.getSettlement();
 		
-		Coordinates c = unit.getCoordinates();
 
-		return CollectionUtils.findSettlement(c);	
+		return CollectionUtils.findSettlement(unit.getCoordinates());	
 	}
 
 	/**
@@ -207,8 +206,9 @@ public class LocationTag implements Serializable {
 	 * @return true if it is
 	 */
 	public boolean isInSettlementVicinity() {
-		Coordinates c = unit.getCoordinates();
-
-		return (CollectionUtils.findSettlement(c) != null);
+		if (unit.getSettlement() != null)
+			return false;
+	
+		return (CollectionUtils.findSettlement(unit.getCoordinates()) != null);
 	}
 }

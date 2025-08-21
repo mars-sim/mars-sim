@@ -376,7 +376,7 @@ public class EmergencySupply extends RoverMission {
 				if (member instanceof Person person) {
 					if (isInAGarage()) {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
-					} else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
+					} else if (!EVAOperation.isGettingDark(person)) {
 						assignTask(person, new UnloadVehicleEVA(person, getRover()));
 					}
 				}
