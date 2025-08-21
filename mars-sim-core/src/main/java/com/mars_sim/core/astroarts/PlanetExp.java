@@ -11,10 +11,15 @@ package com.mars_sim.core.astroarts;
  * Planet Position by Expansion.
  */
 public class PlanetExp {
+	private PlanetExp() {
+		// Prevent instantiation
+		throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+	}
+	
 	//
 	// Mercury
 	//
-	static final PlanetExpP0 MercuryLambda[] = {
+	private static final PlanetExpP0[] MERCURY_LAMBDA = {
 		new PlanetExpP0(0.5258,  448417.55,   74.38),
 		new PlanetExpP0(0.1796,  298945.77,  137.84),
 		new PlanetExpP0(0.1061,  597890.10,  249.2),
@@ -29,7 +34,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.0019,    6356.0,    85.0),
 		new PlanetExpP0(0.0011, 1046308.0,    54.0),
 	};
-	static final PlanetExpP0 MercuryBeta[] = {
+	private static final PlanetExpP0[] MERCURY_BETA = {
 		new PlanetExpP0(0.3123,  448417.92, 103.51),
 		new PlanetExpP0(0.0753,  597890.4,  278.3),
 		new PlanetExpP0(0.0367,  149472.1,   55.7),
@@ -43,7 +48,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.0009,  747364.0,  331.0),
 		new PlanetExpP0(0.0009,  448717.0,   45.0),
 	};
-	static final PlanetExpP0 MercuryR[] = {
+	private static final PlanetExpP0 [] MERCURY_R = {
 		new PlanetExpP0(0.001214,	448417.55,	344.38),
 		new PlanetExpP0(0.000218,	597890.1,	159.20),
 		new PlanetExpP0(0.000042,	747363.0,	334.0),
@@ -53,22 +58,22 @@ public class PlanetExp {
 	//
 	// Venus
 	//
-	static final PlanetExpP0 VenusL0[] = {
+	private static final PlanetExpP0[] VENUS_L0 = {
 		new PlanetExpP0(-0.0048,	248.6,	-19.34),
 		new PlanetExpP0(-0.0004,	198.0,	720.0 ),
 	};
-	static final PlanetExpP0 VenusL1[] = {
+	private static final PlanetExpP0[] VENUS_L1 = {
 		new PlanetExpP0(0.0033, 357.9, 1170.35),
 		new PlanetExpP0(0.0031, 242.3,  450.37),
 		new PlanetExpP0(0.0020, 273.5,  675.55),
 		new PlanetExpP0(0.0014,  31.1,  225.18),
 	};
-	static final PlanetExpP0 VenusQ[] = {
+	private static final PlanetExpP0[] VENUS_Q = {
 		new PlanetExpP0(-0.000015,	357.9,	1170.35),
 		new PlanetExpP0( 0.000010,	 62.3,	 450.37),
 		new PlanetExpP0(-0.000008,	 93.0,	 675.6 ),
 	};
-	static final PlanetExpP1 VenusP = new PlanetExpP1(
+	private static final PlanetExpP1 VENUS_P = new PlanetExpP1(
 		310.1735,		585.19212,
 		 -0.0503,		107.44,		1170.37,
 		 0.7775,		-0.00005,	178.954,	585.178,
@@ -79,11 +84,11 @@ public class PlanetExp {
 	//
 	// Mars
 	//
-	static final PlanetExpP0 MarsL0[] = {
+	private static final PlanetExpP0[] MARS_L0 = {
 		new PlanetExpP0(-0.0048,	248.6,	-19.34),
 		new PlanetExpP0(-0.0004,    198.0,	720.0 ),
 	};
-	static final PlanetExpP0 MarsL1[] = {
+	private static final PlanetExpP0[] MARS_L1 = {
 		new PlanetExpP0(0.6225,  187.54,  382.797),
 		new PlanetExpP0(0.0503,  101.31,  574.196),
 		new PlanetExpP0(0.0146,   62.31,    0.198),
@@ -99,7 +104,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.0010,   91.4,   -30.34 ),
 		new PlanetExpP0(0.0009,  268,     100.4  ),
 	};
-	static final PlanetExpP0 MarsQ[] = {
+	private static final PlanetExpP0[] MARS_Q = {
 		new PlanetExpP0(-0.002825,	187.54,	382.797),
 		new PlanetExpP0(-0.000249,	101.31,	574.196),
 		new PlanetExpP0(-0.000024,	 15.1,	765.59 ),
@@ -109,7 +114,7 @@ public class PlanetExp {
 		new PlanetExpP0( 0.000007,	 27.0,	168.6  ),
 		new PlanetExpP0( 0.000006,	320.0,	145.8  ),
 	};
-	static final PlanetExpP1 MarsP = new PlanetExpP1(
+	private static final PlanetExpP1 MARS_P = new PlanetExpP1(
 	   249.3542,	191.41696,
 	   -0.0149,		40.01,			382.819,
 		10.6886,	0.00010,		273.768,	191.399,
@@ -120,7 +125,7 @@ public class PlanetExp {
 	//
 	// Jupiter
 	//
-	static final PlanetExpP0 JupiterN[] = {
+	private static final PlanetExpP0[] JUPITER_N = {
 		new PlanetExpP0( 0.3323,  162.78,    0.385),
 		new PlanetExpP0( 0.0541,   38.46,  -36.256),
 		new PlanetExpP0( 0.0447,  293.42,  -29.941),
@@ -145,11 +150,11 @@ public class PlanetExp {
 		new PlanetExpP0( 0.0008,   24.0,   -35.8  ),
 		new PlanetExpP0( 0.0005,  356.0,    -5.5  ),
 	};
-	static final PlanetExpP0 JupiterB[] = {
+	private static final PlanetExpP0[] JUPITER_B = {
 		new PlanetExpP0(0.0010, 291.9,	 -29.94),
 		new PlanetExpP0(0.0003, 196.0,   -24.0 ),
 	};
-	static final PlanetExpP0 JupiterQ[] = {
+	private static final PlanetExpP0[] JUPITER_Q = {
 		new PlanetExpP0(0.000230,   38.47,  -36.256),
 		new PlanetExpP0(0.000168,  293.36,  -29.941),
 		new PlanetExpP0(0.000074,  200.50,  -24.03),
@@ -167,7 +172,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.000006,  198.0,   -29.9),
 		new PlanetExpP0(0.000005,  353.5,    12.22),
 	};
-	static final PlanetExpP2 JupiterP = new PlanetExpP2(
+	private static final PlanetExpP2 JUPITER_P = new PlanetExpP2(
 		13.6526,	0.01396,
 		0.0075,		5.94,
 		5.5280,		0.1666,		0.0070,		0.0003,
@@ -178,7 +183,7 @@ public class PlanetExp {
 	//
 	// Saturn
 	//
-	static final PlanetExpP0 SaturnN[] = {
+	private static final PlanetExpP0[] SATURN_N = {
 		new PlanetExpP0( 0.8081,  342.74,    0.385),
 		new PlanetExpP0( 0.1900,    3.57,  -11.813),
 		new PlanetExpP0( 0.1173,  224.52,   -5.907),
@@ -201,12 +206,12 @@ public class PlanetExp {
 		new PlanetExpP0( 0.0014,  165.5,    -5.91),
 		new PlanetExpP0( 0.0013,  307.9,   -42.16),
 	};
-	static final PlanetExpP0 SaturnB[] = {
+	private static final PlanetExpP0[] SATURN_B = {
 		new PlanetExpP0( 0.0024,	  3.9,	-11.81),
 		new PlanetExpP0( 0.0008,    269.0,	 -5.9),
 		new PlanetExpP0( 0.0005,    135.0,	-30.3),
 	};
-	static final PlanetExpP0 SaturnQ[] = {
+	private static final PlanetExpP0[] SATURN_Q = {
 		new PlanetExpP0(0.000701,     3.43,  -11.813),
 		new PlanetExpP0(0.000378,   110.54,  -18.128),
 		new PlanetExpP0(0.000244,   219.13,   -5.907),
@@ -227,7 +232,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.000005,   318.0,    24.4),
 		new PlanetExpP0(0.000005,    24.0,   -15.9),
 	};
-	static final PlanetExpP2 SaturnP = new PlanetExpP2(
+	private static final PlanetExpP2 SATURN_P = new PlanetExpP2(
 		91.8560,	0.01396,
 		0.0272,		135.53,
 		6.4215,		0.2248,		0.0109,		0.0006,
@@ -238,7 +243,7 @@ public class PlanetExp {
 	//
 	// Uranus
 	//
-	static final PlanetExpP0 UranusLambda[] = {
+	private static final PlanetExpP0[] URANUS_LAMBDA = {
 		new PlanetExpP0(5.35857,	 460.61987,		 48.85031),
 		new PlanetExpP0(0.58964,     919.0429,		188.3245),
 		new PlanetExpP0(0.12397,    1065.1192,		354.5935),
@@ -249,13 +254,13 @@ public class PlanetExp {
 		new PlanetExpP0(0.00017,    2873.2,		321.9),
 		new PlanetExpP0(0.00014,    3157.9,		308.1),
 	};
-	static final PlanetExpP0 UranusBeta[] = {
+	private static final PlanetExpP0[] URANUS_BETA = {
 		new PlanetExpP0(1.15483,	 419.91739,		128.15303),
 		new PlanetExpP0(0.67756,     652.9504,		273.6644),
 		new PlanetExpP0(0.13490,     998.0302,		 83.3517),
 		new PlanetExpP0(0.00025,    3030.9,		194.2),
 	};
-	static final PlanetExpP0 UranusR[] = {
+	private static final PlanetExpP0[] URANUS_R = {
 		new PlanetExpP0(0.905790,	 408.729,		320.313),
 		new PlanetExpP0(0.062710,    799.95,		 67.99),
 		new PlanetExpP0(0.004897,   2613.7,		 80.4),
@@ -268,7 +273,7 @@ public class PlanetExp {
 	//
 	// Neptune
 	//
-	static final PlanetExpP0 NeptuneLambda[] = {
+	private static final PlanetExpP0[] NEPTUNE_LAMBDA = {
 		new PlanetExpP0(0.97450,	 221.3904,	167.7269),
 		new PlanetExpP0(0.01344,     986.281,	 50.826),
 		new PlanetExpP0(0.00945,    2815.89,	  0.09),
@@ -276,14 +281,14 @@ public class PlanetExp {
 		new PlanetExpP0(0.00225,    2279.43,	127.61),
 		new PlanetExpP0(0.00023,    5851.6,	 19.2),
 	};
-	static final PlanetExpP0 NeptuneBeta[] = {
+	private static final PlanetExpP0[] NEPTUNE_BETA = {
 		new PlanetExpP0(1.76958,	 218.87906,	 83.11018),
 		new PlanetExpP0(0.01366,	 447.128,	338.864),
 		new PlanetExpP0(0.00015,	1107.1,		224.7),
 		new PlanetExpP0(0.00015,	2596.7,		187.5),
 		new PlanetExpP0(0.00012,	3035.0,		243.9),
 	};
-	static final PlanetExpP0 NeptuneR[] = {
+	private static final PlanetExpP0[] NEPTUNE_R = {
 		new PlanetExpP0(0.260457,	 222.371,	 79.994),
 		new PlanetExpP0(0.004944,   2815.4,	 90.1),
 		new PlanetExpP0(0.003364,    524.0,	308.1),
@@ -294,7 +299,7 @@ public class PlanetExp {
 	//
 	// Pluto
 	//
-	static final PlanetExpP0 PlutoLambda[] = {
+	private static final PlanetExpP0[] PLUTO_LAMBDA = {
 		new PlanetExpP0(15.81087,	 246.556453,	298.348019),
 		new PlanetExpP0( 1.18379,	 551.34710, 	351.67676),
 		new PlanetExpP0( 0.07886, 	 941.622,   	 41.989),
@@ -304,7 +309,7 @@ public class PlanetExp {
 		new PlanetExpP0( 0.00022, 	5861.8,     	 77.9),
 		new PlanetExpP0( 0.00013, 	3288.8,     	293.0),
 	};
-	static final PlanetExpP0 PlutoBeta[] = {
+	private static final PlanetExpP0[] PLUTO_BETA = {
 		new PlanetExpP0(17.04550,	 172.554318,	 42.574982),
 		new PlanetExpP0( 2.45310,	 415.60630,		 66.15350),
 		new PlanetExpP0( 0.26775,	 713.1227,		105.0840),
@@ -314,7 +319,7 @@ public class PlanetExp {
 		new PlanetExpP0( 0.00090,	1532.6,			213.7),
 		new PlanetExpP0( 0.00042,	2342.3,			254.2),
 	};
-	static final PlanetExpP0 PlutoR[] = {
+	private static final PlanetExpP0[] PLUTO_R = {
 		new PlanetExpP0(8.670489,	 181.3383,		198.4973),
 		new PlanetExpP0(0.333884,	 475.963,		228.717),
 		new PlanetExpP0(0.008426,	 909.8,			252.9),
@@ -327,7 +332,7 @@ public class PlanetExp {
 	//
 	// Sun
 	//
-	static final PlanetExpP0 SunLambda[] = {
+	private static final PlanetExpP0[] SUN_LAMBDA = {
 		new PlanetExpP0( 0.0200,   353.06,  719.981),
 		new PlanetExpP0(-0.0048,   248.64,  -19.341),
 		new PlanetExpP0( 0.0020,   285.0,   329.64),
@@ -347,7 +352,7 @@ public class PlanetExp {
 		new PlanetExpP0( 0.0003,   349.6,  1079.97),
 		new PlanetExpP0( 0.0003,   241.2,   -44.43),
 	};
-	static final PlanetExpP0 SunQ[] = {
+	private static final PlanetExpP0[] SUN_Q = {
 		new PlanetExpP0(-0.000091,	353.1,	 719.98),
 		new PlanetExpP0( 0.000013,  205.8,	4452.67),
 		new PlanetExpP0( 0.000007,   62.0,   450.4),
@@ -361,9 +366,9 @@ public class PlanetExp {
 		double fLambda = 279.0358 + 360.00769 * fT
 			+ ( 1.9159 - 0.00005 * fT) 
 				* UdMath.udsin((356.531)+ ( 359.991) * fT);
-		for (int i = 0; i < SunLambda.length; i++) {
-			fLambda += SunLambda[i].a * UdMath.udsin(SunLambda[i].b
-													 + SunLambda[i].c * fT);
+		for (int i = 0; i < SUN_LAMBDA.length; i++) {
+			fLambda += SUN_LAMBDA[i].a() * UdMath.udsin(SUN_LAMBDA[i].b()
+													 + SUN_LAMBDA[i].c() * fT);
 		}
 		fLambda += 0.0057;
 		fLambda = UdMath.deg2rad(UdMath.degmal(fLambda));
@@ -371,8 +376,8 @@ public class PlanetExp {
 		
 		double fq = (- 0.007261+0.0000002 * fT) * UdMath.udcos((356.53)
 										   + (359.991) * fT) + 0.000030;
-		for (int i = 0; i < SunQ.length; i++) {
-			fq += SunQ[i].a * UdMath.udcos(SunQ[i].b + SunQ[i].b * fT);
+		for (int i = 0; i < SUN_Q.length; i++) {
+			fq += SUN_Q[i].a() * UdMath.udcos(SUN_Q[i].b() + SUN_Q[i].b() * fT);
 		}
 		
 		double fRadius = Math.pow(10.0, fq);
@@ -386,43 +391,46 @@ public class PlanetExp {
 	 * Gets Position of Venus and Mars.
 	 */
 	private static Xyz getPosExp1(int planetNo, double fT) {
-		PlanetExpP0 ParamL0[], ParamL1[], ParamQ[];
-		PlanetExpP1 ParamP;
+		PlanetExpP0[] paramL0;
+		PlanetExpP0[] paramL1;
+		PlanetExpP0[] paramQ;
+		PlanetExpP1 paramP;
+
 		switch (planetNo) {
 		case Planet.VENUS:
-			ParamL0 = VenusL0;
-			ParamL1 = VenusL1;
-			ParamQ  = VenusQ;
-			ParamP  = VenusP;
+			paramL0 = VENUS_L0;
+			paramL1 = VENUS_L1;
+			paramQ  = VENUS_Q;
+			paramP  = VENUS_P;
 			break;
 		case Planet.MARS:
-			ParamL0 = MarsL0;
-			ParamL1 = MarsL1;
-			ParamQ  = MarsQ;
-			ParamP  = MarsP;
+			paramL0 = MARS_L0;
+			paramL1 = MARS_L1;
+			paramQ  = MARS_Q;
+			paramP  = MARS_P;
 			break;
 		default:
 			throw new ArithmeticException();
 		}
-		double L1 = (ParamP.L6 + ParamP.L7 * fT)
-						* UdMath.udsin(ParamP.L8 + ParamP.L9 * fT);
-		for (int i = 0; i < ParamL1.length; i++) {
-			L1 += ParamL1[i].a * UdMath.udsin(ParamL1[i].b
-											+ ParamL1[i].c * fT);
+		double l1 = (paramP.L6() + paramP.L7() * fT)
+						* UdMath.udsin(paramP.L8() + paramP.L9() * fT);
+		for (int i = 0; i < paramL1.length; i++) {
+			l1 += paramL1[i].a() * UdMath.udsin(paramL1[i].b()
+											+ paramL1[i].c() * fT);
 		}
-		double L0 = ParamP.L1 + ParamP.L2 * fT
-			+ ParamP.L3 * UdMath.udsin(ParamP.L4 + ParamP.L5 * fT + 2.0 * L1);
-		for (int i = 0; i < ParamL0.length; i++) {
-			L0 += ParamL0[i].a * UdMath.udsin(ParamL0[i].b
-											+ ParamL0[i].c * fT);
+		double l0 = paramP.L1() + paramP.L2() * fT
+			+ paramP.L3() * UdMath.udsin(paramP.L4() + paramP.L5() * fT + 2.0 * l1);
+		for (int i = 0; i < paramL0.length; i++) {
+			l0 += paramL0[i].a() * UdMath.udsin(paramL0[i].b()
+											+ paramL0[i].c() * fT);
 		}
-		double fLambda = UdMath.deg2rad(UdMath.degmal(L0 + L1));
-		double fBeta = Math.asin(ParamP.B1 * UdMath.udsin(ParamP.B2
-												+ ParamP.B3 * fT + L1));
-		double fq = (ParamP.q1 + ParamP.q2 * fT)
-					* UdMath.udcos(ParamP.q3 + ParamP.q4 * fT) + ParamP.q5;
-		for (int i = 0; i < ParamQ.length; i++) {
-			fq += ParamQ[i].a * UdMath.udcos(ParamQ[i].b + ParamQ[i].c * fT);
+		double fLambda = UdMath.deg2rad(UdMath.degmal(l0 + l1));
+		double fBeta = Math.asin(paramP.B1() * UdMath.udsin(paramP.B2()
+												+ paramP.B3() * fT + l1));
+		double fq = (paramP.q1() + paramP.q2() * fT)
+					* UdMath.udcos(paramP.q3() + paramP.q4() * fT) + paramP.q5();
+		for (int i = 0; i < paramQ.length; i++) {
+			fq += paramQ[i].a() * UdMath.udcos(paramQ[i].b() + paramQ[i].c() * fT);
 		}
 		double fRadius = Math.pow(10.0, fq);
 		
@@ -435,15 +443,18 @@ public class PlanetExp {
 	 * Gets Position of Jupiter and Saturn.
 	 */
 	private static Xyz getPosExp2(int planetNo, double fT) {
-		PlanetExpP0 ParamN[], ParamB[], ParamQ[];
-		PlanetExpP2 ParamP;
-		double fq, fN;
+		PlanetExpP0[] paramN;
+		PlanetExpP0[] paramB;
+		PlanetExpP0[] paramQ;
+		PlanetExpP2 paramP;
+		double fq;
+		double fN;
 		switch (planetNo) {
 		case Planet.JUPITER:
-			ParamN = JupiterN;
-			ParamB = JupiterB;
-			ParamQ = JupiterQ;
-			ParamP = JupiterP;
+			paramN = JUPITER_N;
+			paramB = JUPITER_B;
+			paramQ = JUPITER_Q;
+			paramP = JUPITER_P;
 			fN  = 341.5208 + 30.34907 * fT;
 			fN += (0.0350 + 0.00028 * fT)
 				* UdMath.udsin(245.94 - 30.349 * fT)+ 0.0004;
@@ -453,10 +464,10 @@ public class PlanetExp {
 				* UdMath.udcos(245.93 - 30.349 * fT);
 			break;
 		case Planet.SATURN:
-			ParamN = SaturnN;
-			ParamB = SaturnB;
-			ParamQ = SaturnQ;
-			ParamP = SaturnP;
+			paramN = SATURN_N;
+			paramB = SATURN_B;
+			paramQ = SATURN_Q;
+			paramP = SATURN_P;
 			fN  = 12.3042 +12.22117 * fT;
 			fN += (0.0934 + 0.00075 * fT)
 				* UdMath.udsin(250.29 + 12.221 * fT)+ 0.0008;
@@ -473,34 +484,34 @@ public class PlanetExp {
 		}
 
 		// Lambda
-		for (int i = 0; i < ParamN.length; i++) {
-			fN += ParamN[i].a * UdMath.udsin(ParamN[i].b + ParamN[i].c * fT);
+		for (int i = 0; i < paramN.length; i++) {
+			fN += paramN[i].a() * UdMath.udsin(paramN[i].b() + paramN[i].c() * fT);
 		}
-		double ff = fN + ParamP.f1 * UdMath.udsin(fN)
-				+ ParamP.f2 * UdMath.udsin(2.0 * fN)
-				+ ParamP.f3 * UdMath.udsin(3.0 * fN)
-				+ ParamP.f4 * UdMath.udsin(4.0 * fN);
-		double fV = ParamP.V1 * UdMath.udsin(2.0 * ff + ParamP.V2);
+		double ff = fN + paramP.f1() * UdMath.udsin(fN)
+				+ paramP.f2() * UdMath.udsin(2.0 * fN)
+				+ paramP.f3() * UdMath.udsin(3.0 * fN)
+				+ paramP.f4() * UdMath.udsin(4.0 * fN);
+		double fV = paramP.V1() * UdMath.udsin(2.0 * ff + paramP.V2());
 		
 		double fLambda = UdMath.deg2rad(UdMath.degmal(ff + fV
-										+ ParamP.L1 + ParamP.L2 * fT));
+										+ paramP.L1() + paramP.L2() * fT));
 		
 		// Beta
-		double fBeta = Math.asin(ParamP.B1 * UdMath.udsin(ff + ParamP.B2))
-							+ UdMath.deg2rad((ParamP.B3 + ParamP.B4 * fT)
-							* UdMath.udsin(ff + ParamP.B5));
-		for (int i = 0; i < ParamB.length; i++) {
-			fBeta += ParamB[i].a * UdMath.udsin(ParamB[i].b
-												+ ParamB[i].c * fT);
+		double fBeta = Math.asin(paramP.B1() * UdMath.udsin(ff + paramP.B2()))
+							+ UdMath.deg2rad((paramP.B3() + paramP.B4() * fT)
+							* UdMath.udsin(ff + paramP.B5()));
+		for (int i = 0; i < paramB.length; i++) {
+			fBeta += paramB[i].a() * UdMath.udsin(paramB[i].b()
+												+ paramB[i].c() * fT);
 		}
 		
 		// Radius
-		for (int i = 0; i < ParamQ.length; i++) {
-			fq += ParamQ[i].a * UdMath.udcos(ParamQ[i].b + ParamQ[i].c * fT);
+		for (int i = 0; i < paramQ.length; i++) {
+			fq += paramQ[i].a() * UdMath.udcos(paramQ[i].b() + paramQ[i].c() * fT);
 		}
 		double fr = Math.pow(10.0, fq);
-		double fRadius = fr * ParamP.r1
-			/ ( 1.0 + ParamP.r2 * UdMath.udcos(ff));
+		double fRadius = fr * paramP.r1()
+			/ ( 1.0 + paramP.r2() * UdMath.udcos(ff));
 		
 		return new Xyz(fRadius * Math.cos(fBeta) * Math.cos(fLambda),
 					   fRadius * Math.cos(fBeta) * Math.sin(fLambda),
@@ -511,13 +522,17 @@ public class PlanetExp {
 	 * Gets Position of Mercury, Uranus, Neptune, Pluto.
 	 */
 	private static Xyz getPosExp3(int planetNo, double fT2) {
-		PlanetExpP0 ParamL[], ParamB[], ParamR[];
-		double fLambda, fBeta, fRadius;
+		PlanetExpP0[] paramL;
+		PlanetExpP0[] paramB;
+		PlanetExpP0[] paramR;
+		double fLambda;
+		double fBeta;
+		double fRadius;
 		switch (planetNo) {
 		case Planet.MERCURY:
-			ParamL = MercuryLambda;
-			ParamB = MercuryBeta;
-			ParamR = MercuryR;
+			paramL = MERCURY_LAMBDA;
+			paramB = MERCURY_BETA;
+			paramR = MERCURY_R;
 			
 			fLambda  = 252.2502 + 149474.0714 * fT2;
 			fLambda += (23.4405 + 0.0023 * fT2)
@@ -539,9 +554,9 @@ public class PlanetExp {
 				* UdMath.udcos(298945.03 * fT2 + 169.59 );
 			break;
 		case Planet.URANUS:
-			ParamL = UranusLambda;
-			ParamB = UranusBeta;
-			ParamR = UranusR;
+			paramL = URANUS_LAMBDA;
+			paramB = URANUS_BETA;
+			paramR = URANUS_R;
 			
 			fLambda  = 313.33676 + 428.72880 * fT2;
 			fLambda +=   3.20671 * fT2
@@ -566,9 +581,9 @@ public class PlanetExp {
 				* UdMath.udcos( 702.024 * fT2 + 307.419);
 			break;
 		case Planet.NEPTUNE:
-			ParamL = NeptuneLambda;
-			ParamB = NeptuneBeta;
-			ParamR = NeptuneR;
+			paramL = NEPTUNE_LAMBDA;
+			paramB = NEPTUNE_BETA;
+			paramR = NEPTUNE_R;
 			
 			fLambda  = - 55.13323 + 219.93503 * fT2;
 			fLambda +=   0.04403 * fT2
@@ -583,9 +598,9 @@ public class PlanetExp {
 				* UdMath.udcos( 515.2   * fT2 + 195.7  );
 			break;
 		case Planet.PLUTO:
-			ParamL = PlutoLambda;
-			ParamB = PlutoBeta;
-			ParamR = PlutoR;
+			paramL = PLUTO_LAMBDA;
+			paramB = PLUTO_BETA;
+			paramR = PLUTO_R;
 			
 			fLambda  = 241.82574 + 179.09519 * fT2;
 			fBeta    = -2.30285;
@@ -600,21 +615,21 @@ public class PlanetExp {
 			throw new ArithmeticException();
 		}
 		
-		for (int i = 0; i < ParamL.length; i++) {
-			fLambda += ParamL[i].a * UdMath.udcos(ParamL[i].b
-												  * fT2 + ParamL[i].c);
+		for (int i = 0; i < paramL.length; i++) {
+			fLambda += paramL[i].a() * UdMath.udcos(paramL[i].b()
+												  * fT2 + paramL[i].c());
 		}
 		fLambda = UdMath.deg2rad(UdMath.degmal(fLambda));
 		
-		for (int i = 0; i < ParamB.length; i++) {
-			fBeta += ParamB[i].a * UdMath.udcos(ParamB[i].b
-												* fT2 + ParamB[i].c);
+		for (int i = 0; i < paramB.length; i++) {
+			fBeta += paramB[i].a() * UdMath.udcos(paramB[i].b()
+												* fT2 + paramB[i].c());
 		}
 		fBeta = UdMath.deg2rad(fBeta);
 		
-		for (int i = 0; i < ParamR.length; i++) {
-			fRadius += ParamR[i].a * UdMath.udcos(ParamR[i].b
-												  * fT2 + ParamR[i].c);
+		for (int i = 0; i < paramR.length; i++) {
+			fRadius += paramR[i].a() * UdMath.udcos(paramR[i].b()
+												  * fT2 + paramR[i].c());
 		}
 		
 		return new Xyz(fRadius * Math.cos(fBeta) * Math.cos(fLambda),
@@ -626,16 +641,11 @@ public class PlanetExp {
 		switch (planetNo) {
 		case Planet.EARTH:
 			return getPosExp0(atime.getT());
-		case Planet.VENUS:
-		case Planet.MARS:
+		case Planet.VENUS, Planet.MARS:
 			return getPosExp1(planetNo, atime.getT());
-		case Planet.JUPITER:
-		case Planet.SATURN:
+		case Planet.JUPITER, Planet.SATURN:
 			return getPosExp2(planetNo, atime.getT());
-		case Planet.MERCURY:
-		case Planet.URANUS:
-		case Planet.NEPTUNE:
-		case Planet.PLUTO:
+		case Planet.MERCURY, Planet.URANUS, Planet.NEPTUNE, Planet.PLUTO:
 			return getPosExp3(planetNo, atime.getT2());
 		 default:
 		    break;			
@@ -644,55 +654,17 @@ public class PlanetExp {
 	}
 }
 
-class PlanetExpP0 {
-	public double a;
-	public double b;
-	public double c;
+record PlanetExpP0(double a, double b, double c) {}
 
-	public PlanetExpP0(double a, double b, double c) {
-		this.a = a;
-		this.b = b;
-		this.c = c;
-	}
-}
-
-class PlanetExpP1 {		/* Venus and Mars */
-	public double L1, L2, L3, L4, L5, L6, L7, L8, L9;
-	public double B1, B2, B3;
-	public double q1, q2, q3, q4, q5;
-
-	public PlanetExpP1(double L1, double L2, double L3,
+record PlanetExpP1(double L1, double L2, double L3,
 						double L4, double L5, double L6,
 						double L7, double L8, double L9,
 						double B1, double B2, double B3,
 						double q1, double q2, double q3,
-						double q4, double q5) {
-		this.L1 = L1;	this.L2 = L2;	this.L3 = L3;
-		this.L4 = L4;	this.L5 = L5;	this.L6 = L6;
-		this.L7 = L7;	this.L8 = L8;	this.L9 = L9;
-		this.B1 = B1;	this.B2 = B2;	this.B3 = B3;
-		this.q1 = q1;	this.q2 = q2;	this.q3 = q3;
-		this.q4 = q4;	this.q5 = q5;
-	}
-}
+						double q4, double q5) {}
 
-class PlanetExpP2 {		/* Jupiter and Saturn */
-	public double L1, L2;
-	public double V1, V2;
-	public double f1, f2, f3, f4;
-	public double B1, B2, B3, B4, B5;
-	public double r1, r2;
-
-	public PlanetExpP2(double L1, double L2,
+record PlanetExpP2(double L1, double L2,
 						double V1, double V2,
 						double f1, double f2, double f3, double f4,
 						double B1, double B2, double B3, double B4, double B5,
-						double r1, double r2) {
-		this.L1 = L1;	this.L2 = L2;
-		this.V1 = V1;	this.V2 = V2;
-		this.f1 = f1;	this.f2 = f2;	this.f3 = f3;	this.f4 = f4;
-		this.B1 = B1;	this.B2 = B2;	this.B3 = B3;	this.B4 = B4;
-		this.B5 = B5;
-		this.r1 = r1;	this.r2 = r2;
-	}
-}
+						double r1, double r2) {}

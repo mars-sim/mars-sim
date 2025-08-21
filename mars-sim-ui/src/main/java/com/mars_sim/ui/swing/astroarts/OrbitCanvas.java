@@ -59,9 +59,9 @@ class OrbitCanvas extends Canvas {
 	 * Position of the Object and Planets
 	 */
 	private Xyz objectPos;
-	private Xyz planetPos[];
+	private Xyz[] planetPos;
 	private int centerObjectSelected;
-	private boolean orbitDisplay[];	
+	private boolean[] orbitDisplay;	
 	/**
 	 * Projection Parameters
 	 */
@@ -75,7 +75,8 @@ class OrbitCanvas extends Canvas {
 	private Matrix mtxToEcl;
 	private double epochToEcl;
 	private Matrix mtxRotate;
-	private int nX0, nY0;	// Origin
+	private int nX0;
+	private int nY0;	// Origin
 	
 	/**
 	 * Size of Canvas
@@ -85,38 +86,38 @@ class OrbitCanvas extends Canvas {
 	/**
 	 * Colors
 	 */
-	private Color colorObjectOrbitUpper = new Color(0x00f5ff);
-	private Color colorObjectOrbitLower = new Color(0x0000ff);
-	private Color colorObject           = new Color(0x00ffff);
-	private Color colorObjectName       = new Color(0x00cccc);
-	private Color colorPlanetOrbitUpper = new Color(0xffffff);
-	private Color colorPlanetOrbitLower = new Color(0x808080);
-	private Color colorPlanet			= new Color(0x00ff00);
-	private Color colorPlanetName		= new Color(0x00aa00);
-	private Color colorSun              = new Color(0xd04040);
-	private Color colorAxisPlus         = new Color(0xffff00);
-	private Color colorAxisMinus        = new Color(0x555500);
-	private Color colorInformation      = new Color(0xffffff);
+	private static final Color OBJECT_ORBIT_UPPER_COLOR = new Color(0x00f5ff);
+	private static final Color OBJECT_ORBIT_LOWER_COLOR = new Color(0x0000ff);
+	private static final Color OBJECT_COLOR           = new Color(0x00ffff);
+	private static final Color OBJECT_NAME_COLOR       = new Color(0x00cccc);
+	private static final Color PLANET_ORBIT_UPPER_COLOR = new Color(0xffffff);
+	private static final Color PLANET_ORBIT_LOWER_COLOR = new Color(0x808080);
+	private static final Color PLANET_COLOR			= new Color(0x00ff00);
+	private static final Color PLANET_NAME_COLOR		= new Color(0x00aa00);
+	private static final Color SUN_COLOR              = new Color(0xd04040);
+	private static final Color AXIS_PLUS_COLOR         = new Color(0xffff00);
+	private static final Color AXIS_MINUS_COLOR        = new Color(0x555500);
+	private static final Color INFO_COLOR      = new Color(0xffffff);
 	
 	/**
 	 * Fonts
 	 */
-	private Font fontObjectName  = new Font("Helvetica", Font.BOLD, 14);
-	private Font fontPlanetName  = new Font("Helvetica", Font.PLAIN, 14);
-	private Font fontInformation = new Font("Helvetica", Font.BOLD, 14);
+	private static final Font OBJECT_NAME_FONT  = new Font("Helvetica", Font.BOLD, 14);
+	private static final Font PLANET_NAME_FONT  = new Font("Helvetica", Font.PLAIN, 14);
+	private static final Font INFO_FONT = new Font("Helvetica", Font.BOLD, 14);
 	
 	/**
 	 * off-screen Image
 	 */
-	Image offscreen;
+	private Image offscreen;
 	
 	/**
 	 * Object Name Drawing Flag
 	 */
-	boolean bPlanetName;
-	boolean bObjectName;
-	boolean bDistanceLabel;
-	boolean bDateLabel;
+	private boolean bPlanetName;
+	private boolean bObjectName;
+	private boolean bDistanceLabel;
+	private boolean bDateLabel;
 	
 	/**
 	 * Constructor
@@ -157,9 +158,9 @@ class OrbitCanvas extends Canvas {
 	 * Rotation Matrix Equatorial(2000)->Ecliptic(DATE)
 	 */
 	private void updateRotationMatrix(ATime atime) {
-		Matrix mtxPrec = Matrix.PrecMatrix(Astro.JD2000, atime.getJd());
-		Matrix mtxEqt2Ecl = Matrix.RotateX(ATime.getEp(atime.getJd()));
-		this.mtxToEcl = mtxEqt2Ecl.Mul(mtxPrec);
+		Matrix mtxPrec = Matrix.getPrecMatrix(Astro.JD2000, atime.getJd());
+		Matrix mtxEqt2Ecl = Matrix.rotateX(ATime.getEp(atime.getJd()));
+		this.mtxToEcl = mtxEqt2Ecl.mul(mtxPrec);
 		this.epochToEcl = atime.getJd();
 	}
 	
@@ -167,21 +168,21 @@ class OrbitCanvas extends Canvas {
 	 * Horizontal Rotation Parameter Set
 	 */
 	public void setRotateHorz(int nRotateH) {
-		this.fRotateH = (double)nRotateH;
+		this.fRotateH = nRotateH;
 	}
 	
 	/**
 	 * Vertical Rotation Parameter Set
 	 */
 	public void setRotateVert(int nRotateV) {
-		this.fRotateV = (double)nRotateV;
+		this.fRotateV = nRotateV;
 	}
 	
 	/**
 	 * Zoom Parameter Set
 	 */
 	public void setZoom(int nZoom) {
-		this.fZoom = (double)nZoom;
+		this.fZoom = nZoom;
 	}
 	
 	/**
@@ -189,7 +190,7 @@ class OrbitCanvas extends Canvas {
 	 */
 	public void setDate(ATime atime) {
 		this.atime = atime;
-		objectPos = object.GetPos(atime.getJd());
+		objectPos = object.getPos(atime.getJd());
 		for (int i = 0; i < 9; i++) {
 			planetPos[i] = Planet.getPos(Planet.MERCURY+i, atime);
 		}
@@ -206,7 +207,7 @@ class OrbitCanvas extends Canvas {
 	/**
 	 * Select Orbits
 	 */
-	public void selectOrbits(boolean orbitDisplay[]) {
+	public void selectOrbits(boolean[] orbitDisplay) {
 	   for (int i=0; i< orbitDisplay.length; i++) {
 	        this.orbitDisplay[i] = orbitDisplay[i];
 	   }
@@ -245,7 +246,7 @@ class OrbitCanvas extends Canvas {
 	 */
 	private Point getDrawPoint(Xyz xyz) {
 		// 600 means 5...fZoom...100 -> 120AU...Width...6AU
-		double fMul = this.fZoom * (double)sizeCanvas.width / 600.0
+		double fMul = this.fZoom * sizeCanvas.width / 600.0
 							* (1.0 + xyz.fZ / 250.0);		// Parse // 250 to 400
 		int nX = this.nX0 + (int)Math.round(xyz.fX * fMul);
 		int nY = this.nY0 - (int)Math.round(xyz.fY * fMul);
@@ -257,18 +258,19 @@ class OrbitCanvas extends Canvas {
 	 */
 	private void drawPlanetOrbit(Graphics g, PlanetOrbit planetOrbit,
 						 Color colorUpper, Color colorLower) {
-		Point point1, point2;
-		Xyz xyz = planetOrbit.getAt(0).Rotate(this.mtxToEcl)
-							  .Rotate(this.mtxRotate);
+		Point point1;
+		Point point2;
+		Xyz xyz = planetOrbit.getAt(0).rotate(this.mtxToEcl)
+							  .rotate(this.mtxRotate);
 		point1 = getDrawPoint(xyz);
 		for (int i = 1; i <= planetOrbit.getDivision(); i++) {
-			xyz = planetOrbit.getAt(i).Rotate(this.mtxToEcl);
+			xyz = planetOrbit.getAt(i).rotate(this.mtxToEcl);
 			if (xyz.fZ >= 0.0) {
 				g.setColor(colorUpper);
 			} else {
 				g.setColor(colorLower);
 			}
-			xyz = xyz.Rotate(this.mtxRotate);
+			xyz = xyz.rotate(this.mtxRotate);
 			point2 = getDrawPoint(xyz);
 			g.drawLine(point1.x, point1.y, point2.x, point2.y);
 			point1 = point2;
@@ -279,15 +281,16 @@ class OrbitCanvas extends Canvas {
 	 * Draw Earth's Orbit
 	 */
 	private void drawEarthOrbit(Graphics g, PlanetOrbit planetOrbit,
-	                                         Color colorUpper, Color colorLower) {
-		Point point1, point2;
-		Xyz xyz = planetOrbit.getAt(0).Rotate(this.mtxToEcl)
-		                                          .Rotate(this.mtxRotate);
+	                                         Color colorUpper) {
+		Point point1;
+		Point point2;
+		Xyz xyz = planetOrbit.getAt(0).rotate(this.mtxToEcl)
+		                                          .rotate(this.mtxRotate);
 		point1 = getDrawPoint(xyz);
 		for (int i = 1; i <= planetOrbit.getDivision(); i++) {
-		        xyz = planetOrbit.getAt(i).Rotate(this.mtxToEcl);
+		        xyz = planetOrbit.getAt(i).rotate(this.mtxToEcl);
 		        g.setColor(colorUpper);
-		        xyz = xyz.Rotate(this.mtxRotate);
+		        xyz = xyz.rotate(this.mtxRotate);
 		        point2 = getDrawPoint(xyz);
 		        g.drawLine(point1.x, point1.y, point2.x, point2.y);
 		        point1 = point2;
@@ -298,12 +301,12 @@ class OrbitCanvas extends Canvas {
 	 * Draw Planets' Body
 	 */
 	private void drawPlanetBody(Graphics og, Xyz planetPos, String strName) {
-		Xyz xyz = planetPos.Rotate(this.mtxRotate);
+		Xyz xyz = planetPos.rotate(this.mtxRotate);
 		Point point = getDrawPoint(xyz);
-		og.setColor(colorPlanet);
+		og.setColor(PLANET_COLOR);
 		og.fillArc(point.x - 2, point.y - 2, 5, 5, 0, 360);
 		if (bPlanetName) {
-			og.setColor(colorPlanetName);
+			og.setColor(PLANET_NAME_COLOR);
 			og.drawString(strName, point.x + 5, point.y);
 		}
 	}
@@ -315,24 +318,24 @@ class OrbitCanvas extends Canvas {
 		Xyz xyz;
 		Point point;
 		
-		og.setColor(colorAxisMinus);
+		og.setColor(AXIS_MINUS_COLOR);
 		// -X
-		xyz = (new Xyz(-50.0, 0.0,  0.0)).Rotate(this.mtxRotate);
+		xyz = (new Xyz(-50.0, 0.0,  0.0)).rotate(this.mtxRotate);
 		point = getDrawPoint(xyz);
 		og.drawLine(this.nX0, this.nY0, point.x, point.y);
 		
 		// -Z
-		xyz = (new Xyz(0.0, 00.0, -50.0)).Rotate(this.mtxRotate);
+		xyz = (new Xyz(0.0, 00.0, -50.0)).rotate(this.mtxRotate);
 		point = getDrawPoint(xyz);
 		og.drawLine(this.nX0, this.nY0, point.x, point.y);
 		
-		og.setColor(colorAxisPlus);
+		og.setColor(AXIS_PLUS_COLOR);
 		// +X
-		xyz = (new Xyz( 50.0, 0.0,  0.0)).Rotate(this.mtxRotate);
+		xyz = (new Xyz( 50.0, 0.0,  0.0)).rotate(this.mtxRotate);
 		point = getDrawPoint(xyz);
 		og.drawLine(this.nX0, this.nY0, point.x, point.y);
 		// +Z
-		xyz = (new Xyz(0.0, 00.0,  50.0)).Rotate(this.mtxRotate);
+		xyz = (new Xyz(0.0, 00.0,  50.0)).rotate(this.mtxRotate);
 		point = getDrawPoint(xyz);
 		og.drawLine(this.nX0, this.nY0, point.x, point.y);
 	}
@@ -340,14 +343,15 @@ class OrbitCanvas extends Canvas {
 	/**
 	 * update (paint without clearing background)
 	 */
+	@Override
 	public void update(Graphics g) {
                  Point point3;
-                 Xyz xyz, xyz1, xyz2;
+                 Xyz xyz;
 
 		// Calculate Drawing Parameter
-		Matrix mtxRotH = Matrix.RotateZ(this.fRotateH * Math.PI / 180.0);
-		Matrix mtxRotV = Matrix.RotateX(this.fRotateV * Math.PI / 180.0);
-		this.mtxRotate = mtxRotV.Mul(mtxRotH);
+		Matrix mtxRotH = Matrix.rotateZ(this.fRotateH * Math.PI / 180.0);
+		Matrix mtxRotV = Matrix.rotateX(this.fRotateV * Math.PI / 180.0);
+		this.mtxRotate = mtxRotV.mul(mtxRotH);
 
 		this.nX0 = this.sizeCanvas.width  / 2;
 		this.nY0 = this.sizeCanvas.height / 2;
@@ -358,8 +362,7 @@ class OrbitCanvas extends Canvas {
 
         // If center object is comet/asteroid  
         if (centerObjectSelected == 1 )   {
-           xyz = this.objectOrbit.getAt(0).Rotate(this.mtxToEcl).Rotate(this.mtxRotate);
-           xyz = this.objectPos.Rotate(this.mtxToEcl).Rotate(this.mtxRotate);	
+           xyz = this.objectPos.rotate(this.mtxToEcl).rotate(this.mtxRotate);	
            point3 = getDrawPoint(xyz);
 
            this.nX0 = this.sizeCanvas.width - point3.x;
@@ -371,7 +374,7 @@ class OrbitCanvas extends Canvas {
         }
         // If center object is one of the planets
         else if (centerObjectSelected > 1 )   {
-           xyz = planetPos[centerObjectSelected -2].Rotate(this.mtxRotate);
+           xyz = planetPos[centerObjectSelected -2].rotate(this.mtxRotate);
 
            point3 = getDrawPoint(xyz);
 
@@ -390,7 +393,6 @@ class OrbitCanvas extends Canvas {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-//		g2d.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 	
 		// Draw Frame
 		g2d.setColor(Color.black);
@@ -400,27 +402,27 @@ class OrbitCanvas extends Canvas {
 		drawEclipticAxis(g2d);
 		
 		// Draw Sun
-		g2d.setColor(colorSun);
+		g2d.setColor(SUN_COLOR);
 		g2d.fillArc(this.nX0 - 2, this.nY0 - 2, 5, 5, 0, 360);
 		
 		// Draw Orbit of Object
 
-		xyz = this.objectOrbit.getAt(0).Rotate(this.mtxToEcl)
-								   .Rotate(this.mtxRotate);
-		Point point1, point2;
+		xyz = this.objectOrbit.getAt(0).rotate(this.mtxToEcl)
+								   .rotate(this.mtxRotate);
+		Point point2;
 		
-		point1 = getDrawPoint(xyz);
+		Point point1 = getDrawPoint(xyz);
 		
 		if (orbitDisplay[0] || orbitDisplay[1]) {
 
 			for (int i = 1; i <= this.objectOrbit.getDivision(); i++) {
-				xyz = this.objectOrbit.getAt(i).Rotate(this.mtxToEcl);
+				xyz = this.objectOrbit.getAt(i).rotate(this.mtxToEcl);
 				if (xyz.fZ >= 0.0) {
-					g2d.setColor(colorObjectOrbitUpper);
+					g2d.setColor(OBJECT_ORBIT_UPPER_COLOR);
 				} else {
-					g2d.setColor(colorObjectOrbitLower);
+					g2d.setColor(OBJECT_ORBIT_LOWER_COLOR);
 				}
-				xyz = xyz.Rotate(this.mtxRotate);
+				xyz = xyz.rotate(this.mtxRotate);
 				point2 = getDrawPoint(xyz);
 				g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
 				point1 = point2;
@@ -428,13 +430,13 @@ class OrbitCanvas extends Canvas {
 		}
 		
 		// Draw Object Body
-		xyz = this.objectPos.Rotate(this.mtxToEcl).Rotate(this.mtxRotate);
+		xyz = this.objectPos.rotate(this.mtxToEcl).rotate(this.mtxRotate);
 		point1 = getDrawPoint(xyz);
-		g2d.setColor(colorObject);
+		g2d.setColor(OBJECT_COLOR);
 		g2d.fillArc(point1.x - 2, point1.y - 2, 5, 5, 0, 360);
-		g2d.setFont(fontObjectName);
+		g2d.setFont(OBJECT_NAME_FONT);
 		if (bObjectName) {
-			g2d.setColor(colorObjectName);
+			g2d.setColor(OBJECT_NAME_COLOR);
 			g2d.drawString(object.getName(), point1.x + 5, point1.y);
 		}
 		
@@ -442,36 +444,36 @@ class OrbitCanvas extends Canvas {
 		if (Math.abs(epochPlanetOrbit - atime.getJd()) > 365.2422 * 5) {
 			updatePlanetOrbit(atime);
 		}
-		g2d.setFont(fontPlanetName);
+		g2d.setFont(PLANET_NAME_FONT);
 		
 		if (orbitDisplay[0] || orbitDisplay[10]) {
 			drawPlanetOrbit(g2d, planetOrbit[Planet.PLUTO-Planet.MERCURY],
-							colorPlanetOrbitUpper, colorPlanetOrbitLower);
+							PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 		}
 		drawPlanetBody(g2d, planetPos[8], "Pluto");
 		
 		if (orbitDisplay[0] || orbitDisplay[9]) {
 			
 			drawPlanetOrbit(g2d, planetOrbit[Planet.NEPTUNE-Planet.MERCURY],
-							colorPlanetOrbitUpper, colorPlanetOrbitLower);
+							PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 		}
 		drawPlanetBody(g2d, planetPos[7], "Neptune");
 		
 		if (orbitDisplay[0] || orbitDisplay[8]) {
 			drawPlanetOrbit(g2d, planetOrbit[Planet.URANUS-Planet.MERCURY],
-							colorPlanetOrbitUpper, colorPlanetOrbitLower);
+							PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 		}
 		drawPlanetBody(g2d, planetPos[6], "Uranus");
 		
 		if (orbitDisplay[0] || orbitDisplay[7]) {
 			drawPlanetOrbit(g2d, planetOrbit[Planet.SATURN-Planet.MERCURY],
-							colorPlanetOrbitUpper, colorPlanetOrbitLower);
+							PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 		}
 		drawPlanetBody(g2d, planetPos[5], "Saturn");
 		
 		if (orbitDisplay[0] || orbitDisplay[6]) {
 			drawPlanetOrbit(g2d, planetOrbit[Planet.JUPITER-Planet.MERCURY],
-							colorPlanetOrbitUpper, colorPlanetOrbitLower);
+							PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 		}
 		drawPlanetBody(g2d, planetPos[4], "Jupiter");
 		
@@ -479,7 +481,7 @@ class OrbitCanvas extends Canvas {
 			if (orbitDisplay[0] || orbitDisplay[5]) {
 				
 				drawPlanetOrbit(g2d, planetOrbit[Planet.MARS-Planet.MERCURY],
-								colorPlanetOrbitUpper, colorPlanetOrbitLower);
+								PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 			}
 			drawPlanetBody(g2d, planetPos[3], "Mars");
 		}
@@ -487,7 +489,7 @@ class OrbitCanvas extends Canvas {
                         if (orbitDisplay[0] || orbitDisplay[4]) {
 
 			   drawEarthOrbit(g2d, planetOrbit[Planet.EARTH-Planet.MERCURY],
-						colorPlanetOrbitUpper, colorPlanetOrbitUpper);
+						PLANET_ORBIT_UPPER_COLOR);
                         }
 			drawPlanetBody(g2d, planetPos[2], "Earth");
                         
@@ -495,83 +497,71 @@ class OrbitCanvas extends Canvas {
 		if (fZoom * 0.723 >= 7.5) {
                         if (orbitDisplay[0] || orbitDisplay[3]) {
 			   drawPlanetOrbit(g2d, planetOrbit[Planet.VENUS-Planet.MERCURY],
-						colorPlanetOrbitUpper, colorPlanetOrbitLower);
+						PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
                         }
 			drawPlanetBody(g2d, planetPos[1], "Venus");
 		}
 		if (fZoom * 0.387 >= 7.5) {
                         if (orbitDisplay[0] || orbitDisplay[2]) {
 			   drawPlanetOrbit(g2d, planetOrbit[0],
-						colorPlanetOrbitUpper, colorPlanetOrbitLower);
+						PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
                         }
 			drawPlanetBody(g2d, planetPos[0], "Mercury");
 		}
 		
 		// Information
-		g2d.setFont(fontInformation);
-		g2d.setColor(colorInformation);
+		g2d.setFont(INFO_FONT);
+		g2d.setColor(INFO_COLOR);
 		FontMetrics fm = g2d.getFontMetrics();
 		
 		// Object Name String
 		point1.x = fm.charWidth('A');
-//		point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 		point1.y = 2 * fm.charWidth('A');
 		g2d.drawString(object.getName(), point1.x, point1.y);
 		
 		if (bDistanceLabel) {
 			// Earth, Mars, Sun Distance
-			double edistance, sdistance, mdistance;
-			double xdiff, ydiff, zdiff, xdiff2, ydiff2, zdiff2;
-//			BigDecimal a,v;
 			String strDist;
-			xyz  = this.objectPos.Rotate(this.mtxToEcl).Rotate(this.mtxRotate);
+			xyz  = this.objectPos.rotate(this.mtxToEcl).rotate(this.mtxRotate);
 			
 			// Earth
-			xyz1 = planetPos[2].Rotate(this.mtxRotate);
+			var xyz1 = planetPos[2].rotate(this.mtxRotate);
 			
 			// Mars
-			xyz2 = planetPos[3].Rotate(this.mtxRotate);
+			var xyz2 = planetPos[3].rotate(this.mtxRotate);
 						
 			// Sun
-			sdistance = Math.sqrt((xyz.fX * xyz.fX) + (xyz.fY * xyz.fY) + 
+			double sdistance = Math.sqrt((xyz.fX * xyz.fX) + (xyz.fY * xyz.fY) + 
 								  (xyz.fZ * xyz.fZ)) + .0005;
 			sdistance = (int)(sdistance * 1000.0)/1000.0;
 			
 			// Earth
-			xdiff = xyz.fX - xyz1.fX;
-			ydiff = xyz.fY - xyz1.fY;
-			zdiff = xyz.fZ - xyz1.fZ;
-			edistance = Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) +
+			double xdiff = xyz.fX - xyz1.fX;
+			double ydiff = xyz.fY - xyz1.fY;
+			double zdiff = xyz.fZ - xyz1.fZ;
+			double edistance = Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) +
 								  (zdiff * zdiff)) + .0005;  
 			edistance = (int)(edistance * 1000.0)/1000.0;
 			
 			// Mars
-			xdiff2 = xyz.fX - xyz2.fX;
-			ydiff2 = xyz.fY - xyz2.fY;
-			zdiff2 = xyz.fZ - xyz2.fZ;
-			mdistance = Math.sqrt((xdiff2 * xdiff2) + (ydiff2 * ydiff2) +
+			double xdiff2 = xyz.fX - xyz2.fX;
+			double ydiff2 = xyz.fY - xyz2.fY;
+			double zdiff2 = xyz.fZ - xyz2.fZ;
+			double mdistance = Math.sqrt((xdiff2 * xdiff2) + (ydiff2 * ydiff2) +
 								(zdiff2 * zdiff2)) + .0005;  
 			mdistance = (int)(mdistance * 1000.0)/1000.0;
-									
-//			a = new BigDecimal (edistance);
-//			v = a.setScale (3, BigDecimal.ROUND_HALF_UP);
 			
 			// Mars
 			strDist = " Mars Distance : " + mdistance + " AU";
 			point1.x = fm.charWidth('A'); 
-//			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight()* 11/6;
 			g2d.drawString(strDist, point1.x, point1.y);
 
 			// Earth
 			strDist = "Earth Distance : " + edistance + " AU";
 			point1.x = fm.charWidth('A'); 
-//			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight();
 			g2d.drawString(strDist, point1.x, point1.y);
-						
-//			a = new BigDecimal (sdistance);
-//			v = a.setScale (3, BigDecimal.ROUND_HALF_UP);
 			
 			// Sun
 			strDist = "   Sun Distance : " + sdistance + " AU";
@@ -587,7 +577,6 @@ class OrbitCanvas extends Canvas {
 			point1.x = this.sizeCanvas.width  - fm.stringWidth(strDate)
 				- fm.charWidth('A');
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
-//			point1.y = 2 * fm.charWidth('A');
 			g2d.drawString(strDate, point1.x, point1.y);
 		}
 		
@@ -603,6 +592,7 @@ class OrbitCanvas extends Canvas {
 	/**
 	 * paint if invalidate the canvas
 	 */
+	@Override
 	public void paint(Graphics g) {
 		if (offscreen == null) {
 			this.sizeCanvas = getSize();

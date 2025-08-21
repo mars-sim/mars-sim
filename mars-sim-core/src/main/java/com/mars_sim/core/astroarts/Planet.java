@@ -36,4 +36,9 @@ public class Planet {
 			return planetElm.getPos();
 		}
 	}
+
+	private Planet() {
+		// Prevent instantiation
+		throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+	}
 }

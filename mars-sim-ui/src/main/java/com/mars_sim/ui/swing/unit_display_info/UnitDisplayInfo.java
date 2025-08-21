@@ -85,15 +85,6 @@ public class UnitDisplayInfo {
     }
 
 	/**
-	 * Gets the range (km) for clicking on unit on navigator map.
-	 * 
-	 * @return clicking range
-	 */
-    public double getMapClickRange() {
-        return 15;
-    }
-
-	/**
 	 * Gets icon for unit button.
 	 * @param unit the unit to display
 	 * @return icon

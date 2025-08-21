@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -85,24 +86,23 @@ public class DateDialog extends ModalInternalFrame {
 		}
 		monthCB.setSelectedIndex(atime.getMonth()-1);
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
+	    listRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 	    monthCB.setRenderer(listRenderer);
 		monthCB.setToolTipText("Choose the Month");
 		attrPanel.addLabelledItem("Month", monthCB);
 
 		Integer iDate = Integer.valueOf(atime.getDay());
 		tfDate = new JTextField(iDate.toString(), 2);
-		tfDate.setHorizontalAlignment(JTextField.CENTER);
+		tfDate.setHorizontalAlignment(SwingConstants.CENTER);
 		tfDate.setToolTipText("Choose the Day");
 		attrPanel.addLabelledItem("Day", tfDate);
 		
 		Integer iYear = Integer.valueOf(atime.getYear());
 		tfYear = new JTextField(iYear.toString(), 4);
-		tfYear.setHorizontalAlignment(JTextField.CENTER);
+		tfYear.setHorizontalAlignment(SwingConstants.CENTER);
 		tfYear.setToolTipText("Choose the Year");
 		attrPanel.addLabelledItem("Year", tfYear);
 		
-		//////////////////////////////////////////////////////////
 		
 		JPanel choosePanel = new JPanel(new BorderLayout());
 		choosePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -128,9 +128,7 @@ public class DateDialog extends ModalInternalFrame {
 		if (viewer.getSelectedDate() == 1) {
 			buttonSimDate.setSelected(true);
 		}
-		
-		//////////////////////////////////////////////////////////
-		
+				
 		buttonToday = new JRadioButton("Machine Date");
 		buttonToday.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(buttonToday);	
@@ -147,9 +145,7 @@ public class DateDialog extends ModalInternalFrame {
 		if (viewer.getSelectedDate() == 2) {
 			buttonToday.setSelected(true);
 		}
-		
-		//////////////////////////////////////////////////////////
-		
+				
 		button1986 = new JRadioButton("1986 Halley Return");
 		button1986.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(button1986);
@@ -165,9 +161,7 @@ public class DateDialog extends ModalInternalFrame {
 		if (viewer.getSelectedDate() == 3) {
 			button1986.setSelected(true);
 		}
-		
-		///////////////////////////////////////
-				
+						
 		buttonCustom = new JRadioButton("Custom Date");
 		buttonCustom.setBorder(new EmptyBorder(0, 15, 0, 0));
 		buttonCustom.setSelected(true);
@@ -185,17 +179,12 @@ public class DateDialog extends ModalInternalFrame {
 			buttonCustom.setSelected(true);
 		}
 		
-
-		///////////////////////////////////////
-
 		ButtonGroup group = new ButtonGroup();
 		group.add(buttonSimDate);
 		group.add(buttonToday);
 		group.add(button1986);
 		group.add(buttonCustom);
-		
-		///////////////////////////////////////
-				
+						
 		JPanel southPanel = new JPanel(new GridLayout(1, 2, 4, 4));
 		getContentPane().add(southPanel, BorderLayout.SOUTH);
 		
@@ -206,23 +195,21 @@ public class DateDialog extends ModalInternalFrame {
     				JComponent source = (JComponent) e.getSource();
 
     		        if (source == buttonOk) {
-    					int nYear = Integer.valueOf(tfYear.getText()).intValue();
+    					int nYear = Integer.parseInt(tfYear.getText());
     					int nMonth = monthCB.getSelectedIndex() + 1;
-    					int nDate  = Integer.valueOf(tfDate.getText()).intValue();
+    					int nDate  = Integer.parseInt(tfDate.getText());
     					if (1600 <= nYear && nYear <= 2199 &&
     								1 <= nMonth && nMonth <= 12 &&
     								1 <= nDate  && nDate  <= 31) {
-    						at = new ATime(nYear, nMonth, (double)nDate, 0.0);
+    						at = new ATime(nYear, nMonth, nDate, 0.0);
     					}
     				
     				}
     				dispose();
     				viewer.endDateDialog(at);
     				viewer.repaint();
-    				//return true;
 		});
 	
-		//////////////////////////////////////////////////////////
 		
 		buttonCancel = new JButton("CANCEL");
 		southPanel.add(buttonCancel);

@@ -13,6 +13,7 @@
 
 package com.mars_sim.ui.swing.astroarts;
 
+import java.awt.Adjustable;
 import java.awt.BorderLayout;
 
 /**
@@ -95,12 +96,12 @@ implements ActionListener {
 	public static final String NAME = "astro";
 	public static final String ICON = "astro";
 	
-	private final int FRAME_WIDTH = 600;
-	private final int FRAME_HEIGHT = 600;
-	private final int INITIAL_ZOOM_LEVEL = 175;
-	private final int ONE_STEP = 5;
+	private static final int FRAME_WIDTH = 600;
+	private static final int FRAME_HEIGHT = 600;
+	private static final int INITIAL_ZOOM_LEVEL = 175;
+	private static final int ONE_STEP = 5;
 	
-	private final String THREAD_NAME = "OrbitViewer";
+	private static final String THREAD_NAME = "OrbitViewer";
 	
 	private int xvalue = 255;
 	private int yvalue = 130;
@@ -123,7 +124,7 @@ implements ActionListener {
 	 * Player thread
 	 */
 	private OrbitPlayer		orbitPlayer;
-	private Thread			playerThread = null;
+	private transient Thread			playerThread = null;
 
 	/**
 	 * Current Time Setting
@@ -133,7 +134,7 @@ implements ActionListener {
 	/**
 	 * Time step
 	 */
-	private static final TimeSpan timeStepSpan[] = {
+	private static final TimeSpan[] timeStepSpan = {
 		new TimeSpan("1 Hour", 0, 0,  0, 1, 0, 0.0),
 		new TimeSpan("1 Day", 0, 0,  1, 0, 0, 0.0),
 		new TimeSpan("3 Days", 0, 0,  3, 0, 0, 0.0),
@@ -144,31 +145,31 @@ implements ActionListener {
 		new TimeSpan("1 Year", 1, 0,  0, 0, 0, 0.0),
 	};
 
-	public TimeSpan timeStep = timeStepSpan[1];
-	public int playDirection = ATime.F_INCTIME;
+	public TimeSpan timeStep = timeStepSpan[0];
+	int playDirection = ATime.F_INCTIME;
 
     /**
      * Centered Object
      */
-    private static final String centerObjectLabel[] = {
+    private static final String[] centerObjectLabel = {
             "Sun", "Halley", "Mercury", "Venus", "Earth",
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
-    private int centerObjectSelected = 0;
+    
 
     /**
      * Orbits Displayed
      */
-    private static final String orbitDisplayLabel[] = {
+    private static final String[] orbitDisplayLabel = {
             "Default Orbits", "All Orbits", "No Orbits", "------",
             "Halley", "Mercury", "Venus", "Earth",
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
-    private boolean orbitDisplay[] = {false, true, true, true, true, true, true,
+    private boolean[] orbitDisplay = {false, true, true, true, true, true, true,
                                      false, false, false, false };
-    private boolean OrbitDisplayDefault[] = {false, true, true, true, true, true, true,
+    private static final boolean[] orbitDisplayDefault = {false, true, true, true, true, true, true,
                                      false, false, false, false };
 
 	/**
@@ -196,7 +197,7 @@ implements ActionListener {
 	 * Parameter Information
 	 */
 	public String[][] getParameterInfo() {
-		String info[][] = {
+		return new String[][]{
 			{ "Name",
 			  "String", "Name of the object",			"1P/Halley"     },
 			{ "T",
@@ -221,11 +222,10 @@ implements ActionListener {
 			  "double", "Semimajor axis AU", 			"2.76631592"    },
 			{ "Date",
 			  "double", "Initial date", 				"19860209.7695" },
-		}; // "19860209.7695" // "20280817.0000" 
-		return info;
+		};
 	}
 
-	public int rowOfMatrix;
+	private int rowOfMatrix;
 
 	/**
 	 * Initialization.
@@ -255,8 +255,8 @@ implements ActionListener {
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 
-		scrollHor = new JScrollBar(JScrollBar.HORIZONTAL, INITIAL_ZOOM_LEVEL, ONE_STEP, 0, 300);
-		scrollVert = new JScrollBar(JScrollBar.VERTICAL, INITIAL_ZOOM_LEVEL, ONE_STEP, 0, 300);
+		scrollHor = new JScrollBar(Adjustable.HORIZONTAL, INITIAL_ZOOM_LEVEL, ONE_STEP, 0, 300);
+		scrollVert = new JScrollBar(Adjustable.VERTICAL, INITIAL_ZOOM_LEVEL, ONE_STEP, 0, 300);
 		
 		// Create a comet object
 		Comet object = getObject();
@@ -281,6 +281,7 @@ implements ActionListener {
 		orbitCanvas.setZoom(scrollVert.getValue());
 		
 		orbitCanvas.addMouseWheelListener(new MouseAdapter() {
+			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				int value = 0;
 
@@ -341,18 +342,15 @@ implements ActionListener {
 				if (xCache == 0 && x != 0)
 					xCache = x;
 
-				//xCache = x + 1;
 
 				if (x - xCache > 0) {
-					//System.out.print(">0 ");
 					xDiff = x - xCache;
 					xvalue = xvalue + xDiff;
 				}
 				else if (x - xCache == 0) {
-					//System.out.print("=0 ");
+					// Do nothing
 				}
 				else if (x - xCache < 0) {
-					//System.out.print("<0 ");
 					xDiff = xCache - x;
 					xvalue = xvalue - xDiff;
 				}
@@ -366,15 +364,13 @@ implements ActionListener {
 					yCache = y;
 
 				if (y - yCache > 0) {
-					//System.out.print(">0 ");
 					yDiff = y - yCache;
 					yvalue = yvalue + yDiff;
 				}
 				else if (y - yCache == 0) {
-					//System.out.print("=0 ");
+					// do nothing
 				}
 				else if (y - yCache < 0) {
-					//System.out.print("<0 ");
 					yDiff = yCache - y;
 					yvalue = yvalue - yDiff;
 				}
@@ -390,14 +386,6 @@ implements ActionListener {
 
 		orbitCanvas.setRotateVert(180 - yvalue);
 		orbitCanvas.setRotateHorz(270 - xvalue);
-
-//		// Right-Bottom Corner Rectangle
-//		JPanel cornerPanel = new JPanel();
-//		constraints.weightx = 0.0;
-//		constraints.weighty = 0.0;
-//		constraints.gridwidth = GridBagConstraints.REMAINDER;
-//		gblMainPanel.setConstraints(cornerPanel, constraints);
-//		mainPanel.add(cornerPanel);
 	
 		constraints.fill = GridBagConstraints.VERTICAL;
 		
@@ -607,8 +595,8 @@ implements ActionListener {
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
         ctrlPanel.add(choiceOrbitObject);
-        for (int i = 0; i < OrbitDisplayDefault.length; i++) {
-                orbitDisplay[i] = OrbitDisplayDefault[i];
+        for (int i = 0; i < orbitDisplayDefault.length; i++) {
+                orbitDisplay[i] = orbitDisplayDefault[i];
         }
         choiceOrbitObject.setSelectedIndex(1);
         orbitCanvas.selectOrbits(orbitDisplay);
@@ -709,7 +697,6 @@ implements ActionListener {
 
 
 	private String getParameter(String value) {
-//		int col = -1;
 		String result = null;
 		for (int i = 0; i < rowOfMatrix; i++) {
 			if (getParameterInfo()[i][0].equals(value)) {
@@ -724,11 +711,11 @@ implements ActionListener {
 	 * Convert time in format "YYYYMMDD.H" to ATime
 	 */
 	private ATime ymdStringToAtime(String strYmd) {
-		double fYmd = Double.valueOf(strYmd).doubleValue();
+		double fYmd = Double.parseDouble(strYmd);
 		int nYear = (int)Math.floor(fYmd / 10000.0);
-		fYmd -= (double)nYear * 10000.0;
+		fYmd -= nYear * 10000.0;
 		int nMonth = (int)Math.floor(fYmd / 100.0);
-		double fDay = fYmd - (double)nMonth * 100.0;
+		double fDay = fYmd - nMonth * 100.0;
 		// ignore H (hours)
 		return new ATime(nYear, nMonth, fDay, 0.0);
 	}
@@ -739,10 +726,10 @@ implements ActionListener {
 	private double getRequiredParameter(String strName) {
 		String strValue = getParameter(strName);
 		if (strValue == null) {
-			throw new Error("Required parameter '"
+			throw new IllegalArgumentException("Required parameter '"
 							   + strName + "' not found.");
 		}
-		return Double.valueOf(strValue).doubleValue();
+		return Double.parseDouble(strValue);
 	}
 
 	/**
@@ -757,54 +744,54 @@ implements ActionListener {
 		ATime T;
 		String strParam;
 		if ((strParam = getParameter("e")) == null) {
-			throw new Error("required parameter 'e' not found.");
+			throw new IllegalArgumentException("required parameter 'e' not found.");
 		}
-		e = Double.valueOf(strParam).doubleValue();
+		e = Double.parseDouble(strParam);
 		if ((strParam = getParameter("T")) != null) {
 			T = ymdStringToAtime(strParam);
 			if ((strParam = getParameter("q")) != null) {
-				q = Double.valueOf(strParam).doubleValue();
+				q = Double.parseDouble(strParam);
 			} else if ((strParam = getParameter("a")) != null) {
-				double a = Double.valueOf(strParam).doubleValue();
+				double a = Double.parseDouble(strParam);
 				if (Math.abs(e - 1.0) < 1.0e-15) {
-					throw new Error("Orbit is parabolic, but 'q' not found.");
+					throw new IllegalArgumentException("Orbit is parabolic, but 'q' not found.");
 				}
 				q = a * (1.0 - e);
 			} else {
-				throw new Error("Required parameter 'q' or 'a' not found.");
+				throw new IllegalArgumentException("Required parameter 'q' or 'a' not found.");
 			}
 		} else if ((strParam = getParameter("Epoch")) != null) {
-			ATime Epoch = ymdStringToAtime(strParam);
+			ATime epoch = ymdStringToAtime(strParam);
 			if (e > 0.95) {
 				throw new
-					Error("Orbit is nearly parabolic, but 'T' not found.");
+					IllegalArgumentException("Orbit is nearly parabolic, but 'T' not found.");
 			}
 			double a;
 			if ((strParam = getParameter("a")) != null) {
-				a = Double.valueOf(strParam).doubleValue();
+				a = Double.parseDouble(strParam);
 				q = a * (1.0 - e);
 			} else if ((strParam = getParameter("q")) != null) {
-				q = Double.valueOf(strParam).doubleValue();
+				q = Double.parseDouble(strParam);
 				a = q / (1.0 - e);
 			} else {
-				throw new Error("Required parameter 'q' or 'a' not found.");
+				throw new IllegalArgumentException("Required parameter 'q' or 'a' not found.");
 			}
 			if (q < 1.0e-15) {
-				throw new Error("Too small perihelion distance.");
+				throw new IllegalArgumentException("Too small perihelion distance.");
 			}
 			double n = Astro.GAUSS / (a * Math.sqrt(a));
 			if ((strParam = getParameter("M")) == null) {
-				throw new Error("Required parameter 'M' not found.");
+				throw new IllegalArgumentException("Required parameter 'M' not found.");
 			}
-			double M = Double.valueOf(strParam).doubleValue()
+			double M = Double.parseDouble(strParam)
 				* Math.PI / 180.0;
 			if (M < Math.PI) {
-				T = new ATime(Epoch.getJd() - M / n, 0.0);
+				T = new ATime(epoch.getJd() - M / n, 0.0);
 			} else {
-				T = new ATime(Epoch.getJd() + (Math.PI*2.0 - M) / n, 0.0);
+				T = new ATime(epoch.getJd() + (Math.PI*2.0 - M) / n, 0.0);
 			}
 		} else {
-			throw new Error("Required parameter 'T' or 'Epoch' not found.");
+			throw new IllegalArgumentException("Required parameter 'T' or 'Epoch' not found.");
 		}
 		return new Comet(strName, T.getJd(), e, q,
 						 getRequiredParameter("Peri")*Math.PI/180.0,
@@ -864,15 +851,17 @@ implements ActionListener {
 		if (playerThread != null) {
 			orbitPlayer.stop();
 			playerThread = null;
-			buttonDate.setEnabled(true);//.enable();
+			buttonDate.setEnabled(true);
 		}
 	}
 
 	/**
 	 * Destroy.
 	 */
+	@Override
 	public void destroy() {
 		removeAll();
+		super.destroy();
 	}
 
 	private void play(int direction){
@@ -895,7 +884,9 @@ implements ActionListener {
      *
      * @param event the action event
      */
+	@Override
     public void actionPerformed(ActionEvent evt) {
+        int centerObjectSelected = 0;
         JComponent source = (JComponent) evt.getSource();
     	switch (evt.getActionCommand()) {
 		
@@ -969,7 +960,7 @@ implements ActionListener {
 							} break;
 						case 0: 
 							for (int j = 0; j < orbitDisplay.length; j++) {
-								orbitDisplay[j] = OrbitDisplayDefault[j];
+								orbitDisplay[j] = orbitDisplayDefault[j];
 							} break;
 						case 3:
 							break;
@@ -981,6 +972,8 @@ implements ActionListener {
 						orbitCanvas.repaint();
 					}
 				break;
+			default:
+				// Do nothing
 		}
     }
 
@@ -990,7 +983,7 @@ implements ActionListener {
 	 */
 	public void endDateDialog(ATime atime) {
 		dateDialog = null;
-		buttonDate.setEnabled(true);//.enable();
+		buttonDate.setEnabled(true);
 		if (atime != null) {
 			this.atime = limitATime(atime);
 			orbitCanvas.setDate(atime);
@@ -1006,4 +999,3 @@ implements ActionListener {
 		selectedDate = button;
 	}
 }
-

@@ -12,8 +12,12 @@ package com.mars_sim.core.astroarts;
 
 public class Comet {
 	private String	strName;
-	private double	fT, fE, fQ;
-	private double	fPeri, fNode, fIncl;
+	private double	fT;
+	private double fE;
+	private double fQ;
+	private double	fPeri;
+	private double fNode;
+	private double fIncl;
 	private double	fEquinox;
 	private ATime	atimeEquinox;
 	private Matrix	mtxVC;		// Vector Constant
@@ -37,18 +41,18 @@ public class Comet {
 		this.fEquinox = fEquinox;	// ex. 2000.0
 		// Equinox -> ATime
 		int    nEqnxYear  = (int)Math.floor(fEquinox);
-		double fEqnxMonth = (fEquinox - (double)nEqnxYear) * 12.0;
+		double fEqnxMonth = (fEquinox - nEqnxYear) * 12.0;
 		int    nEqnxMonth = (int)Math.floor(fEqnxMonth);
-		double fEqnxDay   = (fEqnxMonth - (double)nEqnxMonth) * 30.0;
+		double fEqnxDay   = (fEqnxMonth - nEqnxMonth) * 30.0;
 		this.atimeEquinox = new ATime(nEqnxYear, nEqnxMonth, fEqnxDay, 0.0);
 		// Vector Constant
-		mtxVC = Matrix.VectorConstant(fPeri, fNode, fIncl, atimeEquinox);
+		mtxVC = Matrix.getVectorConstant(fPeri, fNode, fIncl, atimeEquinox);
 	}
 
 	/**
 	 * Gets Position on Orbital Plane for Elliptical Orbit.
 	 */
-	private Xyz CometStatusEllip(double fJd) {
+	private Xyz getCometStatusEllip(double fJd) {
 		if (this.fQ == 0.0) {
 			throw new ArithmeticException();
 		}
@@ -86,14 +90,15 @@ public class Comet {
 	/**
 	 * Gets Position on Orbital Plane for Parabolic Orbit.
 	 */
-	private Xyz CometStatusPara(double fJd) {
+	private Xyz getCometStatusPara(double fJd) {
 		if (this.fQ == 0.0) {
 			throw new ArithmeticException();
 		}
 		double fN = Astro.GAUSS * (fJd - this.fT)
 			/ (Math.sqrt(2.0) * this.fQ * Math.sqrt(this.fQ));
 		double fTanV2 = fN;
-		double fOldTanV2, fTan2V2;
+		double fOldTanV2;
+		double fTan2V2;
 		int nCount = MAXAPPROX;
 		do {
 			fOldTanV2 = fTanV2;
@@ -113,19 +118,22 @@ public class Comet {
 	/**
 	 * Gets Position on Orbital Plane for Nearly Parabolic Orbit.
 	 */
-	private Xyz CometStatusNearPara(double fJd) {
+	private Xyz getCometStatusNearPara(double fJd) {
 		if (this.fQ == 0.0) {
 			throw new ArithmeticException();
 		}
 		double fA = Math.sqrt((1.0 + 9.0 * this.fE) / 10.0);
 		double fB = 5.0 * (1 - this.fE) / (1.0 + 9.0 * this.fE);
-		double fA1, fB1, fX1, fA0, fB0, fX0, fN;
-		fA1 = fB1 = fX1 = 1.0;
+		double fB1;
+		double fX1;
+		double fA0;
+		double fX0;
+		double fA1 = fB1 = fX1 = 1.0;
 		int nCount1 = MAXAPPROX;
 		do {
 			fA0 = fA1;
-			fB0 = fB1;
-			fN = fB0 * fA * Astro.GAUSS * (fJd - this.fT)
+			var fB0 = fB1;
+			var fN = fB0 * fA * Astro.GAUSS * (fJd - this.fT)
 				/ (Math.sqrt(2.0) * this.fQ * Math.sqrt(this.fQ));
 			int nCount2 = MAXAPPROX;
 			do {
@@ -154,20 +162,20 @@ public class Comet {
 	/**
 	 * Gets Position in Heliocentric Equatorial Coordinates 2000.0.
 	 */
-	public Xyz GetPos(double fJd) {
+	public Xyz getPos(double fJd) {
 		Xyz xyz;
 		// CometStatus' may be throw ArithmeticException
 		if (this.fE < 0.98) {
-			xyz = CometStatusEllip(fJd);
+			xyz = getCometStatusEllip(fJd);
 		} else if (Math.abs(this.fE - 1.0) < TOLERANCE) {
-			xyz = CometStatusPara(fJd);
+			xyz = getCometStatusPara(fJd);
 		} else {
-			xyz = CometStatusNearPara(fJd);
+			xyz = getCometStatusNearPara(fJd);
 		}
-		xyz = xyz.Rotate(mtxVC);
-		Matrix mtxPrec = Matrix.PrecMatrix(this.atimeEquinox.getJd(),
+		xyz = xyz.rotate(mtxVC);
+		Matrix mtxPrec = Matrix.getPrecMatrix(this.atimeEquinox.getJd(),
 										   Astro.JD2000);
-		return xyz.Rotate(mtxPrec);
+		return xyz.rotate(mtxPrec);
 	}
 
 	// Gets Internal Variables.
