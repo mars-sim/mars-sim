@@ -40,7 +40,7 @@ public abstract class DigLocalMeta extends MetaTask
     private static class DigLocalTaskJob extends SettlementTask {
 		
 		private static final long serialVersionUID = 1L;
-
+		
         public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
             super(owner, owner.getName().replaceFirst("ging", ""), null, score);
             setDemand(total);
@@ -58,14 +58,16 @@ public abstract class DigLocalMeta extends MetaTask
         }
     }
 
+	private static final int MAX_BASE = 20_000;
+	private static final int DEFAULT_EVA_NUM = 5;
+	
+    private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
     // This defines the maximum shift completed for a person to start a dig task.
     // Anything above this value will not be considered for digging.
     private static final double MAX_SHIFT_PERC_FOR_DIG = 0.66D;
-	private static final int MAX_BASE = 20_000;
-
+    
 	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
-    private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
-
+	
 	private EquipmentType containerType;
 
     protected DigLocalMeta(String name, EquipmentType containerType) {
@@ -97,7 +99,7 @@ public abstract class DigLocalMeta extends MetaTask
     		return Collections.emptyList();
         }
 
-        double base = RandomUtil.getRandomDouble(collectionProbability / 5, collectionProbability);
+        double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability);
         if (base <= 0) {
             return Collections.emptyList();
         }
@@ -108,14 +110,19 @@ public abstract class DigLocalMeta extends MetaTask
         // Determine the base score
         RatingScore result = new RatingScore(base);
 
+        boolean isEmergency = settlement.getRationing().isAtEmergency();
+        
         // Calculate the capacity for more EVAs
         int maxEVA = settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
-                                                    1);
-        maxEVA -= getActiveEVAPersons(settlement);
-        if (maxEVA <= 0) {
-            return Collections.emptyList();
+                                                    DEFAULT_EVA_NUM);
+        
+        if (!isEmergency) {
+            maxEVA -= getActiveEVAPersons(settlement);
+            if (maxEVA <= 0) {
+                return Collections.emptyList();
+            }
         }
-
+  
         // Should use the demand & resources stored to influence the score. 50% capacity is
         // the unmodified baseline
         var capacity = (settlement.getRemainingCombinedCapacity(resourceId)

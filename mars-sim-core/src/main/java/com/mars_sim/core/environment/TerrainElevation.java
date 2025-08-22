@@ -40,11 +40,12 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-//	private static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
+//	May add back private static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
 	
 	private static final double STEP_KM = 2;
 	private static final double DEG_TO_RAD = Math.PI/180;
-	private static final double RATE = 1;
+	private static final double ICE_RATE = 3;
+	private static final double REGOLITH_RATE = 1;
 	
 	private Set<CollectionSite> sites;
 	
@@ -156,7 +157,7 @@ public class TerrainElevation implements Serializable {
 		site.setElevation(elevation);
 		site.setSteepness(steepness);
 
-		double rate = RATE;
+		double rate = REGOLITH_RATE;
 
 		// Note: Add seasonal variation for north and south hemisphere
 		// Note: The collection rate may be increased by relevant scientific studies
@@ -205,7 +206,7 @@ public class TerrainElevation implements Serializable {
 		site.setElevation(elevation);
 		site.setSteepness(steepness);
 
-		double rate = RATE;
+		double rate = ICE_RATE;
 
 		// Note 1: Investigate how to adjust for seasonal variation of finding ice for north and south hemisphere
 		// Note 2: The collection rate may be adjusted by relevant scientific studies
