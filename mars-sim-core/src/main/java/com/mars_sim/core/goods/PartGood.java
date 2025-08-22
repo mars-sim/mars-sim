@@ -98,7 +98,7 @@ public class PartGood extends Good {
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double BASE_DEMAND = 0.5;
-	private static final double PARTS_MAINTENANCE_VALUE = 0.1;
+	private static final int PARTS_MAINTENANCE_VALUE = 2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
 	private static final double AEROGEL_TILE_DEMAND = 0.05;
@@ -856,11 +856,10 @@ public class PartGood extends Good {
 	 * @return new demand
 	 */
 	private double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
-		double newDemand = 0;
 		
 		int num = settlement.getBuildingManager().getMaintenanceDemand(part);
 		
-		return newDemand * (1 + num * PARTS_MAINTENANCE_VALUE / (previousNum + 1));
+		return previousDemand * (1 + (1 + num) * PARTS_MAINTENANCE_VALUE / (1 + previousNum));
 	}
 	
 	/**
@@ -873,9 +872,9 @@ public class PartGood extends Good {
 	public void injectPartsDemand(Part part, GoodsManager owner, int needNum) {
 		double previousDemand = owner.getDemandScore(this);
 		
-		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
+		int storedNum = owner.getSettlement().getItemResourceStored(part.getID());
 
-		double finalDemand = getMaintenancePartsDemand(previousNum, owner.getSettlement(), part, previousDemand);
+		double finalDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
 	
 		owner.setDemandScore(this, finalDemand);
 		
@@ -883,9 +882,9 @@ public class PartGood extends Good {
 		logger.info(owner.getSettlement(), 30_000L, 
 				part.getName()
 				+ " - Injecting Demand: "
-				+ Math.round(previousDemand * 100.0)/100.0 
-				+ " -> " + Math.round(finalDemand * 100.0)/100.0 
+				+ Math.round(previousDemand * 1000.0)/1000.0 
+				+ " -> " + Math.round(finalDemand * 1000.0)/1000.0 
 				+ "  Quantity: " + needNum
-				+ "/" + previousNum + " (needed/previous).");	
+				+ "/" + storedNum + " (needed/stored).");	
 	}
 }

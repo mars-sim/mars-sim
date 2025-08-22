@@ -22,7 +22,7 @@ public class Rationing implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Rationing.class.getName());
+	// May add back private static SimLogger logger = SimLogger.getLogger(Rationing.class.getName());
 	
 	private static final double WASH_WATER_USAGE = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
 	
@@ -30,15 +30,13 @@ public class Rationing implements Serializable {
 	private boolean approvalDue = false;
 	/** The flag to see if a rationing review is due. */
 	private boolean reviewDue = false;
-	/** The previous rationing level of the settlement. The higher the more urgent for that resource. */
-	private int levelCache = 0;
 	/** The current rationing level of the settlement. */
 	private int currentLevel = 0;
 	/** The newly recommended level just being computed. */
 	private int recommendedLevel;
 	
 	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
-	private int emergencyLevel = 10;
+	private int emergencyLevel = 100;
 	/** The name of the resource to be ration. */
 //	private String resource;
 	/** The associated settlement. */
@@ -57,7 +55,7 @@ public class Rationing implements Serializable {
 	 * Gets the current rationing level at the settlement. 
 	 */
 	public int getRationingLevel() {
-		return levelCache;
+		return currentLevel;
 	}
 	
 	/**
@@ -66,15 +64,13 @@ public class Rationing implements Serializable {
 	 * @return difference of rationing level
 	 */
 	public int getLevelDiff() {
-		return levelCache - recommendedLevel;
+		return recommendedLevel - currentLevel;
 	}
 	
 	/**
 	 * Enforces the new rationing level.
 	 */
 	public void enforceNewRationingLevel() {
-		// Back up the current level to the cache
-		levelCache = currentLevel;
 		// Update the current level to the newly recommended level
 		currentLevel = recommendedLevel;
 		// Set the approval due back to false if it hasn't happened
@@ -174,7 +170,7 @@ public class Rationing implements Serializable {
 		// Record it as the newly recommended level
 		recommendedLevel = newLevel;
 		
-		return levelCache - newLevel;
+		return newLevel - currentLevel;
 	}
 
 }

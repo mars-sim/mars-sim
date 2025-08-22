@@ -61,7 +61,7 @@ public abstract class DigLocalMeta extends MetaTask
     // This defines the maximum shift completed for a person to start a dig task.
     // Anything above this value will not be considered for digging.
     private static final double MAX_SHIFT_PERC_FOR_DIG = 0.66D;
-	private static final int MAX_BASE = 1000;
+	private static final int MAX_BASE = 20_000;
 
 	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
     private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging

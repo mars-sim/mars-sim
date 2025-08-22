@@ -18,7 +18,7 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         var p = buildPerson("Accountant", s);
 
         int diff = s.getRationing().reviewRationingLevel();
-//        System.out.println("diff: " + diff);
+
         s.getRationing().setReviewDue(true);
         assertTrue("Settlement water needs review", s.getRationing().isReviewDue());
         var task = new BudgetResources(p, ReviewGoal.WATER_RATIONING);

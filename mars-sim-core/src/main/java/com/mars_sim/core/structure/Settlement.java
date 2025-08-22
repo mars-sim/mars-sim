@@ -134,12 +134,12 @@ public class Settlement extends Unit implements Temporal,
 	private static final int ICE_PROB_FACTOR = 5;
 	private static final int REGOLITH_PROB_FACTOR = 15;
 	
-	private static final int MAX_PROB = 5000;
+	private static final int MAX_PROB = 10_000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
 	private static final int MIN_SAND_RESERVE = 400; // per person
 	
-	private static final int REGOLITH_MAX = 4000;
-	private static final int ICE_MAX = 4000;
+	private static final int REGOLITH_MAX = 10_000;
+	private static final int ICE_MAX = 10_000;
 	private static final int WATER_MAX = 10_000;
 
 	public static final int MIN_WATER_RESERVE = 800; // per person
@@ -2610,14 +2610,14 @@ public class Settlement extends Unit implements Temporal,
 			iceDemand = 1;
 		
 		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * rationing.getRationingLevel() / 10;
+		waterDemand = waterDemand * Math.sqrt(1 + rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
 		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
-		brineWaterDemand = brineWaterDemand * rationing.getRationingLevel() / 10;
+		brineWaterDemand = brineWaterDemand * Math.sqrt(1 + rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)

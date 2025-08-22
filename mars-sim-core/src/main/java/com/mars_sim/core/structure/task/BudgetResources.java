@@ -282,11 +282,11 @@ public class BudgetResources extends Task {
 					person.getAssociatedSettlement().setIceReviewDue(false);
 					person.getAssociatedSettlement().setIceApprovalDue(true);
 					
-					logger.info(worker, 0, "Submitting a new ice probability for the settlement.");	
+					logger.info(worker, 30_000, "Submitting a new ice probability for the settlement.");	
 				}
-				else {
-					logger.info(worker, 0, "No need to change the ice probability.");	
-				}
+//				else {
+//					logger.info(worker, 30_000, "No need to change the ice probability.");	
+//				}
 				break;
 				
 			case REGOLITH_RESOURCE:
@@ -294,11 +294,11 @@ public class BudgetResources extends Task {
 					person.getAssociatedSettlement().setRegolithReviewDue(false);
 					person.getAssociatedSettlement().setRegolithApprovalDue(true);
 					
-					logger.info(worker, 0, "Submitting a new regolith probability for the settlement.");	
+					logger.info(worker, 30_000, "Submitting a new regolith probability for the settlement.");	
 				}
-				else {
-					logger.info(worker, 0, "No need to change the regolith probability.");	
-				}
+//				else {
+//					logger.info(worker, 30_000, "No need to change the regolith probability.");	
+//				}
 
 				break;
 				
@@ -310,11 +310,11 @@ public class BudgetResources extends Task {
 					
 					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));
 					
-					logger.info(worker, 0, "Submitting a new resource demand measure for the settlement.");	
+					logger.info(worker, 30_000, "Submitting a new resource demand measure for the settlement.");	
 				}
-				else {
-					logger.info(worker, 0, "No need to change the resource demand for the settlement.");	
-				}
+//				else {
+//					logger.info(worker, 30_000, "No need to change the resource demand for the settlement.");	
+//				}
 				
 				break;
 				
@@ -325,7 +325,7 @@ public class BudgetResources extends Task {
 					person.getAssociatedSettlement().getRationing().setApprovalDue(true);
 				}
 				
-				logger.info(worker, 0, "Submitting a new water rationing measure for the settlement.");
+				logger.info(worker, 30_000, "Submitting a new water rationing measure for the settlement.");
 				break;
 		}
 			

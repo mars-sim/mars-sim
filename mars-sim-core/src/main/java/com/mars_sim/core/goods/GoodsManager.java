@@ -819,7 +819,7 @@ public class GoodsManager implements Serializable {
 		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen
-		double supply = getSupplyScore(resourceID);
+//		double supply = getSupplyScore(resourceID);
 
 		double stored = settlement.getAllAmountResourceStored(resourceID);
 	
@@ -833,7 +833,7 @@ public class GoodsManager implements Serializable {
 		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		
 		// Multiply by THROTTLING to limit the speed of increase to avoid an abrupt rise in demand
-		double delta = demand * (lacking / (1 + stored) - 1) * THROTTLING;
+		double delta = (lacking / (1 + stored) - 1); //* THROTTLING;
  
 		
 		if (delta > 0) {
@@ -842,7 +842,8 @@ public class GoodsManager implements Serializable {
 					gasName + " - " 
 					+ "Injecting Demand: " + Math.round(demand * 100.0)/100.0 
 					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
-					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
+					+ "  Optimal: " + Math.round(optimal * 100.0)/100.0 
+//					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
 					+ "  Stored: " + Math.round(stored * 100.0)/100.0
 					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0
 					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
