@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.environment;
+package com.mars_sim.core.environment;
 
 import java.time.Instant;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /**
- * Publishes dust-storm advisories derived from DustStormForecaster.
- * Use this from your weather update loop:
+ * Publishes dust‑storm advisories derived from DustStormForecaster.
+ * Typical usage from your weather update loop:
  *
- *  forecaster.update(currentTau, windMS, dtHours);
- *  advisoryService.onTick(forecaster);
+ *   forecaster.update(currentTau, windMS, dtHours);
+ *   advisoryService.onTick(forecaster);
  */
 public final class DustStormAdvisoryService {
 
@@ -43,14 +43,23 @@ public final class DustStormAdvisoryService {
 
     /** Call this each simulation tick after forecaster.update(...). */
     public void onTick(DustStormForecaster f) {
-        Severity sev = f.isAdvisedNoEVA() ? Severity.NO_EVA : (f.isCautionEVA() ? Severity.CAUTION : Severity.BENIGN);
+        Severity sev = f.isAdvisedNoEVA() ? Severity.NO_EVA
+                      : (f.isCautionEVA() ? Severity.CAUTION : Severity.BENIGN);
         if (sev != lastSeverity) {
             lastSeverity = sev;
-            String msg = switch (sev) {
-                case BENIGN -> "Dust conditions benign. EVAs permitted.";
-                case CAUTION -> "Dust conditions deteriorating. EVAs with caution; limit duration.";
-                case NO_EVA -> "Severe dust storm forecast. Avoid EVAs and secure equipment.";
-            };
+            final String msg;
+            switch (sev) {
+                case BENIGN:
+                    msg = "Dust conditions benign. EVAs permitted.";
+                    break;
+                case CAUTION:
+                    msg = "Dust conditions deteriorating. EVAs with caution; limit duration.";
+                    break;
+                case NO_EVA:
+                default:
+                    msg = "Severe dust storm forecast. Avoid EVAs and secure equipment.";
+                    break;
+            }
             Advisory adv = new Advisory(f.getHazard(), f.getSmoothedTau(), f.getSmoothedWindMS(), sev, msg);
             for (var l : listeners) l.accept(adv);
         }
