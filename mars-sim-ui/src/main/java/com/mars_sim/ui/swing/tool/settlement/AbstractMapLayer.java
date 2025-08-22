@@ -595,6 +595,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
     @Override
     public void destroy() {
 		labelImageCache.clear();
+		labelImageCache = null;
         svgImageCache.clear();
+        svgImageCache = null;
     }   
 }

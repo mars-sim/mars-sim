@@ -776,6 +776,8 @@ public class SettlementTransparentPanel extends JComponent {
 					zoomSlider.setValue(zoomSlider.getValue() + 1);
 				}
 			}
+			
+			evt.consume();
 		});
     }
     
@@ -1211,10 +1213,45 @@ public class SettlementTransparentPanel extends JComponent {
 	 * Prepare class for deletion.
 	 */
 	public void destroy() {		
-		mapPanel = null;
+		
 		settlementCBModel.destroy();
-		desktop = null;
 		settlementListBox = null;
 		settlementCBModel = null;
+		
+		resourceCache.clear();
+		resourceCache = null;
+		
+		mode = null;
+
+		emptyLabel = null;
+		bannerBar = null;
+		zoomSlider = null;
+
+		projectSunriseLabel = null;
+		projectSunsetLabel = null;
+		projectDaylightLabel = null;
+		sunriseLabel = null;
+		sunsetLabel = null;
+		zenithLabel = null;
+		maxSunLabel = null;
+		daylightLabel = null;
+		currentSunLabel = null;
+
+		renameBtn = null;
+		infoButton = null;
+		temperatureIcon = null;
+		windIcon = null;
+		opticalIcon = null;
+
+		labelsMenu = null;
+
+		mapPanel = null;
+		desktop = null;
+
+		weather = null;
+		surfaceFeatures = null;
+		orbitInfo = null;
+		unitManager = null;
+		
 	}
 }

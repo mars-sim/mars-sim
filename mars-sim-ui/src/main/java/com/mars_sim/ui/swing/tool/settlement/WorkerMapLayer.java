@@ -30,8 +30,8 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
     private static final int LABEL_XOFFSET = 1;
     private static final int LABEL_YOFFSET = -1;
 
-    private static final double width = .35;
-    private static final double length = .35;
+    private static final double width = .45;
+    private static final double length = .4;
  
     private static final BasicStroke STROKE = new BasicStroke(1.5f);
  

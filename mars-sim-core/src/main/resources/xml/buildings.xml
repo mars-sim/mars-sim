@@ -2193,22 +2193,40 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="18" power-required="0.9" />
-			<living-accommodation capacity="12" guesthouse="true">
+			<life-support capacity="20" power-required="1.0" />
+			<living-accommodation capacity="20" guesthouse="true">
 				<activity>					
-					<activity-spot xloc="2" yloc="3.2" />
-					<activity-spot xloc="2" yloc="1.8" />
-					<activity-spot xloc="2" yloc=".4" />
-					<activity-spot xloc="2" yloc="-.6" />
-					<activity-spot xloc="2" yloc="-2.0" />			
-					<activity-spot xloc="2" yloc="-3.4" />
+												
+					<activity-spot xloc="-2.45" yloc="2.11" name="Bunk 1" />
+					<activity-spot xloc="-2.45" yloc="1.59" name="Bunk 1" />
 					
-					<activity-spot xloc="-2" yloc="3.2" />
-					<activity-spot xloc="-2" yloc="1.8" />
-					<activity-spot xloc="-2" yloc=".4" />
-					<activity-spot xloc="-2" yloc="-.6" />
-					<activity-spot xloc="-2" yloc="-2.0" />
-					<activity-spot xloc="-2" yloc="-3.4" />
+					<activity-spot xloc="-2.45" yloc=".67" name="Bunk 3" />
+					<activity-spot xloc="-2.45" yloc=".175" name="Bunk 3" />
+					
+					<activity-spot xloc="-2.45" yloc="-.705" name="Bunk 5" />
+					<activity-spot xloc="-2.45" yloc="-1.23" name="Bunk 5" />
+					
+					<activity-spot xloc="-2.45" yloc="-2.16" name="Bunk 7" />
+					<activity-spot xloc="-2.45" yloc="-2.675" name="Bunk 7" />
+					
+					<activity-spot xloc="-2.45" yloc="-3.125" name="Bunk 9" />
+					<activity-spot xloc="-2.45" yloc="-3.655" name="Bunk 9" />
+
+					<activity-spot xloc="2.45" yloc="2.11" name="Bunk 2" />
+					<activity-spot xloc="2.45" yloc="1.59" name="Bunk 2" />
+					
+					<activity-spot xloc="2.45" yloc=".67" name="Bunk 4" />
+					<activity-spot xloc="2.45" yloc=".175" name="Bunk 4" />
+					
+					<activity-spot xloc="2.45" yloc="-.705" name="Bunk 6" />
+					<activity-spot xloc="2.45" yloc="-1.23" name="Bunk 6" />
+					
+					<activity-spot xloc="2.45" yloc="-2.16" name="Bunk 8" />
+					<activity-spot xloc="2.45" yloc="-2.675" name="Bunk 8" />
+					
+					<activity-spot xloc="2.45" yloc="-3.125" name="Bunk 10" />
+					<activity-spot xloc="2.45" yloc="-3.655" name="Bunk 10" />
+
 				</activity>
 			</living-accommodation>
 			<power-generation>

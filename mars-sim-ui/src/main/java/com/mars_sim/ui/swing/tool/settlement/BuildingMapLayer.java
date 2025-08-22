@@ -277,4 +277,11 @@ public class BuildingMapLayer extends AbstractMapLayer {
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }
+    
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		mapPanel = null;
+	}
 }

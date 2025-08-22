@@ -94,4 +94,10 @@ public class ConstructionMapLayer extends AbstractMapLayer {
                                     CONSTRUCTION_COLOR, viewpoint);
         }
     }
+    
+	@Override
+	public void destroy() {
+		super.destroy();
+		mapPanel = null;
+	}
 }

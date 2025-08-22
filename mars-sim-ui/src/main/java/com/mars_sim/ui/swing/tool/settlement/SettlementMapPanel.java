@@ -926,10 +926,9 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	public void destroy() {
 		settlementTransparentPanel.destroy();
-		
+		settlementTransparentPanel = null;
 		menu = null;
 		settlement = null;
-		selectedPerson = null;
 		settlementWindow = null;
 
 		// Destroy all map layers.
@@ -937,9 +936,32 @@ public class SettlementMapPanel extends JPanel {
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
-
+		mapLayers.clear();
 		mapLayers = null;
+		
+		selectedPerson.clear();
+		selectedRobot.clear();
+		selectedBuilding.clear();
+		selectedVehicle.clear();
 		selectedRobot = null;
+		selectedPerson = null;
+		selectedBuilding = null;
+		selectedVehicle = null;
+		
 		settlementTransparentPanel = null;
+		
+		desktop.destroy();
+		desktop = null;
+	
+		dayNightMapLayer.destroy();
+		dayNightMapLayer = null;
+		
+		showSpotLabels.clear();
+		showSpotLabels = null;
+		
+		sansSerif = null;
+		
+		displayOptions.clear();
+		displayOptions = null;
 	}
 }

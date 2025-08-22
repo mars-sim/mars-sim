@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base 2" shift-pattern="Long 3 Shift" 
-        default-population="36" number-of-robots="24" sponsor="RKA"
+        default-population="44" number-of-robots="24" sponsor="RKA"
         description="Large Base" objective="CROP_FARM">
         
     <!-- zone 0 -->        
@@ -119,7 +119,7 @@
             <connection id="16" xloc="0.0" yloc="-1.0" />
         </connection-list>
     </building>
-    <building id="16" type="Residential Quarters" xloc="-22.0"
+    <building id="16" type="Compact Quarters" xloc="-22.0"
         yloc="38" facing="270.0">
         <connection-list>
             <connection id="15" xloc="0.0" yloc="4.5" />

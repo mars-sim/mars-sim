@@ -62,5 +62,6 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	@Override
 	public void destroy() {
 		mapPanel = null;
+		surfaceFeatures = null;
 	}
 }
