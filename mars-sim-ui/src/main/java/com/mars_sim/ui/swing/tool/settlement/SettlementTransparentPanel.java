@@ -46,6 +46,33 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
++import javax.swing.*;
++import java.awt.event.MouseListener;
++import java.awt.event.MouseMotionListener;
++import java.awt.event.MouseWheelListener;
+@@
+ public class SettlementTransparentPanel extends JPanel {
+@@
++    /**
++     * Ensure mouse-related listeners are detached when this panel is removed
++     * from the UI hierarchy. This reduces the chance of retaining references
++     * (and large images) after closing the Settlement Map.
++     */
++    @Override
++    public void removeNotify() {
++        // Detach any mouse listeners that might retain references to this panel.
++        for (MouseListener l : getMouseListeners()) {
++            removeMouseListener(l);
++        }
++        for (MouseMotionListener l : getMouseMotionListeners()) {
++            removeMouseMotionListener(l);
++        }
++        for (MouseWheelListener l : getMouseWheelListeners()) {
++            removeMouseWheelListener(l);
++        }
++        super.removeNotify();
++    }
+ }
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -1301,3 +1328,4 @@ public class SettlementTransparentPanel extends JComponent {
 		
 	}
 }
+
