@@ -28,13 +28,13 @@ public class PlanetOrbit {
 		PlanetElm planetElm = new PlanetElm(planetNo, atime);
 		orbit = new Xyz[nDivision + 1];
 		doGetPlanetOrbit(planetElm);
-		Matrix vec = Matrix.VectorConstant(planetElm.peri * Math.PI/180.0,
+		Matrix vec = Matrix.getVectorConstant(planetElm.peri * Math.PI/180.0,
 										   planetElm.node * Math.PI/180.0,
 										   planetElm.incl * Math.PI/180.0,
 										   atime);
-		Matrix prec = Matrix.PrecMatrix(atime.getJd(), 2451512.5);
+		Matrix prec = Matrix.getPrecMatrix(atime.getJd(), 2451512.5);
 		for (int i = 0; i <= nDivision; i++) {
-			orbit[i] = orbit[i].Rotate(vec).Rotate(prec);
+			orbit[i] = orbit[i].rotate(vec).rotate(prec);
 		}
 	}
 	

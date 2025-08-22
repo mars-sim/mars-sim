@@ -12,9 +12,15 @@ package com.mars_sim.core.astroarts;
  * Matrix (3x3)
  */
 public class Matrix {
-	public double fA11, fA12, fA13;
-	public double fA21, fA22, fA23;
-	public double fA31, fA32, fA33;
+	double fA11;
+	double fA12;
+	double fA13;
+	double fA21;
+	double fA22;
+	double fA23;
+	double fA31;
+	double fA32;
+	double fA33;
 
 	/**
 	 * Default Constructor.
@@ -39,58 +45,58 @@ public class Matrix {
 	/**
 	 * Gets Multiplication of Matrix.
 	 */
-	public Matrix Mul(Matrix mtx) {
-		double fA11 = this.fA11 * mtx.fA11 + this.fA12 * mtx.fA21
+	public Matrix mul(Matrix mtx) {
+		double newfA11 = this.fA11 * mtx.fA11 + this.fA12 * mtx.fA21
 			+ this.fA13 * mtx.fA31;
-		double fA21 = this.fA21 * mtx.fA11 + this.fA22 * mtx.fA21
+		double newfA21 = this.fA21 * mtx.fA11 + this.fA22 * mtx.fA21
 			+ this.fA23 * mtx.fA31;
-		double fA31 = this.fA31 * mtx.fA11 + this.fA32 * mtx.fA21
+		double newfA31 = this.fA31 * mtx.fA11 + this.fA32 * mtx.fA21
 			+ this.fA33 * mtx.fA31;
 
-		double fA12 = this.fA11 * mtx.fA12 + this.fA12 * mtx.fA22
+		double newfA12 = this.fA11 * mtx.fA12 + this.fA12 * mtx.fA22
 			+ this.fA13 * mtx.fA32;
-		double fA22 = this.fA21 * mtx.fA12 + this.fA22 * mtx.fA22
+		double newfA22 = this.fA21 * mtx.fA12 + this.fA22 * mtx.fA22
 			+ this.fA23 * mtx.fA32;
-		double fA32 = this.fA31 * mtx.fA12 + this.fA32 * mtx.fA22
+		double newfA32 = this.fA31 * mtx.fA12 + this.fA32 * mtx.fA22
 			+ this.fA33 * mtx.fA32;
 
-		double fA13 = this.fA11 * mtx.fA13 + this.fA12 * mtx.fA23
+		double newfA13 = this.fA11 * mtx.fA13 + this.fA12 * mtx.fA23
 			+ this.fA13 * mtx.fA33;
-		double fA23 = this.fA21 * mtx.fA13 + this.fA22 * mtx.fA23
+		double newfA23 = this.fA21 * mtx.fA13 + this.fA22 * mtx.fA23
 			+ this.fA23 * mtx.fA33;
-		double fA33 = this.fA31 * mtx.fA13 + this.fA32 * mtx.fA23
+		double newfA33 = this.fA31 * mtx.fA13 + this.fA32 * mtx.fA23
 			+ this.fA33 * mtx.fA33;
 
-		return new Matrix(fA11, fA12, fA13,
-						  fA21, fA22, fA23,
-						  fA31, fA32, fA33);
+		return new Matrix(newfA11, newfA12, newfA13,
+						  newfA21, newfA22, newfA23,
+						  newfA31, newfA32, newfA33);
 	}
 
 	/**
 	 * Gets Multiplication of Matrix by double.
 	 */
-	public Matrix Mul(double fX) {
-		double fA11 = this.fA11 * fX;
-		double fA21 = this.fA21 * fX;
-		double fA31 = this.fA31 * fX;
+	public Matrix mul(double fX) {
+		double newfA11 = this.fA11 * fX;
+		double newfA21 = this.fA21 * fX;
+		double newfA31 = this.fA31 * fX;
 
-		double fA12 = this.fA12 * fX;
-		double fA22 = this.fA22 * fX;
-		double fA32 = this.fA32 * fX;
+		double newfA12 = this.fA12 * fX;
+		double newfA22 = this.fA22 * fX;
+		double newfA32 = this.fA32 * fX;
 
-		double fA13 = this.fA13 * fX;
-		double fA23 = this.fA23 * fX;
-		double fA33 = this.fA33 * fX;
+		double newfA13 = this.fA13 * fX;
+		double newfA23 = this.fA23 * fX;
+		double newfA33 = this.fA33 * fX;
 
-		return new Matrix(fA11, fA12, fA13,
-						  fA21, fA22, fA23,
-						  fA31, fA32, fA33);
+		return new Matrix(newfA11, newfA12, newfA13,
+						  newfA21, newfA22, newfA23,
+						  newfA31, newfA32, newfA33);
 	}
 
 	/**
 	 * Creates Rotation Matrix Around X-Axis.
 	 */
-	public static Matrix RotateX(double fAngle) {
+	public static Matrix rotateX(double fAngle) {
 		double fA11 =  1.0;
 		double fA12 =  0.0;
 		double fA13 =  0.0;
@@ -109,7 +115,7 @@ public class Matrix {
 	/**
 	 *  Creates Rotation Matrix Around Y-Axis.
 	 */
-	public static Matrix RotateY(double fAngle) {
+	public static Matrix rotateY(double fAngle) {
 		double fA11 =  Math.cos(fAngle);
 		double fA12 =  0.0;
 		double fA13 = -Math.sin(fAngle);
@@ -128,7 +134,7 @@ public class Matrix {
 	/**
 	 * Creates Rotation Matrix Around Z-Axis.
 	 */
-	public static Matrix RotateZ(double fAngle) {
+	public static Matrix rotateZ(double fAngle) {
 		double fA11 =  Math.cos(fAngle);
 		double fA12 =  Math.sin(fAngle);
 		double fA13 =  0.0;
@@ -147,51 +153,52 @@ public class Matrix {
 	/**
 	 * Inverts Matrix.
 	 */
-	public void Invert() {
+	public void invert() {
 		double fA = 1.0 /
 			(this.fA11 * (this.fA22 * this.fA33 - this.fA23 * this.fA32)
 		   - this.fA12 * (this.fA21 * this.fA33 - this.fA23 * this.fA31)
 		   + this.fA13 * (this.fA21 * this.fA32 - this.fA22 * this.fA31));
 	
-		double fA11 =  1.0 * fA
+		double newfA11 =  1.0 * fA
 			* (this.fA22 * this.fA33 - this.fA23 * this.fA32);
-		double fA12 = -1.0 * fA
+		double newfA12 = -1.0 * fA
 			* (this.fA12 * this.fA33 - this.fA13 * this.fA32);
-		double fA13 =  1.0 * fA
+		double newfA13 =  1.0 * fA
 			* (this.fA12 * this.fA23 - this.fA13 * this.fA22);
 	
-		double fA21 = -1.0 * fA
+		double newfA21 = -1.0 * fA
 			* (this.fA21 * this.fA33 - this.fA23 * this.fA31);
-		double fA22 =  1.0 * fA
+		double newfA22 =  1.0 * fA
 			* (this.fA11 * this.fA33 - this.fA13 * this.fA31);
-		double fA23 = -1.0 * fA
+		double newfA23 = -1.0 * fA
 			* (this.fA11 * this.fA23 - this.fA13 * this.fA21);
 	
-		double fA31 =  1.0 * fA
+		double newfA31 =  1.0 * fA
 			* (this.fA21 * this.fA32 - this.fA22 * this.fA31);
-		double fA32 = -1.0 * fA
+		double newfA32 = -1.0 * fA
 			* (this.fA11 * this.fA32 - this.fA12 * this.fA31);
-		double fA33 =  1.0 * fA
+		double newfA33 =  1.0 * fA
 			* (this.fA11 * this.fA22 - this.fA12 * this.fA21);
 
-		this.fA11 = fA11;
-		this.fA12 = fA12;
-		this.fA13 = fA13;
-		this.fA21 = fA21;
-		this.fA22 = fA22;
-		this.fA23 = fA23;
-		this.fA31 = fA31;
-		this.fA32 = fA32;
-		this.fA33 = fA33;
+		this.fA11 = newfA11;
+		this.fA12 = newfA12;
+		this.fA13 = newfA13;
+		this.fA21 = newfA21;
+		this.fA22 = newfA22;
+		this.fA23 = newfA23;
+		this.fA31 = newfA31;
+		this.fA32 = newfA32;
+		this.fA33 = newfA33;
 	}
 	
 
 	/**
 	 * Creates Precession Matrix.
 	 */
-	static final double FGeneralPrec = 360.0/25920;
-	static final double FPrecLimit = 30.0;
-	public static Matrix PrecMatrix(double fOldEpoch, double fNewEpoch) {
+	private static final double GENERAL_PERC = 360.0/25920;
+	private static final double PRECISION_LIMIT = 30.0;
+
+	public static Matrix getPrecMatrix(double fOldEpoch, double fNewEpoch) {
 		double fJd = 0.0;
 		boolean	bSwapEpoch = false;
 		boolean bOuterNewcomb = false;
@@ -201,7 +208,7 @@ public class Matrix {
 							  0.0, 0.0, 1.0);
 		}
 		double fT = (fOldEpoch - Astro.JD2000) / 36525.0;
-		if (fT < -FPrecLimit || FPrecLimit < fT) {
+		if (fT < -PRECISION_LIMIT || PRECISION_LIMIT < fT) {
 			bSwapEpoch = true;
 			double fTmp = fNewEpoch;
 			fNewEpoch = fOldEpoch;
@@ -210,17 +217,17 @@ public class Matrix {
 		}
 		
 		double fT2 = fT * fT;
-		double ftt, ft;
-		ftt = ft = (fNewEpoch - fOldEpoch) / 36525.0;
-		if (ftt < -FPrecLimit) {
+		double ft;
+		double ftt = ft = (fNewEpoch - fOldEpoch) / 36525.0;
+		if (ftt < -PRECISION_LIMIT) {
 			bOuterNewcomb = true;
-			ft = -FPrecLimit;
-			fJd = -FPrecLimit * 36525.0 + Astro.JD2000;
+			ft = -PRECISION_LIMIT;
+			fJd = -PRECISION_LIMIT * 36525.0 + Astro.JD2000;
 		}
-		if (FPrecLimit < ftt) {
+		if (PRECISION_LIMIT < ftt) {
 			bOuterNewcomb = true;
-			ft = FPrecLimit;
-			fJd =  FPrecLimit * 36525.0 + Astro.JD2000;
+			ft = PRECISION_LIMIT;
+			fJd =  PRECISION_LIMIT * 36525.0 + Astro.JD2000;
 		}
 		
 		double ft2 = ft * ft;
@@ -233,34 +240,33 @@ public class Matrix {
 		double ftheta = ( (2004.3109 - 0.85330*fT - 0.000217*fT2)*ft
 				 - (0.42665 + 0.000217*fT)*ft2 - 0.041833*ft3 ) / 3600.0;
 
-		Matrix mtx1, mtx2, mtx3;
-		mtx1 = RotateZ((90.0 - fzeta0) * Math.PI / 180.0);
-		mtx2 = RotateX(     ftheta     * Math.PI / 180.0);
-		mtx3 = mtx2.Mul(mtx1);
-		mtx1 = RotateZ((  -90 - fzpc ) * Math.PI / 180.0);
+		Matrix mtx1 = rotateZ((90.0 - fzeta0) * Math.PI / 180.0);
+		Matrix mtx2 = rotateX(     ftheta     * Math.PI / 180.0);
+		Matrix mtx3 = mtx2.mul(mtx1);
+		mtx1 = rotateZ((  -90 - fzpc ) * Math.PI / 180.0);
 		
 		Matrix mtxPrec;
-		mtxPrec = mtx1.Mul(mtx3);
+		mtxPrec = mtx1.mul(mtx3);
 		
 		if (bOuterNewcomb) {
 			double fDjd;
-			if (ftt < -FPrecLimit) {
-				fDjd = (fNewEpoch - fOldEpoch) + FPrecLimit * 36525.0;
+			if (ftt < -PRECISION_LIMIT) {
+				fDjd = (fNewEpoch - fOldEpoch) + PRECISION_LIMIT * 36525.0;
 			} else {
-				fDjd = (fNewEpoch - fOldEpoch) - FPrecLimit * 36525.0;
+				fDjd = (fNewEpoch - fOldEpoch) - PRECISION_LIMIT * 36525.0;
 			}
-			double fPrecPrm = -fDjd / 365.24 * FGeneralPrec * Math.PI / 180.0;
+			double fPrecPrm = -fDjd / 365.24 * GENERAL_PERC * Math.PI / 180.0;
 			double fEps = ATime.getEp(fJd);
-			mtx1 = RotateX(fEps);
-			mtx2 = RotateZ(fPrecPrm);
-			mtx3 = mtx2.Mul(mtx1);
-			mtx2 = RotateX(-fEps);
-			mtx1 = mtx2.Mul(mtx3);
-			mtxPrec = mtx1.Mul(mtxPrec);
+			mtx1 = rotateX(fEps);
+			mtx2 = rotateZ(fPrecPrm);
+			mtx3 = mtx2.mul(mtx1);
+			mtx2 = rotateX(-fEps);
+			mtx1 = mtx2.mul(mtx3);
+			mtxPrec = mtx1.mul(mtxPrec);
 		}
 		
 		if(bSwapEpoch){
-			mtxPrec.Invert();
+			mtxPrec.invert();
 		}
 		
 		return mtxPrec;
@@ -269,7 +275,7 @@ public class Matrix {
 	/**
 	 * Gets Vector Constant from Angle Elements.
 	 */
-	public static Matrix VectorConstant(double fPeri, double fNode,
+	public static Matrix getVectorConstant(double fPeri, double fNode,
 										double fIncl, ATime equinox) {
 		// Equinox
 		double fT1 = equinox.getT();

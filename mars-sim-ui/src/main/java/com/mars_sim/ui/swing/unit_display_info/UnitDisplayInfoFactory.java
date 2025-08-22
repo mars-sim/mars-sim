@@ -10,6 +10,7 @@ package com.mars_sim.ui.swing.unit_display_info;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
  * Factory for unit display info beans.
@@ -18,16 +19,16 @@ public final class UnitDisplayInfoFactory {
 
 	// Static bean instances.
 	private static UnitDisplayInfo settlementBean = new SettlementDisplayInfoBean();
-	private static UnitDisplayInfo buildingBean = new BuildingDisplayInfoBean();
+	private static UnitDisplayInfo buildingBean = new UnitDisplayInfo("building");
 	private static UnitDisplayInfo personBean = new PersonDisplayInfoBean();
 	private static UnitDisplayInfo robotBean = new RobotDisplayInfoBean();
-	private static UnitDisplayInfo explorerRoverBean = new ExplorerRoverDisplayInfoBean();
-	private static UnitDisplayInfo transportRoverBean = new TransportRoverDisplayInfoBean();
-	private static UnitDisplayInfo cargoRoverBean = new CargoRoverDisplayInfoBean();
-	private static UnitDisplayInfo luvBean = new LUVDisplayInfoBean();
-	private static UnitDisplayInfo deliveryDroneBean = new DroneDisplayInfoBean();
-	private static UnitDisplayInfo equipmentBean = new EquipmentDisplayInfoBean();
-	private static UnitDisplayInfo constructionBean = new BuildingDisplayInfoBean();
+	private static UnitDisplayInfo explorerRoverBean = new VehicleDisplayInfoBean("unit/rover_explorer");
+	private static UnitDisplayInfo transportRoverBean = new VehicleDisplayInfoBean("unit/rover_transport");
+	private static UnitDisplayInfo cargoRoverBean = new VehicleDisplayInfoBean("unit/rover_cargo");
+	private static UnitDisplayInfo luvBean = new VehicleDisplayInfoBean("unit/luv");
+	private static UnitDisplayInfo deliveryDroneBean = new VehicleDisplayInfoBean("unit/drone");
+	private static UnitDisplayInfo equipmentBean = new UnitDisplayInfo("unit/equipment", SoundConstants.SND_EQUIPMENT);
+	private static UnitDisplayInfo constructionBean = buildingBean;
 
 
 	/**

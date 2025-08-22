@@ -10,35 +10,23 @@ package com.mars_sim.ui.swing.unit_display_info;
 import java.awt.Color;
 import java.awt.Font;
 
-import javax.swing.Icon;
-
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.MarsSurface;
-import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
  * Provides display information about a vehicle.
  */
-abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
-    
-    // Navigator click range in km.
-    private static final double VEHICLE_CLICK_RANGE = 20D;
-    
-    // Data members
-    private Icon blackMapIcon;
-    private Icon normalMapIcon;
-    private Font mapLabelFont;
+class VehicleDisplayInfoBean extends MapUnitDisplayInfo {
     
     /**
      * Constructor.
      */
-    VehicleDisplayInfoBean() {
-        normalMapIcon = ImageLoader.getIconByName("map/vehicle");
-        blackMapIcon = ImageLoader.getIconByName("map/vehicle_black");
-        mapLabelFont = new Font("Helvetica", Font.PLAIN, 10);
+    VehicleDisplayInfoBean(String buttonName) {
+        super(buttonName, null, new Font("Helvetica", Font.PLAIN, 10),
+                Color.white, "map/vehicle", "map/vehicle_black");
     }
     
     /** 
@@ -54,7 +42,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         
         var container = vehicle.getContainerUnit();
 		if (container == null || container instanceof MarsSurface)
-        	result = true;
+        	return true;
         
         if (vehicle.isSalvaged()) result = false;
         
@@ -65,18 +53,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         
         return result;
     }
-    
-    /** 
-     * Gets display icon for the navigator map.
-     * 
-     * @param unit the unit to display 
-     * @param type Map details
-     * @return icon
-     */
-    @Override
-    public Icon getMapIcon(Unit unit, MapMetaData type) {
-        return (type.isColourful() ? blackMapIcon : normalMapIcon);
-    }
+  
     
     /**
      * Checks if the map icon should blink on and off.
@@ -88,75 +65,18 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     public boolean isMapBlink(Unit unit) {
     	return ((Vehicle) unit).isBeaconOn();
     }
-    
-    /** 
-     * Gets the label color for surface navigator map.
-     * 
-     * @return color
-     */
-    @Override
-    public Color getMapLabelColor(MapMetaData type) {
-        return (type.isColourful() ? Color.black : Color.white);
-    }
-    
- 
-    /** 
-     * Gets the label font for navigator map.
-     *  
-     * @return font
-     */
-    @Override
-    public Font getMapLabelFont() {
-        return mapLabelFont;
-    }
 
-    /** 
-     * Gets the range (km) for clicking on unit on navigator map.
-     *  
-     * @return clicking range
-     */
-    @Override
-    public double getMapClickRange() {
-        return VEHICLE_CLICK_RANGE;
-    }
-    
-    /** 
-     * Checks if the unit is to be displayed on the navigator tool globe.
-     * 
-     * @param unit the unit to display.
-     * @return true if unit is to be displayed on globe
-     */
-    @Override
-    public boolean isGlobeDisplayed(Unit unit) {
-        
-        Vehicle vehicle = (Vehicle) unit;
-        
-        // Show the vehicle only if it's on a mission outside
-        boolean result = !vehicle.isInSettlement() && !vehicle.isInSettlementVicinity();
-        if (vehicle.isSalvaged()) 
-        	result = false;
-        
-        return result;
-    }
-    
-    /** 
-     * Gets display color for surface globe.
-     * 
-     * @return color
-     */
-    @Override
-    public Color getGlobeColor(MapMetaData type) {
-        return (type.isColourful() ? Color.black : Color.white);
-    }
-    
-    /** 
-     * Gets icon for unit button.
-     * To be overridden by sub-class.
-     * 
-     * @return icon
-     */
-    public Icon getButtonIcon() {
-        return null;
-    }
-    
+    /* (non-Javadoc)
+	 * @see com.mars_sim.ui.standard.unit_display_info.UnitDisplayInfo#getSound(com.mars_sim.simulation.Unit)
+	 */
+	@Override
+	public String getSound(Unit unit) {
+		Vehicle rover = (Vehicle) unit;
+		StatusType primStatus = rover.getPrimaryStatus();
+    	if (primStatus == StatusType.MOVING) return SoundConstants.SND_ROVER_MOVING;
+    	else if (rover.haveStatusType(StatusType.MAINTENANCE)) return SoundConstants.SND_ROVER_MAINTENANCE;
+    	else if (rover.haveStatusType(StatusType.MALFUNCTION)) return SoundConstants.SND_ROVER_MALFUNCTION;
+    	else if ((primStatus == StatusType.GARAGED) || (primStatus == StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
+    	else return "";
+	}
 }

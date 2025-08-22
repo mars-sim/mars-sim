@@ -11,15 +11,18 @@
 package com.mars_sim.core.astroarts;
 
 public class ATime {
-	private int    nYear, nMonth, nDay;
-	private int    nHour, nMin;
+	private int    nYear;
+	private int	   nMonth;
+	private int    nDay;
+	private int    nHour;
+	private int    nMin;
 	private double fSec;
 	private double fJd;
 	private double fTimezone;
 	private double fT;			// Origin 1974/12/31  0h ET
 	private double fT2;			// Origin 2000/01/01 12h ET
 
-	static final private String strMonthAbbr[] = {
+	private static final String[] MONTH_ABBR = {
 		"Jan.", "Feb.", "Mar.", "Apr.", "May ", "June",
 		"July", "Aug.", "Sep.", "Oct.", "Nov.", "Dec.",
 	};
@@ -32,7 +35,7 @@ public class ATime {
 	 * Gets Abbreviated Month Name.
 	 */
 	static public String getMonthAbbr(int nMonth) {
-		return strMonthAbbr[nMonth - 1];
+		return MONTH_ABBR[nMonth - 1];
 	}
 
 	/**
@@ -110,8 +113,8 @@ public class ATime {
 		//
 		double fHms1 = this.nHour * 60.0 * 60.0
 			+ this.nMin  * 60.0 + this.fSec;
-		double fHms2 = Span.nHour * 60.0 * 60.0
-			+ Span.nMin  * 60.0 + Span.fSec;
+		double fHms2 = Span.nHour() * 60.0 * 60.0
+			+ Span.nMin()  * 60.0 + Span.fSec();
 		fHms1 += (nIncOrDec == F_INCTIME) ? fHms2 : -fHms2;
 		int nDay1;
 		if (0.0 <= fHms1 && fHms1 < 24.0 * 60.0 * 60.0) {
@@ -136,14 +139,14 @@ public class ATime {
 		ATime newDate = new ATime(this.getYear(), this.getMonth(),
 								  this.getDay(), 12, 0, 0.0, 0.0);
 		double fJd = newDate.getJd();
-		fJd += (nIncOrDec == F_INCTIME) ? nDay1 + Span.nDay
-										: nDay1 - Span.nDay;
+		fJd += (nIncOrDec == F_INCTIME) ? nDay1 + Span.nDay()
+										: nDay1 - Span.nDay();
 		newDate = new ATime(fJd, 0.0);
 		
 		int nNewYear  = newDate.getYear();
 		int nNewMonth = newDate.getMonth();
 		int nNewDay   = newDate.getDay();
-		nNewMonth += (nIncOrDec == F_INCTIME) ? Span.nMonth : -Span.nMonth;
+		nNewMonth += (nIncOrDec == F_INCTIME) ? Span.nMonth() : -Span.nMonth();
 		if (1 > nNewMonth) {
 			nNewYear -= nNewMonth / 12 + 1;
 			nNewMonth = 12 + nNewMonth % 12;
@@ -151,7 +154,7 @@ public class ATime {
 			nNewYear += nNewMonth / 12;
 			nNewMonth = 1 + (nNewMonth - 1) % 12;
 		}
-		nNewYear += (nIncOrDec == F_INCTIME) ? Span.nYear : -Span.nYear;
+		nNewYear += (nIncOrDec == F_INCTIME) ? Span.nYear() : -Span.nYear();
 		
 		// check bound between julian and gregorian
 		if (nNewYear == 1582 && nNewMonth == 10) {

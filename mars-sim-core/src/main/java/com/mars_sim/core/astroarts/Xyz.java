@@ -12,7 +12,9 @@ package com.mars_sim.core.astroarts;
 
 public class Xyz {
 	
-	public double fX, fY, fZ;
+	public double fX;
+	public double fY;
+	public double fZ;
 
 	/**
 	 * Default Constructor.
@@ -33,50 +35,50 @@ public class Xyz {
 	/**
 	 * Rotation of Vector with Matrix
 	 */
-	public Xyz Rotate(Matrix mtx) {
-		double fX = mtx.fA11 * this.fX + mtx.fA12 * this.fY
+	public Xyz rotate(Matrix mtx) {
+		double newFx = mtx.fA11 * this.fX + mtx.fA12 * this.fY
 			+ mtx.fA13 * this.fZ;
-		double fY = mtx.fA21 * this.fX + mtx.fA22 * this.fY
+		double newfY = mtx.fA21 * this.fX + mtx.fA22 * this.fY
 			+ mtx.fA23 * this.fZ;
-		double fZ = mtx.fA31 * this.fX + mtx.fA32 * this.fY
+		double newfZ = mtx.fA31 * this.fX + mtx.fA32 * this.fY
 			+ mtx.fA33 * this.fZ;
-		return new Xyz(fX, fY, fZ);
+		return new Xyz(newFx, newfY, newfZ);
 	}
 
 	/**
 	 * V := V1 + V2.
 	 */
-	public Xyz Add(Xyz xyz) {
-		double fX = this.fX + xyz.fX;
-		double fY = this.fY + xyz.fY;
-		double fZ = this.fZ + xyz.fZ;
-		return new Xyz(fX, fY, fZ);
+	public Xyz add(Xyz xyz) {
+		double newfX = this.fX + xyz.fX;
+		double newfY = this.fY + xyz.fY;
+		double newfZ = this.fZ + xyz.fZ;
+		return new Xyz(newfX, newfY, newfZ);
 	}
 
 	/**
 	 * V := V1 - V2.
 	 */
-	public Xyz Sub(Xyz xyz) {
-		double fX = this.fX - xyz.fX;
-		double fY = this.fY - xyz.fY;
-		double fZ = this.fZ - xyz.fZ;
-		return new Xyz(fX, fY, fZ);
+	public Xyz sub(Xyz xyz) {
+		double newfX = this.fX - xyz.fX;
+		double newfY = this.fY - xyz.fY;
+		double newfZ = this.fZ - xyz.fZ;
+		return new Xyz(newfX, newfY, newfZ);
 	}
 
 	/**
 	 * V := x * V.
 	 */
-	public Xyz Mul(double fA) {
-		double fX = this.fX * fA;
-		double fY = this.fY * fA;
-		double fZ = this.fZ * fA;
-		return new Xyz(fX, fY, fZ);
+	public Xyz mul(double fA) {
+		double newfX = this.fX * fA;
+		double newfY = this.fY * fA;
+		double newfZ = this.fZ * fA;
+		return new Xyz(newfX, newfY, newfZ);
 	}
 
 	/**
 	 * x := abs(V).
 	 */
-	public double Abs() {
+	public double abs() {
 		return Math.sqrt(this.fX * this.fX
 					   + this.fY * this.fY
 					   + this.fZ * this.fZ);
