@@ -965,3 +965,33 @@ public class SettlementMapPanel extends JPanel {
 		displayOptions = null;
 	}
 }
+
+private javax.swing.Timer zoomDebounce;
+private ChangeListener zoomListener;
+private JSlider zoomSlider; // assume it's an existing field you already set up
+
+private void initZoomSlider(JSlider slider) {
+    this.zoomSlider = slider;
+    zoomListener = e -> {
+        int value = ((JSlider) e.getSource()).getValue();
+        if (zoomDebounce == null) {
+            zoomDebounce = new javax.swing.Timer(75, ae -> zoomTo(value));
+            zoomDebounce.setRepeats(false);
+        }
+        zoomDebounce.restart();
+    };
+    slider.addChangeListener(zoomListener);
+}
+
+@Override public void removeNotify() {
+    super.removeNotify();
+    if (zoomSlider != null && zoomListener != null) {
+        zoomSlider.removeChangeListener(zoomListener);
+    }
+    if (zoomDebounce != null) {
+        zoomDebounce.stop();
+    }
+    for (MouseWheelListener mwl : getMouseWheelListeners()) {
+        removeMouseWheelListener(mwl);
+    }
+}	
