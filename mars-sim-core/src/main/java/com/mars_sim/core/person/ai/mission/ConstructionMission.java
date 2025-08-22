@@ -577,24 +577,6 @@ public class ConstructionMission extends AbstractMission
 		return objective.getConstructionVehicles();
 	}
 
-	@Override
-	protected boolean hasEmergency() {
-		boolean result = super.hasEmergency();
-
-		// Cancel construction mission if there are any beacon vehicles within range
-		// that need help.
-		Settlement settlement = getAssociatedSettlement();
-		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
-		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
-			if (vehicleTarget != null && !RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
-				return true;
-		}
-
-		return result;
-	}
-
 	/**
 	 * Gets the mission's construction site.
 	 *

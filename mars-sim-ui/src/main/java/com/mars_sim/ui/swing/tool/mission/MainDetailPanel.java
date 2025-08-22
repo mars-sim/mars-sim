@@ -54,6 +54,7 @@ import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.mission.objectives.MiningObjective;
+import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
@@ -64,7 +65,6 @@ import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
-import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -82,6 +82,7 @@ import com.mars_sim.ui.swing.tool.mission.objectives.ConstructionPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ExplorationPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.MiningPanel;
+import com.mars_sim.ui.swing.tool.mission.objectives.RescuePanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.TradePanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
@@ -340,11 +341,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		customInfoPanels.put(salvageMissionName, salvagePanel);
 		missionCustomPane.add(salvagePanel, salvageMissionName);
 
-		// Create custom rescue/salvage vehicle mission panel.
-		MissionCustomInfoPanel rescuePanel = new RescueMissionCustomInfoPanel(desktop);
-		String rescueMissionName = RescueSalvageVehicle.class.getName();
-		customInfoPanels.put(rescueMissionName, rescuePanel);
-		missionCustomPane.add(rescuePanel, rescueMissionName);
 
 		// Create custom emergency supply mission panel.
 		MissionCustomInfoPanel emergencySupplyPanel = new EmergencySupplyMissionCustomInfoPanel();
@@ -646,6 +642,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					case MiningObjective mo -> new MiningPanel(mo, desktop);
 					case TradeObjective to -> new TradePanel(to, desktop);
 					case ConstructionObjective co -> new ConstructionPanel(co, desktop);
+					case RescueVehicleObjective ro -> new RescuePanel(ro, desktop);
 
 					default -> null;
 				};

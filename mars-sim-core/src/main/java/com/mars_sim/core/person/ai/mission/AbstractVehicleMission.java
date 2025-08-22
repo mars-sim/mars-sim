@@ -172,7 +172,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			setVehicle(vehicle);
 		}
 		
-		if (reserveVehicle()) {
+		else if (reserveVehicle()) {
 			// Charge the vehicle
 			getVehicle().setCharging(true);
 		}

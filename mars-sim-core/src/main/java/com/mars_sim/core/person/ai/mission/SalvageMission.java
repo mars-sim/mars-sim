@@ -630,26 +630,6 @@ public class SalvageMission extends AbstractMission
 		}
 	}
 
-	@Override
-	protected boolean hasEmergency() {
-		boolean result = super.hasEmergency();
-
-		// Cancel construction mission if there are any beacon vehicles within range
-		// that need help.
-		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
-		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
-			if (vehicleTarget != null) {
-				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
-					result = true;
-				}
-			}
-		}
-
-		return result;
-	}
-
 	/**
 	 * Gets the mission's construction site.
 	 * 

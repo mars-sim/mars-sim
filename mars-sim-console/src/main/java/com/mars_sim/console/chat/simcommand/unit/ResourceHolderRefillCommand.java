@@ -52,7 +52,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 		try {
 			var ar = ResourceUtil.findAmountResource(name);
 			if (ar != null)  {
-				return addResource(source, ar, quantity, context);
+				return adjustResource(source, ar, quantity, context);
 			}
 		} catch (IllegalArgumentException e) {
 			// Name is not a amount resource
@@ -61,7 +61,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 		try {
 			var ir = ItemResourceUtil.findItemResource(name);
 			if (ir != null) {
-				return addPart(source, ir, quantity, context);
+				return adjustPart(source, ir, quantity, context);
 			}
 		} catch (IllegalArgumentException ee) {
 			// Name is not a amount resource
@@ -70,7 +70,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 		return false;
 	}
 
-	private boolean addPart(Unit source, ItemResource ir, double quantity, Conversation context) {
+	private boolean adjustPart(Unit source, ItemResource ir, double quantity, Conversation context) {
 		if (!(source instanceof ItemHolder)) {
 			context.println("Sorry this Unit does not hold Items");
 			return false;
@@ -78,7 +78,12 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 		var ih = (ItemHolder) source;
 
 		int existingAmount = ih.getItemResourceStored(ir.getID());
-		ih.storeItemResource(ir.getID(), (int) quantity);
+		if (quantity > 0) {
+			ih.storeItemResource(ir.getID(), (int) quantity);
+		}
+		else {
+			ih.retrieveItemResource(ir.getID(), (int) -quantity);
+		}
 		
 		double newAmount = ih.getItemResourceStored(ir.getID());
 		
@@ -89,7 +94,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 		return true;
 	}
 
-	private boolean addResource(Unit source, AmountResource resource, double quantity, Conversation context) {
+	private boolean adjustResource(Unit source, AmountResource resource, double quantity, Conversation context) {
 		if (!(source instanceof ResourceHolder)) {
 			context.println("Sorry this Unit does not hold resources");
 			return false;
@@ -97,7 +102,12 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 		ResourceHolder rh = (ResourceHolder) source;
 
 		double existingAmount = rh.getAllAmountResourceStored(resource.getID());
-		rh.storeAmountResource(resource.getID(), quantity);
+		if (quantity> 0) {
+			rh.storeAmountResource(resource.getID(), quantity);
+		}
+		else {
+			rh.retrieveAmountResource(resource.getID(), -quantity);
+		}
 		
 		double newAmount = rh.getAllSpecificAmountResourceStored(resource.getID());
 		

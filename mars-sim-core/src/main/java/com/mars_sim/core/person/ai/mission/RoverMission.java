@@ -498,7 +498,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 				
 				else if (v2 != null) {
-					registerVehicle(v1, disembarkSettlement);
+					registerVehicle(v2, disembarkSettlement);
 					
 					untetherVehicle(v2, v0, disembarkSettlement);
 				}
