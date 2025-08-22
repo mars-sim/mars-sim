@@ -71,7 +71,6 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
-import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobUtil;

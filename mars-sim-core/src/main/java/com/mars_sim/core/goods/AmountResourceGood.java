@@ -101,9 +101,9 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 10;
-	private static final double METHANE_VALUE_MODIFIER = 0.07;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
+	private static final double OXYGEN_VALUE_MODIFIER = 2;
+	private static final double METHANE_VALUE_MODIFIER = 0.06;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.0025;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	private static final double CO2_VALUE_MODIFIER = 0.0075;
@@ -152,7 +152,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.3;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.85;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.35;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;

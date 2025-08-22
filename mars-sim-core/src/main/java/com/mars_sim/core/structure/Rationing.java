@@ -22,7 +22,7 @@ public class Rationing implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	// May add back private static SimLogger logger = SimLogger.getLogger(Rationing.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(Rationing.class.getName());
 	
 	private static final double WASH_WATER_USAGE = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
 	
@@ -71,6 +71,8 @@ public class Rationing implements Serializable {
 	 * Enforces the new rationing level.
 	 */
 	public void enforceNewRationingLevel() {
+		
+		logger.info(settlement, 30_000L, "currentLevel: " + currentLevel + "  recommendedLevel: " + recommendedLevel);
 		// Update the current level to the newly recommended level
 		currentLevel = recommendedLevel;
 		// Set the approval due back to false if it hasn't happened
@@ -159,11 +161,6 @@ public class Rationing implements Serializable {
 		int newLevel = (int)((required + reserve) / (1 + stored));
 		if (newLevel < 1)
 			newLevel = 0;
-//		else if (newLevel > 0) {
-			 // Note: once other resources are starting to adopt this class, 
-			 //       this method will be changed	
-//			logger.info(settlement, 30_000, "New Water Rationing Level: " + newLevel);
-//		}
 		else if (newLevel > 1000)
 			newLevel = 1000;
 		

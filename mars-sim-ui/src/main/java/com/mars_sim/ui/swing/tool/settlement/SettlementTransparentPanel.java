@@ -15,6 +15,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +45,7 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeListener;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -116,7 +119,7 @@ public class SettlementTransparentPanel extends JComponent {
 	private double opticalDepthCache;
 	private double windSpeedCache;
 	private double zenithAngleCache;
-
+	
 	private String tString;
 	private String wsString;
 	private String zaString;
@@ -129,10 +132,14 @@ public class SettlementTransparentPanel extends JComponent {
 
 	private GameMode mode;
 
-	private JLabel emptyLabel;
 	private DisplaySingle bannerBar;
 	private JSlider zoomSlider;
-
+	
+	private javax.swing.Timer zoomDebounce;
+	private ChangeListener zoomListener;
+	private MouseWheelListener mouseWheelListener;
+	
+	private JLabel emptyLabel;
 	/** label for projected sunrise time. */
 	private JLabel projectSunriseLabel;
 	/** label for projected sunset time. */
@@ -216,7 +223,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    };
 
         buildInfoP();
-        buildrenameBtn();
+        buildRenameBtn();
         var labelPane = buildLabelPane();
         var buttonPane = buildButtonPane();
         buildSettlementNameComboBox();
@@ -696,29 +703,6 @@ public class SettlementTransparentPanel extends JComponent {
 	 */
     private void buildZoomSlider() {
 
-//        UIDefaults sliderDefaults = new UIDefaults();
-//
-//        sliderDefaults.put("Slider.thumbWidth", 15);
-//        sliderDefaults.put("Slider.thumbHeight", 15);
-//        sliderDefaults.put("Slider:SliderThumb.backgroundPainter",
-//					(Painter<JComponent>) (g, c, w, h) -> {
-//						g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//						g.setStroke(new BasicStroke(2f));
-//						g.setColor(Color.WHITE);
-//						g.fillOval(1, 1, w-1, h-1);
-//						g.setColor(Color.ORANGE);
-//						g.drawOval(1, 1, w-1, h-1);
-//					});
-//        sliderDefaults.put("Slider:SliderTrack.backgroundPainter",
-//					(Painter<JComponent>) (g, c, w, h) -> {
-//						g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//						g.setStroke(new BasicStroke(2f));
-//						g.setColor(Color.WHITE);
-//						g.fillRoundRect(0, 6, w, 6, 6, 6); 
-//						g.setColor(Color.ORANGE);
-//						g.drawRoundRect(0, 6, w, 6, 6, 6);
-//					});
-
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 150, 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 75));
         zoomSlider.setPreferredSize(new Dimension(50, 350));
@@ -751,35 +735,97 @@ public class SettlementTransparentPanel extends JComponent {
 		zoomSlider.setLabelTable(labelTable);
 		
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		zoomSlider.addChangeListener(e -> {
-				// Change scale of map based on slider position.
-				int value = zoomSlider.getValue();
-				if (value == 0) {
-					value = 1/10;
-					zoomSlider.setValue(1/10);
-				}
-				mapPanel.setScale(value);
-		});
+		
+		initDebounce(zoomSlider);
+		
+//		zoomSlider.addChangeListener(e -> {
+//				
+//				int value = zoomSlider.getValue();
+//				if (value == 0) {
+//					// Ensure the minimum is 1/10
+//					value = 1/10;
+//					zoomSlider.setValue(1/10);
+//				}
+//				else
+//					// Change scale of map based on slider position.
+//					mapPanel.setScale(value);
+//		});
 
 		// Add mouse wheel listener for zooming.
-		mapPanel.addMouseWheelListener(evt -> {
-			int numClicks = evt.getWheelRotation();
-			int value = zoomSlider.getValue();
-			if (numClicks > 0) {
-				// Move zoom slider down.
-				if (value > zoomSlider.getMinimum())
-					zoomSlider.setValue(zoomSlider.getValue() - 1);
-			}
-			else if (numClicks < 0) {
-				// Move zoom slider up.
-				if (value < zoomSlider.getMaximum()) {
-					zoomSlider.setValue(zoomSlider.getValue() + 1);
+		mouseWheelListener = new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent evt) {
+
+				int numClicks = evt.getWheelRotation();
+				int value = zoomSlider.getValue();
+				if (numClicks > 0) {
+					// Move zoom slider down.
+					if (value > zoomSlider.getMinimum())
+						zoomSlider.setValue(zoomSlider.getValue() - 1);
+				}
+				else if (numClicks < 0) {
+					// Move zoom slider up.
+					if (value < zoomSlider.getMaximum()) {
+						zoomSlider.setValue(zoomSlider.getValue() + 1);
+					}
 				}
 			}
-			
-			evt.consume();
-		});
+		};
+		
+		mapPanel.addMouseWheelListener(mouseWheelListener);
     }
+    
+    
+    /**
+     * Sets up the zoom slider with a timer to debounce any redundant re-rendering work.
+     * 
+     * @param slider
+     */
+    private void initDebounce(JSlider slider) {
+        zoomListener = e -> {
+            int value = ((JSlider) e.getSource()).getValue();
+//            if (zoomDebounce == null) {
+                zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
+                zoomDebounce.setRepeats(false);
+//            }
+            zoomDebounce.restart();
+        };
+        slider.addChangeListener(zoomListener);
+    }
+
+    
+    /**
+     * Converts the zoom value found on the slider to a map scale.
+     * 
+     * @param value
+     */
+    private void convertTo(int value) {
+    	if (value == 0) {
+    		// Ensure the minimum is 1/10
+			value = 1/10;
+			zoomSlider.setValue(1/10);
+		}
+    	else
+	    	// Change scale of map based on slider position.
+			mapPanel.setScale(value);
+    }
+    
+    @Override 
+    public void removeNotify() {
+        super.removeNotify();
+        if (zoomSlider != null && zoomListener != null) {
+            zoomSlider.removeChangeListener(zoomListener);
+        }
+        if (zoomDebounce != null) {
+            zoomDebounce.stop();
+        }
+        for (MouseWheelListener mwl : getMouseWheelListeners()) {
+            removeMouseWheelListener(mwl);
+        }
+        
+        removeMouseWheelListener(mouseWheelListener);
+    }	
     
     /**
      * Sets the zoom slider value.
@@ -808,7 +854,7 @@ public class SettlementTransparentPanel extends JComponent {
 			});
     }
 
-    private void buildrenameBtn() {
+    private void buildRenameBtn() {
 
     	Icon icon = ImageLoader.getIconByName("settlement_map/edit");
     	renameBtn = new JButton(icon);

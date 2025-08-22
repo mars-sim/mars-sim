@@ -13,7 +13,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.tool.Conversion;
 
 
 public class BuildingConfigTest extends AbstractMarsSimUnitTest {
@@ -24,7 +23,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     
     public void testLanderHabFunctions() {
         var bc = simConfig.getBuildingConfiguration();
-
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
         assertNotNull("Building spec " + LANDER_HAB, spec);
@@ -47,27 +45,19 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         for (var b : beds.getActivitySpots()) { 
         	String name = b.name();
         	if (bedNames.containsKey(name)) {
-//        		System.out.println("0 " + name);
     			int num = bedNames.get(name);
     			bedNames.put(name, ++num);
-//    			System.out.println(bedNames.toString());
     		}
     		else {
-//    			System.out.println("1 " + name);
     			bedNames.put(name, 1);
     		}	
         }
-        
-//        System.out.println(bedNames.toString());
-        
+           
         int totalNum = 0;
         
         for (int i: bedNames.values()) {
         	totalNum += i;
         } 
-        
-//        System.out.println("totalNum: " + totalNum);
-//        System.out.println("bedNames size: " + bedNames.size());
         
         boolean hasBunkBeds = false;
         for (String n: bedNames.keySet()) {
