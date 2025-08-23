@@ -8,7 +8,6 @@
 package com.mars_sim.core.science;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.Map;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -147,12 +145,9 @@ public enum ScienceType {
 
 	static {
 		
-		Collection<Job> jobCol = JobUtil.getJobs();
-		for (Job job: jobCol) {
-			for (ScienceType scienceType : ScienceType.values()) {
-				matchJobToScience.put(job.getType(), scienceType);
-			}
-		}	
+		for (ScienceType scienceType : ScienceType.values()) {
+			matchJobToScience.put(scienceType.getJobType(), scienceType);
+		}
 	}
 	
 	/** 

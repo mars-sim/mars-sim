@@ -69,22 +69,24 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
 
         // Check if study is in invitation phase.
         ScientificStudy study = person.getResearchStudy().getStudy();
+      
         if ((study == null)
                 || (study.getPhase() != StudyStatus.INVITATION_PHASE)) {
             return EMPTY_TASKLIST;
         }
-
+           
         // Check that there isn't a full set of open invitations already sent out.
         int collabNum = study.getCollaborativeResearchers().size();
         int openInvites = study.getNumOpenResearchInvitations();
         if ((openInvites + collabNum) >= study.getMaxCollaborators()) {
             return EMPTY_TASKLIST;
         }
+ 
         if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).isEmpty()) {
             logger.warning(person, 30_000L, "Can not find anyone to invite for " + study.getName());
             return EMPTY_TASKLIST;
         }
-
+ 
         // Once a proposal is finished get the invites out quickly
         var result = new RatingScore(100D);
 		
@@ -98,6 +100,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         // Increase probability if person's current job is related to study's science.
         JobType job = person.getMind().getJob();
         ScienceType science = study.getScience();
+ 
         if (science == ScienceType.getJobScience(job)) {
             result.addModifier(SCIENCE_MODIFIER, 2D);
         }

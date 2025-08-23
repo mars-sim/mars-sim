@@ -20,7 +20,6 @@ import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.robot.Robot;

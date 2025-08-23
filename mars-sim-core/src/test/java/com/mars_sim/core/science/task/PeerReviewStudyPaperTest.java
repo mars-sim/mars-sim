@@ -34,7 +34,6 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         
         var study = CompileScientificStudyResultsTest.buildStudyToPaperPhase(s, this, science, researchJob);
 
-
         // Simulate paper phase
         var elapsed = study.getTotalPrimaryPaperWorkTimeRequired();
         study.addPrimaryPaperWorkTime(elapsed);

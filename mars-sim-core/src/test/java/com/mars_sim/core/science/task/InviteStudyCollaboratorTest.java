@@ -16,7 +16,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
      */
     static ScientificStudy buildStudyToProposalPhase(Settlement s, MarsSimContext context,
                                 ScienceType science, JobType researchJob) {
-        // Build a settlemtn with a lab and put a Person in it
+        // Build a settlement with a lab and put a Person in it
         var l = context.buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var p = context.buildPerson("Researcher", s);
         p.setJob(researchJob, "Boss");
@@ -36,7 +36,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
                                 ScienceType science, JobType researchJob) {
         var study = buildStudyToProposalPhase(s, context, science, researchJob);
 
-        // COmplete Proposal
+        // Complete Proposal
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired() + 10D);
         study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
         assertEquals("Study start phase", StudyStatus.INVITATION_PHASE, study.getPhase());
@@ -52,7 +52,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
 
         var mt = new InviteStudyCollaboratorMeta();
 
-        // Study ignore until corrct phase
+        // Study ignore until correct phase
         var proposalStudy = buildStudyToProposalPhase(s, this, ScienceType.BOTANY, JobType.BOTANIST);
         var tasks = mt.getTaskJobs(proposalStudy.getPrimaryResearcher());
         assertTrue("No tasks found", tasks.isEmpty());
@@ -60,7 +60,9 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Get invite phase study
         var inviteStudy = buildStudyToInvitePhase(s, this, ScienceType.BOTANY, JobType.BOTANIST);
         tasks = mt.getTaskJobs(inviteStudy.getPrimaryResearcher());
+        // Note: The researcher won't be able to find anyone to invite
         assertFalse("Tasks found", tasks.isEmpty());
+        
     }
 
 
@@ -95,7 +97,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         executeTask(p, task, 20);
         assertTrue("Invite task done", task.isDone());
 
-        // Checkhow has been invited
+        // Check if he has been invited
         assertTrue("Collaborator 1 added to study", study.getInvitedResearchers().contains(c1));
         assertTrue("Collaborator 2 added to study", study.getInvitedResearchers().contains(c2));
 
