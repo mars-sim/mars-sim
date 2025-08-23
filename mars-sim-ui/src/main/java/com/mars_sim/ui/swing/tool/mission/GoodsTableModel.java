@@ -60,6 +60,7 @@ public class GoodsTableModel extends AbstractTableModel {
 	 * @param columnIndex the column index.
 	 * @return column name.
 	 */
+	@Override
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) return "Good";
 		else return "Amount";

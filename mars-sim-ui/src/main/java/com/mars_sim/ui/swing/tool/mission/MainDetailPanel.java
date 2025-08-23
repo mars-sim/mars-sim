@@ -51,6 +51,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
+import com.mars_sim.core.mission.objectives.EmergencySupplyObjective;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.mission.objectives.MiningObjective;
@@ -79,6 +80,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ConstructionPanel;
+import com.mars_sim.ui.swing.tool.mission.objectives.EmergencySupplyPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ExplorationPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.MiningPanel;
@@ -340,13 +342,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		String salvageMissionName = SalvageMission.class.getName();
 		customInfoPanels.put(salvageMissionName, salvagePanel);
 		missionCustomPane.add(salvagePanel, salvageMissionName);
-
-
-		// Create custom emergency supply mission panel.
-		MissionCustomInfoPanel emergencySupplyPanel = new EmergencySupplyMissionCustomInfoPanel();
-		String emergencySupplyMissionName = EmergencySupply.class.getName();
-		customInfoPanels.put(emergencySupplyMissionName, emergencySupplyPanel);
-		missionCustomPane.add(emergencySupplyPanel, emergencySupplyMissionName);
 
 		return missionCustomPane;
 	}
@@ -643,7 +638,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					case TradeObjective to -> new TradePanel(to, desktop);
 					case ConstructionObjective co -> new ConstructionPanel(co, desktop);
 					case RescueVehicleObjective ro -> new RescuePanel(ro, desktop);
-
+					case EmergencySupplyObjective so -> new EmergencySupplyPanel(so, desktop);
 					default -> null;
 				};
 
