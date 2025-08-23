@@ -199,15 +199,15 @@ public class SettlementTransparentPanel extends JComponent {
 
         mode = GameManager.getGameMode();
 		
-		setDoubleBuffered(true);
+//		setDoubleBuffered(true);
     }
 
-	@Override
-    public void paintComponent(Graphics g) {
-		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // draw transparent background
-		super.paintComponent(g);
-		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // turn on opacity
-	}
+//	@Override
+//    public void paintComponent(Graphics g) {
+//		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // draw transparent background
+//		super.paintComponent(g);
+//		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // turn on opacity
+//	}
 
     public void createAndShowGUI() {
 
@@ -738,17 +738,9 @@ public class SettlementTransparentPanel extends JComponent {
 		
 		initDebounce(zoomSlider);
 		
-//		zoomSlider.addChangeListener(e -> {
-//				
+//		zoomSlider.addChangeListener(e -> {			
 //				int value = zoomSlider.getValue();
-//				if (value == 0) {
-//					// Ensure the minimum is 1/10
-//					value = 1/10;
-//					zoomSlider.setValue(1/10);
-//				}
-//				else
-//					// Change scale of map based on slider position.
-//					mapPanel.setScale(value);
+//				convertTo(value);
 //		});
 
 		// Add mouse wheel listener for zooming.
@@ -770,6 +762,8 @@ public class SettlementTransparentPanel extends JComponent {
 						zoomSlider.setValue(zoomSlider.getValue() + 1);
 					}
 				}
+				
+				evt.consume();
 			}
 		};
 		
@@ -785,11 +779,23 @@ public class SettlementTransparentPanel extends JComponent {
     private void initDebounce(JSlider slider) {
         zoomListener = e -> {
             int value = ((JSlider) e.getSource()).getValue();
-//            if (zoomDebounce == null) {
+            if (zoomDebounce == null) {
                 zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
                 zoomDebounce.setRepeats(false);
-//            }
-            zoomDebounce.restart();
+                zoomDebounce.start();
+//                logger.info("First created");
+            }
+            else if (zoomDebounce.isRunning()) {
+            	zoomDebounce.restart();
+//            	logger.info("Restarting");
+            }
+            else {
+            	zoomDebounce = null;
+                zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
+                zoomDebounce.setRepeats(false);
+                zoomDebounce.start();
+//                logger.info("Recreating");
+            }
         };
         slider.addChangeListener(zoomListener);
     }

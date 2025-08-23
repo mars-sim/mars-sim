@@ -613,7 +613,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                }
 	        	}
 	        }
-	        
+	
 	        g2d.dispose();
         }
     }

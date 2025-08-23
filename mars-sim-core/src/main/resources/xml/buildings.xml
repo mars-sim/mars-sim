@@ -274,17 +274,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 					<!-- Clockwise from right most room to the left most room -->
 					<!-- Room 1 -->
-					<activity-spot xloc="2.056" yloc="3.491" name="Bunk 1" />
-					<activity-spot xloc="1.832" yloc="3.145" name="Bunk 1"/>					
+					<activity-spot xloc="0.76" yloc="3.78" name="Bunk 1" />
+					<activity-spot xloc="0.28" yloc="3.78" name="Bunk 1"/>					
 					<!-- Room 2 -->
-					<activity-spot xloc="0.021" yloc="4.081" name="Bunk 2"/>
-					<activity-spot xloc="0.021" yloc="3.654" name="Bunk 2"/>
+					<activity-spot xloc="-0.303" yloc="3.78" name="Bunk 2"/>
+					<activity-spot xloc="-0.802" yloc="3.78" name="Bunk 2"/>
 					<!-- Room 3 -->
-					<activity-spot xloc="-3.156" yloc="0.763" name="Bunk 3"/>
-					<activity-spot xloc="-3.156" yloc="0.326" name="Bunk 3"/>
+					<activity-spot xloc="-3.84" yloc="0.319" name="Bunk 3"/>
+					<activity-spot xloc="-3.84" yloc="0.79" name="Bunk 3"/>
 					<!-- Room 4 -->
-					<activity-spot xloc="-3.156" yloc="-0.234" name="Bunk 4"/>
-					<activity-spot xloc="-3.156" yloc="-0.631" name="Bunk 4"/>
+					<activity-spot xloc="-3.84" yloc="-0.725" name="Bunk 4"/>
+					<activity-spot xloc="-3.84" yloc="-0.235" name="Bunk 4"/>
 					
 				</activity>
 			</living-accommodation>

@@ -279,6 +279,8 @@ public class SettlementMapPanel extends JPanel {
 				// Set initial mouse drag position.
 				xLast = evt.getX();
 				yLast = evt.getY();
+				
+				evt.consume();
 			}
 
 			@Override
@@ -294,6 +296,8 @@ public class SettlementMapPanel extends JPanel {
 				// Reset them to zero to prevent over-dragging of the settlement map
 				xLast = 0;
 				yLast = 0;
+				
+				evt.consume();
 			}
 		});
 	}
@@ -896,7 +900,7 @@ public class SettlementMapPanel extends JPanel {
 	
     void update(ClockPulse pulse) {
 		settlementTransparentPanel.update(pulse);
-		repaint();
+//		repaint();
 	}
 
 	/**
@@ -925,7 +929,7 @@ public class SettlementMapPanel extends JPanel {
 	 * Cleans up the map panel for disposal.
 	 */
 	public void destroy() {
-		settlementTransparentPanel.destroy();
+//		settlementTransparentPanel.destroy();
 		settlementTransparentPanel = null;
 		menu = null;
 		settlement = null;

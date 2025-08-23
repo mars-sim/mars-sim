@@ -226,4 +226,13 @@ public class ImageLoader {
 	public static Image iconToImage(Icon icon) {
 		return MarsTerminal.iconToImage(icon);
 	}
+
+	public void destroy() {
+		iconByName.clear();
+		iconByName = null;
+		iconPaths= null;
+		imageCache.clear();
+		imageCache = null;
+		defaultIcon= null;
+	}
 }

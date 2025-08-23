@@ -175,5 +175,6 @@ public class JStatusBar extends TexturedPanel {
 	    g2.setPaint(almond);
 	    g2.fillRect(0, 0, getWidth(), getHeight());
 
+	    g2.dispose();
     }
 }

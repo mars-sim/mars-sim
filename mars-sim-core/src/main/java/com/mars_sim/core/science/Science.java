@@ -79,7 +79,7 @@ implements Serializable, Comparable<Object> {
 	}
 
 	/**
-	 * Gets the jobs associated with this field of science.
+	 * Gets a list of job types associated with this field of science.
 	 * 
 	 * @return jobs.
 	 */

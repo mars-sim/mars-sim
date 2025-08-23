@@ -8,6 +8,8 @@
 package com.mars_sim.core.science;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -68,8 +71,11 @@ public enum ScienceType {
 	private static List<ScienceType> engineeringSubjects = new ArrayList<>();
 
 	
-	/** Maps for keeping track of collaborative sciences. */
+	/** A map for keeping track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences = new HashMap<>();
+	 
+	/** A map for matching a job type to science type */
+	private static EnumMap<JobType, ScienceType> matchJobToScience = new EnumMap<>(JobType.class);
 	 
 	private String name;
 	private String code;
@@ -139,6 +145,16 @@ public enum ScienceType {
 		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
 	}
 
+	static {
+		
+		Collection<Job> jobCol = JobUtil.getJobs();
+		for (Job job: jobCol) {
+			for (ScienceType scienceType : ScienceType.values()) {
+				matchJobToScience.put(job.getType(), scienceType);
+			}
+		}	
+	}
+	
 	/** 
 	 * Hidden constructor. 
 	 */
@@ -147,6 +163,7 @@ public enum ScienceType {
 		this.code = code;
 		this.job = job;
 		this.skill = skill;
+
 	}
 
 	/**
@@ -179,11 +196,7 @@ public enum ScienceType {
 	 */
 	public static ScienceType getJobScience(JobType job) {
 		if (job != null) {
-			for(Science science : collabSciences.values()) {
-				List<JobType> jobs = science.getJobs();
-				if (jobs.contains(job))
-					return science.getType();
-			}
+			return matchJobToScience.get(job);
 		}
 		return null;
 	}
