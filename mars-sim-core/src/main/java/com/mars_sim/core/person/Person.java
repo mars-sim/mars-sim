@@ -179,7 +179,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	private ResearchStudy research;
 	
 	/** The person's mission experiences. */
-	private Map<MissionType, Integer> missionExperiences;
+	private EnumMap<MissionType, Integer> missionExperiences;
 	/** The person's list of prior trainings */
 	private List<TrainingType> trainings;
 

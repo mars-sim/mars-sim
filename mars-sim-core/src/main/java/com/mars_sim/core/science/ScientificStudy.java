@@ -1057,7 +1057,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 			boolean phaseEnded = false;
 			if (collaborators.size() < maxCollaborators) {
-				int availableInvitees = ScientificStudyUtil.getAvailableCollaboratorsForInvite(this).size();
+				int availableInvitees = ScientificStudyUtil.getAvailableNumCollaboratorsForInvite(this);
 				int openResearchInvitations = getNumOpenResearchInvitations();
 				if ((availableInvitees + openResearchInvitations) == 0)
 					phaseEnded = true;

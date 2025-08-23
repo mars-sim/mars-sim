@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScienceType.java
- * @date 2021-09-27
+ * @date 2025-08-22
  * @author stpa
  */
 
@@ -9,9 +9,7 @@ package com.mars_sim.core.science;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
@@ -70,7 +68,7 @@ public enum ScienceType {
 
 	
 	/** A map for keeping track of collaborative sciences. */
-	private static Map<ScienceType, Science> collabSciences = new HashMap<>();
+	private static EnumMap<ScienceType, Science> collabSciences = new EnumMap<>(ScienceType.class);
 	 
 	/** A map for matching a job type to science type */
 	private static EnumMap<JobType, ScienceType> matchJobToScience = new EnumMap<>(JobType.class);
@@ -87,6 +85,8 @@ public enum ScienceType {
 		engineeringSubjects.add(AREOLOGY);
 		engineeringSubjects.add(COMPUTING);
 		engineeringSubjects.add(ENGINEERING);
+		engineeringSubjects.add(MATHEMATICS);
+		engineeringSubjects.add(PHYSICS);
 	}
 		
 	/** 

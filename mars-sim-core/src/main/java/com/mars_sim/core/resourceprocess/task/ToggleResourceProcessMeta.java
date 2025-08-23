@@ -377,13 +377,15 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					// e.g. For CO2, limit the score
 					score += mrate;
 				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
-					score += mrate * MID_BIAS;
+					score += mrate * LOW_BIAS;
 				} else if (ResourceUtil.isRawMaterial(resource)) { // ore, minerals, sand
 					score += mrate / LOW_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water, glucose, leaves, soil
+				} else if (ResourceUtil.isDerivedResource(resource)) { // glucose, leaves, soil
 					score += mrate / HIGH_BIAS;	
-				} else if (ResourceUtil.isInSitu(resource)) { // ice, regolith
+				} else if (ResourceUtil.isInSitu(resource)) { // all regolith types 
 					score += mrate / HIGH_BIAS;
+				} else if (ResourceUtil.isTier0Resource(resource)) { // ice, brine water
+					score += mrate / SUPER_HIGH_BIAS;
 				} else if (ResourceUtil.isWaste(resource)) { // grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
 				} else {
@@ -422,11 +424,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isWasteOutputResource(resource)) {
 					score += mrate;
 				} else if (ResourceUtil.isRawMaterial(resource)) {  // ore, minerals, sand
-					score += mrate * LOW_BIAS ;
-				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
+					score += mrate * LOW_BIAS ;	
+				} else if (ResourceUtil.isTier1Resource(resource)) { // methane, water
 					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource)) { // brine water, glucose, leaves, soil
+				} else if (ResourceUtil.isDerivedResource(resource)) { // glucose, leaves, soil
 					score += mrate * HIGH_BIAS;
+				} else if (ResourceUtil.isTier0Resource(resource)) { // ice, brine water
+					score += mrate * SUPER_HIGH_BIAS;	
 				} else if (ResourceUtil.isRawElement(resource)) { // carbon
 					score += mrate * SUPER_HIGH_BIAS;
 				} else if (ResourceUtil.isWaste(resource)) { // grey water, * waste

@@ -8,7 +8,6 @@ package com.mars_sim.core.equipment;
 
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.UnitType;
@@ -26,7 +25,7 @@ class GenericContainer extends Equipment implements Container {
 	private static final long serialVersionUID = 1L;
 
 	private static SimLogger logger = SimLogger.getLogger(GenericContainer.class.getName());
-	private static final Map<EquipmentType,String> DESCRIPTION_CACHE = new EnumMap<>(EquipmentType.class);
+	private static final EnumMap<EquipmentType, String> DESCRIPTION_CACHE = new EnumMap<>(EquipmentType.class);
 
 	private double totalCapacity;
 	private double amountStored;

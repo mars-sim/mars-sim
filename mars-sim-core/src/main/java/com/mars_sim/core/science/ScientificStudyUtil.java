@@ -36,6 +36,41 @@ public class ScientificStudyUtil {
 	 * @param study the scientific study.
 	 * @return list of potential collaborators.
 	 */
+	public static int getAvailableNumCollaboratorsForInvite(ScientificStudy study) {
+		int result = 0;
+
+		Set<Person> alreadyInvited = study.getInvitedResearchers();
+        Collection<Person> allPeople = unitManager.getPeople();
+        Iterator<Person> i = allPeople.iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+
+            // Make sure person is not already part of study
+            if (!person.equals(study.getPrimaryResearcher()) &&
+                    !alreadyInvited.contains(person) &&
+                    !person.getPhysicalCondition().isDead()) {
+                JobType job = person.getMind().getJob();
+                if (job != null) {
+                    ScienceType jobScience = ScienceType.getJobScience(job);
+
+                    // Is their Job Science suitable for the study
+                    if ((jobScience != null) && (jobScience == study.getScience()
+                        		|| ScienceType.isCollaborativeScience(study.getScience(), jobScience))) {
+                    	result++;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+	
+	/**
+	 * Gets a list of all available collaborators that can be invited to a study.
+	 * 
+	 * @param study the scientific study.
+	 * @return list of potential collaborators.
+	 */
 	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
 		List<Person> result = new ArrayList<>();
 

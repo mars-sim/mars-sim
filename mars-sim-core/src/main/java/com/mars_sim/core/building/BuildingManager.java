@@ -117,7 +117,7 @@ public class BuildingManager implements Serializable {
 	
 	private transient Map<String, Double> vPNewCache = new HashMap<>();
 	private transient Map<String, Double> vPOldCache = new HashMap<>();
-	private transient Map<FunctionType, Set<Building>> buildingFunctionsMap;
+	private transient EnumMap<FunctionType, Set<Building>> buildingFunctionsMap;
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The settlement's maintenance parts map. */

@@ -81,8 +81,9 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         if ((openInvites + collabNum) >= study.getMaxCollaborators()) {
             return EMPTY_TASKLIST;
         }
- 
-        if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).isEmpty()) {
+        
+        // Note: getAvailableCollaboratorsForInvite(study) will be called in InviteStudyCollaborator again
+        if (ScientificStudyUtil.getAvailableNumCollaboratorsForInvite(study) == 0) {
             logger.warning(person, 30_000L, "Can not find anyone to invite for " + study.getName());
             return EMPTY_TASKLIST;
         }

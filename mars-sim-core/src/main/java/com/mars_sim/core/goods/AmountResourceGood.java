@@ -82,9 +82,9 @@ class AmountResourceGood extends Good {
 
 
 	// modifiers
-    private static final double ICE_VALUE_MODIFIER = 0.1;
+    private static final double ICE_VALUE_MODIFIER = 1.5;
 	private static final double WATER_VALUE_MODIFIER = 0.2;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.04;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.2;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 0.03;
@@ -112,7 +112,7 @@ class AmountResourceGood extends Good {
 	private static final double VEHICLE_FUEL_FACTOR = 1;
 	private static final double FARMING_FACTOR = .1;
 
-	private static final double LEAVES_VALUE_MODIFIER = .5;
+	private static final double LEAVES_VALUE_MODIFIER = 1.5;
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
@@ -160,7 +160,7 @@ class AmountResourceGood extends Good {
 	private static final double CO2_FLATTENING_FACTOR = 0.06;
 	
 
-	private static final double ICE_FLATTENING_FACTOR = 0.05;
+	private static final double ICE_FLATTENING_FACTOR = 1.5;
 
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
@@ -1193,7 +1193,7 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Computes ice projected demand.
+	 * Computes ice and brine water projected demand.
 	 *
 	 * @param owner
 	 * @param settlement
@@ -1205,8 +1205,16 @@ class AmountResourceGood extends Good {
 			double ice = 1 + owner.getDemandScoreWithID(resourceID);
 			double water = 1 + owner.getDemandScoreWithID(ResourceUtil.WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			return  (.5 * water + .5 * ice) / ice
+			return  (.25 * water + .75 * ice)
 					* ICE_VALUE_MODIFIER;
+		}
+		else if (resourceID == ResourceUtil.BRINE_WATER_ID) {
+			double ice = 1 + owner.getDemandScoreWithID(resourceID);
+			double water = 1 + owner.getDemandScoreWithID(ResourceUtil.WATER_ID);
+			double brineWater = 1 + owner.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
+			// Use the water's VP and existing iceSupply to compute the ice demand
+			return  (.3 * water + .3 * ice + .4 * brineWater)
+					* BRINE_WATER_VALUE_MODIFIER;
 		}
 
 		return 0;

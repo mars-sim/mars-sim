@@ -102,9 +102,9 @@ public abstract class MetaTask {
 	
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
-	private Map<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
+	private EnumMap<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
 	private Set<RobotType> preferredRobots = new HashSet<>();
-	private Map<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
+	private EnumMap<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
 	
 	
 	/**

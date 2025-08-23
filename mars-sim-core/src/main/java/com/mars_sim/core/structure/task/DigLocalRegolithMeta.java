@@ -48,7 +48,20 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
         	return Collections.emptyList();
         }
     	
-    	return getSettlementTaskJobs(ResourceUtil.REGOLITH_ID, settlement, 
-    			settlement.getRegolithCollectionRate() * settlement.getRegolithProbabilityValue());
+        double iceValue = settlement.getIceProbabilityValue();
+        
+        double regValue = settlement.getRegolithProbabilityValue();
+       
+        double relativeValue = 0;
+        
+        // Note: this is for prioritizing digging local ice more than regolith
+        if (regValue > iceValue) {
+        	relativeValue = regValue - iceValue / 2;
+        }
+        else {
+        	relativeValue = regValue / 2;
+        }
+           
+    	return getSettlementTaskJobs(ResourceUtil.REGOLITH_ID, settlement, relativeValue);
     }
 }

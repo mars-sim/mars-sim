@@ -483,41 +483,6 @@ public class MainWindow
 		// Create speed buttons
 		createSpeedButtons(toolToolbar);
 		
-		// Set up key bindings for the Escape key
-//        KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
-//        InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-//        ActionMap actionMap = getActionMap();
-//
-//        inputMap.put(escapeKeyStroke, "togglePause");
-//        actionMap.put("togglePause", new AbstractAction() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            	// Note: unable to obtain the focus of this button
-//
-////            	if (!playPauseSwitch.isFocusOwner() || !playPauseSwitch.isFocusable())
-////            		playPauseSwitch.requestFocusInWindow();
-////            	frame.toFront();
-//            	playPauseSwitch.requestFocusInWindow();
-//
-////            	boolean isSel = playPauseSwitch.isSelected();
-////				if (isSel) {
-////					playPauseSwitch.setText("\u23F5");//.setIcon(PLAY_ICON);
-////				}
-////				else {
-////					playPauseSwitch.setText("\u23F8");//.setIcon(PAUSE_ICON);
-////				}		
-//            	playPauseSwitch.doClick();
-////				masterClock.setPaused(isSel, false);	
-//            }
-//        });
-			
-//		//Make playPauseSwitch get the focus whenever frame is activated.
-//		frame.addWindowFocusListener(new WindowAdapter() {
-//		    public void windowGainedFocus(WindowEvent e) {
-//		    	playPauseSwitch.requestFocusInWindow();
-//		    }
-//		});
-		
 		// Add toolToolbar to mainPane
 		contentPane.add(toolToolbar, BorderLayout.NORTH);
 
@@ -899,9 +864,11 @@ public class MainWindow
 			return;
 		
 		if (isPaused) {
+			desktop.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			desktop.getSoundPlayer().pauseMusic();
 		}
 		else {
+			desktop.getParent().setCursor(Cursor.getDefaultCursor());
 			desktop.getSoundPlayer().setUserMuteMusic(false);
 			desktop.getSoundPlayer().resumeMusic();
 		}

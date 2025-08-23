@@ -71,7 +71,7 @@ public class UnitManager implements Serializable, Temporal {
 	private String originalBuild;
 
 	/** List of unit manager listeners. */
-	private transient Map<UnitType, Set<UnitManagerListener>> listeners;
+	private transient EnumMap<UnitType, Set<UnitManagerListener>> listeners;
 
 	private transient TemporalExecutor executor;
 

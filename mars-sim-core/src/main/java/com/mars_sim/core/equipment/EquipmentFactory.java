@@ -8,7 +8,6 @@
 package com.mars_sim.core.equipment;
 
 import java.util.EnumMap;
-import java.util.Map;
 import java.util.Optional;
 
 import com.mars_sim.core.UnitEventType;
@@ -29,7 +28,7 @@ public final class EquipmentFactory {
 	// Default mass for uncalculated types
 	protected static final double DEFAULT_MASS = 0.0001;
 	
-	private static Map<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
+	private static EnumMap<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
 	
 	private static UnitManager unitManager;
 	private static ManufactureConfig manufactureConfig;

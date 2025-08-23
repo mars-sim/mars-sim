@@ -428,7 +428,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isInSitu(int resource) {
 		return switch (resource) {
-			case ICE_ID, REGOLITH_ID, REGOLITHB_ID, REGOLITHC_ID, REGOLITHD_ID -> true;
+			case REGOLITH_ID, REGOLITHB_ID, REGOLITHC_ID, REGOLITHD_ID -> true;
 			default -> false;
 		};
 	}
@@ -447,7 +447,18 @@ public class ResourceUtil {
 		};
 	}
 	
-	
+	/**
+	 * Is this tier 0 resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isTier0Resource(int resource) {
+		return switch (resource) {
+			case ICE_ID, BRINE_WATER_ID -> true;
+			default -> false;
+		};
+	}
 	
 	/**
 	 * Is this tier 1 resource ?
@@ -457,7 +468,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier1Resource(int resource) {
 		return switch (resource) {
-			case WATER_ID, METHANE_ID -> true;
+			case METHANE_ID, WATER_ID -> true;
 			default -> false;
 		};
 	}
@@ -470,7 +481,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isDerivedResource(int resource) {
 		return switch (resource) {
-			case GLUCOSE_ID, BRINE_WATER_ID, LEAVES_ID, SOIL_ID -> true;
+			case GLUCOSE_ID, LEAVES_ID, SOIL_ID -> true;
 			default -> false;
 		};
 	}

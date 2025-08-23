@@ -112,8 +112,11 @@ public abstract class DigLocalMeta extends MetaTask
 
         boolean isEmergency = settlement.getRationing().isAtEmergency();
         
+        int rationingLevel = settlement.getRationing().getRationingLevel();
+        
         // Calculate the capacity for more EVAs
-        int maxEVA = settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
+        int maxEVA = (int)Math.sqrt(1 + rationingLevel) 
+        		+ settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
                                                     DEFAULT_EVA_NUM);
         
         if (!isEmergency) {

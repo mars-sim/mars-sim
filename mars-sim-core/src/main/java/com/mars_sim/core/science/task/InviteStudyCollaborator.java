@@ -104,8 +104,8 @@ public class InviteStudyCollaborator extends Task {
 
             if (person.isInVehicle()) {
                 // If person is in rover, walk to passenger activity spot.
-                if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
+                if (person.getVehicle() instanceof Rover r) {
+                    walkToPassengerActivitySpotInRover(r , false);
                 }
             }
             else {
@@ -126,7 +126,7 @@ public class InviteStudyCollaborator extends Task {
     private List<Person> determineBestInvitee(int required) {
 
         List<PersonScore> potentials = new ArrayList<>();
-
+        // Note: getAvailableCollaboratorsForInvite(study) has been called in InviteStudyCollaboratorMeta once
         for(Person invitee : ScientificStudyUtil.getAvailableCollaboratorsForInvite(study)) {
             double inviteeValue = 0D;
 
