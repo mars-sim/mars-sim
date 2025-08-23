@@ -60,6 +60,7 @@ public class EmergencySupplyPanel extends JPanel
 		// Create the emergency supplies table and model.
 		emergencySuppliesTableModel = new GoodsTableModel();
 		JTable emergencySuppliesTable = new JTable(emergencySuppliesTableModel);
+		emergencySuppliesTable.setAutoCreateRowSorter(true);
 		emergencySuppliesScrollPane.setViewportView(emergencySuppliesTable);
 
 		emergencySuppliesTableModel.updateTable(supplies.getSupplies());

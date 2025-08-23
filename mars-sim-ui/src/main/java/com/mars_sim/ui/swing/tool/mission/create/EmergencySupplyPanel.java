@@ -10,13 +10,9 @@ package com.mars_sim.ui.swing.tool.mission.create;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +26,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.text.NumberFormatter;
 
 import com.mars_sim.core.equipment.ContainerUtil;
@@ -46,6 +39,7 @@ import com.mars_sim.core.resource.PhaseType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 
 /**
  * A wizard panel for getting emergency supplies information.
@@ -60,8 +54,8 @@ public class EmergencySupplyPanel extends WizardPanel {
 	private JTable supplyTable;
 	private JTable cargoTable;
 	private JLabel availableSupplyLabel;
-	private SupplyTableModel supplyTableModel;
-	private CargoTableModel cargoTableModel;
+	private GoodsTableModel supplyTableModel;
+	private GoodsTableModel cargoTableModel;
 	private JButton leftArrowButton;
 	private JButton rightArrowButton;
 	private JFormattedTextField amountTextField;
@@ -93,19 +87,15 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create available supply table.
 		JScrollPane supplyScrollPane = new JScrollPane();
 		availableSupplyPane.add(supplyScrollPane, BorderLayout.CENTER);
-		supplyTableModel = new SupplyTableModel();
+		supplyTableModel = new GoodsTableModel();
 		supplyTable = new JTable(supplyTableModel);
+		supplyTable.setAutoCreateRowSorter(true);
 		supplyTable.setRowSelectionAllowed(true);
 		supplyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		supplyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() && (supplyTable.getSelectedRow() > -1)) {
-					cargoTable.clearSelection();
-					errorMessageLabel.setText(" ");
-					leftArrowButton.setEnabled(false);
-					amountTextField.setEnabled(true);
-					rightArrowButton.setEnabled(true);
-				}
+		supplyTable.getSelectionModel().addListSelectionListener(e -> {
+			if (e.getValueIsAdjusting() && (supplyTable.getSelectedRow() > -1)) {
+				cargoTable.clearSelection();
+				updateSelector(true);
 			}
 		});
 		supplyScrollPane.setViewportView(supplyTable);
@@ -125,25 +115,8 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create left arrow button.
 		leftArrowButton = new JButton("<");
 		leftArrowButton.setEnabled(false);
-		leftArrowButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					// Remove cargo amount.
-					int amount = (Integer) formatter.stringToValue(amountTextField.getText());
-					int selectedGoodIndex = cargoTable.getSelectedRow();
-					if (selectedGoodIndex > -1) {
-						Good good = cargoTableModel.cargoList.get(selectedGoodIndex);
-						int currentAmount = cargoTableModel.cargoMap.get(good);
-						if (amount <= currentAmount) {
-							cargoTableModel.removeGoodAmount(good, amount);
-							supplyTableModel.addGoodAmount(good, amount);
-							errorMessageLabel.setText(" ");
-						} else
-							errorMessageLabel.setText("Amount to remove is larger than cargo amount.");
-					}
-				} catch (ParseException c) {
-				}
-			}
+		leftArrowButton.addActionListener(e -> {
+			moveAmount(cargoTable, cargoTableModel, supplyTableModel);
 		});
 		amountControlPane.add(leftArrowButton, BorderLayout.WEST);
 
@@ -163,27 +136,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		rightArrowButton = new JButton(">");
 		rightArrowButton.setEnabled(false);
 		rightArrowButton.addActionListener(e -> {
-				// Add trade good amount.
-				try {
-					int amount = (Integer) formatter.stringToValue(amountTextField.getText());
-					int selectedGoodIndex = supplyTable.getSelectedRow();
-					if (selectedGoodIndex > -1) {
-						Good good = supplyTableModel.goodsList.get(selectedGoodIndex);
-						int currentAmount = supplyTableModel.goodsMap.get(good);
-						if (amount <= currentAmount) {
-							if (good.getCategory() == GoodCategory.VEHICLE
-									&& ((amount > 1) || cargoTableModel.hasCargoVehicle())) {
-								errorMessageLabel.setText("Only one vehicle can be traded.");
-							} else {
-								supplyTableModel.removeGoodAmount(good, amount);
-								cargoTableModel.addGoodAmount(good, amount);
-								errorMessageLabel.setText(" ");
-							}
-						} else
-							errorMessageLabel.setText("Amount to add is larger than available amount.");
-					}
-				} catch (ParseException c) {
-				}
+			moveAmount(supplyTable, supplyTableModel, cargoTableModel);
 		});
 		amountControlPane.add(rightArrowButton, BorderLayout.EAST);
 
@@ -199,19 +152,15 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create cargo table.
 		JScrollPane cargoScrollPane = new JScrollPane();
 		cargoPane.add(cargoScrollPane, BorderLayout.CENTER);
-		cargoTableModel = new CargoTableModel();
+		cargoTableModel = new GoodsTableModel();
 		cargoTable = new JTable(cargoTableModel);
+		cargoTable.setAutoCreateRowSorter(true);
 		cargoTable.setRowSelectionAllowed(true);
 		cargoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		cargoTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() && (cargoTable.getSelectedRow() > -1)) {
-					cargoTable.clearSelection();
-					errorMessageLabel.setText(" ");
-					leftArrowButton.setEnabled(true);
-					amountTextField.setEnabled(true);
-					rightArrowButton.setEnabled(false);
-				}
+		cargoTable.getSelectionModel().addListSelectionListener(e -> {
+			if (e.getValueIsAdjusting() && (cargoTable.getSelectedRow() > -1)) {
+				supplyTable.clearSelection();
+				updateSelector(false);
 			}
 		});
 		cargoScrollPane.setViewportView(cargoTable);
@@ -226,6 +175,39 @@ public class EmergencySupplyPanel extends WizardPanel {
 		return "Emergency Supplies";
 	}
 	
+	private void updateSelector(boolean doRight) {
+		errorMessageLabel.setText(" ");
+		leftArrowButton.setEnabled(!doRight);
+		amountTextField.setEnabled(true);
+		rightArrowButton.setEnabled(doRight);
+	}
+
+	/**
+	 * Move the specified ammount from one table to the other
+	 * @param sourceTable
+	 * @param sourceModel
+	 * @param targetModel
+	 */
+	private void moveAmount(JTable sourceTable, GoodsTableModel sourceModel, GoodsTableModel targetModel) {
+		try {
+			int amount = (Integer) formatter.stringToValue(amountTextField.getText());
+
+			int selectedGoodIndex = sourceTable.getSelectedRow();
+			if (selectedGoodIndex > -1) {
+				selectedGoodIndex = sourceTable.getRowSorter().convertRowIndexToModel(selectedGoodIndex);
+				var selection = sourceModel.getValueAt(selectedGoodIndex);
+				if (amount <= selection.amount()) {
+					sourceModel.changeGoodAmount(selection.good(), -amount);
+					targetModel.changeGoodAmount(selection.good(), amount);
+					errorMessageLabel.setText(" ");
+				} else
+					errorMessageLabel.setText("Amount to add is larger than available amount.");
+			}
+		} catch (ParseException e) {
+			// THis should never happen
+		}
+	}
+		
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
@@ -241,7 +223,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 			// Check if enough containers in cargo goods.
 			if (hasEnoughContainers(missionData.getStartingSettlement())) {
 				// Set emergency cargo goods.
-				missionData.setEmergencyGoods(cargoTableModel.getCargoGoods());
+				missionData.setEmergencyGoods(cargoTableModel.getGoods());
 
 				result = true;
 			}
@@ -269,13 +251,32 @@ public class EmergencySupplyPanel extends WizardPanel {
 		availableSupplyLabel.setText("Available supplies at " + settlementName);
 
 		// Update table models.
-		supplyTableModel.updateTable();
-		cargoTableModel.updateTable();
+		updateSupplyTable();
+		cargoTableModel.updateTable(Collections.emptyMap());
 
 		// Enable next/final button.
 		getWizard().setButtons(true);
 	}
 
+	/**
+	 * Loads the supply table model with the inventrory from the starting Settlement
+	 */
+	private void updateSupplyTable() {
+		// Update good values for settlement.
+		MissionDataBean missionData = getWizard().getMissionData();
+		Settlement settlement = missionData.getStartingSettlement();
+
+		Map<Good, Integer> goodsMap = new HashMap<>();
+		for(Good good :GoodsUtil.getGoodsList()) {
+			int amount = (int) CommerceUtil.getNumInInventory(good, settlement);
+			if (amount > 0) {
+				goodsMap.put(good, amount);
+			}
+		}
+
+		// Update supply table model.
+		supplyTableModel.updateTable(goodsMap);
+	}
 	/**
 	 * Checks if trade list has enough containers to hold amount resources.
 	 * 
@@ -290,11 +291,8 @@ public class EmergencySupplyPanel extends WizardPanel {
 		containerMap.put(EquipmentType.BARREL, getNumberOfCargoContainers(EquipmentType.BARREL));
 		containerMap.put(EquipmentType.GAS_CANISTER, getNumberOfCargoContainers(EquipmentType.GAS_CANISTER));
 
-		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
-
-		Iterator<Good> i = cargoGoods.keySet().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
+		for(var e : cargoTableModel.getGoods().entrySet()) {
+			Good good = e.getKey();
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				PhaseType phase = resource.getPhase();
@@ -302,7 +300,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 				int containerNum = containerMap.get(containerType);
 				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				double totalCapacity = containerNum * capacity;
-				double resourceAmount = cargoGoods.get(good);
+				double resourceAmount = e.getValue();
 				if (resourceAmount > totalCapacity) {
 					double neededCapacity = resourceAmount - totalCapacity;
 					int neededContainerNum = (int) Math.ceil(neededCapacity / capacity);
@@ -333,307 +331,9 @@ public class EmergencySupplyPanel extends WizardPanel {
 	private int getNumberOfCargoContainers(EquipmentType containerType) {
 		int result = 0;
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
-		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
+		Map<Good, Integer> cargoGoods = cargoTableModel.getGoods();
 		if (cargoGoods.containsKey(containerGood))
 			result = cargoGoods.get(containerGood);
 		return result;
-	}
-
-
-	private class SupplyTableModel extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-		private Map<Good, Integer> goodsMap;
-		private List<Good> goodsList;
-
-		/**
-		 * Constructor.
-		 */
-		private SupplyTableModel() {
-			// Use AbstractTableModel constructor.
-			super();
-
-			// Populate goods map.
-			goodsList = GoodsUtil.getGoodsList();
-			goodsMap = new HashMap<Good, Integer>(goodsList.size());
-			Iterator<Good> i = goodsList.iterator();
-			while (i.hasNext())
-				goodsMap.put(i.next(), 0);
-		}
-
-		/**
-		 * Returns the number of rows in the model.
-		 * 
-		 * @return number of rows.
-		 */
-		public int getRowCount() {
-			return goodsList.size();
-		}
-
-		/**
-		 * Returns the number of columns in the model.
-		 * 
-		 * @return number of columns.
-		 */
-		public int getColumnCount() {
-			return 2;
-		}
-
-		/**
-		 * Returns the name of the column at columnIndex.
-		 * 
-		 * @param columnIndex the column index.
-		 * @return column name.
-		 */
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return "Good";
-			else
-				return "Amount";
-		}
-
-		/**
-		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * 
-		 * @param row    the row whose value is to be queried.
-		 * @param column the column whose value is to be queried.
-		 * @return the value Object at the specified cell.
-		 */
-		public Object getValueAt(int row, int column) {
-			Object result = null;
-
-			if (row < goodsList.size()) {
-				Good good = goodsList.get(row);
-				if (column == 0)
-					result = good.getName();
-				else
-					result = goodsMap.get(good);
-			}
-
-			return result;
-		}
-
-		/**
-		 * Updates the table data.
-		 */
-		void updateTable() {
-			// Update good values for settlement.
-			MissionDataBean missionData = getWizard().getMissionData();
-			Settlement settlement = missionData.getStartingSettlement();
-			Iterator<Good> i = goodsList.iterator();
-			while (i.hasNext()) {
-				Good good = i.next();
-				try {
-					int amount = (int) CommerceUtil.getNumInInventory(good, settlement);
-					if (checkForVehicle(good))
-						amount--;
-					goodsMap.put(good, amount);
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Issues updating a good in SupplyTableModel table: " + e.getMessage());
-				}
-			}
-			fireTableDataChanged();
-		}
-
-		/**
-		 * Checks if good is the same type as the mission vehicle.
-		 * 
-		 * @param good the good to check.
-		 * @return true if same type of vehicle.
-		 */
-		private boolean checkForVehicle(Good good) {
-			boolean result = false;
-
-			if (good.getCategory() == GoodCategory.VEHICLE) {
-				String missionRoverName = getWizard().getMissionData().getRover().getDescription();
-				if (good.getName().equalsIgnoreCase(missionRoverName))
-					result = true;
-			}
-
-			return result;
-		}
-
-		/**
-		 * Adds an amount of a good to the table.
-		 * 
-		 * @param good   the good to add.
-		 * @param amount the amount to add.
-		 */
-		void addGoodAmount(Good good, int amount) {
-			if (amount > 0) {
-				amount += goodsMap.get(good);
-				goodsMap.put(good, amount);
-				fireTableDataChanged();
-			}
-		}
-
-		/**
-		 * Removes an amount of a good from the table.
-		 * 
-		 * @param good   the good to remove.
-		 * @param amount the amount to remove.
-		 */
-		void removeGoodAmount(Good good, int amount) {
-			if (amount > 0) {
-				int finalAmount = goodsMap.get(good) - amount;
-				goodsMap.put(good, finalAmount);
-				int selectedGoodIndex = supplyTable.getSelectedRow();
-				fireTableDataChanged();
-				if (selectedGoodIndex > -1) {
-					supplyTable.setRowSelectionInterval(selectedGoodIndex, selectedGoodIndex);
-				}
-			}
-		}
-	}
-
-	private class CargoTableModel extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-		private Map<Good, Integer> cargoMap;
-		private List<Good> cargoList;
-
-		/**
-		 * Constructor.
-		 */
-		private CargoTableModel() {
-			// Use AbstractTableModel constructor.
-			super();
-
-			// Initialize cargo map and list.
-			cargoList = new ArrayList<Good>();
-			cargoMap = new HashMap<Good, Integer>();
-		}
-
-		/**
-		 * Returns the number of rows in the model.
-		 * 
-		 * @return number of rows.
-		 */
-		public int getRowCount() {
-			return cargoList.size();
-		}
-
-		/**
-		 * Returns the number of columns in the model.
-		 * 
-		 * @return number of columns.
-		 */
-		public int getColumnCount() {
-			return 2;
-		}
-
-		/**
-		 * Returns the name of the column at columnIndex.
-		 * 
-		 * @param columnIndex the column index.
-		 * @return column name.
-		 */
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return "Good";
-			else
-				return "Amount";
-		}
-
-		/**
-		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * 
-		 * @param row    the row whose value is to be queried.
-		 * @param column the column whose value is to be queried.
-		 * @return the value Object at the specified cell.
-		 */
-		public Object getValueAt(int row, int column) {
-			Object result = null;
-
-			if (row < cargoList.size()) {
-				Good good = cargoList.get(row);
-				if (column == 0)
-					result = good.getName();
-				else
-					result = cargoMap.get(good);
-			}
-
-			return result;
-		}
-
-		/**
-		 * Updates the table data.
-		 */
-		void updateTable() {
-			// Clear map and list.
-			cargoList.clear();
-			cargoMap.clear();
-			fireTableDataChanged();
-		}
-
-		/**
-		 * Adds an amount of a good to the table.
-		 * 
-		 * @param good   the good to add.
-		 * @param amount the amount to add.
-		 */
-		void addGoodAmount(Good good, int amount) {
-			if (amount > 0) {
-				if (cargoList.contains(good))
-					amount += cargoMap.get(good);
-				else
-					cargoList.add(good);
-				cargoMap.put(good, amount);
-				fireTableDataChanged();
-			}
-		}
-
-		/**
-		 * Removes an amount of a good from the table.
-		 * 
-		 * @param good   the good to remove.
-		 * @param amount the amount to remove.
-		 */
-		void removeGoodAmount(Good good, int amount) {
-			if (amount > 0) {
-				int currentAmount = 0;
-				if (cargoList.contains(good))
-					currentAmount = cargoMap.get(good);
-				int finalAmount = currentAmount - amount;
-
-				if (finalAmount > 0) {
-					int selectedGoodIndex = cargoTable.getSelectedRow();
-					cargoMap.put(good, finalAmount);
-					fireTableDataChanged();
-					if (selectedGoodIndex > -1)
-						cargoTable.setRowSelectionInterval(selectedGoodIndex, selectedGoodIndex);
-				} else {
-					cargoList.remove(good);
-					cargoMap.remove(good);
-					fireTableDataChanged();
-				}
-			}
-		}
-
-		/**
-		 * Gets the cargo goods.
-		 * 
-		 * @return map of goods and integers.
-		 */
-		Map<Good, Integer> getCargoGoods() {
-			return new HashMap<Good, Integer>(cargoMap);
-		}
-
-		/**
-		 * Checks if a vehicle is being towed.
-		 * 
-		 * @return true if vehicle is towed.
-		 */
-		private boolean hasCargoVehicle() {
-			boolean result = false;
-			Iterator<Good> i = cargoList.iterator();
-			while (i.hasNext()) {
-				if (i.next().getCategory() == GoodCategory.VEHICLE)
-					result = true;
-			}
-			return result;
-		}
 	}
 }
