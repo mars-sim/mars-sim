@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -456,25 +457,63 @@ abstract class EVAMission extends RoverMission {
 	 */
 	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
 
-		List<Coordinates> unorderedSites2 = new ArrayList<>(unorderedSites);
-		List<Coordinates> orderedSites = new ArrayList<>(unorderedSites2.size());
+		// 1) Greedy nearest-neighbor initial route (existing behavior)
+		List<Coordinates> unvisited = new ArrayList<>(unorderedSites);
+		List<Coordinates> orderedSites = new ArrayList<>(unvisited.size());
 		Coordinates currentLocation = startingLocation;
-		while (!unorderedSites2.isEmpty()) {
-			Coordinates shortest = unorderedSites2.get(0);
+		while (!unvisited.isEmpty()) {
+			Coordinates shortest = unvisited.get(0);
 			double shortestDistance = currentLocation.getDistance(shortest);
-			for(Coordinates site : unorderedSites2) {
+			for (int i = 1; i < unvisited.size(); i++) {
+				Coordinates site = unvisited.get(i);
 				double distance = currentLocation.getDistance(site);
 				if (distance < shortestDistance) {
 					shortest = site;
 					shortestDistance = distance;
 				}
 			}
-
-			unorderedSites2.remove(shortest);
+			unvisited.remove(shortest);
 			orderedSites.add(shortest);
 			currentLocation = shortest;
 		}
 
+		// 2) Tiny 2-opt improvement pass for an open path (start -> p0 -> ... -> pN)
+		twoOptImprove(startingLocation, orderedSites);
+
 		return orderedSites;
+	}
+
+	/**
+	 * In-place 2-opt improvement for an open route:
+	 * considers reversing segments [i..k] and keeps changes that reduce total distance.
+	 * O(n^2), very fast for the usual small number of EVA sites.
+	 */
+	private static void twoOptImprove(Coordinates start, List<Coordinates> route) {
+		final int n = route.size();
+		if (n < 4) return; // nothing meaningful to optimize
+
+		boolean improved = true;
+		while (improved) {
+			improved = false;
+			for (int i = 0; i < n - 2; i++) {
+				Coordinates prev = (i == 0) ? start : route.get(i - 1);
+				Coordinates A = route.get(i);
+				for (int k = i + 1; k < n - 1; k++) { // require k+1 exists
+					Coordinates B = route.get(k);
+					Coordinates next = route.get(k + 1);
+
+					double oldCost = prev.getDistance(A) + B.getDistance(next);
+					double newCost = prev.getDistance(B) + A.getDistance(next);
+
+					if (newCost + 1e-9 < oldCost) {
+						// Reverse the segment [i..k] to reduce total travel
+						Collections.reverse(route.subList(i, k + 1));
+						improved = true;
+						// After reverse, A is now route.get(i); refresh for subsequent comparisons
+						A = route.get(i);
+					}
+				}
+			}
+		}
 	}
 }
