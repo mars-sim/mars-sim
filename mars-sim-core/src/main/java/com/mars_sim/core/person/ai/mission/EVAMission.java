@@ -244,7 +244,9 @@ abstract class EVAMission extends RoverMission {
 		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
 			
-			// Check below if anyone has been "teleported"
+			// First, clean up any "teleported" members to avoid stale state
+			checkTeleported();
+
 			if (isEveryoneInRover()) {
 				// End phase
 				phaseEVAEnded();
@@ -263,6 +265,9 @@ abstract class EVAMission extends RoverMission {
 	 */
 	void checkTeleported() {
 
+		// Collect first to avoid modifying underlying collection during iteration
+		List<Worker> toRemove = new ArrayList<>();
+
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
 
@@ -274,14 +279,13 @@ abstract class EVAMission extends RoverMission {
 				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				
-				// Use Iterator's remove() method
-//				i.remove();
-				
-				// Call memberLeave to set mission to null will cause this member to drop off the member list
-//				memberLeave(member);
-
-				break;
+				toRemove.add(member);
 			}
+		}
+
+		// Perform proper removal with bookkeeping after iteration
+		for (Worker member : toRemove) {
+			removeMember(member);
 		}
 	}
 	
