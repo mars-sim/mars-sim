@@ -350,11 +350,25 @@ abstract class EVAMission extends RoverMission {
 	 * @return range (km) limit.
 	 */
 	protected double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
-		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites;
+		// Include a small sunlight-wait allowance so planning matches runtime behavior.
+		// (Consistent with getEstimatedRemainingEVATime(...) which already uses this mod.)
+		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites * getSunriseWaitMod();
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
+		if (tripTimeTravellingLimit <= 0D) {
+			return 0D; // no travel time left once site time + wait are accounted for
+		}
 		double averageSpeed = getAverageVehicleSpeedForOperators();
 		double averageSpeedMillisol = averageSpeed / MarsTime.MILLISOLS_PER_HOUR;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+
+	/**
+	 * Small planning allowance for waiting on sunlight during EVA.
+	 * If EVA can occur in any light (NONE), no wait is assumed.
+	 */
+	private double getSunriseWaitMod() {
+		// MAX_WAIT_SUBLIGHT is in millisols; convert to a multiplier like in getEstimatedRemainingEVATime()
+		return (minSunlight == LightLevel.NONE) ? 1.0 : 1.0 + (MAX_WAIT_SUBLIGHT / 1000.0);
 	}
 
 	/**
