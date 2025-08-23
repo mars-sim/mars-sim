@@ -38,6 +38,8 @@ abstract class EVAMission extends RoverMission {
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 	// Require sunlight to be stable for at least this long (in millisols) before resuming EVA
 	private static final double SUNLIGHT_STABLE_MIN = 10D;
+	// Treat two EVA sites closer than this as “the same place” to avoid micro-hops (km)
+	private static final double MIN_SITE_SEPARATION_KM = 0.10D; // ~100 meters
 
 	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
 
@@ -514,7 +516,8 @@ abstract class EVAMission extends RoverMission {
 		// 2) Tiny 2-opt improvement pass for an open path (start -> p0 -> ... -> pN)
 		twoOptImprove(startingLocation, orderedSites);
 
-		return orderedSites;
+		// 3) Prune micro-sites that are effectively the same location (avoid repeated EVA churn)
+		return pruneCloseSites(orderedSites, MIN_SITE_SEPARATION_KM);
 	}
 
 	/**
@@ -549,5 +552,24 @@ abstract class EVAMission extends RoverMission {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Remove consecutive sites that are closer than a minimum separation.
+	 * This prevents “stop, sample, move 50m, stop again” loops that waste time/supplies.
+	 */
+	private static List<Coordinates> pruneCloseSites(List<Coordinates> route, double minKm) {
+		if (route.size() < 2) return route;
+		List<Coordinates> pruned = new ArrayList<>(route.size());
+		Coordinates lastKept = route.get(0);
+		pruned.add(lastKept);
+		for (int i = 1; i < route.size(); i++) {
+			Coordinates c = route.get(i);
+			if (lastKept.getDistance(c) >= minKm) {
+				pruned.add(c);
+				lastKept = c;
+			}
+		}
+		return pruned;
 	}
 }
