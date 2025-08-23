@@ -36,6 +36,8 @@ abstract class EVAMission extends RoverMission {
 
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
+	// Require sunlight to be stable for at least this long (in millisols) before resuming EVA
+	private static final double SUNLIGHT_STABLE_MIN = 10D;
 
 	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
 
@@ -44,6 +46,8 @@ abstract class EVAMission extends RoverMission {
 	private int containerID;
 	private int containerNum;
 	private LightLevel minSunlight;
+	// Tracks when sunlight first became "good enough" during WAIT_SUNLIGHT (phase-relative millisols)
+	private double sunlightOkSinceInWait = Double.NaN;
 
     protected EVAMission(MissionType missionType, 
             Worker startingPerson, Rover rover,
@@ -110,6 +114,8 @@ abstract class EVAMission extends RoverMission {
 			else {
 				// Wait for sunrise
 				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
+				// reset stability window whenever we enter WAIT_SUNLIGHT
+				sunlightOkSinceInWait = Double.NaN;
 				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
 			}
 		}
@@ -122,13 +128,25 @@ abstract class EVAMission extends RoverMission {
 	 */
 	private void performWaitForSunlight(Worker member) {
 		if (isEnoughSunlightForEVA()) {
-			logger.info(getRover(), "Stop wait as enough sunlight");
-			setPhaseEnded(true);
+			// Start (or continue) counting a stability window
+			if (Double.isNaN(sunlightOkSinceInWait)) {
+				sunlightOkSinceInWait = getPhaseDuration();
+			}
+			double stableFor = getPhaseDuration() - sunlightOkSinceInWait;
+			if (stableFor >= SUNLIGHT_STABLE_MIN) {
+				logger.info(getRover(), "Stop wait as enough sunlight");
+				setPhaseEnded(true);
+				sunlightOkSinceInWait = Double.NaN; // reset for next time
+			}
 		}
-		else if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
-			logger.info(getRover(), "Waited long enough");
-			setPhaseEnded(true);
-			startTravellingPhase();
+		else {
+			// Sunlight dropped below the threshold; reset the stability window
+			sunlightOkSinceInWait = Double.NaN;
+			if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
+				logger.info(getRover(), "Waited long enough");
+				setPhaseEnded(true);
+				startTravellingPhase();
+			}
 		}
 	}
 
@@ -302,6 +320,8 @@ abstract class EVAMission extends RoverMission {
 	 */
 	protected void phaseEVAStarted() {
 		activeEVA = true;
+		// Clear any lingering WAIT_SUNLIGHT state
+		sunlightOkSinceInWait = Double.NaN;
 	}
 
 	/**
