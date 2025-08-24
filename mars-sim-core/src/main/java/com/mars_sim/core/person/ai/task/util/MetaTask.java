@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Simulation;

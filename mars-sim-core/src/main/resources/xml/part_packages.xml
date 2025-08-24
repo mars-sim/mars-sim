@@ -15,7 +15,7 @@
 
 	<!-- Part package -->
 	<!-- name: the unique name of the package. -->
-		<part-package name="tech" >
+	<part-package name="tech" >
 
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
@@ -63,7 +63,7 @@
 
 	
 	
-	<part-package name="package 1" >
+	<part-package name="standard package">
 
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
@@ -78,25 +78,24 @@
 		<part type="methanol fuel cell" number="200"/>
 		<part type="methanol fuel cell stack" number="4"/>		
 		<part type="polycarbonate roofing" number="10"/>
-		<!-- 2015-05-22 Added the following new parts -->
+
 		<part type="pathogen filter" number="3"/>
 		<part type="charcoal filter" number="5"/>
 		<part type="electrostatic precipitator" number="5"/>
 		<part type="air duct" number="10"/>
 		<part type="flexible hose" number="10"/>
 
-		<!-- 2015-05-18 Added the following new parts -->
 		<part type="SLS 3D Printer" number="4"/>
 		<part type="heat pump" number="2"/>
 		<part type="carbon dioxide laser" number="5"/>
 		<part type="helium neon laser" number="5"/>
 		<part type="optical lens" number="20"/>
 		<part type="optical prism" number="20"/>
-		<!-- 2015-03-09 Added the following new parts -->
+
 		<part type="light emitting diode kit" number="20" />
 		<part type="light emitting diode bulb" number="50" />
 		<part type="mushroom containment kit" number="5" />
-		<!-- 2014-11-20 Added the following new parts -->
+
 		<part type="microcontroller" number="60" />
 		<part type="microwave" number="3" />
 		<part type="water tank" number="5" />
@@ -112,7 +111,7 @@
 		<part type="refrigerator" number="3" />
 		<part type="stove" number="3" />
 		<part type="ventilation fan" number="3" />
- 		<!-- Prior to 2014-11-20 -->
+
 		<part type="airleak patch" number="160" />
 		<part type="fire extinguisher" number="26" />
 		<part type="rover wheel" number="12" />
@@ -187,362 +186,16 @@
 
 	<part-package name="package 2" >
 
-		<part type="petri dish" number="200"/>
-		<part type="garment" number="16"/>
-		<part type="fiberglass" number="6"/>
-		<part type="fiberglass cloth" number="20"/>
-		<part type="logic board" number="50"/>
-	    <part type="methane fuel cell" number="400"/>
-		<part type="methane fuel cell stack" number="6"/>
-		<part type="methanol fuel cell" number="400"/>
-		<part type="methanol fuel cell stack" number="6"/>			
-		<part type="polycarbonate roofing" number="20"/>
-		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filter" number="6"/>
-		<part type="charcoal filter" number="10"/>
-		<part type="electrostatic precipitator" number="10"/>
-		<part type="air duct" number="20"/>
-		<part type="flexible hose" number="20"/>
-		<!-- 2015-05-18 Added the following new parts -->
-		<part type="SLS 3D Printer" number="6"/>
-		<part type="heat pump" number="5"/>
-		<part type="carbon dioxide laser" number="10"/>
-		<part type="helium neon laser" number="10"/>
-		<part type="optical lens" number="40"/>
-		<part type="optical prism" number="40"/>
-		<!-- 2015-03-09 Added the following new parts -->
-		<part type="light emitting diode kit" number="40" />
-		<part type="light emitting diode bulb" number="100" />
-		<part type="mushroom containment kit" number="10" />
-		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="120" />
-		<part type="microwave" number="10" />
-		<part type="water tank" number="10" />
-		<part type="water pump small" number="6" />
-		<part type="water pump large" number="2" />
-		<part type="carbon dioxide pump" number="10" />
-		<part type="transformer" number="10" />
-		<part type="power transistor" number="120" />
-		<part type="autoclave" number="10" />
-		<part type="blender" number="10" />
-		<part type="air compressor" number="10" />
-		<part type="oven" number="10" />
-		<part type="refrigerator" number="10" />
-		<part type="stove" number="10" />
-		<part type="ventilation fan" number="10" />
- 		<!-- Prior to 2014-11-20 -->
-		<part type="airleak patch" number="306" />
-		<part type="fire extinguisher" number="46" />
-		<part type="rover wheel" number="12" />
-		<part type="gasket" number="168" />
-		<part type="timing belt" number="16" />
-		<part type="valve" number="92" />
-		<part type="plastic bottle" number="286" />
-		<part type="spark plug" number="18" />
-		<part type="coolant bottle" number="18" />
-		<part type="electrical wire" number="521" />
-		<part type="power cable" number="24" />
-		<part type="wire connector" number="331" />
-		<part type="plastic tubing" number="104" />
-		<part type="lubricant bottle" number="24" />
-		<part type="battery module" number="4" />
-		<part type="radio antenna" number="10" />
-		<part type="satellite dish" number="6" />
-		<part type="communications circuit board" number="4" />
-		<part type="navigation circuit board" number="2" />
-		<part type="suit heating unit" number="18" />
-		<part type="plastic pipe" number="39" />
-		<part type="steel pipe" number="18" />
-		<part type="copper pipe" number="22" />
-		<part type="iron pipe" number="18" />
-		<part type="eva helmet" number="32" />
-		<part type="helmet visor" number="16" />
-		<part type="pressure suit" number="32" />
-		<part type="coveralls" number="32" />
-		<part type="work gloves" number="32" />
-		<part type="eva gloves" number="32" />
-		<part type="eva boots" number="32" />
-		<part type="eva pads" number="32" />
-		<part type="eva backpack" number="16" />
-		<part type="eva antenna" number="64" />
-		<part type="eva battery" number="32" />
-		<part type="eva radio" number="38" />
-		<part type="fuel pump" number="2" />
-		<part type="oxygen pump" number="2" />
-		<part type="rover windshield" number="2" />
-		<part type="window" number="4" />
-		<part type="winch" number="2" />
-		<part type="Stepper Motor" number="10"/>
-		<part type="Motor 5 kW" number="8" />
-		<part type="Motor 10 kW" number="5" />
-		<part type="Motor 30 kW" number="3" />
-		<part type="propeller" number="4"/>		
-		<part type="vehicle chassis panel" number="4" />
-		<part type="rover control panel" number="2" />
-		<part type="fuel tank" number="20" />
-		<part type="gas tank" number="20" />
-		<part type="water tank" number="20" />
-		<part type="heating element" number="46" />
-		<part type="heat pipe" number="46" />
-		<part type="pneumatic drill" number="2" />
-		<part type="backhoe" number="2" />
-		<part type="bulldozer blade" number="2" />
-		<part type="soil compactor" number="2" />
-		<part type="crane boom" number="2" />
-		<part type="wheel small" number="2" />
-		<part type="utility vehicle control panel" number="2" />
-		<part type="solar panel" number="6" />
-		<part type="bore drill bit" number="2" />
-		<part type="bore drill pipe" number="30" />
-		<part type="drilling rig" number="2" />
-		<part type="condenser coil" number="2" />
-		<part type="steel post" number="15" />
-		<part type="plastic sheet" number="6" />
-		<part type="decontamination kit" number="4" />
-		<part type="plasma cutter" number="3" />
-		<part type="semiconductor wafer" number="10" />
-		<part type="Biosensor" number="8" />
-						
 	</part-package>
 
+
 	<part-package name="package 3">
-	
-		<part type="petri dish" number="300"/>
-		<part type="garment" number="24"/>
-		<part type="fiberglass" number="12"/>
-		<part type="fiberglass cloth" number="40"/>
-		<part type="logic board" number="100"/>
-		<part type="methane fuel cell" number="600"/>
-		<part type="methane fuel cell stack" number="8"/>
-		<part type="methanol fuel cell" number="600"/>
-		<part type="methanol fuel cell stack" number="8"/>			
-		<part type="polycarbonate roofing" number="30"/>
-		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filter" number="9"/>
-		<part type="charcoal filter" number="15"/>
-		<part type="electrostatic precipitator" number="15"/>
-		<part type="air duct" number="30"/>
-		<part type="flexible hose" number="30"/>
-		<!-- 2015-05-18 Added the following new parts -->
-		<part type="SLS 3D Printer" number="8"/>
-		<part type="heat pump" number="10"/>
-		<part type="carbon dioxide laser" number="20"/>
-		<part type="helium neon laser" number="20"/>
-		<part type="optical lens" number="60"/>
-		<part type="optical prism" number="60"/>
-		<!-- 2015-03-09 Added the following new parts -->
-		<part type="light emitting diode kit" number="60" />
-		<part type="light emitting diode bulb" number="150" />
-		<part type="mushroom containment kit" number="15" />
-		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="160" />
-		<part type="microwave" number="15" />
-		<part type="water tank" number="15" />
-		<part type="water pump small" number="9" />
-		<part type="water pump large" number="3" />
-		<part type="carbon dioxide pump" number="15" />
-		<part type="transformer" number="15" />
-		<part type="power transistor" number="160" />
-		<part type="autoclave" number="15" />
-		<part type="blender" number="15" />
-		<part type="air compressor" number="15" />
-		<part type="oven" number="15" />
-		<part type="refrigerator" number="15" />
-		<part type="stove" number="15" />
-		<part type="ventilation fan" number="15" />
- 		<!-- Prior to 2014-11-20 -->
-		<part type="airleak patch" number="468" />
-		<part type="fire extinguisher" number="72" />
-		<part type="rover wheel" number="22" />
-		<part type="gasket" number="258" />
-		<part type="timing belt" number="34" />
-		<part type="valve" number="138" />
-		<part type="plastic bottle" number="460" />
-		<part type="spark plug" number="36" />
-		<part type="coolant bottle" number="36" />
-		<part type="electrical wire" number="797" />
-		<part type="power cable" number="32" />
-		<part type="wire connector" number="511" />
-		<part type="plastic tubing" number="160" />
-		<part type="lubricant bottle" number="46" />
-		<part type="battery module" number="10" />
-		<part type="radio antenna" number="20" />
-		<part type="satellite dish" number="10" />
-		<part type="communications circuit board" number="8" />
-		<part type="navigation circuit board" number="4" />
-		<part type="suit heating unit" number="26" />
-		<part type="plastic pipe" number="35" />
-		<part type="steel pipe" number="26" />
-		<part type="copper pipe" number="32" />
-		<part type="iron pipe" number="26" />
-		<part type="eva helmet" number="48" />
-		<part type="helmet visor" number="24" />
-		<part type="pressure suit" number="48" />
-		<part type="coveralls" number="48" />
-		<part type="work gloves" number="48" />
-		<part type="eva gloves" number="48" />
-		<part type="eva boots" number="48" />
-		<part type="eva pads" number="48" />
-		<part type="eva backpack" number="24" />
-		<part type="eva antenna" number="96" />
-		<part type="eva battery" number="48" />
-		<part type="eva radio" number="58" />
-		<part type="fuel pump" number="6" />
-		<part type="oxygen pump" number="4" />
-		<part type="rover windshield" number="4" />
-		<part type="window" number="8" />
-		<part type="winch" number="4" />
-		<part type="Stepper Motor" number="14"/>
-		<part type="Motor 5 kW" number="10" />
-		<part type="Motor 10 kW" number="6" />
-		<part type="Motor 30 kW" number="4" />
-		<part type="propeller" number="6"/>			
-		<part type="vehicle chassis panel" number="8" />
-		<part type="rover control panel" number="4" />
-		<part type="fuel tank" number="40" />
-		<part type="gas tank" number="40" />
-		<part type="water tank" number="40" />
-		<part type="heating element" number="72" />
-		<part type="heat pipe" number="72" />
-		<part type="pneumatic drill" number="4" />
-		<part type="backhoe" number="4" />
-		<part type="bulldozer blade" number="4" />
-		<part type="soil compactor" number="4" />
-		<part type="crane boom" number="4" />
-		<part type="wheel small" number="2" />
-		<part type="utility vehicle control panel" number="2" />
-		<part type="solar panel" number="8" />
-		<part type="bore drill bit" number="4" />
-		<part type="bore drill pipe" number="40" />
-		<part type="drilling rig" number="4" />
-		<part type="condenser coil" number="4" />
-		<part type="steel post" number="15" />
-		<part type="plastic sheet" number="6" />
-		<part type="decontamination kit" number="6" />
-		<part type="plasma cutter" number="4" />
-		<part type="semiconductor wafer" number="15" />
-		<part type="Biosensor" number="12" />
+
 				
 	</part-package>
 
 	<part-package name="package 4">
 
-		<part type="petri dish" number="400"/>
-		<part type="garment" number="48"/>
-		<part type="fiberglass" number="24"/>
-		<part type="fiberglass cloth" number="80"/>
-		<part type="logic board" number="200"/>
-		<part type="methane fuel cell" number="800"/>
-		<part type="methane fuel cell stack" number="12"/>
-		<part type="methanol fuel cell" number="800"/>
-		<part type="methanol fuel cell stack" number="12"/>			
-		<part type="polycarbonate roofing" number="50"/>
-		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filter" number="12"/>
-		<part type="charcoal filter" number="20"/>
-		<part type="electrostatic precipitator" number="20"/>
-		<part type="air duct" number="40"/>
-		<part type="flexible hose" number="40"/>
-		<!-- 2015-05-18 Added the following new parts -->
-		<part type="SLS 3D Printer" number="16"/>
-		<part type="heat pump" number="20"/>
-		<part type="carbon dioxide laser" number="30"/>
-		<part type="helium neon laser" number="30"/>
-		<part type="optical lens" number="80"/>
-		<part type="optical prism" number="80"/>
-		<!-- 2015-03-09 Added the following new parts -->
-		<part type="light emitting diode kit" number="100" />
-		<part type="light emitting diode bulb" number="200" />
-		<part type="mushroom containment kit" number="20" />
-		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="400" />
-		<part type="microwave" number="10" />
-		<part type="water tank" number="25" />
-		<part type="water pump small" number="12" />
-		<part type="water pump large" number="4" />
-		<part type="carbon dioxide pump" number="15" />
-		<part type="transformer" number="25" />
-		<part type="power transistor" number="400" />
-		<part type="autoclave" number="15" />
-		<part type="blender" number="15" />
-		<part type="air compressor" number="15" />
-		<part type="oven" number="15" />
-		<part type="refrigerator" number="15" />
-		<part type="stove" number="15" />
-		<part type="ventilation fan" number="15" />
- 		<!-- Prior to 2014-11-20 -->
-		<part type="airleak patch" number="536" />
-		<part type="fire extinguisher" number="78" />
-		<part type="rover wheel" number="38" />
-		<part type="gasket" number="372" />
-		<part type="timing belt" number="58" />
-		<part type="valve" number="202" />
-		<part type="plastic bottle" number="620" />
-		<part type="spark plug" number="64" />
-		<part type="coolant bottle" number="64" />
-		<part type="electrical wire" number="1104" />
-		<part type="power cable" number="36" />
-		<part type="wire connector" number="716" />
-		<part type="plastic tubing" number="220" />
-		<part type="lubricant bottle" number="74" />
-		<part type="battery module" number="16" />
-		<part type="radio antenna" number="30" />
-		<part type="satellite dish" number="16" />
-		<part type="communications circuit board" number="12" />
-		<part type="navigation circuit board" number="8" />
-		<part type="suit heating unit" number="26" />
-		<part type="plastic pipe" number="86" />
-		<part type="steel pipe" number="38" />
-		<part type="copper pipe" number="40" />
-		<part type="iron pipe" number="38" />
-		<part type="eva helmet" number="48" />
-		<part type="helmet visor" number="24" />
-		<part type="pressure suit" number="48" />
-		<part type="coveralls" number="48" />
-		<part type="work gloves" number="48" />
-		<part type="eva gloves" number="48" />
-		<part type="eva boots" number="48" />
-		<part type="eva pads" number="48" />
-		<part type="eva backpack" number="24" />
-		<part type="eva antenna" number="96" />
-		<part type="eva battery" number="48" />
-		<part type="eva radio" number="58" />
-		<part type="fuel pump" number="10" />
-		<part type="oxygen pump" number="8" />
-		<part type="rover windshield" number="8" />
-		<part type="window" number="12" />
-		<part type="winch" number="8" />
-		<part type="Stepper Motor" number="16"/>
-		<part type="Motor 5 kW" number="12" />
-		<part type="Motor 10 kW" number="8" />
-		<part type="Motor 30 kW" number="6" />
-		<part type="propeller" number="12"/>			
-		<part type="vehicle chassis panel" number="14" />
-		<part type="rover control panel" number="8" />
-		<part type="fuel tank" number="80" />
-		<part type="gas tank" number="80" />
-		<part type="water tank" number="80" />
-		<part type="heating element" number="100" />
-		<part type="heat pipe" number="100" />
-		<part type="pneumatic drill" number="6" />
-		<part type="backhoe" number="6" />
-		<part type="bulldozer blade" number="6" />
-		<part type="soil compactor" number="6" />
-		<part type="crane boom" number="6" />
-		<part type="wheel small" number="4" />
-		<part type="utility vehicle control panel" number="4" />
-		<part type="solar panel" number="8" />
-		<part type="bore drill bit" number="6" />
-		<part type="bore drill pipe" number="60" />
-		<part type="drilling rig" number="6" />
-		<part type="condenser coil" number="6" />
-		<part type="steel post" number="40" />
-		<part type="plastic sheet" number="16" />
-		<part type="decontamination kit" number="12" />
-		<part type="plasma cutter" number="5" />
-		<part type="semiconductor wafer" number="20" />
-		<part type="Biosensor" number="24" />
-				
 	</part-package>
 
 </part-package-list>

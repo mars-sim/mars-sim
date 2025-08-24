@@ -610,4 +610,38 @@
 	    <standalone type="Wind Turbine" xloc="105.0" yloc="-160.0" facing="0.0" />
 	</building-package>
 
+	<!-- Note: in future, brine water well shouldn't'have a standard location and 
+	           would be scattered throughout the settlement vicinity wherever 
+	           a water ice pocket is located -->
+	           
+   	<building-package name="Brine Water Well Set 1 - 1x1">
+		<standalone type="Brine Water Well" xloc="30.0" yloc="20.0" facing="0.0" />
+	</building-package>
+	
+	<building-package name="Brine Water Well Set 1 - 1x2">
+		<standalone type="Brine Water Well" xloc="30.0" yloc="20.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="40.0" facing="0.0" />
+	</building-package>
+	
+	<building-package name="Brine Water Well Set 1 - 1x3">
+		<standalone type="Brine Water Well" xloc="30.0" yloc="20.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="40.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="60.0" facing="0.0" />
+	</building-package>
+	
+	<building-package name="Brine Water Well Set 1 - 1x4">
+		<standalone type="Brine Water Well" xloc="30.0" yloc="20.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="40.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="60.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="80.0" facing="0.0" />
+	</building-package>	
+	
+	<building-package name="Brine Water Well Set 1 - 1x5">
+		<standalone type="Brine Water Well" xloc="30.0" yloc="20.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="40.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="60.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="80.0" facing="0.0" />
+		<standalone type="Brine Water Well" xloc="30.0" yloc="100.0" facing="0.0" />
+	</building-package>
+		
 </building-package-list>

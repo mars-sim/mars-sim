@@ -672,6 +672,11 @@
 		its unique pore structures can selectively adsorb desired or 
 		undesired molecules and make it a perfect basis for catalytically active metals.
 	</resource>
+	
+	<resource name="Hydraulic Fluid" type="compound" phase="liquid"> 
+		Hydraulic Fluid is used for the subsurface robotic excavator to drill through the ice layer. 
+		It lubricates the drill bits.
+	</resource>			 					 		 
 				 		 
 <!-- 11 types of Mineral concentrations.
 

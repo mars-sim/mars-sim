@@ -205,7 +205,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has communication capabilities. -->
 			<communication tech-level="1" >
 				<activity>
-					<!-- The left and right seats of the west table -->
+					<!-- The left and right seats of the west dining table -->
 					<activity-spot xloc="3.43" yloc="-1.3" />
 					<activity-spot xloc="2.12" yloc="-1.3" />
 				</activity>
@@ -214,14 +214,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has a computation capability. -->
 			<!-- computing-unit [CU] : the unit of computation available for this node. -->
 			<!-- power-demand [kW/CU] : the power required in kW for running each CU.
-			     Note that cooling demand was calculated separately based on this figure.  -->
+			     Note that cooling demand was calculated separately based on this figure. -->
 			<computation computing-unit="10.0" power-demand="1.0">
 				<activity>
-					<!--The 1 seat on the south end of long lab bench sector-->
-					<activity-spot xloc="-2.67" yloc="-2.86" />
-					<!--The inner 2 seats on the long table south of the medical bay-->
-					<activity-spot xloc="2.95" yloc="0.35" />				
-					<activity-spot xloc="2.05" yloc="0.02" />
+					<!--The 1 burgundy seat on the south end of long lab bench sector-->
+					<activity-spot xloc="-2.745" yloc="-2.872" />
+					
+					<!--The right and middle seats on the long table south of the medical bay. -->
+					<activity-spot xloc="2.962" yloc="0.181" />				
+					<activity-spot xloc="2.081" yloc="-0.147" />
 					
 				</activity>
 			</computation>
@@ -249,8 +250,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="3.74" yloc="-0.7" name="Weight Lifting"/>
-					<activity-spot xloc="3.84" yloc="0" name="Bike"/>
+					<activity-spot xloc="3.725" yloc="-0.799" name="Weight Lifting"/>
+					<activity-spot xloc="3.822" yloc="-0.177" name="Bike"/>
 				</activity>
 			</exercise>
 
@@ -293,7 +294,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- capacity: the number of population managed. -->
 			<management capacity="1">
 				<activity>
-					<activity-spot xloc="3.74" yloc="0.6" />
+					<!-- The right and middle seats on the long table south of the medical bay. -->
+					<activity-spot xloc="3.807" yloc="0.496" />
 				</activity>
 			</management>
 
@@ -364,9 +366,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PSYCHOLOGY" />
 
 				<activity>
-					<activity-spot xloc="-2.20"  yloc="-2.47" />
-					<activity-spot xloc="-1.69" yloc="-2.15" />
-					<activity-spot xloc="-1.17" yloc="-1.80" />
+					<activity-spot xloc="-2.183"  yloc="-2.603" />
+					<activity-spot xloc="-1.663" yloc="-2.262" />
+					<activity-spot xloc="-1.142" yloc="-1.915" />
 
 				</activity>
 			</research>
@@ -3140,7 +3142,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Large Areothermal Well" width="10.0" length="15.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="02">
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="1000">
 		<description>  The Large Areothermal Well is an geothermal energy production system
 			that features more advance geothermal flow path for ground loop design for
 			capturing heat and creating electricity.
@@ -3155,6 +3157,42 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
+	<building type="Brine Water Well" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="-30" base-mass="400">
+		<description>  A Brine Water Well is built on top of a Deep BoreHole Drilling Site that has layer of
+		  water ice below.
+		 </description>
+		<power-required base-power="0.5" base-power-down-power="0.05"/>
+
+		<functions>
+		
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+			
+			<power-storage capacity="20" discharge-rate="1.3"/>
+			
+			<resource-processing power-down-level="0.2">
+				<process-engine name="Excavate Ice" number-modules="1" />
+				<process-engine name="Melt Ice" number-modules="10" />
+				<process-engine name="Filter Brine Water" number-modules="40" />
+				
+			</resource-processing>
+			
+			<storage stock-capacity="100000">
+				<resource-capacity type="Brine Water" amount="90000.0" />
+				<resource-capacity type="Rock Salt" amount="500.0" />
+				<resource-capacity type="Hydraulic Fluid" amount="500.0" />
+				<resource-capacity type="Ice" amount="8000.0" />
+				
+				<resource-initial type="Hydraulic Fluid" amount="100.0" />
+				<resource-initial type="Rock Salt" amount="10.0" />
+			</storage>
+			
+		</functions>
+	</building> <!-- A brine well -->
+
+	
 	<building type="Concrete Storage" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description>  The Concrete Storage Bin is a small brick bin for

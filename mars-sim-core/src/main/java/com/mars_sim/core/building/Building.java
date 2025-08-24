@@ -174,7 +174,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private ConstructionType constructionType;
 	
 	private LocalPosition loc;
-	
+
 	/** A list of functions of this building. */
 	private List<Function> functions = new ArrayList<>();
 	
@@ -212,7 +212,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.buildingType = buildingType;
 		this.category = category;
 
-
 		this.loc = bounds.getPosition();
 		this.facing = bounds.getFacing();
 		this.width = bounds.getWidth();
@@ -248,7 +247,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public Building(Settlement owner, String id, int zone, String name, BoundedObject bounds,
 						BuildingSpec buildingSpec) {
 		this(owner, id, zone, name, buildingSpec.getValidBounds(bounds), buildingSpec.getName(), buildingSpec.getCategory());
-
+		
 		constructionType = buildingSpec.getConstruction();
 
 		baseLevel = buildingSpec.getBaseLevel();

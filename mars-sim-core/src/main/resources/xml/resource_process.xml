@@ -478,26 +478,55 @@
 	</process> <!-- "Methanol Synthesis" -->
 
 
-	<process name="Melt Ice" power-required="1.25" >
-		<description> Melting permafrost ice and filtering the water. 
-			Specific heat capacity of ice is 2.09 J/g/C			
+	<process name="Excavate Ice" power-required="1" >
+	<description>
+		This process works hand in hand with the "Melt Ice" resource process.
+		
+		Assumptions :		
+		1. Drilling has been performed at specific site and reach subsurface water ice layer.
+		2. Reinforced well casing has been installed on the side of the well to prevent 
+		   contamination and blockages.
+		3. A robotic excavator is below ground to further locate ice pockets and 
+		   and excavate chunks of ice. It melts the subsurface ice.
+		4. A mud pump would pump the liquid water back to the surface through the well.
+		5. An insulated reservoir tank at the well will feed and distribute the water 
+		   to the settlement.
+		     
+	</description>
+	
+		<input resource="hydraulic fluid" rate="40.0" />			
+		<input resource="rock salt" rate="1.0" />
+		
+		<output resource="hydraulic fluid" rate="39.0" />
+		<output resource="ice" rate="4000.0"  />
+		
+	</process> <!-- "Excavate Ice" -->
+	
+	<process name="Melt Ice" power-required="1.8" >
+		<description> This process melts permafrost ice into brine water 
+		
+		a.	Specific heat capacity of ice is 2.09 (or 2.108) J/g/C			
 			e.g. For 1 mol of ice, from -25 C to 0 C
-			      = 18 g * 2.09 * (0 -(-25)) = 0.941 kJ		
+			      = 18 g * 2.09 * (0 -(-25)) = 0.941 kJ	
+			      
+			e.g. For 1 kg ice from -30 C to 0C :
+			     Q = m * c * dT = 1 kg * 2.108 kJ / kg / C * 30C = 63.24 kJ
+			     	      	
 				
-			To transition from ice to liquid, it takes a total of 6.02 kJ/mol			
+		b.	At 0 degree C, to transition from ice to liquid, it takes a total of 6.02 kJ/mol			
 			Specific heat capacity of water is 4.18 J/g/C	
-					
-			To warm liquid water to vapor, it takes a total of 7.52 kJ/mol			
-			It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg	
-						
-			For 1 kg, heating for 25 millisols,
-			Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg			
-			       or 1.3939 kW for 8 kg of ice	or 10.3785 kW for 60 kg of ice			
-						
-			Assume 450kJ/kg extraction energy in this case,
-				.45 MJ * 60 = 27 MJ = 7.5 kWh for 60 kg water
-			Power required = 7.5 kWh / 24 h = 0.3125 kW (Given that 1 MJ = .278 kWh)
-									
+			
+			Latent heat of fusion of water : 334 kJ/kg ( or 80 calories per gram)
+			
+		c.  Combining (a) and (b) above,
+		    
+		    For 1 kg ice, 63.24	kJ + 334 kJ = 397.24 kJ ~ 400 kJ
+		    If heating it for a whole sol (1000 millsol), the power req :
+		          400 kJ / 88.7 millisols per sec / 1000 millisols = 4.5 W
+		          
+		    To melt 400 kg of ice from - 30C in 1000 millisol: 
+		           4.5 W  * 400 = 1.8 kW
+							
 			See "Water and Brines on Mars: Current Evidence and 
 			Implications for MSL", 2013	
 												
@@ -506,18 +535,19 @@
 			electrocatalysis, etc.  to reduce power usage of 
 			ice melting by ~10-fold.	
 			2. Exposing ice sunlight is the most economic way of melting ice.
-			3. Ice melts when outside temperature is above zero deg Celsius  
+			3. Ice melts when outside temperature is above zero deg Celsius 
+				 
 		</description>
 		<input resource="ice" rate="400.0"  />
 		
-		<output resource="brine water" rate="340.0"  />
-		<output resource="regolith" rate="40.0"  />
+		<output resource="brine water" rate="380.0"  />
+		<output resource="regolith" rate="15.0"  />
 		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-		<output resource="rock salt" rate="20.0"  />
+		<output resource="rock salt" rate="5.0"  />
 	</process>
 
 
-	<process name="Filter Brine Water" power-required=".05" >
+	<process name="Filter Brine Water" power-required=".1" >
 		<description> 
 			Removing perchlorate from a Martian settlement's water supply can be done 
 			in a number of ways. Methods to remove perchlorates from water include 
