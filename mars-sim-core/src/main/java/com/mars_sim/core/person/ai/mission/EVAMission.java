@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -50,6 +51,20 @@ abstract class EVAMission extends RoverMission {
 	private LightLevel minSunlight;
 	// Tracks when sunlight first became "good enough" during WAIT_SUNLIGHT (phase-relative millisols)
 	private double sunlightOkSinceInWait = Double.NaN;
+
+	// ------------------------------
+	// BEGIN: Teleport-watch support
+	// ------------------------------
+
+	/** Tracks last-known EVA positions to detect "teleportation". */
+	private final Map<Person, Coordinates> teleportWatch = new ConcurrentHashMap<>();
+
+	/** Ignore tiny drift to avoid false positives during airlock/suit transitions. */
+	private static final double TELEPORT_TOLERANCE_METERS = 2.0D;
+
+	// ------------------------------
+	//  END: Teleport-watch support
+	// ------------------------------
 
     protected EVAMission(MissionType missionType, 
             Worker startingPerson, Rover rover,
@@ -260,6 +275,9 @@ abstract class EVAMission extends RoverMission {
 					addMissionLog("EVA operation Terminated.");
 				}
 			}
+
+			// Keep last-known positions fresh for teleport detection
+			updateTeleportWatch();
 		} 
 
 		// An EVA-ending event was triggered. End EVA phase.
@@ -282,10 +300,46 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Ensures no "teleported" person is still a member of this mission.
-	 * Note: still investigating the cause and how to handle this.
+	 * Detects sudden invalid jumps in member positions and removes any
+	 * member who has "teleported" to a settlement vicinity.
 	 */
 	void checkTeleported() {
+		// --- Position-based detection with tolerance (safe iteration & removal) ---
+		synchronized (teleportWatch) {
+			final Iterator<Map.Entry<Person, Coordinates>> it = teleportWatch.entrySet().iterator();
+			while (it.hasNext()) {
+				final Map.Entry<Person, Coordinates> e = it.next();
+				final Person p = e.getKey();
+				final Coordinates last = e.getValue();
 
+				Coordinates now = null;
+				try {
+					// Assumes Person exposes its current surface coordinates.
+					// (If the API differs locally, adapt this accessor accordingly.)
+					now = p.getCoordinates();
+				}
+				catch (Throwable t) {
+					// Defensive: if coordinates unavailable for this person now, skip distance check
+				}
+
+				if (now == null || last == null) {
+					continue; // nothing to compare yet
+				}
+
+				double dMeters = distanceMeters(now, last);
+				if (dMeters > TELEPORT_TOLERANCE_METERS) {
+					logger.severe(p, 10_000, "Invalid 'teleportation' detected. last=" + last + ", now=" + now + ".");
+					// Safe removal without ConcurrentModificationException
+					it.remove();
+				}
+				else {
+					// Refresh the cached position in-place to keep the map stable
+					e.setValue(now);
+				}
+			}
+		}
+
+		// --- Membership cleanup if anyone is already at/near a settlement ---
 		// Collect first to avoid modifying underlying collection during iteration
 		List<Worker> toRemove = new ArrayList<>();
 
@@ -324,12 +378,18 @@ abstract class EVAMission extends RoverMission {
 		activeEVA = true;
 		// Clear any lingering WAIT_SUNLIGHT state
 		sunlightOkSinceInWait = Double.NaN;
+
+		// Reset & seed teleport-watch with current positions
+		teleportWatch.clear();
+		seedTeleportWatch();
 	}
 
 	/**
 	 * Notifies the sub-classes that the current EVA has ended. Trigger any housekeeping.
 	 */
 	protected void phaseEVAEnded() {
+		// Clean up per-EVA caches
+		teleportWatch.clear();
 	}
 
     /**
@@ -571,5 +631,49 @@ abstract class EVAMission extends RoverMission {
 			}
 		}
 		return pruned;
+	}
+
+	// ------------------------------
+	// Teleport-watch helpers
+	// ------------------------------
+
+	/** Seed last-known positions for all members at EVA start. */
+	private void seedTeleportWatch() {
+		for (Worker m : getMembers()) {
+			if (m instanceof Person p) {
+				try {
+					Coordinates c = p.getCoordinates();
+					if (c != null) {
+						teleportWatch.put(p, c);
+					}
+				}
+				catch (Throwable t) {
+					// Defensive: if not available for some reason, skip seeding this member
+				}
+			}
+		}
+	}
+
+	/** Refresh last-known positions of all current EVA members. */
+	private void updateTeleportWatch() {
+		for (Worker m : getMembers()) {
+			if (m instanceof Person p) {
+				try {
+					Coordinates c = p.getCoordinates();
+					if (c != null) {
+						teleportWatch.put(p, c);
+					}
+				}
+				catch (Throwable t) {
+					// Ignore; we'll try again on next EVA pulse
+				}
+			}
+		}
+	}
+
+	/** Compute distance in meters between two coordinates. */
+	private static double distanceMeters(Coordinates a, Coordinates b) {
+		// Coordinates.getDistance() returns kilometers
+		return a.getDistance(b) * 1000D;
 	}
 }
