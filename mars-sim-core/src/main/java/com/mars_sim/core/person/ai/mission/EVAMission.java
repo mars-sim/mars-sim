@@ -7,9 +7,11 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -35,6 +37,10 @@ abstract class EVAMission extends RoverMission {
 
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
+	// Require sunlight to be stable for at least this long (in millisols) before resuming EVA
+	private static final double SUNLIGHT_STABLE_MIN = 10D;
+	// Treat two EVA sites closer than this as "the same place" to avoid micro-hops (km)
+	private static final double MIN_SITE_SEPARATION_KM = 0.10D; // ~100 meters
 
 	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
 
@@ -43,6 +49,22 @@ abstract class EVAMission extends RoverMission {
 	private int containerID;
 	private int containerNum;
 	private LightLevel minSunlight;
+	// Tracks when sunlight first became "good enough" during WAIT_SUNLIGHT (phase-relative millisols)
+	private double sunlightOkSinceInWait = Double.NaN;
+
+	// ------------------------------
+	// BEGIN: Teleport-watch support
+	// ------------------------------
+
+	/** Tracks last-known EVA positions to detect "teleportation". */
+	private final Map<Person, Coordinates> teleportWatch = new ConcurrentHashMap<>();
+
+	/** Ignore tiny drift to avoid false positives during airlock/suit transitions. */
+	private static final double TELEPORT_TOLERANCE_METERS = 2.0D;
+
+	// ------------------------------
+	//  END: Teleport-watch support
+	// ------------------------------
 
     protected EVAMission(MissionType missionType, 
             Worker startingPerson, Rover rover,
@@ -109,6 +131,8 @@ abstract class EVAMission extends RoverMission {
 			else {
 				// Wait for sunrise
 				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
+				// reset stability window whenever we enter WAIT_SUNLIGHT
+				sunlightOkSinceInWait = Double.NaN;
 				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
 			}
 		}
@@ -121,13 +145,25 @@ abstract class EVAMission extends RoverMission {
 	 */
 	private void performWaitForSunlight(Worker member) {
 		if (isEnoughSunlightForEVA()) {
-			logger.info(getRover(), "Stop wait as enough sunlight");
-			setPhaseEnded(true);
+			// Start (or continue) counting a stability window
+			if (Double.isNaN(sunlightOkSinceInWait)) {
+				sunlightOkSinceInWait = getPhaseDuration();
+			}
+			double stableFor = getPhaseDuration() - sunlightOkSinceInWait;
+			if (stableFor >= SUNLIGHT_STABLE_MIN) {
+				logger.info(getVehicle(), "Stop wait as enough sunlight");
+				setPhaseEnded(true);
+				sunlightOkSinceInWait = Double.NaN; // reset for next time
+			}
 		}
-		else if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
-			logger.info(getRover(), "Waited long enough");
-			setPhaseEnded(true);
-			startTravellingPhase();
+		else {
+			// Sunlight dropped below the threshold; reset the stability window
+			sunlightOkSinceInWait = Double.NaN;
+			if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
+				logger.info(getVehicle(), "Waited long enough");
+				setPhaseEnded(true);
+				startTravellingPhase();
+			}
 		}
 	}
 
@@ -137,7 +173,7 @@ abstract class EVAMission extends RoverMission {
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
-		var locn = getCurrentMissionLocation();
+		Coordinates locn = getCurrentMissionLocation();
 
 		if (minSunlight == LightLevel.NONE) {
 			// Don't bother calculating sunlight; EVA valid in whatever conditions
@@ -170,7 +206,7 @@ abstract class EVAMission extends RoverMission {
 	public void abortPhase() {
 		if (evaPhase.equals(getPhase())) {
 
-			logger.info(getRover(), "EVA ended due to external trigger.");
+			logger.info(getVehicle(), "EVA ended due to external trigger.");
 
 			endEVATasks();
 		}
@@ -183,7 +219,7 @@ abstract class EVAMission extends RoverMission {
 	 */
 	protected void endEVATasks() {
 		// End each member's EVA task.
-		for(Worker member : getMembers()) {
+		for (Worker member : getMembers()) {
 			if (member instanceof Person person) {
 				Task task = person.getMind().getTaskManager().getTask();
 				if (task instanceof EVAOperation eo) {
@@ -239,12 +275,17 @@ abstract class EVAMission extends RoverMission {
 					addMissionLog("EVA operation Terminated.");
 				}
 			}
+
+			// Keep last-known positions fresh for teleport detection
+			updateTeleportWatch();
 		} 
 
 		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
 			
-			// Check below if anyone has been "teleported"
+			// First, clean up any "teleported" members to avoid stale state
+			checkTeleported();
+
 			if (isEveryoneInRover()) {
 				// End phase
 				phaseEVAEnded();
@@ -259,9 +300,48 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Ensures no "teleported" person is still a member of this mission.
-	 * Note: still investigating the cause and how to handle this.
+	 * Detects sudden invalid jumps in member positions and removes any
+	 * member who has "teleported" to a settlement vicinity.
 	 */
 	void checkTeleported() {
+		// --- Position-based detection with tolerance (safe iteration & removal) ---
+		synchronized (teleportWatch) {
+			final Iterator<Map.Entry<Person, Coordinates>> it = teleportWatch.entrySet().iterator();
+			while (it.hasNext()) {
+				final Map.Entry<Person, Coordinates> e = it.next();
+				final Person p = e.getKey();
+				final Coordinates last = e.getValue();
+
+				Coordinates now = null;
+				try {
+					// Assumes Person exposes its current surface coordinates.
+					// (If the API differs locally, adapt this accessor accordingly.)
+					now = p.getCoordinates();
+				}
+				catch (Throwable t) {
+					// Defensive: if coordinates unavailable for this person now, skip distance check
+				}
+
+				if (now == null || last == null) {
+					continue; // nothing to compare yet
+				}
+
+				double dMeters = distanceMeters(now, last);
+				if (dMeters > TELEPORT_TOLERANCE_METERS) {
+					logger.severe(p, 10_000, "Invalid 'teleportation' detected. last=" + last + ", now=" + now + ".");
+					// Safe removal without ConcurrentModificationException
+					it.remove();
+				}
+				else {
+					// Refresh the cached position in-place to keep the map stable
+					e.setValue(now);
+				}
+			}
+		}
+
+		// --- Membership cleanup if anyone is already at/near a settlement ---
+		// Collect first to avoid modifying underlying collection during iteration
+		List<Worker> toRemove = new ArrayList<>();
 
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
@@ -274,14 +354,13 @@ abstract class EVAMission extends RoverMission {
 				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				
-				// Use Iterator's remove() method
-//				i.remove();
-				
-				// Call memberLeave to set mission to null will cause this member to drop off the member list
-//				memberLeave(member);
-
-				break;
+				toRemove.add(member);
 			}
+		}
+
+		// Perform proper removal with bookkeeping after iteration
+		for (Worker member : toRemove) {
+			removeMember(member);
 		}
 	}
 	
@@ -293,16 +372,24 @@ abstract class EVAMission extends RoverMission {
 	protected abstract boolean performEVA(Person person);
 
 	/**
-	 * Signak the start of an EVA phase to do any housekeeping
+	 * Signal the start of an EVA phase to do any housekeeping
 	 */
 	protected void phaseEVAStarted() {
 		activeEVA = true;
+		// Clear any lingering WAIT_SUNLIGHT state
+		sunlightOkSinceInWait = Double.NaN;
+
+		// Reset & seed teleport-watch with current positions
+		teleportWatch.clear();
+		seedTeleportWatch();
 	}
 
 	/**
 	 * Notifies the sub-classes that the current EVA has ended. Trigger any housekeeping.
 	 */
 	protected void phaseEVAEnded() {
+		// Clean up per-EVA caches
+		teleportWatch.clear();
 	}
 
     /**
@@ -315,7 +402,7 @@ abstract class EVAMission extends RoverMission {
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingEVATime(true);
-		double numberAccidents = evaTime * getMembers().size()* EVAOperation.BASE_ACCIDENT_CHANCE;
+		double numberAccidents = evaTime * getMembers().size() * EVAOperation.BASE_ACCIDENT_CHANCE;
 
 		// Assume the average number malfunctions per accident is 1.5.
 		double numberMalfunctions = numberAccidents * MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
@@ -345,11 +432,25 @@ abstract class EVAMission extends RoverMission {
 	 * @return range (km) limit.
 	 */
 	protected double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
-		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites;
+		// Include a small sunlight-wait allowance so planning matches runtime behavior.
+		// (Consistent with getEstimatedRemainingEVATime(...) which already uses this mod.)
+		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites * getSunriseWaitMod();
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
+		if (tripTimeTravellingLimit <= 0D) {
+			return 0D; // no travel time left once site time + wait are accounted for
+		}
 		double averageSpeed = getAverageVehicleSpeedForOperators();
 		double averageSpeedMillisol = averageSpeed / MarsTime.MILLISOLS_PER_HOUR;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+
+	/**
+	 * Small planning allowance for waiting on sunlight during EVA.
+	 * If EVA can occur in any light (NONE), no wait is assumed.
+	 */
+	private double getSunriseWaitMod() {
+		// MAX_WAIT_SUBLIGHT is in millisols; convert to a multiplier like in getEstimatedRemainingEVATime()
+		return (minSunlight == LightLevel.NONE) ? 1.0 : 1.0 + (MAX_WAIT_SUBLIGHT / 1000.0);
 	}
 
 	/**
@@ -391,7 +492,7 @@ abstract class EVAMission extends RoverMission {
 				result += remainingTime;
 		}
 		
-		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT/1000;
+		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT / 1000D;
 		
 		// Add estimated EVA time at sites that haven't been visited yet.
 		int remainingEVASites = getNumEVASites() - getNumEVASitesVisited();
@@ -452,25 +553,127 @@ abstract class EVAMission extends RoverMission {
 	 */
 	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
 
-		List<Coordinates> unorderedSites2 = new ArrayList<>(unorderedSites);
-		List<Coordinates> orderedSites = new ArrayList<>(unorderedSites2.size());
+		// 1) Greedy nearest-neighbor initial route (existing behavior)
+		List<Coordinates> unvisited = new ArrayList<>(unorderedSites);
+		List<Coordinates> orderedSites = new ArrayList<>(unvisited.size());
 		Coordinates currentLocation = startingLocation;
-		while (!unorderedSites2.isEmpty()) {
-			Coordinates shortest = unorderedSites2.get(0);
+		while (!unvisited.isEmpty()) {
+			Coordinates shortest = unvisited.get(0);
 			double shortestDistance = currentLocation.getDistance(shortest);
-			for(Coordinates site : unorderedSites2) {
+			for (int i = 1; i < unvisited.size(); i++) {
+				Coordinates site = unvisited.get(i);
 				double distance = currentLocation.getDistance(site);
 				if (distance < shortestDistance) {
 					shortest = site;
 					shortestDistance = distance;
 				}
 			}
-
-			unorderedSites2.remove(shortest);
+			unvisited.remove(shortest);
 			orderedSites.add(shortest);
 			currentLocation = shortest;
 		}
 
-		return orderedSites;
+		// 2) Tiny 2-opt improvement pass for an open path (start -> p0 -> ... -> pN)
+		twoOptImprove(startingLocation, orderedSites);
+
+		// 3) Prune micro-sites that are effectively the same location (avoid repeated EVA churn)
+		return pruneCloseSites(orderedSites, MIN_SITE_SEPARATION_KM);
+	}
+
+	/**
+	 * In-place 2-opt improvement for an open route:
+	 * considers reversing segments [i..k] and keeps changes that reduce total distance.
+	 * O(n^2), very fast for the usual small number of EVA sites.
+	 */
+	private static void twoOptImprove(Coordinates start, List<Coordinates> route) {
+		final int n = route.size();
+		if (n < 4) return; // nothing meaningful to optimize
+
+		boolean improved = true;
+		while (improved) {
+			improved = false;
+			for (int i = 0; i < n - 2; i++) {
+				Coordinates prev = (i == 0) ? start : route.get(i - 1);
+				Coordinates A = route.get(i);
+				for (int k = i + 1; k < n - 1; k++) { // require k+1 exists
+					Coordinates B = route.get(k);
+					Coordinates next = route.get(k + 1);
+
+					double oldCost = prev.getDistance(A) + B.getDistance(next);
+					double newCost = prev.getDistance(B) + A.getDistance(next);
+
+					if (newCost + 1e-9 < oldCost) {
+						// Reverse the segment [i..k] to reduce total travel
+						Collections.reverse(route.subList(i, k + 1));
+						improved = true;
+						// After reverse, A is now route.get(i); refresh for subsequent comparisons
+						A = route.get(i);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Remove consecutive sites that are closer than a minimum separation.
+	 * This prevents "stop, sample, move 50m, stop again" loops that waste time/supplies.
+	 */
+	private static List<Coordinates> pruneCloseSites(List<Coordinates> route, double minKm) {
+		if (route.size() < 2) return route;
+		List<Coordinates> pruned = new ArrayList<>(route.size());
+		Coordinates lastKept = route.get(0);
+		pruned.add(lastKept);
+		for (int i = 1; i < route.size(); i++) {
+			Coordinates c = route.get(i);
+			if (lastKept.getDistance(c) >= minKm) {
+				pruned.add(c);
+				lastKept = c;
+			}
+		}
+		return pruned;
+	}
+
+	// ------------------------------
+	// Teleport-watch helpers
+	// ------------------------------
+
+	/** Seed last-known positions for all members at EVA start. */
+	private void seedTeleportWatch() {
+		for (Worker m : getMembers()) {
+			if (m instanceof Person p) {
+				try {
+					Coordinates c = p.getCoordinates();
+					if (c != null) {
+						teleportWatch.put(p, c);
+					}
+				}
+				catch (Throwable t) {
+					// Defensive: if not available for some reason, skip seeding this member
+				}
+			}
+		}
+	}
+
+	/** Refresh last-known positions of all current EVA members. */
+	private void updateTeleportWatch() {
+		for (Worker m : getMembers()) {
+			if (m instanceof Person p) {
+				try {
+					Coordinates c = p.getCoordinates();
+					if (c != null) {
+						teleportWatch.put(p, c);
+					}
+				}
+				catch (Throwable t) {
+					// Ignore; we'll try again on next EVA pulse
+				}
+			}
+		}
+	}
+
+	/** Compute distance in meters between two coordinates. */
+	private static double distanceMeters(Coordinates a, Coordinates b) {
+		// Coordinates.getDistance() returns kilometers
+		return a.getDistance(b) * 1000D;
 	}
 }

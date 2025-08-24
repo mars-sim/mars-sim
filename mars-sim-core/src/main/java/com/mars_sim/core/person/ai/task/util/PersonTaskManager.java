@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
@@ -54,6 +55,18 @@ public class PersonTaskManager extends TaskManager {
 
 	private transient Person person;
 
+	// ---------------------------------------------------------------------
+	// Cache rebuild throttling to reduce task churn and CPU spikes per agent
+	// ---------------------------------------------------------------------
+
+	/** Do not rebuild the task probability cache more often than this (millisols). */
+	private static final double MIN_REBUILD_INTERVAL_MSOLS = 1.0D;
+	/** Add a tiny random jitter to avoid all agents rebuilding in lockstep. */
+	private static final double REBUILD_JITTER_MSOLS = 0.25D;
+	/** Last time (sim time) we rebuilt the task probability cache. */
+	private transient MarsTime lastCacheRebuildTime;
+	/** Last computed cache snapshot; reused when within cooldown. */
+	private transient CacheCreator<TaskJob> lastCacheSnapshot;
 
 	/**
 	 * Constructor.
@@ -80,13 +93,23 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Calculates and caches the probabilities. This will NOT use the cache but 
-	 * assumes the callers know when a cache can be used or not used.
+	 * Calculates and caches the probabilities. This will NOT use the external cache but
+	 * internally throttles rebuilds to avoid excessive recomputation.
 	 * 
 	 * @param now The current mars time
 	 */
 	@Override
 	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
+
+		// Throttle cache rebuilds to reduce churn and CPU spikes at high sim speed.
+		if (lastCacheSnapshot != null && lastCacheRebuildTime != null) {
+			// Use absolute difference to be robust to direction of getTimeDiff(..)
+			double dt = Math.abs(lastCacheRebuildTime.getTimeDiff(now));
+			double jitter = ThreadLocalRandom.current().nextDouble(0.0D, REBUILD_JITTER_MSOLS);
+			if (dt < (MIN_REBUILD_INTERVAL_MSOLS + jitter)) {
+				return lastCacheSnapshot; // reuse recent snapshot
+			}
+		}
 
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
@@ -135,6 +158,11 @@ public class PersonTaskManager extends TaskManager {
 			logger.warning(person, 30_000L, "No normal task available. Get default "
 								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
+
+		// Keep as the current snapshot and remember rebuild time.
+		lastCacheSnapshot = newCache;
+		lastCacheRebuildTime = now;
+
 		return newCache;
 	}
 
@@ -243,6 +271,9 @@ public class PersonTaskManager extends TaskManager {
 	public void reinit() {
 		person = mind.getPerson();
 		super.reinit(person);
+		// Reset throttling state so the next call will rebuild immediately.
+		lastCacheSnapshot = null;
+		lastCacheRebuildTime = null;
 	}
 
 	/**
