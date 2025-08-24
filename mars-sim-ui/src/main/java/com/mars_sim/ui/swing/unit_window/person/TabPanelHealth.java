@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -950,9 +954,13 @@ extends TabPanel {
 		
 		private static final String MISSION_SOL = "Sol";
 
-		private Map<Integer, Double> sleepTime;
-		private Map<Integer, Double> exerciseTime;
-		private int solOffset = 1;
+		// Immutable snapshots (sol -> millisols)
+		private Map<Integer, Double> sleepTime = Collections.emptyMap();
+		private Map<Integer, Double> exerciseTime = Collections.emptyMap();
+		// Sorted list of sols from the union of both histories (stable row mapping)
+		private List<Integer> rows = Collections.emptyList();
+
+		private int solOffset = 0;
 		private int rowCount = 0;
 
 		private SleepExerciseTableModel(CircadianClock circadian) {
@@ -969,14 +977,7 @@ extends TabPanel {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = null;
-			if (columnIndex == 0) {
-			    dataType = Integer.class;
-			}
-			else {
-			    dataType = String.class;
-			}
-			return dataType;
+			return (columnIndex == 0) ? Integer.class : String.class;
 		}
 
 		@Override
@@ -994,48 +995,46 @@ extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			Object result = null;
-			if (row < getRowCount()) {
-				int rowSol = row + solOffset;
-				if (column == 0) {
-				    result = rowSol;
-				}
-				else if (column == 1) {
-					if (sleepTime.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES1.format(sleepTime.get(rowSol));
-					else
-						result = StyleManager.DECIMAL_PLACES1.format(0);
-				}
-				else if (column == 2) {
-					if (exerciseTime.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES1.format(exerciseTime.get(rowSol));
-					else
-						result = StyleManager.DECIMAL_PLACES1.format(0);
-				}
+			if (row < 0 || row >= rows.size()) return null;
+			final int sol = rows.get(row);
+
+			if (column == 0) {
+				return sol;
 			}
-			return result;
+			else if (column == 1) {
+				double v = sleepTime.getOrDefault(sol, 0D);
+				return StyleManager.DECIMAL_PLACES1.format(v);
+			}
+			else if (column == 2) {
+				double v = exerciseTime.getOrDefault(sol, 0D);
+				return StyleManager.DECIMAL_PLACES1.format(v);
+			}
+			return null;
 		}
 
 		public void update(CircadianClock circadian) {
-			sleepTime = circadian.getSleepHistory();
-			exerciseTime = circadian.getExerciseHistory();
-			
-			Set<Integer> largestSet;
-			if (sleepTime.size() > exerciseTime.size()) {
-				largestSet = sleepTime.keySet();
-			}
-			else {
-				largestSet = exerciseTime.keySet();
-			}
+			// 1) Take stable, sorted snapshots (avoid aliasing live maps)
+			final NavigableMap<Integer, Double> s = new TreeMap<>(circadian.getSleepHistory());
+			final NavigableMap<Integer, Double> e = new TreeMap<>(circadian.getExerciseHistory());
 
-			// Find the lowest sol day in the data
-			solOffset = largestSet.stream()
-					.mapToInt(v -> v)               
-	                .min()                          
-	                .orElse(Integer.MAX_VALUE);
-			rowCount = largestSet.size();
+			// 2) Build the union of sols actually present in either series
+			final TreeSet<Integer> allSols = new TreeSet<>(s.keySet());
+			allSols.addAll(e.keySet());
+			final List<Integer> newRows = new ArrayList<>(allSols); // earliest -> latest
 
-			fireTableDataChanged();
+			// 3) Atomically swap the snapshots & row index
+			sleepTime = Collections.unmodifiableMap(s);
+			exerciseTime = Collections.unmodifiableMap(e);
+			rows = Collections.unmodifiableList(newRows);
+			solOffset = rows.isEmpty() ? 0 : rows.get(0);
+			rowCount  = rows.size();
+
+			// 4) Repaint on EDT to avoid cross-thread UI races
+			if (SwingUtilities.isEventDispatchThread()) {
+				fireTableDataChanged();
+			} else {
+				SwingUtilities.invokeLater(this::fireTableDataChanged);
+			}
 		}
 	}
 	
