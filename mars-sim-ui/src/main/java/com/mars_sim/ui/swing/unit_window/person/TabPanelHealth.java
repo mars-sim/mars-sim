@@ -72,6 +72,9 @@ extends TabPanel {
 	private static final DecimalFormat DECIMAL_PLACES1 = StyleManager.DECIMAL_PLACES1;
 	private static final DecimalFormat DECIMAL_PERC = StyleManager.DECIMAL_PERC;
 	private static final DecimalFormat DECIMAL_KJ = StyleManager.DECIMAL_KJ;
+
+	/** Max rows to render in the Health Risks list. */
+	private static final int RISK_ROWS = 10;
 	
 	private static final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //$NON-NLS-1$
 	private static final String[] RADIATION_TOOL_TIPS = {
@@ -199,7 +202,7 @@ extends TabPanel {
 						
 		hungerCache = (int)condition.getHunger();
 		hungerLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.hunger"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(thirstCache), null);
+										DECIMAL_MSOLS.format(hungerCache), null);
 		
 		maxDailyEnergy = (int)(condition.getPersonalMaxEnergy());
 		maxDailyEnergyLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.maxDailyEnergy"), //$NON-NLS-1$
@@ -229,7 +232,7 @@ extends TabPanel {
 		muscleTorLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.tolerance"), //$NON-NLS-1$
 				DECIMAL_PLACES1.format(muscleTor));	
 		
-		bodyMassDev = Math.round(condition.getPersonalMaxEnergy()*10.0)/10.0;
+		bodyMassDev = Math.round(condition.getBodyMassDeviation()*10.0)/10.0;
 		bodyMassDevLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.bodyMassDev"), //$NON-NLS-1$
 				DECIMAL_PLACES1.format(bodyMassDev));
 		
@@ -464,12 +467,15 @@ extends TabPanel {
 		Map<HealthRiskType, Double> riskMap = condition.getHealthRisks();
 		
 		List<HealthRiskType> riskList = new ArrayList<>(riskMap.keySet());
-		
-		Collections.sort(riskList);
-		
-		for (int i = 0; i < 10; i++) {
+		// Sort by descending risk percentage and cap the number of displayed rows.
+		riskList.sort((a, b) -> Double.compare(
+				riskMap.getOrDefault(b, 0D),
+				riskMap.getOrDefault(a, 0D)));
+		int rows = Math.min(RISK_ROWS, riskList.size());
+		for (int i = 0; i < rows; i++) {
 			HealthRiskType type = riskList.get(i);
-			attributePanel.addTextField(type.getName(), Math.round(riskMap.get(type) * 100.0)/100.0 + " %", null);
+			double pct = Math.round(riskMap.getOrDefault(type, 0D) * 100.0) / 100.0;
+			attributePanel.addTextField(type.getName(), pct + " %", null);
 		}
 
 		
@@ -640,7 +646,7 @@ extends TabPanel {
 		}
 
 		// Update performance cache if necessary.
-		int newP = (int)(condition.getPerformanceFactor() * 100);
+		int newP = (int)(person.getPerformanceRating() * 100);
 		if (performanceCache != newP) {
 			performanceCache = newP;
 			performanceLabel.setText(DECIMAL_PERC.format(newP));
@@ -1122,11 +1128,16 @@ extends TabPanel {
 			// The size of map needs to be updated
 			map = pc.getConsumptionHistory();
 			
-			// Find the lowest sol day in the data
-			solOffset = map.keySet().stream()
-					.mapToInt(v -> v)               
-	                .min()                          
-	                .orElse(Integer.MAX_VALUE);
+			// Find the lowest sol day in the data, guard against empty map
+			if (map.isEmpty()) {
+				solOffset = 1;
+			}
+			else {
+				solOffset = map.keySet().stream()
+						.mapToInt(v -> v)               
+						.min()                          
+						.orElse(1);
+			}
 			
 			fireTableDataChanged();
 		}
