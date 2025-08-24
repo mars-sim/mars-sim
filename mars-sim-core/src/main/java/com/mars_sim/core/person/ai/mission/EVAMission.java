@@ -7,10 +7,10 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -38,7 +38,7 @@ abstract class EVAMission extends RoverMission {
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 	// Require sunlight to be stable for at least this long (in millisols) before resuming EVA
 	private static final double SUNLIGHT_STABLE_MIN = 10D;
-	// Treat two EVA sites closer than this as “the same place” to avoid micro-hops (km)
+	// Treat two EVA sites closer than this as "the same place" to avoid micro-hops (km)
 	private static final double MIN_SITE_SEPARATION_KM = 0.10D; // ~100 meters
 
 	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
@@ -136,7 +136,7 @@ abstract class EVAMission extends RoverMission {
 			}
 			double stableFor = getPhaseDuration() - sunlightOkSinceInWait;
 			if (stableFor >= SUNLIGHT_STABLE_MIN) {
-				logger.info(getRover(), "Stop wait as enough sunlight");
+				logger.info(getVehicle(), "Stop wait as enough sunlight");
 				setPhaseEnded(true);
 				sunlightOkSinceInWait = Double.NaN; // reset for next time
 			}
@@ -145,7 +145,7 @@ abstract class EVAMission extends RoverMission {
 			// Sunlight dropped below the threshold; reset the stability window
 			sunlightOkSinceInWait = Double.NaN;
 			if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
-				logger.info(getRover(), "Waited long enough");
+				logger.info(getVehicle(), "Waited long enough");
 				setPhaseEnded(true);
 				startTravellingPhase();
 			}
@@ -158,7 +158,7 @@ abstract class EVAMission extends RoverMission {
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
-		var locn = getCurrentMissionLocation();
+		Coordinates locn = getCurrentMissionLocation();
 
 		if (minSunlight == LightLevel.NONE) {
 			// Don't bother calculating sunlight; EVA valid in whatever conditions
@@ -191,7 +191,7 @@ abstract class EVAMission extends RoverMission {
 	public void abortPhase() {
 		if (evaPhase.equals(getPhase())) {
 
-			logger.info(getRover(), "EVA ended due to external trigger.");
+			logger.info(getVehicle(), "EVA ended due to external trigger.");
 
 			endEVATasks();
 		}
@@ -204,7 +204,7 @@ abstract class EVAMission extends RoverMission {
 	 */
 	protected void endEVATasks() {
 		// End each member's EVA task.
-		for(Worker member : getMembers()) {
+		for (Worker member : getMembers()) {
 			if (member instanceof Person person) {
 				Task task = person.getMind().getTaskManager().getTask();
 				if (task instanceof EVAOperation eo) {
@@ -318,7 +318,7 @@ abstract class EVAMission extends RoverMission {
 	protected abstract boolean performEVA(Person person);
 
 	/**
-	 * Signak the start of an EVA phase to do any housekeeping
+	 * Signal the start of an EVA phase to do any housekeeping
 	 */
 	protected void phaseEVAStarted() {
 		activeEVA = true;
@@ -342,7 +342,7 @@ abstract class EVAMission extends RoverMission {
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingEVATime(true);
-		double numberAccidents = evaTime * getMembers().size()* EVAOperation.BASE_ACCIDENT_CHANCE;
+		double numberAccidents = evaTime * getMembers().size() * EVAOperation.BASE_ACCIDENT_CHANCE;
 
 		// Assume the average number malfunctions per accident is 1.5.
 		double numberMalfunctions = numberAccidents * MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
@@ -432,7 +432,7 @@ abstract class EVAMission extends RoverMission {
 				result += remainingTime;
 		}
 		
-		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT/1000;
+		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT / 1000D;
 		
 		// Add estimated EVA time at sites that haven't been visited yet.
 		int remainingEVASites = getNumEVASites() - getNumEVASitesVisited();
@@ -556,7 +556,7 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Remove consecutive sites that are closer than a minimum separation.
-	 * This prevents “stop, sample, move 50m, stop again” loops that waste time/supplies.
+	 * This prevents "stop, sample, move 50m, stop again" loops that waste time/supplies.
 	 */
 	private static List<Coordinates> pruneCloseSites(List<Coordinates> route, double minKm) {
 		if (route.size() < 2) return route;
