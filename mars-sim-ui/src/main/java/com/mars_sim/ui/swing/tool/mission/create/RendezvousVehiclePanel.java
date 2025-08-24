@@ -21,13 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -42,14 +37,12 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 class RendezvousVehiclePanel extends WizardPanel {
 
 	/** Wizard panel name. */
-	private final static String NAME = "Rendezvous Vehicle";
+	private static final String NAME = "Rendezvous Vehicle";
 	
 	// Data members.
 	private VehicleTableModel vehicleTableModel;
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
-	
-	private MissionManager missionManager;
 
 	/**
 	 * Constructor.
@@ -58,9 +51,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 	public RendezvousVehiclePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
-		
-		missionManager = getSimulation().getMissionManager();
-		 
+				 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -90,26 +81,24 @@ class RendezvousVehiclePanel extends WizardPanel {
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         vehicleTable.getSelectionModel().addListSelectionListener(
-        	new ListSelectionListener() {
-        		public void valueChanged(ListSelectionEvent e) {
-        			if (e.getValueIsAdjusting()) {
-        				int index = vehicleTable.getSelectedRow();
-        				if (index > -1) {
-        					// Check if selected row has a failed cell.
-        					if (vehicleTableModel.isFailureRow(index)) {
-        						// Set error message and disable final button.
-        						errorMessageLabel.setText("Rover cannot be rescued/salvaged (see red cells).");
-        						getWizard().setButtons(false);
-        					}
-        					else {
-        						// Clear error message and enable final button.
-        						errorMessageLabel.setText(" ");
-        						getWizard().setButtons(true);
-        					}
-        				}
-        			}
-        		}
-        	});
+        	e -> {
+				if (e.getValueIsAdjusting()) {
+					int index = vehicleTable.getSelectedRow();
+					if (index > -1) {
+						// Check if selected row has a failed cell.
+						if (vehicleTableModel.isFailureRow(index)) {
+							// Set error message and disable final button.
+							errorMessageLabel.setText("Rover cannot be rescued/salvaged (see red cells).");
+							getWizard().setButtons(false);
+						}
+						else {
+							// Clear error message and enable final button.
+							errorMessageLabel.setText(" ");
+							getWizard().setButtons(true);
+						}
+					}
+				}
+			});
         vehicleScrollPane.setViewportView(vehicleTable);
 		
         // Create the error message label.
@@ -265,7 +254,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     	 * @return collection of vehicles.
     	 */
     	private Collection<Vehicle> getEmergencyBeaconVehicles() {
-    		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
+    		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
         	Iterator<Vehicle> i = unitManager.getVehicles().iterator();
         	while (i.hasNext()) {
         		Vehicle vehicle = i.next();
@@ -280,19 +269,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     	 * @return rescuing vehicle or null if none.
     	 */
     	private Vehicle getRescueVehicle(Vehicle emergencyVehicle) {
-    		Vehicle result = null;
-    		
-    	   	//MissionManager manager = Simulation.instance().getMissionManager();
-        	Iterator<?> i = missionManager.getMissions().iterator();
-        	while (i.hasNext()) {
-        		Mission mission = (Mission) i.next();
-        		if (mission instanceof RescueSalvageVehicle) {
-        			Vehicle vehicleTarget = ((RescueSalvageVehicle) mission).getVehicleTarget();
-        			if (emergencyVehicle == vehicleTarget) result = ((VehicleMission) mission).getVehicle();
-        		}
-        	}
-    		
-    		return result;
+			return RescueSalvageVehicle.getRescueingVehicle(emergencyVehicle);
     	}
     	
     	/**

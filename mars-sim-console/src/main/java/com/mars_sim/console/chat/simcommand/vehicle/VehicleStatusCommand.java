@@ -47,6 +47,8 @@ public class VehicleStatusCommand extends ChatCommand {
 		buffer.appendLabeledString("Settlement", source.getAssociatedSettlement().getName());
 		buffer.appendLabeledString("Location", source.getCoordinates().getFormattedString());
 		buffer.appendLabeledString("Speed", String.format(CommandHelper.KMPH_FORMAT, source.getSpeed()));
+		buffer.appendLabeledString("Beacon", source.isBeaconOn() ? "On" : "Off");
+
 		buffer.appendLabeledString("Reserved",
 					(source.isReservedForMission() ? "Yes" : "No"));
 		Worker operator = source.getOperator();
@@ -60,9 +62,9 @@ public class VehicleStatusCommand extends ChatCommand {
 			buffer.appendLabeledString("Mission Phase", m.getPhaseDescription());
 			buffer.appendLabeledString("Mission Lead", m.getStartingPerson().getName());
 
-			if (m instanceof VehicleMission) {
-				double dist = ((VehicleMission) m).getTotalDistanceProposed();
-				double trav = ((VehicleMission) m).getTotalDistanceTravelled();
+			if (m instanceof VehicleMission vm) {
+				double dist = vm.getTotalDistanceProposed();
+				double trav = vm.getTotalDistanceTravelled();
 				buffer.appendLabeledString("Proposed Dist.", String.format(CommandHelper.KM_FORMAT, dist));
 				buffer.appendLabeledString("Travelled", String.format(CommandHelper.KM_FORMAT, trav));
 			}

@@ -9,22 +9,16 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EVASuitUtil;
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.malfunction.Malfunction;
-import com.mars_sim.core.malfunction.MalfunctionFactory;
-import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.objectives.EmergencySupplyObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -32,10 +26,8 @@ import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -58,85 +50,15 @@ public class EmergencySupply extends RoverMission {
 	// Static members
 	private static final int MAX_MEMBERS = 2;
 
-	private static final double VEHICLE_FUEL_DEMAND = 1000D;
-	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
-	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
-
-
-	public static final double BASE_STARTING_PROBABILITY = 20D;
-
 	/** Mission phases. */
 	private static final MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase("Mission.phase.supplyDeliveryDisembarking");
 	private static final MissionPhase SUPPLY_DELIVERY = new MissionPhase("Mission.phase.supplyDelivery");
 	private static final MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase("Mission.phase.loadReturnTripSupplies");
 	private static final MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase("Mission.phase.returnTripEmbarking");
 
-	private static final MissionStatus NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES = new MissionStatus("Mission.status.noEmergencySettlement");
-
 	// Data members.
 	private boolean outbound;
-
-	private Settlement emergencySettlement;
-	private Vehicle emergencyVehicle;
-
-	private Map<Integer, Double> emergencyResources;
-	private Map<Integer, Integer> emergencyEquipment;
-	private Map<Integer, Integer> emergencyParts;
-
-	// Static members
-
-	/**
-	 * Constructor.
-	 *
-	 * @param startingPerson the person starting the settlement.
-	 */
-	public EmergencySupply(Person startingPerson, boolean needsReview) {
-		// Use RoverMission constructor.
-		super(MissionType.EMERGENCY_SUPPLY, startingPerson, null);
-		setPriority(5);
-		
-		if (isDone()) {
-			return;
-		}
-
-		// Set the mission capacity.
-		calculateMissionCapacity(MAX_MEMBERS);
-
-		outbound = true;
-
-		Settlement s = startingPerson.getSettlement();
-
-		if (s != null && !isDone()) {
-
-	    	// Question : how to record targetSettlement in such a way that 
-	    	// it doesn't need to look for it in both EmergencySupplyMeta and again in EmergencySupply
-
-			// Determine emergency settlement.
-			emergencySettlement = findSettlementNeedingEmergencySupplies(s, getRover());
-
-			if (emergencySettlement != null) {
-
-				// Update mission information for emergency settlement.
-				addNavpoint(emergencySettlement);
-
-				// Determine emergency supplies.
-				determineNeededEmergencySupplies();
-
-				// Recruit additional members to mission.
-				if (!isDone() && !recruitMembersForMission(startingPerson, MAX_MEMBERS))
-					return;
-			} else {
-				endMission(NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
-				logger.warning("No settlement could be found to deliver emergency supplies to.");
-				return;
-			}
-		}
-
-		if (s != null) {
-			// Set initial phase
-			setInitialPhase(needsReview);
-		}
-	}
+	private EmergencySupplyObjective supplies;
 
 	/**
 	 * Constructor with explicit parameters.
@@ -156,60 +78,21 @@ public class EmergencySupply extends RoverMission {
 		calculateMissionCapacity(MAX_MEMBERS);
 
 		// Set emergency settlement.
-		this.emergencySettlement = emergencySettlement;
 		addNavpoint(emergencySettlement);
-
-		// Determine emergency supplies.
-		emergencyResources = new HashMap<>();
-		emergencyParts = new HashMap<>();
-		emergencyEquipment = new HashMap<>();
-
-		Iterator<Good> j = emergencyGoods.keySet().iterator();
-		while (j.hasNext()) {
-			Good good = j.next();
-			int amount = emergencyGoods.get(good);
-			switch(good.getCategory()) {
-			case AMOUNT_RESOURCE:
-				emergencyResources.put(good.getID(), (double) amount);
-				break;
-
-			case ITEM_RESOURCE:
-				emergencyParts.put(good.getID(), amount);
-				break;
-
-			case EQUIPMENT, CONTAINER:
-				emergencyEquipment.put(good.getID(), amount);
-				break;
-
-			case VEHICLE:
-				String vehicleType = good.getName();
-				Iterator<Vehicle> h = getStartingSettlement().getParkedGaragedVehicles().iterator();
-				while (h.hasNext()) {
-					Vehicle vehicle = h.next();
-					if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
-						if ((vehicle != getVehicle()) && !vehicle.isReserved()) {
-							emergencyVehicle = vehicle;
-							break;
-						}
-					}
-				}
-				break;
-				
-			case ROBOT:
-			default: 
-			}
-		}
-
+		
 		// Add mission members.
 		addMembers(members, false);
 
-		// Set initial phase
+		supplies = new EmergencySupplyObjective(emergencySettlement, emergencyGoods);
+		addObjective(supplies);
+
 		setInitialPhase(false);
 	}
 
 	@Override
 	protected boolean determineNewPhase() {
 		boolean handled = true;
+		var emergencySettlement = supplies.getDestination();
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
 				if (isCurrentNavpointSettlement()) {
@@ -265,40 +148,6 @@ public class EmergencySupply extends RoverMission {
 		}
 	}
 
-	@Override
-	protected void performDepartingFromSettlementPhase(Worker member) {
-		super.performDepartingFromSettlementPhase(member);
-
-		// Set emergency vehicle (if any) to be towed.
-		if (!isDone() && (getRover().getTowedVehicle() == null)) {
-			if (emergencyVehicle != null) {
-				emergencyVehicle.setReservedForMission(true);
-				getRover().setTowedVehicle(emergencyVehicle);
-				emergencyVehicle.setTowingVehicle(getRover());
-				getStartingSettlement().removeVicinityParkedVehicle(emergencyVehicle);
-			}
-		}
-	}
-
-	@Override
-	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
-
-//		// Unload towed vehicle if any.
-//		if (!isDone() && (getRover().getTowedVehicle() != null && emergencyVehicle != null)) {
-//			emergencyVehicle.setReservedForMission(false);
-//
-//			disembarkSettlement.addParkedVehicle(emergencyVehicle);
-//
-//			getRover().setTowedVehicle(null);
-//
-//			emergencyVehicle.setTowingVehicle(null);
-//
-//			emergencyVehicle.findNewParkingLoc();
-//		}
-
-		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
-	}
-
 	/**
 	 * Perform the supply delivery disembarking phase.
 	 *
@@ -306,6 +155,8 @@ public class EmergencySupply extends RoverMission {
 	 */
 	private void performSupplyDeliveryDisembarkingPhase(Worker member) {
 
+		var emergencySettlement = supplies.getDestination();
+		
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 			// Add the vehicle to the emergency settlement
@@ -354,18 +205,6 @@ public class EmergencySupply extends RoverMission {
 	 */
 	private void performSupplyDeliveryPhase(Worker member) {
 
-		// Unload towed vehicle (if necessary).
-		if (getRover().getTowedVehicle() != null) {
-			
-			emergencyVehicle.setReservedForMission(false);
-			
-			getRover().setTowedVehicle(null);
-			
-			emergencyVehicle.setTowingVehicle(null);
-			// Add the vehicle to the emergency settlement
-			emergencySettlement.addVicinityVehicle(emergencyVehicle);
-		}
-
 		// Unload rover if necessary.
 		boolean roverUnloaded = getRover().isEmpty();
 		if (!roverUnloaded) {
@@ -384,7 +223,6 @@ public class EmergencySupply extends RoverMission {
 					assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
 				}
 				
-				return;
 			}
 		} else {
 			outbound = false;
@@ -399,6 +237,7 @@ public class EmergencySupply extends RoverMission {
 	 * @param member the mission member performing the phase.
 	 */
 	private void performLoadReturnTripSuppliesPhase(Worker member) {
+		var emergencySettlement = supplies.getDestination();
 
 		if (!isDone() && !isVehicleLoaded()) {
 			// Random chance of having person load (this allows person to do other things
@@ -433,6 +272,7 @@ public class EmergencySupply extends RoverMission {
 	 * @param member the mission member performing the phase.
 	 */
 	private void performReturnTripEmbarkingPhase(Worker member) {
+		var emergencySettlement = supplies.getDestination();
 		Vehicle v = getVehicle();
 		
 		if (member.isInVehicle()) {
@@ -481,380 +321,8 @@ public class EmergencySupply extends RoverMission {
 		}
 	}
 
-	/**
-	 * Finds a settlement within range that needs emergency supplies.
-	 *
-	 * @param startingSettlement the starting settlement.
-	 * @param rover              the rover to carry the supplies.
-	 * @return settlement needing supplies or null if none found.
-	 */
-	public static Settlement findSettlementNeedingEmergencySupplies(Settlement startingSettlement, Rover rover) {
-
-    	// Question : how to record targetSettlement in such a way that 
-    	// it doesn't need to look for it in both EmergencySupplyMeta and again in EmergencySupply
-		
-		Settlement result = null;
-
-		Iterator<Settlement> i = unitManager.getSettlements().iterator();
-		while (i.hasNext()) {
-			Settlement targetSettlement = i.next();
-
-			if (targetSettlement != startingSettlement 
-				&& !targetSettlement.equals(startingSettlement)
-				// Check if an emergency supply mission is currently ongoing to settlement.
-				&& !hasCurrentEmergencySupplyMission(targetSettlement)) {
-
-				// Check if settlement is within rover range.
-				double settlementRange = targetSettlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
-				if (settlementRange <= (rover.getEstimatedRange() * .8D)) {
-
-					// Find what emergency supplies are needed at settlement.
-					Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(targetSettlement);
-					Map<Integer, Integer> emergencyContainersNeeded = getContainersRequired(emergencyResourcesNeeded);
-
-					if (!emergencyResourcesNeeded.isEmpty()) {
-
-						// Check if starting settlement has enough supplies itself to send emergency
-						// supplies.
-						if (hasEnoughSupplies(startingSettlement, emergencyResourcesNeeded,
-								emergencyContainersNeeded)) {
-							result = targetSettlement;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if a settlement has sufficient supplies to send an emergency supply
-	 * mission.
-	 *
-	 * @param startingSettlement        the starting settlement.
-	 * @param emergencyResourcesNeeded  the emergency resources needed.
-	 * @param emergencyContainersNeeded the containers needed to hold emergency
-	 *                                  resources.
-	 * @return true if enough supplies at starting settlement.
-	 */
-	private static boolean hasEnoughSupplies(Settlement startingSettlement,
-			Map<Integer, Double> emergencyResourcesNeeded, Map<Integer, Integer> emergencyContainersNeeded) {
-
-		boolean result = true;
-
-		// Check if settlement has enough extra resources to send as emergency supplies.
-		Iterator<Integer> i = emergencyResourcesNeeded.keySet().iterator();
-		while (i.hasNext() && result) {
-			Integer resource = i.next();
-			double amountRequired = emergencyResourcesNeeded.get(resource);
-			double amountNeededAtStartingSettlement = getResourceAmountNeededAtStartingSettlement(startingSettlement,
-					resource);
-			double amountAvailable = startingSettlement.getSpecificAmountResourceStored(resource);
-			// Adding tracking demand
-			if (amountAvailable < (amountRequired + amountNeededAtStartingSettlement)) {
-				result = false;
-			}
-		}
-
-		// Check if settlement has enough empty containers to hold emergency resources.
-		Iterator<Integer> j = emergencyContainersNeeded.keySet().iterator();
-		while (j.hasNext() && result) {
-			Integer containerType = j.next();
-			int numberRequired = emergencyContainersNeeded.get(containerType);
-			EquipmentType type = EquipmentType.convertID2Type(containerType);
-			int numberAvailable = startingSettlement.findNumEmptyContainersOfType(type, false);
-
-			// Note: add tracking demand for containers
-			if (numberAvailable < numberRequired) {
-				result = false;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the amount of a resource needed at the starting settlement.
-	 *
-	 * @param startingSettlement the starting settlement.
-	 * @param resource           the amount resource.
-	 * @return amount (kg) needed.
-	 */
-	private static double getResourceAmountNeededAtStartingSettlement(Settlement startingSettlement, Integer resource) {
-
-		double result = 0D;
-
-		if (ResourceUtil.isLifeSupport(resource)) {
-			double amountNeededSol = switch(resource) {
-				case ResourceUtil.OXYGEN_ID -> personConfig.getNominalO2ConsumptionRate();
-				case ResourceUtil.WATER_ID -> personConfig.getWaterConsumptionRate();
-				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate();
-				default -> 0D;
-			};
-
-			double amountNeededOrbit = amountNeededSol * (MarsTime.SOLS_PER_MONTH_LONG * 3D);
-			int numPeople = startingSettlement.getNumCitizens();
-			result = numPeople * amountNeededOrbit;
-		} else {
-			if (resource.equals(ResourceUtil.METHANOL_ID)) {
-				Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
-				while (i.hasNext()) {
-					double fuelDemand = i.next().getSpecificCapacity(resource);
-					result += fuelDemand * VEHICLE_FUEL_REMAINING_MODIFIER;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if a settlement has a current mission to deliver emergency supplies to
-	 * it.
-	 *
-	 * @param settlement the settlement.
-	 * @return true if current emergency supply mission.
-	 */
-	private static boolean hasCurrentEmergencySupplyMission(Settlement settlement) {
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof EmergencySupply emergencyMission && settlement.equals(emergencyMission.getEmergencySettlement())) {
-				return true;
-			}	
-		}
-
-		return false;
-	}
-
-	/**
-	 * Determines needed emergency supplies at the destination settlement.
-	 */
-	private void determineNeededEmergencySupplies() {
-
-		// Determine emergency resources needed.
-		emergencyResources = getEmergencyAmountResourcesNeeded(emergencySettlement);
-
-		// Determine containers needed to hold emergency resources.
-		Map<Integer, Integer> containers = getContainersRequired(emergencyResources);
-		emergencyEquipment = new HashMap<>();
-		Iterator<Integer> i = containers.keySet().iterator();
-		while (i.hasNext()) {
-			Integer container = i.next();
-			int number = containers.get(container);
-			emergencyEquipment.put(container, number);
-		}
-
-		// Determine emergency parts needed.
-		emergencyParts = getEmergencyPartsNeeded(emergencySettlement);
-	}
-
-	/**
-	 * Gets the emergency amount resource supplies needed at a settlement.
-	 *
-	 * @param settlement the settlement
-	 * @return map of amount resources and amounts needed.
-	 */
-	private static Map<Integer, Double> getEmergencyAmountResourcesNeeded(Settlement settlement) {
-
-		Map<Integer, Double> result = new HashMap<>();
-
-		double solsMonth = MarsTime.SOLS_PER_MONTH_LONG;
-		int numPeople = settlement.getNumCitizens();
-
-		// Determine oxygen amount needed.
-		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;
-		double oxygenAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.OXYGEN_ID);
-
-		oxygenAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.OXYGEN_ID);
-		if (oxygenAmountAvailable < oxygenAmountNeeded) {
-			double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
-			if (oxygenAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
-				oxygenAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
-			}
-			result.put(ResourceUtil.OXYGEN_ID, oxygenAmountEmergency);
-		}
-
-		// Determine water amount needed.
-		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;
-		double waterAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.WATER_ID);
-
-		waterAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.WATER_ID);
-		if (waterAmountAvailable < waterAmountNeeded) {
-			double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
-			if (waterAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
-				waterAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
-			}
-			result.put(ResourceUtil.WATER_ID, waterAmountEmergency);
-		}
-
-		// Determine food amount needed.
-		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;
-		double foodAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.FOOD_ID);
-
-		foodAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.FOOD_ID);
-		if (foodAmountAvailable < foodAmountNeeded) {
-			double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
-			if (foodAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
-				foodAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
-			}
-			result.put(ResourceUtil.FOOD_ID, foodAmountEmergency);
-		}
-
-		// Determine methane amount needed.
-		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-		double methaneAmountAvailable = settlement.getAllAmountResourceStored(ResourceUtil.METHANOL_ID);
-
-		methaneAmountAvailable += getResourcesOnMissions(settlement, ResourceUtil.METHANOL_ID);
-		if (methaneAmountAvailable < methaneAmountNeeded) {
-			double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
-			if (methaneAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
-				methaneAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
-			}
-			result.put(ResourceUtil.METHANOL_ID, methaneAmountEmergency);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the amount of a resource on associated rover missions.
-	 *
-	 * @param settlement the settlement.
-	 * @param resource   the amount resource.
-	 * @return the amount of resource on missions.
-	 */
-	private static double getResourcesOnMissions(Settlement settlement, Integer resource) {
-		double result = 0D;
-
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof RoverMission roverMission) {
-				boolean isTradeMission = roverMission instanceof Trade;
-				boolean isEmergencySupplyMission = roverMission instanceof EmergencySupply;
-				if (!isTradeMission && !isEmergencySupplyMission) {
-					Rover rover = roverMission.getRover();
-					if (rover != null) {
-						result += rover.getSpecificAmountResourceStored(resource);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the containers required to hold a collection of resources.
-	 *
-	 * @param resourcesMap the map of resources and their amounts.
-	 * @return map of containers and the number required of each.
-	 */
-	private static Map<Integer, Integer> getContainersRequired(Map<Integer, Double> resourcesMap) {
-
-		Map<Integer, Integer> result = new HashMap<>();
-
-		Iterator<Integer> i = resourcesMap.keySet().iterator();
-		while (i.hasNext()) {
-			Integer id = i.next();
-
-			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				double amount = (double) resourcesMap.get(id);
-				EquipmentType containerType = ContainerUtil.getEquipmentTypeForContainer(id);
-				int containerID = EquipmentType.getResourceID(containerType);
-				double capacity = ContainerUtil.getContainerCapacity(containerType);
-				int numContainers = (int) Math.ceil(amount / capacity);
-				if (result.containsKey(containerID)) {
-					numContainers += (int) (result.get(containerID));
-				}
-
-				result.put(containerID, numContainers);
-
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the emergency part supplies needed at a settlement.
-	 *
-	 * @param settlement the settlement
-	 * @return map of parts and numbers needed.
-	 */
-	private static Map<Integer, Integer> getEmergencyPartsNeeded(Settlement settlement) {
-
-		Map<Integer, Integer> result = new HashMap<>();
-
-		// Get all malfunctionables associated with settlement.
-		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-
-			// Determine parts needed to see if they are available from resource storage. 
-			// Save them if they are not available for repairs.
-			Iterator<Malfunction> j = entity.getMalfunctionManager().getMalfunctions().iterator();
-			while (j.hasNext()) {
-				Malfunction malfunction = j.next();
-				Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-				
-				for (Entry<Integer, Integer> entry: repairParts.entrySet()) {
-					Integer part = entry.getKey();
-					int number = entry.getValue();
-					if (!settlement.getItemResourceIDs().contains(part)) {
-						if (result.containsKey(part)) {
-							number += result.get(part).intValue();
-						}
-						result.put(part, number);
-					}
-				}
-			}
-
-			boolean arePartsNeeded = entity.getMalfunctionManager().areMaintenancePartsNeeded();
-			
-			if (arePartsNeeded) {
-				// Determine parts needed to see if they are available from resource storage.
-				// Save them if they are not available for repairs.
-				Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
-				
-				for (Entry<Integer, Integer> entry: maintParts.entrySet()) {
-					Integer part = entry.getKey();
-					int number = entry.getValue();
-		
-					if (!settlement.getItemResourceIDs().contains(part)) {
-						if (result.containsKey(part)) {
-							number += result.get(part).intValue();
-						}
-						result.put(part, number);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the settlement that emergency supplies are being delivered to.
-	 *
-	 * @return settlement
-	 */
-	public Settlement getEmergencySettlement() {
-		return emergencySettlement;
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
-	}
-
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-
 		return new HashMap<>();
 	}
 
@@ -871,16 +339,13 @@ public class EmergencySupply extends RoverMission {
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(true);
 
 		// Add any emergency resources needed.
-		if (outbound && (emergencyResources != null)) {
-
-			Iterator<Integer> i = emergencyResources.keySet().iterator();
-			while (i.hasNext()) {
-				Integer resource = i.next();
-				double amount = emergencyResources.get(resource);
-				if (result.containsKey(resource)) {
-					amount += (Double) result.get(resource);
+		if (outbound) {
+			for (var e : supplies.getSupplies().entrySet()) {
+				Good good = e.getKey();
+				if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
+					int amount = e.getValue();
+					result.merge(good.getID(), amount, (a,b) -> a.doubleValue() + b.doubleValue());
 				}
-				result.put(resource, amount);
 			}
 		}
 
@@ -893,16 +358,13 @@ public class EmergencySupply extends RoverMission {
 		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 
 		// Add any emergency parts needed.
-		if (outbound && (emergencyParts != null)) {
-
-			Iterator<Integer> i = emergencyParts.keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				int num = emergencyParts.get(part);
-				if (result.containsKey(part)) {
-					num += (Integer) result.get(part);
+		if (outbound) {
+			for (var e : supplies.getSupplies().entrySet()) {
+				Good good = e.getKey();
+				if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
+					int amount = e.getValue();
+					result.merge(good.getID(), amount, (a,b) -> a.intValue() + b.intValue());
 				}
-				result.put(part, num);
 			}
 		}
 
@@ -915,73 +377,16 @@ public class EmergencySupply extends RoverMission {
 		Map<Integer, Integer> result = getEquipmentNeededForRemainingMission(true);
 
 		// Add any emergency equipment needed.
-		if (outbound && (emergencyEquipment != null)) {
-
-			Iterator<Integer> i = emergencyEquipment.keySet().iterator();
-			while (i.hasNext()) {
-				Integer equipment = i.next();
-				int num = emergencyEquipment.get(equipment);
-				if (result.containsKey(equipment)) {
-					num += (Integer) result.get(equipment);
+		if (outbound) {
+			for (var e : supplies.getSupplies().entrySet()) {
+				Good good = e.getKey();
+				if (good.getCategory() == GoodCategory.EQUIPMENT) {
+					int amount = e.getValue();
+					result.merge(good.getID(), amount, (a,b) -> a.intValue() + b.intValue());
 				}
-				result.put(equipment, num);
 			}
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the emergency supplies as a goods map.
-	 *
-	 * @return map of goods and amounts.
-	 */
-	public Map<Good, Integer> getEmergencySuppliesAsGoods() {
-		Map<Good, Integer> result = new HashMap<>();
-
-		// Add emergency resources.
-		Iterator<Integer> i = emergencyResources.keySet().iterator();
-		while (i.hasNext()) {
-			Integer id = i.next();
-			double amount = emergencyResources.get(id);
-			result.put(GoodsUtil.getGood(id), (int) amount);
-		}
-
-		// Add emergency parts.
-		Iterator<Integer> j = emergencyParts.keySet().iterator();
-		while (j.hasNext()) {
-			Integer id = j.next();
-			int number = emergencyParts.get(id);
-			result.put(GoodsUtil.getGood(id), number);
-		}
-
-		// Add emergency equipment.
-		Iterator<Integer> k = emergencyEquipment.keySet().iterator();
-		while (k.hasNext()) {
-			Integer id = k.next();
-			int number = emergencyEquipment.get(id);
-			result.put(GoodsUtil.getGood(id), number);
-		}
-
-		// Add emergency vehicle.
-		if (emergencyVehicle != null) {
-			Good vehicleGood = GoodsUtil.getVehicleGood(emergencyVehicle.getDescription());
-			result.put(vehicleGood, 1);
-		}
-
-		return result;
-	}
-
-	@Override
-	protected void endMission(MissionStatus endStatus) {
-		super.endMission(endStatus);
-
-		// Unreserve any towed vehicles.
-		if (getRover() != null) {
-			if (getRover().getTowedVehicle() != null) {
-				Vehicle towed = getRover().getTowedVehicle();
-				towed.setReservedForMission(false);
-			}
-		}
 	}
 }

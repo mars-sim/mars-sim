@@ -76,11 +76,20 @@ public class MissionTravelStep extends MissionStep {
 		// Choose a driver
         boolean workedOn = false;
         var driver = vehicle.getOperator();
-        if ((driver == null) || driver.equals(worker)) {
+        if (isOperatable(vehicle) && ((driver == null) || driver.equals(worker))) {
             Task operateVehicleTask = createOperateVehicleTask(vehicle, worker);
             workedOn = assignTask(worker, operateVehicleTask);
         }
         return workedOn;
+    }
+
+    /**
+     * Feel thsi should be in the Vehicle class
+     * @param vehicle
+     * @return
+     */
+    private boolean isOperatable(Vehicle vehicle) {
+        return !vehicle.isBeaconOn() && !vehicle.isBeingTowed();
     }
 
     /**

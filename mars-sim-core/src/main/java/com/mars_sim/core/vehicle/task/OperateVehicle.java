@@ -344,7 +344,7 @@ public abstract class OperateVehicle extends Task {
 	 */
 	private void turnOnBeacon(int resource) {
         	
-    	if (!vehicle.isBeaconOn() && (vehicle instanceof VehicleMission vm)) {
+    	if (!vehicle.isBeaconOn() && (vehicle.getMission() instanceof VehicleMission vm)) {
 			MissionStatus status = MissionStatus.createResourceStatus(resource);
 			vm.getHelp(status);
     	}
