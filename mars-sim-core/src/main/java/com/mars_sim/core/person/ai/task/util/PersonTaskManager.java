@@ -6,9 +6,9 @@
  */
 package com.mars_sim.core.person.ai.task.util;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.mars_sim.core.data.RatingScore;
@@ -36,22 +36,29 @@ public class PersonTaskManager extends TaskManager {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
 
 	private static CacheCreator<TaskJob> defaultInsideTasks;
 	private static CacheCreator<TaskJob> defaultOutsideTasks;
-	
+
 	private static final String SLEEP = "Sleep";
 	private static final String EAT = "Eat";
 
 	private static final String DIAGS_MODULE = "taskperson";
-	
+
+	// ---------------------------------------------------------------------
+	// Log TTLs (avoid magic numbers in logger calls)
+	// ---------------------------------------------------------------------
+	private static final long TTL_INFO_RETURN_INSIDE = 10_000L;
+	private static final long TTL_WARN_NO_TASKS = 30_000L;
+	private static final long TTL_WARN_META_EXCEPTION = 5_000L;
+
 	// Data members
-	
+
 	private transient List<MissionRating> missionProbCache;
-	
+
 	private transient MissionRating selectedMissionRating;
-	
+
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 
@@ -71,7 +78,7 @@ public class PersonTaskManager extends TaskManager {
 	private transient CacheCreator<TaskJob> lastCacheSnapshot;
 
 	// ---------------------------------------------------------------------
-	// NEW: Per-task cooldown state to prevent immediate reselection thrash
+	// Per-task cooldown state to prevent immediate reselection thrash
 	// ---------------------------------------------------------------------
 
 	/** Number of cache rebuilds to cool down a task type after it was selected. */
@@ -79,8 +86,8 @@ public class PersonTaskManager extends TaskManager {
 			Integer.getInteger("mars.sim.task.cooldown.rebuilds", 3);
 
 	/**
-	 * Apply a probability factor while cooled. In this implementation we
-	 * use a hard block when cooled (factor 0). Keeping the flag for future tuning.
+	 * Apply a probability factor while cooled. This class uses a hard block when cooled
+	 * (factor 0). Keeping the property for easy tuning later.
 	 */
 	private static final double JOB_COOLDOWN_FACTOR =
 			Double.parseDouble(System.getProperty("mars.sim.task.cooldown.factor", "0"));
@@ -101,14 +108,13 @@ public class PersonTaskManager extends TaskManager {
 
 		// Initialize data members
 		this.mind = mind;
-
 		this.person = mind.getPerson();
 	}
 
 	/**
 	 * Gets the diagnostics module name to used in any output.
-	 * 
-	 * @return
+	 *
+	 * @return diagnostics module id
 	 */
 	@Override
 	protected String getDiagnosticsModule() {
@@ -120,14 +126,14 @@ public class PersonTaskManager extends TaskManager {
 	 * internally throttles rebuilds to avoid excessive recomputation. Also applies
 	 * a short, configurable cooldown to the task type that was just selected so
 	 * agents don't immediately reselect the same task after an abandonment/block.
-	 * 
+	 *
 	 * @param now The current mars time
 	 */
 	@Override
 	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
 		// Throttle cache rebuilds to reduce churn and CPU spikes at high sim speed.
-		if (lastCacheSnapshot != null && lastCacheRebuildTime != null) {
+		if ((lastCacheSnapshot != null) && (lastCacheRebuildTime != null)) {
 			// Use absolute difference to be robust to direction of getTimeDiff(..)
 			double dt = Math.abs(lastCacheRebuildTime.getTimeDiff(now));
 			double jitter = ThreadLocalRandom.current().nextDouble(0.0D, REBUILD_JITTER_MSOLS);
@@ -139,24 +145,26 @@ public class PersonTaskManager extends TaskManager {
 		// We are about to perform a real rebuild; advance the sequence.
 		cacheRebuildSeq++;
 
-		List<FactoryMetaTask> mtList = null;
-		String shiftDesc = null;
+		List<FactoryMetaTask> mtList;
+		String shiftDesc;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
-        shiftDesc = switch (workStatus) {
-            case OFF_DUTY, ON_LEAVE -> {
-                mtList = MetaTaskUtil.getNonDutyHourTasks();
-                yield "Shift: Non-Duty";
-            }
-            case ON_CALL -> {
-                mtList = MetaTaskUtil.getOnCallMetaTasks();
-                yield "Shift: On-Call";
-            }
-            case ON_DUTY -> {
-                mtList = MetaTaskUtil.getDutyHourTasks();
-                yield "Shift: On-Duty";
-            }
-            default -> throw new IllegalStateException("Do not know status " + workStatus);
-        };
+		switch (workStatus) {
+			case OFF_DUTY:
+			case ON_LEAVE:
+				mtList = MetaTaskUtil.getNonDutyHourTasks();
+				shiftDesc = "Shift: Non-Duty";
+				break;
+			case ON_CALL:
+				mtList = MetaTaskUtil.getOnCallMetaTasks();
+				shiftDesc = "Shift: On-Call";
+				break;
+			case ON_DUTY:
+				mtList = MetaTaskUtil.getDutyHourTasks();
+				shiftDesc = "Shift: On-Duty";
+				break;
+			default:
+				throw new IllegalStateException("Do not know status " + workStatus);
+		}
 
 		// Create new taskProbCache
 		CacheCreator<TaskJob> newCache = new CacheCreator<>(shiftDesc, now);
@@ -170,15 +178,14 @@ public class PersonTaskManager extends TaskManager {
 						if (!isCooled(j)) {
 							newCache.put(j);
 						}
-						// else cooled: either hard-block (factor==0) or could be softened in future
 					}
 				}
 			}
 			catch (RuntimeException ex) {
 				// Defensive: a single misbehaving meta must not break the scheduler.
-				logger.warning(person, 5_000L,
-						"Suppressed exception collecting jobs from " + mt.getClass().getSimpleName()
-						+ ": " + ex.toString());
+				logger.warning(person, TTL_WARN_META_EXCEPTION,
+						"Suppressed exception collecting jobs from "
+								+ mt.getClass().getSimpleName() + ": " + ex.toString());
 			}
 		}
 
@@ -196,7 +203,7 @@ public class PersonTaskManager extends TaskManager {
 				}
 			}
 			catch (RuntimeException ex) {
-				logger.warning(person, 5_000L,
+				logger.warning(person, TTL_WARN_META_EXCEPTION,
 						"Suppressed exception collecting settlement tasks: " + ex.toString());
 			}
 		}
@@ -210,8 +217,9 @@ public class PersonTaskManager extends TaskManager {
 			else {
 				newCache = getDefaultInsideTasks();
 			}
-			logger.warning(person, 30_000L, "No normal task available. Get default "
-								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
+			logger.warning(person, TTL_WARN_NO_TASKS,
+					"No normal task available. Get default "
+							+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
 
 		// Keep as the current snapshot and remember rebuild time.
@@ -228,14 +236,19 @@ public class PersonTaskManager extends TaskManager {
 
 	/** Whether the given job is currently under cooldown. */
 	private boolean isCooled(TaskJob job) {
-		if (job == null || JOB_COOLDOWN_REBUILDS <= 0) return false;
+		if (job == null || JOB_COOLDOWN_REBUILDS <= 0) {
+			return false;
+		}
 		Long until = jobCooldownUntil.get(jobKey(job));
-		return (until != null && cacheRebuildSeq < until && JOB_COOLDOWN_FACTOR == 0D);
+		// Hard block while cooled (factor == 0).
+		return (until != null) && (cacheRebuildSeq < until) && (JOB_COOLDOWN_FACTOR == 0D);
 	}
 
 	/** Mark the given job type as just selected; cool it for a few rebuilds. */
 	private void markJobJustSelected(TaskJob job) {
-		if (job == null || JOB_COOLDOWN_REBUILDS <= 0) return;
+		if (job == null || JOB_COOLDOWN_REBUILDS <= 0) {
+			return;
+		}
 		long until = cacheRebuildSeq + Math.max(0, JOB_COOLDOWN_REBUILDS);
 		jobCooldownUntil.put(jobKey(job), until);
 	}
@@ -247,28 +260,28 @@ public class PersonTaskManager extends TaskManager {
 	private static synchronized CacheCreator<TaskJob> getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
 			defaultInsideTasks = new CacheCreator<>("Default Inside", null);
-			
+
 			// Create a fallback Task job that can always be done
 			RatingScore base = new RatingScore(1D);
 			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
-				
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
 					return new Sleep(person);
-				}	
+				}
 			};
 			defaultInsideTasks.put(sleepJob);
 
 			TaskJob eatJob = new AbstractTaskJob(EAT, base) {
-				
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
 					return new EatDrink(person);
-				}	
+				}
 			};
 			defaultInsideTasks.put(eatJob);
 		}
@@ -284,66 +297,67 @@ public class PersonTaskManager extends TaskManager {
 
 			// Create a MetaTask to return inside
 			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
-				
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
-					logger.info(person, 10_000L, "Returning inside to find work.");
+					logger.info(person, TTL_INFO_RETURN_INSIDE, "Returning inside to find work.");
 					return new Walk(person);
-				}	
+				}
 			};
 			defaultOutsideTasks.put(walkBack);
 		}
 		return defaultOutsideTasks;
 	}
-	
+
 	/**
 	 * A Person can do pending tasks if they are not outside and not on a Mission.
 	 * @return Whether person is inside
 	 */
+	@Override
 	protected boolean isPendingPossible() {
 		return (!person.isOutside() || (person.getMission() == null));
 	}
 
 	@Override
 	protected Task createTask(TaskJob selectedWork) {
-		// NEW: record the selected job type so it is briefly cooled down.
+		// Record the selected job type so it is briefly cooled down.
 		markJobJustSelected(selectedWork);
 		return selectedWork.createTask(mind.getPerson());
 	}
-	
-	
+
 	/**
 	 * Sets the list of mission ratings and the selected mission rating.
-	 * 
-	 * @param missionProbCache
-	 * @param selectedMetaMissionRating
+	 *
+	 * @param missionProbCache cache of mission ratings
+	 * @param selectedMetaMissionRating selected mission rating
 	 */
 	public void setMissionRatings(List<MissionRating> missionProbCache,
 								  MissionRating selectedMetaMissionRating) {
 		this.missionProbCache = missionProbCache;
 		this.selectedMissionRating = selectedMetaMissionRating;
 	}
-	
+
 	/**
 	 * Gets the list of mission ratings.
-	 * 
-	 * @return
+	 *
+	 * @return mission rating cache
 	 */
 	public List<MissionRating> getMissionProbCache() {
 		return missionProbCache;
 	}
-	
+
 	/**
 	 * Gets the selected mission rating.
-	 * 
-	 * @return
+	 *
+	 * @return selected mission rating
 	 */
 	public MissionRating getSelectedMission() {
 		return selectedMissionRating;
 	}
-	
+
+	/** Reinitialise after load/reset. */
 	public void reinit() {
 		person = mind.getPerson();
 		super.reinit(person);
