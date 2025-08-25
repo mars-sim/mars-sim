@@ -179,7 +179,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		lastCompletedLabel.setText(StyleManager.DECIMAL1_SOLS.format(timeSinceLastMaint) + AGO);
 
 		// Update inspection window label.
-		double window = manager.getMaintenancePeriod()/1000D;
+		double window = manager.getStandardInspectionWindow()/1000D;
 		inspectionWinLabel.setText(StyleManager.DECIMAL1_SOLS.format(window));
 
 		// Update inspection work time.

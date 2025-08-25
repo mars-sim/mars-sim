@@ -881,7 +881,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return duration (millisol)
 	 */
-	protected double getDuration() {
+	public double getDuration() {
 		return duration;
 	}
 

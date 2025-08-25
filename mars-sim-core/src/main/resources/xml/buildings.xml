@@ -3173,9 +3173,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.3"/>
 			
 			<resource-processing power-down-level="0.2">
-				<process-engine name="Excavate Ice" number-modules="1" />
-				<process-engine name="Melt Ice" number-modules="10" />
-				<process-engine name="Filter Brine Water" number-modules="40" />
+				<process-engine name="Excavate Ice" number-modules="2" />
+				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Filter Brine Water" number-modules="80" />
 				
 			</resource-processing>
 			

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainEVAVehicle.java
- * @date 2023-09-17
+ * @date 2025-08-24
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -13,6 +13,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -50,7 +51,7 @@ public class MaintainEVAVehicle extends EVAOperation {
      * @param target
      */
     public MaintainEVAVehicle(Person person, Vehicle target) {
-        super(NAME, person, 100, MAINTAIN_VEHICLE);
+        super(NAME, person, AVERAGE_EVA_TIME + RandomUtil.getRandomDouble(80, 120), MAINTAIN_VEHICLE);
 
 		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
@@ -115,17 +116,9 @@ public class MaintainEVAVehicle extends EVAOperation {
 		
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
-        boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
-
+ 
 		if (malfunction) {
 			endEVA("Vehicle had malfunction.");
-			return time;
-		}
-		
-		if (finishedMaintenance) {
-            vehicle.setReservedForMaintenance(false);
-            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-            endEVA("Maintenance finished.");
 			return time;
 		}
 
@@ -135,20 +128,25 @@ public class MaintainEVAVehicle extends EVAOperation {
         if (skill == 0) workTime /= 2;
         if (skill > 1) workTime += workTime * (.2D * skill);
 
-		// Note: if parts don't exist, it simply means that one can still do the 
-		// inspection portion of the maintenance with no need of replacing any parts
-		boolean partsPosted = manager.hasMaintenancePartsInStorage(settlement);
-		
-		if (partsPosted) {
-			int shortfall = manager.transferMaintenanceParts(settlement);
-			if (shortfall == -1) {
-				logger.warning(worker, 30_000L, "No spare parts available for maintenance on " 
-						+ vehicle + ".");
-			}
-		}
+		// Check if maintenance has already been completed.
+		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
 
-        // Add work to the maintenance
-        manager.addInspectionMaintWorkTime(workTime);
+		boolean doneInspection = false;
+
+		if (!finishedMaintenance) {
+			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
+		}
+		
+		if (finishedMaintenance || doneInspection || getTimeCompleted() >= getDuration()) {
+			
+            vehicle.setReservedForMaintenance(false);
+            
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
+			// Inspect the entity
+			manager.inspectEntityTrackParts(getTimeCompleted());
+			// No more maintenance is needed
+			endEVA("Inspection Done");
+		}
 
         // Add experience points
         addExperience(time);

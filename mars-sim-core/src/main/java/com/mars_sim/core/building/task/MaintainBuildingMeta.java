@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainBuildingMeta.java
- * @date 2022-09-18
+ * @date 2025-08-24
  * @author Scott Davis
  */
 package com.mars_sim.core.building.task;
@@ -21,8 +21,8 @@ import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
@@ -35,7 +35,9 @@ import com.mars_sim.core.tool.RandomUtil;
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 		
 	// Minimum %age of the inspection window to trigger maintenance
-	public static final double INSPECTION_PERCENTAGE = 0.25;
+	public static final double INSPECTION_PERCENTAGE = 0.0625;
+	// Default logger
+	// May add back private static final SimLogger logger = SimLogger.getLogger(MaintainBuildingMeta.class.getName());
 
 	/**
      * Represents a Job needed for internal maintenance on a Building
@@ -81,6 +83,9 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	
 	private static final double ROBOT_FACTOR = 2D;
 	
+	/**
+	 * Constructor.
+	 */
     public MaintainBuildingMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
@@ -136,31 +141,47 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	 */
 	public static RatingScore scoreMaintenance(Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();
-		boolean hasNoMalfunction = !manager.hasMalfunction();
-		boolean hasPartsInStore = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
-
+		
 		RatingScore score = RatingScore.ZERO_RATING;
 		
+		boolean hasMalfunction = manager.hasMalfunction();
+		
+		// Note: Look for entities that are NOT malfunction since
+		//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
+		if (hasMalfunction)
+			return score;
+		
+		boolean partsPosted = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
+		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		double window = manager.getMaintenancePeriod();
+		double inspectionWindow = manager.getStandardInspectionWindow();
 		
-		// Note: look for entities that are NOT malfunction since
-		// malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
+		// Note: Set the probability to be around 1/16 (INSPECTION_PERCENTAGE is 0.0625) of time into the inspection window
 		
-		// About a quarter of time into the next inspection/maintenance that will be due,
-		// One can begin to do a little bit of inspection whenever possible
-		if ((hasNoMalfunction && effectiveTime >= window * INSPECTION_PERCENTAGE * RandomUtil.getRandomDouble(1, 2))
+		// As a result, settlers may begin to do a little bit of inspection whenever possible, even at the beginning of the window 
+		// and the inspection is a long way from being due
+		
+		// This is important since inspection work won't need to become a time crunch at the end
+		
+		double chance = RandomUtil.getRandomDouble(inspectionWindow * INSPECTION_PERCENTAGE, inspectionWindow);
+		
+//		logger.info("effectiveTime: " + Math.round(effectiveTime * 1000.0)/1000.0 + " chance: " 
+//				+ Math.round(chance * 1000.0)/1000.0 + " window: " + Math.round(inspectionWindow * 1000.0)/1000.0) ;
+			
+		if ((effectiveTime >= chance)
 			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
 			// the standard inspection/maintenance due
-			|| hasPartsInStore) {
+			|| partsPosted) {	
+					
+//			logger.info("Voted for maintenance.");
 			
 			double condition = manager.getAdjustedCondition();
 			// Score is based on condition plus %age overdue
 			score = new RatingScore("condition", 4 * (100 - condition));
 			
-			score.addModifier("maint.win", 6 * (effectiveTime / window));
+			score.addModifier("maint.win", 6 * (effectiveTime / inspectionWindow));
 			
-			if (hasPartsInStore) {
+			if (partsPosted) {
 				// If needed parts are available, double up the speed of the maintenance
 				score.addModifier("parts", 2);
 			}

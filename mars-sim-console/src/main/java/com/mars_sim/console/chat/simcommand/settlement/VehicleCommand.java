@@ -58,7 +58,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			}
 
 			MalfunctionManager mm = v.getMalfunctionManager();
-			boolean needMaintenance = mm.getTimeSinceLastMaintenance() > mm.getMaintenancePeriod();
+			boolean needMaintenance = mm.getTimeSinceLastMaintenance() > mm.getStandardInspectionWindow();
 			
 			boolean isReserved = v.isReserved();
 			

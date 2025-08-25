@@ -59,7 +59,6 @@ import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
-import com.mars_sim.core.person.ai.mission.EmergencySupply;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;

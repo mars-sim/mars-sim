@@ -77,6 +77,9 @@ public abstract class EVAOperation extends Task {
 
 
 	// Static members
+	/** The average time for egress and ingress of EVA airlock. */
+	public static final int AVERAGE_EVA_TIME = 60;
+	
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 

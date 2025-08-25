@@ -789,7 +789,7 @@ public class BuildingManager implements Serializable {
 
 		if (pulse.getMarsTime().getMissionSol() != 1 && pulse.isNewHalfSol()) {
 			// Check if there are any maintenance parts to be submitted
-			retrieveMaintPartsFromMalfunctionMgrs();
+			retrieveAllEntitiesMaintParts();
 		}
 
 		for (Building b : buildings) {
@@ -829,8 +829,10 @@ public class BuildingManager implements Serializable {
 
 			success = building.getMedical().addPatientToBed(p);
 	
-			if (success)
+			if (success) {
+				p.setCurrentBuilding(building);
 				logger.info(p, 0, "Sent to a medical bed in " + building.getName() + ".");
+			}
 			else {
 				logger.info(p, 0, "Unable to send to a medical bed in " + building.getName() + ".");
 			}
@@ -2376,34 +2378,42 @@ public class BuildingManager implements Serializable {
 	 /**
 	  * Retrieves maintenance parts from all entities associated with this settlement. 
 	  */
-	public void retrieveMaintPartsFromMalfunctionMgrs() {
+	public void retrieveAllEntitiesMaintParts() {
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
-            Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
-
-            if (!parts.isEmpty()) {
-
-                if (!partsMaint.isEmpty()) {
-                    Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
-                    if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
-                        // Post the parts and inject the demand
-                        postInjectPartsDemand(entity, parts);
-                    }
-                    
-                    if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
-//						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
-                    } 
-                    else {
-                        // Post the parts and inject the demand
-                        postInjectPartsDemand(entity, parts);
-                    }   
-                } 
-                else {
-                    logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
-                    // Post the parts and inject the demand
-                    postInjectPartsDemand(entity, parts);
-                }
-            }
+        	retrieveMaintParts(entity);
         }
+	}
+	
+	 /**
+	  * Retrieves maintenance parts from an entity. 
+	  */
+	public void retrieveMaintParts(Malfunctionable entity) {
+      
+       Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+
+       if (!parts.isEmpty()) {
+
+           if (!partsMaint.isEmpty()) {
+               Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
+               if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
+                   // Post the parts and inject the demand
+                   postInjectPartsDemand(entity, parts);
+               }
+               
+               if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
+//						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
+               } 
+               else {
+                   // Post the parts and inject the demand
+                   postInjectPartsDemand(entity, parts);
+               }   
+           } 
+           else {
+               logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
+               // Post the parts and inject the demand
+               postInjectPartsDemand(entity, parts);
+           }
+       }
 	}
 	
 	/**

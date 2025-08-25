@@ -1,14 +1,12 @@
 /*
  * Mars Simulation Project
  * MaintainBuilding.java
- * @date 2022-09-18
+ * @date 2025-08-24
  * @author Scott Davis
  */
 package com.mars_sim.core.building.task;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -18,6 +16,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -57,7 +56,7 @@ public class MaintainBuilding extends Task  {
 	 * @param engineer the Worker to perform the task
 	 */
 	public MaintainBuilding(Worker engineer, Building entity) {
-		super(NAME, engineer, false, IMPACT, RandomUtil.getRandomDouble(20, 80));
+		super(NAME, engineer, false, IMPACT, RandomUtil.getRandomDouble(80, 120));
 
 		if (engineer.isOutside()) {
 			endTask();
@@ -118,24 +117,19 @@ public class MaintainBuilding extends Task  {
 		if (mechanicSkill > 1) {
 			workTime += workTime * (.4D * mechanicSkill);
 		}
-	
-		// Note: if parts don't exist, it simply means that one can still do the 
-		// inspection portion of the maintenance with no need of replacing any parts
-		boolean partsPosted = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
 		
-		if (partsPosted) {
-			Unit containerUnit = entity.getAssociatedSettlement();
+		// Check if maintenance has already been completed.
+		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
 
-			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
-			
-			if (shortfall == -1) {
-				logger.warning(entity, 30_000L, "No spare parts available for maintenance on " 
-						+ entity + ".");
-			}
+		boolean doneInspection = false;
+
+		if (!finishedMaintenance) {
+			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
 		}
-
-		// Add work to the maintenance
-		if (!manager.addInspectionMaintWorkTime(workTime)) {
+		
+		if (finishedMaintenance || doneInspection || getTimeCompleted() >= getDuration()) {
+			// Inspect the entity
+			manager.inspectEntityTrackParts(getTimeCompleted());
 			// No more maintenance is needed
 			endTask();
 		}
@@ -146,7 +140,8 @@ public class MaintainBuilding extends Task  {
 		// Check if an accident happens during maintenance.
 		checkForAccident(entity, time, 0.005);
 
-		return 0D;
+		// Note: workTime can be longer or shorter than time
+		return MathUtils.between(workTime, 0, time);
 	}
 
 	/**

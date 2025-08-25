@@ -1,14 +1,12 @@
 /*
  * Mars Simulation Project
  * MaintainBuildingEVA.java
- * @date 2023-09-17
+ * @date 2025-08-24
  * @author Scott Davis
  */
 package com.mars_sim.core.building.task;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -54,7 +52,7 @@ extends EVAOperation {
 	 * @param person the person to perform the task
 	 */
 	public MaintainBuildingEVA(Person person, Building target) {
-		super(NAME, person, RandomUtil.getRandomDouble(90, 100), MAINTAIN);
+		super(NAME, person, AVERAGE_EVA_TIME + RandomUtil.getRandomDouble(80, 120), MAINTAIN);
 
 		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");
@@ -119,24 +117,20 @@ extends EVAOperation {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}	
 			
-		// Note: if parts don't exist, it simply means that one can still do the 
-		// inspection portion of the maintenance with no need of replacing any parts
-		boolean partsPosted = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
-		
-		if (partsPosted) {
-			Unit containerUnit = entity.getAssociatedSettlement();
+		boolean doneInspection = false;
 
-			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
-			
-			if (shortfall == -1) {
-				logger.warning(entity, 30_000L, "No spare parts available for maintenance on " 
-						+ entity + ".");
-			}
+		// Check if maintenance has already been completed.
+		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
+
+		if (!finishedMaintenance) {
+			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
 		}
-
-        // Add work to the maintenance
-		if (!manager.addInspectionMaintWorkTime(workTime)) {
-			endTask();
+		
+		if (finishedMaintenance || doneInspection) {
+			// Inspect the entity
+			manager.inspectEntityTrackParts(getTimeCompleted());
+			// No more maintenance is needed
+			endEVA("Maintenance Done");
 		}
 		
         // Add experience points

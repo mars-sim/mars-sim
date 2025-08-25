@@ -2,6 +2,7 @@ package com.mars_sim.core.building;
 
 import java.util.Map;
 
+import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -28,8 +29,9 @@ public class MockBuilding extends Building {
 						String buildingType, BuildingCategory cat,
 						boolean needsLifeSupport)  {
 		super(owner, id, 1, name, bounds, buildingType, cat);
-
-		malfunctionManager = new MalfunctionManager(this, 0D, 1D);
+		// Set maintWorkTime to 100D
+		// Set wearLifeTime to 334_000D
+		malfunctionManager = new MalfunctionManager(this, 334_000D, 100D);
 		if (needsLifeSupport) {
 			addFunction(getLifeSupportSpec());
 		}
@@ -38,5 +40,11 @@ public class MockBuilding extends Building {
 	public MockBuilding(Settlement owner, String id, BoundedObject bounds) {
 		super(owner, id, 1, "Mock Building " + id, bounds, "Mock", BuildingCategory.LIVING);
 	}
+	
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.BUILDING;
+	}
+
 }
 

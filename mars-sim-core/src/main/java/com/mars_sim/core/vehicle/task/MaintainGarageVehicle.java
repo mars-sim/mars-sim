@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainGarageVehicle.java
- * @date 2022-09-20
+ * @date 2025-08-24
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -66,7 +67,7 @@ public class MaintainGarageVehicle extends Task {
 	 * @param person the person to perform the task
 	 */
 	public MaintainGarageVehicle(Worker unit, Vehicle target) {
-		super(NAME, unit,  false, IMPACT, 100D);
+		super(NAME, unit,  false, IMPACT, RandomUtil.getRandomDouble(80, 120));
 
 		// Choose an available needy ground vehicle.
 		vehicle = target;
@@ -154,36 +155,10 @@ public class MaintainGarageVehicle extends Task {
 
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		
-		// Check if maintenance has already been completed.
-		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-			endTask();
-			return time;
-		}
-
 		// If vehicle has malfunction, end task.
 		if (manager.hasMalfunction()) {
 			endTask();
 			return time * .75;
-		}
-
-		if (isDone()) {
-			endTask();
-			return time;
-		}
-	
-		// Note: if parts don't exist, it simply means that one can still do the 
-		// inspection portion of the maintenance with no need of replacing any parts
-		boolean partsPosted = manager.hasMaintenancePartsInStorage(vehicle.getAssociatedSettlement());
-		
-		if (partsPosted) {
-			Unit containerUnit = vehicle.getAssociatedSettlement();
-
-			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
-			
-			if (shortfall == -1) {
-				logger.warning(worker, 30_000L, "No spare parts available for maintenance on " 
-						+ vehicle + ".");
-			}
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -196,9 +171,26 @@ public class MaintainGarageVehicle extends Task {
 		if (mechanicSkill > 1) {
 			workTime += workTime * (.2D * mechanicSkill);
 		}
+		
+		// Check if maintenance has already been completed.
+		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
 
-		// Add work to the maintenance
-		manager.addInspectionMaintWorkTime(workTime);
+		boolean doneInspection = false;
+
+		if (!finishedMaintenance) {
+			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
+		}
+		
+		if (finishedMaintenance || doneInspection || getTimeCompleted() >= getDuration()) {
+			
+            vehicle.setReservedForMaintenance(false);
+            
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
+			// Inspect the entity
+			manager.inspectEntityTrackParts(getTimeCompleted());			
+			// No more maintenance is needed
+			endTask();
+		}
 
 		// Add experience points
 		addExperience(time);

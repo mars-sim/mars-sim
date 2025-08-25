@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionManager.java
- * @date 2025-08-08
+ * @date 2025-08-24
  * @author Scott Davis
  */
 package com.mars_sim.core.malfunction;
@@ -24,6 +24,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -45,6 +46,7 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -87,6 +89,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
+	/** For a typical building, the number of inspection expected throughout its lifetime. */
+	private static final int INSPECTION_FREQUENCY = 75;
+	
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 5;
 	/** Factor for chance of malfunction by time since last maintenance. */
@@ -97,7 +102,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final double MAINTENANCE_LOWER_LIMIT = 0; //MALFUNCTION_LOWER_LIMIT; // * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
 	/** The upper limit factor for both malfunction and maintenance. 1.000_335_221_5 will result in 100% certainty per orbit. */
 	private static final double UPPER_LIMIT = 2;//1.000_335_221_5;
-
 	
 	/** Wear-and-tear points earned from a low quality inspection. */
 	private static final double LOW_QUALITY_INSPECTION = 200;
@@ -156,7 +160,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The inspection completed. */
 	private double inspectionTimeCompleted;
 	/** The periodic time window between each inspection/maintenance.  */
-	private double inspectionWindow;
+	private double standardInspectionWindow;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCondPercent;
 	/** The cumulative time [in millisols] since active use. */
@@ -207,30 +211,98 @@ public class MalfunctionManager implements Serializable, Temporal {
 		this.baseMaintWorkTime = maintWorkTime;
 		this.baseWearLifeTime = wearLifeTime;
 
-		// Assume the maintenance period [in millisols] is the recommended period of time between the last and the next inspection/maintenance 
-		this.inspectionWindow = wearLifeTime * 0.02;
+		boolean isInhabitable = false;
+		boolean isERV = false;
+		boolean isMainPowerGen = false;
+		boolean isHallway = false;
 		
-		// deploymentime accounts for the pre-use time spent during the base deployment phase prior to the start of the sim
-		// FUTURE: vary this time according to deployment scenario.
-		// Usually power building gets deployed first.
-		// Next is in-situ resource building such as ERV 
-		double deploymentTime = 0;
-		if (UnitType.EVA_SUIT != entity.getUnitType()
-			|| UnitType.VEHICLE != entity.getUnitType()) {
-			deploymentTime = inspectionWindow/40 + RandomUtil.getRandomDouble(inspectionWindow/10);
+		if (UnitType.BUILDING == entity.getUnitType()) {
+
+			Building building = (Building)entity;
+			if (building.isInhabitable()) {
+				// Usually power building gets deployed first.
+				isInhabitable = true;
+				
+				if (BuildingCategory.ERV == building.getCategory()) {
+					// Next is resource processing building such as ERV 
+					isERV = true;
+				}
+				else if (BuildingCategory.POWER == building.getCategory()) {
+					// Next is the main power generator
+					isMainPowerGen = true;
+				}
+			}
+			else if (BuildingCategory.CONNECTION == building.getCategory()) {
+				// Next is resource processing building such as ERV 
+				isHallway = true;
+			}
 		}
+
+		double deployedTime = 0;
 		
-		currentWearLifeTime = wearLifeTime - deploymentTime;
-		cumulativeTime = deploymentTime;
-		effTimeSinceLastMaint = deploymentTime;
-		timeSinceLastMaint = deploymentTime;
+		// deployedTime [in millisols] accounts for the pre-used time spent during the base deployment phase prior to the start of the sim
+		
+		// Note: May also vary deployedTime according to future pre-game deployment scenario.
+		
+		if (UnitType.EVA_SUIT == entity.getUnitType()) {
+			
+			this.standardInspectionWindow = .5;
+			
+			deployedTime = RandomUtil.getRandomDouble(250);
+		}
+		else if (UnitType.VEHICLE == entity.getUnitType()) {
+	
+			this.standardInspectionWindow = .75;
+			
+			deployedTime = RandomUtil.getRandomDouble(500);
+		}
+		else if (isInhabitable) {
+			
+			if (isMainPowerGen) {
+				// Assume having an inspection window [in millisols] as the recommended period of time between the last and the next inspection/maintenance 
+				
+				// Note: vary this window by building category and by the frequency of malfunction of its parts
+
+				// e.g. solar array and power generator need to be inspected more often
+			
+				this.standardInspectionWindow = .5;
+	
+				// Usually power building gets deployed first.
+				deployedTime = RandomUtil.getRandomDouble(4000);
+			}
+			else if (isERV) {
+				this.standardInspectionWindow = .75;
+				
+				// Next is resource processing building such as ERV 
+				deployedTime = RandomUtil.getRandomDouble(3000);
+			}
+			else {
+				this.standardInspectionWindow = 1.0;
+				
+				deployedTime = RandomUtil.getRandomDouble(2000);
+			}
+		}
+		else if (isHallway){
+			this.standardInspectionWindow = 1.5;
+			
+			deployedTime = RandomUtil.getRandomDouble(1000);
+		}
+		else {
+			this.standardInspectionWindow = 1.0;
+			
+			deployedTime = RandomUtil.getRandomDouble(2000);
+		}
+	
+		this.standardInspectionWindow *= wearLifeTime / INSPECTION_FREQUENCY;
+				
+		deployedTime += 1_000_000.0 / standardInspectionWindow;
+		
+		currentWearLifeTime = wearLifeTime - deployedTime;
+		cumulativeTime = deployedTime;
+		effTimeSinceLastMaint = deployedTime;
+		timeSinceLastMaint = deployedTime;
 		
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100D;
-//		logger.info(entity, 10_000L, "wearLifeTime: " + wearLifeTime 
-//				+ "  maintPeriod: " + maintPeriod
-//				+ "  maintWorkTime: " + maintWorkTime
-//				+ "  preUseTime: " + deploymentTime
-//				);
 	}
 
 	/**
@@ -672,7 +744,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				return;
 			}
 			
-			double inspectFactor = (effTimeSinceLastMaint/inspectionWindow) + .1D;
+			double inspectFactor = (effTimeSinceLastMaint/standardInspectionWindow) + .1D;
 			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
 			double malfunctionChance = time * inspectFactor * wearFactor; // * FREQUENCY;
 //			malfunctionProbability = malfunctionChance;
@@ -704,46 +776,54 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// FUTURE : how to connect maintenance to field reliability statistics of parts used in this units	
 			
 			if (hasMal) {
-				// If it already has a malfunction in this tick,
-				// do not trigger maintenance even again so that 
+				// Note: If it already has a malfunction in this tick,
+				// do inhibit any task of inspection over this entity for maintenance so that 
 				// settlers can handle the stress.
 				return;
 			}
-			
-			// Note 1: the need for maintenance should definitely have a higher chance than the onset of malfunction
-			// Note 2: numberMaintenances increases the chance of having maintenance again
-			//         because indicates how many times it has been "patched" up
-			//         But if broken parts have been swapped out, should it lower the maintenance chance ? 
-			
-			// Question: when should numberMaintenances be lower ?
-			
-			double maintenanceChance = malfunctionProbability * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
+		}
+	}
+		
+	/**
+	 * Performs the inspection and generate repair parts. 
+	 * 
+	 * @param time
+	 */
+	public void performInspection(double time) {
+	
+		// Note 1: the need for maintenance should definitely have a higher chance than the onset of malfunction
+		// Note 2: numberMaintenances increases the chance of having maintenance again
+		//         because indicates how many times it has been "patched" up
+		//         But if broken parts have been swapped out, should it lower the maintenance chance ? 
+		
+		// Question: when should numberMaintenances be lower ?
+		
+		double maintenanceChance = malfunctionProbability * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
 //			maintenanceProbability = maintenanceChance;
 //			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 
-			maintenanceProbability = MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT);
+		maintenanceProbability = MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT);
 //			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
-			
-			// Check for repair items needed due to lack of maintenance and wear condition.
-			if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceProbability)) {
-				// Reset delay back to MAX_DELAY. 
-				delay = MAX_DELAY;
+		
+		// Check for repair items needed due to lack of maintenance and wear condition.
+		if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceProbability)) {
+			// Reset delay back to MAX_DELAY. 
+			delay = MAX_DELAY;
 
-				// Note: call determineNewMaintenanceParts is just checking for the possibility 
-				// of having needed repair parts and doesn't necessarily result in generating parts 
-				// that need maintenance
+			// Note: call determineNewMaintenanceParts is just checking for the possibility 
+			// of having needed repair parts and doesn't necessarily result in generating parts 
+			// that need maintenance
+			
+			// If partsNeededForMaintenance has already been generated,
+			// do NOT do it again so as to allow enough time for 
+			// settlers to respond to the previous maintenance task order
+			if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty()) {	
 				
-				// If partsNeededForMaintenance has already been generated,
-				// do NOT do it again so as to allow enough time for 
-				// settlers to respond to the previous maintenance task order
-				if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty()) {	
-					
-					logger.warning(entity, 0, "Maintenance flagged: " + maintenanceProbability);
-					// Generates the repair parts 
-					generateNewMaintenanceParts();
-					// Retrieves the parts right away
-					entity.getAssociatedSettlement().getBuildingManager().retrieveMaintPartsFromMalfunctionMgrs();
-				}
+				logger.warning(entity, 0, "Maintenance flagged: " + maintenanceProbability);
+				// Generates the repair parts 
+				generateNewMaintenanceParts();
+				// Retrieves the parts right away
+				entity.getAssociatedSettlement().getBuildingManager().retrieveMaintParts(entity);
 			}
 		}
 	}
@@ -985,7 +1065,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the time since last maintenance on entity.
+	 * Gets the time since last inspection or maintenance on entity.
 	 *
 	 * @return time (in millisols)
 	 */
@@ -1003,14 +1083,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * The regular maintenance period for this component.
+	 * The standard inspection time window for this entity.
 	 */
-	public double getMaintenancePeriod() {
-		return inspectionWindow;
+	public double getStandardInspectionWindow() {
+		return standardInspectionWindow;
 	}
 
 	/**
-	 * Gets the required work time for inspection/maintenance for the entity.
+	 * Gets the work time for each inspection/maintenance for the entity.
 	 *
 	 * @return time (in millisols)
 	 */
@@ -1036,6 +1116,41 @@ public class MalfunctionManager implements Serializable, Temporal {
 		return numberMaintenances;
 	}
 
+	
+	/**
+	 * Inspects the entity and keeps track of the maintenance parts.
+	 * 
+	 * @param time
+	 */
+	public void inspectEntityTrackParts(double time) {
+		
+		Settlement containerUnit = entity.getAssociatedSettlement();
+		
+		boolean partsPosted = hasMaintenancePartsInStorage(containerUnit);
+		
+		if (partsPosted) {
+			
+			int shortfall = consumeMaintenanceParts((EquipmentOwner) containerUnit);
+			
+			if (shortfall == -1) {
+				logger.warning(entity, 30_000L, "No spare part(s) available for maintenance on " 
+						+ entity + ".");
+			}
+			else if (shortfall == 0) {
+				logger.warning(entity, 30_000L, "No spare part posted yet on " 
+						+ entity + ".");
+			}
+			else {
+				logger.info(entity, 30_000L, "Spare part(s) consumed on a maintenance task on " 
+						+ entity + ".");
+			}
+		}
+		else {
+			// Performs the inspection maintenance to see if any parts need to be replaced
+			performInspection(time);
+		}
+	}
+	
 	/**
 	 * Adds work time to inspection and maintenance.
 	 *
@@ -1044,6 +1159,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public boolean addInspectionMaintWorkTime(double time) {
 		boolean needsMore = true;
+		
 		inspectionTimeCompleted += time;
 		// Check if work if done
 		if (inspectionTimeCompleted >= baseMaintWorkTime) {
@@ -1224,8 +1340,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param partStore Store to provide parts
 	 */
 	public boolean hasMaintenancePartsInStorage(EquipmentOwner partStore) {
-		Map<Integer, Integer> parts = getMaintenanceParts();
-		
+		boolean result = false;
+
 		// Need to FIRST CHECK if any parts are due for maintenance in order to use this
 		// method the right way. 
 		
@@ -1233,7 +1349,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 		boolean posted = areMaintenancePartsNeeded();
 		
 		if (!posted)
-			return false;
+			return result;
+		
+		Map<Integer, Integer> parts = getMaintenanceParts();
 		
 		for (Entry<Integer, Integer> entry: parts.entrySet()) {
 			Integer id = entry.getKey();
@@ -1241,7 +1359,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			if (partStore.getItemResourceStored(id) >= number) {
 				logger.info(entity, 30_000L, "Maintenance parts available: " 
 						+ getPartsString(parts));
-				return true;
+				result = result && true;
 			}
 			else {
 				Good good = GoodsUtil.getGood(id);
@@ -1252,20 +1370,21 @@ public class MalfunctionManager implements Serializable, Temporal {
                 	// Note: in MaintainGarageVehicleTest, good manager is null 
                 	((PartGood)good).injectPartsDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number);
                 }
+                return false;
 			}
 		}
-		return false;
+		return result;
 	}
 
 	/**
-	 * Transfers the required parts for the maintenance from a part store.
+	 * Consumes the maintenance parts.
 	 * 
 	 * @param partStore Store to retrieve parts from
-	 * @return 1 if not parts map is not available;
+	 * @return -1 if parts map is not available;
 	 *         0 if all are available;
-	 *         or # of shortfall
+	 *         or # of shortfall parts
 	 */
-	public int transferMaintenanceParts(EquipmentOwner partStore) {
+	public int consumeMaintenanceParts(EquipmentOwner partStore) {
 		
 		// Future: Can these spare parts be set aside first to avoid others using it ?
 		

@@ -58,7 +58,7 @@ public class BuildingCommand extends AbstractSettlementCommand {
 									building.getCurrentTemperature(),
 									building.getNumPeople(),
 									String.format(MAINT_FORMAT,
-												(mm.getMaintenancePeriod() - mm.getEffectiveTimeSinceLastMaintenance())/1000D));
+												(mm.getStandardInspectionWindow() - mm.getEffectiveTimeSinceLastMaintenance())/1000D));
 		}
 
 		context.println(response.getOutput());

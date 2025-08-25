@@ -261,7 +261,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		presetTemperature = buildingSpec.getPresetTemperature();
 		
 		// Determine total maintenance time.
-		double totalMaintenanceTime = buildingSpec.getMaintenanceTime();
+		double totalMaintenanceTime = buildingSpec.getMaintenanceTime() / 3;
 		for (FunctionType supported : buildingSpec.getFunctionSupported()) {
 			FunctionSpec fSpec = buildingSpec.getFunctionSpec(supported);
 
