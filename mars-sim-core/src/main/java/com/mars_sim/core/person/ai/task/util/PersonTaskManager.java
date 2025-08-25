@@ -7,6 +7,8 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.mars_sim.core.data.RatingScore;
@@ -68,6 +70,27 @@ public class PersonTaskManager extends TaskManager {
 	/** Last computed cache snapshot; reused when within cooldown. */
 	private transient CacheCreator<TaskJob> lastCacheSnapshot;
 
+	// ---------------------------------------------------------------------
+	// NEW: Per-task cooldown state to prevent immediate reselection thrash
+	// ---------------------------------------------------------------------
+
+	/** Number of cache rebuilds to cool down a task type after it was selected. */
+	private static final int JOB_COOLDOWN_REBUILDS =
+			Integer.getInteger("mars.sim.task.cooldown.rebuilds", 3);
+
+	/**
+	 * Apply a probability factor while cooled. In this implementation we
+	 * use a hard block when cooled (factor 0). Keeping the flag for future tuning.
+	 */
+	private static final double JOB_COOLDOWN_FACTOR =
+			Double.parseDouble(System.getProperty("mars.sim.task.cooldown.factor", "0"));
+
+	/** Local sequence incremented each time we actually rebuild the task cache. */
+	private transient long cacheRebuildSeq = 0L;
+
+	/** Per-task-type cooldown (keyed by TaskJob class name) measured in rebuild sequence. */
+	private transient Map<String, Long> jobCooldownUntil = new HashMap<>();
+
 	/**
 	 * Constructor.
 	 *
@@ -94,7 +117,9 @@ public class PersonTaskManager extends TaskManager {
 
 	/**
 	 * Calculates and caches the probabilities. This will NOT use the external cache but
-	 * internally throttles rebuilds to avoid excessive recomputation.
+	 * internally throttles rebuilds to avoid excessive recomputation. Also applies
+	 * a short, configurable cooldown to the task type that was just selected so
+	 * agents don't immediately reselect the same task after an abandonment/block.
 	 * 
 	 * @param now The current mars time
 	 */
@@ -107,9 +132,12 @@ public class PersonTaskManager extends TaskManager {
 			double dt = Math.abs(lastCacheRebuildTime.getTimeDiff(now));
 			double jitter = ThreadLocalRandom.current().nextDouble(0.0D, REBUILD_JITTER_MSOLS);
 			if (dt < (MIN_REBUILD_INTERVAL_MSOLS + jitter)) {
-				return lastCacheSnapshot; // reuse recent snapshot
+				return lastCacheSnapshot; // reuse recent snapshot; do not advance seq
 			}
 		}
+
+		// We are about to perform a real rebuild; advance the sequence.
+		cacheRebuildSeq++;
 
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
@@ -133,22 +161,49 @@ public class PersonTaskManager extends TaskManager {
 		// Create new taskProbCache
 		CacheCreator<TaskJob> newCache = new CacheCreator<>(shiftDesc, now);
 
-		// Determine probabilities.
+		// Determine probabilities from meta tasks (defensive + cooldown-aware).
 		for (FactoryMetaTask mt : mtList) {
-			List<TaskJob> job = mt.getTaskJobs(person);
-			if (job != null) {
-				newCache.add(job);
+			try {
+				List<TaskJob> jobs = mt.getTaskJobs(person);
+				if (jobs != null) {
+					for (TaskJob j : jobs) {
+						if (!isCooled(j)) {
+							newCache.put(j);
+						}
+						// else cooled: either hard-block (factor==0) or could be softened in future
+					}
+				}
+			}
+			catch (RuntimeException ex) {
+				// Defensive: a single misbehaving meta must not break the scheduler.
+				logger.warning(person, 5_000L,
+						"Suppressed exception collecting jobs from " + mt.getClass().getSimpleName()
+						+ ": " + ex.toString());
 			}
 		}
 
-		// Add in any Settlement Tasks
+		// Add in any Settlement Tasks (defensive + cooldown-aware)
 		if ((workStatus == WorkStatus.ON_DUTY) && person.isInSettlement()) {
-			SettlementTaskManager stm = person.getAssociatedSettlement().getTaskManager();
-			newCache.add(stm.getTasks(person));
+			try {
+				SettlementTaskManager stm = person.getAssociatedSettlement().getTaskManager();
+				List<TaskJob> settlementJobs = stm.getTasks(person);
+				if (settlementJobs != null) {
+					for (TaskJob j : settlementJobs) {
+						if (!isCooled(j)) {
+							newCache.put(j);
+						}
+					}
+				}
+			}
+			catch (RuntimeException ex) {
+				logger.warning(person, 5_000L,
+						"Suppressed exception collecting settlement tasks: " + ex.toString());
+			}
 		}
 
 		// Check if the map cache is empty
 		if (newCache.getCache().isEmpty()) {
+			// When falling back, do NOT apply cooldown; always offer these basics.
 			if (person.isOutside()) {
 				newCache = getDefaultOutsideTasks();
 			}
@@ -164,6 +219,25 @@ public class PersonTaskManager extends TaskManager {
 		lastCacheRebuildTime = now;
 
 		return newCache;
+	}
+
+	/** Returns a stable key for cooldown, based on the TaskJob type. */
+	private static String jobKey(TaskJob job) {
+		return (job != null ? job.getClass().getName() : "null");
+	}
+
+	/** Whether the given job is currently under cooldown. */
+	private boolean isCooled(TaskJob job) {
+		if (job == null || JOB_COOLDOWN_REBUILDS <= 0) return false;
+		Long until = jobCooldownUntil.get(jobKey(job));
+		return (until != null && cacheRebuildSeq < until && JOB_COOLDOWN_FACTOR == 0D);
+	}
+
+	/** Mark the given job type as just selected; cool it for a few rebuilds. */
+	private void markJobJustSelected(TaskJob job) {
+		if (job == null || JOB_COOLDOWN_REBUILDS <= 0) return;
+		long until = cacheRebuildSeq + Math.max(0, JOB_COOLDOWN_REBUILDS);
+		jobCooldownUntil.put(jobKey(job), until);
 	}
 
 	/**
@@ -234,6 +308,8 @@ public class PersonTaskManager extends TaskManager {
 
 	@Override
 	protected Task createTask(TaskJob selectedWork) {
+		// NEW: record the selected job type so it is briefly cooled down.
+		markJobJustSelected(selectedWork);
 		return selectedWork.createTask(mind.getPerson());
 	}
 	
@@ -274,6 +350,10 @@ public class PersonTaskManager extends TaskManager {
 		// Reset throttling state so the next call will rebuild immediately.
 		lastCacheSnapshot = null;
 		lastCacheRebuildTime = null;
+
+		// Reset cooldown state
+		cacheRebuildSeq = 0L;
+		jobCooldownUntil = new HashMap<>();
 	}
 
 	/**
@@ -285,6 +365,12 @@ public class PersonTaskManager extends TaskManager {
 		mind = null;
 		person.destroy();
 		person = null;
+
+		// Clear transient maps
+		if (jobCooldownUntil != null) {
+			jobCooldownUntil.clear();
+		}
+		jobCooldownUntil = null;
 
 		super.destroy();
 	}
