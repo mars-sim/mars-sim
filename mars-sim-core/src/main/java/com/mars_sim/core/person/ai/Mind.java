@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mind.java
- * @date 2025-08-25 (patched v3)
+ * @date 2025-08-25 (patched v4)
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai;
@@ -338,19 +338,19 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Ask the PersonTaskManager to start a new task and track session timing.
-	 * If {@code forced} is true, we allow the switch even when the previous task would prefer to continue.
+	 * If {@code forced} is true, we proactively end the current task before starting another.
+	 * (Removed use of non-existent Task#canContinue() to resolve build error.)
 	 */
 	private void startNewTaskFromManager(boolean forced) {
 		final Task old = taskManager.getTask();
 
-		// If forced and there's an old task that can't continue, ensure it's ended.
-		if (old != null && (!old.canContinue() || forced)) {
+		// If forced and there's an old task, ensure it's ended.
+		if (old != null && forced) {
 			try {
 				old.endTask();
 			}
 			catch (RuntimeException ex) {
-				logger.warning(person, 10_000L, "Suppressing exception while ending task "
-						+ safeName(old) + ": " + ex.getMessage());
+				logger.warning(person, 10_000L, "Suppressing exception while ending task: " + ex.getMessage());
 			}
 		}
 
@@ -361,15 +361,6 @@ public class Mind implements Serializable, Temporal {
 		final Task current = taskManager.getTask();
 		if (current != null) {
 			lastTaskStartMsols = simTimeMsols;
-		}
-	}
-
-	private static String safeName(Task t) {
-		try {
-			return (t != null ? t.getName() : "<none>");
-		}
-		catch (Throwable ignore) {
-			return "<unavailable>";
 		}
 	}
 
