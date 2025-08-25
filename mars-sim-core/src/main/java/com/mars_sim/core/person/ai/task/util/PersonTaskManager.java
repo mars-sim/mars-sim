@@ -132,14 +132,9 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
-		// Throttle cache rebuilds to reduce churn and CPU spikes at high sim speed.
-		if ((lastCacheSnapshot != null) && (lastCacheRebuildTime != null)) {
-			// Use absolute difference to be robust to direction of getTimeDiff(..)
-			double dt = Math.abs(lastCacheRebuildTime.getTimeDiff(now));
-			double jitter = ThreadLocalRandom.current().nextDouble(0.0D, REBUILD_JITTER_MSOLS);
-			if (dt < (MIN_REBUILD_INTERVAL_MSOLS + jitter)) {
-				return lastCacheSnapshot; // reuse recent snapshot; do not advance seq
-			}
+		// --- simplified throttle: early-exit via helper ---
+		if (shouldReuseCache(now)) {
+			return lastCacheSnapshot;
 		}
 
 		// We are about to perform a real rebuild; advance the sequence.
@@ -227,6 +222,22 @@ public class PersonTaskManager extends TaskManager {
 		lastCacheRebuildTime = now;
 
 		return newCache;
+	}
+
+	/**
+	 * Decide whether to reuse the last built cache snapshot to throttle rebuilds.
+	 *
+	 * @param now current Mars time
+	 * @return true if the previous snapshot is fresh enough to reuse
+	 */
+	private boolean shouldReuseCache(MarsTime now) {
+		if ((lastCacheSnapshot == null) || (lastCacheRebuildTime == null)) {
+			return false;
+		}
+		// Use absolute difference to be robust to direction of getTimeDiff(..)
+		double dt = Math.abs(now.getTimeDiff(lastCacheRebuildTime));
+		double jitter = ThreadLocalRandom.current().nextDouble(REBUILD_JITTER_MSOLS);
+		return dt < (MIN_REBUILD_INTERVAL_MSOLS + jitter);
 	}
 
 	/** Returns a stable key for cooldown, based on the TaskJob type. */
