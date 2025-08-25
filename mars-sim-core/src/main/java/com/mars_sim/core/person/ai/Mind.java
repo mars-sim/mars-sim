@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * Mind.java
- * @date 2022-08-06
+ * @date 2025-08-25 (patched)
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai;
 
 import java.io.Serializable;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -23,6 +24,7 @@ import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -45,9 +47,28 @@ public class Mind implements Serializable, Temporal {
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
 
+	// ------------------------------------------------------------------------------------
+	// Session guard & repick debounce (reduce task churn / Sleep-Eat thrash)
+	// ------------------------------------------------------------------------------------
+	/** Soft minimum a colonist keeps a task if still valid (millisols). Tunable via -Dmars.sim.task.session.min */
+	private static final double MIN_TASK_SESSION_MSOLS =
+			Double.parseDouble(System.getProperty("mars.sim.task.session.min", "15.0"));
+	/** Minimum time between full re-picks (millisols). Tunable via -Dmars.sim.task.repick.min */
+	private static final double MIN_REPICK_INTERVAL_MSOLS =
+			Double.parseDouble(System.getProperty("mars.sim.task.repick.min", "1.0"));
+	/** Debounce jitter so agents don't retask in lockstep. */
+	private static final double REPICK_JITTER_MSOLS = .25D;
+
+	/** When did we last start (or forcibly switch) a task? */
+	private transient MarsTime lastTaskStartTime;
+	/** When did we last perform a full probability pick? */
+	private transient MarsTime lastRepickTime;
+	/** Name of the task when it started (for diagnostics only). */
+	private transient String lastStartedTaskName;
+
 	private final int relationUpdate = RandomUtil.getRandomInt(RELATION_UPDATE_CYCLE);
 	private final int emotionUpdate = RandomUtil.getRandomInt(EMOTION_UPDATE_CYCLE);
-	
+
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
@@ -69,7 +90,7 @@ public class Mind implements Serializable, Temporal {
 	private PersonalityTraitManager trait;
 	/** The person's relationship with others. */
 	private Relation relation;
-	
+
 	private static MissionManager missionManager;
 
 	/**
@@ -100,8 +121,7 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Time passing.
 	 *
-	 * @param time the time passing (millisols)
-	 * @throws Exception if error.
+	 * @param pulse the clock pulse
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
@@ -113,7 +133,7 @@ public class Mind implements Serializable, Temporal {
 		if (pulse.isNewIntMillisol()) {
 			// Update stress based on personality.
 			mbti.updateStress(time);
-			
+
 			int msol = pulse.getMarsTime().getMillisolInt();
 			if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
 				// Update relationships.
@@ -124,8 +144,7 @@ public class Mind implements Serializable, Temporal {
 				emotionMgr.updateEmotion(trait.getPersonalityVector());
 			}
 		}
-	
-		
+
 		// Note: for now, a Mayor/Manager cannot switch job
 		if (jobLock && job != JobType.POLITICIAN) {
 			// Check for the passing of each day
@@ -134,7 +153,8 @@ public class Mind implements Serializable, Temporal {
 				// (i.e. no change allowed) until the beginning of the next sol
 				jobLock = false;
 			}
-		} else if (job == null) {
+		}
+		else if (job == null) {
 			// Assign a new job but do not bypass jobLock
 			getAJob(false, JobUtil.SETTLEMENT);
 		}
@@ -145,7 +165,7 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Assigns a job, either at the start of the sim or later.
 	 *
-	 * @param bypassingJobLock 
+	 * @param bypassingJobLock whether to bypass the job lock
 	 * @param assignedBy the authority that assigns the job
 	 */
 	public void getAJob(boolean bypassingJobLock, String assignedBy) {
@@ -157,9 +177,8 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Moderates the time for decisions.
-	 * 
+	 *
 	 * @param time in millisols
-	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(double time) {
 		double remaining = time;
@@ -187,7 +206,6 @@ public class Mind implements Serializable, Temporal {
 	 * Takes appropriate action for a given amount of time.
 	 *
 	 * @param time time in millisols
-	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
 		double pulseTime = time;
@@ -200,15 +218,14 @@ public class Mind implements Serializable, Temporal {
 				// Call executeTask
 				double remainingTime = taskManager.executeTask(pulseTime);
 
-				// A task is return a bad remaining time.
-				// Cause of Issue#290
+				// A task is returning a bad remaining time. Cause of Issue#290
 				if (!Double.isFinite(remainingTime) || (remainingTime < 0)) {
 					// Likely to be a defect in a Task
 					logger.warning(person, 20_000, "Calling '"
 							+ taskManager.getTaskName() + "' and return an invalid time " + remainingTime);
 					return;
 				}
-				
+
 				// Can not return more time than originally available
 				if (remainingTime > pulseTime) {
 					// Likely to be a defect in a Task or rounding problem
@@ -230,8 +247,8 @@ public class Mind implements Serializable, Temporal {
 					// No time has been consumed previously
 					// This is not supposed to happen but still happens a lot.
 					// Reduce the time by standardPulseTime
-					remainingTime = pulseTime - Task.getStandardPulseTime(); 
-					// Reset the idle counter					
+					remainingTime = pulseTime - Task.getStandardPulseTime();
+					// Reset the idle counter
 					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
 						return;
 					}
@@ -244,19 +261,20 @@ public class Mind implements Serializable, Temporal {
 			else {
 				// Look for a new task
 				lookForATask();
-				
+
 				// Don't have an active task. Consume time
 				if (!taskManager.hasActiveTask()) {
 					// Didn't find a new Task so abort action
 					pulseTime = 0;
 				}
 			}
-			
+
 		} while (pulseTime > SMALL_AMOUNT_OF_TIME);
 	}
 
 	/**
-	 * Looks for a new task
+	 * Looks for a new task (respects mission, then applies a small debounce).
+	 * A soft session guard is enforced when a task has just started to reduce thrash.
 	 */
 	private void lookForATask() {
 
@@ -272,7 +290,7 @@ public class Mind implements Serializable, Temporal {
 		}
 
 		if (hasActiveMission && !mission.isDone()) {
-			// Missions have to be done and are stressfull so allow high stress.
+			// Missions have to be done and are stressful so allow high stress.
 			if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
 				// Cannot perform the mission if a person is not well
 				// Note: If everyone has dangerous medical condition during a mission,
@@ -284,22 +302,82 @@ public class Mind implements Serializable, Temporal {
 			}
 		}
 
+		// If still no active task, (re)pick one — but debounce to avoid storms
 		if (!taskManager.hasActiveTask()) {
-			// don't have an active mission
-			taskManager.startNewTask();
+
+			// Session guard: if we *just* started a task recently and it ended instantly,
+			// avoid immediate re-pick storms; also cooperates with manager-level sticky logic.
+			if (lastTaskStartTime != null) {
+				double age = Math.abs(lastTaskStartTime.getTimeDiff(person.getMasterClock().getMarsTime()));
+				if (age < MIN_TASK_SESSION_MSOLS) {
+					// Within the commitment window; skip repick this tick.
+					return;
+				}
+			}
+
+			// Debounce full re-pick with small jitter
+			final MarsTime now = person.getMasterClock().getMarsTime();
+			if (lastRepickTime != null) {
+				double dt = Math.abs(lastRepickTime.getTimeDiff(now));
+				double jitter = ThreadLocalRandom.current().nextDouble(0D, REPICK_JITTER_MSOLS);
+				if (dt < (MIN_REPICK_INTERVAL_MSOLS + jitter)) {
+					return;
+				}
+			}
+
+			startNewTaskFromManager(false);
+			lastRepickTime = person.getMasterClock().getMarsTime();
+		}
+	}
+
+	/**
+	 * Ask the PersonTaskManager to start a new task and track session timing.
+	 * If {@code forced} is true, we allow the switch even when the previous task would prefer to continue.
+	 */
+	private void startNewTaskFromManager(boolean forced) {
+		final Task old = taskManager.getTask();
+
+		// If forced and there's an old task that can't continue, ensure it's ended.
+		if (old != null && (!old.canContinue() || forced)) {
+			try {
+				old.endTask();
+			}
+			catch (RuntimeException ex) {
+				logger.warning(person, 10_000L, "Suppressing exception while ending task "
+						+ safeName(old) + ": " + ex.getMessage());
+			}
+		}
+
+		// Delegate to task manager
+		taskManager.startNewTask();
+
+		// Track session timing for the guard
+		final Task current = taskManager.getTask();
+		if (current != null) {
+			lastTaskStartTime = person.getMasterClock().getMarsTime();
+			lastStartedTaskName = safeName(current);
+		}
+	}
+
+	private static String safeName(Task t) {
+		try {
+			return (t != null ? t.getName() : "<none>");
+		}
+		catch (Throwable ignore) {
+			return "<unavailable>";
 		}
 	}
 
 	/**
 	 * Resumes a mission.
 	 *
-	 * @param modifier
+	 * @param modifier mission-resume bias
 	 */
 	private void resumeMission(int modifier) {
 		int fitness = person.getPhysicalCondition().computeFitnessLevel();
 		int priority = mission.getPriority();
 		int rand = RandomUtil.getRandomInt(5);
-		if (rand - (fitness)/1.5D <= priority + modifier) {
+		if (rand - (fitness) / 1.5D <= priority + modifier) {
 			mission.performMission(person);
 		}
 	}
@@ -307,7 +385,7 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Checks if a person can start a new mission.
 	 *
-	 * @return
+	 * @return {@code true} if they can start a new mission
 	 */
 	public boolean canStartNewMission() {
 		boolean hasAMission = hasAMission();
@@ -327,7 +405,7 @@ public class Mind implements Serializable, Temporal {
 	 * Reassigns the person's job.
 	 *
 	 * @param newJob           the new job
-	 * @param bypassingJobLock
+	 * @param bypassingJobLock whether to bypass the job lock
 	 */
 	public void reassignJob(JobType newJob, boolean bypassingJobLock, String assignedBy, AssignmentType status,
 			String approvedBy) {
@@ -338,10 +416,10 @@ public class Mind implements Serializable, Temporal {
 	 * Assigns a person a new job.
 	 *
 	 * @param newJob           the new job
-	 * @param bypassingJobLock
-	 * @param assignedBy
+	 * @param bypassingJobLock whether to bypass the job lock
+	 * @param assignedBy       who assigned the job
 	 * @param status           of JobAssignmentType
-	 * @param approvedBy
+	 * @param approvedBy       approver
 	 */
 	public void assignJob(JobType newJob, boolean bypassingJobLock, String assignedBy,
 			AssignmentType status, String approvedBy) {
@@ -369,7 +447,7 @@ public class Mind implements Serializable, Temporal {
 	 * @return true for active mission
 	 */
 	public boolean hasActiveMission() {
-        return (mission != null) && !mission.isDone();
+		return (mission != null) && !mission.isDone();
 	}
 
 	/**
@@ -378,13 +456,12 @@ public class Mind implements Serializable, Temporal {
 	 * @return true for active mission
 	 */
 	public boolean hasAMission() {
-        return mission != null;
-    }
+		return mission != null;
+	}
 
 	/**
-	 * Sets this mind as inactive. Needs move work on this; has to abort the Task can
-	 * not just close it. This abort action would then allow the Mission to be also
-	 * aborted.
+	 * Sets this mind as inactive. Needs more work on this; has to abort the Task, cannot just close it.
+	 * This abort action would then allow the Mission to be also aborted.
 	 */
 	public void setInactive() {
 		taskManager.clearAllTasks("Inactive");
@@ -400,7 +477,7 @@ public class Mind implements Serializable, Temporal {
 	public void setActive() {
 		taskManager.clearAllTasks("Revived");
 	}
-	
+
 	/**
 	 * Sets the person's current mission.
 	 *
@@ -423,7 +500,6 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Stops the person's current mission.
-	 *
 	 */
 	public void stopMission() {
 		mission = null;
@@ -447,8 +523,8 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Gets the emotion manager.
-	 * 
-	 * @return
+	 *
+	 * @return emotion manager
 	 */
 	public EmotionManager getEmotion() {
 		return emotionMgr;
@@ -511,7 +587,7 @@ public class Mind implements Serializable, Temporal {
 
 	/*
 	 * Sets the value of jobLock so that the job can or cannot be changed.
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setJobLock(boolean value) {
@@ -520,8 +596,8 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Gets the PersonalityTraitManager instance.
-	 * 
-	 * @return the PersonalityTraitManager instance 
+	 *
+	 * @return the PersonalityTraitManager instance
 	 */
 	public PersonalityTraitManager getTraitManager() {
 		return trait;
@@ -529,10 +605,10 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Gets the relation instance.
-	 * 
-	 * @return the relation instance 
+	 *
+	 * @return the relation instance
 	 */
-	public Relation getRelation( ) {
+	public Relation getRelation() {
 		return relation;
 	}
 
@@ -547,6 +623,10 @@ public class Mind implements Serializable, Temporal {
 
 	public void reinit() {
 		taskManager.reinit();
+		// Reset session/repick state
+		lastTaskStartTime = null;
+		lastRepickTime = null;
+		lastStartedTaskName = null;
 	}
 
 	/**
@@ -560,12 +640,17 @@ public class Mind implements Serializable, Temporal {
 		if (mbti != null)
 			mbti.destroy();
 		mbti = null;
-		
+
 		emotionMgr.destroy();
 		emotionMgr = null;
 		trait.destroy();
 		trait = null;
 		relation.destroy();
 		relation = null;
+
+		// clear transient references
+		lastTaskStartTime = null;
+		lastRepickTime = null;
+		lastStartedTaskName = null;
 	}
 }
