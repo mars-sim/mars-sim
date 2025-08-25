@@ -7,14 +7,26 @@
 package com.mars_sim.ui.swing.tool.construction;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.Collections;
+import java.util.List;
 
+import javax.swing.BoundedRangeModel;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
+import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhase;
+import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -24,10 +36,20 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class TabPanelSiteGeneral extends TabPanel {
 
-	private static final String ID_ICON = "info"; //$NON-NLS-1$
+	private static final String ID_ICON = "info"; //-NLS-1$
 	
 	/** The ConstructionSite instance. */
 	private ConstructionSite constructionSite;
+
+	private EntityLabel missionLabel;
+
+	private PhaseTableModel phaseModel;
+	private ConstructionStage currentStage;
+	private BoundedRangeModel progressBarModel;
+
+	private JLabel stageName;
+
+	private JLabel stageType;
 	
 	/**
 	 * Constructor.
@@ -38,9 +60,9 @@ public class TabPanelSiteGeneral extends TabPanel {
 	public TabPanelSiteGeneral(ConstructionSite unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelGeneral.title"), //-NLS-1$
 			ImageLoader.getIconByName(ID_ICON),		
-			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelGeneral.title"), //-NLS-1$
 			desktop
 		);
 
@@ -55,15 +77,100 @@ public class TabPanelSiteGeneral extends TabPanel {
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
-		
 		String name = constructionSite.getName();
-		ConstructionStageInfo stageInfo = constructionSite.getCurrentConstructionStage().getInfo();
-		String stageInfoName = stageInfo.getName();
-		String stageInfoType = stageInfo.getType().name().toLowerCase();
-		
+
 		infoPanel.addTextField("Site Name", name, null);
 		infoPanel.addTextField("Building Type", constructionSite.getBuildingName(), null);
-		infoPanel.addTextField("Stage Info Name", stageInfoName, null);
-		infoPanel.addTextField("Stage Info Type", stageInfoType, null);
+		stageName = infoPanel.addTextField("Current Stage", "", null);
+		stageType = infoPanel.addTextField("Current Stage Type", "", null);
+
+		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getDesktop());
+		infoPanel.addLabelledItem("Work Mission", missionLabel);
+
+		JProgressBar progressBar = new JProgressBar();
+        progressBarModel = progressBar.getModel();
+        progressBar.setStringPainted(true);
+        infoPanel.addLabelledItem("Stage Completion", progressBar);
+
+		phaseModel = new PhaseTableModel();
+		var phaseTable = new JTable(phaseModel);
+		phaseTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+
+		var scrollPane = StyleManager.createScrollBorder("Remaining Phases", phaseTable);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		content.add(scrollPane, BorderLayout.CENTER);
+
+		update();
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		
+		missionLabel.setEntity(constructionSite.getWorkOnSite());
+		phaseModel.update(constructionSite.getRemainingPhases());
+
+		ConstructionStage stage = constructionSite.getCurrentConstructionStage();
+        if (stage != null) {
+            double completedWork = stage.getCompletedWorkTime();
+            double requiredWork = stage.getRequiredWorkTime();
+            int workProgress = (int) (100D * completedWork / requiredWork);
+            progressBarModel.setValue(workProgress);
+        }
+
+		var activeStage = constructionSite.getCurrentConstructionStage();
+		if (!activeStage.equals(currentStage)) {
+			currentStage = activeStage;
+
+			var info = currentStage.getInfo();
+			stageName.setText(info.getName());
+			stageType.setText(info.getType().name().toLowerCase());
+		}
+	}
+
+	private static class PhaseTableModel extends AbstractTableModel {
+
+		private List<ConstructionPhase> phases = Collections.emptyList();
+		
+		@Override
+		public int getRowCount() {
+			return phases.size();
+		}
+
+		public void update(List<ConstructionPhase> remainingPhases) {
+			if (!phases.equals(remainingPhases)) {
+				phases = remainingPhases;
+				fireTableDataChanged();
+			}
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 4;
+		}
+
+		@Override
+		public String getColumnName(int column) {	
+			return switch (column) {
+				case 0 -> "Stage";
+				case 1 -> "Type";
+				case 2 -> "Work";
+				case 3 -> "Work Time";
+				default -> null;
+			};
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			var p = phases.get(rowIndex);
+			return switch (columnIndex) {
+				case 0 -> p.stage().getName();
+				case 1 -> p.stage().getType().name().toLowerCase();
+				case 2 -> p.construct() ? "Construct" : "Salvage";
+				case 3 -> p.stage().getWorkTime();
+				default -> null;
+			};
+		}
 	}
 }

@@ -17,7 +17,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingSpec;
-import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
+import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhase;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.RoboticStation;
@@ -97,7 +97,6 @@ public class ConstructionManager implements Serializable {
 	private int uniqueId = 0;
 	
 	private Settlement settlement;
-	/** The settlement's construction sites. */
 	private List<ConstructionSite> sites;
 	private SalvageValues salvageValues;
 	private History<String> constructedBuildingLog;
@@ -133,9 +132,8 @@ public class ConstructionManager implements Serializable {
 	public List<ConstructionSite> getConstructionSitesNeedingMission(boolean construction) {
 		List<ConstructionSite> result = new ArrayList<>();
 		for (ConstructionSite site : sites) {
-			if (!site.isWorkOnSite() &&
-					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()
-					&& site.isConstruction() == construction) {
+			if ((site.getWorkOnSite() == null) &&
+					!site.isComplete()&& site.isConstruction() == construction) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
 					boolean workNeeded = !currentStage.isComplete();
@@ -153,23 +151,20 @@ public class ConstructionManager implements Serializable {
 
 	/**
 	 * Creates a new construction site.
-	 * @param buildingType Type of building
+	 * @param buildingType The final type of building
 	 * @param placement Where the site is placed
-	 * @param isConstruction The site is to create a new building
-	 * @param initStage Where the work starts
+	 * @param phases P{hases required to create the construction.
 	 */
 	private ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
-						boolean isConstruction, ConstructionStageInfo initStage) {
+						 List<ConstructionPhase> phases) {
 		String siteName = String.format("Site %s-%03d", settlement.getSettlementCode(), uniqueId++);
 
-		ConstructionSite site = new ConstructionSite(settlement, siteName, buildingType, isConstruction, initStage, placement);
+		ConstructionSite site = new ConstructionSite(settlement, siteName, buildingType, phases, placement);
 		sites.add(site);
     	Simulation.instance().getUnitManager().addUnit(site);
 
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
-		logger.info(site, "Just created and registered in ConstructionManager.");
-		logger.info(settlement, "New site created for a " + buildingType + " starting "
-					+ initStage.getName() + " called " + site);
+		logger.info(site, "Just created for a " + buildingType);
 		
 		return site;
 	}
@@ -242,10 +237,19 @@ public class ConstructionManager implements Serializable {
 			}
 		}
 
-		var bldStage = getStageInfo(salvagedBuilding.getBuildingType(), Stage.BUILDING);
+		var bldStage = getConstructionStages(salvagedBuilding.getBuildingType());
+		if (bldStage.isEmpty()) {
+			throw new IllegalStateException("No construction stages found for " + salvagedBuilding.getBuildingType());
+		}
+
+		// Salvage so rotate the phases as demonlishing
+		Collections.reverse(bldStage);
+		var phases = bldStage.stream()
+				.map(s -> new ConstructionPhase(s, false))
+				.toList();
 
 		// Add construction site.
-		return createNewConstructionSite(salvagedBuilding.getBuildingType(), salvagedBuilding, false, bldStage);
+		return createNewConstructionSite(salvagedBuilding.getBuildingType(), salvagedBuilding, phases);
 	}
 
 	/**
@@ -256,7 +260,7 @@ public class ConstructionManager implements Serializable {
 	public ConstructionSite getNextConstructionSite(int skill) {
 
 		var potentials = sites.stream()
-					.filter(s -> s.isConstruction() && !s.isWorkOnSite())
+					.filter(s -> s.isConstruction() && (s.getWorkOnSite() == null))
 					.filter(s -> s.getCurrentConstructionStage().getInfo().getBaseLevel() <= skill)
 					.toList();
 
@@ -294,28 +298,13 @@ public class ConstructionManager implements Serializable {
 		}
 
 		// Find the first state
-		ConstructionStageInfo initStage = getStageInfo(building.getName(), Stage.FOUNDATION);
-		return createNewConstructionSite(building.getName(), placement, true, initStage);
+		var bldStage = getConstructionStages(building.getName());
+		var phases = bldStage.stream()
+				.map(s -> new ConstructionPhase(s, true))
+				.toList();
+
+		return createNewConstructionSite(building.getName(), placement, phases);
 	}
-
-	/**
-	 * Check if the settlement needs new Building beyond the Queue
-	 */
-	// private void evaluateNewBuildingNeed() {
-	// 	// Check if settlement has construction override flag set.
-	// 	// if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
-	// 	// 	return null
-	// 	// }
-
-	// 	// This implementation should be enhanced to select a building according to soem rules
-	// 	//e.g. not enought beds then Accomodation
-	// 	String buildingType = ObjectiveUtil.getBuildingType(settlement.getObjective());
-
-	// 	// Make sure the best building is not in the queue already
-	// 	if (queue.stream().noneMatch(s -> s.getBuildingType().equals(buildingType))) {
-	// 		addBuildingToQueue(buildingType, null);
-	// 	}
-	// }
 
 	/**
 	 * Add a building to the queue to be scheduled for construction
@@ -343,21 +332,22 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Find the construction stage details in teh chain to create a certain building type
+	 * Find the construction stages needed to build a building.
 	 * @param buildingType Type to create
-	 * @param target The type of stage to locate
-	 * @return
+	 * @return List starting for first to last
 	 */
-	public static ConstructionStageInfo getStageInfo(String buildingType, Stage target) {
+	public static List<ConstructionStageInfo> getConstructionStages(String buildingType) {
 		var consConfig = SimulationConfig.instance().getConstructionConfiguration();
 
+		List<ConstructionStageInfo> results = new ArrayList<>();
 		// Get the top level Building stage and walkbacks
 		var stageInfo = consConfig.getConstructionStageInfoByName(buildingType);
-		while(stageInfo.getType() != target) {
+		while(stageInfo != null) {
+			results.add(0, stageInfo);
 			stageInfo = stageInfo.getPrerequisiteStage();
 		}
 
-		return stageInfo;
+		return results;
 	}
 
 	/**

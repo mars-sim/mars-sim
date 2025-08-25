@@ -8,6 +8,7 @@
 package com.mars_sim.core.building.construction;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 
 /**
  * Unit test for the ConstructionManager class.
@@ -48,7 +49,9 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
 
         ConstructionSite site2 = manager.getNextConstructionSite(1);
         assertEquals(1, manager.getConstructionSitesNeedingMission(true).size());
-        site2.setWorkOnSite(true);
+
+        var mission = new MockMission();
+        site2.setWorkOnSite(mission);
         assertEquals(0, manager.getConstructionSitesNeedingMission(true).size());
     }
 
@@ -109,4 +112,25 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
         first = queue.get(0);
         assertTrue("Build ready", first.isReady());
     }
+
+
+    public void testGetStages() {
+        var manager = buildManager();
+        var phases = manager.getConstructionStages(LANDER_HAB);
+
+        assertEquals("Phases", 3, phases.size());
+
+        var foundation = phases.get(0);
+        assertEquals("Surface Foundation 9x9", foundation.getName());
+        assertEquals(Stage.FOUNDATION, foundation.getType());
+
+        var frame = phases.get(1);
+        assertEquals("Round Hab Frame", frame.getName());
+        assertEquals(Stage.FRAME, frame.getType());
+
+        var building = phases.get(2);
+        assertEquals(LANDER_HAB, building.getName());
+        assertEquals(Stage.BUILDING, building.getType());
+    }
+
 }
