@@ -7,6 +7,10 @@
 
 package com.mars_sim.core.building.construction;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -18,6 +22,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.FixedUnit;
 
@@ -29,11 +34,16 @@ public class ConstructionSite extends FixedUnit {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * A phase of construction that might be construct or salvage.
+     */
+    public record ConstructionPhase(ConstructionStageInfo stage, boolean construct) implements Serializable {}
+
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
 
     private boolean isConstruction;
-    private boolean isWorkOnsite;
+    private Mission activeWork;
     private boolean unstarted = true;
 
     private double width;
@@ -44,23 +54,28 @@ public class ConstructionSite extends FixedUnit {
     private String targetBuilding;
     private ConstructionStage currentStage;
 
+    private List<ConstructionPhase> phases;
     
     /**
      * Constructor.
      */
-    public ConstructionSite(Settlement settlement, String siteName, String target, boolean isConstruction,
-                            ConstructionStageInfo initStage,
+    public ConstructionSite(Settlement settlement, String siteName, String target, List<ConstructionPhase> phases,
                             LocalBoundedObject placement) {
     	super(siteName, settlement);
     	
-        this.isConstruction = isConstruction;
+        this.phases = new ArrayList<>(phases);
+
+        // Pop off the first phase
+        var initPhase = this.phases.remove(0);
+
+        this.isConstruction = initPhase.construct();
+        this.currentStage = new ConstructionStage(initPhase.stage(), this, isConstruction);
+
         this.targetBuilding = target;
     	this.width = placement.getWidth();
         this.length = placement.getLength();
         this.facing = placement.getFacing();
         this.position = placement.getPosition();
-        this.currentStage = new ConstructionStage(initStage, this, isConstruction);
-
     }
 
     @Override
@@ -84,25 +99,20 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
+     * Get the remaining construction phases
+     * @return
+     */
+    public List<ConstructionPhase> getRemainingPhases() {
+        return phases;
+    }
+
+    /**
      * Checks if all construction is complete at the site.
      * 
      * @return true if construction is complete.
      */
-    public boolean isAllConstructionComplete() {
-        if (currentStage.getInfo().getType() == Stage.BUILDING && isConstruction) return currentStage.isComplete();
-        else return false;
-    }
-
-    /**
-     * Checks if all salvage is complete at the site.
-     * 
-     * @return true if salvage is complete.
-     */
-    public boolean isAllSalvageComplete() {
-        if (!isConstruction) {
-            if (currentStage.getInfo().getType() != Stage.FOUNDATION) return false;
-            else return currentStage.isComplete();
-        }
+    public boolean isComplete() {
+        if (phases.isEmpty()) return currentStage.isComplete();
         else return false;
     }
 
@@ -114,32 +124,25 @@ public class ConstructionSite extends FixedUnit {
     public boolean isConstruction() {
         return isConstruction;
     }
-
-    /**
-     * Checks if site has work on site
-     */
-    public boolean isWorkOnSite() {
-        return isWorkOnsite;
-    }
-
+    
     /**
      * Sets if site has work on site.
      */
-    public void setWorkOnSite(boolean active) {
+    public void setWorkOnSite(Mission activeWork) {
         this.unstarted = false;
-        this.isWorkOnsite = active;
+        this.activeWork = activeWork;
 
-        UnitEventType eventType;
-        if (isConstruction) {
-            eventType = (isWorkOnsite  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
+        UnitEventType eventType = ((activeWork != null)  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
                                         : UnitEventType.END_CONSTRUCTION_SITE_EVENT);
-        }
-        else {
-            eventType =  (isWorkOnsite ? UnitEventType.START_CONSTRUCTION_SALVAGE_EVENT
-                                        : UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT);
-        }
-
         fireUnitUpdate(eventType);
+    }
+
+    /**
+     * Get the mission that is doing active work on site
+     * @return
+     */
+    public Mission getWorkOnSite() {
+        return activeWork;
     }
 
     /**
@@ -152,47 +155,21 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
-     * Adds a new construction stage to the site.
-     * 
-     * @param newStage the new construction stage.
-     * @throws Exception if error adding construction stage.
+     * Advance to the next phase
+     * @return All completed
      */
-    public void addNewStage(ConstructionStageInfo newStage) {
-        var stageType = currentStage.getInfo().getType();
-        var newType = newStage.getType();
+    public boolean advanceToNextPhase() {
+        if (phases.isEmpty()) return true;
 
-        // Stage type must move forward
-        if (newType.ordinal() > stageType.ordinal()) {
-            // Fire construction event.
-            currentStage = new ConstructionStage(newStage, this, isConstruction);
-            fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
-            return;
-        }
+        var nextPhase = phases.remove(0);
+        this.isConstruction = nextPhase.construct();
+        this.currentStage = new ConstructionStage(nextPhase.stage(), this, isConstruction);
 
-        logger.severe(this, "Invalid stage construction change from " + currentStage.getInfo().getName()
-                            + " to " + newStage.getName());
-    }
+        logger.info(this, "Advanced to next phase '" + nextPhase.stage().getName() + "' "
+                + (isConstruction ? "construction" : "salvage"));
 
-    /**
-     * Removes a salvaged stage from the construction site.
-     * 
-     * @param stage the salvaged construction stage.
-     * @throws Exception if error removing the stage.
-     */
-    public void removeSalvagedStage(ConstructionStage stage) {
-        var stageType = currentStage.getInfo().getType();
-        var newType = stage.getInfo().getType();
-
-        // Stage type must move backward
-        if (newType.ordinal() < stageType.ordinal()) {
-            // Fire construction event.
-            currentStage = stage;
-            fireUnitUpdate(UnitEventType.REMOVE_CONSTRUCTION_STAGE_EVENT, currentStage);
-            return;
-        }
-
-        logger.severe(this, "Invalid stage savlage change from " + currentStage.getInfo().getName()
-                            + " to " + stage.getInfo().getName());
+        fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
+        return phases.isEmpty();
     }
 
     /**
@@ -220,10 +197,6 @@ public class ConstructionSite extends FixedUnit {
         		new BoundedObject(position, width, length, facing), spec);
         
         manager.addBuilding(newBuilding, true);
-
-        // Record completed building name.
-        var constructionManager = settlement.getConstructionManager();
-        constructionManager.addConstructedBuildingLogEntry(buildingType);
 
         // Fire construction event.
         fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
@@ -312,7 +285,7 @@ public class ConstructionSite extends FixedUnit {
      */
     public String getStatusDescription() {
         String result = currentStage.getInfo().getName();
-        if (isWorkOnsite) {
+        if (activeWork != null) {
             if (isConstruction) {
                 result += " - Active Construction";
             } else  {

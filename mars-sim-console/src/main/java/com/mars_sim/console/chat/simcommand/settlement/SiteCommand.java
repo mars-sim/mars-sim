@@ -45,18 +45,19 @@ public class SiteCommand extends AbstractSettlementCommand {
 		// Output Sites
 		response.appendHeading("Sites");
 		response.appendTableHeading("Name", 11,
-						"Stage", 28, "%", 3, "Build", "Active", "Building", STAGE_WIDTH);
+						"Stage", 28, "%", 3, "Build", "Active", "Left", "Building", -STAGE_WIDTH);
 		for (var site : cmgr.getConstructionSites()) {
 			var stage = site.getCurrentConstructionStage();
 			response.appendTableRow(site.getName(), stage.getInfo().getName(),
 						Math.round(stage.getCompletedPerc() * 100),
-						site.isConstruction(), site.isWorkOnSite(), site.getBuildingName());
+						site.isConstruction(), site.getWorkOnSite() != null,
+						site.getRemainingPhases().size(), site.getBuildingName());
 		}
 		response.appendBlankLine();
 
 		// Output queue
 		response.appendHeading("Building Queue");
-		response.appendTableHeading("Building", STAGE_WIDTH,"When", CommandHelper.TIMESTAMP_TRUNCATED_WIDTH);
+		response.appendTableHeading("Building", STAGE_WIDTH,"When", -CommandHelper.TIMESTAMP_TRUNCATED_WIDTH);
 		for (var item : cmgr.getBuildingSchedule()) {
 			String when = (item.isReady() ? "Now" : item.getStart().getDateTimeStamp());
 			response.appendTableRow(item.getBuildingType(), when);

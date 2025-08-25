@@ -20,15 +20,6 @@ public class ConstructionConfigTest extends AbstractMarsSimUnitTest {
         assertFalse("Frame stages is empty", frames.isEmpty());
     }
 
-    public void testPotentialNextStages() {
-        var cConfig = getConfig().getConstructionConfiguration();
-
-        String selectedStage = "Round Hab Frame";
-        var selected = cConfig.getConstructionStageInfoByName(selectedStage);
-        var found = cConfig.getPotentialNextStages(selected);
-        assertEquals("Number of later stages for " + selectedStage, 6, found.size());
-    }
-
     public void testSteelFrameTower() {
         var cConfig = getConfig().getConstructionConfiguration();
         var selected = cConfig.getConstructionStageInfoByName("Steel Frame Tower");

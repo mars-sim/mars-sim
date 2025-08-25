@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhase;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ItemResource;
@@ -30,9 +31,10 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
                                         BUILDING_WIDTH, BUILDING_LENGTH, 0);
 
     // Data members
-    ConstructionStageInfo foundationInfo = null;
-    ConstructionStageInfo frameInfo = null;
-    ConstructionStageInfo buildingInfo = null;
+    private ConstructionStageInfo foundationInfo = null;
+    private ConstructionStageInfo frameInfo = null;
+    private ConstructionStageInfo buildingInfo = null;
+    private List<ConstructionPhase> phases = null;
 
     @Override
     public void setUp() {
@@ -65,6 +67,10 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
         buildingInfo = new ConstructionStageInfo("Workshop",
                 ConstructionStageInfo.Stage.BUILDING, BUILDING_WIDTH, BUILDING_LENGTH, "length", false, 0, true, false, 10000D, 0, null, parts,
                 resources, vehicles);
+
+        phases = List.of(new ConstructionPhase(foundationInfo, true),
+                        new ConstructionPhase(frameInfo, true),
+                        new ConstructionPhase(buildingInfo, true));
     }
 
     /*
@@ -74,7 +80,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
     public void testIsStageComplete() {
         var s = buildSettlement();
 
-        var site = new ConstructionSite(s, "Site1", WORKSHOP, true, foundationInfo, PLACE);
+        var site = new ConstructionSite(s, "Site1", WORKSHOP, phases, PLACE);
 
         assertEquals("Inital stage", foundationInfo, site.getCurrentConstructionStage().getInfo());
 
@@ -98,25 +104,25 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
     public void testIsSiteComplete() {
         var s = buildSettlement();
 
-        var site = new ConstructionSite(s, "Site2", WORKSHOP, true, foundationInfo, PLACE);
+        var site = new ConstructionSite(s, "Site2", WORKSHOP, phases, PLACE);
 
         assertEquals("Inital stage", foundationInfo, site.getCurrentConstructionStage().getInfo());
         site.getCurrentConstructionStage().addWorkTime(10000D);
         assertTrue(site.getCurrentConstructionStage().isComplete());
-        assertFalse(site.isAllConstructionComplete());
+        assertFalse(site.isComplete());
 
-        site.addNewStage(frameInfo);
+        site.advanceToNextPhase();
         assertEquals("Frame stage", frameInfo, site.getCurrentConstructionStage().getInfo());
         site.getCurrentConstructionStage().addWorkTime(10000D);
         assertTrue(site.getCurrentConstructionStage().isComplete());
-        assertFalse(site.isAllConstructionComplete());
+        assertFalse(site.isComplete());
 
-        site.addNewStage(buildingInfo);
+        site.advanceToNextPhase();
         assertEquals("Building stage", buildingInfo, site.getCurrentConstructionStage().getInfo());
         site.getCurrentConstructionStage().addWorkTime(10000D);
         assertTrue(site.getCurrentConstructionStage().isComplete());
 
-        assertTrue(site.isAllConstructionComplete());
+        assertTrue(site.isComplete());
     }
 
     /*
@@ -126,12 +132,14 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
     public void testSetWorkOnSite() {
         var s = buildSettlement();
 
-        var site = new ConstructionSite(s, "Site3", WORKSHOP, true, foundationInfo, PLACE);
+        var site = new ConstructionSite(s, "Site3", WORKSHOP, phases, PLACE);
 
-        site.setWorkOnSite(true);
-        assertTrue(site.isWorkOnSite());
+        var mission = new MockMission();
+        site.setWorkOnSite(mission);
+        assertEquals(mission, site.getWorkOnSite());
 
-        site.setWorkOnSite(false);
-        assertFalse(site.isWorkOnSite());
+        site.setWorkOnSite(null);
+        assertNull(site.getWorkOnSite());
+
     }
 }
