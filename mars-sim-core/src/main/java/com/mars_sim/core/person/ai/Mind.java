@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mind.java
- * @date 2025-08-25 (patched)
+ * @date 2025-08-25 (patched v2)
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai;
@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.OverrideType;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
@@ -95,7 +96,7 @@ public class Mind implements Serializable, Temporal {
 	private static MissionManager missionManager;
 
 	/**
-	 * Constructor 1.
+	 * Constructor.
 	 *
 	 * @param person the person owning this mind
 	 */
@@ -393,17 +394,18 @@ public class Mind implements Serializable, Temporal {
 	 * @return {@code true} if they can start a new mission
 	 */
 	public boolean canStartNewMission() {
-		boolean hasAMission = hasAMission();
+		boolean hasMission = hasAMission();
+		boolean activeMission = hasActiveMission();
 
-		boolean hasActiveMission = hasActiveMission();
-
+		// Check if mission creation at settlement (if any) is overridden. Guard against null settlement.
 		boolean overrideMission = false;
-
-		// Check if mission creation at settlement (if any) is overridden.
-		overrideMission = person.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
+		Settlement s = person.getAssociatedSettlement();
+		if (s != null) {
+			overrideMission = s.getProcessOverride(OverrideType.MISSION);
+		}
 
 		// See if this person can ask for a mission
-		return !hasActiveMission && !hasAMission && !overrideMission;
+		return !activeMission && !hasMission && !overrideMission;
 	}
 
 	/**
@@ -469,7 +471,9 @@ public class Mind implements Serializable, Temporal {
 	 * This abort action would then allow the Mission to be also aborted.
 	 */
 	public void setInactive() {
-		taskManager.clearAllTasks("Inactive");
+		if (taskManager != null) {
+			taskManager.clearAllTasks("Inactive");
+		}
 		if (hasActiveMission()) {
 			mission.removeMember(person);
 			mission = null;
@@ -480,7 +484,9 @@ public class Mind implements Serializable, Temporal {
 	 * Sets this mind active.
 	 */
 	public void setActive() {
-		taskManager.clearAllTasks("Revived");
+		if (taskManager != null) {
+			taskManager.clearAllTasks("Revived");
+		}
 	}
 
 	/**
@@ -627,31 +633,57 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	public void reinit() {
-		taskManager.reinit();
+		if (taskManager != null) {
+			taskManager.reinit();
+		}
 		// Reset session/repick state
 		lastTaskStartMsols = null;
 		lastRepickMsols = null;
 		lastStartedTaskName = null;
+		// Reset local sim clock (safe default)
+		simTimeMsols = 0D;
 	}
 
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		person = null;
-		taskManager.destroy();
+		// Avoid potential destroy() recursion between Mind and PersonTaskManager:
+		// just clear tasks and drop references. The settlement GC will take care of the rest.
+		if (taskManager != null) {
+			try {
+				taskManager.clearAllTasks("Destroyed");
+			}
+			catch (Throwable ignored) {
+				// Defensive: ignore errors during shutdown
+			}
+		}
+		taskManager = null;
+
 		mission = null;
 		job = null;
-		if (mbti != null)
-			mbti.destroy();
+
+		if (mbti != null) {
+			try { mbti.destroy(); } catch (Throwable ignored) {}
+		}
 		mbti = null;
 
-		emotionMgr.destroy();
+		if (emotionMgr != null) {
+			try { emotionMgr.destroy(); } catch (Throwable ignored) {}
+		}
 		emotionMgr = null;
-		trait.destroy();
+
+		if (trait != null) {
+			try { trait.destroy(); } catch (Throwable ignored) {}
+		}
 		trait = null;
-		relation.destroy();
+
+		if (relation != null) {
+			try { relation.destroy(); } catch (Throwable ignored) {}
+		}
 		relation = null;
+
+		person = null;
 
 		// clear transient references
 		lastTaskStartMsols = null;
