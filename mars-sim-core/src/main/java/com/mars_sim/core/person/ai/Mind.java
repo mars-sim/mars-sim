@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mind.java
- * @date 2025-08-25 (patched v2)
+ * @date 2025-08-25 (patched v3)
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai;
@@ -65,8 +65,6 @@ public class Mind implements Serializable, Temporal {
 	private transient Double lastTaskStartMsols;
 	/** When did we last perform a full probability pick? (sim millisols) */
 	private transient Double lastRepickMsols;
-	/** Name of the task when it started (for diagnostics only). */
-	private transient String lastStartedTaskName;
 
 	private final int relationUpdate = RandomUtil.getRandomInt(RELATION_UPDATE_CYCLE);
 	private final int emotionUpdate = RandomUtil.getRandomInt(EMOTION_UPDATE_CYCLE);
@@ -247,9 +245,9 @@ public class Mind implements Serializable, Temporal {
 					logger.warning(person, 20_000, "Calling '"
 							+ taskManager.getTaskName() + "' for "
 							+ callCount + " iterations.");
-					callCount++;
 					return;
 				}
+
 				if (remainingTime == pulseTime) {
 					// No time has been consumed previously
 					// This is not supposed to happen but still happens a lot.
@@ -263,7 +261,9 @@ public class Mind implements Serializable, Temporal {
 				else {
 					zeroCount = 0;
 				}
+
 				pulseTime = remainingTime;
+				callCount++; // count this iteration where we executed a task
 			}
 			else {
 				// Look for a new task
@@ -361,7 +361,6 @@ public class Mind implements Serializable, Temporal {
 		final Task current = taskManager.getTask();
 		if (current != null) {
 			lastTaskStartMsols = simTimeMsols;
-			lastStartedTaskName = safeName(current);
 		}
 	}
 
@@ -639,7 +638,6 @@ public class Mind implements Serializable, Temporal {
 		// Reset session/repick state
 		lastTaskStartMsols = null;
 		lastRepickMsols = null;
-		lastStartedTaskName = null;
 		// Reset local sim clock (safe default)
 		simTimeMsols = 0D;
 	}
@@ -688,6 +686,5 @@ public class Mind implements Serializable, Temporal {
 		// clear transient references
 		lastTaskStartMsols = null;
 		lastRepickMsols = null;
-		lastStartedTaskName = null;
 	}
 }
