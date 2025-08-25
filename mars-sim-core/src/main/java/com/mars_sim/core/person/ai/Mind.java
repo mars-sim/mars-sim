@@ -24,7 +24,6 @@ import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -59,10 +58,12 @@ public class Mind implements Serializable, Temporal {
 	/** Debounce jitter so agents don't retask in lockstep. */
 	private static final double REPICK_JITTER_MSOLS = .25D;
 
-	/** When did we last start (or forcibly switch) a task? */
-	private transient MarsTime lastTaskStartTime;
-	/** When did we last perform a full probability pick? */
-	private transient MarsTime lastRepickTime;
+	/** Local monotonic sim-time accumulator in millisols (advanced via timePassing). */
+	private transient double simTimeMsols = 0D;
+	/** When did we last start (or forcibly switch) a task? (sim millisols) */
+	private transient Double lastTaskStartMsols;
+	/** When did we last perform a full probability pick? (sim millisols) */
+	private transient Double lastRepickMsols;
 	/** Name of the task when it started (for diagnostics only). */
 	private transient String lastStartedTaskName;
 
@@ -97,7 +98,6 @@ public class Mind implements Serializable, Temporal {
 	 * Constructor 1.
 	 *
 	 * @param person the person owning this mind
-	 * @throws Exception if mind could not be created.
 	 */
 	public Mind(Person person) {
 		// Initialize data members
@@ -126,7 +126,13 @@ public class Mind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		double time = pulse.getElapsed();
-		if ((taskManager != null) && (pulse.getElapsed() > 0)) {
+
+		// Advance local sim time accumulator (millisols)
+		if (time > 0D && Double.isFinite(time)) {
+			simTimeMsols += time;
+		}
+
+		if ((taskManager != null) && (time > 0)) {
 			moderateTime(time);
 		}
 
@@ -307,8 +313,8 @@ public class Mind implements Serializable, Temporal {
 
 			// Session guard: if we *just* started a task recently and it ended instantly,
 			// avoid immediate re-pick storms; also cooperates with manager-level sticky logic.
-			if (lastTaskStartTime != null) {
-				double age = Math.abs(lastTaskStartTime.getTimeDiff(person.getMasterClock().getMarsTime()));
+			if (lastTaskStartMsols != null) {
+				double age = Math.abs(simTimeMsols - lastTaskStartMsols.doubleValue());
 				if (age < MIN_TASK_SESSION_MSOLS) {
 					// Within the commitment window; skip repick this tick.
 					return;
@@ -316,9 +322,8 @@ public class Mind implements Serializable, Temporal {
 			}
 
 			// Debounce full re-pick with small jitter
-			final MarsTime now = person.getMasterClock().getMarsTime();
-			if (lastRepickTime != null) {
-				double dt = Math.abs(lastRepickTime.getTimeDiff(now));
+			if (lastRepickMsols != null) {
+				double dt = Math.abs(simTimeMsols - lastRepickMsols.doubleValue());
 				double jitter = ThreadLocalRandom.current().nextDouble(0D, REPICK_JITTER_MSOLS);
 				if (dt < (MIN_REPICK_INTERVAL_MSOLS + jitter)) {
 					return;
@@ -326,7 +331,7 @@ public class Mind implements Serializable, Temporal {
 			}
 
 			startNewTaskFromManager(false);
-			lastRepickTime = person.getMasterClock().getMarsTime();
+			lastRepickMsols = simTimeMsols;
 		}
 	}
 
@@ -354,7 +359,7 @@ public class Mind implements Serializable, Temporal {
 		// Track session timing for the guard
 		final Task current = taskManager.getTask();
 		if (current != null) {
-			lastTaskStartTime = person.getMasterClock().getMarsTime();
+			lastTaskStartMsols = simTimeMsols;
 			lastStartedTaskName = safeName(current);
 		}
 	}
@@ -624,8 +629,8 @@ public class Mind implements Serializable, Temporal {
 	public void reinit() {
 		taskManager.reinit();
 		// Reset session/repick state
-		lastTaskStartTime = null;
-		lastRepickTime = null;
+		lastTaskStartMsols = null;
+		lastRepickMsols = null;
 		lastStartedTaskName = null;
 	}
 
@@ -649,8 +654,8 @@ public class Mind implements Serializable, Temporal {
 		relation = null;
 
 		// clear transient references
-		lastTaskStartTime = null;
-		lastRepickTime = null;
+		lastTaskStartMsols = null;
+		lastRepickMsols = null;
 		lastStartedTaskName = null;
 	}
 }
