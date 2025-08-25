@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScientificStudy.java
- * @date 2025-08-09
+ * @date 2025-08-09 (patched per PR #1679 discussion)
  * @author Scott Davis
  */
 package com.mars_sim.core.science;
@@ -37,7 +37,8 @@ import com.mars_sim.core.tool.RandomUtil;
  * A class representing a scientific study.
  */
 public class ScientificStudy implements Entity, Temporal, Comparable<ScientificStudy> {
-	// POJO holding collaborators effort
+
+	// POJO holding collaborators' effort
 	private static final class CollaboratorStats implements Serializable {
 		private static final long serialVersionUID = 1L;
 
@@ -86,7 +87,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/** The amount of proposal time done so far. */
 	private double proposalWorkTime;
 
-	/** The primary researcher */
+	/** The primary researcher. */
 	private Person primaryResearcher;
 
 	private StudyStatus phase;
@@ -113,9 +114,10 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/**
 	 * Constructor.
 	 *
+	 * @param id                study id
+	 * @param name              study name
 	 * @param primaryResearcher the primary researcher for the study.
-	 * @param science           {@link ScienceType} the primary field of science in
-	 *                          the study.
+	 * @param science           {@link ScienceType} the primary field of science in the study.
 	 * @param difficultyLevel   the difficulty level of the study.
 	 */
 	ScientificStudy(int id, String name, Person primaryResearcher, ScienceType science, int difficultyLevel) {
@@ -134,32 +136,17 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		// Compute the number for this particular scientific study
 		maxCollaborators = (int) RandomUtil.getGaussianPositive(aveNum, aveNum / 5D);
 
-		// Compute the base proposal study time for this particular scientific study
+		// Compute base times for this particular scientific study
 		baseProposalTime = computeTime(SciencePhaseTime.PROPOSAL) * Math.max(1, difficultyLevel);
-
-		// Compute the primary research time for this particular scientific study
 		basePrimaryResearchTime = computeTime(SciencePhaseTime.PRIMARY_RESEARCH) * Math.max(1, difficultyLevel);
-
-		// Compute the collaborative research time for this particular scientific study
 		baseCollaborativeResearchTime = computeTime(SciencePhaseTime.COLLABORATIVE_RESEARCH) * Math.max(1, difficultyLevel);
-
-		// Compute the primary research paper writing time for this particular scientific study
 		basePrimaryWritingPaperTime = computeTime(SciencePhaseTime.PRIMARY_RESEARCHER_WRITING) * Math.max(1, difficultyLevel);
-
-		// Compute the collaborative paper writing time for this particular scientific study
 		baseCollaborativePaperWritingTime = computeTime(SciencePhaseTime.COLLABORATOR_WRITING) * Math.max(1, difficultyLevel);
-
-		// Compute the base peer review time for this particular scientific study
 		basePeerReviewTime = computeTime(SciencePhaseTime.PEER_REVIEW);
-
-		// Compute the primary work downtime allowed for this particular scientific study
 		primaryWorkDownTimeAllowed = computeTime(SciencePhaseTime.PRIMARY_RESEARCHER_IDLE);
-
-		// Compute the collaborative work downtime allowed for this particular scientific study
 		collaborativeWorkDownTimeAllowed = computeTime(SciencePhaseTime.COLLABORATOR_IDLE);
 
-		// These must be concurrent otherwise the internal representation will be corrupted
-		// after a reload due to multiple threads.
+		// Concurrent to avoid reload-corruption with multiple threads.
 		collaborators = new ConcurrentHashMap<>();
 		invitedResearchers = new ConcurrentHashMap<>();
 		primaryStats = new CollaboratorStats(science);
@@ -172,16 +159,15 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/**
 	 * Computes the time of interest for this scientific study.
 	 *
-	 * @param index
-	 * @return
+	 * @param index phase time index
+	 * @return phase time in millisols
 	 */
 	private double computeTime(SciencePhaseTime index) {
 		// Gets the average time from scientific_study.json
 		int mean = scienceConfig.getAverageTime(index);
 		// Modify it with random gaussian for this particular scientific study
 		double mod = RandomUtil.getGaussianPositive(0, .68);
-		if (mod > 10)
-			mod = 10;
+		if (mod > 10) mod = 10;
 		// Limit it to not less than 1/4 of the mean
 		return Math.max(mean / 4D, mean + mean * mod / 5D);
 	}
@@ -206,7 +192,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/**
 	 * Gets the assigned id of this study.
 	 *
-	 * @return
+	 * @return id
 	 */
 	public int getID() {
 		return id;
@@ -281,7 +267,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/**
 	 * Has the proposal been completed ?
 	 *
-	 * @return
+	 * @return true if completed
 	 */
 	public boolean isProposalCompleted() {
 		return (proposalWorkTime >= baseProposalTime);
@@ -294,8 +280,9 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	public void addProposalWorkTime(double workTime) {
 		proposalWorkTime += workTime;
-		if (proposalWorkTime >= baseProposalTime)
+		if (proposalWorkTime >= baseProposalTime) {
 			proposalWorkTime = baseProposalTime;
+		}
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PROPOSAL_WORK_EVENT);
@@ -304,7 +291,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/**
 	 * Gets the study's collaborative researchers.
 	 *
-	 * @return map of researchers and their sciences.
+	 * @return set of researchers.
 	 */
 	public Set<Person> getCollaborativeResearchers() {
 		return getPersons(collaborators.keySet());
@@ -312,23 +299,23 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Converts a set of Person IDs into a Set of Person objects.
-	 *
-	 * @param ids
-	 * @return
 	 */
 	private static Set<Person> getPersons(Set<Integer> ids) {
 		UnitManager um = getUnitManager();
-		return ids.stream().map(um::getPersonByID).collect(Collectors.toSet());
+		return ids.stream()
+		          .map(um::getPersonByID)
+		          .filter(p -> p != null)
+		          .collect(Collectors.toSet());
 	}
 
 	/**
 	 * Gets the contribution of a researcher to this study. Maybe primary researcher or a collaborator.
 	 *
-	 * @param researcher
+	 * @param researcher person
 	 * @return Can return null if this person does not play a part.
 	 */
 	public ScienceType getContribution(Person researcher) {
-		ScienceType result = null;
+		ScienceType result;
 		if (researcher.equals(primaryResearcher)) {
 			result = science;
 		}
@@ -356,9 +343,12 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	public Map<Person, ScienceType> getPersonCollaborativePersons() {
 		UnitManager um = getUnitManager();
-		Map<Person, ScienceType> map =  new HashMap<>();
+		Map<Person, ScienceType> map = new HashMap<>();
 		for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
-			map.put(um.getPersonByID(c.getKey()), c.getValue().contribution);
+			Person p = um.getPersonByID(c.getKey());
+			if (p != null) {
+				map.put(p, c.getValue().contribution);
+			}
 		}
 		return map;
 	}
@@ -403,7 +393,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Checks if an invited researcher has responded to the invitation.
 	 *
 	 * @param researcher the invited researcher
-	 * @return true if reseacher has responded.
+	 * @return true if researcher has responded.
 	 */
 	public boolean hasInvitedResearcherResponded(Person researcher) {
 		boolean result = false;
@@ -420,20 +410,16 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	public int getNumOpenResearchInvitations() {
 		int result = 0;
-
 		for (Boolean responded : invitedResearchers.values()) {
 			if ((responded != null) && !responded.booleanValue()) {
 				result++;
 			}
 		}
-
 		return result;
 	}
 
 	/**
 	 * Who has been invited?
-	 *
-	 * @return
 	 */
 	public Set<Person> getInvitedResearchers() {
 		return getPersons(invitedResearchers.keySet());
@@ -462,19 +448,15 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	}
 
 	/**
-	 * Finds all dead people in a list of IDs. Probably should be a generic helper method.
-	 *
-	 * @param ids
-	 * @return
+	 * Finds all dead people in a list of IDs.
 	 */
 	private static Set<Person> findDeadPeople(Set<Integer> ids) {
 		Set<Person> dead = new UnitSet<>();
-
 		UnitManager um = getUnitManager();
 		for (Integer id : ids) {
 			Person p = um.getPersonByID(id);
-			if (p.getPhysicalCondition().isDead()) {
-				dead.add(p);
+			if (p == null || p.getPhysicalCondition().isDead()) {
+				if (p != null) dead.add(p);
 			}
 		}
 		return dead;
@@ -485,10 +467,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	}
 
 	/**
-	 * Adds a researcher to the list of researchers invited to collaborate on this
-	 * study.
-	 *
-	 * @param researcher the invited researcher.
+	 * Adds a researcher to the list of researchers invited to collaborate on this study.
 	 */
 	public synchronized void addInvitedResearcher(Person researcher) {
 		invitedResearchers.put(researcher.getIdentifier(), Boolean.FALSE);
@@ -498,8 +477,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Sets that an invited researcher has responded.
 	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
 	 * different Threads.
-	 *
-	 * @param researcher the invited researcher.
 	 */
 	public synchronized void respondingInvitedResearcher(Person researcher) {
 		invitedResearchers.put(researcher.getIdentifier(), Boolean.TRUE);
@@ -507,8 +484,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the total work time required for primary research.
-	 *
-	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryResearchWorkTimeRequired() {
 		return basePrimaryResearchTime;
@@ -516,8 +491,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the work time completed for primary research.
-	 *
-	 * @return work time (millisols).
 	 */
 	public double getPrimaryResearchWorkTimeCompleted() {
 		return primaryStats.reseachWorkTime;
@@ -525,8 +498,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Adds work time for primary research.
-	 *
-	 * @param workTime work time (millisols).
 	 */
 	public void addPrimaryResearchWorkTime(double workTime) {
 		primaryStats.reseachWorkTime += workTime;
@@ -544,8 +515,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Checks if primary research has been completed.
-	 *
-	 * @return true if primary research completed.
 	 */
 	public boolean isPrimaryResearchCompleted() {
 		return (primaryStats.reseachWorkTime >= getTotalPrimaryResearchWorkTimeRequired());
@@ -553,8 +522,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the total work time required for a collaborative researcher.
-	 *
-	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativeResearchWorkTimeRequired() {
 		return baseCollaborativeResearchTime;
@@ -570,9 +537,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the work time completed for a collaborative researcher.
-	 *
-	 * @param researcher the collaborative researcher.
-	 * @return work time (millisols).
 	 */
 	public double getCollaborativeResearchWorkTimeCompleted(Person researcher) {
 		return getCollaboratorStats(researcher).reseachWorkTime;
@@ -582,18 +546,14 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Adds work time for collaborative research.
 	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
 	 * different Threads.
-	 *
-	 * @param researcher the collaborative researcher.
-	 * @param workTime   the work time (millisols).
 	 */
 	public synchronized void addCollaborativeResearchWorkTime(Person researcher, double workTime) {
 		CollaboratorStats c = getCollaboratorStats(researcher);
-
 		c.reseachWorkTime += workTime;
 		double requiredWorkTime = getTotalCollaborativeResearchWorkTimeRequired();
-		if (c.reseachWorkTime >= requiredWorkTime)
+		if (c.reseachWorkTime >= requiredWorkTime) {
 			c.reseachWorkTime = requiredWorkTime;
-
+		}
 		// Update last collaborative work time.
 		c.lastContribution = masterClock.getMarsTime();
 
@@ -604,10 +564,9 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/**
 	 * Checks if collaborative research has been completed by a given researcher.
 	 *
-	 * @param researcher the collaborative researcher.
+	 * (Per PR #1679 discussion) Guard against null/non-collaborator and return false instead of throwing.
 	 */
 	public synchronized boolean isCollaborativeResearchCompleted(Person researcher) {
-		// Defensive: if null or not a collaborator, this work cannot be completed.
 		if (researcher == null) return false;
 		CollaboratorStats c = collaborators.get(researcher.getIdentifier());
 		if (c == null) return false;
@@ -620,16 +579,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 		for (CollaboratorStats c : collaborators.values()) {
 			// If ANY collaborator has NOT reached the target, overall research is not complete.
-			if (c.reseachWorkTime < targetTime)
-				result = false;
+			if (c.reseachWorkTime < targetTime) result = false;
 		}
 		return (result && isPrimaryResearchCompleted());
 	}
 
 	/**
 	 * Gets the total work time required for primary researcher writing paper.
-	 *
-	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryPaperWorkTimeRequired() {
 		return basePrimaryWritingPaperTime;
@@ -637,8 +593,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the work time completed for primary researcher writing paper.
-	 *
-	 * @return work time (millisols).
 	 */
 	public double getPrimaryPaperWorkTimeCompleted() {
 		return primaryStats.paperWorkTime;
@@ -646,8 +600,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Adds work time for primary researcher writing paper.
-	 *
-	 * @param workTime work time (millisols).
 	 */
 	public void addPrimaryPaperWorkTime(double workTime) {
 		primaryStats.paperWorkTime += workTime;
@@ -662,18 +614,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Checks if primary researcher paper writing has been completed.
-	 *
-	 * @return true if primary researcher paper writing completed.
 	 */
 	public boolean isPrimaryPaperCompleted() {
 		return (primaryStats.paperWorkTime >= getTotalPrimaryPaperWorkTimeRequired());
 	}
 
 	/**
-	 * Gets the total work time required for a collaborative researcher writing
-	 * paper.
-	 *
-	 * @return work time (millisols).
+	 * Gets the total work time required for a collaborative researcher writing paper.
 	 */
 	public double getTotalCollaborativePaperWorkTimeRequired() {
 		return baseCollaborativePaperWritingTime;
@@ -681,9 +628,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the work time completed for a collaborative researcher writing paper.
-	 *
-	 * @param researcher the collaborative researcher.
-	 * @return work time (millisols).
 	 */
 	public double getCollaborativePaperWorkTimeCompleted(Person researcher) {
 		return getCollaboratorStats(researcher).paperWorkTime;
@@ -693,27 +637,22 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Adds work time for collaborative researcher writing paper.
 	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
 	 * different Threads.
-	 *
-	 * @param researcher the collaborative researcher.
-	 * @param workTime   the work time (millisols).
 	 */
 	public synchronized void addCollaborativePaperWorkTime(Person researcher, double workTime) {
 		CollaboratorStats c = getCollaboratorStats(researcher);
 
 		c.paperWorkTime += workTime;
 		double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
-		if (c.paperWorkTime  >= requiredWorkTime)
-			c.paperWorkTime  = requiredWorkTime;
+		if (c.paperWorkTime >= requiredWorkTime) {
+			c.paperWorkTime = requiredWorkTime;
+		}
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_PAPER_WORK_EVENT, researcher);
 	}
 
 	/**
-	 * Checks if collaborative paper writing has been completed by a given
-	 * researcher.
-	 *
-	 * @param researcher the collaborative researcher.
+	 * Checks if collaborative paper writing has been completed by a given researcher.
 	 */
 	public boolean isCollaborativePaperCompleted(Person researcher) {
 		return (getCollaboratorStats(researcher).paperWorkTime >= getTotalCollaborativePaperWorkTimeRequired());
@@ -721,16 +660,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Checks if all paper writing in study has been completed.
-	 *
-	 * @return true if paper writing completed.
 	 */
 	private boolean isAllPaperWritingCompleted() {
 		boolean result = true;
 		double targetTime = getTotalCollaborativePaperWorkTimeRequired();
 		for (CollaboratorStats c : collaborators.values()) {
 			// If ANY collaborator has NOT reached the target, overall paper writing is not complete.
-			if (c.paperWorkTime < targetTime)
-				result = false;
+			if (c.paperWorkTime < targetTime) result = false;
 		}
 		return (result && isPrimaryPaperCompleted());
 	}
@@ -744,23 +680,18 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Checks if peer review time has finished.
-	 *
-	 * @return true if peer review time finished.
 	 */
 	private boolean isPeerReviewTimeFinished() {
 		boolean result = false;
 		if (peerReviewStartTime != null) {
 			double peerReviewTime = masterClock.getMarsTime().getTimeDiff(peerReviewStartTime);
-			if (peerReviewTime >= basePeerReviewTime)
-				result = true;
+			if (peerReviewTime >= basePeerReviewTime) result = true;
 		}
 		return result;
 	}
 
 	/**
 	 * Gets the amount of peer review time that has been completed so far.
-	 *
-	 * @return peer review time completed (millisols)..
 	 */
 	public double getPeerReviewTimeCompleted() {
 		double result = 0D;
@@ -772,8 +703,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the total amount of peer review time required for the study.
-	 *
-	 * @return the total peer review time (millisols).
 	 */
 	public double getTotalPeerReviewTimeRequired() {
 		return basePeerReviewTime;
@@ -783,7 +712,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Sets the study as completed.
 	 *
 	 * @param completionState the state of completion.
-	 * @param reason Reason for completed
+	 * @param reason          Reason for completed
 	 */
 	public void setCompleted(StudyStatus completionState, String reason) {
 		if (!StudyStatus.isCompleted(completionState)) {
@@ -805,8 +734,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Checks if the study is completed.
-	 *
-	 * @return true if completed.
 	 */
 	public boolean isCompleted() {
 		return StudyStatus.isCompleted(phase);
@@ -814,8 +741,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the settlement where primary research is conducted.
-	 *
-	 * @return settlement.
 	 */
 	public Settlement getPrimarySettlement() {
 		return primaryResearcher.getAssociatedSettlement();
@@ -823,8 +748,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the last time primary research work was done on the study.
-	 *
-	 * @return last time or null if none.
 	 */
 	public MarsTime getLastPrimaryResearchWorkTime() {
 		return primaryStats.lastContribution;
@@ -832,19 +755,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Gets the primary researcher's earned scientific achievement from the study.
-	 *
-	 * @return earned scientific achievement.
 	 */
 	public double getPrimaryResearcherEarnedScientificAchievement() {
 		return primaryStats.acheivementEarned;
 	}
 
 	/**
-	 * Gets a collaborative researcher's earned scientific achievement from the
-	 * study.
-	 *
-	 * @param researcher the collaborative researcher.
-	 * @return earned scientific achievement.
+	 * Gets a collaborative researcher's earned scientific achievement from the study.
 	 */
 	public double getCollaborativeResearcherEarnedScientificAchievement(Person researcher) {
 		return getCollaboratorStats(researcher).acheivementEarned;
@@ -867,6 +784,8 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		UnitManager um = getUnitManager();
 		for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
 			Person researcher = um.getPersonByID(c.getKey());
+			if (researcher == null) continue;
+
 			double collaboratorModifier = 10D;
 			CollaboratorStats cs = c.getValue();
 
@@ -912,6 +831,8 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		UnitManager um = getUnitManager();
 		for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
 			Person researcher = um.getPersonByID(c.getKey());
+			if (researcher == null) continue;
+
 			CollaboratorStats cs = c.getValue();
 			ScienceType collaborativeScience = cs.contribution;
 			researcher.getResearchStudy().addScientificAchievement(collaborativeAchievement, collaborativeScience);
@@ -920,39 +841,30 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 			// Add achievement credit to the collaborative researcher's current settlement.
 			Settlement collaboratorSettlement = researcher.getAssociatedSettlement();
-			if (collaboratorSettlement != null) collaboratorSettlement.addScientificAchievement(
-					collaborativeAchievement, collaborativeScience);
+			if (collaboratorSettlement != null) {
+				collaboratorSettlement.addScientificAchievement(collaborativeAchievement, collaborativeScience);
+			}
 		}
 	}
 
 	/**
 	 * Adds a listener.
-	 *
-	 * @param newListener the listener to add.
 	 */
 	public synchronized void addScientificStudyListener(ScientificStudyListener newListener) {
-		if (listeners == null)
-			listeners = new ArrayList<>();
-		if (!listeners.contains(newListener))
-			listeners.add(newListener);
+		if (listeners == null) listeners = new ArrayList<>();
+		if (!listeners.contains(newListener)) listeners.add(newListener);
 	}
 
 	/**
 	 * Removes a listener.
-	 *
-	 * @param oldListener the listener to remove.
 	 */
 	public synchronized void removeScientificStudyListener(ScientificStudyListener oldListener) {
-		if (listeners == null)
-			listeners = new ArrayList<>();
-		if (listeners.contains(oldListener))
-			listeners.remove(oldListener);
+		if (listeners == null) listeners = new ArrayList<>();
+		if (listeners.contains(oldListener)) listeners.remove(oldListener);
 	}
 
 	/**
 	 * Fires a scientific study update event.
-	 *
-	 * @param type the update type.
 	 */
 	private void fireScientificStudyUpdate(String type) {
 		fireScientificStudyUpdate(type, null);
@@ -962,7 +874,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Fires a scientific study update event.
 	 *
 	 * @param updateType the update type.
-	 * @param researcher   the researcher related to the event or null if none.
+	 * @param researcher the researcher related to the event or null if none.
 	 */
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {
 		if (listeners != null) {
@@ -980,7 +892,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	}
 
 	/**
-	 * Context for a study is always the Settlemetn of the lead researcher
+	 * Context for a study is always the Settlement of the lead researcher.
 	 */
 	@Override
 	public String getContext() {
@@ -994,18 +906,15 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	/**
 	 * Compares this object with the specified object for order.
-	 *
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
 	 */
+	@Override
 	public int compareTo(ScientificStudy o) {
 		return getName().compareTo(o.getName());
 	}
 
 	/**
 	 * Initializes instances after loading from a saved sim.
-	 * 	 */
+	 */
 	public static void initializeInstances(MasterClock c, ScienceConfig sc) {
 		masterClock = c;
 		scienceConfig = sc;
@@ -1018,12 +927,10 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		phase = null;
 		science = null;
 		collaborators = null;
-		invitedResearchers.clear();
+		if (invitedResearchers != null) invitedResearchers.clear();
 		invitedResearchers = null;
 		peerReviewStartTime = null;
-		if (listeners != null) {
-			listeners.clear();
-		}
+		if (listeners != null) listeners.clear();
 		listeners = null;
 	}
 
@@ -1040,8 +947,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		case PROPOSAL_PHASE:
 			// Check if proposal work time is completed, then move to invitation phase.
 			if (proposalWorkTime >= baseProposalTime) {
-				logger.info(this,
-					"Finished writing proposal. Starting to invite collaborative researchers.");
+				logger.info(this, "Finished writing proposal. Starting to invite collaborative researchers.");
 				topics.add(scienceConfig.getATopic(science));
 				setPhase(StudyStatus.INVITATION_PHASE);
 			}
@@ -1055,15 +961,14 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			if (collaborators.size() < maxCollaborators) {
 				int availableInvitees = ScientificStudyUtil.getAvailableNumCollaboratorsForInvite(this);
 				int openResearchInvitations = getNumOpenResearchInvitations();
-				if ((availableInvitees + openResearchInvitations) == 0)
-					phaseEnded = true;
-			} else
-				phaseEnded = true;
+				if ((availableInvitees + openResearchInvitations) == 0) phaseEnded = true;
+			}
+			else phaseEnded = true;
 
 			if (phaseEnded) {
-				logger.info("Ended the invitation phase with "
-					+ collaborators.size()
-					+ " collaborative researchers. Started the research work phase.");
+				logger.info(this, "Ended the invitation phase with "
+						+ collaborators.size()
+						+ " collaborative researchers. Started the research work phase.");
 				setPhase(StudyStatus.RESEARCH_PHASE);
 			}
 			break;
@@ -1079,8 +984,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 				// Check primary researcher downtime.
 				if (!isPrimaryResearchCompleted()) {
 					MarsTime lastPrimaryWork = getLastPrimaryResearchWorkTime();
-					if ((lastPrimaryWork != null) && now.getTimeDiff(
-							lastPrimaryWork) > getPrimaryWorkDownTimeAllowed()) {
+					if ((lastPrimaryWork != null) && (now.getTimeDiff(lastPrimaryWork) > getPrimaryWorkDownTimeAllowed())) {
 						setCompleted(StudyStatus.CANCELLED, "Abandoned due to lack of participation from the primary researcher");
 					}
 				}
@@ -1089,14 +993,17 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 				UnitManager um = getUnitManager();
 				for (Entry<Integer, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
 					CollaboratorStats c = e.getValue();
-					if (c.reseachWorkTime >= baseCollaborativeResearchTime) {
+					// Only remove for inactivity if they have NOT yet completed their required work
+					if (c.reseachWorkTime < baseCollaborativeResearchTime) {
 						MarsTime lastCollaborativeWork = c.lastContribution;
-						if ((lastCollaborativeWork != null) && now.getTimeDiff(
-								lastCollaborativeWork) > collaborativeWorkDownTimeAllowed) {
+						if ((lastCollaborativeWork != null)
+								&& (now.getTimeDiff(lastCollaborativeWork) > collaborativeWorkDownTimeAllowed)) {
 							Person researcher = um.getPersonByID(e.getKey());
-							removeCollaborativeResearcher(researcher);
-							logger.info(this, "Removed " + researcher.getName()
-								+ " as a collaborator due to lack of participation");
+							if (researcher != null) {
+								removeCollaborativeResearcher(researcher);
+								logger.info(this, "Removed " + researcher.getName()
+									+ " as a collaborator due to lack of participation");
+							}
 						}
 					}
 				}
@@ -1127,7 +1034,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			break;
 
 		default: // Nothing to do
-				break;
+			break;
 		}
 		return true;
 	}
@@ -1142,41 +1049,41 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		ScientificStudy other = (ScientificStudy) obj;
 		if (name == null) {
-            return other.name == null;
-		} else return name.equals(other.name);
-    }
+			return other.name == null;
+		}
+		else return name.equals(other.name);
+	}
 
 	/**
-	 * Get the percentage [0 -> 1.0] of the completion of the current phase
+	 * Get the percentage [0 -> 1.0] of the completion of the current phase.
 	 */
 	public double getPhaseProgress() {
-		switch(phase) {
+		switch (phase) {
 			case PROPOSAL_PHASE:
-				return proposalWorkTime / baseProposalTime;
+				return (baseProposalTime > 0D) ? (proposalWorkTime / baseProposalTime) : 0D;
 			case INVITATION_PHASE:
-				return (double)collaborators.size()/ maxCollaborators;
+				return (maxCollaborators > 0) ? (double) collaborators.size() / maxCollaborators : 0D;
 			case PAPER_PHASE: {
 				double total = getTotalPrimaryPaperWorkTimeRequired() + (collaborators.size() * baseCollaborativePaperWritingTime);
+				if (total <= 0D) return 0D;
 				double completed = getPrimaryPaperWorkTimeCompleted()
-							+ collaborators.values().stream().mapToDouble(v -> v.paperWorkTime).sum();
-				return completed/total;
+						+ collaborators.values().stream().mapToDouble(v -> v.paperWorkTime).sum();
+				return completed / total;
 			}
 			case RESEARCH_PHASE: {
 				double total = getTotalPrimaryResearchWorkTimeRequired() + (collaborators.size() * baseCollaborativeResearchTime);
+				if (total <= 0D) return 0D;
 				double completed = getPrimaryResearchWorkTimeCompleted()
-							+ collaborators.values().stream().mapToDouble(v -> v.reseachWorkTime).sum();
-				return completed/total;
+						+ collaborators.values().stream().mapToDouble(v -> v.reseachWorkTime).sum();
+				return completed / total;
 			}
 			case PEER_REVIEW_PHASE:
-				return getPeerReviewTimeCompleted() / basePeerReviewTime;
+				return (basePeerReviewTime > 0D) ? (getPeerReviewTimeCompleted() / basePeerReviewTime) : 0D;
 			default:
 				return 0D;
 		}
