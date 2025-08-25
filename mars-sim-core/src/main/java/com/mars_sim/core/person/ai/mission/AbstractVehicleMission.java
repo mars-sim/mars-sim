@@ -103,7 +103,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	/** Small ring buffer sample for stuck detection. */
 	private static final class PosSample {
-		final double tMillisols;   // phase-relative time (msols since phase start)
+		final double tMillisols; // phase-relative time (msols since phase start)
 		final Coordinates pos;
 		PosSample(double tMillisols, Coordinates pos) {
 			this.tMillisols = tMillisols;
@@ -137,6 +137,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final Integer WHEEL_ID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {ItemResourceUtil.FIBERGLASS});
+
 	// Data members
 	/** The current navpoint index. */
 	private int navIndex = 0;
@@ -663,6 +664,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 			else
 				logger.severe(getName() + ": Current navpoint is not a settlement.");
+			
+//			int msol = getMarsTime().getMillisolInt();
+//			if (msolCache != msol) {
+//				msolCache = msol;
+//				// Update the distances only once per msol
+//				computeDistanceCurrentLegTravelled();
+//				computeTotalDistanceRemaining();
+//				computeTotalDistanceTravelled();
+//			}
 		}
 	}
 
@@ -677,7 +687,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// Use phase-relative time to avoid relying on absolute clock methods
 		double now = getPhaseDuration(); // millisols since current phase started
-
 		// Append and prune by lookback window
 		travelTrace.addLast(new PosSample(now, here));
 		double cutoff = now - STUCK_LOOKBACK_MSOLS;
@@ -689,7 +698,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** True if we've made less than STUCK_MIN_PROGRESS_KM over the recent lookback window. */
 	private boolean isLikelyStuck() {
 		if (travelTrace.size() < 2) return false;
-
 		PosSample first = travelTrace.peekFirst();
 		PosSample last  = travelTrace.peekLast();
 		if (first == null || last == null) return false;
@@ -708,11 +716,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Coordinates loc = getCurrentMissionLocation();
 
 		if (recoveryAttempts <= STUCK_RECOVERY_MAX) {
-			logger.warning(getVehicle(), "Vehicle progress below threshold ("
+			logger.warning(getVehicle(), "Vehicle progress below threshold (" 
 					+ String.format("%.3f km over ~%.2f msols", STUCK_MIN_PROGRESS_KM, STUCK_LOOKBACK_MSOLS)
 					+ "); attempt " + recoveryAttempts + " to refresh driver/route.");
-			addMissionLog("Vehicle appears stuck near " + (loc != null ? loc.getFormattedString() : "unknown")
-					+ ". Attempting recovery (" + recoveryAttempts + "/" + STUCK_RECOVERY_MAX + ").");
 
 			// Nudge: drop/finish current operate task so it will be rebuilt and destination refreshed this tick
 			if (operateVehicleTask instanceof PilotDrone pd) {
@@ -722,7 +728,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				dgv.endTask();
 			}
 			operateVehicleTask = null; // force reassignment in performTravelPhase
-			updateTravelDestination();  // restate intent to the current navpoint
+			updateTravelDestination(); // restate intent to the current navpoint
 
 			// First time we detect "stuck", ask for a beacon to help SAR / towing
 			if (!beaconRequested) {
@@ -736,7 +742,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Exhausted recovery attempts: fail safe
 		logger.severe(getVehicle(), 30_000L, "Vehicle failed to recover after "
 				+ STUCK_RECOVERY_MAX + " attempts. Ending mission as 'vehicleStuck'.");
-		addMissionLog("Unable to make progress after multiple recovery attempts. Ending mission.");
 		clearProgressTrace();
 		endMission(VEHICLE_STUCK);
 	}
@@ -750,7 +755,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// Reuse mission API to generate proper history/event
 				setEmergencyBeacon(getStartingPerson(), vehicle, true, "Stuck recovery watchdog");
 				logger.info(vehicle, "Emergency beacon enabled (stuck recovery).");
-				addMissionLog("Emergency beacon enabled for search & rescue.");
 			}
 		}
 		catch (Exception e) {
