@@ -264,7 +264,7 @@
 
 		<foundation name="Shallow Borehole Drilling Site" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0"
-		 constructable="true" salvagable="true" work-time="5.0" skill-required="3" >
+		 constructable="true" salvagable="true" work-time="5.0" skill-required="2" >
 		 	<part type="bore drill bit" number="1" />
 		 	<part type="bore drill pipe" number="20" />
 			<vehicle type="LUV" >
@@ -273,9 +273,10 @@
 			</vehicle>
 		</foundation>
 
-		<foundation name="Deep Borehole Drilling Site" width="10.0" length="15.0"
+
+		<foundation name="Deep Borehole Large Drilling Site" width="10.0" length="15.0"
 		 north-south-alignment="length" base-level="0"
-		 constructable="true" salvagable="true" work-time="10.0" skill-required="4" >
+		 constructable="true" salvagable="true" work-time="10.0" skill-required="3" >
 		 	<part type="bore drill bit" number="4" />
 		 	<part type="bore drill pipe" number="60" />
 			<vehicle type="LUV" >
@@ -284,6 +285,17 @@
 			</vehicle>
 		</foundation>
 
+		<foundation name="Deep Borehole Small Drilling Site" width="5.0" length="5.0"
+		 north-south-alignment="length" base-level="0"
+		 constructable="true" salvagable="true" work-time="3.0" skill-required="2" >
+	 		<part type="bore drill bit" number="2" />
+		 	<part type="bore drill pipe" number="15" />
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+				<attachment-part type="drilling rig" />
+			</vehicle>
+		</foundation>
+		
 		<!-- Surface foundation with a variable width and length is dynamically set. -->
 		<!-- (Used for hallway construction) -->
 		<foundation name="Surface Foundation Variable Size" width="-1.0" length="-1.0"
@@ -590,7 +602,7 @@
 
 		<frame name="Large Areothermal Well Frame" width="10.0" length="15.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time="1.3" skill-required="3" foundation="Deep Borehole Drilling Site" >
+		 salvagable="true" work-time="1.3" skill-required="3" foundation="Deep Borehole Large Drilling Site" >
 			<resource type="concrete" amount="150.0" />
 			<resource type="acetylene" amount="1.0" />				
 			<part type="steel truss" number="20" />
@@ -600,6 +612,18 @@
 			</vehicle>
 		</frame>
 
+		<frame name="Brine Water Well Frame" width="5.0" length="5.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time="0.4" skill-required="2" foundation="Deep Borehole Small Drilling Site" >
+			<resource type="concrete" amount="45.0" />
+			<resource type="acetylene" amount="0.2" />				
+			<part type="steel truss" number="5" />
+			<part type="steel sheet" number="6" />
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+			</vehicle>
+		</frame>
+		
 		<frame name="Round Vaulted Brick Frame" width="10.0" length="10.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.2" skill-required="2" foundation="Subsurface Foundation 10x10x3" >
@@ -1375,6 +1399,25 @@
 			</vehicle>
 		</building>
 
+		<building name="Brine Water Well" width="5.0" length="5.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time="0.5" skill-required="3" frame="Brine Water Well Frame" >
+			<part type="condenser coil" number="1" />
+			<part type="steel pipe" number="2" />
+			<part type="water pump large" number="1" />
+			<part type="turbine generator" number="1" />
+			<part type="valve" number="2" />
+			<part type="gasket" number="2" />
+			<part type="water tank" number="1" />
+			<part type="fiberglass cloth" number="3" />
+			<part type="power cable" number="1" />
+			<part type="electrical wire" number="8" />
+			<part type="wire connector" number="8" />
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+			</vehicle>
+		</building>
+		
 		<building name="Outpost Hub" width="10.0" length="10.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="3" frame="Round Vaulted Brick Frame" >
