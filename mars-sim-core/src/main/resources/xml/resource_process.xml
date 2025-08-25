@@ -547,7 +547,7 @@
 	</process>
 
 
-	<process name="Filter Brine Water" power-required=".1" >
+	<process name="Filter Brine Water" power-required="2.4" >
 		<description> 
 			Removing perchlorate from a Martian settlement's water supply can be done 
 			in a number of ways. Methods to remove perchlorates from water include 
@@ -555,16 +555,16 @@
 			photochemically via UV light on a metallic iron catalyst.
 			See https://marspedia.org/Perchlorate
 		</description>
-		<input resource="brine water" rate="100.0"  />
+		<input resource="brine water" rate="400.0"  />
 		
-		<output resource="water" rate="96.0"  />
-		<output resource="regolith" rate="2.0"  />
-		<output resource="magnesium" rate="0.5"  />	
-		<output resource="calcium" rate="0.5"  />					
-		<output resource="perchlorate" rate="0.1"  />	
-		<output resource="aluminum oxide" rate="0.2"  />	
-		<output resource="iron oxide" rate="0.4"  />	
-		<output resource="silica" rate="0.3"  />			
+		<output resource="water" rate="390.0"  />
+		<output resource="sand" rate="2.0"  />
+		<output resource="magnesium" rate="2.0"  />	
+		<output resource="calcium" rate="2.0"  />					
+		<output resource="perchlorate" rate="0.4"  />	
+		<output resource="aluminum oxide" rate="0.8"  />	
+		<output resource="iron oxide" rate="1.6"  />	
+		<output resource="silica" rate="1.2"  />			
 				
 	</process>
 
