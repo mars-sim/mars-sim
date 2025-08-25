@@ -608,16 +608,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @param researcher the collaborative researcher.
 	 */
-	public boolean isCollaborativeResearchCompleted(Person researcher) {
-		CollaboratorStats c = getCollaboratorStats(researcher);
-		return (c.reseachWorkTime >= getTotalCollaborativeResearchWorkTimeRequired());
-	}
-
-	/**
-	 * Checks if all research in study has been completed.
-	 * 
-	 * @return true if research completed.
-	 */
+	public synchronized boolean isCollaborativeResearchCompleted(Person researcher) {
+   
+    if (researcher == null || !collaborators.containsKey(researcher.getIdentifier())) {
+        return false;
+    }
+   
+}
 	private boolean isAllResearchCompleted() {
 		boolean result = true;
 		double targetTime = getTotalCollaborativeResearchWorkTimeRequired();
@@ -1187,3 +1184,4 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		}
 	}
 }
+
