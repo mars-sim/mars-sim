@@ -7,10 +7,11 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
@@ -38,7 +39,7 @@ public class ConstructionSitesPanel extends JPanel {
 	
     // Data members
     private ConstructionManager manager;
-    private List<ConstructionSite> sitesCache;
+    private Map<ConstructionSite,ConstructionPanel> sitesCache;
     private JPanel sitesListPane;
     private JScrollPane sitesScrollPane;
     
@@ -72,62 +73,43 @@ public class ConstructionSitesPanel extends JPanel {
         sitesOuterListPane.add(sitesListPane, BorderLayout.NORTH);
         
         // Create the site panels.
-        sitesCache = manager.getConstructionSites();
-        sitesCache.forEach(s -> sitesListPane.add(new ConstructionPanel(s)));
+        sitesCache = new HashMap<>();
+        manager.getConstructionSites().forEach(this::addSitePanel);
     }
     
+    private void addSitePanel(ConstructionSite site) {
+        var newPanel = new ConstructionPanel(site);
+        sitesListPane.add(newPanel);
+        sitesCache.put(site, newPanel);
+    }
+
+    private void removeSitePanel(ConstructionSite site) {
+        var oldPanel = sitesCache.remove(site);
+        sitesListPane.remove(oldPanel);
+    }
+
     /**
      * Updates the information on this panel.
      */
     public void update() {
         // Update sites is necessary.
-        List<ConstructionSite> sites = manager.getConstructionSites();
-        if (!sitesCache.equals(sites)) {
-            
+        Set<ConstructionSite> activeSites = new HashSet<>(manager.getConstructionSites());
+        if (!sitesCache.keySet().equals(activeSites)) {        
             // Add site panels for new sites.
-            for (ConstructionSite site : sites) {
-                if (!sitesCache.contains(site)) 
-                    sitesListPane.add(new ConstructionPanel(site));
-            }
+            activeSites.stream()
+                .filter(s -> !sitesCache.containsKey(s))
+                .forEach(this::addSitePanel);
             
             // Remove site panels for old sites.
-            for (ConstructionSite site : sitesCache) {
-                if (!sites.contains(site)) {
-                    ConstructionPanel panel = getConstructionSitePanel(site);
-                    if (panel != null) sitesListPane.remove(panel);
-                }
-            }
-            
-            sitesScrollPane.validate();
-            
-            // Update sitesCache
-            sitesCache.clear();
-            sitesCache.addAll(sites);
+            var remove = sitesCache.keySet().stream()
+                .filter(s -> !activeSites.contains(s))
+                .toList();
+            // Must be done seperately as the Map stream is altered
+            remove.forEach(this::removeSitePanel);
         }
         
         // Update all site panels.
-        Iterator<ConstructionSite> i = sites.iterator();
-        while (i.hasNext()) {
-            ConstructionPanel panel = getConstructionSitePanel(i.next());
-            if (panel != null) panel.update();
-        }
-    }
-    
-    /**
-     * Gets a construction site panel for a particular construction site.
-     * 
-     * @param site the construction site.
-     * @return construction site panel or null if none found.
-     */
-    private ConstructionPanel getConstructionSitePanel(ConstructionSite site) {        
-        for (int x = 0; x < sitesListPane.getComponentCount(); x++) {
-            Component component = sitesListPane.getComponent(x);
-            if (component instanceof ConstructionPanel panel && panel.getConstructionSite().equals(site)) {
-                return panel;
-            }
-        }
-        
-        return null;
+        sitesCache.values().forEach(p -> p.update());
     }
     
     /**
@@ -181,16 +163,7 @@ public class ConstructionSitesPanel extends JPanel {
             // Add tooltip.
             setToolTipText(getToolTipString());
         }
-        
-        /**
-         * Gets the construction site for this panel.
-         * 
-         * @return construction site.
-         */
-        private ConstructionSite getConstructionSite() {
-            return site;
-        }
-        
+
         /**
          * Updates the panel information.
          */

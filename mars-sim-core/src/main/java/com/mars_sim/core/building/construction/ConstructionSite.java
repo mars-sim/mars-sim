@@ -198,10 +198,6 @@ public class ConstructionSite extends FixedUnit {
         
         manager.addBuilding(newBuilding, true);
 
-        // Record completed building name.
-        var constructionManager = settlement.getConstructionManager();
-        constructionManager.addConstructedBuildingLogEntry(buildingType);
-
         // Fire construction event.
         fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 

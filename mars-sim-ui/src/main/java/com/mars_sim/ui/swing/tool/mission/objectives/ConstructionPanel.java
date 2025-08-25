@@ -14,10 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
@@ -47,11 +45,11 @@ import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 @SuppressWarnings("serial")
 public class ConstructionPanel extends JPanel implements MissionListener, ObjectivesPanel, UnitListener {
 
-    private BoundedRangeModel progressBarModel;
     private MaterialsTableModel materialsTableModel;
     private JScrollPane scrollPane;
     private ConstructionObjective objective;
     private JLabel stageLabel;
+    private JLabel workRemaining;
 
     /**
      * Constructor.
@@ -80,10 +78,8 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         stageLabel = infoPanel.addTextField(stageLabelString, stage.getInfo().getName(),
                         ConstructionStageFormat.getTooltip(stage, true));
         
-        JProgressBar progressBar = new JProgressBar();
-        progressBarModel = progressBar.getModel();
-        progressBar.setStringPainted(true);
-        infoPanel.addLabelledItem("Site Completion", progressBar);
+
+        workRemaining = infoPanel.addTextField("Work Remaining", "",  null);
          
         // Create remaining construction materials label panel.
         JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
@@ -141,20 +137,14 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
      * Updates the progress bar.
      */
     private void updateProgressBar() {
-        int workProgress = 0;
         ConstructionStage stage = objective.getStage();
         if (stage != null) {
-            double completedWork = stage.getCompletedWorkTime();
-            double requiredWork = stage.getRequiredWorkTime();
-            if (requiredWork > 0D) {
-                workProgress = (int) (100D * completedWork / requiredWork);
-            }
-        }
-
-        progressBarModel.setValue(workProgress);
+            double workLeft = stage.getRequiredWorkTime() - stage.getCompletableWorkTime();
+            workRemaining.setText(StyleManager.DECIMAL_MSOL.format(workLeft));
         
-        // Update the tool tip string.
-        stageLabel.setToolTipText(ConstructionStageFormat.getTooltip(stage, true));
+            // Update the tool tip string.
+            stageLabel.setToolTipText(ConstructionStageFormat.getTooltip(stage, true));
+        }
     }
 
   

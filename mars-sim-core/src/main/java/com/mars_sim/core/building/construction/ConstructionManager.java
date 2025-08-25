@@ -21,8 +21,6 @@ import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhas
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.RoboticStation;
-import com.mars_sim.core.data.History;
-import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalBoundedObject;
@@ -99,7 +97,6 @@ public class ConstructionManager implements Serializable {
 	private Settlement settlement;
 	private List<ConstructionSite> sites;
 	private SalvageValues salvageValues;
-	private History<String> constructedBuildingLog;
 	private List<BuildingSchedule> queue = new ArrayList<>();
 
 	/**
@@ -111,7 +108,6 @@ public class ConstructionManager implements Serializable {
 		this.settlement = settlement;
 		sites = new ArrayList<>();
 		salvageValues = new SalvageValues(settlement);
-		constructedBuildingLog = new History<>();
 	}
 
 	/**
@@ -186,24 +182,6 @@ public class ConstructionManager implements Serializable {
 	 */
 	public SalvageValues getSalvageValues() {
 		return salvageValues;
-	}
-
-	/**
-	 * Adds a building log entry to the constructed buildings list.
-	 * 
-	 * @param buildingName the building name to add.
-	 */
-	void addConstructedBuildingLogEntry(String buildingName) {		
-		constructedBuildingLog.add(buildingName);
-	}
-
-	/**
-	 * Gets a log of all constructed buildings at the settlement.
-	 * 
-	 * @return list of ConstructedBuildingLogEntry
-	 */
-	public List<HistoryItem<String>> getConstructedBuildingLog() {
-		return constructedBuildingLog.getChanges();
 	}
 
 	/**
@@ -320,6 +298,15 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
+	 * Remove a previously added building from the queue
+	 * @param item Schedule to be removed
+	 * @return Was teh item found and removed
+	 */
+	public boolean removeBuildingFromQueue(BuildingSchedule item) {
+		return queue.remove(item);
+	}
+
+	/**
 	 * Get the building schedule
 	 * @return
 	 */
@@ -357,6 +344,5 @@ public class ConstructionManager implements Serializable {
 		sites.clear();
 		salvageValues.destroy();
 		salvageValues = null;
-		constructedBuildingLog = null;
 	}
 }

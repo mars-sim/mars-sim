@@ -8,13 +8,12 @@ package com.mars_sim.ui.swing.tool.construction;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
@@ -29,6 +28,8 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * The TabPanelSiteGeneral is a tab panel for general information about a construction site.
@@ -45,11 +46,11 @@ public class TabPanelSiteGeneral extends TabPanel {
 
 	private PhaseTableModel phaseModel;
 	private ConstructionStage currentStage;
-	private BoundedRangeModel progressBarModel;
 
+	private double lastWorkLeft = 0D;
 	private JLabel stageName;
-
 	private JLabel stageType;
+	private JLabel workLeft;
 	
 	/**
 	 * Constructor.
@@ -86,14 +87,15 @@ public class TabPanelSiteGeneral extends TabPanel {
 
 		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getDesktop());
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
-
-		JProgressBar progressBar = new JProgressBar();
-        progressBarModel = progressBar.getModel();
-        progressBar.setStringPainted(true);
-        infoPanel.addLabelledItem("Stage Completion", progressBar);
+        workLeft = infoPanel.addTextField("Stage Work", "", null);
 
 		phaseModel = new PhaseTableModel();
-		var phaseTable = new JTable(phaseModel);
+		var phaseTable = new JTable(phaseModel) {
+			@Override
+            public String getToolTipText(MouseEvent e) {
+                return ToolTipTableModel.extractToolTip(e, this);
+            }
+		};
 		phaseTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 
 		var scrollPane = StyleManager.createScrollBorder("Remaining Phases", phaseTable);
@@ -113,10 +115,11 @@ public class TabPanelSiteGeneral extends TabPanel {
 
 		ConstructionStage stage = constructionSite.getCurrentConstructionStage();
         if (stage != null) {
-            double completedWork = stage.getCompletedWorkTime();
-            double requiredWork = stage.getRequiredWorkTime();
-            int workProgress = (int) (100D * completedWork / requiredWork);
-            progressBarModel.setValue(workProgress);
+			double workRemaining = stage.getRequiredWorkTime() - stage.getCompletedWorkTime();
+			if (workRemaining != lastWorkLeft) {
+				lastWorkLeft = workRemaining;
+				workLeft.setText(StyleManager.DECIMAL_MSOL.format(lastWorkLeft));
+			}
         }
 
 		var activeStage = constructionSite.getCurrentConstructionStage();
@@ -129,7 +132,8 @@ public class TabPanelSiteGeneral extends TabPanel {
 		}
 	}
 
-	private static class PhaseTableModel extends AbstractTableModel {
+	private class PhaseTableModel extends AbstractTableModel 
+						implements ToolTipTableModel {
 
 		private List<ConstructionPhase> phases = Collections.emptyList();
 		
@@ -171,6 +175,13 @@ public class TabPanelSiteGeneral extends TabPanel {
 				case 3 -> p.stage().getWorkTime();
 				default -> null;
 			};
+		}
+		
+		@Override
+		public String getToolTipAt(int row, int col) {
+			var selected = phases.get(row);
+
+			return ConstructionStageFormat.getTooltip(selected.stage());
 		}
 	}
 }

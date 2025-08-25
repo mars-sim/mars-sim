@@ -113,7 +113,7 @@ public class SettlementMapPanel extends JPanel {
 	private Map<Settlement, Building> selectedBuilding;
 	private Map<Settlement, Vehicle> selectedVehicle;
 	
-	private static Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
+	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 	
 	private Set<DisplayOption> displayOptions = new HashSet<>();
 
@@ -929,19 +929,16 @@ public class SettlementMapPanel extends JPanel {
 	 * Cleans up the map panel for disposal.
 	 */
 	public void destroy() {
-//		settlementTransparentPanel.destroy();
 		settlementTransparentPanel = null;
 		menu = null;
 		settlement = null;
 		settlementWindow = null;
 
 		// Destroy all map layers.
-		Iterator<SettlementMapLayer> i = mapLayers.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
+		if (mapLayers != null) {
+			mapLayers.forEach(ml -> ml.destroy());
+			mapLayers.clear();
 		}
-		mapLayers.clear();
-		mapLayers = null;
 		
 		selectedPerson.clear();
 		selectedRobot.clear();
@@ -953,18 +950,13 @@ public class SettlementMapPanel extends JPanel {
 		selectedVehicle = null;
 		
 		settlementTransparentPanel = null;
-		
-		desktop.destroy();
-		desktop = null;
 	
 		dayNightMapLayer.destroy();
 		dayNightMapLayer = null;
 		
 		showSpotLabels.clear();
 		showSpotLabels = null;
-		
-		sansSerif = null;
-		
+				
 		displayOptions.clear();
 		displayOptions = null;
 	}
