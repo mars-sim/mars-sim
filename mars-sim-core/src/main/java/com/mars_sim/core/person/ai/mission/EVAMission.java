@@ -30,8 +30,8 @@ abstract class EVAMission extends RoverMission {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
-	
+	private static final SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
+
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
 	private static final MissionStatus EVA_SUIT_CANNOT_BE_LOADED = new MissionStatus("Mission.status.noEVASuits");
 
@@ -44,8 +44,11 @@ abstract class EVAMission extends RoverMission {
 
 	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
 
-    private MissionPhase evaPhase;
-    private boolean activeEVA = true;
+	// TTL for teleport anomaly messages
+	private static final long TTL_TELEPORT_ANOMALY = 10_000L;
+
+	private MissionPhase evaPhase;
+	private boolean activeEVA = true;
 	private int containerID;
 	private int containerNum;
 	private LightLevel minSunlight;
@@ -66,12 +69,12 @@ abstract class EVAMission extends RoverMission {
 	//  END: Teleport-watch support
 	// ------------------------------
 
-    protected EVAMission(MissionType missionType, 
-            Worker startingPerson, Rover rover,
-            MissionPhase evaPhase, LightLevel minSunlight) {
-        super(missionType, startingPerson, rover);
-        
-        this.evaPhase = evaPhase;
+	protected EVAMission(MissionType missionType,
+			Worker startingPerson, Rover rover,
+			MissionPhase evaPhase, LightLevel minSunlight) {
+		super(missionType, startingPerson, rover);
+
+		this.evaPhase = evaPhase;
 		this.minSunlight = minSunlight;
 
 		// Check suit although these may be claimed before loading
@@ -79,8 +82,8 @@ abstract class EVAMission extends RoverMission {
 		if (suits < getMembers().size()) {
 			endMission(EVA_SUIT_CANNOT_BE_LOADED);
 		}
-    }
-    
+	}
+
 	@Override
 	protected boolean determineNewPhase() {
 		boolean handled = true;
@@ -110,8 +113,8 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Can the EVA phase be started ?
-	 * 
-	 * @return 
+	 *
+	 * @return true if startable
 	 */
 	private boolean canStartEVA() {
 		boolean result = false;
@@ -167,10 +170,9 @@ abstract class EVAMission extends RoverMission {
 		}
 	}
 
-
 	/**
 	 * Is there enough sunlight to leave the vehicle for an EVA
-	 * @return
+	 * @return true if enough sunlight
 	 */
 	protected boolean isEnoughSunlightForEVA() {
 		Coordinates locn = getCurrentMissionLocation();
@@ -214,7 +216,7 @@ abstract class EVAMission extends RoverMission {
 			super.abortPhase();
 	}
 
-    /**
+	/**
 	 * End all EVA Operations
 	 */
 	protected void endEVATasks() {
@@ -228,7 +230,7 @@ abstract class EVAMission extends RoverMission {
 			}
 		}
 	}
-    
+
 	/**
 	 * Performs the explore site phase of the mission.
 	 *
@@ -265,7 +267,7 @@ abstract class EVAMission extends RoverMission {
 				logger.info(getVehicle(), "Not enough resources was reported during the EVA phase of the mission.");
 				activeEVA = false;
 			}
-			
+
 			// All good so far, perform the EVA
 			if (activeEVA) {
 				// performEVA will check if rover capacity is full
@@ -278,11 +280,11 @@ abstract class EVAMission extends RoverMission {
 
 			// Keep last-known positions fresh for teleport detection
 			updateTeleportWatch();
-		} 
+		}
 
 		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
-			
+
 			// First, clean up any "teleported" members to avoid stale state
 			checkTeleported();
 
@@ -290,7 +292,7 @@ abstract class EVAMission extends RoverMission {
 				// End phase
 				phaseEVAEnded();
 				setPhaseEnded(true);
-			} 
+			}
 			else {
 				// Call everyone back inside
 				endEVATasks();
@@ -302,58 +304,69 @@ abstract class EVAMission extends RoverMission {
 	 * Ensures no "teleported" person is still a member of this mission.
 	 * Detects sudden invalid jumps in member positions and removes any
 	 * member who has "teleported" to a settlement vicinity.
+	 *
+	 * Two-phase approach avoids mutating collections while iterating.
 	 */
 	void checkTeleported() {
-		// --- Position-based detection with tolerance (safe iteration & removal) ---
-		synchronized (teleportWatch) {
-			final Iterator<Map.Entry<Person, Coordinates>> it = teleportWatch.entrySet().iterator();
-			while (it.hasNext()) {
-				final Map.Entry<Person, Coordinates> e = it.next();
-				final Person p = e.getKey();
-				final Coordinates last = e.getValue();
+		// --- Phase 1+2: use a stable snapshot to inspect & decide actions ---
+		final List<Map.Entry<Person, Coordinates>> snapshot =
+				new ArrayList<>(teleportWatch.entrySet());
 
-				Coordinates now = null;
-				try {
-					// Assumes Person exposes its current surface coordinates.
-					// (If the API differs locally, adapt this accessor accordingly.)
-					now = p.getCoordinates();
-				}
-				catch (Throwable t) {
-					// Defensive: if coordinates unavailable for this person now, skip distance check
-				}
+		final List<Person> toRemoveFromWatch = new ArrayList<>();
 
-				if (now == null || last == null) {
-					continue; // nothing to compare yet
-				}
+		for (Map.Entry<Person, Coordinates> e : snapshot) {
+			final Person p = e.getKey();
+			final Coordinates last = e.getValue();
 
-				double dMeters = distanceMeters(now, last);
-				if (dMeters > TELEPORT_TOLERANCE_METERS) {
-					logger.severe(p, 10_000, "Invalid 'teleportation' detected. last=" + last + ", now=" + now + ".");
-					// Safe removal without ConcurrentModificationException
-					it.remove();
-				}
-				else {
-					// Refresh the cached position in-place to keep the map stable
-					e.setValue(now);
-				}
+			Coordinates now = null;
+			try {
+				now = p.getCoordinates(); // may be null depending on state
 			}
+			catch (Throwable t) {
+				// Defensive: if coordinates unavailable for this person now, skip distance check
+			}
+
+			if (now == null) {
+				continue; // nothing to compare/update
+			}
+
+			if (last == null) {
+				// Initialize baseline position in the live map
+				teleportWatch.put(p, now);
+				continue;
+			}
+
+			double dMeters = distanceMeters(now, last);
+			if (dMeters > TELEPORT_TOLERANCE_METERS) {
+				logger.warning(p, TTL_TELEPORT_ANOMALY,
+						"Teleport anomaly detected. last=" + last + ", now=" + now + ".");
+				toRemoveFromWatch.add(p);
+			}
+			else {
+				// Refresh cached position in the live map (safe: iterating snapshot)
+				teleportWatch.put(p, now);
+			}
+		}
+
+		// --- Phase 3: apply removals against the live structure ---
+		for (Person p : toRemoveFromWatch) {
+			teleportWatch.remove(p);
 		}
 
 		// --- Membership cleanup if anyone is already at/near a settlement ---
 		// Collect first to avoid modifying underlying collection during iteration
 		List<Worker> toRemove = new ArrayList<>();
 
-		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
+		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {
 			Worker member = i.next();
 
 			if (member instanceof Person p
-				&& (p.isInSettlement() 
-				|| p.isInSettlementVicinity()
-				|| p.isRightOutsideSettlement())) {
+					&& (p.isInSettlement()
+					|| p.isInSettlementVicinity()
+					|| p.isRightOutsideSettlement())) {
 
-				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
+				logger.warning(p, TTL_TELEPORT_ANOMALY, "Teleport anomaly: current location: "
 						+ p.getLocationTag().getExtendedLocation() + ".");
-				
 				toRemove.add(member);
 			}
 		}
@@ -363,12 +376,12 @@ abstract class EVAMission extends RoverMission {
 			removeMember(member);
 		}
 	}
-	
-    /**
-     * Perform the specific EVA activities. This may cancel the EVA phase
-     * @param person
-     * @return
-     */
+
+	/**
+	 * Perform the specific EVA activities. This may cancel the EVA phase
+	 * @param person actor
+	 * @return true to continue, false to end EVA
+	 */
 	protected abstract boolean performEVA(Person person);
 
 	/**
@@ -392,10 +405,10 @@ abstract class EVAMission extends RoverMission {
 		teleportWatch.clear();
 	}
 
-    /**
-     * Calculate the spare parts needed for the trip
-     */
-    @Override
+	/**
+	 * Calculate the spare parts needed for the trip
+	 */
+	@Override
 	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		// Load the standard parts from VehicleMission.
 		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
@@ -412,18 +425,18 @@ abstract class EVAMission extends RoverMission {
 		return result;
 	}
 
-    /**
-     * Get the remaining mission time based on the travel and the remaining EVA time.
-     * @return Mission time left.
-     */
-    @Override
+	/**
+	 * Get the remaining mission time based on the travel and the remaining EVA time.
+	 * @return Mission time left.
+	 */
+	@Override
 	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
 		result += getEstimatedRemainingEVATime(useBuffer);
 		return result;
 	}
 
-    /**
+	/**
 	 * Gets the range of a trip based on its time limit and collection sites.
 	 *
 	 * @param tripTimeLimit time (millisols) limit of trip.
@@ -491,9 +504,9 @@ abstract class EVAMission extends RoverMission {
 			if (remainingTime > 0D)
 				result += remainingTime;
 		}
-		
+
 		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT / 1000D;
-		
+
 		// Add estimated EVA time at sites that haven't been visited yet.
 		int remainingEVASites = getNumEVASites() - getNumEVASitesVisited();
 		result += evaSiteTime * remainingEVASites * sunriseWaitMod;
@@ -503,7 +516,7 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Defines equipment needed for the EVAs.
-	 * 
+	 *
 	 * @param eqmType Equipment needed
 	 * @param eqmNum Number of equipment
 	 */
@@ -543,13 +556,12 @@ abstract class EVAMission extends RoverMission {
 		return result;
 	}
 
-
 	/**
 	 * Order a list of Coordinates starting from a point to minimise
 	 * the travel time.
-	 * @param unorderedSites
-	 * @param startingLocation
-	 * @return
+	 * @param unorderedSites sites to order
+	 * @param startingLocation start point
+	 * @return ordered list
 	 */
 	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
 
