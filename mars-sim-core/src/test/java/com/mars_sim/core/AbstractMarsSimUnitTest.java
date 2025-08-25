@@ -143,7 +143,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 								LocalPosition pos, double facing, boolean lifeSupport) {
 
 		int id = buildingManager.getNumBuildings();
-		String name = "B" + id;
+		String name = "B" + (id + 1);
 		var building0 = new MockBuilding(buildingManager.getSettlement(), name, Integer.toString(id),
 										new BoundedObject(pos, BUILDING_WIDTH, BUILDING_LENGTH, facing),
 										type, cat, lifeSupport);

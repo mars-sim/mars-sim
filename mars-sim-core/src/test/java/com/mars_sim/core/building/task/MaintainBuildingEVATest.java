@@ -23,7 +23,7 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("EVA Maintenance");
         var b1 = buildERV(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION);
         // 2nd building check logic
-        buildERV(s.getBuildingManager(), new LocalPosition(10, 10));
+        var b2 = buildERV(s.getBuildingManager(), new LocalPosition(10, 10));
 
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
@@ -35,15 +35,26 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         MaintainBuildingTest.buildingNeedMaintenance(b1, this);
         tasks = mt.getSettlementTasks(s);
         
-        if (tasks.size() == 1) {
-//	        assertEquals("Tasks found", 1, tasks.size());
-	
-        	var found = tasks.get(0);
-        	if (found.isEVA()) {
-//        		assertFalse("EVA task", found.isEVA());
-        		assertEquals("Found building with maintenance", b1, found.getFocus());
-        	}       
+        
+       	// Question : why would sometimes both buildings (b1, b2) will incur the need for maintenance ?
+        // Answer : getSettlementTasks() will consider both buildings always
+        
+        // Note: tasks may have the size of 0, 1, 2. It depends on the result of  scoreMaintenance()
+        if (tasks.size() == 2) {
+
+	        var found1 = tasks.get(0);
+	        var found2 = tasks.get(1);
+	        
+	        var foundB1 = found1.getFocus();
+	        var foundB2 = found2.getFocus();
+	        
+	        if (found1.isEVA()) {
+	        	assertEquals("Found building B1 with maintenance", b1, foundB1);
+	        }
+	        
+	        assertEquals("Found building B2", b2, foundB2);
         }
+
     }
     
     public void testCreateEVATask() {

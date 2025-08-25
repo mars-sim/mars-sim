@@ -162,7 +162,7 @@ public abstract class FieldStudyMission extends EVAMission {
 
 		// Add all collaborative studies in research phase.
 		for( ScientificStudy collabStudy : researcher.getResearchStudy().getCollabStudies()) {
-			if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
+			if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)
 					&& (science == collabStudy.getContribution(researcher))) {
 				possibleStudies.add(collabStudy);
