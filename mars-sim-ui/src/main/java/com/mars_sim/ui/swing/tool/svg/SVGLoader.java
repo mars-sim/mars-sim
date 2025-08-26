@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SVGLoader.java
- * @date 2025-08-17
+ * @date 2025-08-25
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.svg;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 //For batik-transcoder 1.7, use
 //import org.apache.batik.dom.svg.SAXSVGDocumentFactory; 
@@ -32,6 +33,8 @@ import org.apache.batik.util.XMLResourceDescriptor;
 public class SVGLoader {
 
 	// Static members
+	private static final Logger logger = Logger.getLogger(SVGLoader.class.getName());
+	 
 	public static final String SVG_DIR = "/svg/";
 	public static final String SLASH = "/";
 	public static final String DOT = ".";
@@ -73,7 +76,7 @@ public class SVGLoader {
 				found = new GVTBuilder().build(bridgeContext, f.createDocument(resource.toString()));
 				svgCache.put(name, found);
 			} catch (IOException e) {
-				System.err.println("getSVGImage error: " + fileName);
+				logger.severe("getSVGImage error. fileName: " + fileName);
 			}
 		}
 
