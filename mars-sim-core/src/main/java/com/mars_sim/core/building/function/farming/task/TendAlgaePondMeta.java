@@ -138,7 +138,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
   
             result.addBase("nutrient.ratio", defaultNRatio / nutrientRatio * 50);
       
-            if (result.getScore() > 0) {
+            if (result.getScore() >= 1) {
                 tasks.add(new AlgaeTaskJob(this, pond, result));
             }
         }

@@ -85,7 +85,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
         RatingScore result = super.assessPersonSuitability(t, p);
 
         // Should always be true
-        if ((result.getScore() > 0) && (t instanceof GroupActivitySettlementTask gst)) {
+        if ((result.getScore() >= 1) && (t instanceof GroupActivitySettlementTask gst)) {
             Person instigator = gst.getActivity().getInstigator();
             if (instigator != null) {
                 if (instigator.equals(p)) {

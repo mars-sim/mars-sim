@@ -151,7 +151,7 @@ public class SettlementTaskManager implements Serializable {
             // Check this type of Robot can do the Job
             if (mt.getPreferredRobot().contains(r.getRobotType())) {
                 RatingScore score = mt.assessRobotSuitability(st, r);
-                if (score.getScore() > 0) {
+                if (score.getScore() >= 1) {
                     result.add(new SettlementTaskProxy(this, st, score));
                 }
             }
@@ -180,7 +180,7 @@ public class SettlementTaskManager implements Serializable {
             if (acceptable.contains(scope)) {
                 SettlementMetaTask mt = st.getMeta();
                 RatingScore score = mt.assessPersonSuitability(st, p);
-                if (score.getScore() > 0) {
+                if (score.getScore() >= 1) {
                     result.add(new SettlementTaskProxy(this, st, score));
                 }
             }

@@ -106,7 +106,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         var factor = TaskUtil.assessRobot(t, r);
-		if (factor.getScore() > 0)
+		if (factor.getScore() >= 1)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
         return factor;
     }
@@ -123,7 +123,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		for (Building building: settlement.getBuildingManager().getBuildingSet()) {
 			RatingScore score = scoreMaintenance(building);
 
-			if (score.getScore() > 0) {
+			if (score.getScore() >= 1) {
 				boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 				tasks.add(new MaintainTaskJob(this, building, !habitableBuilding, score));
 			}

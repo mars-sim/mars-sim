@@ -217,7 +217,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score.addModifier("toggleTime", 0.75 + (elapsed/500D));
 				
 					// Has a score so queue it; avoid very small benefits
-					if (score.getScore() > 1) { 
+					if (score.getScore() >= 1) { 
 						results.add(new ToggleOffJob(this, building, process, score));
 					}
 				}
@@ -257,7 +257,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				score.addBase("inputs", -inputValue);
 			}
 
-			if (score.getScore() > 0) {
+			if (score.getScore() >= 1) {
 				score.applyRange(0, MAX_SCORE);
 
 				results.add(new ToggleOnJob(this, isWaste, process, score));

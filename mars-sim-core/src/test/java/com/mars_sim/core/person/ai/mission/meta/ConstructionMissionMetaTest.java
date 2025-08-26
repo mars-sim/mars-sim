@@ -32,7 +32,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         addSitePreReqs(s);
 
         score = meta.getProbability(architect);
-        assertTrue("Architect can start", score.getScore() > 0);
+        assertTrue("Architect can start", score.getScore() >= 1);
     }
 
     public void testProbabiltyDoctor() {
@@ -79,6 +79,6 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         cm.addBuildingToQueue(LANDER_HAB, null);
 
         score = meta.getProbability(architect);
-        assertTrue("Architect can start", score.getScore() > 0);
+        assertTrue("Architect can start", score.getScore() >= 1);
     }
 }

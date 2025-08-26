@@ -131,7 +131,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
             // Settlement factors
             score = applyCommerceFactor(score, settlement, CommerceType.CROP);
 
-            if (score.getScore() > 0) {
+            if (score.getScore() >= 1) {
                 int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit
                 workTask = Math.min(workTask, b.getLifeSupport().getAvailableOccupancy());
                 workTask = Math.max(1, workTask);
