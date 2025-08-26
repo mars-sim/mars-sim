@@ -271,13 +271,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
     		if (p != null) {
     			return settlement.getItemResourceStored(id) * p.getMassPerItem();
     		}
-    			return 0;
+    		return 0.0;
     	}
     	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
     		// For Vehicle
     		VehicleType vehicleType = VehicleType.convertID2Type(id);
     		if (settlement.getAVehicle(vehicleType) == null)
-    			return 0;
+    			return 0.0;
     		
     		return settlement.findNumVehiclesOfType(vehicleType) * CollectionUtils.getVehicleTypeBaseMass(vehicleType); 
     	}

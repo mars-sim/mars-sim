@@ -208,14 +208,14 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 			case POWER_GEN: 
 				double genPower = settle.getPowerGrid().getGeneratedPower();
 				if (genPower < 0D || Double.isNaN(genPower) || Double.isInfinite(genPower))
-					genPower = 0;
+					genPower = 0.0;
 				result = genPower;
 				break;
 
 			case POWER_LOAD: 
 				double reqPower = settle.getPowerGrid().getRequiredPower();
 				if (reqPower < 0D || Double.isNaN(reqPower) || Double.isInfinite(reqPower))
-					reqPower = 0;
+					reqPower = 0.0;
 				result = reqPower;
 				break;
 
