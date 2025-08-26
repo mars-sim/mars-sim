@@ -12,6 +12,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 
 /**
  * This class represents how a Robot can be traded.
@@ -153,14 +154,14 @@ class RobotGood extends Good {
 		double totalDemand = 0;
 		
 		// Determine projected demand for this cycle
-		double projectedDemand = determineRobotDemand(owner, settlement);
+		double newProjDemand = determineRobotDemand(owner, settlement);
 
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 		
-		this.projectedDemand = projectedDemand;
+		double projected = newProjDemand * flattenDemand;
 		
-		double projected = projectedDemand * flattenDemand;
-				
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		
 		double totalSupply = getNumberForSettlement(settlement);
 				
 		owner.setSupplyValue(this, totalSupply);

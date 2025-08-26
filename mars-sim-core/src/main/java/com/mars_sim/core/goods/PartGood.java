@@ -22,6 +22,7 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -397,7 +398,7 @@ public class PartGood extends Good {
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
-		double projectedDemand = 
+		double newProjDemand = 
 			// Add manufacturing demand.					
 			getPartManufacturingDemand(owner, settlement, part)
 			// Add food production demand.
@@ -419,14 +420,14 @@ public class PartGood extends Good {
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(0, settlement, part, previousDemand);
 		
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
-		
-		this.projectedDemand = projectedDemand;
-		
-		double projected = projectedDemand
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
+
+		double projected = newProjDemand
 			// Flatten certain part demand.
 			* flattenDemand;
 
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		
 		// Add trade demand.
 		tradeDemand = owner.determineTradeDemand(this);
 

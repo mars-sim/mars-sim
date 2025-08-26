@@ -217,14 +217,14 @@ class VehicleGood extends Good {
 		
 		owner.setSupplyValue(this, totalSupply);
 			
-		double projectedDemand = determineVehicleProjectedDemand(owner, settlement);
+		double newProjDemand = determineVehicleProjectedDemand(owner, settlement);
 				
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 		
-		this.projectedDemand = projectedDemand;
+		double projected = newProjDemand * flattenDemand;
 		
-		double projected = projectedDemand * flattenDemand;
-
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		
 		double average = computeVehiclePartsCost(owner);
 		
 		tradeDemand = determineTradeVehicleValue(owner, settlement);

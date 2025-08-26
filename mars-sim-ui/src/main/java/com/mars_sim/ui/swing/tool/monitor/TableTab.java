@@ -24,7 +24,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;

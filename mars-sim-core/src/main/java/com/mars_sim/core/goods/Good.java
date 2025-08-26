@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Good.java
- * @date 2024-06-29
+ * @date 2025-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.goods;
@@ -39,6 +39,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	static final double LOWEST_PROJECTED_VALUE = 0.01;
 	static final int HIGHEST_PROJECTED_VALUE = 20_000;
 	
 	private static final double LABOR_FACTOR = 150D ;

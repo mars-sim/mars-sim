@@ -96,7 +96,7 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_VALUE_MODIFIER = 0.02;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
-	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
+	private static final double ROCK_SALT_VALUE_MODIFIER = .01;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = 0.1;
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
@@ -529,8 +529,8 @@ class AmountResourceGood extends Good {
 		double totalDemand = 0;
 		double totalSupply = 0;	
 
-		// Calculate projected demand
-		double newDemand = 
+		// Calculate new projected demand
+		double newProjDemand = 
 			// Tune ice demand.
 			computeIceProjectedDemand(owner)
 			// Tune regolith projected demand.
@@ -560,15 +560,15 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
 
-		newDemand = Math.min(HIGHEST_PROJECTED_VALUE, newDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 	
-		this.projectedDemand = newDemand;
-		
-		double projected = newDemand
+		double projected = newProjDemand
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
+		
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		
 		// Add trade value. Cache is always false if this method is called
 		this.tradeDemand = owner.determineTradeDemand(this);

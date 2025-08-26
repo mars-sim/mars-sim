@@ -25,6 +25,7 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -236,14 +237,14 @@ public class EquipmentGood extends Good {
 		double totalDemand = 0;
 		
 		// Determine projected demand for this cycle
-		double projectedDemand = determineEquipmentDemand(owner, settlement);
+		double newProjDemand = determineEquipmentDemand(owner, settlement);
 
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
+	
+		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = projectedDemand;
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		
-		double projected = projectedDemand * flattenDemand;
-
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyValue(this, totalSupply);
