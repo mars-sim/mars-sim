@@ -81,12 +81,12 @@ public class MasterClock implements Serializable {
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
 //	private static final int NEW_SLEEP = 20;
 	
+	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
+	public static final int INITIAL_TASK_PULSE_DAMPER = 100;
+	/** The initial ref pulse dampener for controlling the speed of the ref pulse width increase. */
+	public static final int INITIAL_REF_PULSE_DAMPER = 100;
 	/** The initial max pulse time allowed in one frame for a task to execute in its phase. */
 	public static final float INITIAL_PULSE_WIDTH = .082f;
-	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
-	public static final float INITIAL_TASK_PULSE_DAMPER = 10;
-	/** The initial ref pulse dampener for controlling the speed of the ref pulse width increase. */
-	public static final float INITIAL_REF_PULSE_DAMPER = 10;
 	/** The initial ratio between the next pulse width and the task pulse width. */
 	public static final float INITIAL_TASK_PULSE_RATIO = .5f;
 	/** The initial ratio between the minMilliSolPerPulse and the ref pulse width. */
@@ -124,8 +124,12 @@ public class MasterClock implements Serializable {
 	private int lastIntMillisol = -1;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
-	/** Duration of last sleep in milliseconds per pulse. */
-	private float sleepTime;
+	
+	/** The task pulse damper - the higher the number, the slower the task pulse width will increase. */
+	private int taskPulseDamper = INITIAL_TASK_PULSE_DAMPER;
+	/** The ref pulse damper - the higher the number, the slower the ref pulse width will increase. */
+	private int refPulseDamper = INITIAL_REF_PULSE_DAMPER;
+	
 	/** The time taken to execute one frame in the game loop [in ms]. */
 	private short executionTime;
 	
@@ -134,6 +138,9 @@ public class MasterClock implements Serializable {
 	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
 	
+	/** Duration of last sleep in milliseconds per pulse. */
+	private float sleepTime;
+	/** The millisol per pulse. */
 	private float millisecPerPulse;
 	/** The last millisol from the last pulse. */
 	private float lastMillisol;
@@ -148,10 +155,6 @@ public class MasterClock implements Serializable {
 	private float originalCPUUtil;
 	/** The current CPU util. */
 	private float cpuUtil;
-	/** The task pulse damper - the higher the number, the slower the task pulse width will increase. */
-	private float taskPulseDamper = INITIAL_TASK_PULSE_DAMPER;
-	/** The ref pulse damper - the higher the number, the slower the ref pulse width will increase. */
-	private float refPulseDamper = INITIAL_REF_PULSE_DAMPER;
 	/** The player adjustable task pulse ratio. */
 	private float taskPulseRatio = INITIAL_TASK_PULSE_RATIO; 
 	/** The player adjustable ref pulse ratio. */
@@ -308,7 +311,7 @@ public class MasterClock implements Serializable {
 	public void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = (float) (refPulseRatio * minMilliSolPerPulse 
-						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / 100 / refPulseDamper);
+						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / 10 / refPulseDamper);
 		
 		optMilliSolPerPulse = referencePulse;
 	}
@@ -329,21 +332,21 @@ public class MasterClock implements Serializable {
 		computeReferencePulse();
 	}
 
-	public void setTaskPulseDamper(float value) {
+	public void setTaskPulseDamper(int value) {
 		taskPulseDamper = value;
 	}
 	
-	public float getTaskPulseDamper() {
+	public int getTaskPulseDamper() {
 		return taskPulseDamper;
 	}
 
-	public void setRefPulseDamper(float value) {
+	public void setRefPulseDamper(int value) {
 		refPulseDamper = value;
 		// Recompute the ref and opt pulses
 		computeReferencePulse();
 	}
 	
-	public float getRefPulseDamper() {
+	public int getRefPulseDamper() {
 		return refPulseDamper;
 	}
 	
@@ -780,7 +783,7 @@ public class MasterClock implements Serializable {
 		
 		// Update the pulse time for use in tasks
 		float newTaskPulseWidth = (float) (taskPulseRatio * INITIAL_PULSE_WIDTH 
-				+ (1 - taskPulseRatio) * leadPulse / taskPulseDamper / cpuUtil * 30);
+				+ (1 - taskPulseRatio) * leadPulse / taskPulseDamper / cpuUtil * 2000);
 
 		if (taskPulseWidth != newTaskPulseWidth) {
 			taskPulseWidth = newTaskPulseWidth;
