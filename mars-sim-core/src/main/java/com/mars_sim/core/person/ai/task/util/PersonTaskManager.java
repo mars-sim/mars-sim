@@ -7,6 +7,8 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
@@ -37,23 +39,31 @@ public class PersonTaskManager extends TaskManager {
 
 	private static CacheCreator<TaskJob> defaultInsideTasks;
 	private static CacheCreator<TaskJob> defaultOutsideTasks;
-	
+
 	private static final String SLEEP = "Sleep";
 	private static final String EAT = "Eat";
 
 	private static final String DIAGS_MODULE = "taskperson";
-	
+
+	// === NEW: Meta-task failure cooldown guard rails ===
+	/** Number of pulses to cool down a meta-task after it fails. */
+	private static final int FAILURE_COOLDOWN_PULSES = 200;
+
+	/** Tracks when a meta-task (by class name) is cooled down until (exclusive). */
+	private transient Map<String, Long> failedUntilPulse = new ConcurrentHashMap<>();
+
+	/** Local pulse counter advanced each rebuild of the cache. */
+	private transient long pulseCounter = 0L;
+
 	// Data members
-	
 	private transient List<MissionRating> missionProbCache;
-	
+
 	private transient MissionRating selectedMissionRating;
-	
+
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 
 	private transient Person person;
-
 
 	/**
 	 * Constructor.
@@ -71,7 +81,7 @@ public class PersonTaskManager extends TaskManager {
 
 	/**
 	 * Gets the diagnostics module name to used in any output.
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -79,42 +89,77 @@ public class PersonTaskManager extends TaskManager {
 		return DIAGS_MODULE;
 	}
 
+	/** Returns true if the given meta-task key is still cooling down. */
+	private boolean isCoolingDown(String key) {
+		Long until = failedUntilPulse.get(key);
+		return (until != null) && (until > pulseCounter);
+	}
+
 	/**
-	 * Calculates and caches the probabilities. This will NOT use the cache but 
+	 * Calculates and caches the probabilities. This will NOT use the cache but
 	 * assumes the callers know when a cache can be used or not used.
-	 * 
+	 *
 	 * @param now The current mars time
 	 */
 	@Override
 	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
+		// Advance a lightweight "pulse" counter each rebuild; used for cooldown timing.
+		pulseCounter++;
+
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
-        shiftDesc = switch (workStatus) {
-            case OFF_DUTY, ON_LEAVE -> {
-                mtList = MetaTaskUtil.getNonDutyHourTasks();
-                yield "Shift: Non-Duty";
-            }
-            case ON_CALL -> {
-                mtList = MetaTaskUtil.getOnCallMetaTasks();
-                yield "Shift: On-Call";
-            }
-            case ON_DUTY -> {
-                mtList = MetaTaskUtil.getDutyHourTasks();
-                yield "Shift: On-Duty";
-            }
-            default -> throw new IllegalStateException("Do not know status " + workStatus);
-        };
+		shiftDesc = switch (workStatus) {
+			case OFF_DUTY, ON_LEAVE -> {
+				mtList = MetaTaskUtil.getNonDutyHourTasks();
+				yield "Shift: Non-Duty";
+			}
+			case ON_CALL -> {
+				mtList = MetaTaskUtil.getOnCallMetaTasks();
+				yield "Shift: On-Call";
+			}
+			case ON_DUTY -> {
+				mtList = MetaTaskUtil.getDutyHourTasks();
+				yield "Shift: On-Duty";
+			}
+			default -> throw new IllegalStateException("Do not know status " + workStatus);
+		};
 
 		// Create new taskProbCache
 		CacheCreator<TaskJob> newCache = new CacheCreator<>(shiftDesc, now);
 
-		// Determine probabilities.
+		// Determine probabilities with guard rails and cooldowns.
 		for (FactoryMetaTask mt : mtList) {
-			List<TaskJob> job = mt.getTaskJobs(person);
-			if (job != null) {
-				newCache.add(job);
+			final String key = mt.getClass().getName();
+
+			// If this meta-task recently failed, skip it for now to prevent thrashing.
+			if (isCoolingDown(key)) {
+				logger.info(person, 5_000L, "Cooling down meta-task " + key + "; skipping this tick.");
+				continue;
+			}
+
+			try {
+				List<TaskJob> job = mt.getTaskJobs(person);
+				if (job != null) {
+					newCache.add(job);
+				}
+				// Cooldown expired / success path: clean up stale entry if present.
+				failedUntilPulse.remove(key);
+			}
+			catch (IllegalArgumentException | IllegalStateException ex) {
+				// Common precondition issue (e.g., not a collaborator yet) — cool down this meta.
+				failedUntilPulse.put(key, pulseCounter + FAILURE_COOLDOWN_PULSES);
+				logger.info(person, 10_000L,
+						"Cooling down meta-task " + key + " after failure: "
+								+ ex.getClass().getSimpleName() + ": " + ex.getMessage());
+			}
+			catch (RuntimeException ex) {
+				// Any unexpected runtime failure — don't let it break the frame.
+				failedUntilPulse.put(key, pulseCounter + FAILURE_COOLDOWN_PULSES);
+				logger.warning(person, 10_000L,
+						"Cooling down meta-task " + key + " after runtime failure: "
+								+ ex.getClass().getSimpleName() + ": " + ex.getMessage());
 			}
 		}
 
@@ -133,7 +178,7 @@ public class PersonTaskManager extends TaskManager {
 				newCache = getDefaultInsideTasks();
 			}
 			logger.warning(person, 30_000L, "No normal task available. Get default "
-								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
+					+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
 		return newCache;
 	}
@@ -145,28 +190,28 @@ public class PersonTaskManager extends TaskManager {
 	private static synchronized CacheCreator<TaskJob> getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
 			defaultInsideTasks = new CacheCreator<>("Default Inside", null);
-			
+
 			// Create a fallback Task job that can always be done
 			RatingScore base = new RatingScore(1D);
 			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
-				
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
 					return new Sleep(person);
-				}	
+				}
 			};
 			defaultInsideTasks.put(sleepJob);
 
 			TaskJob eatJob = new AbstractTaskJob(EAT, base) {
-				
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
 					return new EatDrink(person);
-				}	
+				}
 			};
 			defaultInsideTasks.put(eatJob);
 		}
@@ -182,20 +227,20 @@ public class PersonTaskManager extends TaskManager {
 
 			// Create a MetaTask to return inside
 			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
-				
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
 					logger.info(person, 10_000L, "Returning inside to find work.");
 					return new Walk(person);
-				}	
+				}
 			};
 			defaultOutsideTasks.put(walkBack);
 		}
 		return defaultOutsideTasks;
 	}
-	
+
 	/**
 	 * A Person can do pending tasks if they are not outside and not on a Mission.
 	 * @return Whether person is inside
@@ -208,11 +253,10 @@ public class PersonTaskManager extends TaskManager {
 	protected Task createTask(TaskJob selectedWork) {
 		return selectedWork.createTask(mind.getPerson());
 	}
-	
-	
+
 	/**
 	 * Sets the list of mission ratings and the selected mission rating.
-	 * 
+	 *
 	 * @param missionProbCache
 	 * @param selectedMetaMissionRating
 	 */
@@ -221,28 +265,32 @@ public class PersonTaskManager extends TaskManager {
 		this.missionProbCache = missionProbCache;
 		this.selectedMissionRating = selectedMetaMissionRating;
 	}
-	
+
 	/**
 	 * Gets the list of mission ratings.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<MissionRating> getMissionProbCache() {
 		return missionProbCache;
 	}
-	
+
 	/**
 	 * Gets the selected mission rating.
-	 * 
+	 *
 	 * @return
 	 */
 	public MissionRating getSelectedMission() {
 		return selectedMissionRating;
 	}
-	
+
 	public void reinit() {
 		person = mind.getPerson();
 		super.reinit(person);
+		// Ensure cooldown map exists after reinit/deserialization.
+		if (failedUntilPulse == null) {
+			failedUntilPulse = new ConcurrentHashMap<>();
+		}
 	}
 
 	/**
