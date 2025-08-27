@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarketData.java
- * @date 2025-07-23
+ * @date 2025-08-26
  * @author Manny Kung
  */
 
@@ -15,10 +15,10 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private double goodValue = 1;
-	private double price = 0;
-	private double cost = 0;
-	private double demand = 1;
+	private double goodValue = 0.0;
+	private double price = 0.0;
+	private double cost = 0.0;
+	private double demand = 0.0;
 	
 	public MarketData() {
 	}
@@ -31,7 +31,7 @@ public class MarketData implements Serializable {
 	 * @return
 	 */
 	private static double smoothValue(double newValue, double oldValue) {
-		if (oldValue < 0.0 && !Double.isNaN(oldValue)) {
+		if (!Double.isNaN(oldValue)) {
 			newValue = (0.95 * oldValue + 0.05 * newValue);
 		}
 		return newValue;
@@ -41,7 +41,7 @@ public class MarketData implements Serializable {
 	 * Updates the Good Value here.
 	 * 
 	 * @param data
-	 * @return the delta
+	 * @return 
 	 */
 	public double updateGoodValue(double data) {
 		double oldValue = goodValue;
@@ -50,35 +50,74 @@ public class MarketData implements Serializable {
 			return goodValue;
 		}
 		var newValue = smoothValue(data, oldValue);
-		this.goodValue = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
-
-		return goodValue - oldValue;
-	}
-
-	void setPrice(double data) {
-		this.price = smoothValue(data, price);
+		newValue = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
+		goodValue = newValue;
+		return newValue; //goodValue - oldValue;
 	}
 
 	/**
 	 * Updates the demand here.
 	 * 
 	 * @param data
-	 * @return the delta
+	 * @return 
 	 */
 	public double updateDemand(double data) {
 		double oldDemand = demand;
 		if (oldDemand == 0.0) {
 			demand = data;
-			return demand;
+			return data;
 		}
 		var newDemand = smoothValue(data, oldDemand);		
-		demand = MathUtils.between(newDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
-		return demand - oldDemand;
+		newDemand = MathUtils.between(newDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
+		demand = newDemand;
+		return newDemand; //demand - oldDemand;
 	}
 
+	/**
+	 * Updates the cost here.
+	 * 
+	 * @param data
+	 * @return 
+	 */
+	public double updateCost(double data) {
+		double oldC = cost;
+		if (oldC == 0.0) {
+			cost = data;
+			return data;
+		}
+		var newC = smoothValue(data, oldC);		
+		newC = MathUtils.between(newC, 0.01, 10_000);
+		cost = newC;
+		return newC;
+	}
+	
+	/**
+	 * Updates the price here.
+	 * 
+	 * @param data
+	 * @return 
+	 */
+	public double updatePrice(double data) {
+		double oldP = price;
+		if (oldP == 0.0) {
+			price = data;
+			return data;
+		}
+		var newP = smoothValue(data, oldP);		
+		newP = MathUtils.between(newP, 0.01, 10_000);
+		price = newP;
+		return newP;
+	}
+	
 	void setCost(double data) {
 		this.cost = smoothValue(data, cost);
 	}
+	
+
+	void setPrice(double data) {
+		this.price = smoothValue(data, price);
+	}
+
 	
 	public double getGoodValue() {
 		return goodValue;

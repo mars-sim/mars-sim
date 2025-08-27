@@ -189,10 +189,13 @@ class VehicleGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-        double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
-        double quantity = settlement.findNumVehiclesOfType(vehicleType);
-        double factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
+//        double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
+//        double quantity = settlement.findNumVehiclesOfType(vehicleType);
+        double supply = settlement.getGoodsManager().getSupplyScore(getID());
+        double factor = 1.5 / (2 + supply);
+        double price = getCostOutput() * (1 + factor * Math.log(Math.sqrt(value + 1)));  
+        setPrice(price);
+	    return price;
     }
 
     @Override
@@ -215,7 +218,7 @@ class VehicleGood extends Good {
 		// Calculate total supply
 		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
 		
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
 			
 		double newProjDemand = determineVehicleProjectedDemand(owner, settlement);
 				

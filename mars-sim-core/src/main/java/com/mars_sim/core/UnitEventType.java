@@ -116,6 +116,8 @@ public enum UnitEventType {
 	COST_EVENT						("cost of a good"),
 	PRICE_EVENT						("price of a good"),
 	
+	SUPPLY_EVENT					("supply of a good"),
+	
 	// For Vehicle
 	STATUS_EVENT					("vehicle status"),
 	SPEED_EVENT						("vehicle speed"),

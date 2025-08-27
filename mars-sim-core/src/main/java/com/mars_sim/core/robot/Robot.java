@@ -80,7 +80,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private static final String REPAIRBOT = "RepairBot";
 	/** The base carrying capacity (kg) of a robot. */
 	private static final double BASE_CAPACITY = 60D;
-	/** Unloaded mass of EVA suit (kg.). */
+	/** The estimate base mass in kg. */
 	public static final double EMPTY_MASS = 80D;
 	/** life time in number of sols. */
 	private static final double WEAR_LIFETIME = 334_000D;

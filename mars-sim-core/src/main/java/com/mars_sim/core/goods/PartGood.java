@@ -365,10 +365,13 @@ public class PartGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-        double mass = getPart().getMassPerItem();
-        double quantity = settlement.getItemResourceStored(getID()) ;
-        double factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
-        return getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
+    	// double mass = getMassPerItem();
+//        double quantity = settlement.getItemResourceStored(getID());
+        double supply = settlement.getGoodsManager().getSupplyScore(getID());
+        double factor = 1.2 / (2 + supply);
+        double price = getCostOutput() * (1 + factor * Math.log(value + 1));
+        setPrice(price);
+	    return price;
     }
 
     @Override
@@ -468,7 +471,7 @@ public class PartGood extends Good {
 		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
 
 		// Save the average supply
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
     }
 
     /**

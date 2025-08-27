@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GoodsManager.java
- * @date 2024-06-29
+ * @date 2025-08-26
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -136,16 +136,17 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_EVA_SUIT = 1;	
 	private static final int BASE_BOT = 1;	
 	private static final int MAX_SUPPLY = 5_000;
-	private static final int MAX_VP = 10_000;
-
+	
 	public static final double THROTTLING = .25;
 	
 	static final double MIN_VP = 0.01;
+	private static final int MAX_VP = 10_000;
 	public static final double MAX_FINAL_VP = 5_000D;
+	
 	static final int MAX_DEMAND = 10_000;
 	static final double MIN_DEMAND = 0.01;
 
-	private static final double MIN_SUPPLY = 0.01;
+	private static final double MIN_SUPPLY = 1;
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_81 = .81;
@@ -155,8 +156,7 @@ public class GoodsManager implements Serializable {
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
 
 	private static Map<Integer, ResourceLimits> resLimits;
-	
-	private Map<Good, MarketData> marketMap = new HashMap<>();
+
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static Set<Good> unsellableGoods = null;
 
@@ -187,6 +187,7 @@ public class GoodsManager implements Serializable {
 	private Settlement settlement;
 
 	private static UnitManager unitManager;
+	private static MarketManager marketManager;
 
 
 	/**
@@ -267,7 +268,7 @@ public class GoodsManager implements Serializable {
 			deflationIndexMap.put(id, 0);
 			demandCache.put(id, good.getDefaultDemandValue());
 			supplyCache.put(id, good.getDefaultSupplyValue());
-			marketMap.put(good, new MarketData());
+//			marketMap.put(good, new MarketData());
 		}
 	}
 
@@ -313,22 +314,24 @@ public class GoodsManager implements Serializable {
 	 * @param g
 	 */
 	public void updateOneGood(Good g) {
-		MarketData mv = marketMap.get(g);
+		MarketData mv = marketManager.getGlobalMarketBook().get(g);
+		
+		// Note: calling determineGoodValue would automatically update 
+		// local demand/VP with global market data adjustment
 		double localValue = determineGoodValue(g);
 		
-		double localDemand = demandCache.get(g.getID());
+		// Note: No need to update the market demand/VP. 
+		// Already done in determineGoodValue()
 
 		double localCost = g.computeAdjustedCost();
-		
 		double localPrice = g.calculatePrice(settlement, localValue);
+
+		settlement.fireUnitUpdate(UnitEventType.COST_EVENT, g);
+		settlement.fireUnitUpdate(UnitEventType.PRICE_EVENT, g);
 		
-		mv.updateDemand(localDemand);	
-		mv.updateGoodValue(localValue);	
-		mv.setCost(localCost);
-		mv.setPrice(localPrice);
+		mv.updateCost(localCost);
+		mv.updatePrice(localPrice);
 		
-		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, g);				
-		settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, g);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_COST_EVENT, g);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_PRICE_EVENT, g);
 	}
@@ -348,19 +351,14 @@ public class GoodsManager implements Serializable {
 		
 			double totalSupply = supplyCache.get(id);
 			double oldDemand = demandCache.get(id);
-			double newDemand = oldDemand;
 			
 			// Adjust the market demand
-			MarketData marketData = getMarketData(good);
-			double adjustment = adjustMarketDemand(good, oldDemand) / 20.0;
-			if (oldDemand + adjustment > 0)
-				newDemand += adjustment;
-			
+			double marketDemand = adjustMarketDemand(good, oldDemand);
+			double newDemand = .95 *  oldDemand + .05 * marketDemand;
+	
 			// Save the demand if it has changed
 			if (oldDemand != newDemand) {
-				demandCache.put(id, newDemand);
-
-				settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
+				setDemandScore(good, newDemand);
 			}
 
 			// Calculate the good value
@@ -379,17 +377,15 @@ public class GoodsManager implements Serializable {
 
 			// Check for inflation and deflation adjustment due to other resources
 			newGoodValue = checkDeflation(id, newGoodValue);
-			// Adjust the market value
-			double adj1 = marketData.updateGoodValue(newGoodValue) / 20.0;
-			if (newGoodValue + adj1 > 0)
-				newGoodValue += adj1;
+			
+			// Adjust the market VP
+			double marketVP = adjustMarketVP(good, newGoodValue);
+			newGoodValue = .95 *  newGoodValue + .05 * marketVP;
 
 			// Save the value point if it has changed
 			double oldValue = goodsValues.get(id);
 			if (oldValue != newGoodValue) {
-				goodsValues.put(id, newGoodValue);
-
-				settlement.fireUnitUpdate(UnitEventType.VALUE_EVENT, good);
+				setGoodValue(good, newGoodValue);
 			}
 
 			return newGoodValue;
@@ -404,13 +400,27 @@ public class GoodsManager implements Serializable {
 	 * 
 	 * @param good
 	 * @param demand
-	 * @return the market adjustment
+	 * @return the market demand
 	 */
 	private double adjustMarketDemand(Good good, double demand) {
-		// Gets the market demand among the settlements
-		var adj = getMarketData(good).updateDemand(demand);
+		// Adjust the market demand
+		double marketDemand = getMarketData(good).updateDemand(demand);
+		settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, good);				
+		return marketDemand;
+	}
+	
+	/**
+	 * Adjusts the market vp of a good of a settlement.
+	 * 
+	 * @param good
+	 * @param vp
+	 * @return the market vp
+	 */
+	private double adjustMarketVP(Good good, double vp) {
+		// Adjust the market vp 
+		double marketVP = getMarketData(good).updateGoodValue(vp);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
-		return adj;
+		return marketVP;
 	}
 	
 	/**
@@ -648,7 +658,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getPrice(Good good) {
-		return marketMap.get(good).getPrice();
+		return good.getPrice();
 	}
 	
 
@@ -699,18 +709,30 @@ public class GoodsManager implements Serializable {
 	public void setDemandScore(Good good, double newScore) {
 		double clippedValue = MathUtils.between(newScore, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
-		
 		settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
 	}
 
+	/**
+	 * Sets the good value or value point (VP) of a good.
+	 * 
+	 * @param good
+	 * @param newValue
+	 */
+	public void setGoodValue(Good good, double newValue) {
+		double clippedValue = MathUtils.between(newValue, MIN_VP, MAX_VP);
+		goodsValues.put(good.getID(), clippedValue);
+		settlement.fireUnitUpdate(UnitEventType.VALUE_EVENT, good);
+	}
+	
 	/**
 	 * Sets the supply score of a good.
 	 * 
 	 * @param good
 	 * @param newScore
 	 */
-	void setSupplyValue(Good good, double newScore) {
+	void setSupplyScore(Good good, double newScore) {
 		setSupplyScore(good.getID(), newScore);
+		settlement.fireUnitUpdate(UnitEventType.SUPPLY_EVENT, good);
 	}
 
 	/**
@@ -742,17 +764,6 @@ public class GoodsManager implements Serializable {
 	 */
 	public double getSupplyScore(int id) {
 		return supplyCache.get(id);
-	}
-	
-	/**
-	 * Calculates the good value of a good.
-	 *
-	 * @param good's id.
-	 * @return value (VP)
-	 */
-	public double determineGoodValueWithSupply(Good good, double supply) {
-		double previousDemand = getDemandScore(good);
-		return previousDemand / supply;
 	}
 
 	/**
@@ -867,25 +878,14 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the market position for a Good from the view of this Settlement.
+	 * Gets the market position for a good.
 	 * 
 	 * @param good
 	 * @return
 	 */
 	public MarketData getMarketData(Good good) {
-		// Should always find a value
-		return marketMap.computeIfAbsent(good, g -> new MarketData());
+		return marketManager.getGlobalMarketBook().get(good);
 	}
-
-	/**
-	 * GEts the market map.
-	 * 
-	 * @return
-	 */
-	public Map<Good, MarketData> getMarketMap() {
-		return marketMap;
-	}
-	
 
 	/**
 	 * Returns the owning Settlement of this manager.
@@ -1007,11 +1007,13 @@ public class GoodsManager implements Serializable {
 	 * @param s  {@link SimulationConfg}
 	 * @param m  {@link MissionManager}
 	 * @param u  {@link UnitManager}
+	 * @param mm  {@link MarketManager}
 	 */
-	public static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u) {
+	public static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u, MarketManager mm) {
 		unitManager = u;
-		Good.initializeInstances(sc, m);
+		Good.initializeInstances(sc, m, u);
 		CommerceUtil.initializeInstances(m, u);
+		marketManager = mm;
 		resLimits = sc.getSettlementConfiguration().getEssentialResources();
 	}
 

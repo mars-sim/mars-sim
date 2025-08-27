@@ -95,6 +95,12 @@ class RobotGood extends Good {
 
     @Override
     public double getMassPerItem() {
+    	for (Robot r: unitManager.getRobots()) {
+    		if (robotType == r.getRobotType()) {
+    			return r.getBaseMass();
+    		}
+    	}
+    	
         return Robot.EMPTY_MASS;
     }
 
@@ -128,11 +134,14 @@ class RobotGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-        double mass = Robot.EMPTY_MASS;
-        double quantity = settlement.getInitialNumOfRobots() ;
-        double factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
+//        double mass = getMassPerItem();
+//        double quantity = settlement.getInitialNumOfRobots() ;
+        double supply = settlement.getGoodsManager().getSupplyScore(getID());
+        double factor = 2 / (2 + supply);
         // Need to increase the value for robots
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
+        double price = getCostOutput() * (1 + factor * Math.log(Math.sqrt(value) + 1));  
+        setPrice(price);
+	    return price;
     }
 
     @Override
@@ -164,7 +173,7 @@ class RobotGood extends Good {
 		
 		double totalSupply = getNumberForSettlement(settlement);
 				
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
 		tradeDemand = owner.determineTradeDemand(this);

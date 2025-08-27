@@ -198,23 +198,25 @@ public class EquipmentGood extends Good {
     	
 		// For Equipment   		
     	double mass = 0;
-		double quantity = 0;
     	double factor = 0;
+		double supply = settlement.getGoodsManager().getSupplyScore(getID());
         if (equipmentType == EquipmentType.EVA_SUIT) {
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-    		quantity = settlement.getNumEVASuit();
+//    		quantity = settlement.getNumEVASuit();
     		
             // Need to increase the value for EVA
-    		factor = 1.2 * Math.log(mass/50.0 + 1) / (.1 + Math.log(quantity + 1));
+    		factor = 2.4 * Math.log(mass/80.0 + 1) / supply;
     	}
     	else {
     		// For containers
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-    		quantity = settlement.findNumContainersOfType(equipmentType);
-    		factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
+//    		quantity = settlement.findNumContainersOfType(equipmentType);
+    		factor = 2.0 * Math.log(mass/5 + 1) / supply;
     	}
         
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));    
+        double price = getCostOutput() * (1 + factor * Math.log(Math.sqrt(value + 1) + 1)); 
+        setPrice(price);
+	    return price;
     }
 
 	@Override
@@ -247,7 +249,7 @@ public class EquipmentGood extends Good {
 		
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
 		tradeDemand = owner.determineTradeDemand(this);

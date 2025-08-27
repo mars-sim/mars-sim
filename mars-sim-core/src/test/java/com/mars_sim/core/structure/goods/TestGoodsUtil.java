@@ -29,7 +29,7 @@ public class TestGoodsUtil extends TestCase {
         SimulationConfig config = SimulationConfig.loadConfig();
   
         // Don't need a full GoodsManager initialisation
-        GoodsManager.initializeInstances(config, null, null);
+        GoodsManager.initializeInstances(config, null, null, null);
 
         GoodType type = GoodType.TOOL;
         hammer = ItemResourceUtil.createItemResource("hammer", 1100, "a hand tool", type, 1.4D, 1);
