@@ -40,7 +40,7 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
     private static final double EAT_WEIGHT_ONCALL    = 0.35;
     private static final double WALK_WEIGHT_ONCALL   = 0.15;
 
-    @Override
+    /** Optional identifier; kept without @Override to avoid interface drift issues. */
     public String getName() {
         return NAME;
     }
@@ -86,7 +86,8 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
                 @Override public Task createTask(Person p) { return new Walk(p); }
             });
 
-            LOG.fine(person, 5_000L, "Offering OffDuty wellbeing TaskJobs.");
+            // Use info() for compatibility across logger configurations.
+            LOG.info(person, 5_000L, "Offering OffDuty wellbeing TaskJobs.");
             return out;
         }
 
@@ -103,7 +104,7 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
                 @Override public Task createTask(Person p) { return new Walk(p); }
             });
 
-            LOG.fine(person, 5_000L, "Offering On-Call light wellbeing TaskJobs.");
+            LOG.info(person, 5_000L, "Offering On-Call light wellbeing TaskJobs.");
         }
 
         return out;
