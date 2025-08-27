@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.equipment.BinFactory;
