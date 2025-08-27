@@ -1290,3 +1290,4 @@ public class SettlementTransparentPanel extends JComponent {
 
     }
 }
+
