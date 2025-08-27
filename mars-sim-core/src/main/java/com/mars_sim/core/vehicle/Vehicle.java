@@ -194,7 +194,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private Set<StatusType> statusTypes = new HashSet<>();
 	
 	/** The vehicle's status log. */
-	private History<Set<StatusType>> vehicleLog = new History<>(40);
+	private History<Set<StatusType>> vehicleLog = new History<>(28);
 	/** The vehicle's road speed history. */
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	

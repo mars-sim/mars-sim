@@ -51,7 +51,7 @@ public abstract class ToolWindow extends JInternalFrame {
 
 		opened = false;
 
-		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		// Set internal frame listener
 		addInternalFrameListener(new ToolFrameListener());

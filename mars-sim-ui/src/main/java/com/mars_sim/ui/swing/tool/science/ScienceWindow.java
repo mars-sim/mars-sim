@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
@@ -50,6 +51,8 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		selectedStudy = null;
 

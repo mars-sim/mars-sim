@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -171,6 +172,8 @@ public class TimeWindow extends ToolWindow {
 		// Use TimeWindow constructor
 		super(NAME, TITLE, desktop);
 	
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+
 		// Set window resizable to false.
 		setResizable(true);
 		

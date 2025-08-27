@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -81,6 +82,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public GuideWindow(MainDesktopPane desktop) {
 		super(NAME, Msg.getString("GuideWindow.title"), desktop);
 		
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+
        	init();            
 	}
 

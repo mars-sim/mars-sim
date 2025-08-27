@@ -231,6 +231,8 @@ public class MainDesktopPane extends JDesktopPane
 			// Set the backgroundLabel size to the size of the desktop
 			backgroundLabel.setSize(getSize());
 		}
+		
+		backgroundImage.flush();
 	}
 
 	// Additional Component Listener methods implemented but not used.
@@ -479,6 +481,7 @@ public class MainDesktopPane extends JDesktopPane
 		if ((window != null) && !window.isClosed()) {
 			try {
 				window.setClosed(true);
+				window.dispose();
 			} catch (java.beans.PropertyVetoException e) {
 				// ignore
 			}

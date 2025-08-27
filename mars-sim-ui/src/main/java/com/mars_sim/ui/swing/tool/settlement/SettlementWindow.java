@@ -79,7 +79,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
 
-		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		setBackground(Color.BLACK);
 		

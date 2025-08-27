@@ -35,6 +35,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -159,6 +160,8 @@ public class MonitorWindow extends ToolWindow
 	public MonitorWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
 		super(NAME, TITLE, desktop);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		unitManager = desktop.getSimulation().getUnitManager();
 		

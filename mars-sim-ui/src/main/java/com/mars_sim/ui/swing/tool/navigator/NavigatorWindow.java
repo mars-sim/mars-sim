@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.formdev.flatlaf.extras.components.FlatToggleButton;
@@ -233,6 +234,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public NavigatorWindow(MainDesktopPane desktop) {
 		// use ToolWindow constructor
 		super(NAME, TITLE, desktop);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		Simulation sim = desktop.getSimulation();
 		this.unitManager = sim.getUnitManager();
@@ -815,7 +818,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		super.destroy();
 		if (mapPanel != null)
 			mapPanel.destroy();
-
 		
 		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
 		

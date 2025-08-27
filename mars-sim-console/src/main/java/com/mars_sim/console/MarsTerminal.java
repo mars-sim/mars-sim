@@ -139,6 +139,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			BufferedImage image = gc.createCompatibleImage(w, h);
 			Graphics2D g = image.createGraphics();
 			icon.paintIcon(null, g, 0, 0);
+			image.flush();
 			g.dispose();
 			return image;
 		}

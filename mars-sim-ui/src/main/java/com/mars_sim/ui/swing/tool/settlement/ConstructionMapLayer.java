@@ -93,6 +93,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
             drawCenteredMultiLabel(words, LABEL_FONT, site.getPosition(),
                                     CONSTRUCTION_COLOR, viewpoint);
         }
+
     }
     
 	@Override

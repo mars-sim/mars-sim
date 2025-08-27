@@ -133,6 +133,7 @@ public class SVGGraphicNodeIcon implements Icon {
 		svg.paint(g2d);
 
 		// Cleanup and return image
+		bufferedImage.flush();
 		g2d.dispose();
 
 		return bufferedImage;
@@ -158,6 +159,8 @@ public class SVGGraphicNodeIcon implements Icon {
         at.rotate(rads, x, y);
         g2d.setTransform(at);
         g2d.drawImage(img, 0, 0, null);
+        
+        rotated.flush();
         g2d.dispose();
 
         return rotated;

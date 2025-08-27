@@ -928,6 +928,7 @@ public class SettlementMapPanel extends JPanel {
 	 * Cleans up the map panel for disposal.
 	 */
 	public void destroy() {
+		settlementTransparentPanel.destroy();
 		settlementTransparentPanel = null;
 		menu = null;
 		settlement = null;

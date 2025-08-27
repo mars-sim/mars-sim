@@ -73,8 +73,6 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 		double diagonal = Math.hypot(mapWidth, mapHeight);
 
-		ImageObserver imageObserver = null;
-
 		if (backgroundTileImage == null) {
 		    Image backgroundTileIcon = getBackgroundImage(settlement);
 		    if (backgroundTileIcon == null) {
@@ -82,13 +80,13 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 		    }
 		    
 		    double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
-		    int tileWidth = (int) Math.round(backgroundTileIcon.getWidth(imageObserver) * imageScale);
-		    int tileHeight = (int) Math.round(backgroundTileIcon.getHeight(imageObserver) * imageScale);
+		    int tileWidth = (int) Math.round(backgroundTileIcon.getWidth(mapPanel) * imageScale);
+		    int tileHeight = (int) Math.round(backgroundTileIcon.getHeight(mapPanel) * imageScale);
 
 			// No Image observer so assuming image has already loaded from file
 			backgroundTileImage = resizeImage(
 		            backgroundTileIcon, 
-		            imageObserver,
+		            mapPanel,
 		            tileWidth, tileHeight
 		            );
 		}
@@ -152,6 +150,8 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 				}
 			}
 		}
+		
+		backgroundTileImage.flush();
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -188,22 +188,26 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 				h = scaleHeight;
 			}
 
-			int bufferWidth = w;
-			int bufferHeight = h;
-			int xOffset = 0;
-			int yOffset = 0;
-			
-			BufferedImage tmpImage = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2d = (Graphics2D) tmpImage.getGraphics();
-			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-			g2d.setClip(0, 0, bufferWidth, bufferHeight);
-			g2d.drawImage(result, xOffset, yOffset, w, h, null);
-			g2d.dispose();
-
-			result = tmpImage;
-
 		} while ((w != scaleWidth) || (h != scaleHeight));
 
+		int bufferWidth = w;
+		int bufferHeight = h;
+		int xOffset = 0;
+		int yOffset = 0;
+		
+		BufferedImage tmpImage = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = (Graphics2D) tmpImage.getGraphics();
+		
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		
+		g2d.setClip(0, 0, bufferWidth, bufferHeight);
+		g2d.drawImage(result, xOffset, yOffset, w, h, observer);
+		
+		tmpImage.flush();
+		g2d.dispose();
+
+		result = tmpImage;
+		
 		return result;
 	}
 
@@ -214,21 +218,18 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	 * @return the background tile image icon or null if none found.
 	 */
 	private Image getBackgroundImage(Settlement settlement) {
-		Image result = null;
+		String backgroundImageName = null;
 
 		if (settlementBackgroundMap.containsKey(settlement)) {
-			String backgroundImageName = settlementBackgroundMap.get(settlement);
-			result = ImageLoader.getImage(backgroundImageName);
+			backgroundImageName = settlementBackgroundMap.get(settlement);
 		}
 		else {
 			int id = settlement.getMapImageID();
-
-			String backgroundImageName = MAP_TILE_POINTER + id;
+			backgroundImageName = MAP_TILE_POINTER + id;
 			settlementBackgroundMap.put(settlement, backgroundImageName);
-			result = ImageLoader.getImage(backgroundImageName);
 		}
 
-		return result;
+		return ImageLoader.getImage(backgroundImageName);
 	}
 
 	@Override

@@ -117,9 +117,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		double scale = viewpoint.scale();
 		double rotation = viewpoint.rotation();
 		var g2d = viewpoint.graphics();
-//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		
 		float newScale = Math.round(scale/2.5);
 		
@@ -179,6 +180,9 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         // Draw image label.
 		g2d.drawImage(labelImage, widthOffset, heightOffset, null);
 		
+		labelImage.flush();
+        g2d.dispose();
+        
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		g2d.setFont(saveFont);
@@ -229,6 +233,9 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Draw image label with yOffset
 		g2d.drawImage(labelImage, 0, Math.round(yOffset * size), null);
 		
+		labelImage.flush();
+        g2d.dispose();
+     
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		g2d.setFont(saveFont);
@@ -293,6 +300,9 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 							labelColor.outline(), hasOutline);
 			labelImageCache.put(labelId, labelImage);
 		}
+		
+		labelImage.flush();
+ 
 		return labelImage;
 	}
 
@@ -345,6 +355,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Fill label
 		g2d.fill(labelShape);
 
+		bufferedImage.flush();
+
 		// Dispose of image graphics context.
 		g2d.dispose();
 
@@ -385,6 +397,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             imageCache.put(buildingKey, image);
         }
 
+        image.flush();
+//        patternSVG = null;
+//        svg = null;
+        
         return image;
     }
 
@@ -462,6 +478,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         }
 
         // Cleanup and return image
+        bufferedImage.flush();
+//        patternSVG = null;
+//        svg = null;
+        
         g2d.dispose();
 
         return bufferedImage;
@@ -536,6 +556,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			// Restore the stroke
 			g2d.setStroke(oldStroke);
         }
+        
+        image.flush();
+//        patternSVG = null;
+//        svg = null;
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);

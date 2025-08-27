@@ -738,13 +738,13 @@ public class SettlementTransparentPanel extends JComponent {
                 int value = zoomSlider.getValue();
                 if (numClicks > 0) {
                     // Move zoom slider down.
-                    if (value > zoomSlider.getMinimum())
-                        zoomSlider.setValue(zoomSlider.getValue() - 1);
+                    if (value >= zoomSlider.getMinimum())
+                        zoomSlider.setValue(value - 1);
                 }
                 else if (numClicks < 0) {
                     // Move zoom slider up.
-                    if (value < zoomSlider.getMaximum()) {
-                        zoomSlider.setValue(zoomSlider.getValue() + 1);
+                    if (value <= zoomSlider.getMaximum()) {
+                        zoomSlider.setValue(value + 1);
                     }
                 }
 

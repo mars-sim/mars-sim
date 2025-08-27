@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
+import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -96,6 +97,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		this.missionMgr = desktop.getSimulation().getMissionManager();
 		this.missionMgr.addListener(new MissionManagerListener() {

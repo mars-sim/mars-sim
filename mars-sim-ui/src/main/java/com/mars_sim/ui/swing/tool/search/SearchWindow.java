@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -70,8 +71,10 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
+		
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+
 		unitManager = desktop.getSimulation().getUnitManager();
-	
 		
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
