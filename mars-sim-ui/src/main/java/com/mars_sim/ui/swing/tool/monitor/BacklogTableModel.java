@@ -62,8 +62,9 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class, ColumnSpec.STYLE_DIGIT1);
 	}
 
-	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;
+	
+	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private List<BacklogEntry> tasks = Collections.emptyList();
 
 	/**
@@ -156,14 +157,14 @@ public class BacklogTableModel extends AbstractMonitorModel
     }
 
 	/**
-	 * Create a list od backlog entries for all the monitored settlements.
-	 * The SettlementTask does holdthe Settlement refernece so this is record in
-	 * the artifical BacklogEntry record.
+	 * Creates a list of backlog entries for all the monitored settlements.
+	 * The SettlementTask does hold the Settlement reference so this is record in
+	 * the artificial BacklogEntry record.
 	 */
 	private List<BacklogEntry> getTasks() {
 		return selectedSettlements.stream()
 					.flatMap(s -> s.getTaskManager().getAvailableTasks().stream()
-									.map(e -> new BacklogEntry(s, e)))
+					.map(e -> new BacklogEntry(s, e)))
 					.toList();
 	}
 

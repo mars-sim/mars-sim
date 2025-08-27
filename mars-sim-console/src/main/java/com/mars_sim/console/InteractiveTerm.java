@@ -602,7 +602,7 @@ public class InteractiveTerm {
 		if (selectedScreen >= 0) {
 			return screenSizes[selectedScreen];
 		}
-//		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+
 		int screenWidth = gd.getDisplayMode().getWidth();
 		int screenHeight = gd.getDisplayMode().getHeight();
 

@@ -794,6 +794,7 @@ public class SettlementTransparentPanel extends JComponent {
     @Override
     public void removeNotify() {
         super.removeNotify();
+        System.out.println("removeNotify");
         if (zoomSlider != null && zoomListener != null) {
             zoomSlider.removeChangeListener(zoomListener);
         }

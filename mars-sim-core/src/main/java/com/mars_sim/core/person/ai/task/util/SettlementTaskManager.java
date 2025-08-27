@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -133,6 +134,9 @@ public class SettlementTaskManager implements Serializable {
      * @return
      */
     public List<SettlementTask> getAvailableTasks() {
+    	if (tasks == null) {
+    		return Collections.emptyList();
+    	}
         return tasks;
     }
     

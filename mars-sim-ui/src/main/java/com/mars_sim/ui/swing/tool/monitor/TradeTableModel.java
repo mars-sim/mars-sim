@@ -116,10 +116,9 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		if (event.getTarget() instanceof Good g
-			&& unit instanceof Settlement s) {
+			&& event.getSource() instanceof Settlement s) {
 			
 			switch (eventType) {
 				case UnitEventType.MASS_EVENT ->

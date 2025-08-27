@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
@@ -132,8 +135,14 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		resetEntities(filter.stream().flatMap(s -> s.getAllAssociatedVehicles().stream()).toList());
-
+		
+		Collection<Vehicle> vehicles = filter.stream()
+				.flatMap(s -> s.getAllAssociatedVehicles().stream())
+				.sorted(Comparator.comparing(Vehicle::getName))
+				.toList();
+	
+		resetEntities(vehicles);
+		
 		return true;
 	}
 

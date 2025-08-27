@@ -6,10 +6,12 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -72,9 +74,13 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		resetEntities(filter.stream()
+		
+		Set<Building> buildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet(FunctionType.FARMING).stream())
-				.collect(Collectors.toSet()));
+				.sorted(Comparator.comparing(Building::getName))
+				.collect(Collectors.toSet());
+
+		resetEntities(buildings);
 
 		return true;
 	}

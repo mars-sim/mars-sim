@@ -6,8 +6,10 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Comparator;
 import java.util.Set;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -18,6 +20,7 @@ import com.mars_sim.core.building.utility.heating.HeatSourceType;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
@@ -132,7 +135,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	public boolean setSettlementFilter(Set<Settlement> filter) {
 		getEntities().forEach(s -> s.removeUnitListener(this));
 
-		var newBuildings = filter.stream().flatMap(s -> s.getBuildingManager().getBuildingSet().stream()).toList();
+		var newBuildings = filter.stream()
+				.flatMap(s -> s.getBuildingManager().getBuildingSet().stream())
+				.sorted(Comparator.comparing(Building::getName))
+				.toList();
+	
 		resetEntities(newBuildings);
 
 		newBuildings.forEach(s -> s.addUnitListener(this));
