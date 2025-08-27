@@ -7,6 +7,8 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
@@ -42,6 +44,16 @@ public class PersonTaskManager extends TaskManager {
 	private static final String EAT = "Eat";
 
 	private static final String DIAGS_MODULE = "taskperson";
+
+	// === New: meta-task failure cooldown guard rails (prevents thrash) ===
+	/** Pulses to cool down a meta after it throws during job/probability evaluation. */
+	private static final int FAILURE_COOLDOWN_PULSES = 200; // Tune 50–400 as desired
+
+	/** Key: meta class name; Value: pulse # until which it stays cooled down (exclusive). */
+	private transient Map<String, Long> failedUntilPulse = new ConcurrentHashMap<>();
+
+	/** Local pulse counter advanced once per cache rebuild. */
+	private transient long pulseCounter = 0L;
 	
 	// Data members
 	
@@ -88,6 +100,9 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
+		// Advance a lightweight "pulse" counter each rebuild; used for cooldown timing.
+		pulseCounter++;
+
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
@@ -110,11 +125,39 @@ public class PersonTaskManager extends TaskManager {
 		// Create new taskProbCache
 		CacheCreator<TaskJob> newCache = new CacheCreator<>(shiftDesc, now);
 
-		// Determine probabilities.
+		// Determine candidate TaskJobs with guard rails and cooldowns.
 		for (FactoryMetaTask mt : mtList) {
-			List<TaskJob> job = mt.getTaskJobs(person);
-			if (job != null) {
-				newCache.add(job);
+			final String key = mt.getClass().getName();
+
+			// Skip metas currently in cooldown (prevents repeated exceptions & thrash).
+			Long until = failedUntilPulse.get(key);
+			if (until != null && until > pulseCounter) {
+				// Throttled info to diagnose prolonged cooldowns without spamming logs.
+				logger.info(person, 10_000L, "Cooling down meta " + key + "; skipping this tick.");
+				continue;
+			}
+
+			try {
+				List<TaskJob> job = mt.getTaskJobs(person);
+				if (job != null && !job.isEmpty()) {
+					newCache.add(job);
+				}
+				// Success path: clear any stale cooldown entry.
+				failedUntilPulse.remove(key);
+			}
+			catch (IllegalArgumentException | IllegalStateException ex) {
+				// Common precondition errors (e.g., not a collaborator yet).
+				failedUntilPulse.put(key, pulseCounter + FAILURE_COOLDOWN_PULSES);
+				logger.info(person, 10_000L,
+						"Meta " + key + " failed (" + ex.getClass().getSimpleName() + "): " + ex.getMessage()
+						+ " — cooling down for " + FAILURE_COOLDOWN_PULSES + " pulses.");
+			}
+			catch (RuntimeException ex) {
+				// Fail-soft for unexpected runtime errors; keep simulation ticking.
+				failedUntilPulse.put(key, pulseCounter + FAILURE_COOLDOWN_PULSES);
+				logger.warning(person, 10_000L,
+						"Meta " + key + " runtime failure: " + ex.getClass().getSimpleName()
+						+ " — cooling down for " + FAILURE_COOLDOWN_PULSES + " pulses.");
 			}
 		}
 
@@ -239,10 +282,20 @@ public class PersonTaskManager extends TaskManager {
 	public MissionRating getSelectedMission() {
 		return selectedMissionRating;
 	}
+
+	/** Exposed for tests or diagnostics. */
+	boolean isCoolingDown(String metaClassName) {
+		Long until = failedUntilPulse.get(metaClassName);
+		return (until != null) && (until > pulseCounter);
+	}
 	
 	public void reinit() {
 		person = mind.getPerson();
 		super.reinit(person);
+		// Ensure cooldown map exists after reinit/deserialization.
+		if (failedUntilPulse == null) {
+			failedUntilPulse = new ConcurrentHashMap<>();
+		}
 	}
 
 	/**
