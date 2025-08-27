@@ -18,19 +18,17 @@ import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 
 /**
- * A simple FactoryMetaTask that injects well-being activities off shift.
+ * A FactoryMetaTask that injects well-being activities off shift.
  * - When OFF_DUTY / ON_LEAVE: offer Sleep (high), Eat (medium), Walk (low)
  * - When ON_CALL: offer Eat (low) and Walk (very low), avoiding long Sleep blocks
  *
  * This complements existing metas and reduces reliance on fallback defaults,
  * yielding a more believable off-duty rhythm without touching core logic.
  */
-public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
+public final class OffDutyWellbeingMetaTask extends FactoryMetaTask {
 
     private static final SimLogger LOG =
             SimLogger.getLogger(OffDutyWellbeingMetaTask.class.getName());
-
-    private static final String NAME = "OffDutyWellbeing";
 
     // Tunable base weights (0..1). These are deliberately modest: they "suggest" rather than force.
     private static final double SLEEP_WEIGHT_OFFDUTY = 0.90;
@@ -39,11 +37,6 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
 
     private static final double EAT_WEIGHT_ONCALL    = 0.35;
     private static final double WALK_WEIGHT_ONCALL   = 0.15;
-
-    /** Optional identifier; kept without @Override to avoid interface drift issues. */
-    public String getName() {
-        return NAME;
-    }
 
     /**
      * Produces a small set of TaskJobs appropriate for off-duty contexts.
@@ -109,3 +102,4 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
         return out;
     }
 }
+
