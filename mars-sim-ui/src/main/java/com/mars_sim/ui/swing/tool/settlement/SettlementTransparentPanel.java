@@ -793,16 +793,21 @@ public class SettlementTransparentPanel extends JComponent {
 
     @Override
     public void removeNotify() {
-        super.removeNotify();
-        if (zoomSlider != null && zoomListener != null) {
-            zoomSlider.removeChangeListener(zoomListener);
+        try {
+            if (zoomSlider != null && zoomListener != null) {
+                zoomSlider.removeChangeListener(zoomListener);
+            }
+            if (zoomDebounce != null) {
+                zoomDebounce.stop();
+            }
+            // Remove from the same component we added to (mapPanel), not 'this'
+            if (mouseWheelListener != null && mapPanel != null) {
+                mapPanel.removeMouseWheelListener(mouseWheelListener);
+                mouseWheelListener = null; // avoid stale reference
+            }
         }
-        if (zoomDebounce != null) {
-            zoomDebounce.stop();
-        }
-        // Remove from the same component we added to (mapPanel), not 'this'
-        if (mouseWheelListener != null && mapPanel != null) {
-            mapPanel.removeMouseWheelListener(mouseWheelListener);
+        finally {
+            super.removeNotify();
         }
     }
 
