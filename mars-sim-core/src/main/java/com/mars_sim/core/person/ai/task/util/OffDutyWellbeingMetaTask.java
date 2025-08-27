@@ -19,8 +19,8 @@ import com.mars_sim.core.person.ai.task.Walk;
 
 /**
  * A simple FactoryMetaTask that injects well-being activities off shift.
- * - When OFF_DUTY / ON_LEAVE: offer Sleep (high), EatDrink (medium), Walk (low)
- * - When ON_CALL: offer EatDrink (low) and Walk (very low), avoiding long Sleep blocks
+ * - When OFF_DUTY / ON_LEAVE: offer Sleep (high), Eat (medium), Walk (low)
+ * - When ON_CALL: offer Eat (low) and Walk (very low), avoiding long Sleep blocks
  *
  * This complements existing metas and reduces reliance on fallback defaults,
  * yielding a more believable off-duty rhythm without touching core logic.
@@ -74,7 +74,7 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
                 });
 
                 // Medium: Eat/drink & hydrate
-                out.add(new AbstractTaskJob("Eat/Drink", new RatingScore(EAT_WEIGHT_OFFDUTY)) {
+                out.add(new AbstractTaskJob("Eat", new RatingScore(EAT_WEIGHT_OFFDUTY)) {
                     private static final long serialVersionUID = 1L;
                     @Override public Task createTask(Person p) { return new EatDrink(p); }
                 });
@@ -86,15 +86,14 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
                 @Override public Task createTask(Person p) { return new Walk(p); }
             });
 
-            // Use info() for compatibility across logger configurations.
-            LOG.info(person, 5_000L, "Offering OffDuty wellbeing TaskJobs.");
+            LOG.info(person, 5000L, "Offering OffDuty wellbeing TaskJobs.");
             return out;
         }
 
         // ON_CALL: keep it light, avoid long sleep blocks
         if (status == WorkStatus.ON_CALL) {
             if (!outside) {
-                out.add(new AbstractTaskJob("Eat/Drink", new RatingScore(EAT_WEIGHT_ONCALL)) {
+                out.add(new AbstractTaskJob("Eat", new RatingScore(EAT_WEIGHT_ONCALL)) {
                     private static final long serialVersionUID = 1L;
                     @Override public Task createTask(Person p) { return new EatDrink(p); }
                 });
@@ -104,7 +103,7 @@ public final class OffDutyWellbeingMetaTask implements FactoryMetaTask {
                 @Override public Task createTask(Person p) { return new Walk(p); }
             });
 
-            LOG.info(person, 5_000L, "Offering On-Call light wellbeing TaskJobs.");
+            LOG.info(person, 5000L, "Offering On-Call light wellbeing TaskJobs.");
         }
 
         return out;
