@@ -103,7 +103,6 @@ public class AnalyzeMapData extends Task {
     	if (numSites == 0) {
     		
 	       	// Set task phase to discovering
-	    	addPhase(DISCOVERING);
 	        setPhase(DISCOVERING);
     	}
     	else {
@@ -117,7 +116,6 @@ public class AnalyzeMapData extends Task {
     			// At the beginning, here is where it will most likely land on
     			
 				// Set task phase to discovering
-    	    	addPhase(DISCOVERING);
     	        setPhase(DISCOVERING);
     	        
     			return;
@@ -136,8 +134,7 @@ public class AnalyzeMapData extends Task {
     			int num = sitesToimprove.size();
     			if (num == 0) {
     				
-    				// Set task phase to analyzing
-        	    	addPhase(ANALYZING);
+    				// Set task phase to analyzing	    	
         	        setPhase(ANALYZING);
         	        
     				return;
@@ -147,7 +144,6 @@ public class AnalyzeMapData extends Task {
     				site = RandomUtil.getRandomElement(sitesToimprove);
     				
     				// Set task phase to analyzing
-        	    	addPhase(ANALYZING);
         	        setPhase(ANALYZING);
         	        
     				return;
@@ -158,7 +154,6 @@ public class AnalyzeMapData extends Task {
     		if (site == null) {
     			
     	       	// Set task phase to discovering
-    	    	addPhase(DISCOVERING);
     	        setPhase(DISCOVERING);
     	        
     			return;
@@ -180,13 +175,11 @@ public class AnalyzeMapData extends Task {
     		int value = (int)Math.round(rand / 5.0);
     		
     		if (rand < value) {
-    	       	// Add task phases
-    	    	addPhase(DISCOVERING);
+    	       	
     	        setPhase(DISCOVERING);
     		}
             else if (!site.isEmpty()) {
-    	       	// Add task phases
-    	    	addPhase(ANALYZING);
+    	       	
     	        setPhase(ANALYZING);
             }
             else {

@@ -30,7 +30,6 @@ public class DayDream extends Task {
 		super(NAME, person, false, false, 0D, 2D);
 		
 		// Initialize phase
-		addPhase(NOTHING);
 		setPhase(NOTHING);
 	}
 	

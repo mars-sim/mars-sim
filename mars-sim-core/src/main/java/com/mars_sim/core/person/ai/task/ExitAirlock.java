@@ -137,15 +137,6 @@ public class ExitAirlock extends Task {
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.exitAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
-		addPhase(REQUEST_EGRESS);
-		addPhase(PRESSURIZE_CHAMBER);
-		addPhase(STEP_THRU_INNER_DOOR);
-		addPhase(WALK_TO_CHAMBER);
-		addPhase(DON_EVA_SUIT);
-		addPhase(PREBREATHE);
-		addPhase(DEPRESSURIZE_CHAMBER);
-		addPhase(LEAVE_AIRLOCK);
-
 		setPhase(REQUEST_EGRESS);
 
 		logger.fine(person, 4_000,

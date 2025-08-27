@@ -277,8 +277,6 @@ public class EatDrink extends Task {
 		Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
 		if (diningBuilding != null) {
 			// Initialize task phase.
-			addPhase(LOOK_FOR_FOOD);
-			addPhase(EAT_MEAL);
 			setPhase(LOOK_FOR_FOOD);
 			
 			walkToDiningLoc(diningBuilding, false);
@@ -310,8 +308,6 @@ public class EatDrink extends Task {
 	
 	private void checkFoodDessertAmount() {
 		// Initialize task phase.
-		addPhase(LOOK_FOR_FOOD);
-		addPhase(EAT_PRESERVED_FOOD);
 		setPhase(LOOK_FOR_FOOD);
 	}
 	
@@ -351,7 +347,6 @@ public class EatDrink extends Task {
 	private void goForWater() {
 		// if water only
 		// Initialize task phase.
-		addPhase(DRINK_WATER);
 		setPhase(DRINK_WATER);
 	}
 
@@ -410,7 +405,6 @@ public class EatDrink extends Task {
 
 			if (kitchen == null) {
 				// No kitchen so eat preserved food
-				addPhase(EAT_PRESERVED_FOOD);
 				setPhase(EAT_PRESERVED_FOOD);
 				return time * .75;
 			}
@@ -440,7 +434,6 @@ public class EatDrink extends Task {
 	 */
 	private void choosePreservedFood() {	
 		// usually eat preserved food
-		addPhase(EAT_PRESERVED_FOOD);
 		setPhase(EAT_PRESERVED_FOOD);
 	}
 

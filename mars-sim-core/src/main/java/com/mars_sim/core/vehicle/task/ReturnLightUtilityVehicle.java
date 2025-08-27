@@ -112,7 +112,6 @@ public class ReturnLightUtilityVehicle extends Task {
 		}
 
 		// Initialize task phase
-		addPhase(RETURN_LUV);
 		setPhase(RETURN_LUV);
 
 		// If returnContainer still hasn't been found, end task.

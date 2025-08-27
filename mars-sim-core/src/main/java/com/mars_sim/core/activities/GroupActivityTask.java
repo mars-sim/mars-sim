@@ -43,9 +43,6 @@ public class GroupActivityTask extends Task {
         }
  
 		// Initialize phase
-		addPhase(WAITING);
-        addPhase(ACTIVE);
-
 		setPhase(toPhase(activity));
     }
 

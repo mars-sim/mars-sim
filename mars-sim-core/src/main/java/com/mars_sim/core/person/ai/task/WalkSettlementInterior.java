@@ -137,7 +137,6 @@ public class WalkSettlementInterior extends Task {
 			}
 					
 			// Initialize task phase.
-			addPhase(WALKING);
 			setPhase(WALKING);
 		
 		} catch (Exception ex) {
@@ -205,7 +204,6 @@ public class WalkSettlementInterior extends Task {
 			}
 	
 			// Initialize task phase.
-			addPhase(WALKING);
 			setPhase(WALKING);
 			
 		} catch (Exception ex) {

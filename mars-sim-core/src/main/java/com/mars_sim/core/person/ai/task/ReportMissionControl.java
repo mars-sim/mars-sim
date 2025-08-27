@@ -79,7 +79,6 @@ public class ReportMissionControl extends Task {
 //				}				
 			}
 			// Initialize phase
-			addPhase(REPORTING);
 			setPhase(REPORTING);
 			
 			// set the boolean to true so that it won't be done again today
@@ -94,7 +93,6 @@ public class ReportMissionControl extends Task {
 //				person.getPreference().setTaskDue(this, true);
 				
 				// Initialize phase
-				addPhase(REPORTING);
 				setPhase(REPORTING);
 			}
 		}

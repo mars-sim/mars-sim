@@ -166,9 +166,6 @@ public class ToggleResourceProcess extends Task {
 			// Looks for management function for toggling resource process.
 			checkManagement();
 
-		addPhase(TOGGLING);
-		addPhase(FINISHED);
-
 		setPhase(TOGGLING);
 		process.setWorkerAssigned(true);
 	}

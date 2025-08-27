@@ -79,7 +79,6 @@ public class NegotiateTrade extends Task {
 		this.inPerson = inPerson;
 
 		// Initialize task phase.
-		addPhase(NEGOTIATING);
 		setPhase(NEGOTIATING);
 	}
 

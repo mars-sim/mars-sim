@@ -91,7 +91,6 @@ public class ManufactureWorkTask extends Task {
 		walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 		
 		// Initialize phase
-		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
 	}
 

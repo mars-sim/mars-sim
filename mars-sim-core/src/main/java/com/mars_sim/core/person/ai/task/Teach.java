@@ -154,7 +154,6 @@ public class Teach extends Task {
 
 		if (teachingTask != null && student != null) {
 			// Initialize phase
-			addPhase(TEACHING);
 			setPhase(TEACHING);
 		}
 		else {

@@ -96,7 +96,6 @@ public class Charge extends Task {
 		}
 		
 		// Initialize phase
-		addPhase(CHARGING);
 		setPhase(CHARGING);
 	}
 

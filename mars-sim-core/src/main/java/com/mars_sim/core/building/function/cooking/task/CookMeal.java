@@ -82,8 +82,6 @@ public class CookMeal extends Task {
 			endTask();
 		}
 		else {
-			// Add task phase
-			addPhase(COOKING);
 			setPhase(COOKING);
 		}
 	}

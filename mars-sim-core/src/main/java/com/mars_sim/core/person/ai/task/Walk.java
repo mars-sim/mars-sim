@@ -218,16 +218,6 @@ public class Walk extends Task {
 		walkingStepIndex = 0;
 
 		// Initialize task phase.
-		addPhase(WALKING_SETTLEMENT_INTERIOR);
-		addPhase(WALKING_ROVER_INTERIOR);
-		addPhase(WALKING_EXTERIOR);
-		addPhase(EXITING_AIRLOCK);
-		addPhase(ENTERING_AIRLOCK);
-		addPhase(EXITING_ROVER_GARAGE);
-		addPhase(ENTERING_ROVER_GARAGE);
-		addPhase(CLIMB_UP_LADDER);
-		addPhase(CLIMB_DOWN_LADDER);
-
 		setPhase(getWalkingStepPhase());
 	}
 
@@ -240,8 +230,6 @@ public class Walk extends Task {
 		this.walkingSteps = walkingSteps;
 
 		// Initialize task phase.
-		addPhase(WALKING_SETTLEMENT_INTERIOR);
-
 		setPhase(getWalkingStepPhase());
 	}
 

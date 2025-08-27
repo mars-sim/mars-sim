@@ -69,7 +69,6 @@ public class WalkRoverInterior extends Task {
         this.destLoc = destLoc;
 
         // Initialize task phase.
-        addPhase(WALKING);
         setPhase(WALKING);
     }
 
@@ -90,7 +89,6 @@ public class WalkRoverInterior extends Task {
         this.destLoc = destLoc;
 
         // Initialize task phase.
-        addPhase(WALKING);
         setPhase(WALKING);
     }
     

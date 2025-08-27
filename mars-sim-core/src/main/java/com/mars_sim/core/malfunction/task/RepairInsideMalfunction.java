@@ -109,7 +109,6 @@ public class RepairInsideMalfunction extends Task implements Repair {
 			RepairHelper.prepareRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
 
 			// Initialize phase
-			addPhase(REPAIRING);
 			setPhase(REPAIRING);
 		}
 	}

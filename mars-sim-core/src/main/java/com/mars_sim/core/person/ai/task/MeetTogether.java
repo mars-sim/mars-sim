@@ -163,7 +163,6 @@ public class MeetTogether extends Task {
 		}
 		
         // Initialize phase
-        addPhase(MEET_TOGETHER);
         setPhase(MEET_TOGETHER);
     }
     

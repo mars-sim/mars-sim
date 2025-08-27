@@ -109,7 +109,6 @@ public class ConnectOnline extends Task {
 		// but preferably it will look for a suitable location first
 		setDescription(connection.getName());
 		// Initialize phase
-		addPhase(CONNECTING_ONLINE);
 		setPhase(CONNECTING_ONLINE);
 	}
 

@@ -77,7 +77,6 @@ public class DoInventory extends Task {
 				endTask();
 			
 			// Initialize phase
-			addPhase(DOING_INVENTORY);
 			setPhase(DOING_INVENTORY);
 		}
 		
