@@ -1,4 +1,4 @@
-/*
+/* 
  * Mars Simulation Project
  * EVAMission.java
  * @date 2025-08-17
@@ -244,7 +244,9 @@ abstract class EVAMission extends RoverMission {
 		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
 			
-			// Check below if anyone has been "teleported"
+			// Proactively drop any "teleported" members in a CME-safe way.
+			checkTeleported();
+
 			if (isEveryoneInRover()) {
 				// End phase
 				phaseEVAEnded();
@@ -259,10 +261,12 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Ensures no "teleported" person is still a member of this mission.
-	 * Note: still investigating the cause and how to handle this.
+	 * Drops them from the mission safely outside the iteration to avoid CME.
 	 */
 	void checkTeleported() {
 
+		// Phase 1: scan and collect potential removals (no structural change yet).
+		List<Worker> removals = new ArrayList<>();
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
 
@@ -274,13 +278,18 @@ abstract class EVAMission extends RoverMission {
 				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				
-				// Use Iterator's remove() method
-//				i.remove();
-				
-				// Call memberLeave to set mission to null will cause this member to drop off the member list
-//				memberLeave(member);
+				removals.add(member);
+			}
+		}
 
-				break;
+		// Phase 2: remove via mission API; this may adjust membership safely.
+		for (Worker m : removals) {
+			try {
+				memberLeave(m);
+			}
+			catch (RuntimeException ex) {
+				// Fail-soft: don't let a cleanup issue break the mission tick.
+				logger.warning(getVehicle(), "Error removing teleported member: " + ex.getMessage());
 			}
 		}
 	}
