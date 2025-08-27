@@ -54,6 +54,13 @@ public class PersonTaskManager extends TaskManager {
 
 	/** Local pulse counter advanced once per cache rebuild. */
 	private transient long pulseCounter = 0L;
+
+	// === New: modest off-duty wellbeing suggestion weights ===
+	private static final double SLEEP_WEIGHT_OFFDUTY = 0.40;
+	private static final double EAT_WEIGHT_OFFDUTY   = 0.25;
+	private static final double WALK_WEIGHT_OFFDUTY  = 0.15;
+	private static final double EAT_WEIGHT_ONCALL    = 0.20;
+	private static final double WALK_WEIGHT_ONCALL   = 0.10;
 	
 	// Data members
 	
@@ -161,6 +168,9 @@ public class PersonTaskManager extends TaskManager {
 			}
 		}
 
+		// NEW: Light “wellbeing” cadence during off-duty windows to smooth pacing
+		injectOffDutyWellbeingTasks(newCache, workStatus);
+
 		// Add in any Settlement Tasks
 		if ((workStatus == WorkStatus.ON_DUTY) && person.isInSettlement()) {
 			SettlementTaskManager stm = person.getAssociatedSettlement().getTaskManager();
@@ -179,6 +189,50 @@ public class PersonTaskManager extends TaskManager {
 								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
 		return newCache;
+	}
+
+	/**
+	 * Injects small always-valid TaskJobs for off-duty contexts to avoid harsh fallbacks.
+	 * Keeps weights modest so normal metas still dominate when available.
+	 */
+	private void injectOffDutyWellbeingTasks(CacheCreator<TaskJob> cache, WorkStatus status) {
+		// On duty: no injection.
+		if (status == WorkStatus.ON_DUTY) return;
+
+		final boolean outside = person.isOutside();
+
+		// OFF_DUTY / ON_LEAVE
+		if (status == WorkStatus.OFF_DUTY || status == WorkStatus.ON_LEAVE) {
+			if (!outside) {
+				cache.put(new AbstractTaskJob(SLEEP, new RatingScore(SLEEP_WEIGHT_OFFDUTY)) {
+					private static final long serialVersionUID = 1L;
+					@Override public Task createTask(Person p) { return new Sleep(p); }
+				});
+				cache.put(new AbstractTaskJob(EAT, new RatingScore(EAT_WEIGHT_OFFDUTY)) {
+					private static final long serialVersionUID = 1L;
+					@Override public Task createTask(Person p) { return new EatDrink(p); }
+				});
+			}
+			cache.put(new AbstractTaskJob("Walk", new RatingScore(WALK_WEIGHT_OFFDUTY)) {
+				private static final long serialVersionUID = 1L;
+				@Override public Task createTask(Person p) { return new Walk(p); }
+			});
+			return;
+		}
+
+		// ON_CALL: keep it light, avoid long sleep blocks
+		if (status == WorkStatus.ON_CALL) {
+			if (!outside) {
+				cache.put(new AbstractTaskJob(EAT, new RatingScore(EAT_WEIGHT_ONCALL)) {
+					private static final long serialVersionUID = 1L;
+					@Override public Task createTask(Person p) { return new EatDrink(p); }
+				});
+			}
+			cache.put(new AbstractTaskJob("Walk", new RatingScore(WALK_WEIGHT_ONCALL)) {
+				private static final long serialVersionUID = 1L;
+				@Override public Task createTask(Person p) { return new Walk(p); }
+			});
+		}
 	}
 
 	/**
