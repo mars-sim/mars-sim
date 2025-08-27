@@ -122,6 +122,8 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			&& unit instanceof Settlement s) {
 			
 			switch (eventType) {
+				case UnitEventType.MASS_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
 				case UnitEventType.SUPPLY_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);
 				case UnitEventType.VALUE_EVENT ->
@@ -312,6 +314,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
     	}
     	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
     		// For Robots   
+    		// Future: will need to account for individual robot mass
     		return settlement.getNumBots() * Robot.EMPTY_MASS;
     	}    	
     	else {
