@@ -111,6 +111,7 @@ public class MainWindow
 	private Dimension terminalSize;
 	
 	private Simulation sim;
+	
 	private MasterClock masterClock;
 
 	private JMemoryMeter memoryBar;
@@ -953,19 +954,29 @@ public class MainWindow
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
+		
+		masterClock.removeClockListener(this);
+		masterClock = null;
+		
 		frame = null;
+		
 		unitToolbar = null;
 		toolToolbar = null;
+		
 		desktop.destroy();
 		desktop = null;
+		
 		uiconfigs = null;
 		splashWindow = null;
+		
 		interactiveTerm.destroy();
 		interactiveTerm = null;
+		
 		playPauseSwitch = null;
 		selectedSize = null;
+		
 		sim = null;
-		masterClock = null;
+		
 		memoryBar = null;
 	}
 }

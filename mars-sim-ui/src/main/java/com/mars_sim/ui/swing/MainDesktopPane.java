@@ -232,7 +232,7 @@ public class MainDesktopPane extends JDesktopPane
 			backgroundLabel.setSize(getSize());
 		}
 		
-		backgroundImage.flush();
+		backgroundImage = null;
 	}
 
 	// Additional Component Listener methods implemented but not used.
@@ -789,10 +789,12 @@ public class MainDesktopPane extends JDesktopPane
     }
 
 	/**
-	 * Prepares the panel for deletion.
+	 * Prepares for deletion.
 	 */
 	public void destroy() {
 
+		removeComponentListener(this);
+		
 		mode = null;
 		if (unitWindows != null) {
 			for (UnitWindow u : unitWindows) {

@@ -53,7 +53,8 @@ public class SVGGraphicNodeIcon implements Icon {
 
         BufferedImage image = getBufferedImage(source, width, height, rotate);
         if (image != null) {
-            g2d.drawImage(image, x, y, c);
+            g2d.drawImage(image, x, y, c);        
+            image.flush();
         }
     }
 
@@ -92,6 +93,7 @@ public class SVGGraphicNodeIcon implements Icon {
 			svgImageCache.put(svg, image);
 		}
 
+		image.flush();
 		return image;
 	}
 

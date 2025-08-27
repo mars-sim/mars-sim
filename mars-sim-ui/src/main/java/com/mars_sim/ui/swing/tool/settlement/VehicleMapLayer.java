@@ -103,6 +103,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 			if (vehicle instanceof LightUtilityVehicle luv) {
 				drawSVGPartAttachments(luv, svg, viewpoint);
 			}
+            svg = null;
 		}
 		else {
 			// Otherwise draw colored rectangle for vehicle.

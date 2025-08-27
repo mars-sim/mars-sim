@@ -135,6 +135,9 @@ public class BuildingMapLayer extends AbstractMapLayer {
             // Determine building pattern SVG image if available.
             GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getBuildingType().toLowerCase());
             drawStructure(building, svg, patternSVG, selectedColor, viewpoint);
+            
+            patternSVG = null;
+            svg = null;
         }
         else {
             // Otherwise draw colored rectangle for building.
@@ -230,6 +233,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
         if (hatchSVG != null) {
             // Draw hatch.
             drawStructure(hatch, hatchSVG, null, null, viewpoint);
+            
+            hatchSVG = null;
         }
         else {
             // Otherwise draw colored rectangle for hatch.
