@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
@@ -33,6 +35,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
@@ -40,7 +43,6 @@ import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
-import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -122,6 +124,11 @@ public class PhysicalCondition implements Serializable {
 
 	public static final String TBD = "[To Be Determined]";
 	private static final String TRIGGERED_DEATH = "Player Triggered Death";
+
+	/** Tracks how many colonists are currently alive (across the whole simulation). */
+	private static final AtomicInteger ALIVE_COLONIST_COUNT = new AtomicInteger(0);
+	/** Ensures we only trigger the game-over pause once on extinction. */
+	private static final AtomicBoolean GAME_OVER_TRIGGERED = new AtomicBoolean(false);
 	
 	private static double o2Consumption;
 	private static double h20Consumption;
@@ -249,6 +256,8 @@ public class PhysicalCondition implements Serializable {
 		naturalAttributeManager = person.getNaturalAttributeManager();
 
 		alive = true;
+		// Track that a new living colonist exists.
+		ALIVE_COLONIST_COUNT.incrementAndGet();
 
 		deathDetails = null;
 
@@ -1481,6 +1490,9 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reviveToLife() {
 		alive = true;
+
+		// Track resurrection as a new survivor.
+		ALIVE_COLONIST_COUNT.incrementAndGet();
 		
 		HealthProblem problem = deathDetails.getProblem();
 		// Reset the declaredDead
@@ -1518,6 +1530,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param triggeredByPlayer True if it's caused by users
 	 */
 	public void recordDead(HealthProblem problem, boolean triggeredByPlayer, String lastWord) {
+		boolean wasAlive = alive;
 		alive = false;
 		String reason = TBD;
 		if (triggeredByPlayer) {
@@ -1550,6 +1563,20 @@ public class PhysicalCondition implements Serializable {
 		// Add the person's death info to the postmortem exam waiting list
 		// Note: what if a person died in a settlement outside of home town ?
 		medicalManager.addPostmortemExam(person.getAssociatedSettlement(), deathDetails);
+
+		// ===== Colony-extinction detection and automatic pause =====
+		if (wasAlive) {
+			int remaining = ALIVE_COLONIST_COUNT.decrementAndGet();
+			if (remaining <= 0 && GAME_OVER_TRIGGERED.compareAndSet(false, true)) {
+				try {
+					master.setPaused(true, true);
+				}
+				catch (Exception e) {
+					logger.severe(person, 0, "Failed to pause simulation on colony extinction: ", e);
+				}
+				logger.severe(person, 0, "All settlers have perished. Simulation paused – colony has collapsed.");
+			}
+		}
 	}
 
 	/**
