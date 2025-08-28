@@ -1137,7 +1137,43 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Provides the daily reports for the settlement.
 	 */
-	private void performBeginningOfDayTasks() {
+	    private void performBeginningOfDayTasks() {
+
+        // ... [existing initialization code above] ...
+
+        // Check the Grey water situation
+        if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+            // Adjust the grey water filtering rate
+            changeGreyWaterFilteringRate(false);
+            double r = getGreyWaterFilteringRate();
+            logger.log(this, Level.WARNING, 10_000,
+                        "Low storage of grey water decreases filtering rate to " 
+                        + Math.round(r * 100.0) / 100.0 + ".");
+        }
+        else if (getRemainingCombinedCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+            // Adjust the grey water filtering rate
+            changeGreyWaterFilteringRate(true);
+            double r = getGreyWaterFilteringRate();
+            logger.log(this, Level.WARNING, 10_000,
+                        "Low capacity for grey water increases filtering rate to " 
+                        + Math.round(r * 100.0) / 100.0 + ".");
+        }
+
+        // **NEW: Alert if water supply is at emergency levels**
+        if (rationing.isAtEmergency()) {
+            if (getProcessOverride(OverrideType.DIG_LOCAL_ICE)) {
+                logger.log(this, Level.WARNING, 10_000,
+                            "Water supply critically low, but automatic ice digging is SUSPENDED! " 
+                            + "Consider re-enabling ice collection or sending a crew to gather water ice immediately.");
+            } 
+            else {
+                logger.log(this, Level.WARNING, 10_000,
+                            "Water supply critically low! Colonists will prioritize digging ice to replenish water reserves.");
+            }
+        }
+
+        // ... [remaining beginning-of-day tasks] ...
+    }
 
 		Walk.removeAllReservations(buildingManager);
 
