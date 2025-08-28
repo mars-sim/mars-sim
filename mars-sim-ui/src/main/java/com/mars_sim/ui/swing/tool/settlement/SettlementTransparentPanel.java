@@ -1243,14 +1243,154 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
+     * Recursively removes common listeners and clears maps on any Component tree.
+     * Safe to call with null; idempotent.
+     */
+    private static void removeAllListenersRecursively(java.awt.Component c) {
+        if (c == null) return;
+
+        // Detach AWT listeners
+        for (java.awt.event.MouseListener l : c.getMouseListeners()) c.removeMouseListener(l);
+        for (java.awt.event.MouseMotionListener l : c.getMouseMotionListeners()) c.removeMouseMotionListener(l);
+        for (java.awt.event.MouseWheelListener l : c.getMouseWheelListeners()) c.removeMouseWheelListener(l);
+        for (java.awt.event.KeyListener l : c.getKeyListeners()) c.removeKeyListener(l);
+        for (java.awt.event.FocusListener l : c.getFocusListeners()) c.removeFocusListener(l);
+        for (java.beans.PropertyChangeListener l : c.getPropertyChangeListeners()) c.removePropertyChangeListener(l);
+
+        // Detach Swing listeners and clear action/input maps per child as well
+        if (c instanceof javax.swing.JComponent jc) {
+            for (javax.swing.event.AncestorListener l : jc.getAncestorListeners()) jc.removeAncestorListener(l);
+
+            javax.swing.ActionMap am = jc.getActionMap();
+            if (am != null) am.clear();
+            for (int cond : new int[] {
+                    javax.swing.JComponent.WHEN_FOCUSED,
+                    javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+                    javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW}) {
+                javax.swing.InputMap im = jc.getInputMap(cond);
+                if (im != null) im.clear();
+            }
+
+            jc.setTransferHandler(null);
+            jc.setToolTipText(null);
+            jc.setCursor(null);
+
+            // Best-effort detach common model listeners when possible
+            if (jc instanceof javax.swing.JSlider slider) {
+                for (javax.swing.event.ChangeListener l : slider.getChangeListeners()) {
+                    slider.removeChangeListener(l);
+                }
+            }
+            if (jc instanceof javax.swing.AbstractButton btn) {
+                for (java.awt.event.ActionListener l : btn.getActionListeners()) {
+                    btn.removeActionListener(l);
+                }
+                for (java.awt.event.ItemListener l : btn.getItemListeners()) {
+                    btn.removeItemListener(l);
+                }
+            }
+            if (jc instanceof javax.swing.JComboBox<?> combo) {
+                for (java.awt.event.ItemListener l : combo.getItemListeners()) {
+                    combo.removeItemListener(l);
+                }
+                for (java.awt.event.ActionListener l : combo.getActionListeners()) {
+                    combo.removeActionListener(l);
+                }
+            }
+            if (jc instanceof javax.swing.JTable table) {
+                for (java.beans.PropertyChangeListener l : table.getPropertyChangeListeners()) {
+                    table.removePropertyChangeListener(l);
+                }
+            }
+        }
+
+        // Recurse
+        if (c instanceof java.awt.Container container) {
+            for (java.awt.Component child : container.getComponents()) {
+                removeAllListenersRecursively(child);
+            }
+        }
+    }
+
+    /**
      * Prepare class for deletion.
      */
     public void destroy() {
+        // Ensure Swing teardown happens on the EDT
+        if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
+            javax.swing.SwingUtilities.invokeLater(this::destroy);
+            return;
+        }
 
+        // --- Stop timers and detach explicit listeners we track ---
+        if (zoomDebounce != null) {
+            zoomDebounce.stop();
+            zoomDebounce = null;
+        }
+        if (zoomSlider != null && zoomListener != null) {
+            zoomSlider.removeChangeListener(zoomListener);
+        }
+        zoomListener = null;
+
+        // Remove from the same component we added to (mapPanel), not 'this'
+        if (mouseWheelListener != null && mapPanel != null) {
+            mapPanel.removeMouseWheelListener(mouseWheelListener);
+        }
+        mouseWheelListener = null;
+
+        // --- Best-effort: remove action/item listeners on owned controls ---
+        if (renameBtn != null) {
+            for (java.awt.event.ActionListener l : renameBtn.getActionListeners()) {
+                renameBtn.removeActionListener(l);
+            }
+        }
+        if (infoButton != null) {
+            for (java.awt.event.ActionListener l : infoButton.getActionListeners()) {
+                infoButton.removeActionListener(l);
+            }
+        }
+        if (settlementListBox != null) {
+            for (java.awt.event.ItemListener l : settlementListBox.getItemListeners()) {
+                settlementListBox.removeItemListener(l);
+            }
+            for (java.awt.event.ActionListener l : settlementListBox.getActionListeners()) {
+                settlementListBox.removeActionListener(l);
+            }
+        }
+
+        // --- Clear and hide popup menu if present ---
+        if (labelsMenu != null) {
+            labelsMenu.setVisible(false);
+            labelsMenu.removeAll();
+            labelsMenu = null;
+        }
+
+        // --- Recursively detach listeners / clear maps for all owned components ---
+        removeAllListenersRecursively(this);                // harmless if not in component tree
+        removeAllListenersRecursively(zoomSlider);
+        removeAllListenersRecursively(bannerBar);
+        removeAllListenersRecursively(temperatureIcon);
+        removeAllListenersRecursively(windIcon);
+        removeAllListenersRecursively(opticalIcon);
+        removeAllListenersRecursively(renameBtn);
+        removeAllListenersRecursively(infoButton);
+        removeAllListenersRecursively(settlementListBox);
+        removeAllListenersRecursively(projectSunriseLabel);
+        removeAllListenersRecursively(projectSunsetLabel);
+        removeAllListenersRecursively(projectDaylightLabel);
+        removeAllListenersRecursively(sunriseLabel);
+        removeAllListenersRecursively(sunsetLabel);
+        removeAllListenersRecursively(zenithLabel);
+        removeAllListenersRecursively(maxSunLabel);
+        removeAllListenersRecursively(daylightLabel);
+        removeAllListenersRecursively(currentSunLabel);
+
+        // --- ComboBox model listener cleanup ---
         if (settlementCBModel != null) settlementCBModel.destroy();
         settlementListBox = null;
         settlementCBModel = null;
 
+        // --- Clear caches and references for GC ---
         if (resourceCache != null) {
             resourceCache.clear();
             resourceCache = null;
@@ -1278,9 +1418,7 @@ public class SettlementTransparentPanel extends JComponent {
         windIcon = null;
         opticalIcon = null;
 
-        labelsMenu = null;
-
-        mapPanel = null;
+        // Break references to external objects last
         desktop = null;
 
         weather = null;
@@ -1288,5 +1426,7 @@ public class SettlementTransparentPanel extends JComponent {
         orbitInfo = null;
         unitManager = null;
 
+        // Finally, release mapPanel (after we've removed its listener above)
+        mapPanel = null;
     }
 }
