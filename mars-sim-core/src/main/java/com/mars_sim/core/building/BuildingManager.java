@@ -2592,7 +2592,7 @@ public class BuildingManager implements Serializable {
 		unitManager = u;
 	}
 
-	static BuildingConfig getBuildingConfig() {
+	public static BuildingConfig getBuildingConfig() {
 		return simulationConfig.getBuildingConfiguration();
 	}
 	

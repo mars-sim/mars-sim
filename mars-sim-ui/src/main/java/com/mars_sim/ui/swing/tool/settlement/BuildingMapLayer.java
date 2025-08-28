@@ -135,9 +135,6 @@ public class BuildingMapLayer extends AbstractMapLayer {
             // Determine building pattern SVG image if available.
             GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getBuildingType().toLowerCase());
             drawStructure(building, svg, patternSVG, selectedColor, viewpoint);
-            
-            patternSVG = null;
-            svg = null;
         }
         else {
             // Otherwise draw colored rectangle for building.

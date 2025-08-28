@@ -103,7 +103,6 @@ public class VehicleMapLayer extends AbstractMapLayer {
 			if (vehicle instanceof LightUtilityVehicle luv) {
 				drawSVGPartAttachments(luv, svg, viewpoint);
 			}
-            svg = null;
 		}
 		else {
 			// Otherwise draw colored rectangle for vehicle.
@@ -234,7 +233,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 			g2d.drawImage(image, 0, 0, mapPanel);
 		}
 
-		image.flush();
+//		image.flush();
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 	}

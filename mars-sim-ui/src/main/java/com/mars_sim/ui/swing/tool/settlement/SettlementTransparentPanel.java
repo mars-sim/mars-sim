@@ -58,6 +58,7 @@ import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingConfig;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SunData;
@@ -86,7 +87,7 @@ public class SettlementTransparentPanel extends JComponent {
 
     /** Rotation change (radians per rotation button press). */
     private static final double ROTATION_CHANGE = Math.PI / 20D;
-    private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
+    private static final double RADIANS_TO_DEGREES = 180D / Math.PI;
 
     /** Zoom change. */
     public static final double ZOOM_CHANGE = 0.25;
@@ -978,14 +979,22 @@ public class SettlementTransparentPanel extends JComponent {
         var allItem = new JMenuItem("All"); //$NON-NLS-1$
         allItem.setContentAreaFilled(false);
         allItem.addActionListener(e -> {
-                BuildingConfig config = getConfig();
-                mapPanel.reverseSpotLabels(config.getActivitySpotFunctions());
+                mapPanel.reverseSpotLabels(bc.getActivitySpotFunctions());
                 clearLabelsMenu(); // Clear the menu because all the values will change
         });
         spotLabelMenuItem.add(allItem);
 
+        // Add an None
+        var noneItem = new JMenuItem("None"); //$NON-NLS-1$
+        noneItem.setContentAreaFilled(false);
+        noneItem.addActionListener(e -> {
+        		mapPanel.clearSpotLabels();
+                clearLabelsMenu(); // Clear the menu because all the values will change
+        });
+        spotLabelMenuItem.add(noneItem);
+        
         // Add one per function type
-        for(FunctionType ft : sortedFT) {
+        for (FunctionType ft : sortedFT) {
             var ftItem = new JCheckBoxMenuItem(ft.getName(), mapPanel.isShowSpotLabels(ft)); //$NON-NLS-1$
             ftItem.setContentAreaFilled(false);
             ftItem.addActionListener(e ->
@@ -994,7 +1003,7 @@ public class SettlementTransparentPanel extends JComponent {
         }
 
         // Create display option items
-        for(DisplayOption op : DisplayOption.values()) {
+        for (DisplayOption op : DisplayOption.values()) {
             popMenu.add(createDisplayToggle(Msg.getString("SettlementWindow.menu." + op.name().toLowerCase()),
                 op));
         }
@@ -1004,9 +1013,8 @@ public class SettlementTransparentPanel extends JComponent {
         return popMenu;
     }
 
-    private static BuildingConfig getConfig() {
-        // Donot like this method using the instance method
-        return SimulationConfig.instance().getBuildingConfiguration();
+    private BuildingConfig getConfig() {
+        return BuildingManager.getBuildingConfig();
     }
 
     /**

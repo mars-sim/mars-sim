@@ -21,8 +21,9 @@ public enum UnitEventType {
 	NAME_EVENT						("name"),
 	DESCRIPTION_EVENT				("description"),
 	MASS_EVENT						("mass"),
-	LOCATION_EVENT					("location"),
+	COORDINATE_EVENT				("coordinate"),
 	NOTES_EVENT						("notes"),
+	LOCAL_POSITION_EVENT			("local position"),
 	
 	// For Settlement
 	ADD_ASSOCIATED_PERSON_EVENT		("add associated person"),

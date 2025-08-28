@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SwingHelper.java
- * @date 2023-01-22
+ * @date 2025-08-28
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.utils;
@@ -34,6 +34,7 @@ public final class SwingHelper {
      * but can be offset in the X & Y directions.
      * 
      * Size will default to the preferred size of the content unless overridden.
+     * @param unit 
      * @param content Content to display
      * @param width Fixed width; can be -1
      * @param height Fixed height; can be -1
@@ -42,7 +43,7 @@ public final class SwingHelper {
      * @return
      */
     public static JDialog createPopupWindow(JPanel content, int width, int height, int xOffset, int yOffset) {
-		JDialog d = new JDialog();
+    	JDialog d = new JDialog();
 		d.setUndecorated(true);
                 
 		if (width <= 0 || height <= 0) {
@@ -59,12 +60,13 @@ public final class SwingHelper {
 		location.translate(xOffset, yOffset);
 		d.setLocation(location);
 
+		
 		d.addWindowFocusListener(new WindowFocusListener() {
 			public void windowLostFocus(WindowEvent e) {
 				d.dispose();
 			}
 			public void windowGainedFocus(WindowEvent e) {
-				// placeholder
+				// no change
 			}
 		});
 

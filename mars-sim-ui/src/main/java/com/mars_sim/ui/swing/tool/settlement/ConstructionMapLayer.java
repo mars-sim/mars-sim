@@ -81,9 +81,6 @@ public class ConstructionMapLayer extends AbstractMapLayer {
                     .getConstructionSitePatternSVG(imageName);
 
             drawStructure(site, svg, patternSVG, CONST_SELECTED_COLOR, viewpoint);
-            
-            patternSVG = null;
-            svg = null;
         }
         else {
             drawRectangle(site, CONST_COLOR, CONST_SELECTED_COLOR, viewpoint);

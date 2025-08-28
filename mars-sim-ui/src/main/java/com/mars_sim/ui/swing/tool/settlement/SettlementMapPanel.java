@@ -12,6 +12,7 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -80,7 +81,6 @@ public class SettlementMapPanel extends JPanel {
 	// Data members
 	private boolean exit = true;
 
-	
 	private double xPos;
 	private double yPos;
 	private double rotation;
@@ -351,18 +351,23 @@ public class SettlementMapPanel extends JPanel {
 
 		LocalPosition mousePos = convertToSettlementLocation(xPixel, yPixel);
 
-		for(Building building : settlement.getBuildingManager().getBuildingSet()) {
+		for (Building building : settlement.getBuildingManager().getBuildingSet()) {
 			if (!building.getInTransport() && isWithin(mousePos, building)) {
 				settlementWindow.setBuildingXYCoord(building.getPosition(), false);
-				// Note: not considering facing = 45 and 135 yet
+				
+				LocalPosition pointerPos = convertToBuildingLoc(mousePos, building);
+				settlementWindow.setBuildingPointerXYCoord(pointerPos, false);
+				
 				showBlank = false;
 				break;
 			}
 		}
 
-		if (showBlank)
+		if (showBlank) {
 			// Remove the building coordinate
 			settlementWindow.setBuildingXYCoord(LocalPosition.DEFAULT_POSITION, true);
+			settlementWindow.setBuildingPointerXYCoord(LocalPosition.DEFAULT_POSITION, true);
+		}
 	}
 
 	/**
@@ -472,6 +477,54 @@ public class SettlementMapPanel extends JPanel {
 		repaint();
 	}
 
+
+	/**
+	 * Converts a pixel X,Y position to a X,Y (meter) position local to the
+	 * settlement in view.
+	 *
+	 * @param xPixel the pixel X position.
+	 * @param yPixel the pixel Y position.
+	 * @return the X,Y settlement position.
+	 */
+	private LocalPosition convertToSettlementLocation(int xPixel, int yPixel) {
+
+		double xDiff1 = (getWidth() / 2.0) - xPixel;
+		double yDiff1 = (getHeight() / 2.0) - yPixel;
+
+		double xDiff2 = xDiff1 / scale;
+		double yDiff2 = yDiff1 / scale;
+
+		// Correct due to rotation of map.
+		double xDiff3 = (Math.cos(rotation) * xDiff2) + (Math.sin(rotation) * yDiff2);
+		double yDiff3 = (Math.cos(rotation) * yDiff2) - (Math.sin(rotation) * xDiff2);
+
+		double newXPos = xPos + xDiff3;
+		double newYPos = yPos + yDiff3;
+
+		return new LocalPosition(newXPos, newYPos);
+	}
+	
+	/**
+	 * Converts a local position from settlement positioning system to screen pixel x and y.
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	Point convertToPixelPos(LocalPosition pos) {
+		double x = pos.getX();
+		double y = pos.getY();
+		double xDiff3 = x - xPos;
+		double yDiff3 = y - yPos;
+		double xDiff2 = (Math.cos(rotation) * xDiff3) + (Math.sin(rotation) * yDiff3);
+		double yDiff2 = (Math.cos(rotation) * yDiff3) - (Math.sin(rotation) * xDiff3);
+		double xDiff1 = xDiff2 * scale;
+		double yDiff1 = yDiff2 * scale;
+		int xPixel = (int)Math.round(getWidth() / 2.0 - xDiff1);
+		int yPixel = (int)Math.round(getHeight() / 2.0 - yDiff1);
+		return new Point(xPixel, yPixel);
+	}
+	
+	
 	/**
 	 * Selects a person if any person is at the given x and y pixel position.
 	 *
@@ -595,56 +648,121 @@ public class SettlementMapPanel extends JPanel {
 	 * Is a position within the bounds of an Object ?
 	 * This should be in a common class.
 	 * 
-	 * @param pos
-	 * @param lbo
+	 * @param pos the mouse pointer position under settlement positioning system
+	 * @param obj
 	 * @return
 	 */
-	private static boolean isWithin(LocalPosition pos, LocalBoundedObject lbo) {
-		double width = lbo.getWidth();
-		double length = lbo.getLength();
-		int facing = (int) lbo.getFacing();
-		double x = lbo.getPosition().getX();
-		double y = lbo.getPosition().getY();
-		double xx = 0;
-		double yy = 0;
+	private static boolean isWithin(LocalPosition pos, LocalBoundedObject obj) {
+		double oW = obj.getWidth();
+		double oL = obj.getLength();
+		int facing = (int) obj.getFacing();
+		// The center position of the object
+		double oX = obj.getPosition().getX();
+		double oY = obj.getPosition().getY();
+		// Half the width and length
+		double hX = 0;
+		double hY = 0;
 
 		if (facing == 0) {
-			xx = width / 2D;
-			yy = length / 2D;
+			hX = oW / 2D;
+			hY = oL / 2D;
 		}
 		else if (facing == 90) {
-			yy = width / 2D;
-			xx = length / 2D;
+			hY = oW / 2D;
+			hX = oL / 2D;
 		}
 		// Loading Dock Garage
 		if (facing == 180) {
-			xx = width / 2D;
-			yy = length / 2D;
+			hX = oW / 2D;
+			hY = oL / 2D;
 		}
 		else if (facing == 270) {
-			yy = width / 2D;
-			xx = length / 2D;
+			hY = oW / 2D;
+			hX = oL / 2D;
 		}
 
 		// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
 		// Fortunately, they both have the same width and length
 		else if (facing == 45) {
-			yy = width / 2D;
-			xx = length / 2D;
+			hY = oW / 2D;
+			hX = oL / 2D;
 		} else if (facing == 135) {
-			yy = width / 2D;
-			xx = length / 2D;
+			hY = oW / 2D;
+			hX = oL / 2D;
 		}
 
-		double cX = pos.getX();
-		double cY = pos.getY();
+		// Mouse pointer position under the settlement positioning system
+		double mX = pos.getX();
+		double mY = pos.getY();
 
-		double rangeX = Math.round((cX - x) * 100.0) / 100.0; 
-		double rangeY = Math.round((cY - y) * 100.0) / 100.0;
+		double rangeX = Math.round((mX - oX) * 100.0) / 100.0; 
+		double rangeY = Math.round((mY - oY) * 100.0) / 100.0;
 
-		return Math.abs(rangeX) <= Math.abs(xx) && Math.abs(rangeY) <= Math.abs(yy);
+		return Math.abs(rangeX) <= Math.abs(hX) && Math.abs(rangeY) <= Math.abs(hY);
 	}
 
+	/**
+	 * Is a position within the bounds of an Object ?
+	 * This should be in a common class.
+	 * 
+	 * @param pos the mouse pointer position under settlement coordinate system
+	 * @param obj
+	 * @return
+	 */
+	private static LocalPosition convertToBuildingLoc(LocalPosition pos, LocalBoundedObject obj) {
+		double oW = obj.getWidth();
+		double oL = obj.getLength();
+		int facing = (int) obj.getFacing();
+		// The center position of the object
+		double oX = obj.getPosition().getX();
+		double oY = obj.getPosition().getY();
+		// Half the width and length
+		double hX = 0;
+		double hY = 0;
+
+		if (facing == 0) {
+			hX = oW / 2D;
+			hY = oL / 2D;
+		}
+		else if (facing == 90) {
+			hY = oW / 2D;
+			hX = oL / 2D;
+		}
+		// Loading Dock Garage
+		if (facing == 180) {
+			hX = oW / 2D;
+			hY = oL / 2D;
+		}
+		else if (facing == 270) {
+			hY = oW / 2D;
+			hX = oL / 2D;
+		}
+
+		// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+		// Fortunately, they both have the same width and length
+		else if (facing == 45) {
+			hY = oW / 2D;
+			hX = oL / 2D;
+		} else if (facing == 135) {
+			hY = oW / 2D;
+			hX = oL / 2D;
+		}
+
+		// Mouse pointer position under the settlement positioning system
+		double mX = pos.getX();
+		double mY = pos.getY();
+		
+		double rangeX = Math.round((mX - oX) * 100.0) / 100.0; 
+		double rangeY = Math.round((mY - oY) * 100.0) / 100.0;
+
+		boolean isWithin = Math.abs(rangeX) <= Math.abs(hX) && Math.abs(rangeY) <= Math.abs(hY);
+		
+		if (isWithin)
+			return new LocalPosition(rangeX, rangeY);
+		else
+			return null;
+	}
+	
 	/**
 	 * Selects a building.
 	 *
@@ -763,36 +881,9 @@ public class SettlementMapPanel extends JPanel {
 		return result;
 	}
 
-
-
-	/**
-	 * Converts a pixel X,Y position to a X,Y (meter) position local to the
-	 * settlement in view.
-	 *
-	 * @param xPixel the pixel X position.
-	 * @param yPixel the pixel Y position.
-	 * @return the X,Y settlement position.
-	 */
-	private LocalPosition convertToSettlementLocation(int xPixel, int yPixel) {
-
-		double xDiff1 = (getWidth() / 2.0) - xPixel;
-		double yDiff1 = (getHeight() / 2.0) - yPixel;
-
-		double xDiff2 = xDiff1 / scale;
-		double yDiff2 = yDiff1 / scale;
-
-		// Correct due to rotation of map.
-		double xDiff3 = (Math.cos(rotation) * xDiff2) + (Math.sin(rotation) * yDiff2);
-		double yDiff3 = (Math.cos(rotation) * yDiff2) - (Math.sin(rotation) * xDiff2);
-
-		double newXPos = xPos + xDiff3;
-		double newYPos = yPos + yDiff3;
-
-		return new LocalPosition(newXPos, newYPos);
-	}
-
 	/**
 	 * Is a display option enabled?
+	 * 
 	 * @param op
 	 * @return
 	 */
@@ -827,6 +918,13 @@ public class SettlementMapPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Clears the settings of the Spot label.
+	 */
+	void clearSpotLabels() {
+		showSpotLabels.clear();
+	}
+	
 	/**
 	 * Checks if building spots should be displayed.
 	 * 

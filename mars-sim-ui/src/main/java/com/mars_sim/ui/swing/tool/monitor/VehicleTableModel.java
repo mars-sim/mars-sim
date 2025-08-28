@@ -328,7 +328,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		int columnNum = -1;
 		switch(eventType) {
 			case NAME_EVENT: columnNum = NAME; break;
-			case LOCATION_EVENT: columnNum = LOCATION; break;
+			case COORDINATE_EVENT: columnNum = LOCATION; break;
 			case INVENTORY_STORING_UNIT_EVENT:
 			case INVENTORY_RETRIEVING_UNIT_EVENT:
 				if (((Unit)target).getUnitType() == UnitType.PERSON)

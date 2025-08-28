@@ -125,6 +125,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	public void setPosition(LocalPosition position) {
 		this.localPosn = position;
+		fireUnitUpdate(UnitEventType.LOCAL_POSITION_EVENT, position);
 	}
 
     /**
@@ -186,7 +187,7 @@ public abstract class AbstractMobileUnit extends Unit
 	public void setCoordinates(Coordinates newLocation) {
 		if (!location.equals(newLocation)) {
 			location = newLocation;
-			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
+			fireUnitUpdate(UnitEventType.COORDINATE_EVENT, newLocation);
 		}
 	}
 

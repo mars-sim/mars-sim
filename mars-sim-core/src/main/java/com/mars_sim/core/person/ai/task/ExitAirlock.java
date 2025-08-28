@@ -1288,7 +1288,7 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 		
-		if (!person.getSettlement().getRationing().isAtEmergency()
+		if (person.getSettlement() != null && !person.getSettlement().getRationing().isAtEmergency()
 				// Check if person is incapacitated.
 			&& (person.getPerformanceRating() <= MIN_PERFORMANCE
 				|| person.getPhysicalCondition().hasSeriousMedicalProblems())) {

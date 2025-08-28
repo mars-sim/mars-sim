@@ -19,7 +19,7 @@ import com.mars_sim.ui.swing.tool.LineBreakPanel;
 
 
 @SuppressWarnings("serial")
-public class UnitInfoPanel extends JPanel {
+public final class UnitInfoPanel extends JPanel {
 
 	public static final int MARGIN_WIDTH = 2;
 	public static final int MARGIN_HEIGHT = 2;
@@ -66,4 +66,8 @@ public class UnitInfoPanel extends JPanel {
 //	    mover.registerComponent(getComponents());	
 	}
 
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+	
 }

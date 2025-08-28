@@ -54,7 +54,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 
 
 		// Draw all workers except selected person.
-		for(T w : workers) {
+		for (T w : workers) {
 			if (!w.equals(selected)) {
 				drawUnselectedWorker(w, showLabels, viewpoint);
 			}

@@ -19,6 +19,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -123,8 +124,14 @@ public class PopUpUnitMenu extends JPopupMenu {
 			    b.init(name, type, description);
 	           	b.setOpaque(false);
 		        b.setBackground(new Color(0,0,0,128));
-
-				final JDialog d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+		        
+		        final JDialog d;
+//		        if (unit instanceof Worker w) {
+//					 d = new UnitDialog(w).createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+//		        }
+//		        else {
+		        	d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+//		        }
 
 				d.setForeground(Color.WHITE); // orange font
 				d.setFont(new Font("Arial", Font.BOLD, 14));

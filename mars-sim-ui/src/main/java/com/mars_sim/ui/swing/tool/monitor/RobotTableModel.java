@@ -83,7 +83,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 		eventColumnMapping = new EnumMap<>(UnitEventType.class);
 		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
-		eventColumnMapping.put(UnitEventType.LOCATION_EVENT, LOCATION);
+		eventColumnMapping.put(UnitEventType.COORDINATE_EVENT, LOCATION);
 		eventColumnMapping.put(UnitEventType.STATUS_EVENT, MODE);
 		eventColumnMapping.put(UnitEventType.BATTERY_EVENT, BATTERY);
 		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);

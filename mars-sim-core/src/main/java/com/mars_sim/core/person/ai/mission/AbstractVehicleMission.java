@@ -1332,7 +1332,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType type = event.getType();
-		if (type == UnitEventType.LOCATION_EVENT) {
+		if (type == UnitEventType.COORDINATE_EVENT) {
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 		} else if (type == UnitEventType.NAME_EVENT) {
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);

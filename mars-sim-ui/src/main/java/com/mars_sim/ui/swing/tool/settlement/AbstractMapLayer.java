@@ -180,9 +180,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         // Draw image label.
 		g2d.drawImage(labelImage, widthOffset, heightOffset, null);
 		
-		labelImage.flush();
-        g2d.dispose();
-        
+//		labelImage.flush();
+   
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		g2d.setFont(saveFont);
@@ -233,9 +232,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Draw image label with yOffset
 		g2d.drawImage(labelImage, 0, Math.round(yOffset * size), null);
 		
-		labelImage.flush();
-        g2d.dispose();
-     
+//		labelImage.flush();
+    
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		g2d.setFont(saveFont);
@@ -301,7 +299,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			labelImageCache.put(labelId, labelImage);
 		}
 		
-		labelImage.flush();
+//		labelImage.flush();
  
 		return labelImage;
 	}
@@ -355,7 +353,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Fill label
 		g2d.fill(labelShape);
 
-		bufferedImage.flush();
+//		bufferedImage.flush();
 
 		// Dispose of image graphics context.
 		g2d.dispose();
@@ -397,10 +395,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             imageCache.put(buildingKey, image);
         }
 
-        image.flush();
-//        patternSVG = null;
-//        svg = null;
-        
+//        image.flush();
+      
         return image;
     }
 
@@ -478,10 +474,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         }
 
         // Cleanup and return image
-        bufferedImage.flush();
-//        patternSVG = null;
-//        svg = null;
-        
+//        bufferedImage.flush();
+    
         g2d.dispose();
 
         return bufferedImage;
@@ -557,10 +551,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			g2d.setStroke(oldStroke);
         }
         
-        image.flush();
-//        patternSVG = null;
-//        svg = null;
-        
+//        image.flush();
+     
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }

@@ -60,6 +60,7 @@ import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
+import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeWindow;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
@@ -100,8 +101,9 @@ public class MainDesktopPane extends JDesktopPane
 	/** The image icon of the tiled background. */
 	private Image baseImageIcon = ImageLoader.getImage("background");
 
-
 	private MainWindow mainWindow;
+	
+	private SettlementMapPanel settlementMapPanel;
 	
 	// Preload the Tool windows
 	private boolean preloadTools = true;
@@ -230,9 +232,9 @@ public class MainDesktopPane extends JDesktopPane
 			backgroundImageIcon.setImage(backgroundImage);
 			// Set the backgroundLabel size to the size of the desktop
 			backgroundLabel.setSize(getSize());
+			
+			backgroundGraphics.dispose();
 		}
-		
-		backgroundImage = null;
 	}
 
 	// Additional Component Listener methods implemented but not used.
@@ -761,6 +763,14 @@ public class MainDesktopPane extends JDesktopPane
 		return sim;
 	}
 
+	public void setSettlementMapPanel(SettlementMapPanel panel) {
+		settlementMapPanel = panel;
+	}
+	
+	public SettlementMapPanel getSettlementMapPanel() {
+		return settlementMapPanel;
+	}
+	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		updateWindows(pulse);
