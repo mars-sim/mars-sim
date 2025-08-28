@@ -1,111 +1,129 @@
 /*
  * Mars Simulation Project
  * TemporalExecutorService.java
- * @date 2025-07-27
- * @author Barry Evans
+ * Patched: 2025-08-28
+ *
+ * Parallel fan-out executor using a fixed thread pool. CME-safe:
+ * - Targets are held in CopyOnWriteArrayList and iterated via snapshot.
+ * - Each target runs in its own task; we wait for all to finish per pulse.
  */
 package com.mars_sim.core.unit;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
-/**
- * This is an implementation of a Temporal Excutor that uses a ExecutorService coupled with Callable 
- * to apply a clock pulse in parallel.
- */
 public class TemporalExecutorService implements TemporalExecutor {
 
-	/**
-	 * Prepares the Temporal task for setting up its own thread.
-	 */
-	private static class TemporalTask implements Callable<String> {
-		private Temporal target;
-		private ClockPulse currentPulse;
+    private static final SimLogger LOG = SimLogger.getLogger(TemporalExecutorService.class.getName());
 
-		TemporalTask(Temporal target) {
-			this.target = target;
-		}
+    /** Safe to iterate without CME; write operations copy the backing array. */
+    private final CopyOnWriteArrayList<Temporal> targets = new CopyOnWriteArrayList<>();
 
-		void setCurrentPulse(ClockPulse pulse) {
-			this.currentPulse = pulse;
-		}
+    /** Backing pool for parallel fan-out. */
+    private final ExecutorService pool;
 
-		@Override
-		public String call() throws Exception {
-			try {
-				target.timePassing(currentPulse);
-			}
-			catch (RuntimeException rte) {
-				String msg = "Problem with pulse on " + target
-        					  + ": " + rte.getMessage();
-	            logger.severe(msg, rte);
-	            return msg;
-			}
-			return target + " completed pulse #" + currentPulse.getId();
-		}
-	}
+    /** Liveness flag. */
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
-    private static final SimLogger logger = SimLogger.getLogger(TemporalExecutorService.class.getName());
-
-    private ExecutorService executor;
-    private List<TemporalTask> tasks = new ArrayList<>();
+    /** Optional prefix for worker thread names. */
+    private final String threadPrefix;
 
     /**
-     * Create a blank temporal executor
+     * @param threadPrefix prefix for worker thread names, may be null
      */
-    public TemporalExecutorService(String name) {
-        logger.config("Setting up a caching thread factory wuth a caching strategy");
+    public TemporalExecutorService(String threadPrefix) {
+        this.threadPrefix = (threadPrefix == null ? "Temporal-" : threadPrefix);
+        int cpu = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+        int parallelism = Math.max(2, cpu); // reasonable default, avoids tiny pools
 
-        // Use a standard cached thread pool
-        executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat(name + "-%d").build());
+        this.pool = Executors.newFixedThreadPool(parallelism, namedFactory(this.threadPrefix));
+        LOG.config("TemporalExecutorService started with parallelism = " + parallelism);
     }
 
-    /**
-     * Apply a new pulse to all the registered temporals.
-     */
+    private static ThreadFactory namedFactory(String prefix) {
+        return new ThreadFactory() {
+            private volatile int idx = 0;
+            @Override public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, prefix + idx++);
+                t.setDaemon(true);
+                return t;
+            }
+        };
+    }
+
+    @Override
+    public void addTarget(Temporal t) {
+        if (t == null) return;
+        targets.addIfAbsent(t);
+    }
+
+    @Override
+    public void removeTarget(Temporal t) {
+        if (t == null) return;
+        targets.remove(t);
+    }
+
     @Override
     public void applyPulse(ClockPulse pulse) {
+        Objects.requireNonNull(pulse, "pulse");
+        if (!running.get()) return;
 
-		// May use parallelStream() after it's proven to be safe
-		tasks.stream().forEach(s -> s.setCurrentPulse(pulse));
+        // Snapshot size once; CopyOnWrite ensures this is stable for the loop
+        final int n = targets.size();
+        if (n == 0) return;
 
-		// Execute all listener concurrently and wait for all to complete before advancing
-		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		try {
-			List<Future<String>> results = executor.invokeAll(tasks);
-			for (Future<String> future : results) {
-				future.get();
-			}
-		}
-		catch (ExecutionException ee) {
-			// Problem running the pulse
-			logger.severe("Problem running the settlement task pulses : ", ee);
-		}
-		catch (InterruptedException ie) {
-			// Program probably exiting
-			if (executor.isShutdown()) {
-				Thread.currentThread().interrupt();
-			}
-		}
+        final CountDownLatch latch = new CountDownLatch(n);
+
+        // Dispatch parallel tasks (each target independently)
+        for (Temporal t : targets) {
+            pool.submit(() -> {
+                try {
+                    // Deliver pulse
+                    t.timePassing(pulse);
+                } catch (Throwable ex) {
+                    // Never let one bad target kill the pulse
+                    LOG.severe("Temporal target threw during pulse #" + pulse.getId() + ": ", ex);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        // Barrier: preserve pulse boundary semantics
+        boolean interrupted = false;
+        try {
+            // Wait unbounded; could add a watchdog if desired
+            latch.await();
+        } catch (InterruptedException ie) {
+            interrupted = true;
+            Thread.currentThread().interrupt();
+        }
+
+        if (interrupted) {
+            LOG.warning("applyPulse interrupted while waiting for tasks to complete.");
+        }
     }
 
     @Override
     public void stop() {
-        executor.shutdown();
-    }
-
-    @Override
-    public void addTarget(Temporal s) {
-        tasks.add(new TemporalTask(s));
+        if (!running.compareAndSet(true, false)) return;
+        pool.shutdownNow();
+        try {
+            if (!pool.awaitTermination(5, TimeUnit.SECONDS)) {
+                LOG.warning("TemporalExecutorService did not terminate within 5s; forcing shutdown.");
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
