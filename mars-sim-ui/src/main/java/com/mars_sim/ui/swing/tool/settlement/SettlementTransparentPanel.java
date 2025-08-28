@@ -98,9 +98,9 @@ public class SettlementTransparentPanel extends JComponent {
 
     private static final String PROJECTED_SUNRISE = "  Projected Sunrise: ";
     private static final String PROJECTED_SUNSET  = "   Projected Sunset: ";
+    private static final String PROJECTED_DAYLIGHT= " Projected Daylight: ";
     private static final String SUNRISE           = "  Yestersol Sunrise: ";
     private static final String SUNSET            = "   Yestersol Sunset: ";
-    private static final String PROJECTED_DAYLIGHT= " Projected Daylight: ";
     private static final String DAYLIGHT          = " Yestersol Daylight: ";
     private static final String ZENITH            = "        Zenith Time: ";
     private static final String MAX_LIGHT         = "       Max Sunlight: ";
@@ -177,6 +177,9 @@ public class SettlementTransparentPanel extends JComponent {
     private SurfaceFeatures surfaceFeatures;
     private OrbitInfo orbitInfo;
     private UnitManager unitManager;
+
+    /** Ensures destroy() only executes once even if called from multiple paths. */
+    private volatile boolean destroyed = false;
 
     /**
      * The panel with elements that are on top of the settlement map.
@@ -529,7 +532,7 @@ public class SettlementTransparentPanel extends JComponent {
      * Builds the banner text from current caches (does *not* touch UI).
      */
     private String buildBannerText(Settlement s) {
-        String resources = resourceCache.get(s);
+        String resources = (resourceCache != null) ? resourceCache.get(s) : null;
         if (resources == null) resources = "";
         StringBuilder sb = new StringBuilder();
         var ds = s.getDustStorm();
@@ -614,6 +617,9 @@ public class SettlementTransparentPanel extends JComponent {
      * (Call on EDT)
      */
     private void updateIcon() {
+        // If we're tearing down, components may have been nulled; skip safely.
+        if (temperatureIcon == null || windIcon == null || opticalIcon == null) return;
+
         Icon updatedIcon;
         String tooltip = "";
         if (temperatureCache < -40) {
@@ -794,17 +800,8 @@ public class SettlementTransparentPanel extends JComponent {
     @Override
     public void removeNotify() {
         try {
-            if (zoomSlider != null && zoomListener != null) {
-                zoomSlider.removeChangeListener(zoomListener);
-            }
-            if (zoomDebounce != null) {
-                zoomDebounce.stop();
-            }
-            // Remove from the same component we added to (mapPanel), not 'this'
-            if (mouseWheelListener != null && mapPanel != null) {
-                mapPanel.removeMouseWheelListener(mouseWheelListener);
-                mouseWheelListener = null; // avoid stale reference
-            }
+            // Centralized teardown: destroy() is idempotent and EDT-safe.
+            destroy();
         }
         finally {
             super.removeNotify();
@@ -1322,6 +1319,10 @@ public class SettlementTransparentPanel extends JComponent {
             return;
         }
 
+        // Run only once
+        if (destroyed) return;
+        destroyed = true;
+
         // --- Stop timers and detach explicit listeners we track ---
         if (zoomDebounce != null) {
             zoomDebounce.stop();
@@ -1384,6 +1385,15 @@ public class SettlementTransparentPanel extends JComponent {
         removeAllListenersRecursively(maxSunLabel);
         removeAllListenersRecursively(daylightLabel);
         removeAllListenersRecursively(currentSunLabel);
+
+        // Remove any children this component might have (defensive)
+        try {
+            removeAll();
+            revalidate();
+            repaint();
+        } catch (Throwable ignore) {
+            // best-effort cleanup; ignore if already detached
+        }
 
         // --- ComboBox model listener cleanup ---
         if (settlementCBModel != null) settlementCBModel.destroy();
