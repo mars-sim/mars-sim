@@ -1,27 +1,36 @@
-/**
+/*
  * Mars Simulation Project
  * ClockListener.java
- * @version 3.2.0 2021-06-20
- * @author Scott Davis
+ * @date 2025-08-28 (hardened)
  */
 package com.mars_sim.core.time;
 
 /**
- * A listener for clock time changes.
+ * Listener for master clock events.
+ *
+ * <p>All methods are default no-ops so implementors can override only what they need.</p>
  */
 public interface ClockListener {
 
-	/**
-	 * Change in time for managers in Simulation.
-	 * 
-	 * @param currentPulse the current pulse
-	 */
-	public void clockPulse(ClockPulse currentPulse);
+    /**
+     * Called on each simulation tick/pulse.
+     *
+     * @param time quantity associated with the pulse (e.g., millisols)
+     */
+    default void clockPulse(double time) { /* no-op */ }
 
-	/**
-	 * Change the pause state of the clock.
-	 * 
-	 * @param isPaused true if clock is paused.
-	 */
-	public void pauseChange(boolean isPaused, boolean showPane);
+    /**
+     * Called for UI refresh pulses (may differ in cadence from simulation pulses).
+     *
+     * @param time quantity associated with the pulse (e.g., millisols)
+     */
+    default void uiPulse(double time) { /* no-op */ }
+
+    /**
+     * Called when the pause state changes.
+     *
+     * @param isPaused current pause state
+     * @param showPane whether the UI should show a pause pane
+     */
+    default void pauseChange(boolean isPaused, boolean showPane) { /* no-op */ }
 }
