@@ -39,6 +39,10 @@ public class MasterClock implements Serializable {
 
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
+
+	/** Auto-drop threshold: listeners throwing this many times in a row are unregistered. */
+	private static final int MAX_CONSECUTIVE_LISTENER_FAILURES = 5;
+
 	/** The maximum speed allowed .*/
 	public static final int TIER_3_TOP = 32;
 	/** The maximum speed allowed .*/
@@ -76,10 +80,10 @@ public class MasterClock implements Serializable {
 	private static final int EXE_UPPER_LIMIT = 9_000;
 	
 	/** The TPS lower limit before action is taken. */
-//	private static final double TPS_LOWER_LIMIT = 0.1;
+	// private static final double TPS_LOWER_LIMIT = 0.1;
 				
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
-//	private static final int NEW_SLEEP = 20;
+	// private static final int NEW_SLEEP = 20;
 	
 	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
 	public static final int INITIAL_TASK_PULSE_DAMPER = 500;
@@ -381,28 +385,6 @@ public class MasterClock implements Serializable {
 		refPulseRatio = INITIAL_REF_PULSE_RATIO;
 	}
 	
-//	/**
-//	 * Increments the tick factor.
-//	 */
-//	public void incrementTickFactor() {
-//		float tick = pulseFactor;
-//		tick *= 1.1;
-//		if (tick > 2 * pulseFactor)
-//			tick = 2 * pulseFactor;
-//		pulseFactor = tick;
-//	}
-//	
-//	/**
-//	 * Decrements the tick factor.
-//	 */
-//	public void decrementTickFactor() {
-//		float tick = pulseFactor;
-//		tick /= 1.1;
-//		if (tick < pulseFactor / 2)
-//			tick =  pulseFactor / 2;
-//		pulseFactor = tick;
-//	}
-	
 	/**
 	 * Returns the current Martian time.
 	 *
@@ -671,23 +653,7 @@ public class MasterClock implements Serializable {
 			else if (!acceptablePulse) {
 				logger.severe(20_000, "acceptablePulse is false. Pulse width deviated too much: " 
 						+ pulseDeviation + ".");
-				
-//				leadPulseTime *= .999999;
-				
-//				// Readjust the time pulses and get the deviation
-//				pulseDeviation = computePulseDev();
-//				
-//				if (pulseDeviation > -3.0 && pulseDeviation < 3.0) {
-//					// If not deviating too much
-//					acceptablePulse = true;
-//				}
 			}
-//			else {
-//				// NOTE: check if resuming from power saving can cause this
-//				logger.severe(10_000, "ClockThreadTask is NOT running. Restarting listener executor thread.");
-//				
-//				resetListenerExecutor();
-//			}
 		}
 		
 		return acceptablePulse;
@@ -737,7 +703,6 @@ public class MasterClock implements Serializable {
 			leadPulse = leadPulse + (1 - ratio) * leadPulse / PULSE_STEPS / 2;
 			if (leadPulse > refPulse) {
 				leadPulse = refPulse;
-//				logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Increase leadPulse.");
 			}					
 				
 			// Update the lead pulse time
@@ -747,7 +712,6 @@ public class MasterClock implements Serializable {
 			leadPulse = leadPulse - (ratio - 1) * leadPulse / PULSE_STEPS * 5;
 			if (leadPulse < refPulse) {
 				leadPulse = refPulse;
-//				logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Decrease leadPulse.");
 			}				
 				
 			// Update the lead pulse time
@@ -760,7 +724,6 @@ public class MasterClock implements Serializable {
 			leadPulse = leadPulse + (1 - ratio) * leadPulse / PULSE_STEPS / 2;
 			if (leadPulse > refPulse) {
 				leadPulse = refPulse;
-//				logger.warning(30_000L, "leadPulse / refPulse = " + ratio + ". Increase leadPulse.");
 			}					
 				
 			// Update the lead pulse time
@@ -770,13 +733,11 @@ public class MasterClock implements Serializable {
 			leadPulse = leadPulse - (ratio - 1) * leadPulse / PULSE_STEPS * 5;
 			if (leadPulse < refPulse) {
 				leadPulse = refPulse;
-//				logger.warning(30_000L, "leadPulse / refPulse = " + ratio + ". Decrease leadPulse.");
 			}				
 				
 			// Update the lead pulse time
 			leadPulseTime = leadPulse;
 		}		
-		
 		
 		// Update the pulse time for use in tasks
 		float newTaskPulseWidth = (float) (taskPulseRatio * INITIAL_PULSE_WIDTH 
@@ -785,7 +746,6 @@ public class MasterClock implements Serializable {
 		if (taskPulseWidth != newTaskPulseWidth) {
 			taskPulseWidth = newTaskPulseWidth;
 			Task.setStandardPulseTime(newTaskPulseWidth);
-//			logger.info(5_000L, "Task pulse: " + Math.round(newTaskPulse * 10000.0)/10000.0);
 		}
 
 		// Returns the deviation
@@ -801,6 +761,9 @@ public class MasterClock implements Serializable {
 		private ClockListener listener;
 		private long minDuration;
 
+		/** Count of consecutive exceptions from this listener. */
+		private int consecutiveFailures = 0;
+
 		public ClockListener getClockListener() {
 			return listener;
 		}
@@ -811,12 +774,26 @@ public class MasterClock implements Serializable {
 			this.lastPulseDelivered = System.currentTimeMillis();
 		}
 
+		/** Resets the consecutive failure counter (on success). */
+		public void resetFailures() {
+			consecutiveFailures = 0;
+		}
+
+		/** Increments failure counter (on exception). */
+		public void recordFailure(Throwable t) {
+			consecutiveFailures++;
+		}
+
+		/** Returns current consecutive failure count. */
+		public int getConsecutiveFailures() {
+			return consecutiveFailures;
+		}
+
 		@Override
 		public String call() throws Exception {
 			if (!isPaused) {
 				try {
 					// The most important job for ClockListener is to send a clock pulse to listener
-					// gets updated.
 					ClockPulse activePulse = currentPulse;
 
 					// Handler is collapsing pulses so check the passed time
@@ -839,9 +816,23 @@ public class MasterClock implements Serializable {
 
 					// Call handler
 					listener.clockPulse(activePulse);
+
+					// Success: reset failure streak
+					resetFailures();
+					return "done";
 				}
-				catch (Exception e) {
-					logger.severe( "Can't send out clock pulse: ", e);
+				catch (Throwable e) {
+					// Failure: increment streak and log
+					recordFailure(e);
+					logger.severe("Can't send out clock pulse to listener %s (consecutive failures=%d): ",
+							listener != null ? listener.getClass().getName() : "null",
+							getConsecutiveFailures(), e);
+
+					// Decide whether to drop this listener
+					if (getConsecutiveFailures() >= MAX_CONSECUTIVE_LISTENER_FAILURES) {
+						return "drop";
+					}
+					return "fail";
 				}
 			}
 			return "done";
@@ -959,19 +950,10 @@ public class MasterClock implements Serializable {
 		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
 				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 		
-		// Note: for-loop may handle checked exceptions better than forEach()
-		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
-
-		// May do it using for loop
-
-		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
-		// Not using clockListenerTasks.forEach(s -> { }) for now
-
 		// Execute all listener concurrently and wait for all to complete before advancing
-		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		// May use parallelStream() after it's proven to be safe
 		if (clockListenerTasks != null) {
-			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
+			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream()
+				.forEach(this::executeClockListenerTask);
 		}
 	}
 
@@ -985,14 +967,23 @@ public class MasterClock implements Serializable {
 
 		try {
 			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-			result.get();
+			String status = result.get();
+
+			// If a listener repeatedly failed, drop it automatically.
+			if ("drop".equals(status)) {
+				ClockListener listener = task.getClockListener();
+				clockListenerTasks.remove(task);
+				logger.warning("Auto-unregistering ClockListener %s after %d consecutive failures.",
+						(listener != null ? listener.getClass().getName() : "null"),
+						task.getConsecutiveFailures());
+			}
 		} catch (ExecutionException ee) {
-			logger.severe( "ExecutionException. Problem with clock listener tasks: ", ee);
+			logger.severe("ExecutionException. Problem with clock listener tasks: ", ee);
 		} catch (RejectedExecutionException ree) {
 			// Application shutting down
 			Thread.currentThread().interrupt();
 			// Executor is shutdown and cannot complete queued tasks
-			logger.severe( "RejectedExecutionException. Problem with clock listener tasks: ", ree);
+			logger.severe("RejectedExecutionException. Problem with clock listener tasks: ", ree);
 		} catch (InterruptedException ie) {
 			// Program closing down
 			Thread.currentThread().interrupt();
@@ -1057,7 +1048,7 @@ public class MasterClock implements Serializable {
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 
 			// Recompute pulse load
-//			computeNewCpuLoad();
+			// computeNewCpuLoad();
 			// Redo the pulses
 			computeReferencePulse();
 		}
@@ -1139,12 +1130,6 @@ public class MasterClock implements Serializable {
 		if (this.isPaused != value) {
 			this.isPaused = value;
 
-			// Q: why does it have to reset the last pulse since start() will call it also ?
-//			if (!value) {
-//				// Reset the last pulse time
-//				timestampPulseStart();
-//			}
-
 			if (isPaused) {
 				stop();
 			}
@@ -1174,7 +1159,31 @@ public class MasterClock implements Serializable {
 	 */
 	private void firePauseChange(boolean isPaused, boolean showPane) {
 		if (clockListenerTasks != null) {
-			clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
+			// Use a snapshot to avoid CME when a listener is auto-removed due to failures.
+			for (ClockListenerTask cl : new HashSet<>(clockListenerTasks)) {
+				try {
+					cl.getClockListener().pauseChange(isPaused, showPane);
+					// Success: reset failure streak
+					cl.resetFailures();
+				}
+				catch (Throwable t) {
+					// Failure: increment streak and log
+					cl.recordFailure(t);
+					ClockListener listener = cl.getClockListener();
+					logger.severe("ClockListener %s threw during pauseChange(paused=%s, showPane=%s) [consecutive failures=%d]: ",
+							(listener != null ? listener.getClass().getName() : "null"),
+							Boolean.toString(isPaused), Boolean.toString(showPane),
+							cl.getConsecutiveFailures(), t);
+
+					// Auto-remove if past threshold
+					if (cl.getConsecutiveFailures() >= MAX_CONSECUTIVE_LISTENER_FAILURES) {
+						clockListenerTasks.remove(cl);
+						logger.warning("Auto-unregistering ClockListener %s after %d consecutive failures during pauseChange.",
+								(listener != null ? listener.getClass().getName() : "null"),
+								cl.getConsecutiveFailures());
+					}
+				}
+			}
 		}
 	}
 
@@ -1335,9 +1344,6 @@ public class MasterClock implements Serializable {
 		
 		float delta = (float) Math.min(deltaTR / 10, 5 * Math.abs(desiredTR/(1 + actualTR)));				
 				
-		// Note: actualTR is greater or less than desiredTR, then our goal is to see a increase or decrease 
-		// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
-		
 		// Get the desired millisols per second
 		float desiredMsolPerSec = (float) ((desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL);
 
@@ -1346,7 +1352,6 @@ public class MasterClock implements Serializable {
 				(0.1 * optMilliSolPerPulse + 0.6 * referencePulse + 0.3 * leadPulseTime));
 		
 		// Get the milliseconds between each pulse
-		// // Limit the desired pulses to be the minimum of 1 (or at least 1)
 		millisecPerPulse = 1000f / desiredPulsesPerSec;
 	
 		// Update the sleep time that will allow room for the execution time (ms per pulse)
@@ -1412,49 +1417,25 @@ public class MasterClock implements Serializable {
 					calculateSleepTime();				
 
 					// NOTE: When resuming from power save, executionTime is often very high
-					// Do NOT delete the followings. Very useful for debugging.
 					if (executionTime > EXE_UPPER_LIMIT) {
 				    	logger.severe(EXE_UPPER_LIMIT, String.format("Abnormal execution time: %d ms.", executionTime));
-						// Slow down the time ratio
-//						decreaseSpeed();	
-						// Set the sleep time
-//						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
 					}
 					else if (executionTime > EXE_UPPER_LIMIT / 3) {
 				    	logger.severe(EXE_UPPER_LIMIT / 3, String.format("Abnormal execution time: %d ms.", executionTime));
-						// Set the sleep time
-//						sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
 					}
 				}
 				else {
 					// Case 2: acceptablePulse is false
-					
 				    if (!isPaused) {
-				    	
-//				    	int rand = RandomUtil.getInt(100);
-//				    	if (rand == 10) cpuUtil *= .9999;
-//				    	else if (rand == 11) taskPulseDamper *= .9999;
-//				    	else if (rand == 12) refPulseDamper *= .9999;
-//				    	else if (rand == 13) taskPulseRatio *= .9999;
-//				    	else if (rand == 14) refPulseRatio *= .9999;
-				    	
 						logger.warning(20_000, "Time Pulse deviated too much. Pause & unpause the sim. "
 								+ "Lower the TR or adjust the pulse parameters.");
-				
 						// Test if this can restore the simulation
 						leadPulseTime = referencePulse;
-								
-						// NOTE: check if resuming from power saving can cause this
-//						logger.config(10_000L, "Pulse deviation is too high. Restarting listener executor thread.");
-//						
-//						resetListenerExecutor();
 					}
 				}
 				
 				// If still going then wait
 				if (keepRunning && !isPaused && sleepTime > 0) {
-					// Pause the execution of this thread 
-					// and allow other threads to complete.
 					try {
 						Thread.sleep((long)sleepTime);
 					} catch (InterruptedException e) {
