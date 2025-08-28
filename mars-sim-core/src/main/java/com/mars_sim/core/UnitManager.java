@@ -60,7 +60,9 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final String THREAD = "thread";
 	public static final String SHARED = "shared";
-	
+
+	/** Enable parallel updates for non-settlement units (people, robots, equipment, vehicles). */
+	private static final boolean ENABLE_PARALLEL_AGENT_UPDATES = true;
 
 	// Data members
 	/** Counter of unit identifiers. */
@@ -305,20 +307,109 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Notifies all the units that time has passed. Times they are a changing.
+	 * 
+	 * Performance enhancement: settlements are updated via the executor (which may
+	 * run them concurrently), and then independent agents (people, robots, vehicles,
+	 * and equipment) are updated in parallel streams, if they implement {@link Temporal}.
 	 *
 	 * @param pulse the amount time passing (in millisols)
-	 * @throws Exception if error during time passing.
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0) {
-			executor.applyPulse(pulse);
+			// Phase 1: Update settlements (and any other executor targets) first.
+			if (executor != null) {
+				executor.applyPulse(pulse);
+			}
+			else {
+				logger.warning("Executor not initialized – no settlements activated?");
+			}
+
+			// Phase 2: Update construction sites sequentially (order may matter).
+			updateConstructionSitesSequential(pulse);
+
+			// Phase 3: Update independent units in parallel (safe-by-design check: only if they implement Temporal).
+			if (ENABLE_PARALLEL_AGENT_UPDATES) {
+				updateAgentsInParallel(pulse);
+			}
 		}
 		else {
 			logger.warning("Zero elapsed pulse #" + pulse.getId());
 		}
 
 		return true;
+	}
+
+	/**
+	 * Updates all construction sites sequentially. If a site implements {@link Temporal},
+	 * it receives the current pulse. (Sequencing avoids potential ordering hazards.)
+	 */
+	private void updateConstructionSitesSequential(ClockPulse pulse) {
+		for (ConstructionSite site : lookupSite.values()) {
+			if (site instanceof Temporal t) {
+				try {
+					t.timePassing(pulse);
+				}
+				catch (Exception e) {
+					logger.warning("Error updating ConstructionSite " + site + " during pulse #" + pulse.getId() + ": " + e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Updates people, robots, vehicles, and equipment in parallel. Only objects that implement
+	 * {@link Temporal} will be pulsed; others are skipped. Using {@code parallelStream()} helps
+	 * reduce tick time when there are many agents.
+	 */
+	private void updateAgentsInParallel(ClockPulse pulse) {
+		// People
+		lookupPerson.values().parallelStream().forEach(person -> {
+			if (person instanceof Temporal t) {
+				try {
+					t.timePassing(pulse);
+				}
+				catch (Exception e) {
+					logger.warning("Error updating Person " + person + " during pulse #" + pulse.getId() + ": " + e);
+				}
+			}
+		});
+
+		// Robots
+		lookupRobot.values().parallelStream().forEach(robot -> {
+			if (robot instanceof Temporal t) {
+				try {
+					t.timePassing(pulse);
+				}
+				catch (Exception e) {
+					logger.warning("Error updating Robot " + robot + " during pulse #" + pulse.getId() + ": " + e);
+				}
+			}
+		});
+
+		// Vehicles
+		lookupVehicle.values().parallelStream().forEach(vehicle -> {
+			if (vehicle instanceof Temporal t) {
+				try {
+					t.timePassing(pulse);
+				}
+				catch (Exception e) {
+					logger.warning("Error updating Vehicle " + vehicle + " during pulse #" + pulse.getId() + ": " + e);
+				}
+			}
+		});
+
+		// Equipment (containers, EVA suits, etc.)
+		lookupEquipment.values().parallelStream().forEach(equip -> {
+			if (equip instanceof Temporal t) {
+				try {
+					t.timePassing(pulse);
+				}
+				catch (Exception e) {
+					logger.warning("Error updating Equipment " + equip + " during pulse #" + pulse.getId() + ": " + e);
+				}
+			}
+		});
 	}
 
 	/**
