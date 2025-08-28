@@ -4,13 +4,10 @@
  * @date 2025-08-28
  * @author Contributors
  *
- * Notes:
- * - This task performs a short, harmless "idle maintenance" period when a person
- *   has nothing better to do. The intent is to represent light upkeep without
- *   consuming notable resources or requiring specific building context.
- * - This version fixes build errors by importing the correct Task base class and
- *   removing unused imports. It also avoids direct calls to unknown Malfunction
- *   APIs to remain build-safe across modules.
+ * A lightweight, low-priority task settlers perform when idle.
+ * It occupies a small, finite duration and then completes. This version is
+ * intentionally conservative (no hard coupling to malfunction/maintenance
+ * subsystems) so it compiles cleanly across branches.
  */
 
 package com.mars_sim.core.person.ai.task;
@@ -22,38 +19,34 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsClock;
 
 /**
- * A lightweight task representing simple upkeep actions when a person is idle.
+ * Represents simple upkeep/inspection during idle periods.
  * <p>
- * This task does not require special tools or a specific building; it simply
- * occupies a small, finite duration and then finishes. If you later wish to
- * hook into settlement maintenance systems, use the {@link Settlement}
- * reference provided and perform guarded calls to malfunction/maintenance
- * managers where available.
+ * The task completes after a short, fixed amount of simulation time.
+ * Future extensions can add guarded hooks into maintenance systems.
  */
 public class IdleMaintenanceTask extends Task {
 
     /** Serial ID. */
     private static final long serialVersionUID = 1L;
 
-    /** Default duration (in millisols) to spend on idle maintenance. */
+    /** Duration to spend on maintenance (in millisols). */
     private static final double DURATION_MILLISOLS = 50.0;
 
-    /** The person performing this task (cached for convenience). */
+    /** The worker doing the task. */
     private final Person person;
 
-    /** The settlement the person is associated with at task start (may be null). */
+    /** Settlement snapshot at start (may be null). */
     private final Settlement settlement;
 
-    /** Millisol timestamp when the task first began work; NaN indicates uninitialized. */
+    /** Millisol when work began; NaN until first perform() tick. */
     private double startMillisol = Double.NaN;
 
-    /** Whether this task has completed. */
+    /** Completion flag. */
     private boolean completed;
 
     /**
      * Creates an IdleMaintenanceTask for the given person.
-     *
-     * @param person the person who will perform the task
+     * @param person the worker (may be null if constructed defensively)
      */
     public IdleMaintenanceTask(Person person) {
         super(person);
@@ -65,50 +58,40 @@ public class IdleMaintenanceTask extends Task {
     }
 
     /**
-     * Perform a small slice of work. The task tracks elapsed millisols using the
-     * global master clock and completes once {@link #DURATION_MILLISOLS} has elapsed.
-     * <p>
-     * NOTE: We intentionally keep this implementation conservative to avoid
-     * compile-time coupling to optional maintenance/malfunction subsystems. If
-     * you need to expand functionality, add guarded calls against available
-     * managers here (e.g., a MalfunctionManager) and keep null/availability checks.
+     * Advances the task. Uses the master clock's Mars time to measure elapsed work.
+     * Keeps implementation conservative to remain build-safe across modules.
      */
+    @Override
     public void perform() {
-        if (completed) {
-            return;
-        }
+        if (completed) return;
 
-        // Acquire current mission time in millisols.
-        final MarsClock marsClock = Simulation.instance()
-                                              .getMasterClock()
-                                              .getMarsClock();
-        final double now = marsClock.getMillisol();
+        final MarsClock clock = Simulation.instance()
+                                          .getMasterClock()
+                                          .getMarsClock();
+        final double now = clock.getMillisol();
 
-        // Initialize start time on first perform tick.
+        // Initialize start time on first tick.
         if (Double.isNaN(startMillisol)) {
             startMillisol = now;
         }
 
-        // ---- Optional hook point (kept commented to remain build-safe) ----
+        // OPTIONAL HOOK (kept commented to avoid compile-time coupling):
         // if (settlement != null) {
-        //     final var mm = settlement.getMalfunctionManager();
+        //     var mm = settlement.getMalfunctionManager();
         //     if (mm != null) {
-        //         // Example guarded call (replace with a real API available in your branch):
+        //         // Example guarded call for future use:
         //         // mm.applyIdleUpkeepTick(person, 0.01D);
         //     }
         // }
 
-        // Complete the task after the configured idle duration has elapsed.
+        // Complete once the maintenance interval has elapsed.
         if ((now - startMillisol) >= DURATION_MILLISOLS) {
             completed = true;
         }
     }
 
-    /**
-     * Indicates if the task has finished.
-     *
-     * @return true if complete; false otherwise
-     */
+    /** @return true when the task has finished. */
+    @Override
     public boolean isFinished() {
         return completed;
     }
