@@ -135,6 +135,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 				RatingScore score = scoreMaintenance(manager, building, partsPosted);
 	
 				if (score.getScore() >= 1) {
+	
 					boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 					
 					if (habitableBuilding) {
@@ -142,15 +143,22 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 					}
 					
 					else {
-						// In case of those inhabitable buildings in settlement vicinity
-						boolean requireEVA = false;
 						
-						// Arbitrarily set 10% chance to be inspected in person by EVA
-						if (RandomUtil.getRandomInt(9) == 9) {
-							requireEVA = true;
+						if (partsPosted) {
+							tasks.add(new MaintainTaskJob(this, building, true, score));
 						}
+						
+						else {						
+							// In case of those inhabitable buildings in settlement vicinity
+							boolean requireEVA = false;
 							
-						tasks.add(new MaintainTaskJob(this, building, requireEVA, score));
+							// Arbitrarily set 10% chance to be inspected in person by EVA
+							if (RandomUtil.getRandomInt(9) == 9) {
+								requireEVA = true;
+							}
+								
+							tasks.add(new MaintainTaskJob(this, building, requireEVA, score));
+						}
 					}
 				}
 			}
