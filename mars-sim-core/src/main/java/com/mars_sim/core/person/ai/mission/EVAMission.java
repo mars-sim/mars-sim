@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -202,6 +203,14 @@ abstract class EVAMission extends RoverMission {
 	private void evaPhase(Worker member) {
 
 		if (activeEVA) {
+			// NEW: proactively clean up teleported members before doing any EVA work.
+			checkTeleported();
+			// If this tick's member was just removed, skip further work this tick.
+			if (!getMembers().contains(member)) {
+				logger.info(getVehicle(), "Skipping EVA tick for removed/teleported member.");
+				return;
+			}
+
 			// Check if crew has been at site for more than one sol.
 			double timeDiff = getPhaseDuration();
 			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
@@ -455,31 +464,87 @@ abstract class EVAMission extends RoverMission {
 	/**
 	 * Order a list of Coordinates starting from a point to minimise
 	 * the travel time.
-	 * @param unorderedSites
-	 * @param startingLocation
-	 * @return
+	 *
+	 * We keep the original nearest-neighbour seed (fast), then run a small 2‑Opt
+	 * refinement loop to cut obvious path crossings. This reduces total driving time
+	 * without touching any other file or adding dependencies.
+	 *
+	 * @param unorderedSites Sites to visit (unordered)
+	 * @param startingLocation Start point for the route
+	 * @return Ordered sites for a shorter path (no return-to-start)
 	 */
 	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
 
-		List<Coordinates> unorderedSites2 = new ArrayList<>(unorderedSites);
-		List<Coordinates> orderedSites = new ArrayList<>(unorderedSites2.size());
-		Coordinates currentLocation = startingLocation;
-		while (!unorderedSites2.isEmpty()) {
-			Coordinates shortest = unorderedSites2.get(0);
-			double shortestDistance = currentLocation.getDistance(shortest);
-			for(Coordinates site : unorderedSites2) {
-				double distance = currentLocation.getDistance(site);
-				if (distance < shortestDistance) {
-					shortest = site;
-					shortestDistance = distance;
+		List<Coordinates> unordered = new ArrayList<>(unorderedSites);
+		List<Coordinates> route = new ArrayList<>(unordered.size());
+		Coordinates current = startingLocation;
+
+		// --- Greedy nearest-neighbour seed ---
+		while (!unordered.isEmpty()) {
+			Coordinates best = unordered.get(0);
+			double bestDist = current.getDistance(best);
+			for (Coordinates site : unordered) {
+				double d = current.getDistance(site);
+				if (d < bestDist) {
+					best = site;
+					bestDist = d;
 				}
 			}
-
-			unorderedSites2.remove(shortest);
-			orderedSites.add(shortest);
-			currentLocation = shortest;
+			unordered.remove(best);
+			route.add(best);
+			current = best;
 		}
 
-		return orderedSites;
+		// --- Light 2-Opt refinement (bounded passes) ---
+		return twoOptImprove(startingLocation, route, /*maxPasses*/ 20);
+	}
+
+	/** Computes the path length from start through the route (no return). */
+	private static double routeDistance(Coordinates start, List<Coordinates> route) {
+		if (route.isEmpty()) return 0D;
+		double total = start.getDistance(route.get(0));
+		for (int i = 0; i < route.size() - 1; i++) {
+			total += route.get(i).getDistance(route.get(i + 1));
+		}
+		return total;
+	}
+
+	/**
+	 * Simple 2‑Opt: try reversing segments (i+1..k) if it shortens the path.
+	 * Bounded passes to keep it lightweight for gameplay pacing.
+	 */
+	private static List<Coordinates> twoOptImprove(Coordinates start, List<Coordinates> route, int maxPasses) {
+		int n = route.size();
+		if (n < 4) return route; // nothing to do
+
+		double best = routeDistance(start, route);
+		boolean improved = true;
+		int passes = 0;
+
+		while (improved && passes++ < maxPasses) {
+			improved = false;
+
+			for (int i = 0; i < n - 2; i++) {
+				Coordinates a = (i == 0) ? start : route.get(i - 1);
+				Coordinates b = route.get(i);
+				for (int k = i + 1; k < n - 1; k++) {
+					Coordinates c = route.get(k);
+					Coordinates d = route.get(k + 1);
+
+					// Current edges: a-b, c-d
+					double currentCost = a.getDistance(b) + c.getDistance(d);
+					// Proposed edges: a-c, b-d
+					double newCost = a.getDistance(c) + b.getDistance(d);
+
+					if (newCost + 1e-9 < currentCost) {
+						// Reverse the middle segment [i..k]
+						Collections.reverse(route.subList(i, k + 1));
+						best = best - currentCost + newCost;
+						improved = true;
+					}
+				}
+			}
+		}
+		return route;
 	}
 }
