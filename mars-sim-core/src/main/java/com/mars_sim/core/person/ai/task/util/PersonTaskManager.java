@@ -45,17 +45,23 @@ public class PersonTaskManager extends TaskManager {
 
 	private static final String DIAGS_MODULE = "taskperson";
 
-	// === New: meta-task failure cooldown guard rails (prevents thrash) ===
-	/** Pulses to cool down a meta after it throws during job/probability evaluation. */
+	// === Failure cooldown guard rails (prevents thrash on failing metas) ===
+	/** Base pulses to cool down a meta after it throws during job/probability evaluation. */
 	private static final int FAILURE_COOLDOWN_PULSES = 200; // Tune 50–400 as desired
+	/** Maximum pulses for exponential backoff. */
+	private static final int MAX_FAILURE_COOLDOWN_PULSES = 1600;
+	/** How often to prune expired cooldown entries. */
+	private static final int PRUNE_INTERVAL_PULSES = 500;
 
 	/** Key: meta class name; Value: pulse # until which it stays cooled down (exclusive). */
 	private transient Map<String, Long> failedUntilPulse = new ConcurrentHashMap<>();
+	/** Key: meta class name; Value: consecutive failure count (resets on success). */
+	private transient Map<String, Integer> consecutiveFailures = new ConcurrentHashMap<>();
 
 	/** Local pulse counter advanced once per cache rebuild. */
 	private transient long pulseCounter = 0L;
 
-	// === New: modest off-duty wellbeing suggestion weights ===
+	// === Modest off-duty wellbeing suggestion weights (keeps loop moving during lulls) ===
 	private static final double SLEEP_WEIGHT_OFFDUTY = 0.40;
 	private static final double EAT_WEIGHT_OFFDUTY   = 0.25;
 	private static final double WALK_WEIGHT_OFFDUTY  = 0.15;
@@ -110,6 +116,11 @@ public class PersonTaskManager extends TaskManager {
 		// Advance a lightweight "pulse" counter each rebuild; used for cooldown timing.
 		pulseCounter++;
 
+		// Periodically prune expired cooldown entries to avoid unbounded growth.
+		if ((pulseCounter % PRUNE_INTERVAL_PULSES) == 0) {
+			pruneExpiredCooldowns();
+		}
+
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
@@ -149,26 +160,29 @@ public class PersonTaskManager extends TaskManager {
 				if (job != null && !job.isEmpty()) {
 					newCache.add(job);
 				}
-				// Success path: clear any stale cooldown entry.
+				// Success path: clear any cooldown/failure state.
 				failedUntilPulse.remove(key);
+				consecutiveFailures.remove(key);
 			}
 			catch (IllegalArgumentException | IllegalStateException ex) {
 				// Common precondition errors (e.g., not a collaborator yet).
-				failedUntilPulse.put(key, pulseCounter + FAILURE_COOLDOWN_PULSES);
+				long cool = computeNextCooldown(key);
+				failedUntilPulse.put(key, pulseCounter + cool);
 				logger.info(person, 10_000L,
 						"Meta " + key + " failed (" + ex.getClass().getSimpleName() + "): " + ex.getMessage()
-						+ " — cooling down for " + FAILURE_COOLDOWN_PULSES + " pulses.");
+						+ " — cooling down for " + cool + " pulses.");
 			}
 			catch (RuntimeException ex) {
 				// Fail-soft for unexpected runtime errors; keep simulation ticking.
-				failedUntilPulse.put(key, pulseCounter + FAILURE_COOLDOWN_PULSES);
+				long cool = computeNextCooldown(key);
+				failedUntilPulse.put(key, pulseCounter + cool);
 				logger.warning(person, 10_000L,
 						"Meta " + key + " runtime failure: " + ex.getClass().getSimpleName()
-						+ " — cooling down for " + FAILURE_COOLDOWN_PULSES + " pulses.");
+						+ " — cooling down for " + cool + " pulses.");
 			}
 		}
 
-		// NEW: Light “wellbeing” cadence during off-duty windows to smooth pacing
+		// Light “wellbeing” cadence during off-duty windows to smooth pacing
 		injectOffDutyWellbeingTasks(newCache, workStatus);
 
 		// Add in any Settlement Tasks
@@ -189,6 +203,37 @@ public class PersonTaskManager extends TaskManager {
 								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
 		return newCache;
+	}
+
+	/**
+	 * Computes the next cooldown using exponential backoff capped at a maximum.
+	 * Increments the consecutive failure count for this meta.
+	 */
+	private long computeNextCooldown(String key) {
+		int failures = consecutiveFailures.getOrDefault(key, 0);
+		// Increment for this event
+		failures++;
+		consecutiveFailures.put(key, failures);
+
+		// Exponential backoff: base * 2^(failures-1), capped
+		long cool = (long) FAILURE_COOLDOWN_PULSES << (failures - 1);
+		if (cool > MAX_FAILURE_COOLDOWN_PULSES) {
+			cool = MAX_FAILURE_COOLDOWN_PULSES;
+		}
+		return cool;
+	}
+
+	/** Removes expired cooldown entries and resets stale failure counters. */
+	private void pruneExpiredCooldowns() {
+		// Remove any meta whose cooldown has expired.
+		for (Map.Entry<String, Long> e : failedUntilPulse.entrySet()) {
+			if (e.getValue() <= pulseCounter) {
+				failedUntilPulse.remove(e.getKey());
+				// Do not automatically clear consecutiveFailures here;
+				// it resets on first successful evaluation to avoid oscillation.
+			}
+		}
+		// (Map sizes are expected to be small; additional pruning not necessary.)
 	}
 
 	/**
@@ -346,9 +391,12 @@ public class PersonTaskManager extends TaskManager {
 	public void reinit() {
 		person = mind.getPerson();
 		super.reinit(person);
-		// Ensure cooldown map exists after reinit/deserialization.
+		// Ensure cooldown maps exist after reinit/deserialization.
 		if (failedUntilPulse == null) {
 			failedUntilPulse = new ConcurrentHashMap<>();
+		}
+		if (consecutiveFailures == null) {
+			consecutiveFailures = new ConcurrentHashMap<>();
 		}
 	}
 
