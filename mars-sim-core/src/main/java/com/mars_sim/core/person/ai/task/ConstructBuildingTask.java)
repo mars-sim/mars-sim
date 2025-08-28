@@ -1,0 +1,201 @@
+/*
+ * Mars Simulation Project
+ * ConstructBuildingTask.java
+ * @date 2025-08-28
+ *
+ * Single-file gameplay loop upgrade:
+ * - Ties construction progress to the builder's Construction skill with a clear multiplier.
+ * - Higher skill => faster progress, rewarding training and assignment strategy.
+ *
+ * Drop this in alongside other tasks (e.g., Walk, Sleep, EatDrink).
+ * You can wire it into a MetaTask or mission logic that decides when to build.
+ */
+package com.mars_sim.core.person.ai.task;
+
+import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Task;
+
+// NOTE: Adjust these two imports if your project uses different package paths
+// for settlements / construction sites / skills.
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.construction.ConstructionSite;
+import com.mars_sim.core.person.ai.skill.SkillType;
+
+/**
+ * A simple, self-contained Task that advances a {@link ConstructionSite}'s progress
+ * at a rate scaled by the performer's Construction skill.
+ *
+ * <p>Intent:</p>
+ * <ul>
+ *   <li>Make Construction skill materially affect build speed.</li>
+ *   <li>Reward assigning experienced builders to projects.</li>
+ *   <li>Keep changes scoped to one file; no global balancing changes required.</li>
+ * </ul>
+ *
+ * <p>Integration tips:</p>
+ * <ul>
+ *   <li>Instantiate for a person + site when a build step is desired.</li>
+ *   <li>Schedule/choose it through your existing meta-task or mission selection logic.</li>
+ *   <li>Base work rate is conservative—tune <code>BASE_WORK_RATE</code> as needed.</li>
+ * </ul>
+ */
+public class ConstructBuildingTask extends Task {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final SimLogger LOG =
+            SimLogger.getLogger(ConstructBuildingTask.class.getName());
+
+    /** Base work done per (simulation) hour by an average builder. Tune to taste. */
+    private static final double BASE_WORK_RATE = 1.0;
+
+    /** Optional completion XP bonus multiplier (scaled by site difficulty). */
+    private static final double COMPLETION_XP_MULTIPLIER = 1.0;
+
+    private final Person builder;
+    private final ConstructionSite site;
+    private final Settlement settlement;
+
+    /**
+     * Creates a construction task for a given builder and site.
+     *
+     * @param person     the builder performing the work
+     * @param site       the construction site to advance
+     * @param settlement (optional) settlement context; pass null if not needed
+     */
+    public ConstructBuildingTask(Person person, ConstructionSite site, Settlement settlement) {
+        // super(name, person) — other tasks in mars-sim typically pass Person into Task.
+        // If your Task base uses a different ctor, adjust accordingly.
+        super(person);
+        this.builder = person;
+        this.site = site;
+        this.settlement = settlement;
+        setName("Construct Building");
+    }
+
+    /**
+     * Perform this task for a slice of simulated time.
+     *
+     * <p><b>Note:</b> If your Task base uses a different perform signature
+     * (e.g., returns double or receives pulse/time-slice in millisols), adapt the
+     * method signature and the time unit conversion here.</p>
+     *
+     * @param hours simulated hours of focused construction work
+     */
+    public void performTask(double hours) {
+        // If site already finished, end immediately.
+        if (site == null || site.isCompleted()) {
+            setDone(true);
+            return;
+        }
+
+        // Pull the Construction skill level; 0..100 expected, but defensive against out-of-range.
+        double skillLevel = getConstructionSkillLevel(builder);
+        if (skillLevel < 0) skillLevel = 0;
+        if (skillLevel > 100) skillLevel = 100;
+
+        // Efficiency curve: +1% output per skill point; 0 -> 1.0x, 50 -> 1.5x, 100 -> 2.0x.
+        double efficiencyMultiplier = 1.0 + (skillLevel / 100.0);
+
+        // Amount of progress contributed in this slice.
+        double workDone = BASE_WORK_RATE * hours * efficiencyMultiplier;
+
+        // Apply progress.
+        try {
+            site.addConstructionProgress(workDone);
+        }
+        catch (RuntimeException ex) {
+            // Fail-soft: log and end this task; site or state may have changed externally.
+            LOG.warning(builder, 10_000L,
+                "Construction progress update failed: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
+            setDone(true);
+            return;
+        }
+
+        // Check for completion.
+        if (site.isCompleted()) {
+            try {
+                site.finishConstruction();
+            }
+            catch (RuntimeException ex) {
+                // Even if finalize fails, we won't loop forever.
+                LOG.warning(builder, 10_000L,
+                    "finishConstruction() failed: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
+            }
+
+            // Optional: award experience proportional to difficulty.
+            tryAwardCompletionXP(builder, site);
+
+            setDone(true);
+
+            if (settlement != null) {
+                LOG.info(settlement, 8_000L,
+                    builder.getName() + " completed construction at " + site.getName() + ".");
+            }
+            else {
+                LOG.info(builder, 8_000L,
+                    "Completed construction at " + site.getName() + ".");
+            }
+        }
+    }
+
+    /**
+     * Returns whether this task has finished.
+     * <p>Keep in sync with your Task base; some frameworks poll isDone()</p>
+     */
+    public boolean isFinished() {
+        return isDone() || (site != null && site.isCompleted());
+    }
+
+    // ---------------------------------------------------------------------
+    // Internals
+    // ---------------------------------------------------------------------
+
+    /** Reads the builder's Construction skill level in a robust way. */
+    private static double getConstructionSkillLevel(Person p) {
+        try {
+            // Preferred: direct enum-based lookup if present in your codebase.
+            // Adjust if your Skill system uses a different API.
+            return p.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+        }
+        catch (NoSuchMethodError | Exception ignored) {
+            // Fallback: return 0 if the skill system is absent/different.
+            return 0.0;
+        }
+    }
+
+    /** Optional XP award on completion to reinforce progression. */
+    private static void tryAwardCompletionXP(Person p, ConstructionSite s) {
+        try {
+            // If your project exposes a difficulty metric, scale XP by it.
+            double difficulty = 1.0;
+            try {
+                difficulty = Math.max(0.5, Math.min(3.0, s.getDifficulty()));
+            }
+            catch (NoSuchMethodError | Exception ignored) { /* leave default */ }
+
+            double xp = 10.0 * difficulty * COMPLETION_XP_MULTIPLIER;
+
+            // If your API supports it, credit XP to Construction skill:
+            p.getSkillManager().addExperience(SkillType.CONSTRUCTION, xp);
+        }
+        catch (NoSuchMethodError | Exception ignored) {
+            // If skills API differs, no-op is fine—the core benefit (faster progress) remains.
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // Compatibility shims to align with common mars-sim Task base patterns.
+    // If your Task base already provides these, you can remove or adapt them.
+    // ---------------------------------------------------------------------
+
+    /** Convenience for naming, if Task base doesn't already have setName(String). */
+    private String name;
+    private boolean done;
+
+    private void setName(String n) { this.name = n; }
+    @Override public String getName() { return (name != null) ? name : "Construct Building"; }
+    protected void setDone(boolean value) { this.done = value; }
+    @Override public boolean isDone() { return done; }
+}
