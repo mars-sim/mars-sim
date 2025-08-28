@@ -1333,9 +1333,12 @@ public class SettlementTransparentPanel extends JComponent {
         }
         zoomListener = null;
 
-        // Remove from the same component we added to (mapPanel), not 'this'
-        if (mouseWheelListener != null && mapPanel != null) {
-            mapPanel.removeMouseWheelListener(mouseWheelListener);
+        // Defensive unregistration from both this panel and the mapPanel (safe no-ops if not present)
+        if (mouseWheelListener != null) {
+            removeMouseWheelListener(mouseWheelListener);
+            if (mapPanel != null) {
+                mapPanel.removeMouseWheelListener(mouseWheelListener);
+            }
         }
         mouseWheelListener = null;
 
