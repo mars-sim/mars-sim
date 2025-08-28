@@ -6,11 +6,13 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
@@ -154,8 +156,12 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		this.allSettlements = allSettlements;
 
 		setupCaches();
+		
 		if (allSettlements) {
-			resetEntities(unitManager.getSettlements());
+			
+			Collection<Settlement> settlements = CollectionUtils.sortByName(unitManager.getSettlements());
+			resetEntities(settlements);
+			
 			listenForUnits();
 		}
 	}
@@ -165,7 +171,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	}
 
 	/**
-	 * Sets the settlement filter for the Robot table.
+	 * Sets the settlement filter for the settlement table.
 	 * 
 	 * @param filter
 	 */
@@ -173,6 +179,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	public boolean setSettlementFilter(Set<Settlement> filter) {
 
 		if (!allSettlements) {
+			CollectionUtils.sortByName(filter);		
 			resetEntities(filter);
 		}
 		return !allSettlements;

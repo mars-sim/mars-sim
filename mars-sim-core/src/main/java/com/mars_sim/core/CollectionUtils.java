@@ -1,14 +1,13 @@
 /*
  * Mars Simulation Project
  * CollectionUtils.java
- * @date 2022-06-24
+ * @date 2025-08-27
  * @author Sebastien Venot
  */
 package com.mars_sim.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -144,59 +143,30 @@ public class CollectionUtils {
 		return unitManager.findSettlement(c);
 	}
 	
-	public static <T extends Unit> Collection<T> sortByName(
-		Collection<T> collection
-	) {
+	/**
+	 * Sorts by name.
+	 * 
+	 * @param <T>
+	 * @param collection
+	 * @return
+	 */
+	public static <T extends Unit> Collection<T> sortByName(Collection<T> collection) {
 		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<>(
-			new Comparator<>() {
-				@Override
-				public int compare(T o1, T o2) {
-					return o1.getName().compareToIgnoreCase(o2.getName());
-				}
-			}
-		);
+				(o1, o2) -> o1.getName().compareTo(o2.getName()));
+
 		sorted.addAll(collection);
 		return sorted;
 	}
 
 	/**
-	 * Gets a list of associated people of a settlement in its vicinity.
+	 * Gets a list of people of a settlement in its vicinity.
 	 * Note: a person can be either inside the settlement or within its vicinity
 	 *
 	 * @param settlement the settlement
+	 * @param isCitizen are these people associated with this settlement
 	 * @return list of people to display.
 	 */
-	public static List<Person> getAssociatedPeopleInSettlementVicinity(Settlement settlement) {
-
-		List<Person> result = new ArrayList<>();
-
-		if (settlement != null) {
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				Person person = i.next();
-				// Only select living people.
-				if (!person.getPhysicalCondition().isDead()) {
-
-					// Select a person that is at the settlement location.
-					Coordinates personLoc = person.getCoordinates();
-					if (personLoc != null && personLoc.equals(settlement.getCoordinates())) {
-						result.add(person);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of people (regardless their association) of a settlement in its vicinity.
-	 * Note: a person can be either inside the settlement or within its vicinity
-	 *
-	 * @param settlement the settlement
-	 * @return list of people to display.
-	 */
-	public static List<Person> getPeopleInSettlementVicinity(Settlement settlement) {
+	public static List<Person> getPeopleInSettlementVicinity(Settlement settlement, boolean isCitizen) {
 
 		List<Person> result = new ArrayList<>();
 
@@ -204,11 +174,16 @@ public class CollectionUtils {
 			Iterator<Person> i = unitManager.getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
-				// Only select living people.
-				if (!person.getPhysicalCondition().isDead()) {
+				
+				// if isCitizen is true, then it's required that this person must be associated with 
+				// this settlement
+				// If if isCitizen is false, then it's not required
+				if ((!isCitizen || person.getAssociatedSettlement().equals(settlement)) 
+					&& !person.getPhysicalCondition().isDead()) {
 
-					// Select a person that is at the settlement coordinate.
-					if (person.getCoordinates().equals(settlement.getCoordinates())) {
+					// Select a person that is at the settlement location.
+					Coordinates personLoc = person.getCoordinates();
+					if (personLoc != null && personLoc.equals(settlement.getCoordinates())) {
 						result.add(person);
 					}
 				}
@@ -264,35 +239,13 @@ public class CollectionUtils {
 	
 	/**
 	 * Gets a list of robots associated people of a settlement in its vicinity.
- 	 * Note: a person can be either inside the settlement or within its vicinity
+ 	 * Note: a robot can be either inside the settlement or within its vicinity
 	 * 
 	 * @param settlement the settlement
 	 * @return list of robots to display.
 	 */
 	public static List<Robot> getAssociatedRobotsInSettlementVicinity(Settlement settlement) {
-
 		return new ArrayList<>(settlement.getAllAssociatedRobots());
-		
-//		List<Robot> result = new ArrayList<Robot>();
-//
-//		if (settlement != null) {
-//			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
-//			while (i.hasNext()) {
-//				Robot robot = i.next();
-//				// Only select functional robots.
-//				if (!robot.getSystemCondition().isInoperable()) {
-//
-//					// Select a robot that is at the settlement location.
-//					Coordinates settlementLoc = settlement.getCoordinates();
-//					Coordinates loc = robot.getCoordinates();
-//					if (loc.equals(settlementLoc)) {
-//						result.add(robot);
-//					}
-//				}
-//			}
-//		}
-//
-//		return result;
 	}
 	
 	/**

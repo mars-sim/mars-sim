@@ -12,9 +12,9 @@ package com.mars_sim.core.astroarts;
 
 public class Xyz {
 	
-	public double fX;
-	public double fY;
-	public double fZ;
+	private double fX;
+	private double fY;
+	private double fZ;
 
 	/**
 	 * Default Constructor.
@@ -32,6 +32,18 @@ public class Xyz {
 		this.fZ = fZ;
 	}
 
+	public double getfX() {
+		return fX;
+	}
+	
+	public double getfY() {
+		return fY;
+	}
+	
+	public double getfZ() {
+		return fZ;
+	}
+	
 	/**
 	 * Rotation of Vector with Matrix
 	 */

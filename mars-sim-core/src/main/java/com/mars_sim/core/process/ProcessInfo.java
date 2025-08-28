@@ -9,6 +9,8 @@ package com.mars_sim.core.process;
 import java.io.Serializable;
 import java.util.List;
 
+import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 
@@ -186,9 +188,10 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	}
 
 	/**
-	 * Deposit the outputs of this process into the given settlement.
+	 * Deposits the outputs of this process into the given settlement.
+	 * 
 	 * @param settlement
-	 * @param updateGoods Update the value of teh goods
+	 * @param updateGoods Update the value of the goods
 	 */
     public void depositOutputs(Settlement settlement, boolean updateGoods) {
 		for (var item : outputList) {
@@ -197,7 +200,8 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
     }
 
 	/**
-	 * Retrieve the required inputs from the given settlement.
+	 * Retrieves the required inputs from the given settlement.
+	 * 
 	 * @param settlement
 	 */
 	public void retrieveInputs(Settlement settlement) {
@@ -213,6 +217,8 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 				default:
 					throw new IllegalArgumentException("Process input: " + item.getType() + " not a valid type.");
 			}
+			
+			settlement.fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(item.getId()));
 		}
 	}
 	

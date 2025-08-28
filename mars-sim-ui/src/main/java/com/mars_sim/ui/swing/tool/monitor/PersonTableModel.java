@@ -9,12 +9,13 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
@@ -172,7 +173,11 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 		sourceType = ValidSourceType.VEHICLE_CREW;
 		this.vehicle = vehicle;
-		resetEntities(vehicle.getCrew());
+		
+		Collection<Person> crew = CollectionUtils.sortByName(vehicle.getCrew());
+		
+		resetEntities(crew);
+		
 		crewListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		((Unit) vehicle).addUnitListener(crewListener);
@@ -199,7 +204,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				missionPeople.add((Person) member);
 			}
 		}
+		
+		CollectionUtils.sortByName(missionPeople);
 		resetEntities(missionPeople);
+		
 		missionListener = new LocalMissionListener();
 		mission.addMissionListener(missionListener);
 	}
@@ -222,7 +230,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		this.settlements = filter;
-		List<Person> entities = null;
+		
+		Collection<Person> entities = null;
 		
 		if (isLiveCB) {
 			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
@@ -230,6 +239,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getAllAssociatedPeople)
 								.flatMap(Collection::stream)
+								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
@@ -239,6 +249,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
+								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
@@ -250,6 +261,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getDeceasedPeople)
 								.flatMap(Collection::stream)
+								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
@@ -259,6 +271,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
+								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
@@ -270,6 +283,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getBuriedPeople)
 								.flatMap(Collection::stream)
+								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
@@ -280,6 +294,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
+								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
@@ -287,7 +302,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		
-		if (entities != null) {
+		if (entities != null && !entities.isEmpty()) {		
 			resetEntities(entities);
 		}
 

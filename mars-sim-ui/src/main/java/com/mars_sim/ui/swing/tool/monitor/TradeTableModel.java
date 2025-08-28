@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.equipment.BinFactory;
@@ -116,12 +115,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		if (event.getTarget() instanceof Good g
-			&& unit instanceof Settlement s) {
+			&& event.getSource() instanceof Settlement s) {
 			
 			switch (eventType) {
+				case UnitEventType.MASS_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
 				case UnitEventType.SUPPLY_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);
 				case UnitEventType.VALUE_EVENT ->
@@ -312,6 +312,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
     	}
     	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
     		// For Robots   
+    		// Future: will need to account for individual robot mass
     		return settlement.getNumBots() * Robot.EMPTY_MASS;
     	}    	
     	else {

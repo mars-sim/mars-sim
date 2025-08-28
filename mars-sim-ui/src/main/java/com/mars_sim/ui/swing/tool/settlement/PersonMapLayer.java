@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonMapLayer.java
- * @date 2023-11-06
+ * @date 2025-08-27
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -40,7 +40,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	
 	@Override
 	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
-		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);		
+		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement, false);		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
 		drawWorkers(people, selectedPerson, mapPanel.isOptionDisplayed(DisplayOption.PERSON_LABELS), viewpoint);

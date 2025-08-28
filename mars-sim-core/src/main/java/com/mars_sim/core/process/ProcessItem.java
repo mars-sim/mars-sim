@@ -9,6 +9,7 @@ package com.mars_sim.core.process;
 import java.io.Serializable;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.equipment.Bin;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -66,6 +67,7 @@ public class ProcessItem implements Serializable {
 
     /**
      * Deposits the item into the settlement.
+     * 
      * @param settlement
      * @param context The process driving the deposit
      * @param updateGoods Updated the Goods manager for this item
@@ -73,6 +75,7 @@ public class ProcessItem implements Serializable {
     void deposit(Settlement settlement, ProcessInfo context, boolean updateGoods) {
 		int outputId = -1;
 		double outputAmount = amount;
+		
 		switch(type) {
 			case AMOUNT_RESOURCE: {
 
@@ -112,13 +115,15 @@ public class ProcessItem implements Serializable {
 				for (int x = 0; x < number; x++) {
 					EquipmentFactory.createEquipment(equipmentType, settlement);
 				}
+
 			} break;
 
 			case BIN: {
 				// Produce bins.
 				int number = (int) outputAmount;
 				for (int x = 0; x < number; x++) {
-					BinFactory.createBins(name, settlement);
+					Bin bin = BinFactory.createBins(name, settlement);
+					settlement.addBin(bin);
 				}
 			} break;
 		
@@ -128,7 +133,7 @@ public class ProcessItem implements Serializable {
 				var unitMgr = Simulation.instance().getUnitManager();// Don't like this
 				for (int x = 0; x < number; x++) {
 					Vehicle v = VehicleFactory.createVehicle(unitMgr, settlement, name);
-
+					settlement.addOwnedVehicle(v);
 					outputId = VehicleType.getVehicleID(v.getVehicleType());
 				}
 			} break;
@@ -139,8 +144,9 @@ public class ProcessItem implements Serializable {
 			if (outputId >= 0) {
 				settlement.addOutput(outputId, outputAmount, context.getWorkTimeRequired());
 			}
-
-			Good good = GoodsUtil.getGood(name);
+			
+			Good good = GoodsUtil.getGood(outputId);
+			
 			if (good == null) {
 				logger.severe(name + " is not a good.");
 			}

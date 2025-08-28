@@ -11,7 +11,6 @@ import java.io.Serializable;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.process.ProcessInfo;
-import com.mars_sim.core.structure.Settlement;
 
 /**
  * A process that is executed in a Workshop.
@@ -168,10 +167,7 @@ public abstract class WorkshopProcess implements Serializable {
 	 * @param process
 	 */
 	protected void depositOutputs() {
-		var host = getWorkshop().getBuilding();
-		Settlement settlement = host.getAssociatedSettlement();
-
-		info.depositOutputs(settlement, true);
+		info.depositOutputs(getBuilding().getAssociatedSettlement(), true);
 	}
 
 	/**
@@ -180,10 +176,7 @@ public abstract class WorkshopProcess implements Serializable {
 	 * @param process
 	 */
 	protected void returnInputs() {
-		var host = getWorkshop().getBuilding();
-		Settlement settlement = host.getAssociatedSettlement();
-
-		info.returnInputs(settlement);
+		info.returnInputs(getBuilding().getAssociatedSettlement());
 	}
 
 

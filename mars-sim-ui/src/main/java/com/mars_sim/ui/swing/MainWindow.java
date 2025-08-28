@@ -155,7 +155,6 @@ public class MainWindow
 		// Set up the look and feel library to be used
 		StyleManager.setStyles(uiconfigs.getPropSets());
 
-//		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;

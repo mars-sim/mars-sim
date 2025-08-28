@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -77,7 +78,10 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
         // Create a new row key for each combination of Settlement and Catogory
 		Collection<CategoryKey<T>> newRows = new ArrayList<>();
         for(var s : filter) {
-            newRows.addAll(categories.stream().map(c -> new CategoryKey<>(s, c)).toList());
+            newRows.addAll(categories.stream()
+            		.map(c -> new CategoryKey<>(s, c))
+            		.sorted(Comparator.comparing(CategoryKey::getName))
+            		.toList());
         }
 
         // Initialize goods list.

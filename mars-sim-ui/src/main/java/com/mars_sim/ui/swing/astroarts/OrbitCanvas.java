@@ -247,9 +247,9 @@ class OrbitCanvas extends Canvas {
 	private Point getDrawPoint(Xyz xyz) {
 		// 600 means 5...fZoom...100 -> 120AU...Width...6AU
 		double fMul = this.fZoom * sizeCanvas.width / 600.0
-							* (1.0 + xyz.fZ / 250.0);		// Parse // 250 to 400
-		int nX = this.nX0 + (int)Math.round(xyz.fX * fMul);
-		int nY = this.nY0 - (int)Math.round(xyz.fY * fMul);
+							* (1.0 + xyz.getfZ() / 250.0);		// Parse // 250 to 400
+		int nX = this.nX0 + (int)Math.round(xyz.getfX() * fMul);
+		int nY = this.nY0 - (int)Math.round(xyz.getfY() * fMul);
 		return new Point(nX, nY);
 	}
 	
@@ -265,7 +265,7 @@ class OrbitCanvas extends Canvas {
 		point1 = getDrawPoint(xyz);
 		for (int i = 1; i <= planetOrbit.getDivision(); i++) {
 			xyz = planetOrbit.getAt(i).rotate(this.mtxToEcl);
-			if (xyz.fZ >= 0.0) {
+			if (xyz.getfZ()  >= 0.0) {
 				g.setColor(colorUpper);
 			} else {
 				g.setColor(colorLower);
@@ -417,7 +417,7 @@ class OrbitCanvas extends Canvas {
 
 			for (int i = 1; i <= this.objectOrbit.getDivision(); i++) {
 				xyz = this.objectOrbit.getAt(i).rotate(this.mtxToEcl);
-				if (xyz.fZ >= 0.0) {
+				if (xyz.getfZ()  >= 0.0) {
 					g2d.setColor(OBJECT_ORBIT_UPPER_COLOR);
 				} else {
 					g2d.setColor(OBJECT_ORBIT_LOWER_COLOR);
@@ -531,22 +531,22 @@ class OrbitCanvas extends Canvas {
 			var xyz2 = planetPos[3].rotate(this.mtxRotate);
 						
 			// Sun
-			double sdistance = Math.sqrt((xyz.fX * xyz.fX) + (xyz.fY * xyz.fY) + 
-								  (xyz.fZ * xyz.fZ)) + .0005;
+			double sdistance = Math.sqrt((xyz.getfX() * xyz.getfX()) + (xyz.getfY() * xyz.getfY()) + 
+								  (xyz.getfZ() * xyz.getfZ())) + .0005;
 			sdistance = (int)(sdistance * 1000.0)/1000.0;
 			
 			// Earth
-			double xdiff = xyz.fX - xyz1.fX;
-			double ydiff = xyz.fY - xyz1.fY;
-			double zdiff = xyz.fZ - xyz1.fZ;
+			double xdiff = xyz.getfX() - xyz1.getfX();
+			double ydiff = xyz.getfY() - xyz1.getfY();
+			double zdiff = xyz.getfZ() - xyz1.getfZ();
 			double edistance = Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) +
 								  (zdiff * zdiff)) + .0005;  
 			edistance = (int)(edistance * 1000.0)/1000.0;
 			
 			// Mars
-			double xdiff2 = xyz.fX - xyz2.fX;
-			double ydiff2 = xyz.fY - xyz2.fY;
-			double zdiff2 = xyz.fZ - xyz2.fZ;
+			double xdiff2 = xyz.getfX() - xyz2.getfX();
+			double ydiff2 = xyz.getfY() - xyz2.getfY();
+			double zdiff2 = xyz.getfZ() - xyz2.getfZ();
 			double mdistance = Math.sqrt((xdiff2 * xdiff2) + (ydiff2 * ydiff2) +
 								(zdiff2 * zdiff2)) + .0005;  
 			mdistance = (int)(mdistance * 1000.0)/1000.0;

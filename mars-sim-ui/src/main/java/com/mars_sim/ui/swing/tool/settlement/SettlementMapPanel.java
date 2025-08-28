@@ -486,7 +486,7 @@ public class SettlementMapPanel extends JPanel {
 		//         in the vicinity of this settlement
 		// Note 3: Could create a list of people not being out there on a mission as well as 
 		//         those visiting this settlement to shorten the execution time to find people 
-		for (Person person : CollectionUtils.getPeopleInSettlementVicinity(settlement)) {
+		for (Person person : CollectionUtils.getPeopleInSettlementVicinity(settlement, false)) {
 			if (person.getPosition().getDistanceTo(settlementPosition) <= SELECTION_RANGE) {
 				selectPerson(person);
 				return person;
@@ -928,8 +928,7 @@ public class SettlementMapPanel extends JPanel {
 	 * Cleans up the map panel for disposal.
 	 */
 	public void destroy() {
-		settlementTransparentPanel.destroy();
-		settlementTransparentPanel = null;
+
 		menu = null;
 		settlement = null;
 		settlementWindow = null;
@@ -948,8 +947,6 @@ public class SettlementMapPanel extends JPanel {
 		selectedPerson = null;
 		selectedBuilding = null;
 		selectedVehicle = null;
-		
-		settlementTransparentPanel = null;
 	
 		dayNightMapLayer.destroy();
 		dayNightMapLayer = null;
@@ -959,5 +956,8 @@ public class SettlementMapPanel extends JPanel {
 				
 		displayOptions.clear();
 		displayOptions = null;
+		
+		settlementTransparentPanel.destroy();
+		settlementTransparentPanel = null;
 	}
 }

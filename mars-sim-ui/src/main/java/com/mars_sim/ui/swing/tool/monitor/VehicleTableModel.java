@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,6 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -86,7 +87,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		COLUMNS[MODEL] = new ColumnSpec("Model", String.class);
 		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
-		COLUMNS[DESTINATION] = new ColumnSpec("Next Waypoint", Coordinates.class);
+		COLUMNS[DESTINATION] = new ColumnSpec("Next Waypoint", String.class);
 		COLUMNS[DESTDIST] = new ColumnSpec("Dist. to next [km]", Double.class);
 		COLUMNS[MISSION] = new ColumnSpec("Mission", String.class);
 		COLUMNS[CREW] = new ColumnSpec("Crew", Integer.class);
@@ -133,8 +134,14 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		resetEntities(filter.stream().flatMap(s -> s.getAllAssociatedVehicles().stream()).toList());
-
+		
+		Collection<Vehicle> vehicles = filter.stream()
+				.flatMap(s -> s.getAllAssociatedVehicles().stream())
+				.sorted(Comparator.comparing(Vehicle::getName))
+				.toList();
+	
+		resetEntities(vehicles);
+		
 		return true;
 	}
 

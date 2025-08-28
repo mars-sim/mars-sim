@@ -328,9 +328,10 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		subPanel = null;
 		
 		statusBar = null;
-		mapPanel.destroy();
 		
+		mapPanel.destroy();
 		mapPanel = null;
+		
 		desktop = null;
 	}
 }
