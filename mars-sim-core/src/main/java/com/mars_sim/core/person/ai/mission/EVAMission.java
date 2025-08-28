@@ -1,550 +1,468 @@
-/* 
+/*
  * Mars Simulation Project
- * EVAMission.java
- * @date 2025-08-17
+ * PersonTaskManager.java
+ * @date 2023-09-04
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.mission;
+package com.mars_sim.core.person.ai.task.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.malfunction.MalfunctionManager;
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
-import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.ai.CacheCreator;
+import com.mars_sim.core.person.ai.Mind;
+import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
+import com.mars_sim.core.person.ai.task.EatDrink;
+import com.mars_sim.core.person.ai.task.Sleep;
+import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.vehicle.Rover;
 
-abstract class EVAMission extends RoverMission {
+/**
+ * The PersonTaskManager class keeps track of a person's current task and can randomly
+ * assign a new task to a person based on a list of possible tasks and that
+ * person's current situation.
+ *
+ * There is one instance of TaskManager per person.
+ */
+public class PersonTaskManager extends TaskManager {
 
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
+
+	private static CacheCreator<TaskJob> defaultInsideTasks;
+	private static CacheCreator<TaskJob> defaultOutsideTasks;
 	
-	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
-	private static final MissionStatus EVA_SUIT_CANNOT_BE_LOADED = new MissionStatus("Mission.status.noEVASuits");
+	private static final String SLEEP = "Sleep";
+	private static final String EAT = "Eat";
 
-	// Maximum time to wait for sunrise
-	protected static final double MAX_WAIT_SUBLIGHT = 400D;
+	private static final String DIAGS_MODULE = "taskperson";
 
-	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
+	// === Failure cooldown guard rails (prevents thrash on failing metas) ===
+	/** Base pulses to cool down a meta after it throws during job/probability evaluation. */
+	private static final int FAILURE_COOLDOWN_PULSES = 200; // Tune 50–400 as desired
+	/** Maximum pulses for exponential backoff. */
+	private static final int MAX_FAILURE_COOLDOWN_PULSES = 1600;
 
-    private MissionPhase evaPhase;
-    private boolean activeEVA = true;
-	private int containerID;
-	private int containerNum;
-	private LightLevel minSunlight;
+	// === NEW: Empty-result cooldown guard rails (prevents thrash when meta returns no jobs) ===
+	/** Base pulses to cool down a meta after it yields NO TaskJobs for this person. */
+	private static final int EMPTY_COOLDOWN_PULSES = 60;   // short, because conditions may change soon
+	/** Maximum pulses for empty-result exponential backoff. */
+	private static final int MAX_EMPTY_COOLDOWN_PULSES = 600;
 
-    protected EVAMission(MissionType missionType, 
-            Worker startingPerson, Rover rover,
-            MissionPhase evaPhase, LightLevel minSunlight) {
-        super(missionType, startingPerson, rover);
-        
-        this.evaPhase = evaPhase;
-		this.minSunlight = minSunlight;
+	/** How often to prune expired cooldown entries. */
+	private static final int PRUNE_INTERVAL_PULSES = 500;
 
-		// Check suit although these may be claimed before loading
-		int suits = MissionUtil.getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
-		if (suits < getMembers().size()) {
-			endMission(EVA_SUIT_CANNOT_BE_LOADED);
-		}
-    }
-    
-	@Override
-	protected boolean determineNewPhase() {
-		boolean handled = true;
-		if (!super.determineNewPhase()) {
-			if (TRAVELLING.equals(getPhase())) {
-				if (isCurrentNavpointSettlement()) {
-					startDisembarkingPhase();
-				}
-				else if (canStartEVA()) {
-					setPhase(evaPhase, getCurrentNavpointDescription());
-					phaseEVAStarted();
-				}
-			}
-			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				setPhase(evaPhase, getCurrentNavpointDescription());
-				phaseEVAStarted();
-			}
-			else if (evaPhase.equals(getPhase())) {
-				startTravellingPhase();
-			}
-			else {
-				handled = false;
-			}
-		}
-		return handled;
+	/** Key: meta class name; Value: pulse # until which it stays cooled down (exclusive). */
+	private transient Map<String, Long> failedUntilPulse = new ConcurrentHashMap<>();
+	/** Key: meta class name; Value: consecutive failure count (resets on success). */
+	private transient Map<String, Integer> consecutiveFailures = new ConcurrentHashMap<>();
+
+	/** Key: meta class name; Value: pulse # until which it stays cooled down due to empty returns (exclusive). */
+	private transient Map<String, Long> emptyUntilPulse = new ConcurrentHashMap<>();
+	/** Key: meta class name; Value: consecutive empty count (resets on success). */
+	private transient Map<String, Integer> consecutiveEmpties = new ConcurrentHashMap<>();
+
+	/** Local pulse counter advanced once per cache rebuild. */
+	private transient long pulseCounter = 0L;
+
+	// === Modest off-duty wellbeing suggestion weights (keeps loop moving during lulls) ===
+	private static final double SLEEP_WEIGHT_OFFDUTY = 0.40;
+	private static final double EAT_WEIGHT_OFFDUTY   = 0.25;
+	private static final double WALK_WEIGHT_OFFDUTY  = 0.15;
+	private static final double EAT_WEIGHT_ONCALL    = 0.20;
+	private static final double WALK_WEIGHT_ONCALL   = 0.10;
+	
+	// Data members
+	
+	private transient List<MissionRating> missionProbCache;
+	
+	private transient MissionRating selectedMissionRating;
+	
+	/** The mind of the person the task manager is responsible for. */
+	private Mind mind;
+
+	private transient Person person;
+
+
+	/**
+	 * Constructor.
+	 *
+	 * @param mind the mind that uses this task manager.
+	 */
+	public PersonTaskManager(Mind mind) {
+		super(mind.getPerson());
+
+		// Initialize data members
+		this.mind = mind;
+
+		this.person = mind.getPerson();
 	}
 
 	/**
-	 * Can the EVA phase be started ?
+	 * Gets the diagnostics module name to used in any output.
 	 * 
-	 * @return 
-	 */
-	private boolean canStartEVA() {
-		boolean result = false;
-		if (isEnoughSunlightForEVA()) {
-			result = true;
-		}
-		else {
-			// Decide what to do
-			MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
-			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
-				// No point waiting, move to next site
-				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTruncatedDateTimeStamp());
-				addMissionLog(NOT_ENOUGH_SUNLIGHT);
-				startTravellingPhase();
-			}
-			else {
-				// Wait for sunrise
-				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
-				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Check that if the sunlight is suitable to continue
-	 * @param member Member triggering the waiting
-	 */
-	private void performWaitForSunlight(Worker member) {
-		if (isEnoughSunlightForEVA()) {
-			logger.info(getRover(), "Stop wait as enough sunlight");
-			setPhaseEnded(true);
-		}
-		else if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
-			logger.info(getRover(), "Waited long enough");
-			setPhaseEnded(true);
-			startTravellingPhase();
-		}
-	}
-
-
-	/**
-	 * Is there enough sunlight to leave the vehicle for an EVA
 	 * @return
 	 */
-	protected boolean isEnoughSunlightForEVA() {
-		var locn = getCurrentMissionLocation();
-
-		if (minSunlight == LightLevel.NONE) {
-			// Don't bother calculating sunlight; EVA valid in whatever conditions
-			return true;
-		}
-
-		// This is equivalent of a 1% sun ratio as below
-		return (EVAOperation.isSunlightAboveLevel(locn, minSunlight)
-					&& !surfaceFeatures.inDarkPolarRegion(locn));
+	@Override
+	protected String getDiagnosticsModule() {
+		return DIAGS_MODULE;
 	}
 
 	/**
-	 * Perform the current phase
+	 * Calculates and caches the probabilities. This will NOT use the cache but 
+	 * assumes the callers know when a cache can be used or not used.
+	 * 
+	 * @param now The current mars time
 	 */
 	@Override
-	protected void performPhase(Worker member) {
-		super.performPhase(member);
-		if (evaPhase.equals(getPhase())) {
-			evaPhase(member);
-		}
-		else if (WAIT_SUNLIGHT.equals(getPhase())) {
-			performWaitForSunlight(member);
-		}
-	}
+	protected CacheCreator<TaskJob> rebuildTaskCache(MarsTime now) {
 
-	/**
-	 * Ends the exploration at a site.
-	 */
-	@Override
-	public void abortPhase() {
-		if (evaPhase.equals(getPhase())) {
+		// Advance a lightweight "pulse" counter each rebuild; used for cooldown timing.
+		pulseCounter++;
 
-			logger.info(getRover(), "EVA ended due to external trigger.");
-
-			endEVATasks();
-		}
-		else
-			super.abortPhase();
-	}
-
-    /**
-	 * End all EVA Operations
-	 */
-	protected void endEVATasks() {
-		// End each member's EVA task.
-		for(Worker member : getMembers()) {
-			if (member instanceof Person person) {
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof EVAOperation eo) {
-					eo.requestEndEVA();
-				}
-			}
-		}
-	}
-    
-	/**
-	 * Performs the explore site phase of the mission.
-	 *
-	 * @param member the mission member currently performing the mission
-	 * @throws MissionException if problem performing phase.
-	 */
-	private void evaPhase(Worker member) {
-
-		if (activeEVA) {
-			// NEW: proactively clean up teleported members before doing any EVA work.
-			checkTeleported();
-			// If this tick's member was just removed, skip further work this tick.
-			if (!getMembers().contains(member)) {
-				logger.info(getVehicle(), "Skipping EVA tick for removed/teleported member.");
-				return;
-			}
-
-			// Check if crew has been at site for more than one sol.
-			double timeDiff = getPhaseDuration();
-			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
-				logger.info(getVehicle(), "Ran out of EVA site time.");
-				activeEVA = false;
-			}
-
-			// If no one can explore the site and this is not due to it just being
-			// night time, end the exploring phase.
-			if (activeEVA && !isEnoughSunlightForEVA()) {
-				logger.info(getVehicle(), "Not enough sunlight during the EVA phase of the mission.");
-				addMissionLog(NOT_ENOUGH_SUNLIGHT);
-				activeEVA = false;
-			}
-
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (activeEVA && hasEmergency()) {
-				logger.info(getVehicle(), "A medical emergency was reported during the EVA phase of the mission.");
-				activeEVA = false;
-			}
-
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
-				logger.info(getVehicle(), "Not enough resources was reported during the EVA phase of the mission.");
-				activeEVA = false;
-			}
-			
-			// All good so far, perform the EVA
-			if (activeEVA) {
-				// performEVA will check if rover capacity is full
-				activeEVA = performEVA((Person) member);
-				if (!activeEVA) {
-					logger.info(member, "EVA operation Terminated.");
-					addMissionLog("EVA operation Terminated.");
-				}
-			}
-		} 
-
-		// An EVA-ending event was triggered. End EVA phase.
-		if (!activeEVA) {
-			
-			// Proactively drop any "teleported" members in a CME-safe way.
-			checkTeleported();
-
-			if (isEveryoneInRover()) {
-				// End phase
-				phaseEVAEnded();
-				setPhaseEnded(true);
-			} 
-			else {
-				// Call everyone back inside
-				endEVATasks();
-			}
-		}
-	}
-
-	/**
-	 * Ensures no "teleported" person is still a member of this mission.
-	 * Drops them from the mission safely outside the iteration to avoid CME.
-	 */
-	void checkTeleported() {
-
-		// Phase 1: scan and collect potential removals (no structural change yet).
-		List<Worker> removals = new ArrayList<>();
-		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
-			Worker member = i.next();
-
-			if (member instanceof Person p
-				&& (p.isInSettlement() 
-				|| p.isInSettlementVicinity()
-				|| p.isRightOutsideSettlement())) {
-
-				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-				
-				removals.add(member);
-			}
+		// Periodically prune expired cooldown entries to avoid unbounded growth.
+		if ((pulseCounter % PRUNE_INTERVAL_PULSES) == 0) {
+			pruneExpiredCooldowns();
 		}
 
-		// Phase 2: remove via mission API; this may adjust membership safely.
-		for (Worker m : removals) {
+		List<FactoryMetaTask> mtList = null;
+		String shiftDesc = null;
+		WorkStatus workStatus = person.getShiftSlot().getStatus();
+        shiftDesc = switch (workStatus) {
+            case OFF_DUTY, ON_LEAVE -> {
+                mtList = MetaTaskUtil.getNonDutyHourTasks();
+                yield "Shift: Non-Duty";
+            }
+            case ON_CALL -> {
+                mtList = MetaTaskUtil.getOnCallMetaTasks();
+                yield "Shift: On-Call";
+            }
+            case ON_DUTY -> {
+                mtList = MetaTaskUtil.getDutyHourTasks();
+                yield "Shift: On-Duty";
+            }
+            default -> throw new IllegalStateException("Do not know status " + workStatus);
+        };
+
+		// Create new taskProbCache
+		CacheCreator<TaskJob> newCache = new CacheCreator<>(shiftDesc, now);
+
+		// Determine candidate TaskJobs with guard rails and cooldowns.
+		for (FactoryMetaTask mt : mtList) {
+			final String key = mt.getClass().getName();
+
+			// Skip metas currently in cooldown (prevents repeated exceptions & thrash).
+			Long fUntil = failedUntilPulse.get(key);
+			if (fUntil != null && fUntil > pulseCounter) {
+				logger.info(person, 10_000L, "Cooling down meta " + key + " after failure; skipping this tick.");
+				continue;
+			}
+			Long eUntil = emptyUntilPulse.get(key);
+			if (eUntil != null && eUntil > pulseCounter) {
+				logger.fine(person, 8_000L, "Meta " + key + " yielded no jobs earlier; short cool-down in effect.");
+				continue;
+			}
+
 			try {
-				memberLeave(m);
+				List<TaskJob> job = mt.getTaskJobs(person);
+
+				if (job != null && !job.isEmpty()) {
+					newCache.add(job);
+
+					// Success path: clear any cooldown / counters.
+					failedUntilPulse.remove(key);
+					consecutiveFailures.remove(key);
+					emptyUntilPulse.remove(key);
+					consecutiveEmpties.remove(key);
+				}
+				else {
+					// Empty result: apply short exponential backoff to avoid per-pulse thrash.
+					long cool = computeNextEmptyCooldown(key);
+					emptyUntilPulse.put(key, pulseCounter + cool);
+					logger.fine(person, 8_000L,
+							"Meta " + key + " returned no TaskJobs — cooling down for " + cool + " pulses.");
+				}
+			}
+			catch (IllegalArgumentException | IllegalStateException ex) {
+				// Common precondition errors (e.g., not a collaborator yet) — back off.
+				long cool = computeNextFailureCooldown(key);
+				failedUntilPulse.put(key, pulseCounter + cool);
+				logger.info(person, 10_000L,
+						"Meta " + key + " failed (" + ex.getClass().getSimpleName() + "): " + ex.getMessage()
+						+ " — cooling down for " + cool + " pulses.");
 			}
 			catch (RuntimeException ex) {
-				// Fail-soft: don't let a cleanup issue break the mission tick.
-				logger.warning(getVehicle(), "Error removing teleported member: " + ex.getMessage());
+				// Fail-soft for unexpected runtime errors; keep simulation ticking.
+				long cool = computeNextFailureCooldown(key);
+				failedUntilPulse.put(key, pulseCounter + cool);
+				logger.warning(person, 10_000L,
+						"Meta " + key + " runtime failure: " + ex.getClass().getSimpleName()
+						+ " — cooling down for " + cool + " pulses.");
 			}
 		}
+
+		// Light “wellbeing” cadence during off-duty windows to smooth pacing
+		injectOffDutyWellbeingTasks(newCache, workStatus);
+
+		// Add in any Settlement Tasks
+		if ((workStatus == WorkStatus.ON_DUTY) && person.isInSettlement()) {
+			SettlementTaskManager stm = person.getAssociatedSettlement().getTaskManager();
+			newCache.add(stm.getTasks(person));
+		}
+
+		// Check if the map cache is empty
+		if (newCache.getCache().isEmpty()) {
+			if (person.isOutside()) {
+				newCache = getDefaultOutsideTasks();
+			}
+			else {
+				newCache = getDefaultInsideTasks();
+			}
+			logger.warning(person, 30_000L, "No normal task available. Get default "
+								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
+		}
+		return newCache;
+	}
+
+	/**
+	 * Computes the next failure-based cooldown using exponential backoff capped at a maximum.
+	 * Increments the consecutive failure count for this meta.
+	 */
+	private long computeNextFailureCooldown(String key) {
+		int failures = consecutiveFailures.getOrDefault(key, 0) + 1;
+		consecutiveFailures.put(key, failures);
+
+		long cool = (long) FAILURE_COOLDOWN_PULSES << (failures - 1);
+		if (cool > MAX_FAILURE_COOLDOWN_PULSES) {
+			cool = MAX_FAILURE_COOLDOWN_PULSES;
+		}
+		return cool;
+	}
+
+	/**
+	 * Computes the next empty-result cooldown using exponential backoff capped at a maximum.
+	 * Increments the consecutive empty count for this meta.
+	 */
+	private long computeNextEmptyCooldown(String key) {
+		int empties = consecutiveEmpties.getOrDefault(key, 0) + 1;
+		consecutiveEmpties.put(key, empties);
+
+		long cool = (long) EMPTY_COOLDOWN_PULSES << (empties - 1);
+		if (cool > MAX_EMPTY_COOLDOWN_PULSES) {
+			cool = MAX_EMPTY_COOLDOWN_PULSES;
+		}
+		return cool;
+	}
+
+	/** Removes expired cooldown entries and resets stale counters opportunistically. */
+	private void pruneExpiredCooldowns() {
+		// Failure-based cooldowns
+		for (Map.Entry<String, Long> e : failedUntilPulse.entrySet()) {
+			if (e.getValue() <= pulseCounter) {
+				failedUntilPulse.remove(e.getKey());
+				// Do not clear consecutiveFailures here; we clear on the next success to avoid oscillation.
+			}
+		}
+		// Empty-result cooldowns
+		for (Map.Entry<String, Long> e : emptyUntilPulse.entrySet()) {
+			if (e.getValue() <= pulseCounter) {
+				emptyUntilPulse.remove(e.getKey());
+				// Keep consecutiveEmpties until a success, mirroring failure behavior.
+			}
+		}
+	}
+
+	/**
+	 * Injects small always-valid TaskJobs for off-duty contexts to avoid harsh fallbacks.
+	 * Keeps weights modest so normal metas still dominate when available.
+	 */
+	private void injectOffDutyWellbeingTasks(CacheCreator<TaskJob> cache, WorkStatus status) {
+		// On duty: no injection.
+		if (status == WorkStatus.ON_DUTY) return;
+
+		final boolean outside = person.isOutside();
+
+		// OFF_DUTY / ON_LEAVE
+		if (status == WorkStatus.OFF_DUTY || status == WorkStatus.ON_LEAVE) {
+			if (!outside) {
+				cache.put(new AbstractTaskJob(SLEEP, new RatingScore(SLEEP_WEIGHT_OFFDUTY)) {
+					private static final long serialVersionUID = 1L;
+					@Override public Task createTask(Person p) { return new Sleep(p); }
+				});
+				cache.put(new AbstractTaskJob(EAT, new RatingScore(EAT_WEIGHT_OFFDUTY)) {
+					private static final long serialVersionUID = 1L;
+					@Override public Task createTask(Person p) { return new EatDrink(p); }
+				});
+			}
+			cache.put(new AbstractTaskJob("Walk", new RatingScore(WALK_WEIGHT_OFFDUTY)) {
+				private static final long serialVersionUID = 1L;
+				@Override public Task createTask(Person p) { return new Walk(p); }
+			});
+			return;
+		}
+
+		// ON_CALL: keep it light, avoid long sleep blocks
+		if (status == WorkStatus.ON_CALL) {
+			if (!outside) {
+				cache.put(new AbstractTaskJob(EAT, new RatingScore(EAT_WEIGHT_ONCALL)) {
+					private static final long serialVersionUID = 1L;
+					@Override public Task createTask(Person p) { return new EatDrink(p); }
+				});
+			}
+			cache.put(new AbstractTaskJob("Walk", new RatingScore(WALK_WEIGHT_ONCALL)) {
+				private static final long serialVersionUID = 1L;
+				@Override public Task createTask(Person p) { return new Walk(p); }
+			});
+		}
+	}
+
+	/**
+	 * Shared cache for person who are Inside. Contains the basic Task
+	 * that can always be done.
+	 */
+	private static synchronized CacheCreator<TaskJob> getDefaultInsideTasks() {
+		if (defaultInsideTasks == null) {
+			defaultInsideTasks = new CacheCreator<>("Default Inside", null);
+			
+			// Create a fallback Task job that can always be done
+			RatingScore base = new RatingScore(1D);
+			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Task createTask(Person person) {
+					return new Sleep(person);
+				}	
+			};
+			defaultInsideTasks.put(sleepJob);
+
+			TaskJob eatJob = new AbstractTaskJob(EAT, base) {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Task createTask(Person person) {
+					return new EatDrink(person);
+				}	
+			};
+			defaultInsideTasks.put(eatJob);
+		}
+		return defaultInsideTasks;
+	}
+
+	/**
+	 * Shared cache for person who are Outside. This forces a return to the settlement.
+	 */
+	private static synchronized CacheCreator<TaskJob> getDefaultOutsideTasks() {
+		if (defaultOutsideTasks == null) {
+			defaultOutsideTasks = new CacheCreator<>("Default Outside", null);
+
+			// Create a MetaTask to return inside
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Task createTask(Person person) {
+					logger.info(person, 10_000L, "Returning inside to find work.");
+					return new Walk(person);
+				}	
+			};
+			defaultOutsideTasks.put(walkBack);
+		}
+		return defaultOutsideTasks;
 	}
 	
-    /**
-     * Perform the specific EVA activities. This may cancel the EVA phase
-     * @param person
-     * @return
-     */
-	protected abstract boolean performEVA(Person person);
-
 	/**
-	 * Signak the start of an EVA phase to do any housekeeping
+	 * A Person can do pending tasks if they are not outside and not on a Mission.
+	 * @return Whether person is inside
 	 */
-	protected void phaseEVAStarted() {
-		activeEVA = true;
+	@Override
+	protected boolean isPendingPossible() {
+		return (!person.isOutside() || (person.getMission() == null));
 	}
 
+	@Override
+	protected Task createTask(TaskJob selectedWork) {
+		return selectedWork.createTask(mind.getPerson());
+	}
+	
+	
 	/**
-	 * Notifies the sub-classes that the current EVA has ended. Trigger any housekeeping.
-	 */
-	protected void phaseEVAEnded() {
-	}
-
-    /**
-     * Calculate the spare parts needed for the trip
-     */
-    @Override
-	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
-		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
-
-		// Determine repair parts for EVA Suits.
-		double evaTime = getEstimatedRemainingEVATime(true);
-		double numberAccidents = evaTime * getMembers().size()* EVAOperation.BASE_ACCIDENT_CHANCE;
-
-		// Assume the average number malfunctions per accident is 1.5.
-		double numberMalfunctions = numberAccidents * MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
-
-		result.putAll(getEVASparePartsForTrip(numberMalfunctions));
-
-		return result;
-	}
-
-    /**
-     * Get the remaining mission time based on the travel and the remaining EVA time.
-     * @return Mission time left.
-     */
-    @Override
-	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-		result += getEstimatedRemainingEVATime(useBuffer);
-		return result;
-	}
-
-    /**
-	 * Gets the range of a trip based on its time limit and collection sites.
-	 *
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param numSites      the number of collection sites.
-	 * @param useBuffer     Use time buffer in estimations if true.
-	 * @return range (km) limit.
-	 */
-	protected double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
-		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites;
-		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double averageSpeedMillisol = averageSpeed / MarsTime.MILLISOLS_PER_HOUR;
-		return tripTimeTravellingLimit * averageSpeedMillisol;
-	}
-
-	/**
-	 * Gets the total number of EVA sites for this mission.
-	 *
-	 * @return number of sites.
-	 */
-	public final int getNumEVASites() {
-		return getNavpoints().size() - 2;
-	}
-
-	/**
-	 * Gets the number of EVA sites that have been currently visited by the
-	 * mission.
-	 *
-	 * @return number of sites.
-	 */
-	private final int getNumEVASitesVisited() {
-		int result = getCurrentNavpointIndex();
-		if (result == (getNavpoints().size() - 1))
-			result -= 1;
-		return result;
-	}
-
-	/**
-	 * Gets the estimated time remaining for exploration sites in the mission.
-	 *
-	 * @return time (millisols)
-	 * @throws MissionException if error estimating time.
-	 */
-	private double getEstimatedRemainingEVATime(boolean buffer) {
-		double result = 0D;
-		double evaSiteTime = getEstimatedTimeAtEVASite(buffer);
-
-		// Add estimated remaining exploration time at current site if still there.
-		if (evaPhase.equals(getPhase())) {
-			double remainingTime = evaSiteTime - getPhaseDuration();
-			if (remainingTime > 0D)
-				result += remainingTime;
-		}
-		
-		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT/1000;
-		
-		// Add estimated EVA time at sites that haven't been visited yet.
-		int remainingEVASites = getNumEVASites() - getNumEVASitesVisited();
-		result += evaSiteTime * remainingEVASites * sunriseWaitMod;
-
-		return result;
-	}
-
-	/**
-	 * Defines equipment needed for the EVAs.
+	 * Sets the list of mission ratings and the selected mission rating.
 	 * 
-	 * @param eqmType Equipment needed
-	 * @param eqmNum Number of equipment
+	 * @param missionProbCache
+	 * @param selectedMetaMissionRating
 	 */
-	protected void setEVAEquipment(EquipmentType eqmType, int eqmNum) {
-		this.containerID = EquipmentType.getResourceID(eqmType);
-		this.containerNum = eqmNum;
+	public void setMissionRatings(List<MissionRating> missionProbCache,
+								  MissionRating selectedMetaMissionRating) {
+		this.missionProbCache = missionProbCache;
+		this.selectedMissionRating = selectedMetaMissionRating;
+	}
+	
+	/**
+	 * Gets the list of mission ratings.
+	 * 
+	 * @return
+	 */
+	public List<MissionRating> getMissionProbCache() {
+		return missionProbCache;
+	}
+	
+	/**
+	 * Gets the selected mission rating.
+	 * 
+	 * @return
+	 */
+	public MissionRating getSelectedMission() {
+		return selectedMissionRating;
 	}
 
+	/** Exposed for tests or diagnostics. */
+	boolean isCoolingDown(String metaClassName) {
+		Long until = failedUntilPulse.get(metaClassName);
+		if (until != null && until > pulseCounter) return true;
+		Long euntil = emptyUntilPulse.get(metaClassName);
+		return (euntil != null) && (euntil > pulseCounter);
+	}
+	
+	public void reinit() {
+		person = mind.getPerson();
+		super.reinit(person);
+		// Ensure cooldown maps exist after reinit/deserialization.
+		if (failedUntilPulse == null) {
+			failedUntilPulse = new ConcurrentHashMap<>();
+		}
+		if (consecutiveFailures == null) {
+			consecutiveFailures = new ConcurrentHashMap<>();
+		}
+		if (emptyUntilPulse == null) {
+			emptyUntilPulse = new ConcurrentHashMap<>();
+		}
+		if (consecutiveEmpties == null) {
+			consecutiveEmpties = new ConcurrentHashMap<>();
+		}
+	}
+
+	/**
+	 * Prepares object for garbage collection.
+	 */
 	@Override
-	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Integer> result = super.getEquipmentNeededForRemainingMission(useBuffer);
+	public void destroy() {
+		mind.destroy();
+		mind = null;
+		person.destroy();
+		person = null;
 
-		// Include required number of containers.
-		if (containerID > 0) {
-			result.put(containerID, containerNum);
-		}
-		return result;
-	}
-
-	/**
-	 * Estimate the time needed at an EVA site.
-	 * @param buffer Add a buffer allowance
-	 * @return Estimated time per EVA site
-	 */
-	protected abstract double getEstimatedTimeAtEVASite(boolean buffer);
-
-	@Override
-	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
-
-		double explorationSitesTime = getEstimatedRemainingEVATime(useBuffer);
-		double timeSols = explorationSitesTime / 1000D;
-
-		// Add the amount for the site visits
-		result = addLifeSupportResources(result, getMembers().size(), timeSols, useBuffer);
-
-		return result;
-	}
-
-
-	/**
-	 * Order a list of Coordinates starting from a point to minimise
-	 * the travel time.
-	 *
-	 * We keep the original nearest-neighbour seed (fast), then run a small 2‑Opt
-	 * refinement loop to cut obvious path crossings. This reduces total driving time
-	 * without touching any other file or adding dependencies.
-	 *
-	 * @param unorderedSites Sites to visit (unordered)
-	 * @param startingLocation Start point for the route
-	 * @return Ordered sites for a shorter path (no return-to-start)
-	 */
-	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
-
-		List<Coordinates> unordered = new ArrayList<>(unorderedSites);
-		List<Coordinates> route = new ArrayList<>(unordered.size());
-		Coordinates current = startingLocation;
-
-		// --- Greedy nearest-neighbour seed ---
-		while (!unordered.isEmpty()) {
-			Coordinates best = unordered.get(0);
-			double bestDist = current.getDistance(best);
-			for (Coordinates site : unordered) {
-				double d = current.getDistance(site);
-				if (d < bestDist) {
-					best = site;
-					bestDist = d;
-				}
-			}
-			unordered.remove(best);
-			route.add(best);
-			current = best;
-		}
-
-		// --- Light 2-Opt refinement (bounded passes) ---
-		return twoOptImprove(startingLocation, route, /*maxPasses*/ 20);
-	}
-
-	/** Computes the path length from start through the route (no return). */
-	private static double routeDistance(Coordinates start, List<Coordinates> route) {
-		if (route.isEmpty()) return 0D;
-		double total = start.getDistance(route.get(0));
-		for (int i = 0; i < route.size() - 1; i++) {
-			total += route.get(i).getDistance(route.get(i + 1));
-		}
-		return total;
-	}
-
-	/**
-	 * Simple 2‑Opt: try reversing segments (i+1..k) if it shortens the path.
-	 * Bounded passes to keep it lightweight for gameplay pacing.
-	 */
-	private static List<Coordinates> twoOptImprove(Coordinates start, List<Coordinates> route, int maxPasses) {
-		int n = route.size();
-		if (n < 4) return route; // nothing to do
-
-		double best = routeDistance(start, route);
-		boolean improved = true;
-		int passes = 0;
-
-		while (improved && passes++ < maxPasses) {
-			improved = false;
-
-			for (int i = 0; i < n - 2; i++) {
-				Coordinates a = (i == 0) ? start : route.get(i - 1);
-				Coordinates b = route.get(i);
-				for (int k = i + 1; k < n - 1; k++) {
-					Coordinates c = route.get(k);
-					Coordinates d = route.get(k + 1);
-
-					// Current edges: a-b, c-d
-					double currentCost = a.getDistance(b) + c.getDistance(d);
-					// Proposed edges: a-c, b-d
-					double newCost = a.getDistance(c) + b.getDistance(d);
-
-					if (newCost + 1e-9 < currentCost) {
-						// Reverse the middle segment [i..k]
-						Collections.reverse(route.subList(i, k + 1));
-						best = best - currentCost + newCost;
-						improved = true;
-					}
-				}
-			}
-		}
-		return route;
+		super.destroy();
 	}
 }
