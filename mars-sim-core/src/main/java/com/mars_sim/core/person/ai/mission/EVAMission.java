@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.task.util;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +52,7 @@ public class PersonTaskManager extends TaskManager {
 	/** Maximum pulses for exponential backoff. */
 	private static final int MAX_FAILURE_COOLDOWN_PULSES = 1600;
 
-	// === NEW: Empty-result cooldown guard rails (prevents thrash when meta returns no jobs) ===
+	// === Empty-result cooldown guard rails (prevents thrash when meta returns no jobs) ===
 	/** Base pulses to cool down a meta after it yields NO TaskJobs for this person. */
 	private static final int EMPTY_COOLDOWN_PULSES = 60;   // short, because conditions may change soon
 	/** Maximum pulses for empty-result exponential backoff. */
@@ -167,7 +168,7 @@ public class PersonTaskManager extends TaskManager {
 			}
 			Long eUntil = emptyUntilPulse.get(key);
 			if (eUntil != null && eUntil > pulseCounter) {
-				logger.fine(person, 8_000L, "Meta " + key + " yielded no jobs earlier; short cool-down in effect.");
+				logger.info(person, 8_000L, "Meta " + key + " yielded no jobs earlier; short cool-down in effect.");
 				continue;
 			}
 
@@ -187,7 +188,7 @@ public class PersonTaskManager extends TaskManager {
 					// Empty result: apply short exponential backoff to avoid per-pulse thrash.
 					long cool = computeNextEmptyCooldown(key);
 					emptyUntilPulse.put(key, pulseCounter + cool);
-					logger.fine(person, 8_000L,
+					logger.info(person, 8_000L,
 							"Meta " + key + " returned no TaskJobs — cooling down for " + cool + " pulses.");
 				}
 			}
@@ -264,17 +265,19 @@ public class PersonTaskManager extends TaskManager {
 
 	/** Removes expired cooldown entries and resets stale counters opportunistically. */
 	private void pruneExpiredCooldowns() {
-		// Failure-based cooldowns
-		for (Map.Entry<String, Long> e : failedUntilPulse.entrySet()) {
+		// Failure-based cooldowns (iterator removal to avoid CME)
+		for (Iterator<Map.Entry<String, Long>> it = failedUntilPulse.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<String, Long> e = it.next();
 			if (e.getValue() <= pulseCounter) {
-				failedUntilPulse.remove(e.getKey());
-				// Do not clear consecutiveFailures here; we clear on the next success to avoid oscillation.
+				it.remove();
+				// Do not clear consecutiveFailures here; clear on success to avoid oscillation.
 			}
 		}
-		// Empty-result cooldowns
-		for (Map.Entry<String, Long> e : emptyUntilPulse.entrySet()) {
+		// Empty-result cooldowns (iterator removal to avoid CME)
+		for (Iterator<Map.Entry<String, Long>> it = emptyUntilPulse.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<String, Long> e = it.next();
 			if (e.getValue() <= pulseCounter) {
-				emptyUntilPulse.remove(e.getKey());
+				it.remove();
 				// Keep consecutiveEmpties until a success, mirroring failure behavior.
 			}
 		}
@@ -386,7 +389,7 @@ public class PersonTaskManager extends TaskManager {
 	 * A Person can do pending tasks if they are not outside and not on a Mission.
 	 * @return Whether person is inside
 	 */
-	@Override
+	// NOTE: Do not mark @Override; the base TaskManager may not declare this method.
 	protected boolean isPendingPossible() {
 		return (!person.isOutside() || (person.getMission() == null));
 	}
