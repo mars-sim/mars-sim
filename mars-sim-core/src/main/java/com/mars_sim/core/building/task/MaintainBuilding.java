@@ -1,12 +1,17 @@
 /*
  * Mars Simulation Project
  * MaintainBuilding.java
- * @date 2025-08-24
+ * @date 2025-08-27
  * @author Scott Davis
  */
 package com.mars_sim.core.building.task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -16,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -69,8 +75,25 @@ public class MaintainBuilding extends Task  {
 		setDescription(des);
 		logger.info(worker, 30_000, des + ".");
 		
-		// Walk to random location in building.
-		walkToRandomLocInBuilding(entity, false);
+		
+		if (entity.isInhabitable()) {
+			// walk to an admin and remotely inspect the building
+			Settlement s = worker.getSettlement();
+			if (s != null) {
+				List<Building> buildingList = new ArrayList<>(
+						BuildingManager.getBuildingsinSameZone(worker, FunctionType.ADMINISTRATION));
+				int size = buildingList.size();
+				boolean success = false;
+				for (int i=0; i<size && !success; i++) {
+					success = walkToActivitySpotInBuilding(buildingList.get(i), 
+							FunctionType.ADMINISTRATION, false);
+				}
+			}
+		}
+		else {
+			// Walk to random location in building.
+			walkToRandomLocInBuilding(entity, false);
+		}
 
 		// Initialize phase.
 		setPhase(MAINTAIN);

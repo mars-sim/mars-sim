@@ -272,15 +272,15 @@
 
 
 <!-- Salt resources -->
-	<resource name="Table salt" type="chemical" phase="solid" demand=".15" edible="true">
+	<resource name="Table salt" type="chemical" phase="solid" demand="0.25" edible="true">
 		Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="Rock salt" type="compound" phase="solid" demand="1.5">
+	<resource name="Rock salt" type="chemical" phase="solid" demand="0.25">
 		Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
-	<resource name="Epsom salt" type="chemical" phase="solid" demand=".5"> 
+	<resource name="Epsom salt" type="chemical" phase="solid" demand="0.5"> 
 		Magnesium Sulfate as bath salt to
 		soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="Perchlorate" type="chemical" phase="solid" demand=".5"> 
+	<resource name="Perchlorate" type="chemical" phase="solid" demand="0.5"> 
 		Perchlorate salts such as magnesium perchlorate Mg(ClO4)2 is a powerful 
 		oxidizing agent. 
 		

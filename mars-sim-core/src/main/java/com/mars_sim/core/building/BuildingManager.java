@@ -617,20 +617,20 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a list of non-malfunctioned buildings with a particular function type.
 	 *
-	 * @param person
+	 * @param worker
 	 * @param functionType
 	 * @return
 	 */
-	private static Set<Building> getBuildingsinSameZone(Person person, FunctionType functionType) {		
-		if (person.getBuildingLocation() != null) {
-			return person.getSettlement().getBuildingManager().getBuildingSet(functionType)
+	public static Set<Building> getBuildingsinSameZone(Worker worker, FunctionType functionType) {		
+		if (worker.getBuildingLocation() != null) {
+			return worker.getSettlement().getBuildingManager().getBuildingSet(functionType)
 					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+					.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
 		
-		return person.getSettlement().getBuildingManager().getBuildingSet(functionType)
+		return worker.getSettlement().getBuildingManager().getBuildingSet(functionType)
 				.stream()
 				.filter(b -> b.getZone() == 0
 						&& !b.getMalfunctionManager().hasMalfunction())

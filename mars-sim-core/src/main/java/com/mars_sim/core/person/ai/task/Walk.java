@@ -240,23 +240,54 @@ public class Walk extends Task {
 	 * @param destPosition Final destination within an interior object
 	 * @param destZ Vertical destination
 	 * @param destObject Destination
+	 * @param needEVA
 	 * @return
 	 */
-	public static Walk createWalkingTask(Person person, LocalPosition destPosition, LocalBoundedObject destObject) {
+	public static Walk createWalkingTask(Person person, LocalPosition destPosition, 
+			LocalBoundedObject destObject, boolean needEVA) {
 		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
-        // Check if all airlocks can be exited.
-		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
-		// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
-		canWalk = canWalk && canExitAllAirlocks(person, walkingSteps);
-
+		if (canWalk) {
+			if (needEVA) {
+		        // Check if all airlocks can be exited
+				canWalk = canExitAllAirlocks(person, walkingSteps);
+			}
+			// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
+			// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
+		}
+		else {
+			return null;
+		}
+		
 		if (canWalk) {
 			return new Walk(person, walkingSteps);
 		}
+		
 		return null;
 	}
 
+	/**
+	 * Check if person can walk to a local destination.
+	 *
+	 * @param person       the person.
+	 * @param walkingSteps the walking steps.
+	 * @return true if a person can walk all the steps to the destination.
+	 */
+	public static boolean canWalkAllSteps(Person person, WalkingSteps walkingSteps) {
+		// Note: should add boolean needEVA param to avoid airlock checks
+		
+		// Check if all steps can be walked.
+		boolean canWalk = walkingSteps.canWalkAllSteps();
+		if (!canWalk)
+			return false;
+		
+        // Check if all airlocks can be exited.
+		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
+		// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
+		return canExitAllAirlocks(person, walkingSteps);
+	}
+	
 	/**
 	 * This is a factory method to create a Walk task if there is a valid path.
 	 *
@@ -302,25 +333,6 @@ public class Walk extends Task {
 	public static boolean canWalk(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
 		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
 		return canWalkAllSteps(robot, walkingSteps);
-	}
-	
-	/**
-	 * Check if person can walk to a local destination.
-	 *
-	 * @param person       the person.
-	 * @param walkingSteps the walking steps.
-	 * @return true if a person can walk all the steps to the destination.
-	 */
-	public static boolean canWalkAllSteps(Person person, WalkingSteps walkingSteps) {
-		// Check if all steps can be walked.
-		boolean canWalk = walkingSteps.canWalkAllSteps();
-		if (!canWalk)
-			return false;
-		
-        // Check if all airlocks can be exited.
-		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
-		// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
-		return canExitAllAirlocks(person, walkingSteps);
 	}
 	
 	/**
@@ -399,7 +411,14 @@ public class Walk extends Task {
 				WalkingSteps.WalkStep step = i.next();
 				if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
 					Airlock airlock = step.airlock;
-					if (!ExitAirlock.canExitAirlock(person, airlock)) {
+					
+					// Question: can it be more than one airlock ?
+					// Answer: it may involve a vehicle airlock and a building airlock
+					
+					// But is it realistic to check beyond the immediate airlock
+					// such as the faraway (second airlock)	?	 
+					
+					if (ExitAirlock.isFull(airlock)) {
 						return false;
 					}
 				}

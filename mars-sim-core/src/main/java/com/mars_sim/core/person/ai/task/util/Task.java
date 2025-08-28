@@ -982,7 +982,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	
 		// Create subtask for walking to destination.
-		return createWalkingSubtask(bed.getOwner(), bedLoc, allowFail);
+		return createWalkingSubtask(bed.getOwner(), bedLoc, allowFail, true);
 	}
 
 	/**
@@ -994,7 +994,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail    true if walking is allowed to fail.
 	 * @return
 	 */
-	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
+	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, 
+			boolean allowFail) {
 		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
@@ -1007,10 +1008,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Finds an EVA spot in this building and walk to this spot.
 	 * 
 	 * @param building
+	 * @param newPos
+	 * @param needEVA
 	 * @return
 	 */
-	protected boolean walkToEVASpot(Building building, LocalPosition newPos) {
-		return walkToActivitySpot(building, building.getFunction(FunctionType.EVA), newPos, false);
+	protected boolean walkToEVASpot(Building building, LocalPosition newPos, boolean needEVA) {
+		return walkToActivitySpot(building, building.getFunction(FunctionType.EVA), newPos, false, needEVA);
 	}
 
 	/**
@@ -1038,12 +1041,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail
 	 * @return
 	 */
-	private LocalPosition walkToActivitySpotInFunction(Building building, Function f, boolean allowFail) {
+	private LocalPosition walkToActivitySpotInFunction(Building building, Function f, 
+			boolean allowFail) {
 		LocalPosition loc = f.getAvailableActivitySpot();
 
 		if (loc != null) {
 			// Create subtask for walking to destination.
-			boolean canWalk = createWalkingSubtask(building, loc, allowFail);
+			boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
 			
 			if (canWalk) {
 				// Claim this activity spot
@@ -1067,12 +1071,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param f
 	 * @param newPos
 	 * @param allowFail
+	 * @param needEVA
 	 * @return
 	 */
-	private boolean walkToActivitySpot(Building building, Function f, LocalPosition newPos, boolean allowFail) {
+	private boolean walkToActivitySpot(Building building, Function f, LocalPosition newPos, 
+			boolean allowFail, boolean needEVA) {
 		if (newPos != null) {
 			// Create subtask for walking to destination.
-			boolean canWalk = createWalkingSubtask(building, newPos, allowFail);
+			boolean canWalk = createWalkingSubtask(building, newPos, allowFail, needEVA);
 			
 			if (canWalk) {
 				// Add to this activity spot
@@ -1085,6 +1091,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	
 	/**
 	 * Walks to a random location in a building.
+	 * @apiNote This method should only be used when inspecting or repairing the building.
 	 * 
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1093,7 +1100,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Gets a settlement wide location
 		LocalPosition sPos = LocalAreaUtil.getRandomLocalPos(building);
 		// Create subtask for walking to destination.
-		return createWalkingSubtask(building, sPos, allowFail);
+		return createWalkingSubtask(building, sPos, allowFail, false);
 	}
 
 	
@@ -1212,7 +1219,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (activitySpot != null) {
 
 			// Create subtask for walking to destination.
-			success = createWalkingSubtask(rover, activitySpot, allowFail);
+			success = createWalkingSubtask(rover, activitySpot, allowFail, true);
 		} else {
 
 			// Walk to a random location in the rover.
@@ -1236,7 +1243,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (sPos != null)
 			// Create subtask for walking to destination.
-			success = createWalkingSubtask(rover, sPos, allowFail);
+			success = createWalkingSubtask(rover, sPos, allowFail, true);
 		
 		return success;
 	}
@@ -1353,10 +1360,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @Note: need to ensure releasing the old activity spot prior to calling this method
 	 * and take in the new activity spot after this method.
 	 * @param interiorObject the destination interior object.
-	 * @param sLoc  the settlement local position destination.
-	 * @param allowFail      true if walking is allowed to fail.
+	 * @param sLoc the settlement local position destination.
+	 * @param allowFail true if walking is allowed to fail.
+	 * @param needEVA
 	 */
-	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition sLoc, boolean allowFail) {
+	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition sLoc, 
+			boolean allowFail, boolean needEVA) {
 		// Check my own position
 		LocalPosition myLoc = worker.getPosition();
 
@@ -1367,7 +1376,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		Walk walkingTask = null;
 		
 		if (worker instanceof Person person) {
-			walkingTask = Walk.createWalkingTask(person, sLoc, interiorObject);
+			walkingTask = Walk.createWalkingTask(person, sLoc, interiorObject, needEVA);
 		}
 		else {
 			walkingTask = Walk.createWalkingTask((Robot)(worker), sLoc, interiorObject);

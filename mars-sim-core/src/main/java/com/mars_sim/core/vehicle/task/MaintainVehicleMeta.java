@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainVehicleMeta.java
- * @date 2022-09-20
+ * @date 2025-08-27
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -15,6 +15,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.task.MaintainBuildingMeta;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -86,7 +87,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
      * For a robot can not do EVA tasks so will return a zero factor in this case.
      * 
 	 * @param t Task being scored
-	 * @parma r Robot requesting work.
+	 * @param r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
@@ -104,15 +105,28 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		List<SettlementTask> tasks = new ArrayList<>();
 
 		for (Vehicle vehicle : getAllVehicleCandidates(settlement, false)) {
-			RatingScore score = MaintainBuildingMeta.scoreMaintenance(vehicle);
-
-			// Vehicle in need of maintenance
-			if (score.getScore() >= 1) {
 				
-				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-						vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+			MalfunctionManager manager = vehicle.getMalfunctionManager();
+			
+			boolean hasMalfunction = manager.hasMalfunction();
+			
+			// Note: Look for entities that are NOT malfunction since
+			//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
+			if (!hasMalfunction) {
+			
+				boolean partsPosted = vehicle.getMalfunctionManager()
+						.hasMaintenancePartsInStorage(settlement);
 				
-				tasks.add(new VehicleMaintenanceJob(this, vehicle, !garageTask, score));
+				RatingScore score = MaintainBuildingMeta.scoreMaintenance(manager, vehicle, partsPosted);
+	
+				// Vehicle in need of maintenance
+				if (score.getScore() >= 1) {
+					
+					boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+							vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+					
+					tasks.add(new VehicleMaintenanceJob(this, vehicle, !garageTask, score));
+				}
 			}
 		}
 

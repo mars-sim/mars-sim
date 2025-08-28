@@ -293,7 +293,7 @@ public abstract class EVAOperation extends Task {
 	    // If not at field work site location, create walk outside subtask.
         if (person.isInside()) {
         	// A person is walking toward an airlock or inside an airlock
-            Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, null);
+            Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, null, true);
             if (walkingTask != null) {
 
 				boolean canAdd = addSubTask(walkingTask);
@@ -381,7 +381,7 @@ public abstract class EVAOperation extends Task {
 			// If not inside, create walk inside subtask.
 			if (interiorObject != null && returnInsideLoc != null && !person.getPosition().isClose(returnInsideLoc)) {
 
-				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, interiorObject);
+				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, interiorObject, true);
 				if (walkingTask != null) {
 					addSubTask(walkingTask);
 				}

@@ -26,7 +26,8 @@ public class GroupActivityTask extends Task {
     private ActivityState currentState;
 
     /**
-     * Create a Task to participate in a Group Activity.
+     * Creates a Task to participate in a Group Activity.
+     * 
      * @param activity Activity to participate in.
      * @param person Worker taking part
      */
@@ -39,7 +40,7 @@ public class GroupActivityTask extends Task {
         // Walk to meeting place
         var b = person.getBuildingLocation();
         if ((b == null) || !b.equals(activity.getMeetingPlace())) {
-            walkToRandomLocInBuilding(activity.getMeetingPlace(), true);
+        	walkToEmptyActivitySpotInBuilding(activity.getMeetingPlace(), true);
         }
  
 		// Initialize phase

@@ -122,11 +122,25 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_VALUE_MODIFIER_2 = 10;
 		
 	// flatten multipliers
+	private static final double ICE_FLATTENING_FACTOR = 1.5;
+	private static final double WATER_FLATTENING_FACTOR = 2.0;
+	
+	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
+	private static final double METHANE_FLATTENING_FACTOR = 1.1;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.1;	
+	
+	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
+	private static final double CO_FLATTENING_FACTOR = 0.09;
+	private static final double CO2_FLATTENING_FACTOR = 0.06;
+		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
 	private static final double ROCK_FLATTENING_FACTOR = 1;
 	private static final double REGOLITH_FLATTENING_FACTOR = 2;
 	private static final double SAND_FLATTENING_FACTOR = 1;
+	
+	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
 	
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
@@ -149,23 +163,9 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FLATTENING_FACTOR = 2;
 	private static final double DERIVED_FLATTENING_FACTOR = 2;
 	private static final double TISSUE_FLATTENING_FACTOR = 4;
-	
-	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
-	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
-	private static final double OXYGEN_FLATTENING_FACTOR = 0.1;	
-	
-	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
-	private static final double CO_FLATTENING_FACTOR = 0.09;
-	private static final double CO2_FLATTENING_FACTOR = 0.06;
-	
-
-	private static final double ICE_FLATTENING_FACTOR = 1.5;
 
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
-	
-	private static final double WATER_FLATTENING_FACTOR = 2.0;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	
@@ -223,6 +223,11 @@ class AmountResourceGood extends Good {
 
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
+			
+			mod *= switch(ar.getID()) {
+				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
+				default -> 1D;
+			};
 			
 			break;
 			

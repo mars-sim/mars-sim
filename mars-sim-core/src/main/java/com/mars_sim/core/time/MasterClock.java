@@ -82,9 +82,9 @@ public class MasterClock implements Serializable {
 //	private static final int NEW_SLEEP = 20;
 	
 	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
-	public static final int INITIAL_TASK_PULSE_DAMPER = 100;
+	public static final int INITIAL_TASK_PULSE_DAMPER = 500;
 	/** The initial ref pulse dampener for controlling the speed of the ref pulse width increase. */
-	public static final int INITIAL_REF_PULSE_DAMPER = 100;
+	public static final int INITIAL_REF_PULSE_DAMPER = 500;
 	/** The initial max pulse time allowed in one frame for a task to execute in its phase. */
 	public static final float INITIAL_PULSE_WIDTH = .082f;
 	/** The initial ratio between the next pulse width and the task pulse width. */
@@ -291,10 +291,7 @@ public class MasterClock implements Serializable {
 		else {
 			originalCPUUtil = cores / .4f;
 		}
-		
-//		refPulseRatio /= originalCPUUtil;
-//		taskPulseRatio /= originalCPUUtil;
-		
+			
 		cpuUtil = originalCPUUtil;
 	}
 	
@@ -311,7 +308,7 @@ public class MasterClock implements Serializable {
 	public void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = (float) (refPulseRatio * minMilliSolPerPulse 
-						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / 10 / refPulseDamper);
+						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / refPulseDamper);
 		
 		optMilliSolPerPulse = referencePulse;
 	}
@@ -783,7 +780,7 @@ public class MasterClock implements Serializable {
 		
 		// Update the pulse time for use in tasks
 		float newTaskPulseWidth = (float) (taskPulseRatio * INITIAL_PULSE_WIDTH 
-				+ (1 - taskPulseRatio) * leadPulse / taskPulseDamper / cpuUtil * 2000);
+				+ (1 - taskPulseRatio) * leadPulse / taskPulseDamper / cpuUtil * 5_000);
 
 		if (taskPulseWidth != newTaskPulseWidth) {
 			taskPulseWidth = newTaskPulseWidth;
@@ -1058,10 +1055,9 @@ public class MasterClock implements Serializable {
 			logger.config(10_000, "Setting up the master clock thread executor.");
 			clockExecutor = Executors.newSingleThreadExecutor(
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
-			
-			computeNewCpuLoad();
+
 			// Recompute pulse load
-			computeNewCpuLoad();
+//			computeNewCpuLoad();
 			// Redo the pulses
 			computeReferencePulse();
 		}

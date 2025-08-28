@@ -294,7 +294,7 @@ public class Sleep extends Task {
 			AllocatedSpot tempBed = findABed(s, person);
 
 			if (tempBed != null) {
-				createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven);
+				createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven, false);
 			}
 			else {
 				endTask();

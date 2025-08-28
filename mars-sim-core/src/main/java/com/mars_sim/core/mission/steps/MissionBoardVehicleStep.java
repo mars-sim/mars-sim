@@ -191,7 +191,8 @@ public class MissionBoardVehicleStep extends MissionStep {
 	}
 
 	/**
-	 * Set the worker to baord the Vehicle
+	 * Sets the worker to board the Vehicle.
+	 * 
 	 * @param worker
 	 * @param v
 	 */
@@ -199,7 +200,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		Walk walk = null;
 		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
 		if (worker instanceof Person p) {
-			walk = Walk.createWalkingTask(p, adjustedLoc, v);
+			walk = Walk.createWalkingTask(p, adjustedLoc, v, true);
 		}
 
 		else if (worker instanceof Robot r) {

@@ -332,7 +332,7 @@ public class EatDrink extends Task {
 
 		// Create subtask for walking to destination.
 		if (loc != null) {			
-			boolean canWalk = createWalkingSubtask(building, loc, allowFail);
+			boolean canWalk = createWalkingSubtask(building, loc, allowFail, false);
 		
 			if (canWalk) {
 				// Set the new position

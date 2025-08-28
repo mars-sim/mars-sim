@@ -197,7 +197,8 @@ public class ToggleFuelPowerSource extends Task {
         // Note: Use action point rather than random internal location.
         LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalPos(powerBuilding);
 
-        Walk walk = Walk.createWalkingTask(person, settlementLoc, powerBuilding);
+        // Note: may need to determine ahead of time if this building require EVA or not
+        Walk walk = Walk.createWalkingTask(person, settlementLoc, powerBuilding, true);
         if (walk != null) {
             // Add subtask for walking to power building.
 			boolean canAdd = addSubTask(walk);

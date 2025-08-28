@@ -378,7 +378,7 @@ public class TimeWindow extends ToolWindow {
 		float value = Math.round(masterClock.getCPUUtil() * 100.0)/100.0f;
 		float min = Math.round(value / 5 * 100.0)/100.0f;
 		float max = Math.round(5 * value * 100.0)/100.0f;
-		float step = Math.round(value/20 * 100.0)/100.0f;
+		float step = Math.round(value / 20 * 100.0)/100.0f;
 		cpuSpinner = createSpinner(masterClock, value, min, max, step);
 		cpuSpinner.addChangeListener(e -> {
 			float cpu = ((SpinnerNumberModel)(cpuSpinner.getModel())).getNumber().floatValue();
@@ -423,9 +423,9 @@ public class TimeWindow extends ToolWindow {
 		
 		// Create the ref pulse damper spinner
 		value = (int)(masterClock.getRefPulseDamper());
-		min = 1;
-		max = 100;
-		step = 2.5f;
+		min = 5;
+		max = 1000;
+		step = 5;
 		refPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
 		refPulseDamperSpinner.addChangeListener(e -> {
 			int rpd = ((SpinnerNumberModel)(refPulseDamperSpinner.getModel())).getNumber().intValue();
@@ -471,9 +471,9 @@ public class TimeWindow extends ToolWindow {
 		
 		// Create the task pulse damper spinner
 		value = masterClock.getTaskPulseDamper();
-		min = 1;
-		max = 100;
-		step = 2.5f;
+		min = 5;
+		max = 1000;
+		step = 5;
 		taskPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
 		taskPulseDamperSpinner.addChangeListener(e -> {
 			int tpd = ((SpinnerNumberModel)(taskPulseDamperSpinner.getModel())).getNumber().intValue();

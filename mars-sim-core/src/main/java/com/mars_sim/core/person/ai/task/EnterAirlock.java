@@ -233,7 +233,7 @@ public class EnterAirlock extends Task {
 
 		if (newZone == AirlockZone.ZONE_2) {
 			// Check if the person can walk to one of the 4 EVA chambers
-			boolean canWalk = walkToEVASpot(b, newPos);
+			boolean canWalk = walkToEVASpot(b, newPos, false);
 
 			if (canWalk) {
 				// Convert the local activity spot to the settlement reference coordinate
