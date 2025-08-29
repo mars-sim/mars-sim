@@ -9,16 +9,18 @@ package com.mars_sim.core.time;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.Simulation;
@@ -107,8 +109,8 @@ public class MasterClock implements Serializable {
 	private transient ExecutorService listenerExecutor;
 	/** Thread for main clock */
 	private transient ExecutorService clockExecutor;
-	/** A list of clock listener tasks. */
-	private transient Collection<ClockListenerTask> clockListenerTasks;
+	/** CME-safe list of clock listener tasks (snapshot-friendly for fan-out). */
+	private transient CopyOnWriteArrayList<ClockListenerTask> clockListenerTasks;
 	/** The clock pulse. */
 	private transient ClockPulse currentPulse;
 	
@@ -467,7 +469,7 @@ public class MasterClock implements Serializable {
 		// Check if clockListenerTaskList already contain the newListener's task,
 		// if it doesn't, create one
 		if (clockListenerTasks == null)
-			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
+			clockListenerTasks = new CopyOnWriteArrayList<>();
 		if (!hasClockListenerTask(newListener)) {
 			clockListenerTasks.add(new ClockListenerTask(newListener, minDuration));
 		}
@@ -480,7 +482,7 @@ public class MasterClock implements Serializable {
 	 */
 	public final void removeClockListener(ClockListener oldListener) {
 		ClockListenerTask task = retrieveClockListenerTask(oldListener);
-		if (task != null) {
+		if (task != null && clockListenerTasks != null) {
 			clockListenerTasks.remove(task);
 		}
 	}
@@ -959,44 +961,38 @@ public class MasterClock implements Serializable {
 		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
 				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 		
-		// Note: for-loop may handle checked exceptions better than forEach()
-		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
-
-		// May do it using for loop
-
-		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
-		// Not using clockListenerTasks.forEach(s -> { }) for now
-
-		// Execute all listener concurrently and wait for all to complete before advancing
-		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		// May use parallelStream() after it's proven to be safe
-		if (clockListenerTasks != null) {
-			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
-		}
-	}
-
-	/**
-	 * Executes the clock listener task.
-	 *
-	 * @param task
-	 */
-	public void executeClockListenerTask(ClockListenerTask task) {
-		Future<String> result = listenerExecutor.submit(task);
-
-		try {
-			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-			result.get();
-		} catch (ExecutionException ee) {
-			logger.severe( "ExecutionException. Problem with clock listener tasks: ", ee);
-		} catch (RejectedExecutionException ree) {
-			// Application shutting down
-			Thread.currentThread().interrupt();
-			// Executor is shutdown and cannot complete queued tasks
-			logger.severe( "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-		} catch (InterruptedException ie) {
-			// Program closing down
-			Thread.currentThread().interrupt();
-			logger.severe("InterruptedException. Problem with clock listener tasks: ", ie);
+		// Fan-out to listeners in parallel, then wait for all before advancing.
+		if (clockListenerTasks != null && !clockListenerTasks.isEmpty()) {
+			// Snapshot for CME safety & deterministic traversal per pulse
+			List<ClockListenerTask> snapshot = new ArrayList<>(clockListenerTasks);
+			try {
+				// Invoke all with a sensible upper bound to avoid deadlocks
+				List<Future<String>> futures = listenerExecutor.invokeAll(snapshot, 30, TimeUnit.SECONDS);
+				// Drain/observe exceptions
+				for (Future<String> f : futures) {
+					try {
+						f.get();
+					}
+					catch (CancellationException ce) {
+						logger.severe("Clock listener timed out (cancelled): ", ce);
+					}
+					catch (ExecutionException ee) {
+						logger.severe("ExecutionException. Problem with clock listener tasks: ", ee);
+					}
+					catch (InterruptedException ie) {
+						Thread.currentThread().interrupt();
+						logger.severe("Interrupted waiting for listener: ", ie);
+						break;
+					}
+					catch (RejectedExecutionException ree) {
+						logger.severe("RejectedExecutionException from listener: ", ree);
+					}
+				}
+			}
+			catch (InterruptedException ie) {
+				Thread.currentThread().interrupt();
+				logger.severe("Interrupted while invoking listeners: ", ie);
+			}
 		}
 	}
 
@@ -1039,8 +1035,11 @@ public class MasterClock implements Serializable {
 				|| listenerExecutor.isShutdown()
 				|| listenerExecutor.isTerminated()) {
 			logger.config(10_000, "Setting up thread(s) for clock listener.");
-			listenerExecutor = Executors.newFixedThreadPool(1,
-					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
+			int cores = Math.max(2, Math.min(8, Runtime.getRuntime().availableProcessors()));
+			listenerExecutor = Executors.newFixedThreadPool(
+					cores,
+					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build()
+			);
 		}
 	}
 	
@@ -1174,8 +1173,17 @@ public class MasterClock implements Serializable {
 	 * @param showPane
 	 */
 	private void firePauseChange(boolean isPaused, boolean showPane) {
-		if (clockListenerTasks != null) {
-			clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
+		if (clockListenerTasks != null && !clockListenerTasks.isEmpty()) {
+			// Snapshot for CME safety
+			List<ClockListenerTask> snapshot = new ArrayList<>(clockListenerTasks);
+			for (ClockListenerTask cl : snapshot) {
+				try {
+					cl.listener.pauseChange(isPaused, showPane);
+				}
+				catch (Throwable t) {
+					logger.severe("Clock listener threw during pauseChange: ", t);
+				}
+			}
 		}
 	}
 
