@@ -179,8 +179,8 @@ public class MedicalCare extends Function implements MedicalAid {
 	public int getPhysicianNum() {
 		int result = 0;
 
-		if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = getBuilding().getLifeSupport();
+		LifeSupport lifeSupport = getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Task task = i.next().getMind().getTaskManager().getTask();

@@ -234,8 +234,7 @@ public class LifeSupport extends Function {
 					Iterator<Person> j = getOccupants().iterator();
 					while (j.hasNext()) {
 						Person p = j.next();
-						if (!p.isRestingTask()) {	
-//							logger.info(p, 10_000, "Adding " + Math.round(stressModifier * 100.0)/100.0 + " to the stress.");
+						if (!p.isRestingTask()) {
 							p.getPhysicalCondition().addStress(stressModifier);
 						}
 					}

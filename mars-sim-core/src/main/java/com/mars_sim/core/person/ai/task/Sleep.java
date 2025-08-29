@@ -151,7 +151,7 @@ public class Sleep extends Task {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.EVA)) {
 			// Future: need to rework this method to find the two emergency beds in EVA Airlock
-			walkToActivitySpotInBuilding(currentBuilding, FunctionType.MEDICAL_CARE, true);
+			// This is not the right way to find the medical bed walkToActivitySpotInBuilding(currentBuilding, FunctionType.MEDICAL_CARE, true);
 		}
 		return false;
 	}

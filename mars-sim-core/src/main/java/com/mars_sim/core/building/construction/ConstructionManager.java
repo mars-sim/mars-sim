@@ -198,8 +198,8 @@ public class ConstructionManager implements Serializable {
 		buildingManager.removeBuilding(salvagedBuilding);
 
 		// Move any people in building to somewhere else in the settlement.
-		if (salvagedBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = salvagedBuilding.getLifeSupport();
+		LifeSupport lifeSupport = salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {		
 			for(Person occupant : new ArrayList<>(lifeSupport.getOccupants())) {
 				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
@@ -207,8 +207,8 @@ public class ConstructionManager implements Serializable {
 		}
 
 		// Move any robot in building to somewhere else in the settlement.
-		if (salvagedBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
-			RoboticStation station = salvagedBuilding.getRoboticStation();
+		RoboticStation station= salvagedBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+		if (station != null) {
 			for (Robot occupant : new ArrayList<>(station.getRobotOccupants())) {
 				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());

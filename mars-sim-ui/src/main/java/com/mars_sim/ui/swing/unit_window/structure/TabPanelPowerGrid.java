@@ -28,6 +28,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerSource;
@@ -415,18 +416,13 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			
 			else if (column == 2) {
 				double generated = 0D;
-				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
+				PowerGeneration pg = building.getFunction(FunctionType.POWER_GENERATION);
+				if (pg != null) {
 					try {
-						generated = building.getPowerGeneration().getGeneratedPower();
+						generated = pg.getGeneratedPower();
 					} catch (Exception e) {
 					}
 				}
-//				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
-//					try {
-//						generated += building.getThermalGeneration().getGeneratedPower();
-//					} catch (Exception e) {
-//					}
-//				}
 				return Math.round(generated * 10.0) / 10.0;
 			} 
 			

@@ -766,8 +766,8 @@ public class Farming extends Function {
 	public int getFarmerNum() {
 		int result = 0;
 
-		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = building.getLifeSupport();
+		LifeSupport lifeSupport = building.getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {
 			for(Person p : lifeSupport.getOccupants()) {
 				Task task = p.getMind().getTaskManager().getTask();
 				if (task instanceof TendGreenhouse)

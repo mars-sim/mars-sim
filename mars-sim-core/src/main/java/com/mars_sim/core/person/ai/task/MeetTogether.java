@@ -223,28 +223,14 @@ public class MeetTogether extends Task {
 	    		return time * .75;
 	    	}
 	    }
-    	
-    	Building personbuilding = null;
-    	
+		
     	if (invitee != null && initiator != null) {
-			personbuilding = initiator.getBuildingLocation();
-			
-	    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
-	    		Building building = settlement.getBuildingManager()
-						.getBuildingSet(FunctionType.DINING)
-						.stream()
-						.findAny().orElse(null);	 
-			
-				if (building != null) {
-					walkToActivitySpotInBuilding(building, FunctionType.DINING, false);
-				}
-	    	}
-
-			// The person is setting up and inviting the candidate
-			// e.g. Joe is meeting with Mary
-			
+    	   	// The person is setting up and inviting the candidate
+        	// e.g. Joe is meeting with Mary
+        			
+    		Building personbuilding = initiator.getBuildingLocation();
 			Building inviteebuilding = invitee.getBuildingLocation();
-	
+	    			
 			if (inviteebuilding.equals(personbuilding)) {
 				setDescription(Msg.getString("Task.description.meetTogether.detail", invitee.getName())); //$NON-NLS-1$
 				
@@ -253,13 +239,25 @@ public class MeetTogether extends Task {
 				RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 				RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 		   
-				// The person is invited to a meeting setup by the inviter
-				// e.g. Joe is invited to meet with Mary
+				// No need to walk elsewhere since they are already in the same building
 			}
-			else {
-				// Walk to invitee building first
+    		else {
+    			// Walk to invitee building 
 				walkToActivitySpotInBuilding(inviteebuilding, FunctionType.DINING, false);
-			}
+    		}
+			
+			// FUTURE: how to ask invitee to walk to a diner ?
+//	    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
+//	    		Building diner = settlement.getBuildingManager()
+//						.getBuildingSet(FunctionType.DINING)
+//						.stream()
+//						.findAny().orElse(null);	 
+//			
+//				if (diner != null) {
+//					walkToActivitySpotInBuilding(diner, FunctionType.DINING, false);
+//				}
+//	    	}
+
     	}
 		
         if (getTimeCompleted() + time >= getDuration()) {

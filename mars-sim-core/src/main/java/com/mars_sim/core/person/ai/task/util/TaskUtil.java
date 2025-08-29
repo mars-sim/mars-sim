@@ -119,8 +119,8 @@ public class TaskUtil {
             throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
         }
         
-        if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-            LifeSupport lifeSupport = building.getLifeSupport();
+        LifeSupport lifeSupport = building.getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {
             double totalOpinion = 0D;
             Iterator<Person> i = lifeSupport.getOccupants().iterator();
             while (i.hasNext()) {

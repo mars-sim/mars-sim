@@ -627,7 +627,9 @@ public class Converse extends Task {
 
 				if (sameBuilding) {
 					// face-to-face conversation
-					if (initiator.getBuildingLocation().equals(p.getBuildingLocation())) {
+					if (initiator.getBuildingLocation() != null
+						&& p.getBuildingLocation() != null
+						&& initiator.getBuildingLocation().equals(p.getBuildingLocation())) {
 						addPerson(checkIdle, task, initiator, people, p);
 					}
 				}

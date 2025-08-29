@@ -592,8 +592,11 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
-			if (building != null && building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-				localRobotGroup.addAll(building.getRoboticStation().getRobotOccupants());
+			if (building != null) {
+				RoboticStation rs = building.getFunction(FunctionType.ROBOTIC_STATION); 
+				if (rs != null) {
+					localRobotGroup.addAll(rs.getRobotOccupants());
+				}
 			}
 		}
 		else if (isInVehicle()) {

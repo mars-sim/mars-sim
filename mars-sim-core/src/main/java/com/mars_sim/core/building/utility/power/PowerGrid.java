@@ -860,7 +860,9 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private boolean canGenMoreThanLoad(Building b, PowerMode mode) {
 		double generated = 0D;
-		if (b.hasFunction(FunctionType.POWER_GENERATION)) {
+		
+		PowerGeneration pg = b.getFunction(FunctionType.POWER_GENERATION);
+		if (pg != null) {
 			// The power that it can generate at this moment
 			// e.g. Solar power is dependent upon the sunlight
 			// e.g. Wind power is dependent upon the wind speed

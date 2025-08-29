@@ -935,24 +935,23 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
 		
-		if (building.hasFunction(FunctionType.RESEARCH)) {
-			walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
+		boolean success = walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
+		
+		if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
 		} 
-		else if (building.hasFunction(FunctionType.ADMINISTRATION)) {
-			walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
+		else if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
 		} 
-		else if (building.hasFunction(FunctionType.DINING)) {
-			walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
+		else if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
 		} 
-		else if (building.hasFunction(FunctionType.RECREATION)) {
-			walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
-		} 
-		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATION)) {
-			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATION, allowFail);			
+		else if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATION, allowFail);			
 		} 
 		else {
 			// If no available activity spot, go to an empty location in building
-			walkToEmptyActivitySpotInBuilding(building, allowFail);
+			success = walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
 	}
 
@@ -1288,32 +1287,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param robot
 	 * @param allowFail
 	 */
-	protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
+	protected boolean walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
+		
 		if (robot.isInSettlement()) {
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-			
-			RobotType type = robot.getRobotType();
-			FunctionType fct = FunctionType.getDefaultFunction(type);
-			
-			if (currentBuilding != null && currentBuilding.hasFunction(fct)) {
-				walkToActivitySpotInBuilding(currentBuilding, fct, allowFail);
-			}
-			else {
-				List<Building> buildingList = robot.getSettlement().getBuildingManager()
-						.getBuildingsNoHallwayTunnelObservatory(fct);
-
-				if (!buildingList.isEmpty()) {
-					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-
-					Building building = buildingList.get(buildingIndex);
-
-					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
-						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getName());
-						walkToActivitySpotInBuilding(building, fct, allowFail);
-					}
-				}
-			}
+			return walkToASpot(robot, allowFail, BuildingManager.getBuilding(robot), 
+					FunctionType.getDefaultFunction(robot.getRobotType()));
 		}
+		
+		return false;
 	}
 
 	/**
@@ -1324,30 +1305,39 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return
 	 */
 	protected boolean walkToRoboticStation(Robot robot, boolean allowFail) {
+	
+		if (robot.isInSettlement()) {
+			return walkToASpot(robot, allowFail, BuildingManager.getBuilding(robot), 
+					FunctionType.ROBOTIC_STATION);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Walks to a spot.
+	 * 
+	 * @param robot
+	 * @param allowFail
+	 * @param currentBuilding
+	 * @param functionType
+	 * @return
+	 */
+	public boolean walkToASpot(Robot robot, boolean allowFail, Building currentBuilding, FunctionType functionType) {
 		boolean canWalk = false;
 		
-		if (robot.isInSettlement()) {
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-
-			FunctionType functionType = FunctionType.ROBOTIC_STATION;
+		if (currentBuilding != null) {
+			canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
+		}
 		
-			if (currentBuilding != null && currentBuilding.hasFunction(functionType)) {
-				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
-			}
-			else {
-				List<Building> buildingList = robot.getSettlement().getBuildingManager()
-						.getBuildingsNoHallwayTunnelObservatory(functionType);
+		if (!canWalk) {
+			List<Building> buildingList = robot.getSettlement().getBuildingManager()
+					.getBuildingsNoHallwayTunnelObservatory(functionType);
 
-				if (!buildingList.isEmpty()) {
-					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-
-					Building building = buildingList.get(buildingIndex);
-
-					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
-						logger.fine(robot, 5000, "Walking toward " + building.getName());
-						canWalk = walkToActivitySpotInBuilding(building, functionType, allowFail);
-					}
-				}
+			for (Building b: buildingList) {
+				canWalk = walkToActivitySpotInBuilding(b, functionType, allowFail);
+				if (canWalk)
+					return true;
 			}
 		}
 		

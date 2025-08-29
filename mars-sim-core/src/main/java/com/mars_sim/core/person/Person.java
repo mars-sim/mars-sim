@@ -32,6 +32,7 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
@@ -931,7 +932,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * Gets the person's local group of people (in building or rover).
 	 *
-	 * @return collection of people in person's location. The collectino incldues the Person
+	 * @return collection of people in person's location. The collection includes the Person
 	 */
 	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = null;
@@ -939,11 +940,13 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
-				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					localGroup = building.getLifeSupport().getOccupants();
+				LifeSupport ls = building.getFunction(FunctionType.LIFE_SUPPORT);
+				if (ls != null) {
+					localGroup = ls.getOccupants();
 				}
 			}
-		} else if (isInVehicle()) {
+		} 
+		else if (isInVehicle()) {
 			localGroup = ((Crewable) getVehicle()).getCrew();
 		}
 

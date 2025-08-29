@@ -99,18 +99,15 @@ public class ToggleFuelPowerSource extends Task {
             setDescription(NAME_OFF);
         }
 
-        var isInhabitable = !building.hasFunction(FunctionType.LIFE_SUPPORT);
         // If habitable building, send person there.
-        if (!isInhabitable) {
+        if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
             
-            int rand = RandomUtil.getRandomInt(5);
-            
+            int rand = RandomUtil.getRandomInt(5);     
             if (rand == 0) {
                 // Yes it requires EVA
                 
                 // Walk to power source building.
-                walkToPowerSourceBuilding(building);
-                
+                walkToPowerSourceBuilding(building);              
             }
             else { // 5 out of 6 cases requires no EVA
                 // Looks for management function for toggling power source.

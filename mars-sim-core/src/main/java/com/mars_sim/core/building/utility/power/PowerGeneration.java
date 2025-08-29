@@ -35,8 +35,6 @@ public class PowerGeneration extends Function {
 
 	private List<PowerSource> powerSources;
 
-//	private ThermalGeneration thermalGeneration;
-	
 	/**
 	 * Constructor.
 	 * 
