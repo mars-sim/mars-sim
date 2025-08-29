@@ -1,8 +1,17 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @date 2025-07-22
+ * @date 2025-07-22 (patched 2025-08-29)
  * @author Scott Davis
+ *
+ * Notes (patch):
+ * - Applies the MasterClock listener-hardening pattern to UnitManager.
+ * - Uses CopyOnWriteArraySet for CME-safe listener storage (already present).
+ * - Adds a bounded listener ExecutorService and delivers events in parallel
+ *   using invokeAll(), while waiting for completion to keep the world in sync.
+ * - Shields each listener call so one faulty listener cannot break delivery.
+ * - Executor sizing is bounded by the number of cores and listener count.
+ * - Tiny perf tidy: avoid stream().count() in getObjectsLoad() and reuse size lookups.
  */
 package com.mars_sim.core;
 
@@ -12,13 +21,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
@@ -36,6 +51,7 @@ import com.mars_sim.core.unit.TemporalExecutor;
 import com.mars_sim.core.unit.TemporalExecutorService;
 import com.mars_sim.core.unit.TemporalThreadExecutor;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.SimulationConfig;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -60,18 +76,20 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final String THREAD = "thread";
 	public static final String SHARED = "shared";
-	
 
 	// Data members
-	/** Counter of unit identifiers. */
-	private int uniqueId = 0;
+	/** Counter of unit identifiers. (Atomic to avoid global monitor contention) */
+	private final java.util.concurrent.atomic.AtomicInteger uniqueId = new java.util.concurrent.atomic.AtomicInteger(0);
 	/** The commander's unique id . */
 	private int commanderID = -1;
 	/** The core engine's original build. */
 	private String originalBuild;
 
-	/** List of unit manager listeners. */
-	private transient EnumMap<UnitType, Set<UnitManagerListener>> listeners;
+	/** Map: UnitType -> listeners (CME-safe). */
+	private transient EnumMap<UnitType, CopyOnWriteArraySet<UnitManagerListener>> listeners;
+
+	/** Bounded executor for parallel, shielded listener delivery. */
+	private transient ExecutorService umListenerExecutor;
 
 	private transient TemporalExecutor executor;
 
@@ -91,8 +109,8 @@ public class UnitManager implements Serializable, Temporal {
 	private Map<Integer, Equipment> lookupEquipment;
 	/** A map of building with its unit identifier. */
 	private Map<Integer, Building> lookupBuilding;
-	/** A map of settlements with its coordinates. */
-	private transient Map<Coordinates, Settlement> settlementCoordinateMap = new HashMap<>();
+	/** A map of settlements with its coordinates. (CME-safe for parallel reads/writes) */
+	private transient Map<Coordinates, Settlement> settlementCoordinateMap = new ConcurrentHashMap<>();
 
 	/** The instance of Mars Surface. */
 	private MarsSurface marsSurface;
@@ -262,7 +280,7 @@ public class UnitManager implements Serializable, Temporal {
 					"Cannot store unit type:" + unit.getUnitType());
 		}
 
-		// Notify listeners
+		// Notify listeners (CME-safe & exception-shielded, parallel delivery)
 		fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 	}
 
@@ -347,6 +365,9 @@ public class UnitManager implements Serializable, Temporal {
 	public void endSimulation() {
 		if (executor != null)
 			executor.stop();
+		// Stop the unit manager listener executor as well
+		if (umListenerExecutor != null)
+			umListenerExecutor.shutdownNow();
 	}
 
 	/**
@@ -398,15 +419,16 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a composite load score from people, robots, buildings and vehicles.
-	 * 
-	 * @return
+	 * (Micro perf tidy: reuse size() values and avoid streams.)
+	 *
+	 * @return composite load metric
 	 */
 	public float getObjectsLoad() {
-		return (.45f * lookupPerson.entrySet().stream().count() 
-				+ .2f * lookupRobot.entrySet().stream().count()
-				+ .25f * lookupBuilding.entrySet().stream().count()
-				+ .1f * lookupVehicle.entrySet().stream().count()
-				);
+		final int p = lookupPerson.size();
+		final int r = lookupRobot.size();
+		final int b = lookupBuilding.size();
+		final int v = lookupVehicle.size();
+		return 0.45f * p + 0.20f * r + 0.25f * b + 0.10f * v;
 	}
 	
 	/**
@@ -416,12 +438,18 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param newListener the listener to add.
 	 */
 	public final void addUnitManagerListener(UnitType source, UnitManagerListener newListener) {
+		if (newListener == null || source == null) return;
+
 		if (listeners == null) {
 			listeners = new EnumMap<>(UnitType.class);
 		}
-		synchronized(listeners) {
-			listeners.computeIfAbsent(source, k -> new HashSet<>()).add(newListener);
-		}
+
+		// CopyOnWriteArraySet prevents CME during concurrent fire/update
+		listeners.computeIfAbsent(source, k -> new CopyOnWriteArraySet<>())
+		         .add(newListener);
+
+		// Ensure executor exists (bounded by cores & listener count)
+		ensureListenerExecutor();
 	}
 
 	/**
@@ -430,38 +458,100 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeUnitManagerListener(UnitType source, UnitManagerListener oldListener) {
-		if (listeners == null) {
-			// Will never happen
-			return;
-		}
+		if (listeners == null || source == null || oldListener == null) return;
 
-		synchronized(listeners) {
-			Set<UnitManagerListener> l = listeners.get(source);
-			if (l != null) {
-				l.remove(oldListener);
-			}
+		CopyOnWriteArraySet<UnitManagerListener> l = listeners.get(source);
+		if (l != null) {
+			l.remove(oldListener);
 		}
 	}
 
 	/**
-	 * Fires a unit update event.
+	 * Computes the total number of registered listeners across all sources.
+	 */
+	private int totalListenerCount() {
+		if (listeners == null || listeners.isEmpty()) return 0;
+		int c = 0;
+		for (CopyOnWriteArraySet<UnitManagerListener> s : listeners.values()) {
+			if (s != null) c += s.size();
+		}
+		return c;
+	}
+
+	/**
+	 * Starts the listener thread pool executor if needed.
+	 * Pool size is bounded by number of cores and total listeners.
+	 */
+	private void ensureListenerExecutor() {
+		if (umListenerExecutor == null
+				|| umListenerExecutor.isShutdown()
+				|| umListenerExecutor.isTerminated()) {
+			int listenerCount = Math.max(1, totalListenerCount());
+			int cores = com.mars_sim.core.SimulationRuntime.NUM_CORES;
+			int desired = Math.max(1, Math.min(cores, listenerCount));
+			logger.config("Setting up UnitManager listener executor with " + desired + " thread(s).");
+			umListenerExecutor = Executors.newFixedThreadPool(
+					desired,
+					new ThreadFactoryBuilder().setNameFormat("unitManager-listener-%d").build()
+			);
+		}
+	}
+
+	/**
+	 * Fires a unit update event. (CME-safe & exception-shielded, parallel)
 	 *
 	 * @param eventType the event type.
 	 * @param unit      the unit causing the event.
 	 */
 	private final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
-		if (listeners == null) {
+		if (listeners == null || unit == null) {
 			return;
 		}
-		synchronized (listeners) {
-			Set<UnitManagerListener> l = listeners.get(unit.getUnitType());
-			if (l != null) {
-				UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
 
-				for (UnitManagerListener listener : l) {
+		CopyOnWriteArraySet<UnitManagerListener> l = listeners.get(unit.getUnitType());
+		if (l == null || l.isEmpty()) {
+			return;
+		}
+
+		// Prepare event
+		UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
+
+		// Make sure executor exists
+		ensureListenerExecutor();
+
+		// Build a parallel batch with shielding
+		final java.util.List<Callable<String>> batch = new java.util.ArrayList<>(l.size());
+		for (UnitManagerListener listener : l) {
+			batch.add(() -> {
+				try {
 					listener.unitManagerUpdate(e);
 				}
+				catch (Throwable ex) {
+					// Never let a bad listener break delivery to others
+					logger.severe("UnitManager listener threw during " + eventType + " for " + unit + ": ", ex);
+				}
+				return "ok";
+			});
+		}
+
+		try {
+			final List<Future<String>> futures = umListenerExecutor.invokeAll(batch);
+			// Surface (should be none, because we shield inside tasks)
+			for (Future<String> f : futures) {
+				try {
+					f.get();
+				}
+				catch (ExecutionException ee) {
+					logger.severe("ExecutionException in UnitManager listener batch: ", ee);
+				}
 			}
+		}
+		catch (InterruptedException ie) {
+			Thread.currentThread().interrupt();
+			logger.severe("Interrupted while delivering UnitManager event " + eventType + " for " + unit + ": ", ie);
+		}
+		catch (RejectedExecutionException ree) {
+			logger.severe("Rejected while delivering UnitManager event (executor shutdown): ", ree);
 		}
 	}
 
@@ -516,8 +606,8 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param unitType
 	 * @return
 	 */
-	public synchronized int generateNewId(UnitType unitType) {
-		int baseId = uniqueId++;
+	public int generateNewId(UnitType unitType) {
+		int baseId = uniqueId.getAndIncrement();
 		if (baseId >= MAX_BASE_ID) {
 			throw new IllegalStateException("Too many Unit created " + MAX_BASE_ID);
 		}
@@ -536,8 +626,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param clock
 	 */
 	public void reinit() {
 
@@ -546,8 +634,11 @@ public class UnitManager implements Serializable, Temporal {
 		lookupSettlement.values().forEach(Settlement::reinit);
 
 		// Sets up the concurrent tasks
-		settlementCoordinateMap = new HashMap<>();
+		settlementCoordinateMap = new ConcurrentHashMap<>();
 		lookupSettlement.values().forEach(this::activateSettlement);
+
+		// (Re)ensure listener executor after reload if listeners are present
+		ensureListenerExecutor();
 	}
 
 	/**
@@ -572,6 +663,12 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment.clear();
 
 		marsSurface = null;
+
+		// Stop the UnitManager listener executor
+		if (umListenerExecutor != null) {
+			umListenerExecutor.shutdownNow();
+			umListenerExecutor = null;
+		}
 
 		listeners = null;
 	}

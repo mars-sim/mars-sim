@@ -1,27 +1,21 @@
-/**
+/*
  * Mars Simulation Project
  * ClockListener.java
- * @version 3.2.0 2021-06-20
- * @author Scott Davis
  */
 package com.mars_sim.core.time;
 
 /**
- * A listener for clock time changes.
+ * Receives simulated time pulses and pause changes from the MasterClock.
+ * Implementations should keep work short; long work should be offloaded.
  */
 public interface ClockListener {
 
-	/**
-	 * Change in time for managers in Simulation.
-	 * 
-	 * @param currentPulse the current pulse
-	 */
-	public void clockPulse(ClockPulse currentPulse);
+    /** Called each simulation pulse. */
+    void clockPulse(ClockPulse pulse);
 
-	/**
-	 * Change the pause state of the clock.
-	 * 
-	 * @param isPaused true if clock is paused.
-	 */
-	public void pauseChange(boolean isPaused, boolean showPane);
+    /** Optional UI pulse (reserved for UI integrations). */
+    default void uiPulse(double time) { }
+
+    /** Called when the simulation pause state changes. */
+    default void pauseChange(boolean isPaused, boolean showPane) { }
 }

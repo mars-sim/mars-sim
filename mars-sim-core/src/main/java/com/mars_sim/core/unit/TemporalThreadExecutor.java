@@ -1,121 +1,170 @@
 /*
  * Mars Simulation Project
  * TemporalThreadExecutor.java
- * @date 2025-07-27
- * @author Barry Evans
+ * Patched: 2025-08-29
+ *
+ * Per-target lanes (ordered per target, parallel across targets).
+ * - Targets are held in CopyOnWriteArrayList (snapshot-safe).
+ * - Each target has a SerialExecutor lane; lanes run on a shared pool.
+ * - applyPulse() submits one task per target and awaits all (barrier).
  */
 package com.mars_sim.core.unit;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Semaphore;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
-/**
- * This class implement a TemporalExecutor that uses a blocking worker Thread per Temporal
- * managed.
- */
 public class TemporalThreadExecutor implements TemporalExecutor {
-	/**
-	 * Prepares the Settlement task for setting up its own thread.
-	 */
-	private static class TemporalRunnable implements Runnable {
-		private Temporal target;
-		private ClockPulse currentPulse;
-		private Semaphore startLock = new Semaphore(0);  // Sets as zero so initially thread is blocked
-		private Semaphore doneLock = new Semaphore(0);  // Sets as zero so initially caller is blocked
 
-		private boolean keepRunning = true;
+    private static final SimLogger LOG = SimLogger.getLogger(TemporalThreadExecutor.class.getName());
 
-		
-		private TemporalRunnable(Temporal target) {
-			this.target = target;
-		}
+    /** Snapshot-safe target list; writes copy the backing array. */
+    private final CopyOnWriteArrayList<Temporal> targets = new CopyOnWriteArrayList<>();
 
-		void applyPulse(ClockPulse pulse) {
-			this.currentPulse = pulse;
-			startLock.release();	// Release the worker element and processes in the background
-		}
+    /** Shared pool used by all lanes. */
+    private final ExecutorService pool;
 
-		/**
-		 * Wait for teh current pulse to be applied
-		 */
-		private void awaitPulse() {
-			try {
-				doneLock.acquire();
-			} catch (InterruptedException e) {
-				logger.severe(target + ": Problem waitng for pulse", e);
-			}
-		}
+    /** Per-target serialized lanes. */
+    private final ConcurrentHashMap<Temporal, SerialExecutor> lanes = new ConcurrentHashMap<>();
 
-		private void stop() {
-			keepRunning = false;
-            startLock.release();
-		}
+    /** Liveness flag. */
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
-		@Override
-		public void run() {
-			// Keep running as will break once keepRunnign flag changes
-			while(true) {
-				try {
-					startLock.acquire();
-				} catch (InterruptedException e) {
-				    logger.severe(target + ": Problem waiting for startLock", e);
-				} // Wait for the pulse
+    public TemporalThreadExecutor() {
+        int cores = Math.max(1, Runtime.getRuntime().availableProcessors());
+        int parallelism = Math.max(2, cores); // at least 2 to get some overlap
+        this.pool = Executors.newFixedThreadPool(parallelism, namedFactory("TemporalLane-"));
+        LOG.config("TemporalThreadExecutor started with parallelism = " + parallelism);
+    }
 
-				// Graceful closedown
-				if (!keepRunning) {
-					break;
-				}
+    private static ThreadFactory namedFactory(String prefix) {
+        return r -> {
+            Thread t = new Thread(r);
+            t.setName(prefix + t.getId());
+            t.setDaemon(true);
+            return t;
+        };
+    }
 
-				try {
-					target.timePassing(currentPulse);
-					doneLock.release();  // Notify parent pulse has been applied
-				}
-				catch (RuntimeException rte) {
-					logger.severe(target + ": Problem with Pulse", rte);
-				}	
-			}
-		}
-	}
-    
-    private static final SimLogger logger = SimLogger.getLogger(TemporalThreadExecutor.class.getName());
-    private Set<TemporalRunnable> tasks = new HashSet<>();
+    /** A serializing executor that runs tasks one-at-a-time on a backing executor. */
+    private static final class SerialExecutor implements Executor {
+        private final Executor backend;
+        private final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
+        private final AtomicBoolean running = new AtomicBoolean(false);
 
+        SerialExecutor(Executor backend) {
+            this.backend = backend;
+        }
+
+        @Override
+        public void execute(Runnable command) {
+            queue.add(command);
+            schedule();
+        }
+
+        private void schedule() {
+            if (running.compareAndSet(false, true)) {
+                backend.execute(() -> {
+                    try {
+                        Runnable r;
+                        while ((r = queue.poll()) != null) {
+                            try {
+                                r.run();
+                            } catch (Throwable ex) {
+                                // Isolate failures; continue draining
+                                SimLogger.getLogger(SerialExecutor.class.getName())
+                                         .severe("SerialExecutor task threw: ", ex);
+                            }
+                        }
+                    } finally {
+                        running.set(false);
+                        // Check for races where a task arrived after we stopped
+                        if (!queue.isEmpty()) schedule();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void addTarget(Temporal t) {
+        if (t == null) return;
+        targets.addIfAbsent(t);
+        // Lazily create lane on first pulse for this target
+    }
+
+    @Override
+    public void removeTarget(Temporal t) {
+        if (t == null) return;
+        targets.remove(t);
+        lanes.remove(t); // release lane
+    }
+
+    /**
+     * Deliver the pulse to all targets:
+     *  - each target enqueued to its own serial lane (preserves per-target order),
+     *  - lanes run concurrently on the shared pool,
+     *  - wait for all to complete (barrier) to keep the world in sync per pulse.
+     */
     @Override
     public void applyPulse(ClockPulse pulse) {
+        Objects.requireNonNull(pulse, "pulse");
+        if (!running.get()) return;
 
-		// Wakeup each thread by applying the latest Pulse
-		tasks.stream().forEach(s -> s.applyPulse(pulse));
+        final int n = targets.size();
+        if (n == 0) return;
 
-		// Wait for all to apply the new pulse as this is a blocking operation
-		// order of completion does not matter
-		// These must be seperate to applow the Thread to process
-		tasks.stream().forEach(s -> s.awaitPulse());
+        final CountDownLatch latch = new CountDownLatch(n);
+
+        for (Temporal t : targets) {
+            // One lane per target
+            SerialExecutor lane = lanes.computeIfAbsent(t, k -> new SerialExecutor(pool));
+            lane.execute(() -> {
+                try {
+                    t.timePassing(pulse);
+                } catch (Throwable ex) {
+                    LOG.severe("Temporal target threw during pulse #" + pulse.getId() + ": ", ex);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        boolean interrupted = false;
+        try {
+            latch.await();
+        } catch (InterruptedException ie) {
+            interrupted = true;
+            Thread.currentThread().interrupt();
+        }
+        if (interrupted) {
+            LOG.warning("applyPulse interrupted while waiting for target lanes to drain.");
+        }
     }
 
-    /**
-     * Stop all threads
-     */
     @Override
     public void stop() {
-        logger.info("Stopping executor");
-        tasks.stream().forEach(s -> s.stop());
-    }
-
-    /**
-     * Add a new Temporal to the executor. This will create a new Thread.
-     * @param s Temporal to add
-     */
-    @Override
-    public void addTarget(Temporal s) {
-        var task = new TemporalRunnable(s);
-        tasks.add(task);
-
-        var t = new Thread(task, s.toString() + " Pulse");
-        t.start();
+        if (!running.compareAndSet(true, false)) return;
+        pool.shutdownNow();
+        try {
+            if (!pool.awaitTermination(5, TimeUnit.SECONDS)) {
+                LOG.warning("TemporalThreadExecutor did not terminate within 5s; forcing shutdown.");
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        lanes.clear();
     }
 }
