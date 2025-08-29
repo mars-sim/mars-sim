@@ -111,7 +111,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
 	
-	private int momentOfImpact = 1000;
+	private int momentOfImpact = 999;
 	/** The designated zone where this building is located at. */
 	private int zone;
 	/** Unique template id assigned for the settlement template of this building belong. */
@@ -1128,11 +1128,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 
 	/**
-	 * Gets a collection of inhabitants.
+	 * Gets a collection of building occupants.
 	 *
 	 * @return
 	 */
-	public Collection<Person> getInhabitants() {
+	public Collection<Person> getOccupants() {
 		if (lifeSupport != null) {
 			return lifeSupport.getOccupants();
 		}
@@ -1199,6 +1199,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		// Send time to each building function.
 		for (Function f : functions)
+			// Not needed for now. Will need this for future work
 			f.timePassing(pulse);
 
 		// If powered up, active time passing.
@@ -1210,7 +1211,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		if (pulse.isNewSol()) {
 			// Determine if a meteorite impact will occur within the new sol
-			momentOfImpact = checkImpactProbability(pulse);
+			momentOfImpact = checkImpactProbability();
 		}
 		
 		if (isImpactImminent && pulse.isNewIntMillisol()) {
@@ -1226,13 +1227,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/**
 	 * Checks for probability of a meteorite impact for this building in a sol.
 	 * 
-	 * @param pulse
 	 * @return momentOfImpact in millisol
 	 */
-	private int checkImpactProbability(ClockPulse pulse) {
-		// Reset the impact time
-		int momentOfImpact = 1000;
-		
+	private int checkImpactProbability() {
+
 		var meteorite = getBuildingManager().getMeteorite();
 
 		// Note: if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
@@ -1263,7 +1261,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			isImpactImminent = false;
 			
 			// No the impact does not occur in the vicinity
-//			logger.log(this, Level.INFO, 30_000, "Meteorite Impact event observed but occurred in settlement vicinity.");
+//			May add back for debugging: logger.log(this, Level.INFO, 30_000, "Meteorite Impact event observed but occurred in settlement vicinity.");
 		}
 		
 		return momentOfImpact;
@@ -1320,43 +1318,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 			logger.log(this, Level.INFO, 0, mal.getName() + " registered.");
 			
-			String victimNames = null;
-//			var settlement = getAssociatedSettlement();
-
-			// check if someone under this roof may have seen/affected by the impact
-			for (Person person : getInhabitants()) {
-				
-				if (person.getBuildingLocation() == this
-					&& RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
-
-					// Note 1: someone got hurt, declare medical emergency
-					// Note 2: delineate the accidents from those listed in malfunction.xml
-					// currently, malfunction whether a person gets hurt is handled by Malfunction
-					// above
-					int resilience = person.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-					int courage = person.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.COURAGE);
-					double stressFactor = 10 + RandomUtil.getRandomDouble(10) - resilience / 10D - courage / 10D;
-					PhysicalCondition pc = person.getPhysicalCondition();
-					if (stressFactor > 0) {
-			            logger.info(person, 0, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
-						pc.addStress(stressFactor);
-					}
-						
-					if (victimNames != null)
-						victimNames += ", " + person.getName();
-					else
-						victimNames = person.getName();
-					
-					mal.setTraumatized(victimNames);
-
-					if (pc.getStress() > 50)
-						logger.warning(this, 0, victimNames + " was traumatized by the meteorite impact");
-
-				} // check if this person happens to be inside the affected building
-				
-			} // loop for persons
+			checkPersonImpact(mal);
 
 			// Future: 
 			// 1. Record this amount in the landscape in the settlement vicinity
@@ -1368,28 +1330,74 @@ public class Building extends FixedUnit implements Malfunctionable,
 			logger.info(this, 0, "Estimated " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
 					+ " kg of meteorite fragments in settlement vicinity");
 
-
-			if (victimNames == null)
-				victimNames = "";
-				
-			// Pick the last person who witness this event in the affected building. Could be no one.
-			HistoricalEvent hEvent = new HazardEvent(
-					EventType.HAZARD_ACTS_OF_GOD,
-					this,
-					mal.getMalfunctionMeta().getName(),
-					"",
-					victimNames,
-					this);
-
-			if (eventManager == null)
-				eventManager = Simulation.instance().getEventManager();
-			
-			eventManager.registerNewEvent(hEvent);
-
-			fireUnitUpdate(UnitEventType.METEORITE_EVENT);
 		}
 	}
 
+	/**
+	 * Determines the impacts on affected people.
+	 * 
+	 * @param mal
+	 */
+	private void checkPersonImpact(Malfunction mal) {
+
+		String victimNames = null;
+//		var settlement = getAssociatedSettlement();
+		
+		// check if someone under this roof may have seen/affected by the impact
+		for (Person person : getOccupants()) {
+			
+			if (RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
+
+				// Note 1: someone got hurt, declare medical emergency
+				// Note 2: delineate the accidents from those listed in malfunction.xml
+				// currently, malfunction whether a person gets hurt is handled by Malfunction
+				// above
+				int resilience = person.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+				int courage = person.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.COURAGE);
+				double stressFactor = 10 + RandomUtil.getRandomDouble(10) - resilience / 10D - courage / 10D;
+				PhysicalCondition pc = person.getPhysicalCondition();
+				if (stressFactor > 0) {
+		            logger.info(person, 0, "Adding " + Math.round(stressFactor * 100.0)/100.0 + " to the stress.");
+					pc.addStress(stressFactor);
+				}
+					
+				if (victimNames != null)
+					victimNames += ", " + person.getName();
+				else
+					victimNames = person.getName();
+				
+				mal.setTraumatized(victimNames);
+
+				if (pc.getStress() > 50)
+					logger.warning(this, 0, victimNames + " was traumatized by the meteorite impact");
+
+			} // check if this person happens to be inside the affected building
+			
+		} // loop for persons
+		
+
+		if (victimNames == null)
+			victimNames = "";
+			
+		// Pick the last person who witness this event in the affected building. Could be no one.
+		HistoricalEvent hEvent = new HazardEvent(
+				EventType.HAZARD_ACTS_OF_GOD,
+				this,
+				mal.getMalfunctionMeta().getName(),
+				"",
+				victimNames,
+				this);
+
+		if (eventManager == null)
+			eventManager = Simulation.instance().getEventManager();
+		
+		eventManager.registerNewEvent(hEvent);
+
+		fireUnitUpdate(UnitEventType.METEORITE_EVENT);
+	}
+	
 	/**
 	 * Gets the wall thickness based on the constructionType type.
 	 */

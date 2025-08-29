@@ -41,7 +41,7 @@ public interface MobileUnit extends SurfacePOI {
     	
 	/**
 	 * Is the worker in a settlement ?
-	 *
+	 * @apiNote May use isInVehicleInGarage() to check if a person is in a vehicle inside a garage
 	 * @return true if the worker in a settlement
 	 */
 	public boolean isInSettlement();

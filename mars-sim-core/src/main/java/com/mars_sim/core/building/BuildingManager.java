@@ -1487,6 +1487,8 @@ public class BuildingManager implements Serializable {
 	
 	/**
 	 * Adds the person to an activity spot in a building.
+	 * @apiNote This method will automatically add the person as an occupant to the life support function first, 
+	 *          even if an activity spot is not available
 	 *
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
@@ -1519,7 +1521,8 @@ public class BuildingManager implements Serializable {
 				loc = lifeSupport.getAvailableActivitySpot();
 			}
 
-			// Add the person to this building, even if an activity spot is not available				
+			// Add the person as an occupant to the life support function first, 
+			// even if an activity spot is not available				
 			if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
 				lifeSupport.addPerson(person);
 			}
@@ -1553,8 +1556,10 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds the robot to aN activity spot in a building.
-	 *
+	 * Adds the robot to an activity spot in a building.
+	 * @apiNote This method will automatically add the robot as an robot occupant to the robotic station function first, 
+	 *          even if an activity spot is not available
+	 *          
 	 * @param robot   the robot to add.
 	 * @param building the building to add the robot to.
 	 * @param functionType
@@ -1586,18 +1591,6 @@ public class BuildingManager implements Serializable {
 
 				loc = roboticStation.getAvailableActivitySpot();
 			}
-
-//			if (functionType != null)  {
-//				var specificF = building.getFunction(functionType);
-//				if (specificF == null) {
-//					logger.warning(robot, "No " + functionType.getName() + " in " + building.getName() + ".");
-//				}
-//				else {
-//					f = specificF;
-//					// Find an empty spot in this function
-//					loc = f.getAvailableActivitySpot();
-//				}
-//			}
 			
 			// Case 2: Gets an empty pos from building's robotic station
 			if (loc == null) {

@@ -52,7 +52,6 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;

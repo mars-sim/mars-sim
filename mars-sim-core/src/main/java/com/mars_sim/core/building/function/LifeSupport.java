@@ -173,9 +173,10 @@ public class LifeSupport extends Function {
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 
-			if (person.getBuildingLocation() != null) {
+			Building oldBldg = person.getBuildingLocation();
+			if (oldBldg != null) {
 				// Remove this person from the old building first
-				BuildingManager.removePersonFromBuilding(person, person.getBuildingLocation());
+				BuildingManager.removePersonFromBuilding(person, oldBldg);
 			}
 				
 			// Add person to this building.

@@ -851,7 +851,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Time passing for unit.
+	 * Time passing for tracking resources of the entity.
 	 *
 	 * @param time amount of time passing (in millisols)
 	 */
@@ -860,7 +860,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 
 		if (entity.getUnitType() == UnitType.BUILDING
-				&& entity.getUnitType() == UnitType.EVA_SUIT) {
+				|| entity.getUnitType() == UnitType.EVA_SUIT) {
 			// Check if life support modifiers are still in effect.
 			setLifeSupportModifiers(time);
 			// Check if resources is still draining

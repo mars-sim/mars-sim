@@ -19,7 +19,6 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;

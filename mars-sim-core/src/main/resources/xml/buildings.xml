@@ -266,7 +266,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
-			<life-support capacity="16" power-required="0.8" />
+			<life-support capacity="24" power-required="1.2" />
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
@@ -986,13 +986,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Bioreactor-F" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor-F hosts fermentation reactions using specialized equipment and 
+		<description> Bioreactor-F (F stands for fermentation) hosts fermentation reactions using specialized equipment and 
 			racks and cyanobacteria and chorella that consumes glucose to produce hydrogen.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1060,13 +1060,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Bioreactor-E" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor-E host specialized equipment and racks for utilizing cynobacteria 
+		<description> Bioreactor-E (E stands for Ethylene) host specialized equipment and racks for utilizing cynobacteria 
 			to produce ethylene gas.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1132,13 +1132,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 	<building type="Bioreactor-M" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor-M hosts specialized equipment and racks for utilizing methanogenic 
+		<description> Bioreactor-M (M stands for methanol/methane) hosts specialized equipment and racks for utilizing methanogenic 
 		 archaea to convert methanol into methane and water.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1204,13 +1204,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Bioreactor-G" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor A hosts specialized equipment and racks for utilizing bio-organisms 
+		<description> Bioreactor-G (G stands for Glucose) hosts specialized equipment and racks for utilizing bio-organisms 
 			to convert fiber into glucose. 
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1315,7 +1315,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="10.0"
@@ -1599,7 +1599,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</fishery>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="10.0"
@@ -1681,7 +1681,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</algae-farming>
 
-			<life-support capacity="8" power-required=".8" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="10.0"
@@ -2291,7 +2291,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="18" power-required="0.9" />
+			<life-support capacity="12" power-required="0.6" />
 			<living-accommodation capacity="12" guesthouse="true">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.15" />
@@ -2701,7 +2701,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.75" yloc="-2.33" />
 				</activity>
 			</computation>
-			<life-support capacity="24" power-required="0.6" />
+			<life-support capacity="24" power-required="1.2" />
 			<management capacity="12">
 				<activity>
 					<activity-spot xloc="1.32" yloc="0.92" />
@@ -2790,7 +2790,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.15" yloc="-0.8" />																			
 				</activity>
 			</computation>
-			<life-support capacity="24" power-required="0.6" />
+			<life-support capacity="24" power-required="1.2" />
 			<management capacity="12">
 				<activity>
 					<activity-spot xloc="3.1" yloc="2.7" />
@@ -2940,7 +2940,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-0.55" yloc="-2.5" />		
 				</activity>
 			</vehicle-maintenance>
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="7.5" />
 				<power-source type="Fuel Power Source" toggle="false" power="7.5"
@@ -3470,7 +3470,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</dining>
 			
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			<research tech-level="4" capacity="3">
@@ -3747,7 +3747,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</computation>			
 
-			<life-support capacity="6" power-required="3" />
+			<life-support capacity="8" power-required="0.4" />
 			<manufacture tech-level="4" concurrent-processes="8">
 				<activity>
 					<activity-spot xloc="2.25" yloc="1.6" />
@@ -4199,7 +4199,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 										
 				</activity>
 			</vehicle-maintenance>
-			<life-support capacity="16" power-required="0.8" />
+			<life-support capacity="24" power-required="1.2" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="10" />
 				<power-source type="Fuel Power Source" toggle="false" power="10"
@@ -4239,7 +4239,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="4" power-required="0.2" />
+			<life-support capacity="6" power-required="0.3" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
@@ -4291,7 +4291,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
 			</computation>			
-			<life-support capacity="4" power-required="0.2" />
+			<life-support capacity="6" power-required="0.3" />
 			<manufacture tech-level="3" concurrent-processes="2">
 				<activity>
 					<activity-spot xloc=".95" yloc="1.05" />
@@ -4354,7 +4354,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="10" power-required="0.5" />
 
 			<power-storage capacity="40" discharge-rate="1.25"/>
 
