@@ -11,6 +11,7 @@
  *   using invokeAll(), while waiting for completion to keep the world in sync.
  * - Shields each listener call so one faulty listener cannot break delivery.
  * - Executor sizing is bounded by the number of cores and listener count.
+ * - Tiny perf tidy: avoid stream().count() in getObjectsLoad().
  */
 package com.mars_sim.core;
 
@@ -50,6 +51,7 @@ import com.mars_sim.core.unit.TemporalExecutor;
 import com.mars_sim.core.unit.TemporalExecutorService;
 import com.mars_sim.core.unit.TemporalThreadExecutor;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.SimulationConfig;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -421,11 +423,10 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public float getObjectsLoad() {
-		return (.45f * lookupPerson.entrySet().stream().count() 
-				+ .2f * lookupRobot.entrySet().stream().count()
-				+ .25f * lookupBuilding.entrySet().stream().count()
-				+ .1f * lookupVehicle.entrySet().stream().count()
-				);
+		return (.45f * lookupPerson.size()
+				+ .2f * lookupRobot.size()
+				+ .25f * lookupBuilding.size()
+				+ .1f * lookupVehicle.size());
 	}
 	
 	/**
