@@ -11,7 +11,7 @@
  *   using invokeAll(), while waiting for completion to keep the world in sync.
  * - Shields each listener call so one faulty listener cannot break delivery.
  * - Executor sizing is bounded by the number of cores and listener count.
- * - Tiny perf tidy: avoid stream().count() in getObjectsLoad().
+ * - Tiny perf tidy: avoid stream().count() in getObjectsLoad() and reuse size lookups.
  */
 package com.mars_sim.core;
 
@@ -419,14 +419,16 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a composite load score from people, robots, buildings and vehicles.
-	 * 
-	 * @return
+	 * (Micro perf tidy: reuse size() values and avoid streams.)
+	 *
+	 * @return composite load metric
 	 */
 	public float getObjectsLoad() {
-		return (.45f * lookupPerson.size()
-				+ .2f * lookupRobot.size()
-				+ .25f * lookupBuilding.size()
-				+ .1f * lookupVehicle.size());
+		final int p = lookupPerson.size();
+		final int r = lookupRobot.size();
+		final int b = lookupBuilding.size();
+		final int v = lookupVehicle.size();
+		return 0.45f * p + 0.20f * r + 0.25f * b + 0.10f * v;
 	}
 	
 	/**
