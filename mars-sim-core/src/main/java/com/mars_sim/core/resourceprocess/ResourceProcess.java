@@ -30,7 +30,33 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private static final double SMALL_AMOUNT = 0.000001;
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
-	
+
+	// ===== Adaptive Backoff (one-file gameplay upgrade) ======================
+	/** System property to disable backoff if needed (default: true). */
+	private static final boolean BACKOFF_ENABLED =
+			!"false".equalsIgnoreCase(System.getProperty("msim.process.backoff.enabled", "true"));
+
+	/** Minimum & maximum cooldowns between retries when blocked (in mSol). */
+	// With typical 1000 mSol ~= 1 sol, 5 mSol ~ 7.4 minutes sim-time; 15 mSol ~ ~22 minutes.
+	private static final double MIN_BACKOFF_MSOL = 5D;
+	private static final double MAX_BACKOFF_MSOL = 15D;
+
+	/** Log throttle window when repeatedly blocked (in mSol). */
+	private static final double LOG_THROTTLE_MSOL = 5D;
+
+	/** Backoff grows when we repeatedly hit the same block reason. */
+	private double currentBackoffMSol = MIN_BACKOFF_MSOL;
+	private double backoffRemainingMSol = 0D;
+	private double logThrottleRemainingMSol = 0D;
+	private int suppressedLogs = 0;
+
+	/** Why the process is blocked right now. */
+	private enum BlockReason {
+		NO_INPUT, OUTPUT_FULL, OTHER
+	}
+	private BlockReason lastBlockReason = null;
+	// ========================================================================
+
 	/**
 	 * Represents the internal state of the process.
 	 */
@@ -333,9 +359,23 @@ public class ResourceProcess implements ScheduledEventHandler {
 			return;
 
 		if (runningProcess) {
+			// --- Adaptive backoff window / log throttle decay ---
+			if (BACKOFF_ENABLED && logThrottleRemainingMSol > 0D) {
+				logThrottleRemainingMSol -= time;
+				if (logThrottleRemainingMSol < 0D) logThrottleRemainingMSol = 0D;
+			}
+			if (BACKOFF_ENABLED && backoffRemainingMSol > 0D) {
+				// Still in cooldown; skip heavy checks/work for this pulse.
+				backoffRemainingMSol -= time;
+				if (backoffRemainingMSol < 0D) backoffRemainingMSol = 0D;
+				currentProductionLevel = 0D;
+				return;
+			}
+
 			var host = building.getAssociatedSettlement();
 			double newProdLevel = productionLevel;
 
+			// Accumulate time only when not backing off
 			accumulatedTime += time;
 
 			double newCheckPeriod = PROCESS_CHECK_FREQUENCY * time;
@@ -345,6 +385,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 				accumulatedTime -= newCheckPeriod;
 	
 				double bottleneck = 1D;
+				boolean blocked = false;
 
 				// Input resources from inventory.
 				for (Integer resource : processSpec.getInputResources()) {
@@ -366,6 +407,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
 								resourceProblem(resource, false, required, stored);
+								blocked = true;
 
 								required = stored;
 								host.retrieveAmountResource(resource, required);
@@ -376,6 +418,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 						}
 						else {
 							resourceProblem(resource, false, required, stored);
+							blocked = true;
 							break;
 						}
 					}
@@ -385,7 +428,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 				newProdLevel = Math.min(newProdLevel, bottleneck);
 				
 				// Output resources to inventory.
-				for (Integer resource : processSpec.getOutputResources()) {
+				if (!blocked) {
+					for (Integer resource : processSpec.getOutputResources()) {
 						double maxRate = getBaseFullOutputRate(resource);
 						double resourceRate = maxRate * newProdLevel;
 						double required = resourceRate * accumulatedTime;
@@ -395,10 +439,10 @@ public class ResourceProcess implements ScheduledEventHandler {
 						if (remainingCap > SMALL_AMOUNT) {
 							if (required > remainingCap) {
 								resourceProblem(resource, true, required, remainingCap);
+								blocked = true;
 
 								required = remainingCap;
-								host.storeAmountResource(resource, required);
-
+                                host.storeAmountResource(resource, required);
 								break;
 							}
 							else
@@ -407,8 +451,21 @@ public class ResourceProcess implements ScheduledEventHandler {
 						}
 						else {
 							resourceProblem(resource, true, required, remainingCap);
+							blocked = true;
 							break;
 						}
+					}
+				}
+
+				// Success path: decay cooldown and optionally roll-up suppressed logs.
+				if (BACKOFF_ENABLED && !blocked) {
+					currentBackoffMSol = Math.max(MIN_BACKOFF_MSOL, currentBackoffMSol / 2D);
+					if (suppressedLogs > 0 && logThrottleRemainingMSol <= 0D) {
+						logger.fine(building, 30_000,
+								"[ResourceProcess] Resumed after backoff; suppressed " + suppressedLogs + " repeated block logs.");
+						suppressedLogs = 0;
+						logThrottleRemainingMSol = LOG_THROTTLE_MSOL;
+					}
 				}
 			}
 
@@ -418,13 +475,52 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	private void resourceProblem(int resource, boolean capacity, double required, double available) {
-		logger.fine(building, 30_000,
+		if (BACKOFF_ENABLED) {
+			// Throttled logging for repeated block reasons
+			String msg = (capacity ? "No capacity '" : "Not enough '")
+					+ ResourceUtil.findAmountResourceName(resource)
+					+ "' for '" + processSpec.getName() + "'. Required: "
+					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
+					+ Math.round(available * 1000.0)/1000.0 + " kg.";
+			if (logThrottleRemainingMSol <= 0D) {
+				if (suppressedLogs > 0) {
+					msg += " (" + suppressedLogs + " repeats suppressed)";
+				}
+				logger.fine(building, 30_000, msg);
+				suppressedLogs = 0;
+				logThrottleRemainingMSol = LOG_THROTTLE_MSOL;
+			}
+			else {
+				suppressedLogs++;
+			}
+
+			// Escalate backoff and set cooldown
+			escalateCooldown(capacity ? BlockReason.OUTPUT_FULL : BlockReason.NO_INPUT);
+		}
+		else {
+			// Legacy behavior: flip process off and let workers re-toggle later.
+			logger.fine(building, 30_000,
 					(capacity ? "No capacity '" : "Not enough '")
 					+ ResourceUtil.findAmountResourceName(resource)
 					+ "' for '" + processSpec.getName() + "'. Required: "
 					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
 					+ Math.round(available * 1000.0)/1000.0 + " kg.");
-		setProcessRunning(false);
+			setProcessRunning(false);
+		}
+	}
+
+	private void escalateCooldown(BlockReason reason) {
+		if (!BACKOFF_ENABLED) return;
+
+		if (reason == lastBlockReason) {
+			currentBackoffMSol = Math.min(MAX_BACKOFF_MSOL,
+					Math.max(MIN_BACKOFF_MSOL, currentBackoffMSol * 2D));
+		}
+		else {
+			currentBackoffMSol = MIN_BACKOFF_MSOL;
+		}
+		backoffRemainingMSol = currentBackoffMSol;
+		lastBlockReason = reason;
 	}
 
 	/**
