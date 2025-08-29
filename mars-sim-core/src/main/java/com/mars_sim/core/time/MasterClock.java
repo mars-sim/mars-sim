@@ -1,4 +1,4 @@
-/*
+  /*
  * Mars Simulation Project
  * MasterClock.java
  * @date 2025-08-05 (patched 2025-08-29: listener pool scales to listeners/cores)
@@ -113,7 +113,7 @@ public class MasterClock implements Serializable {
     /** The thread for running the clock listeners. */
     private transient ExecutorService listenerExecutor;
     /** Current size of the listener pool (for dynamic resizing). */
-    private transient int listenerThreads = 0;
+    private transient volatile int listenerThreads = 0;
     /** Thread for main clock */
     private transient ExecutorService clockExecutor;
     /** Registered clock listener tasks (CME-safe & unique). */
@@ -580,7 +580,8 @@ public class MasterClock implements Serializable {
 
         if (!isPaused) {
             // Ensure listenerExecutor is working
-            if (listenerExecutor.isTerminated() 
+            if (listenerExecutor == null
+                    || listenerExecutor.isTerminated() 
                     || listenerExecutor.isShutdown()) {
                 // NOTE: check if resuming from power saving can cause this
                 logger.config("ListenerExecutor has died. Restarting listener executor thread.");
@@ -1092,7 +1093,7 @@ public class MasterClock implements Serializable {
      * Starts or resizes the listener thread pool executor to match the number
      * of registered listeners (bounded by CPU cores).
      */
-    private void startListenerExecutor() {
+    private synchronized void startListenerExecutor() {
         int desiredThreads = computeListenerThreads();
 
         if (listenerExecutor == null 
@@ -1538,4 +1539,4 @@ public class MasterClock implements Serializable {
             } // end of while
         } // end of run
     }
-}
+} 
