@@ -16,17 +16,11 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
 public interface TemporalExecutor {
-
-    /** Adds a target to receive pulses. No-op if null or already present. */
-    void addTarget(Temporal t);
-
-    /** Removes a target. No-op if null or absent. */
-    void removeTarget(Temporal t);
-
-    /** Convenience bulk add. */
-    default void addTargets(Collection<? extends Temporal> ts) {
-        if (ts != null) ts.forEach(this::addTarget);
-    }
+     void addTarget(Temporal target);
+     void removeTarget(Temporal target);
+     void applyPulse(ClockPulse pulse);
+     void stop();
+ }
 
     /**
      * Applies a clock pulse to all current targets.
