@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2025-08-05
+ * @date 2025-08-05 (patched 2025-08-29: listener pool scales to listeners/cores)
  * @author Scott Davis
  */
 package com.mars_sim.core.time;
@@ -112,6 +112,8 @@ public class MasterClock implements Serializable {
     private transient long tLast;
     /** The thread for running the clock listeners. */
     private transient ExecutorService listenerExecutor;
+    /** Current size of the listener pool (for dynamic resizing). */
+    private transient int listenerThreads = 0;
     /** Thread for main clock */
     private transient ExecutorService clockExecutor;
     /** Registered clock listener tasks (CME-safe & unique). */
@@ -454,6 +456,8 @@ public class MasterClock implements Serializable {
             clockListenerTasks = new CopyOnWriteArraySet<>();
         if (!hasClockListenerTask(newListener)) {
             clockListenerTasks.add(new ClockListenerTask(newListener, minDuration));
+            // Re-evaluate pool size when a new listener is added
+            startListenerExecutor();
         }
     }
 
@@ -466,6 +470,8 @@ public class MasterClock implements Serializable {
         ClockListenerTask task = retrieveClockListenerTask(oldListener);
         if (task != null && clockListenerTasks != null) {
             clockListenerTasks.remove(task);
+            // Optionally downsize pool when listeners are removed
+            startListenerExecutor();
         }
     }
 
@@ -525,6 +531,7 @@ public class MasterClock implements Serializable {
         if (listenerExecutor != null) {
             listenerExecutor.shutdown();
             listenerExecutor = null;
+            listenerThreads = 0;
         }
 
         // Restart executor, listener tasks are still in place
@@ -1074,18 +1081,39 @@ public class MasterClock implements Serializable {
         logger.info(3_000, "Simulation paused.");
     }
 
+    /** Computes desired listener threads: min(cores, #listeners), >= 1. */
+    private int computeListenerThreads() {
+        int listeners = (clockListenerTasks == null ? 0 : clockListenerTasks.size());
+        int cores     = Math.max(1, Runtime.getRuntime().availableProcessors());
+        return Math.max(1, Math.min(cores, Math.max(1, listeners)));
+    }
+
     /**
-     * Starts the listener thread pool executor.
+     * Starts or resizes the listener thread pool executor to match the number
+     * of registered listeners (bounded by CPU cores).
      */
     private void startListenerExecutor() {
+        int desiredThreads = computeListenerThreads();
+
         if (listenerExecutor == null 
                 || listenerExecutor.isShutdown()
                 || listenerExecutor.isTerminated()) {
-            logger.config(10_000, "Setting up thread(s) for clock listener.");
-            int nThreads = Math.max(1, Math.min(8, Runtime.getRuntime().availableProcessors()));
+            logger.config(10_000, "Setting up " + desiredThreads + " thread(s) for clock listeners.");
             listenerExecutor = Executors.newFixedThreadPool(
-                    nThreads,
+                    desiredThreads,
                     new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
+            listenerThreads = desiredThreads;
+            return;
+        }
+
+        // Resize the pool if the desired concurrency changed (simple rebuild).
+        if (desiredThreads != listenerThreads) {
+            logger.config("Resizing clock listener executor from " + listenerThreads + " to " + desiredThreads + " thread(s).");
+            listenerExecutor.shutdown();
+            listenerExecutor = Executors.newFixedThreadPool(
+                    desiredThreads,
+                    new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
+            listenerThreads = desiredThreads;
         }
     }
     
