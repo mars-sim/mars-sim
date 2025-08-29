@@ -9,11 +9,14 @@ package com.mars_sim.core.time;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -111,8 +114,8 @@ public class MasterClock implements Serializable {
 	private transient ExecutorService listenerExecutor;
 	/** Thread for main clock */
 	private transient ExecutorService clockExecutor;
-	/** A list of clock listener tasks. */
-	private transient Collection<ClockListenerTask> clockListenerTasks;
+	/** A list of clock listener tasks. (CME-safe snapshot semantics) */
+	private transient CopyOnWriteArrayList<ClockListenerTask> clockListenerTasks;
 	/** The clock pulse. */
 	private transient ClockPulse currentPulse;
 	
@@ -446,10 +449,9 @@ public class MasterClock implements Serializable {
 	 * @Param minDuration The minimum duration in milliseconds between pulses.
 	 */
 	public final void addClockListener(ClockListener newListener, long minDuration) {
-		// Check if clockListenerTaskList already contain the newListener's task,
-		// if it doesn't, create one
+		if (newListener == null) return;
 		if (clockListenerTasks == null)
-			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
+			clockListenerTasks = new CopyOnWriteArrayList<>();
 		if (!hasClockListenerTask(newListener)) {
 			clockListenerTasks.add(new ClockListenerTask(newListener, minDuration));
 		}
@@ -462,7 +464,7 @@ public class MasterClock implements Serializable {
 	 */
 	public final void removeClockListener(ClockListener oldListener) {
 		ClockListenerTask task = retrieveClockListenerTask(oldListener);
-		if (task != null) {
+		if (task != null && clockListenerTasks != null) {
 			clockListenerTasks.remove(task);
 		}
 	}
@@ -474,9 +476,8 @@ public class MasterClock implements Serializable {
 	 * @return
 	 */
 	private boolean hasClockListenerTask(ClockListener listener) {
-		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
-		while (i.hasNext()) {
-			ClockListenerTask c = i.next();
+		if (clockListenerTasks == null) return false;
+		for (ClockListenerTask c : clockListenerTasks) {
 			if (c.getClockListener().equals(listener))
 				return true;
 		}
@@ -490,9 +491,7 @@ public class MasterClock implements Serializable {
 	 */
 	private ClockListenerTask retrieveClockListenerTask(ClockListener listener) {
 		if (clockListenerTasks != null) {
-			Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
-			while (i.hasNext()) {
-				ClockListenerTask c = i.next();
+			for (ClockListenerTask c : clockListenerTasks) {
 				if (c.getClockListener().equals(listener))
 					return c;
 			}
@@ -824,9 +823,12 @@ public class MasterClock implements Serializable {
 				catch (Throwable e) {
 					// Failure: increment streak and log
 					recordFailure(e);
-					logger.severe("Can't send out clock pulse to listener %s (consecutive failures=%d): ",
-							listener != null ? listener.getClass().getName() : "null",
-							getConsecutiveFailures(), e);
+					logger.severe(
+						"Can't send out clock pulse to listener: " 
+							+ (listener != null ? listener.getClass().getName() : "null")
+							+ " (consecutive failures=" + getConsecutiveFailures() + "): ",
+						e
+					);
 
 					// Decide whether to drop this listener
 					if (getConsecutiveFailures() >= MAX_CONSECUTIVE_LISTENER_FAILURES) {
@@ -836,6 +838,18 @@ public class MasterClock implements Serializable {
 				}
 			}
 			return "done";
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof ClockListenerTask other)) return false;
+			return listener != null && listener.equals(other.listener);
+		}
+
+		@Override
+		public int hashCode() {
+			return (listener == null ? 0 : listener.hashCode());
 		}
 	}
 
@@ -950,15 +964,51 @@ public class MasterClock implements Serializable {
 		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
 				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 		
-		// Execute all listener concurrently and wait for all to complete before advancing
-		if (clockListenerTasks != null) {
-			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream()
-				.forEach(this::executeClockListenerTask);
+		// Execute all listeners: submit all, then wait for all to complete (CME-safe via COW list)
+		if (clockListenerTasks != null && !clockListenerTasks.isEmpty()) {
+			final List<ClockListenerTask> submitted = new ArrayList<>(clockListenerTasks);
+			final List<Future<String>> futures = new ArrayList<>(submitted.size());
+
+			for (ClockListenerTask task : submitted) {
+				try {
+					futures.add(listenerExecutor.submit(task));
+				}
+				catch (RejectedExecutionException ree) {
+					// Application shutting down
+					Thread.currentThread().interrupt();
+					logger.severe("RejectedExecutionException when submitting clock listener task: ", ree);
+				}
+			}
+
+			// Wait for completion and handle possible "drop" instructions
+			for (int i = 0; i < futures.size(); i++) {
+				Future<String> f = futures.get(i);
+				ClockListenerTask task = submitted.get(i);
+				try {
+					String status = f.get();
+					if ("drop".equals(status)) {
+						ClockListener listener = task.getClockListener();
+						clockListenerTasks.remove(task);
+						logger.warning(
+							"Auto-unregistering ClockListener "
+								+ (listener != null ? listener.getClass().getName() : "null")
+								+ " after " + task.getConsecutiveFailures() + " consecutive failures."
+						);
+					}
+				}
+				catch (ExecutionException ee) {
+					logger.severe("ExecutionException. Problem with clock listener tasks: ", ee);
+				}
+				catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
+					logger.severe("Interrupted during clock listener tasks: ", ie);
+				}
+			}
 		}
 	}
 
 	/**
-	 * Executes the clock listener task.
+	 * Executes the clock listener task. (kept for compatibility; not used by fireClockPulse anymore)
 	 *
 	 * @param task
 	 */
@@ -973,9 +1023,11 @@ public class MasterClock implements Serializable {
 			if ("drop".equals(status)) {
 				ClockListener listener = task.getClockListener();
 				clockListenerTasks.remove(task);
-				logger.warning("Auto-unregistering ClockListener %s after %d consecutive failures.",
-						(listener != null ? listener.getClass().getName() : "null"),
-						task.getConsecutiveFailures());
+				logger.warning(
+					"Auto-unregistering ClockListener "
+						+ (listener != null ? listener.getClass().getName() : "null")
+						+ " after " + task.getConsecutiveFailures() + " consecutive failures."
+				);
 			}
 		} catch (ExecutionException ee) {
 			logger.severe("ExecutionException. Problem with clock listener tasks: ", ee);
@@ -1159,8 +1211,8 @@ public class MasterClock implements Serializable {
 	 */
 	private void firePauseChange(boolean isPaused, boolean showPane) {
 		if (clockListenerTasks != null) {
-			// Use a snapshot to avoid CME when a listener is auto-removed due to failures.
-			for (ClockListenerTask cl : new HashSet<>(clockListenerTasks)) {
+			// Iterate over snapshot semantics (COW list); removal is safe during iteration.
+			for (ClockListenerTask cl : clockListenerTasks) {
 				try {
 					cl.getClockListener().pauseChange(isPaused, showPane);
 					// Success: reset failure streak
@@ -1170,17 +1222,23 @@ public class MasterClock implements Serializable {
 					// Failure: increment streak and log
 					cl.recordFailure(t);
 					ClockListener listener = cl.getClockListener();
-					logger.severe("ClockListener %s threw during pauseChange(paused=%s, showPane=%s) [consecutive failures=%d]: ",
-							(listener != null ? listener.getClass().getName() : "null"),
-							Boolean.toString(isPaused), Boolean.toString(showPane),
-							cl.getConsecutiveFailures(), t);
+					logger.severe(
+						"ClockListener "
+							+ (listener != null ? listener.getClass().getName() : "null")
+							+ " threw during pauseChange(paused=" + isPaused + ", showPane=" + showPane
+							+ ") [consecutive failures=" + cl.getConsecutiveFailures() + "]: ",
+						t
+					);
 
 					// Auto-remove if past threshold
-					if (cl.getConsecutiveFailures() >= MAX_CONSECUTIVE_LISTENER_FAILURES) {
+				 if (cl.getConsecutiveFailures() >= MAX_CONSECUTIVE_LISTENER_FAILURES) {
 						clockListenerTasks.remove(cl);
-						logger.warning("Auto-unregistering ClockListener %s after %d consecutive failures during pauseChange.",
-								(listener != null ? listener.getClass().getName() : "null"),
-								cl.getConsecutiveFailures());
+						logger.warning(
+							"Auto-unregistering ClockListener "
+								+ (listener != null ? listener.getClass().getName() : "null")
+								+ " after " + cl.getConsecutiveFailures()
+								+ " consecutive failures during pauseChange."
+						);
 					}
 				}
 			}
