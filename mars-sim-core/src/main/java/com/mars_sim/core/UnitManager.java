@@ -1,8 +1,16 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @date 2025-07-22
+ * @date 2025-07-22 (patched 2025-08-29)
  * @author Scott Davis
+ *
+ * Notes (patch):
+ * - Applies the MasterClock listener-hardening pattern to UnitManager.
+ * - Uses CopyOnWriteArraySet for CME-safe listener storage (already present).
+ * - Adds a bounded listener ExecutorService and delivers events in parallel
+ *   using invokeAll(), while waiting for completion to keep the world in sync.
+ * - Shields each listener call so one faulty listener cannot break delivery.
+ * - Executor sizing is bounded by the number of cores and listener count.
  */
 package com.mars_sim.core;
 
@@ -12,15 +20,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
@@ -62,11 +74,10 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final String THREAD = "thread";
 	public static final String SHARED = "shared";
-	
 
 	// Data members
 	/** Counter of unit identifiers. (Atomic to avoid global monitor contention) */
-	private final AtomicInteger uniqueId = new AtomicInteger(0);
+	private final java.util.concurrent.atomic.AtomicInteger uniqueId = new java.util.concurrent.atomic.AtomicInteger(0);
 	/** The commander's unique id . */
 	private int commanderID = -1;
 	/** The core engine's original build. */
@@ -74,6 +85,9 @@ public class UnitManager implements Serializable, Temporal {
 
 	/** Map: UnitType -> listeners (CME-safe). */
 	private transient EnumMap<UnitType, CopyOnWriteArraySet<UnitManagerListener>> listeners;
+
+	/** Bounded executor for parallel, shielded listener delivery. */
+	private transient ExecutorService umListenerExecutor;
 
 	private transient TemporalExecutor executor;
 
@@ -264,7 +278,7 @@ public class UnitManager implements Serializable, Temporal {
 					"Cannot store unit type:" + unit.getUnitType());
 		}
 
-		// Notify listeners (CME-safe & exception-shielded)
+		// Notify listeners (CME-safe & exception-shielded, parallel delivery)
 		fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 	}
 
@@ -349,6 +363,9 @@ public class UnitManager implements Serializable, Temporal {
 	public void endSimulation() {
 		if (executor != null)
 			executor.stop();
+		// Stop the unit manager listener executor as well
+		if (umListenerExecutor != null)
+			umListenerExecutor.shutdownNow();
 	}
 
 	/**
@@ -427,6 +444,9 @@ public class UnitManager implements Serializable, Temporal {
 		// CopyOnWriteArraySet prevents CME during concurrent fire/update
 		listeners.computeIfAbsent(source, k -> new CopyOnWriteArraySet<>())
 		         .add(newListener);
+
+		// Ensure executor exists (bounded by cores & listener count)
+		ensureListenerExecutor();
 	}
 
 	/**
@@ -444,7 +464,38 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fires a unit update event. (CME-safe & exception-shielded)
+	 * Computes the total number of registered listeners across all sources.
+	 */
+	private int totalListenerCount() {
+		if (listeners == null || listeners.isEmpty()) return 0;
+		int c = 0;
+		for (CopyOnWriteArraySet<UnitManagerListener> s : listeners.values()) {
+			if (s != null) c += s.size();
+		}
+		return c;
+	}
+
+	/**
+	 * Starts the listener thread pool executor if needed.
+	 * Pool size is bounded by number of cores and total listeners.
+	 */
+	private void ensureListenerExecutor() {
+		if (umListenerExecutor == null
+				|| umListenerExecutor.isShutdown()
+				|| umListenerExecutor.isTerminated()) {
+			int listenerCount = Math.max(1, totalListenerCount());
+			int cores = com.mars_sim.core.SimulationRuntime.NUM_CORES;
+			int desired = Math.max(1, Math.min(cores, listenerCount));
+			logger.config("Setting up UnitManager listener executor with " + desired + " thread(s).");
+			umListenerExecutor = Executors.newFixedThreadPool(
+					desired,
+					new ThreadFactoryBuilder().setNameFormat("unitManager-listener-%d").build()
+			);
+		}
+	}
+
+	/**
+	 * Fires a unit update event. (CME-safe & exception-shielded, parallel)
 	 *
 	 * @param eventType the event type.
 	 * @param unit      the unit causing the event.
@@ -455,9 +506,20 @@ public class UnitManager implements Serializable, Temporal {
 		}
 
 		CopyOnWriteArraySet<UnitManagerListener> l = listeners.get(unit.getUnitType());
-		if (l != null && !l.isEmpty()) {
-			UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
-			for (UnitManagerListener listener : l) {
+		if (l == null || l.isEmpty()) {
+			return;
+		}
+
+		// Prepare event
+		UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
+
+		// Make sure executor exists
+		ensureListenerExecutor();
+
+		// Build a parallel batch with shielding
+		final java.util.List<Callable<String>> batch = new java.util.ArrayList<>(l.size());
+		for (UnitManagerListener listener : l) {
+			batch.add(() -> {
 				try {
 					listener.unitManagerUpdate(e);
 				}
@@ -465,7 +527,28 @@ public class UnitManager implements Serializable, Temporal {
 					// Never let a bad listener break delivery to others
 					logger.severe("UnitManager listener threw during " + eventType + " for " + unit + ": ", ex);
 				}
+				return "ok";
+			});
+		}
+
+		try {
+			final List<Future<String>> futures = umListenerExecutor.invokeAll(batch);
+			// Surface (should be none, because we shield inside tasks)
+			for (Future<String> f : futures) {
+				try {
+					f.get();
+				}
+				catch (ExecutionException ee) {
+					logger.severe("ExecutionException in UnitManager listener batch: ", ee);
+				}
 			}
+		}
+		catch (InterruptedException ie) {
+			Thread.currentThread().interrupt();
+			logger.severe("Interrupted while delivering UnitManager event " + eventType + " for " + unit + ": ", ie);
+		}
+		catch (RejectedExecutionException ree) {
+			logger.severe("Rejected while delivering UnitManager event (executor shutdown): ", ree);
 		}
 	}
 
@@ -540,8 +623,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param clock
 	 */
 	public void reinit() {
 
@@ -552,6 +633,9 @@ public class UnitManager implements Serializable, Temporal {
 		// Sets up the concurrent tasks
 		settlementCoordinateMap = new ConcurrentHashMap<>();
 		lookupSettlement.values().forEach(this::activateSettlement);
+
+		// (Re)ensure listener executor after reload if listeners are present
+		ensureListenerExecutor();
 	}
 
 	/**
@@ -576,6 +660,12 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment.clear();
 
 		marsSurface = null;
+
+		// Stop the UnitManager listener executor
+		if (umListenerExecutor != null) {
+			umListenerExecutor.shutdownNow();
+			umListenerExecutor = null;
+		}
 
 		listeners = null;
 	}
