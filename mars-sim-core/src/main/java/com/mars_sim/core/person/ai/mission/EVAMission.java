@@ -1,15 +1,15 @@
 /*
  * Mars Simulation Project
  * EVAMission.java
- * @date 2025-08-17
+ * @date 2025-08-17 (patched 2025-08-29: CME-safe teleport check)
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -43,6 +43,9 @@ abstract class EVAMission extends RoverMission {
 	private int containerID;
 	private int containerNum;
 	private LightLevel minSunlight;
+
+	/** Tracks EVA members for CME-safe teleport detection. */
+	private final Map<Person, Coordinates> teleportCheck = new ConcurrentHashMap<>();
 
     protected EVAMission(MissionType missionType, 
             Worker startingPerson, Rover rover,
@@ -259,29 +262,60 @@ abstract class EVAMission extends RoverMission {
 
 	/**
 	 * Ensures no "teleported" person is still a member of this mission.
-	 * Note: still investigating the cause and how to handle this.
+	 * CME-safe under parallel execution: uses ConcurrentHashMap + removeIf on a weakly-consistent view.
 	 */
 	void checkTeleported() {
-
-		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
-			Worker member = i.next();
-
-			if (member instanceof Person p
-				&& (p.isInSettlement() 
-				|| p.isInSettlementVicinity()
-				|| p.isRightOutsideSettlement())) {
-
-				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-				
-				// Use Iterator's remove() method
-//				i.remove();
-				
-				// Call memberLeave to set mission to null will cause this member to drop off the member list
-//				memberLeave(member);
-
-				break;
+		// Snapshot members to avoid CME while we update tracking state
+		for (Worker w : List.copyOf(getMembers())) {
+			if (w instanceof Person p) {
+				teleportCheck.put(p, p.getCoordinates());
 			}
+		}
+
+		// Remove any entries that now appear invalid; handle each before removal
+		teleportCheck.entrySet().removeIf(e -> {
+			final Person p = e.getKey();
+			final Coordinates last = e.getValue();
+			if (hasTeleported(p, last)) {
+				handleTeleport(p);
+				return true; // remove this tracking entry
+			}
+			return false;
+		});
+	}
+
+	/**
+	 * Heuristic used to detect an invalid "teleport".
+	 * Currently: being (back) in or right outside a settlement while still on an EVA mission.
+	 * Extendable to distance/speed checks using {@link Coordinates#getDistance(Coordinates)} if desired.
+	 */
+	private boolean hasTeleported(Person p, Coordinates last) {
+		return p != null && (
+				p.isInSettlement()
+			 || p.isInSettlementVicinity()
+			 || p.isRightOutsideSettlement()
+		);
+	}
+
+	/**
+	 * Handles a detected teleport: log and drop from mission membership safely.
+	 */
+	private void handleTeleport(Person p) {
+		try {
+			String where = (p.getLocationTag() != null ? p.getLocationTag().getExtendedLocation() : "unknown");
+			logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " + where + ".");
+		}
+		catch (Throwable t) {
+			// If location tag retrieval fails, still proceed with removal
+			logger.severe("Error while logging teleportation for " + p + ": ", t);
+		}
+
+		// Safely remove from mission using API (do not mutate a live iterator)
+		try {
+			memberLeave(p);
+		}
+		catch (Throwable t) {
+			logger.severe("Failed to remove teleported member " + p + " from mission: ", t);
 		}
 	}
 	
