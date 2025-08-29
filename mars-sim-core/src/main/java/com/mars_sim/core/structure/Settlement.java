@@ -1,4 +1,4 @@
-/*
+   /* 
  * Mars Simulation Project
  * Settlement.java
  * @date 2025-07-30
@@ -1016,12 +1016,15 @@ public class Settlement extends Unit implements Temporal,
 
 	/**
 	 * Passes a pulse to citizens that are not dead. Those that are buried are removed.
+	 * Uses a snapshot to avoid ConcurrentModificationException when membership changes during delivery.
 	 * 
 	 * @param pulse
 	 */
 	private void timePassingCitizens(ClockPulse pulse) {
 		List<Person> remove = null;
-		for (Person p : citizens) {
+		// Snapshot protects iteration if citizens are added/removed during callbacks
+		final List<Person> snapshot = new ArrayList<>(citizens);
+		for (Person p : snapshot) {
 			if (p.isDeclaredDead()) {
 				// If also buried then remove it at the end of loop
 				if (p.isBuried()) {
@@ -1030,9 +1033,14 @@ public class Settlement extends Unit implements Temporal,
 					}
 					remove.add(p);
 				}
+				continue;
 			}
-			else {
+			try {
 				p.timePassing(pulse);
+			}
+			catch (Throwable t) {
+				// Never let one failing Person block time for the rest; log and continue
+				logger.severe("Citizen timePassing() threw for " + p + " @ pulse #" + pulse.getId() + ": ", t);
 			}
 		}
 
@@ -2755,7 +2763,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @param millisols the labor time
 	 */
 	public void addOutput(Integer resource, double amount, double millisols) {
-
 		// Record the amount of resource produced
 		dailyResourceOutput.increaseDataPoint(resource, amount);
 		dailyLaborTime.increaseDataPoint(resource, millisols);
