@@ -6,16 +6,19 @@
  * Parallel fan-out executor using a fixed thread pool. CME-safe:
  * - Targets are held in CopyOnWriteArrayList and iterated via snapshot.
  * - Each target runs in its own task; we wait for all to finish per pulse.
+ * - Uses invokeAll() as a barrier per pulse delivery.
  */
 package com.mars_sim.core.unit;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -82,35 +85,30 @@ public class TemporalExecutorService implements TemporalExecutor {
         final int n = targets.size();
         if (n == 0) return;
 
-        final CountDownLatch latch = new CountDownLatch(n);
-
-        // Dispatch parallel tasks (each target independently)
+        // Build a barriered batch using invokeAll()
+        final List<Callable<Void>> batch = new ArrayList<>(n);
         for (Temporal t : targets) {
-            pool.submit(() -> {
+            batch.add(() -> {
                 try {
-                    // Deliver pulse
+                    // Deliver pulse to target
                     t.timePassing(pulse);
                 } catch (Throwable ex) {
                     // Never let one bad target kill the pulse
                     LOG.severe("Temporal target threw during pulse #" + pulse.getId() + ": ", ex);
-                } finally {
-                    latch.countDown();
                 }
+                return null;
             });
         }
 
-        // Barrier: preserve pulse boundary semantics
-        boolean interrupted = false;
         try {
-            // Wait unbounded; could add a watchdog if desired
-            latch.await();
+            // invokeAll() blocks until all tasks complete (barrier semantics)
+            pool.invokeAll(batch);
         } catch (InterruptedException ie) {
-            interrupted = true;
             Thread.currentThread().interrupt();
-        }
-
-        if (interrupted) {
             LOG.warning("applyPulse interrupted while waiting for tasks to complete.");
+        } catch (RuntimeException re) {
+            // Defensive: in practice, invokeAll doesn't throw RejectedExecutionException here unless pool is broken
+            LOG.severe("Unexpected runtime exception during applyPulse invokeAll: ", re);
         }
     }
 
