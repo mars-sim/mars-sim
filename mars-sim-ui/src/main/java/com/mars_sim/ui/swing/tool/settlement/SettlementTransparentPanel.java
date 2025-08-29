@@ -1254,7 +1254,8 @@ public class SettlementTransparentPanel extends JComponent {
      * Prepare class for deletion.
      */
     public void destroy() {
-
+    	removeNotify();
+    	
         if (settlementCBModel != null) settlementCBModel.destroy();
         settlementListBox = null;
         settlementCBModel = null;

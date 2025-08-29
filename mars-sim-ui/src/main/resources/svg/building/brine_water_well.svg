@@ -21,15 +21,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.602"
-     inkscape:cx="267.47815"
-     inkscape:cy="216.91635"
+     inkscape:zoom="1.1327851"
+     inkscape:cx="233.4953"
+     inkscape:cy="278.07569"
      inkscape:window-width="1392"
-     inkscape:window-height="954"
+     inkscape:window-height="949"
      inkscape:window-x="368"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg196"
+     inkscape:current-layer="layer1"
      showgrid="true">
     <inkscape:grid
        id="grid196"
@@ -1592,7 +1592,8 @@
   <g
      inkscape:groupmode="layer"
      id="layer1"
-     inkscape:label="frame">
+     inkscape:label="frame"
+     style="fill:#ffffff;fill-opacity:0">
     <rect
        ry="80.327873"
        y="-500"
@@ -1600,7 +1601,7 @@
        height="500"
        width="500"
        id="rect2816"
-       style="display:inline;fill:none;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+       style="display:inline;fill:#ffffff;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new;fill-opacity:0"
        inkscape:label="rect2816"
        transform="rotate(90)" />
   </g>

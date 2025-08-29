@@ -520,8 +520,8 @@ public class MainWindow
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
 		memoryBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-		memoryBar.setPreferredSize(new Dimension(130, 22));
+		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 5));
+		memoryBar.setPreferredSize(new Dimension(235, 22));
 		statusBar.addRightComponent(memoryBar, false);
 
 		// Add this class to the master clock's listener
@@ -966,6 +966,8 @@ public class MainWindow
 		desktop = null;
 		
 		uiconfigs = null;
+		
+		splashWindow.destroy();
 		splashWindow = null;
 		
 		interactiveTerm.destroy();

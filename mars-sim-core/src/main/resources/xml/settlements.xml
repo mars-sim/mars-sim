@@ -160,31 +160,42 @@
 	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 
-		The others can be added/deleted -->
+		The others can be added/deleted 
+		To avoid confusion of local day and night, shift names are defined as follows : 
+		- 4 shifts are termed A, B, C, D
+		- 3 shifts are termed X, Y, Z
+		- 2 shifts are termed either Early and late, or First and Second	
+		-->
 	<shifts>
-		<shift-pattern name="Standard 4 Shift" rotation-sols="2" minPopulation="36">
-			<shift name="A" start="0" end="250" pop-percentage ="30"/>
-			<shift name="B" start="250" end="500" pop-percentage ="30"/>
-			<shift name="C" start="500" end="750" pop-percentage ="30"/>
-			<shift name="Night" start="750" end="0" pop-percentage ="10"/>
+		<shift-pattern name="Standard 4 Shift" rotation-sols="2" minPopulation="96">
+			<shift name="A" start="0" end="275" pop-percentage ="25"/>
+			<shift name="B" start="250" end="525" pop-percentage ="25"/>
+			<shift name="C" start="500" end="775" pop-percentage ="25"/>
+			<shift name="D" start="750" end="25" pop-percentage ="25"/>
 		</shift-pattern>
+		<shift-pattern name="Long 4 Shift" rotation-sols="4" minPopulation="48">
+			<shift name="A" start="0" end="300" pop-percentage ="25"/>
+			<shift name="B" start="250" end="550" pop-percentage ="25"/>
+			<shift name="C" start="500" end="800" pop-percentage ="25"/>
+			<shift name="D" start="750" end="50" pop-percentage ="25"/>
+		</shift-pattern>	
 		<shift-pattern name="Standard 3 Shift" rotation-sols="2" minPopulation="24">
-			<shift name="A" start="200" end="550" pop-percentage ="40"/>
-			<shift name="B" start="550" end="900" pop-percentage ="40"/>
-			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
-		</shift-pattern>
-		<shift-pattern name="Standard 2 Shift" leave-perc="3" rotation-sols="4" minPopulation="1">
-			<shift name="Day" start="200" end="700" pop-percentage ="50"/>
-			<shift name="Night" start="700" end="200" pop-percentage ="50"/>
-		</shift-pattern>
-		<shift-pattern name="Skeleton Night Shift" leave-perc="3" rotation-sols="2">
-			<shift name="Day" start="500" end="930" pop-percentage ="90"/>
-			<shift name="Night" start="900" end="530" pop-percentage ="10"/>
+			<shift name="X" start="200" end="550" pop-percentage ="40"/>
+			<shift name="Y" start="525" end="875" pop-percentage ="40"/>
+			<shift name="Z" start="850" end="225" pop-percentage ="20"/>
 		</shift-pattern>
 		<shift-pattern name="Long 3 Shift" rotation-sols="4" minPopulation="12">
-			<shift name="A" start="200" end="600" pop-percentage ="40"/>
-			<shift name="B" start="500" end="900" pop-percentage ="40"/>
-			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
+			<shift name="X" start="200" end="600" pop-percentage ="40"/>
+			<shift name="Y" start="500" end="900" pop-percentage ="40"/>
+			<shift name="Z" start="900" end="200" pop-percentage ="20"/>
+		</shift-pattern>	
+		<shift-pattern name="Standard 2 Shift" leave-perc="3" rotation-sols="4" minPopulation="4">
+			<shift name="Early" start="200" end="725" pop-percentage ="50"/>
+			<shift name="Late" start="700" end="225" pop-percentage ="50"/>
+		</shift-pattern>	
+		<shift-pattern name="Skeleton 2 Shift" leave-perc="3" rotation-sols="2" minPopulation="1">
+			<shift name="First" start="0" end="600" pop-percentage ="70"/>
+			<shift name="Second" start="500" end="100" pop-percentage ="30"/>
 		</shift-pattern>
 	</shifts>
 

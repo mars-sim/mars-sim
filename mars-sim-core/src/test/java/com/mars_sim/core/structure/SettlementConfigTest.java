@@ -42,7 +42,7 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
 
 
         var small = config.getShiftByPopulation(8);
-        assertTrue("Small shift has smaller min pop", 8 > small.getMinPopulation());
+        assertTrue("Small shift has smaller min pop", 8 >= small.getMinPopulation());
         assertEquals("Shift pattern for small", "Standard 2 Shift", small.getName());
 
     }

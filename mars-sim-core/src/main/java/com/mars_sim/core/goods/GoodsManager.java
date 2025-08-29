@@ -404,6 +404,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private double adjustMarketDemand(Good good, double demand) {
 		// Adjust the market demand
+		// Note: Changing data on another thread may not work well
 		double marketDemand = getMarketData(good).updateDemand(demand);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, good);				
 		return marketDemand;
@@ -418,6 +419,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private double adjustMarketVP(Good good, double vp) {
 		// Adjust the market vp 
+		// Note: Changing data on another thread may not work well
 		double marketVP = getMarketData(good).updateGoodValue(vp);
 		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
 		return marketVP;

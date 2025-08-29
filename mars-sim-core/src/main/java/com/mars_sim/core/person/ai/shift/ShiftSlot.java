@@ -17,7 +17,7 @@ public class ShiftSlot implements ScheduledEventHandler {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final String DASH = " - ";
+	private static final String SEPARATOR = " ";
 	
     /**
      * The work status of this slot.
@@ -135,6 +135,6 @@ public class ShiftSlot implements ScheduledEventHandler {
      * @return Return the shift name and it on/off status.
      */
     public String getStatusDescription() {
-        return shift.getName() + DASH + getStatus().getName();
+        return shift.getName() + SEPARATOR + getStatus().getName();
     }
 }

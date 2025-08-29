@@ -809,12 +809,14 @@ public class MainDesktopPane extends JDesktopPane
 		if (unitWindows != null) {
 			for (UnitWindow u : unitWindows) {
 				u.destroy();
+				u = null;
 			}
 			unitWindows = null;
 		}
 		if (toolWindows != null) {
 			for (ToolWindow w : toolWindows) {
 				w.destroy();
+				w = null;
 			}
 			toolWindows = null;
 		}

@@ -54,7 +54,7 @@ public class SVGGraphicNodeIcon implements Icon {
         BufferedImage image = getBufferedImage(source, width, height, rotate);
         if (image != null) {
             g2d.drawImage(image, x, y, c);        
-//            image.flush();
+            image.flush();
         }
     }
 
@@ -93,7 +93,7 @@ public class SVGGraphicNodeIcon implements Icon {
 			svgImageCache.put(svg, image);
 		}
 
-//		image.flush();
+		image.flush();
 		return image;
 	}
 
@@ -119,7 +119,6 @@ public class SVGGraphicNodeIcon implements Icon {
 		double scalingLength = length / bounds.getHeight();
         double scaling = Math.min(scalingWidth, scalingLength);
                                             
-
 		// Draw the SVG image on the buffered image.
 		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -135,7 +134,7 @@ public class SVGGraphicNodeIcon implements Icon {
 		svg.paint(g2d);
 
 		// Cleanup and return image
-//		bufferedImage.flush();
+		bufferedImage.flush();
 		g2d.dispose();
 
 		return bufferedImage;
@@ -162,7 +161,7 @@ public class SVGGraphicNodeIcon implements Icon {
         g2d.setTransform(at);
         g2d.drawImage(img, 0, 0, null);
         
-//        rotated.flush();
+        rotated.flush();
         g2d.dispose();
 
         return rotated;

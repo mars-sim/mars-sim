@@ -180,7 +180,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         // Draw image label.
 		g2d.drawImage(labelImage, widthOffset, heightOffset, null);
 		
-//		labelImage.flush();
+		labelImage.flush();
    
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -232,7 +232,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Draw image label with yOffset
 		g2d.drawImage(labelImage, 0, Math.round(yOffset * size), null);
 		
-//		labelImage.flush();
+		labelImage.flush();
     
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -299,7 +299,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			labelImageCache.put(labelId, labelImage);
 		}
 		
-//		labelImage.flush();
+		labelImage.flush();
  
 		return labelImage;
 	}
@@ -353,7 +353,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Fill label
 		g2d.fill(labelShape);
 
-//		bufferedImage.flush();
+		bufferedImage.flush();
 
 		// Dispose of image graphics context.
 		g2d.dispose();
@@ -395,7 +395,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             imageCache.put(buildingKey, image);
         }
 
-//        image.flush();
+        image.flush();
       
         return image;
     }
@@ -474,7 +474,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         }
 
         // Cleanup and return image
-//        bufferedImage.flush();
+        bufferedImage.flush();
     
         g2d.dispose();
 
@@ -551,7 +551,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			g2d.setStroke(oldStroke);
         }
         
-//        image.flush();
+        image.flush();
      
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
