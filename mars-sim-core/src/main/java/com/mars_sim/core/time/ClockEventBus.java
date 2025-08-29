@@ -54,24 +54,24 @@ public final class ClockEventBus {
 
     /** Dispatches a simulation clock pulse. */
     public void fireClockPulse(double time) {
+        final ClockPulse pulse = ClockPulse.of(time);
         for (ClockListener l : listeners) {
             try {
-                l.clockPulse(time);
+                l.clockPulse(pulse);
             } catch (Throwable t) {
-                logger.severe("ClockListener %s threw during clockPulse(%.4f): %s",
-                        safeName(l), time, t);
+                logger.severe("ClockListener " + safeName(l) + " threw during clockPulse(" + time + ")", t);
             }
         }
     }
 
     /** Dispatches a UI refresh pulse. */
     public void fireUiPulse(double time) {
+        final ClockPulse pulse = ClockPulse.of(time);
         for (ClockListener l : listeners) {
             try {
-                l.uiPulse(time);
+                l.uiPulse(pulse);
             } catch (Throwable t) {
-                logger.severe("ClockListener %s threw during uiPulse(%.4f): %s",
-                        safeName(l), time, t);
+                logger.severe("ClockListener " + safeName(l) + " threw during uiPulse(" + time + ")", t);
             }
         }
     }
@@ -82,8 +82,11 @@ public final class ClockEventBus {
             try {
                 l.pauseChange(isPaused, showPane);
             } catch (Throwable t) {
-                logger.severe("ClockListener %s threw during pauseChange(paused=%s, showPane=%s): %s",
-                        safeName(l), isPaused, showPane, t);
+                logger.severe(
+                    "ClockListener " + safeName(l)
+                    + " threw during pauseChange(paused=" + isPaused + ", showPane=" + showPane + ")",
+                    t
+                );
             }
         }
     }
