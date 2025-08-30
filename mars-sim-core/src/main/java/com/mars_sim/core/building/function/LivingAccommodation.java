@@ -234,7 +234,7 @@ public class LivingAccommodation extends Function {
 	 */
 	private AllocatedSpot getBed(Person person, boolean permanent, ActivitySpot sp, boolean isLastOne) {
 		// Claim the bed
-		AllocatedSpot bed = sp.claim(person, permanent, building);
+		AllocatedSpot bed = sp.claim(person, permanent, this);
 		if (bed != null) {
 			if (permanent) {
 				person.registerBed(bed);
@@ -501,7 +501,7 @@ public class LivingAccommodation extends Function {
 
 		// Pick a random bed in the guest house; unlikely to arrive here
 		AllocatedSpot guestBed = RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,
-									  guestHouse.getBuilding());
+									  guestHouse);
 		
 		if (guestBed != null) {
 			logger.config(p, "Given a guest bed at " + guestBed.toString());

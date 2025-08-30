@@ -43,7 +43,6 @@ import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -940,16 +939,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (!success) {
 			success = walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
 		} 
-		else if (!success) {
+		if (!success) {
 			success = walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
 		} 
-		else if (!success) {
+		if (!success) {
 			success = walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
 		} 
-		else if (!success) {
+		if (!success) {
 			success = walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATION, allowFail);			
 		} 
-		else {
+		if (!success) {
 			// If no available activity spot, go to an empty location in building
 			success = walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
@@ -1000,7 +999,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (f == null) {
 			return false;
 		}
-		return walkToActivitySpotInFunction(building, f, allowFail) != null;
+		return walkToActivitySpotInFunction(building, f, allowFail);
 	}
 
 	/**
@@ -1029,7 +1028,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			return false;
 		}
 
-		return walkToActivitySpotInFunction(building, f, allowFail) != null;
+		return walkToActivitySpotInFunction(building, f, allowFail);
 	}
 
 	/**
@@ -1040,27 +1039,63 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail
 	 * @return
 	 */
-	private LocalPosition walkToActivitySpotInFunction(Building building, Function f, 
+	private boolean walkToActivitySpotInFunction(Building building, Function f, 
 			boolean allowFail) {
-		LocalPosition loc = f.getAvailableActivitySpot();
 
+		LocalPosition originLoc = worker.getPosition();
+		Building originBuilding = worker.getBuildingLocation();
+		
+		// if the worker is already there, does it make a difference ?
+		if (originBuilding != null && originBuilding.equals(building)) {
+			logger.info(worker, "Already at " + originLoc + " in " + building + ".");
+
+			Function fClaimed = worker.getActivitySpot().getFunction();
+			if (f.equals(fClaimed)) {
+				logger.info(worker, "Already at a spot of " + f.getFunctionType().getName() 
+						+ ". No need to go further to claim any spot.");
+				return true;
+			}
+		}
+		
+		LocalPosition loc = f.getAvailableActivitySpot();
+		
 		if (loc != null) {
-			// Create subtask for walking to destination.
-			boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
+			// Claim this activity spot
+			boolean canClaim = f.claimActivitySpot(loc, worker);
 			
-			if (canWalk) {
-				// Claim this activity spot
-				boolean canClaim = f.claimActivitySpot(loc, worker);
+			if (canClaim) {
+				// Create subtask for walking to destination.
+				boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
 				
-				if (!canClaim)
-					loc = null;
+				if (canWalk) {
+					logger.info(worker, "Walking toward " + building + ".");
+
+					// Q: how to make it the building only after it has arrived ?
+					// Use setToBuilding() to both add to life support/robotic station and the building itself
+					BuildingManager.setToBuilding(worker, building);
+					
+					logger.info(worker, "Claimed the spot. Walking toward " + building + ".");
+					return true;
+				}
+				else {
+					logger.info(worker, "Unable to walk to " + loc + " in " + building + " " +  ".");
+					return false;
+				}
+				
 			}
 			else {
-				loc = null;
+				// Reverse the walk and go back to the original building
+				createWalkingSubtask(originBuilding, originLoc, allowFail, true);
+				logger.info(worker, "Failed to claim the spot. Walking back to " + originBuilding + ".");
+				return false;
 			}
-		} 
 
-		return loc;
+		}
+		else {
+			logger.info(worker, 10_000L, "No available spots in " + building +  ".");
+		}
+
+		return false;
 	}
 	
 	/**
@@ -1216,11 +1251,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		boolean success = false;
 		
 		if (activitySpot != null) {
-
 			// Create subtask for walking to destination.
 			success = createWalkingSubtask(rover, activitySpot, allowFail, true);
-		} else {
-
+		} 
+		else {
 			// Walk to a random location in the rover.
 			success = walkToRandomLocInRover(rover, allowFail);
 		}
@@ -1360,6 +1394,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
+			logger.info(worker, "Already at the spot and no need to walk further.");
 			return true;
 		}
 		

@@ -297,9 +297,15 @@ public class Sleep extends Task {
 			AllocatedSpot tempBed = findABed(s, person);
 
 			if (tempBed != null) {
-				createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven, false);
+				boolean canWalk = createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven, false);
+				if (!canWalk) {
+					logger.severe(person, 10_000, "Unable to walk to his/her own bed.");
+					endTask();
+					return;
+				}
 			}
 			else {
+				logger.severe(person, 10_000, "Unable to find a bed.");
 				endTask();
 				return;
 			}

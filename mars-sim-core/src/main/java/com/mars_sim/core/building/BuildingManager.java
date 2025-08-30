@@ -1508,20 +1508,24 @@ public class BuildingManager implements Serializable {
 	
 	/**
 	 * Adds a worker to the building if possible.
+	 * Note: it will add the worker to life support / robotic station as well.
 	 *
 	 * @param worker   the worker to add.
 	 * @param building the building to add.
 	 */
-	public static void addToBuilding(Worker worker, Building building) {
+	public static boolean addToBuilding(Worker worker, Building building) {
 		
 		if (worker instanceof Person person)
-			addPersonToActivitySpot(person, building, null);
+			return addPersonToActivitySpot(person, building, null);
 		else if (worker instanceof Robot robot)
-			addRobotToActivitySpot(robot, building, null);
+			return addRobotToActivitySpot(robot, building, null);
+		
+		return false;
 	}
 	
 	/**
 	 * Adds a worker to the building if possible.
+	 * Note: it will add the worker to life support / robotic station as well.
 	 *
 	 * @param worker   the worker to add.
 	 * @param building the building to add.
@@ -1548,82 +1552,66 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addPersonToActivitySpot(Person person, Building building, FunctionType functionType) {
 		boolean result = false;
+		
+		LifeSupport lifeSupport = building.getLifeSupport();
 
-		try {
-			LifeSupport lifeSupport = building.getLifeSupport();
-			Function f = lifeSupport;
-			
-			LocalPosition loc = null;
-			
-			if (functionType != null)  {
-				f = building.getFunction(functionType);			
+		// Find an empty spot in life support
+//		Note: for now no need to occupy a life support spot: LocalPosition loc = lifeSupport.getAvailableActivitySpot();
+		
+		// Add the person as an occupant to the life support function first,
+		// even if an activity spot is not available				
+		if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
+			lifeSupport.addPerson(person);
+		}
+		
+		if (functionType == null) {
 	
-				if (f != null) {
-					// Check if the person is already occupying an activity spot of this function type
-					if (f.checkWorkerActivitySpot(person)) {
-						return true;
-					}
-					
-					loc = f.getAvailableActivitySpot();
-				}
-	
+			Function f = building.getEmptyActivitySpotFunction();
+			if (f != null) {
+				functionType = f.getFunctionType();
 			}
-			else {
-				// Find an empty spot in life support
-				loc = lifeSupport.getAvailableActivitySpot();
-			}
+		}
+		
+		if (functionType != null) {
+			result = claimActivitySpot(person, building, functionType);
+		}
 
-			// Add the person as an occupant to the life support function first, 
-			// even if an activity spot is not available				
-			if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
-				lifeSupport.addPerson(person);
-			}
-			
-			if (loc == null) {
-				f = building.getEmptyActivitySpotFunction();
-				if (f != null)
-					loc = f.getAvailableActivitySpot();	
-			}
-			
-			if (loc != null) {
-				// Put the person there
-				person.setPosition(loc);
-			
-				// Claim this activity spot
-				boolean canClaim = f.claimActivitySpot(loc, person);
-				
-				if (!canClaim)
-					result = false;
-				else
-					result = true;
-			}
-
-		} catch (Exception e) {
-			logger.severe(person, 2000, "Could not be added to " + building.getName(), e);
+		if (result) {
+			// Load the claimed spot
+			AllocatedSpot as = person.getActivitySpot();
+			// Set person's location
+			person.setPosition(as.getAllocated().getPos());
+			// Set the building
+			person.setCurrentBuilding(building);
+		}
+		else {
+			logger.info(person, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
 		}
 		
 		return result;
 	}
 
-	public static boolean claimActivitySpot(Person person, Building building, FunctionType functionType) {
-		boolean result = false;
-
-		LocalPosition loc = null;
+	/**
+	 * Claims an activity spot.
+	 * 
+	 * @param worker
+	 * @param building
+	 * @param functionType
+	 * @return
+	 */
+	public static boolean claimActivitySpot(Worker worker, Building building, FunctionType functionType) {
 		
-		Function f = building.getEmptyActivitySpotFunction();
-		if (f != null)
-			loc = f.getAvailableActivitySpot();	
+		Function f = building.getFunction(functionType);	
+
+		LocalPosition loc = f.getAvailableActivitySpot();	
 		
 		if (loc != null) {
-	
+			logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.");
 			// Claim this activity spot
-			boolean canClaim = f.claimActivitySpot(loc, person);
-			
-			if (canClaim)
-				result = true;
+			return f.claimActivitySpot(loc, worker);
 		}
 		
-		return result;
+		return false;
 	}
 	
 	
@@ -1640,74 +1628,33 @@ public class BuildingManager implements Serializable {
 	public static boolean addRobotToActivitySpot(Robot robot, Building building, FunctionType functionType) {
 		boolean result = false;
 
-		try {
-			RoboticStation roboticStation = building.getRoboticStation();
-			Function f = roboticStation;
-			LocalPosition loc = null;
-				
-			if (functionType != null)  {
-				f = building.getFunction(functionType);			
-	
-				if (f != null) {
-					// Case 0: Check if the person is already occupying an activity spot of this function type
-					if (f.checkWorkerActivitySpot(robot)) {
-						return true;
-					}
-					
-					loc = f.getAvailableActivitySpot();
-				}
-	
-			}
-			else {
-				// Case 1: Gets an empty pos from functionType
-
-				loc = roboticStation.getAvailableActivitySpot();
-			}
-			
-			// Case 2: Gets an empty pos from building's robotic station
-			if (loc == null) {
-
-				if (roboticStation == null) {
-					logger.warning(robot, "No robotic function in " + building.getName() + ".");
-				}
-				else {	
-					f = roboticStation;
-					// Find an empty spot in robotic station
-					loc = roboticStation.getAvailableActivitySpot();
-					
-					// Add the robot to the station
-					if (loc != null && !roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.addRobot(robot);
-					}
-				}
-			}
-			
-			// Case 3: Gets an empty pos from any building's function
-			if (loc == null) {
-				f = building.getEmptyActivitySpotFunction();
-				if (f == null) {
-					logger.warning(robot, "No empty activity spot function in " + building.getName() + ".");
-					return false;
-				}
-				loc = f.getAvailableActivitySpot();	
-			}
-
-			if (loc != null) {		
-				// Put the robot there
-				robot.setPosition(loc);
-				// Set the building
-				robot.setCurrentBuilding(building);
-				// Claim this activity spot
-				boolean canClaim = f.claimActivitySpot(loc, robot);
-
-				if (!canClaim)
-					result = false;
-				else
-					result = true;
-			}	
+		RoboticStation roboticStation = building.getRoboticStation();
 		
-		} catch (Exception e) {
-			logger.severe(robot, 2000, "Could not be added to " + building.getName(), e);
+		// Add the robot as an occupant to the roboticStation function first,
+		// even if an activity spot is not available				
+		if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+			roboticStation.addRobot(robot);
+		}
+		
+		if (functionType == null) {
+			
+			Function f = building.getEmptyActivitySpotFunction();
+			if (f != null) {
+				functionType = f.getFunctionType();
+			}
+		}
+		
+		if (functionType != null) {
+			result = claimActivitySpot(robot, building, functionType);
+		}
+
+		if (result) {
+			// Load the claimed spot
+			AllocatedSpot as = robot.getActivitySpot();
+			// Set robot's location
+			robot.setPosition(as.getAllocated().getPos());
+			// Set the building
+			robot.setCurrentBuilding(building);
 		}
 		
 		return result;
@@ -1751,9 +1698,10 @@ public class BuildingManager implements Serializable {
 
 				if (roboticStation != null && roboticStation.containsRobotOccupant(robot)) {
 					roboticStation.removeRobot(robot);
+					
+					robot.setCurrentBuilding(null);
 				}
-				
-				robot.setCurrentBuilding(null);
+
 			} catch (Exception e) {
 				logger.severe(robot, 2000, "Could not be removed from " + building.getName(), e);
 			}

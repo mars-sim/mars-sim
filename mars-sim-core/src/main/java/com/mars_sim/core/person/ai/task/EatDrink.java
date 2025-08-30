@@ -322,7 +322,7 @@ public class EatDrink extends Task {
 		Function f = building.getFunction(FunctionType.DINING);
 		LocalPosition loc = f.getAvailableActivitySpot();
 		if (loc == null) {
-			// Find another spot in the smae building
+			// Find another spot in the same building
 			f = building.getEmptyActivitySpotFunction();
 			if (f == null) {
 				return;

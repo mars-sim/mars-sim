@@ -39,16 +39,16 @@ public abstract class MedicalAidTask extends Task {
     /**
      * Walks to a medical station as a doctor.
      * 
-     * @param needBed Use a bed
+     * @param allowFail
      * @return
      */
-    protected boolean walkToDoctorStation(boolean needBed) {
+    protected boolean walkToDoctorStation(boolean allowFail) {
     	boolean success = false;
     	
         // Walk to medical aid.
         if (medicalAid instanceof MedicalCare medicalCare) {     
             // Walk to medical care building.
-        	success = walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, needBed);
+        	success = walkToActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, allowFail);
         }
         
         else if (medicalAid instanceof SickBay sb) {
