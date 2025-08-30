@@ -1485,10 +1485,11 @@ public class BuildingManager implements Serializable {
 
 			else {
 				Robot robot = (Robot) worker;
+				
 				RoboticStation roboticStation0 = origin.getRoboticStation();
 
-				if (roboticStation0 != null && !roboticStation0.containsRobotOccupant(robot)) {
-					roboticStation0.addRobot(robot);
+				if (roboticStation0 != null && roboticStation0.containsRobotOccupant(robot)) {
+					roboticStation0.removeRobot(robot);
 				}				
 
 				RoboticStation roboticStation1 = destination.getRoboticStation();
