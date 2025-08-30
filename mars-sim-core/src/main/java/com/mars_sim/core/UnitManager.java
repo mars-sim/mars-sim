@@ -51,7 +51,7 @@ public class UnitManager implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(UnitManager.class.getName());
 
-	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
+	public static final int THREE_SHIFTS_MIN_POPULATION = 12;
 
 	//  The number of bits in the identifier field to use for the type element
 	private static final int TYPE_BITS = 4;
