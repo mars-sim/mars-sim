@@ -148,10 +148,13 @@ public class Sleep extends Task {
 	 * @return
 	 */
 	public boolean sleepInEVAMedicalBed() {
+
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.EVA)) {
 			// Future: need to rework this method to find the two emergency beds in EVA Airlock
-			// This is not the right way to find the medical bed walkToActivitySpotInBuilding(currentBuilding, FunctionType.MEDICAL_CARE, true);
+			// This is not the right way to find the medical bed walkToActivitySpotInBuilding(currentBuilding, FunctionType.EVA, true);
+			// Model after MedicalStation's bedRegistry for the EVA bed
+			// May add a helper method in BuildingManager such as BuildingManager::addPatientToMedicalBed.
 		}
 		return false;
 	}

@@ -831,6 +831,7 @@ public class BuildingManager implements Serializable {
 	
 			if (success) {
 				p.setCurrentBuilding(building);
+				
 				logger.info(p, 0, "Sent to a medical bed in " + building.getName() + ".");
 			}
 			else {
@@ -848,7 +849,7 @@ public class BuildingManager implements Serializable {
 			if (bed != null) {
 					
 				Building b = bed.getOwner();
-				
+				// Question: does it still need to claim since this is already his own bed ?
 				success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
 				
 				if (success) {
@@ -1455,6 +1456,56 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Transfers the worker from one building to another 
+	 * Note: Will add to or remove from life support/robotic station.
+	 *
+	 * @param worker   the worker to add.
+	 * @param origin   the building to leave behind.
+	 * @param destination the building to go
+	 */
+	public static void transferFromBuildingToBuilding(Worker worker, Building origin, Building destination) {
+
+		if (origin != null && destination != null) {
+			if (worker instanceof Person person) {
+				
+				LifeSupport lifeSupport0 = origin.getLifeSupport();
+
+				if (lifeSupport0 != null && lifeSupport0.containsOccupant(person)) {
+					lifeSupport0.removePerson(person);
+				}
+				
+				LifeSupport lifeSupport1 = destination.getLifeSupport();
+
+				if (lifeSupport1 != null && !lifeSupport1.containsOccupant(person)) {
+					lifeSupport1.addPerson(person);
+
+					person.setCurrentBuilding(destination);
+				}
+			}
+
+			else {
+				Robot robot = (Robot) worker;
+				RoboticStation roboticStation0 = origin.getRoboticStation();
+
+				if (roboticStation0 != null && !roboticStation0.containsRobotOccupant(robot)) {
+					roboticStation0.addRobot(robot);
+				}				
+
+				RoboticStation roboticStation1 = destination.getRoboticStation();
+
+				if (roboticStation1 != null && !roboticStation1.containsRobotOccupant(robot)) {
+					roboticStation1.addRobot(robot);
+					
+					robot.setCurrentBuilding(destination);
+				}
+			}
+		}
+
+		else
+			logger.severe(worker, 2000, "The building is null.");
+	}
+	
+	/**
 	 * Adds a worker to the building if possible.
 	 *
 	 * @param worker   the worker to add.
@@ -1536,9 +1587,7 @@ public class BuildingManager implements Serializable {
 			if (loc != null) {
 				// Put the person there
 				person.setPosition(loc);
-				// Set the building
-				person.setCurrentBuilding(building);
-				
+			
 				// Claim this activity spot
 				boolean canClaim = f.claimActivitySpot(loc, person);
 				
@@ -1555,6 +1604,28 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
+	public static boolean claimActivitySpot(Person person, Building building, FunctionType functionType) {
+		boolean result = false;
+
+		LocalPosition loc = null;
+		
+		Function f = building.getEmptyActivitySpotFunction();
+		if (f != null)
+			loc = f.getAvailableActivitySpot();	
+		
+		if (loc != null) {
+	
+			// Claim this activity spot
+			boolean canClaim = f.claimActivitySpot(loc, person);
+			
+			if (canClaim)
+				result = true;
+		}
+		
+		return result;
+	}
+	
+	
 	/**
 	 * Adds the robot to an activity spot in a building.
 	 * @apiNote This method will automatically add the robot as an robot occupant to the robotic station function first, 

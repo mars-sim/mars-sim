@@ -41,7 +41,7 @@ public class WalkSettlementInterior extends Task {
 	private static SimLogger logger = SimLogger.getLogger(WalkSettlementInterior.class.getName());
 
 	/** Simple Task name */
-	public static final String SIMPLE_NAME = WalkOutside.class.getSimpleName();
+	public static final String SIMPLE_NAME = WalkSettlementInterior.class.getSimpleName();
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walkSettlementInterior"); //$NON-NLS-1$
@@ -400,35 +400,16 @@ public class WalkSettlementInterior extends Task {
 	private boolean changeBuildings(InsidePathLocation location) {
 
 		if (location instanceof Hatch hatch) {
-			// If hatch leads to new building, place person in the new building.
-			if (person != null) {
-				Building currentBuilding = BuildingManager.getBuilding(person);
-				if (!hatch.getBuilding().equals(currentBuilding)) {
-					BuildingManager.removePersonFromBuilding(person, currentBuilding);
-					BuildingManager.setToBuilding(person, hatch.getBuilding());
-				}
-			} 
-			
-			else if (robot != null) {
-				Building currentBuilding = BuildingManager.getBuilding(robot);
-				if (!hatch.getBuilding().equals(currentBuilding)) {
-					BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-					BuildingManager.setToBuilding(robot, hatch.getBuilding());
-				}
+			// If hatch leads to new building, place worker in the new building.
+			Building currentBuilding = BuildingManager.getBuilding(worker);
+			if (!hatch.getBuilding().equals(currentBuilding)) {
+				BuildingManager.transferFromBuildingToBuilding(worker, currentBuilding, hatch.getBuilding());
 			}
-
-		} else if (location instanceof BuildingConnector connector) {
-			// If non-split building connector, place person in the new building.
+		} 
+		else if (location instanceof BuildingConnector connector) {
+			// If non-split building connector, place worker in the new building.
 			if (!connector.isSplitConnection()) {
-				Building currentBuilding = null;
-				
-				if (person != null) {
-					currentBuilding = BuildingManager.getBuilding(person);
-				} 
-				
-				else {
-					currentBuilding = BuildingManager.getBuilding(robot);
-				}
+				Building currentBuilding = BuildingManager.getBuilding(worker);
 				
 				Building newBuilding = null;
 				if (connector.getBuilding1().equals(currentBuilding)) {
@@ -446,16 +427,8 @@ public class WalkSettlementInterior extends Task {
 					return false;
 				}
 
-				if (newBuilding != null) {
-					
-					if (person != null) {
-						BuildingManager.removePersonFromBuilding(person, currentBuilding);
-						BuildingManager.setToBuilding(person, newBuilding);
-					}
-					else if (robot != null) {
-						BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-						BuildingManager.setToBuilding(robot, newBuilding);
-					}
+				if (newBuilding != null) {			
+					BuildingManager.transferFromBuildingToBuilding(worker, currentBuilding, newBuilding);
 				}
 			}
 		}

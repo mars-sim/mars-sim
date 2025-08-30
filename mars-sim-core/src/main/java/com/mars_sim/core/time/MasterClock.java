@@ -1342,11 +1342,13 @@ public class MasterClock implements Serializable {
 		float desiredMsolPerSec = (float) ((desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL);
 
 		// Get the desired number of pulses per second
+		// [pulse per sec] = [millisol per sec] / [millisol per pulse] 
 		float desiredPulsesPerSec = (float) (desiredMsolPerSec / 
-				(0.1 * optMilliSolPerPulse + 0.6 * referencePulse + 0.3 * leadPulseTime));
+				(0.1 * optMilliSolPerPulse + 0.3 * referencePulse + .6 * leadPulseTime));
 		
 		// Get the milliseconds between each pulse
 		// // Limit the desired pulses to be the minimum of 1 (or at least 1)
+		// [millisec per pulse] = [1000 * milli] / [pulse per sec]
 		millisecPerPulse = 1000f / desiredPulsesPerSec;
 	
 		// Update the sleep time that will allow room for the execution time (ms per pulse)

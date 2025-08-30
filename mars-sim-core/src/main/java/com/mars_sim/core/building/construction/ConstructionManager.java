@@ -25,6 +25,7 @@ import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -195,14 +196,16 @@ public class ConstructionManager implements Serializable {
 
 		// Remove building from settlement.
 		BuildingManager buildingManager = salvagedBuilding.getBuildingManager();
-		buildingManager.removeBuilding(salvagedBuilding);
-
+		
 		// Move any people in building to somewhere else in the settlement.
 		LifeSupport lifeSupport = salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
 		if (lifeSupport != null) {		
-			for(Person occupant : new ArrayList<>(lifeSupport.getOccupants())) {
-				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
-				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
+			for (Person occupant : new ArrayList<>(lifeSupport.getOccupants())) {
+				// Note: the safest way is to assign a task to have the person to walk to another building
+				//       Need to find ways to ensure he will talk to an unaffected building
+				occupant.getTaskManager().addPendingTask(Walk.SIMPLE_NAME);
+//				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
+//				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
 
@@ -210,10 +213,15 @@ public class ConstructionManager implements Serializable {
 		RoboticStation station= salvagedBuilding.getFunction(FunctionType.ROBOTIC_STATION);
 		if (station != null) {
 			for (Robot occupant : new ArrayList<>(station.getRobotOccupants())) {
-				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
-				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());
+				// Note: the safest way is to assign a task to have the robot to walk to another building
+				//       Need to find ways to ensure it will talk to an unaffected building
+				occupant.getTaskManager().addPendingTask(Walk.SIMPLE_NAME);
+//				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
+//				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
+
+		buildingManager.removeBuilding(salvagedBuilding);
 
 		var bldStage = getConstructionStages(salvagedBuilding.getBuildingType());
 		if (bldStage.isEmpty()) {

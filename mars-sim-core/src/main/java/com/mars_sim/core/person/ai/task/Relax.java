@@ -31,6 +31,9 @@ extends Task {
     private static final String NAME = Msg.getString(
             "Task.description.relax"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = Relax.class.getSimpleName();
+	
     /** Task phases. */
     private static final TaskPhase RELAXING = new TaskPhase(Msg.getString(
             "Task.phase.relaxing")); //$NON-NLS-1$

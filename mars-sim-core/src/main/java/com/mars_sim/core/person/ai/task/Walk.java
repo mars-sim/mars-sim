@@ -50,6 +50,9 @@ public class Walk extends Task {
 
 	/** default serial id. */
 	private static SimLogger logger = SimLogger.getLogger(Walk.class.getName());
+	
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = Walk.class.getSimpleName();
 
 	// Static members
 	static final double MIN_PULSE_TIME = 0.0129;
@@ -110,7 +113,11 @@ public class Walk extends Task {
 		LocalBoundedObject targetObject = null;
 		if (person.isInSettlement()) {
 			// Walk to random inhabitable building at settlement.
-			List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
+			List<Building> buildingList = person.getSettlement().getBuildingManager()
+					.getBuildings(FunctionType.LIFE_SUPPORT)
+					.stream()
+					.filter(b -> b != person.getBuildingLocation())
+					.toList();
 			if (!buildingList.isEmpty()) {
 				int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 				targetObject  = buildingList.get(buildingIndex);

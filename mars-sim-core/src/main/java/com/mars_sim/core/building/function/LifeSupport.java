@@ -171,22 +171,8 @@ public class LifeSupport extends Function {
 	 * @param person new person to add to building.
 	 */
 	public void addPerson(Person person) {
-		if (!occupants.contains(person)) {
-
-			Building oldBldg = person.getBuildingLocation();
-			if (oldBldg != null) {
-				// Remove this person from the old building first
-				BuildingManager.removePersonFromBuilding(person, oldBldg);
-			}
-				
-			// Add person to this building.
-			occupants.add(person);
-			
-			logger.fine(person, 10_000L, "Added to " + building + "'s life support.");	
-		} 
-		else {
-			throw new IllegalStateException("Person already occupying building.");
-		}
+		// Add occupant to this function.
+		occupants.add(person);
 	}
 
 	/**
