@@ -231,12 +231,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         var selectedSite = siteList.getSelectedValue();
         if (selectedSite != null) {
-            if (!selectedSite.isConstruction()) {
-                errorMessageTextPane.setText("Cannot start mission on a site already undergoing salvage.");
-                // Do nothing.
-            } else {
-            	loadSite(selectedSite);
-            }
+            loadSite(selectedSite);
         }
         else {
             materialsTableModel.update();

@@ -168,7 +168,7 @@ public class WalkSettlementInterior extends Task {
 		if (!checkRemainingPathLocations()) {
 			// Flooding with the following statement in stacktrace
 			logger.severe(worker, 10_000L, "Unable to continue walking due to missing path objects.");
-			worker.getTaskManager().clearAllTasks("Walk path is no longer valid");
+			endTask();
 			return 0;
 		}
 

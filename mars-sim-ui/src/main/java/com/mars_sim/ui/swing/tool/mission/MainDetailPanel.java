@@ -8,16 +8,13 @@
 package com.mars_sim.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,9 +91,6 @@ import com.mars_sim.ui.swing.utils.EntityModel;
 @SuppressWarnings("serial")
 public class MainDetailPanel extends JPanel implements MissionListener, UnitListener {
 
-	// Custom mission panel IDs.
-	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
-
 	private static final int MAX_LENGTH = 48;
 	private static final int WIDTH = 250;
 	private static final int MEMBER_HEIGHT = 125;
@@ -117,9 +111,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	
 	private MemberTableModel memberTableModel;
 
-	private CardLayout customPanelLayout;
-
-	private JPanel missionCustomPane;
 	private JScrollPane memberPane;
 	private JPanel memberOuterPane;
 	
@@ -127,8 +118,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private Vehicle currentVehicle;
 	private MissionWindow missionWindow;
 	private MainDesktopPane desktop;
-
-	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 
 	private LogTableModel logTableModel;
 
@@ -312,33 +301,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		var objectivePane = new JTabbedPane();
 		objectivePane.setBorder(StyleManager.createLabelBorder("Objectives"));
 
-		// First tab is legacy; this will be removed
-		objectivePane.addTab("Legacy", initCustomMissionPane());
-
 		return objectivePane;
 	}
-
-	/**
-	 * Initializes the custom mission pane.
-	 * 
-	 * @return
-	 */
-	private JPanel initCustomMissionPane() {
-
-		// Create the mission custom panel.
-		customPanelLayout = new CardLayout(10, 10);
-		missionCustomPane = new JPanel(customPanelLayout);
-		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		
-		// Create custom empty panel.
-		JPanel emptyCustomPanel = new JPanel();
-		missionCustomPane.add(emptyCustomPanel, EMPTY);
-		customInfoPanels = new HashMap<>();
-
-		return missionCustomPane;
-	}
-
-
 	
 	public void setCurrentMission(Mission mission) {
 		if (missionCache != null) {
@@ -584,8 +548,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		if (currentVehicle != null)
 			currentVehicle.removeUnitListener(this);
 		currentVehicle = null;
-		
-		customPanelLayout.show(missionCustomPane, EMPTY);
+
+		clearObjectives();
 	}
 
 	/**
@@ -602,24 +566,25 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return list.stream().map(Worker::getName).collect(Collectors.joining(", "));
 	}
 	
+	private void clearObjectives() {
+		while(objectivesPane.getTabCount() > 0) {
+			var pan = objectivesPane.getComponentAt(0);
+			if (pan instanceof ObjectivesPanel op) {
+				op.unregister();
+			}
+			objectivesPane.removeTabAt(0);
+		}
+	}
 	/**
 	 * Updates the custom mission panel with a mission.
 	 *
 	 * @param mission the mission.
 	 */
 	private void updateCustomPanel(Mission mission) {
-		boolean clearLegacy = false;
 		// Drop old panels expecgt first one legacy
-		while(objectivesPane.getTabCount() > 1) {
-			var pan = objectivesPane.getComponentAt(1);
-			if (pan instanceof ObjectivesPanel op) {
-				op.unregister();
-			}
-			objectivesPane.removeTabAt(1);
-		}
+		clearObjectives();
 
 		if (mission != null) {
-
 			// Add custom mission panel.
 			for(MissionObjective o : mission.getObjectives()) {
 				JPanel newPanel = switch(o) {
@@ -640,26 +605,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					objectivesPane.setPreferredSize(dim);
 	 				objectivesPane.addTab(newPanel.getName(), newPanel);
 					objectivesPane.setSelectedComponent(newPanel);
-					clearLegacy = true;
-				}
-			}
-
-			if (!clearLegacy) {
-				// Defautl back to legacy behaviour
-				String missionClassName = mission.getClass().getName();
-				if (customInfoPanels.containsKey(missionClassName)) {
-					MissionCustomInfoPanel panel = customInfoPanels.get(missionClassName);
-					customPanelLayout.show(missionCustomPane, missionClassName);
-					panel.updateMission(mission);
-				}
-				else {
-					clearLegacy = true;
 				}
 			}
 		}
-
-		if (clearLegacy)
-			customPanelLayout.show(missionCustomPane, EMPTY);
 	}
 
 	/**
