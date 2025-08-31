@@ -10,10 +10,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -1100,7 +1096,7 @@ public class MasterClock implements Serializable {
     /** Computes desired listener threads: min(cores, #listeners), >= 1. */
     private int computeListenerThreads() {
         int listeners = (clockListenerTasks == null ? 0 : clockListenerTasks.size());
-        int cores     = Math.max(1, Runtime.getRuntime().availableProcessors());
+        int cores     = Math.max(1, SimulationRuntime.NUM_CORES);
         return Math.max(1, Math.min(cores, Math.max(1, listeners)));
     }
 
