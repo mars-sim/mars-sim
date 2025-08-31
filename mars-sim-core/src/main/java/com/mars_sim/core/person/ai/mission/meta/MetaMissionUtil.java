@@ -41,7 +41,6 @@ public class MetaMissionUtil {
 		newMissions.add(new AreologyFieldStudyMeta());
 		newMissions.add(new BiologyFieldStudyMeta());
 		newMissions.add(new ConstructionMissionMeta());
-		newMissions.add(new BuildingSalvageMissionMeta());
 		newMissions.add(new CollectIceMeta());
 		newMissions.add(new CollectRegolithMeta());
 		newMissions.add(new DeliveryMeta());

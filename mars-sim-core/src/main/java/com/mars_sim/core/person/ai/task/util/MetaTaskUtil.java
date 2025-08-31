@@ -45,7 +45,6 @@ import com.mars_sim.core.person.ai.task.meta.RelaxMeta;
 import com.mars_sim.core.person.ai.task.meta.ReportMissionControlMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewMissionPlanMeta;
-import com.mars_sim.core.person.ai.task.meta.SalvageBuildingMeta;
 import com.mars_sim.core.person.ai.task.meta.SleepMeta;
 import com.mars_sim.core.person.ai.task.meta.TeachMeta;
 import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
@@ -178,7 +177,6 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ReviewJobReassignmentMeta());
 		allMetaTasks.add(new ReviewMissionPlanMeta());
 		
-		allMetaTasks.add(new SalvageBuildingMeta());
 		allMetaTasks.add(new SelfTreatHealthProblemMeta());
 		allMetaTasks.add(new SleepMeta()); 
 		allMetaTasks.add(new StudyFieldSamplesMeta());

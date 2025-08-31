@@ -97,7 +97,6 @@ public class ConstructionManager implements Serializable {
 	
 	private Settlement settlement;
 	private List<ConstructionSite> sites;
-	private SalvageValues salvageValues;
 	private List<BuildingSchedule> queue = new ArrayList<>();
 
 	/**
@@ -108,7 +107,6 @@ public class ConstructionManager implements Serializable {
 	public ConstructionManager(Settlement settlement) {
 		this.settlement = settlement;
 		sites = new ArrayList<>();
-		salvageValues = new SalvageValues(settlement);
 	}
 
 	/**
@@ -173,15 +171,6 @@ public class ConstructionManager implements Serializable {
 	 */
 	public void removeConstructionSite(ConstructionSite site) {
 		sites.remove(site);
-	}
-
-	/**
-	 * Gets the salvage values.
-	 * 
-	 * @return salvage values.
-	 */
-	public SalvageValues getSalvageValues() {
-		return salvageValues;
 	}
 
 	/**
@@ -350,8 +339,6 @@ public class ConstructionManager implements Serializable {
 	 */
 	public void destroy() {
 		sites.clear();
-		salvageValues.destroy();
-		salvageValues = null;
 	}
 
 	/**

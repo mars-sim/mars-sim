@@ -132,7 +132,7 @@ public class TabPanelSiteGeneral extends TabPanel {
 			var info = currentStage.getInfo();
 			stageName.setText(info.getName());
 			stageType.setText(info.getType().name().toLowerCase());
-			workType.setText(constructionSite.isConstruction() ? "Construct" : "Salvage");
+			workType.setText(constructionSite.isConstruction() ? "Construct" : "Demolish");
 		}
 	}
 
@@ -175,7 +175,7 @@ public class TabPanelSiteGeneral extends TabPanel {
 			return switch (columnIndex) {
 				case 0 -> p.stage().getName();
 				case 1 -> p.stage().getType().name().toLowerCase();
-				case 2 -> p.construct() ? "Construct" : "Salvage";
+				case 2 -> p.construct() ? "Construct" : "Demolish";
 				case 3 -> p.stage().getWorkTime();
 				default -> null;
 			};

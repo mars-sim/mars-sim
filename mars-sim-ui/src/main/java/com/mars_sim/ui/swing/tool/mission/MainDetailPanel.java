@@ -65,7 +65,6 @@ import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
-import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;
@@ -335,12 +334,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		JPanel emptyCustomPanel = new JPanel();
 		missionCustomPane.add(emptyCustomPanel, EMPTY);
 		customInfoPanels = new HashMap<>();
-
-		// Create custom salvage mission panel.
-		MissionCustomInfoPanel salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
-		String salvageMissionName = SalvageMission.class.getName();
-		customInfoPanels.put(salvageMissionName, salvagePanel);
-		missionCustomPane.add(salvagePanel, salvageMissionName);
 
 		return missionCustomPane;
 	}

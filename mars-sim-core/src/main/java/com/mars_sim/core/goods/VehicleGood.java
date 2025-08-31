@@ -188,8 +188,6 @@ class VehicleGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-//        double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
-//        double quantity = settlement.findNumVehiclesOfType(vehicleType);
         double supply = settlement.getGoodsManager().getSupplyScore(getID());
         double factor = 1.5 / (2 + supply);
         double price = getCostOutput() * (1 + factor * Math.log(Math.sqrt(value + 1)));  
@@ -454,37 +452,35 @@ class VehicleGood extends Good {
 	 * @return
 	 */
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
-		// TODO should come from MissionMeta classes
 		
 		double demand = settlement.getPopulationFactor();
 		
 		switch(missionType) {
-		case CONSTRUCTION, SALVAGE:
+		case CONSTRUCTION ->
 			demand /= 1 + JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
-		case TRAVEL_TO_SETTLEMENT, RESCUE_SALVAGE_VEHICLE:
+		case TRAVEL_TO_SETTLEMENT, RESCUE_SALVAGE_VEHICLE ->
 			demand /= 1 + JobUtil.numJobs(JobType.PILOT, settlement);
 
-		case COLLECT_ICE:
+		case COLLECT_ICE ->
 			demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 1, 100);
 		
-		case TRADE, DELIVERY:
+		case TRADE, DELIVERY ->
 			demand /= 1 + JobUtil.numJobs(JobType.TRADER, settlement);
 		
-		case COLLECT_REGOLITH:
+		case COLLECT_REGOLITH ->
 			demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 1, 100);
 		
-		case MINING, AREOLOGY, EXPLORATION:
+		case MINING, AREOLOGY, EXPLORATION ->
 			demand /= 1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement);
 		
-		case BIOLOGY:
+		case BIOLOGY ->
 			demand /= 1 + JobUtil.numJobs(JobType.BIOLOGIST, settlement);
 		
-		case METEOROLOGY:
+		case METEOROLOGY ->
 			demand /= 1 + JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
-		
-		case EMERGENCY_SUPPLY:
-			; // Simplify code as a temp measure
+			default -> { // Nothing to do 
+				}
 		}
 
 		return demand;
