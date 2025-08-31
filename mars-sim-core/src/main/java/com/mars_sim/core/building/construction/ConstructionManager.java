@@ -174,36 +174,65 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Creates a new salvaging construction site to replace a building.
+	 * Class to operatino the demolish of a Building async to avoid the removal causing a problem with 
+	 * the active simulation logic.
+	 */
+	private class DemolishHandler implements ScheduledEventHandler {
+		private Building b;
+
+		public DemolishHandler(Building b) {
+			this.b = b;
+		}
+
+		@Override
+		public String getEventDescription() {
+			return "Start demolishing of " + b.getName();
+		}
+
+		@Override
+		public int execute(MarsTime currentTime) {
+			demolishBuilding(b);
+			return 0;
+		}
+
+	}
+	/**
+	 * Creates a new demolish construction site to replace a building.
+	 * This is an async operation
 	 * 
-	 * @param salvagedBuilding the building to be salvaged.
-	 * @return the construction site.
+	 * @param demolist the building to be demolished.
 	 * @throws Exception if error creating construction site.
 	 */
-	public ConstructionSite createNewSalvageConstructionSite(Building salvagedBuilding) {
+	public void createNewSalvageConstructionSite(Building demolish) {
+		var fm = demolish.getAssociatedSettlement().getFutureManager();
 
+		var handler = new DemolishHandler(demolish);
+		fm.addEvent(1, handler);
+	}
+
+	private void demolishBuilding(Building b) {
 		// Remove building from settlement.
-		BuildingManager buildingManager = salvagedBuilding.getAssociatedSettlement().getBuildingManager();
+		BuildingManager buildingManager = b.getAssociatedSettlement().getBuildingManager();
 		
 		// Move any people in building to somewhere else in the settlement.
 		List<Worker> occupants = new ArrayList<>();
-		LifeSupport lifeSupport = salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+		LifeSupport lifeSupport = b.getFunction(FunctionType.LIFE_SUPPORT);
 		if (lifeSupport != null) {	
 			occupants.addAll(lifeSupport.getOccupants());	
 		}
 
 		// Move any robot in building to somewhere else in the settlement.
-		RoboticStation station= salvagedBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+		RoboticStation station= b.getFunction(FunctionType.ROBOTIC_STATION);
 		if (station != null) {
 			occupants.addAll(station.getRobotOccupants());
 		}
 		occupants.forEach(this::moveWorker);
 
-		buildingManager.removeBuilding(salvagedBuilding);
+		buildingManager.removeBuilding(b);
 
-		var bldStage = getConstructionStages(salvagedBuilding.getBuildingType());
+		var bldStage = getConstructionStages(b.getBuildingType());
 		if (bldStage.isEmpty()) {
-			throw new IllegalStateException("No construction stages found for " + salvagedBuilding.getBuildingType());
+			throw new IllegalStateException("No construction stages found for " + b.getBuildingType());
 		}
 
 		// Salvage so rotate the phases as demonlishing
@@ -213,7 +242,7 @@ public class ConstructionManager implements Serializable {
 				.toList();
 
 		// Add construction site.
-		return createNewConstructionSite(salvagedBuilding.getBuildingType(), salvagedBuilding, phases);
+		createNewConstructionSite(b.getBuildingType(), b, phases);
 	}
 
 	private void moveWorker(Worker w) {
