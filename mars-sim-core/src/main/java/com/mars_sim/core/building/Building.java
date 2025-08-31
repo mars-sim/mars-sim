@@ -640,15 +640,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public void removeFunctionsFromSettlement() {
 
-		Iterator<Function> i = functions.values().iterator();
-		while (i.hasNext()) {
-			Function f = i.next();
+		for (Function f : functions.values()) {
 			f.removeFromSettlement();
 			removeFunction(f);
 		}
 		
-		functions.clear();
-		functions = null;
+		functions.clear(); // Do NOT nullify
 	}
 
 	/**

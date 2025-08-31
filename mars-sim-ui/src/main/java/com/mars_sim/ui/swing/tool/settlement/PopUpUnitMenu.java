@@ -59,14 +59,16 @@ public class PopUpUnitMenu extends JPopupMenu {
         	case Building b:
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
-				add(buildSalvageItem(b));
+				if (b.getAssociatedSettlement().getConstructionManager().canDemolish(b)) {
+					add(buildSalvageItem(b));
+				}
 				break;
 
         	// Note: for construction sites
 			case ConstructionSite cs:
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
-				if (cs.isUnstarted()) {
+				if (cs.isRelocatable()) {
 					add(relocateSite(cs));
 				}
 				break;

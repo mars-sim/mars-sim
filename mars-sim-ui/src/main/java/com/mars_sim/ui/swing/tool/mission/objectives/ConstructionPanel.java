@@ -77,7 +77,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //-NLS-1$
         stageLabel = infoPanel.addTextField(stageLabelString, stage.getInfo().getName(),
                         ConstructionStageFormat.getTooltip(stage, true));
-        
+        infoPanel.addTextField("Work Type", site.isConstruction() ? "Build" : "Salvage", null);
 
         workRemaining = infoPanel.addTextField("Work Remaining", "",  null);
          

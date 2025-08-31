@@ -22,7 +22,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -59,8 +58,6 @@ public class ConstructionSite extends FixedUnit {
     private ConstructionStage currentStage;
 
     private List<ConstructionPhase> phases;
-
-    public double reclaimRate = 50D;
     
     /**
      * Constructor.
@@ -274,8 +271,8 @@ public class ConstructionSite extends FixedUnit {
         return !currentStage.isComplete();
     }
 
-    public boolean isUnstarted() {
-        return unstarted;
+    public boolean isRelocatable() {
+        return unstarted && isConstruction;
     }
 
     /**
