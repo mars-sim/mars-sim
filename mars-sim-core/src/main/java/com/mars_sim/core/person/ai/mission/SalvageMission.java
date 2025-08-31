@@ -275,7 +275,7 @@ public class SalvageMission extends AbstractMission
 
 		double topSiteProfit = 0D;
 		ConstructionManager manager = settlement.getConstructionManager();
-		for (ConstructionSite site :  manager.getConstructionSitesNeedingMission(false)) {
+		for (ConstructionSite site :  manager.getConstructionSitesNeedingMission()) {
 			double siteProfit = manager.getSalvageValues().getSalvageSiteProfit(site, constructionSkill);
 			if (siteProfit > topSiteProfit) {
 				result = site;

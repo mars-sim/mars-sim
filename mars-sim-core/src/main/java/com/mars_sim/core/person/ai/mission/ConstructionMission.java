@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.building.construction.ConstructionVehicleType;
@@ -100,10 +97,9 @@ public class ConstructionMission extends AbstractMission
 
 		// Determine construction site and stage.
 		int constructionSkill = 1;
-		if (startingMember.getUnitType() == UnitType.PERSON) {
-			Person person = (Person) startingMember;
-			constructionSkill += person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			person.getMind().setMission(this);
+		if (startingMember instanceof Person p) {
+			constructionSkill += p.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+			p.getMind().setMission(this); // THis has probably already been set
 		}
 
 		var site = startingMember.getAssociatedSettlement().getConstructionManager().getNextConstructionSite(constructionSkill);
@@ -311,16 +307,21 @@ public class ConstructionMission extends AbstractMission
 		}
 	}
 	
+	/**
+	 * Are all the prerequistes meet to start construction
+	 * @param site
+	 * @return
+	 */
 	private boolean isPreReqsAvailable(ConstructionSite site) {
 		var settlement = site.getAssociatedSettlement();
 		var stage = objective.getStage();
 
-		if (!loadAvailableConstructionMaterials(settlement, stage)) {
+		if (!stage.loadAvailableConstructionMaterials(settlement)) {
 			logger.info(site, 60_000, "Materials not ready at " + site.getName() + ".");
 			return false;
 		}
 	
-		if (!loadAvailableConstructionParts(settlement, stage)) {
+		if (!stage.loadAvailableConstructionParts(settlement)) {
 			logger.info(site, 60_000, "Parts not ready at " + site.getName() + ".");
 			return false;
 		}
@@ -341,75 +342,6 @@ public class ConstructionMission extends AbstractMission
 		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
 			setPhaseEnded(true);
 		}
-	}
-
-	/**
-	 * Loads remaining required construction materials into site that are available
-	 * at settlement inventory.
-	 * @param settlement 
-	 * 
-	 * @return true if all resources are available
-	 */
-	private boolean loadAvailableConstructionMaterials(Settlement settlement, ConstructionStage stage) {
-		// Account for the situation when all the input materials are ready 
-		// but since some processes take time to produce the output materials (the construction materials)
-		// It should simply wait for it to finish, without having to compute if resources are 
-		// missing over and over again.
-		
-		// Load amount resources.
-		for(var r : stage.getMissingResources().entrySet()) {
-			int resource = r.getKey();
-			double amountNeeded = r.getValue();
-			double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
-			// Load as much of the remaining resource as possible into the construction site
-			// stage.
-			double amountLoading = Math.min(amountAvailable, amountNeeded);
-
-			if (amountLoading > 0) {
-				// Retrieve this materials now
-				settlement.retrieveAmountResource(resource, amountLoading);
-				// Store the materials at this site
-				stage.addResource(resource, amountLoading);
-				amountNeeded -= amountLoading;
-			}
-
-			// Use a 10% buffer just in case other tasks will consume this materials at the same time
-			if (amountNeeded > 0) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-		
-		
-	/**
-	 * Loads remaining required construction materials into site that are available
-	 * at settlement inventory.
-	 * 
-	 * @return true if all parts are available
-	 */
-	private boolean loadAvailableConstructionParts(Settlement settlement, ConstructionStage stage) {
-		boolean enough = true;
-		// Load parts.
-		for(var e : stage.getMissingParts().entrySet()) {
-			int part = e.getKey();
-			int numberNeeded = e.getValue();
-			int numberAvailable = settlement.getItemResourceStored(part);
-			// Load as many remaining parts as possible into the construction site stage.
-			int numberLoading = Math.min(numberAvailable, numberNeeded);
-
-			if (numberLoading > 0) {
-				// Retrieve this item now
-				settlement.retrieveItemResource(part, numberLoading);
-				// Store this item at this site
-				stage.addParts(part, numberLoading);
-			}
-			else
-				enough = false;
-		}
-		
-		return enough;
 	}
 
 	/**
@@ -436,7 +368,7 @@ public class ConstructionMission extends AbstractMission
 
 		// Check if further work can be done on construction stage.
 		var stage = objective.getStage();
-		if (stage.getCompletableWorkTime() <= stage.getCompletedWorkTime()) {
+		if (stage.getRequiredWorkTime() <= stage.getCompletedWorkTime()) {
 			setPhaseEnded(true);
 		}
 
@@ -470,11 +402,21 @@ public class ConstructionMission extends AbstractMission
 			var manager = site.getAssociatedSettlement().getConstructionManager();
 
 			if (site.isComplete()) {
-				// Construct building if all 3 stages of the site construction have been complete.
-				Building building = site.createBuilding();
 				manager.removeConstructionSite(site);
-				site.getAssociatedSettlement().fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
-				logger.info(site, "New building '" + site.getBuildingName() + "' constructed.");
+
+				if (stage.isConstruction()) {		
+					// Construct building if all 3 stages of the site construction have been complete.
+					site.createBuilding();
+					logger.info(site, "New building '" + site.getBuildingName() + "' constructed.");
+				}
+				else {
+					// Get average construction skill of mission members.
+					double averageSkill = getMembers().stream()
+							.mapToDouble(w -> w.getSkillManager()
+								.getEffectiveSkillLevel(SkillType.CONSTRUCTION))
+							.average().orElse(0D);
+					site.reclaimParts(averageSkill);
+				}
 			}
 			else {
 				// Move on to the next one fromm the current one

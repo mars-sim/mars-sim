@@ -81,38 +81,42 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
 
         workRemaining = infoPanel.addTextField("Work Remaining", "",  null);
          
-        // Create remaining construction materials label panel.
-        JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
-        add(remainingMaterialsLabelPane, BorderLayout.CENTER);
-        
-        // Create remaining construction materials label.
-        String remainingMaterialsLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.constructionMaterials"); //$NON-NLS-1$
-        Border blackline = StyleManager.createLabelBorder(remainingMaterialsLabelString);
-        remainingMaterialsLabelPane.setBorder(blackline);
-        
-        // Create the construction materials table and model.
-        materialsTableModel = new MaterialsTableModel();
-        JTable materialsTable = new JTable(materialsTableModel);
-        materialsTable.setRowSelectionAllowed(true);
+        if (objective.getStage().isConstruction()) {
+            // Create remaining construction materials label panel.
+            JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
+            add(remainingMaterialsLabelPane, BorderLayout.CENTER);
+            
+            // Create remaining construction materials label.
+            String remainingMaterialsLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.constructionMaterials"); //$NON-NLS-1$
+            Border blackline = StyleManager.createLabelBorder(remainingMaterialsLabelString);
+            remainingMaterialsLabelPane.setBorder(blackline);
+            
+            // Create the construction materials table and model.
+            materialsTableModel = new MaterialsTableModel();
+            JTable materialsTable = new JTable(materialsTableModel);
+            materialsTable.setRowSelectionAllowed(true);
 
-        // Create a scroll pane for the remaining construction materials table.
-        scrollPane = new JScrollPane();
-        remainingMaterialsLabelPane.add(scrollPane);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setPreferredSize(new Dimension(-1, 100));  
-        scrollPane.setViewportView(materialsTable);
+            // Create a scroll pane for the remaining construction materials table.
+            scrollPane = new JScrollPane();
+            remainingMaterialsLabelPane.add(scrollPane);
+            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setPreferredSize(new Dimension(-1, 100));  
+            scrollPane.setViewportView(materialsTable);
+
+            // Update remaining construction materials table.
+            materialsTableModel.updateTable();
+        }
 
         site.addUnitListener(this);    
         
         updateProgressBar();
-
-        // Update remaining construction materials table.
-        materialsTableModel.updateTable();
     }
 
     @Override
     public void missionUpdate(MissionEvent event) {
-        materialsTableModel.updateTable();
+        if (materialsTableModel != null) {
+            materialsTableModel.updateTable();
+        }
     }
 
     /**
@@ -127,7 +131,8 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
             updateProgressBar();
 
         }
-        else if (UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()) {
+        else if (UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()
+                && materialsTableModel != null) {
             // Update remaining construction materials table.
             materialsTableModel.updateTable();
         }
@@ -139,7 +144,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
     private void updateProgressBar() {
         ConstructionStage stage = objective.getStage();
         if (stage != null) {
-            double workLeft = stage.getRequiredWorkTime() - stage.getCompletableWorkTime();
+            double workLeft = stage.getRequiredWorkTime() - stage.getCompletedWorkTime();
             workRemaining.setText(StyleManager.DECIMAL_MSOL.format(workLeft));
         
             // Update the tool tip string.

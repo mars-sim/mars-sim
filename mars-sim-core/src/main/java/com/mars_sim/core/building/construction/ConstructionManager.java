@@ -126,11 +126,10 @@ public class ConstructionManager implements Serializable {
 	 * @param construction Search for sites under construction not salvage
 	 * @return list of construction sites.
 	 */
-	public List<ConstructionSite> getConstructionSitesNeedingMission(boolean construction) {
+	public List<ConstructionSite> getConstructionSitesNeedingMission() {
 		List<ConstructionSite> result = new ArrayList<>();
 		for (ConstructionSite site : sites) {
-			if ((site.getWorkOnSite() == null) &&
-					!site.isComplete()&& site.isConstruction() == construction) {
+			if ((site.getWorkOnSite() == null) && !site.isComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
 					boolean workNeeded = !currentStage.isComplete();
@@ -195,7 +194,7 @@ public class ConstructionManager implements Serializable {
 	public ConstructionSite createNewSalvageConstructionSite(Building salvagedBuilding) {
 
 		// Remove building from settlement.
-		BuildingManager buildingManager = salvagedBuilding.getBuildingManager();
+		BuildingManager buildingManager = salvagedBuilding.getAssociatedSettlement().getBuildingManager();
 		
 		// Move any people in building to somewhere else in the settlement.
 		LifeSupport lifeSupport = salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
@@ -204,8 +203,6 @@ public class ConstructionManager implements Serializable {
 				// Note: the safest way is to assign a task to have the person to walk to another building
 				//       Need to find ways to ensure he will talk to an unaffected building
 				occupant.getTaskManager().addPendingTask(Walk.SIMPLE_NAME);
-//				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
-//				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
 
@@ -216,8 +213,6 @@ public class ConstructionManager implements Serializable {
 				// Note: the safest way is to assign a task to have the robot to walk to another building
 				//       Need to find ways to ensure it will talk to an unaffected building
 				occupant.getTaskManager().addPendingTask(Walk.SIMPLE_NAME);
-//				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
-//				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
 
@@ -246,7 +241,7 @@ public class ConstructionManager implements Serializable {
 	public ConstructionSite getNextConstructionSite(int skill) {
 
 		var potentials = sites.stream()
-					.filter(s -> s.isConstruction() && (s.getWorkOnSite() == null))
+					.filter(s -> s.getWorkOnSite() == null)
 					.filter(s -> s.getCurrentConstructionStage().getInfo().getBaseLevel() <= skill)
 					.toList();
 

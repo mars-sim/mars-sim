@@ -191,7 +191,7 @@ extends WizardPanel {
             
             // Add construction sites.
             Iterator<ConstructionSite> j = salvageSettlement.getConstructionManager().
-                    getConstructionSitesNeedingMission(false).iterator();
+                    getConstructionSitesNeedingMission().iterator();
             while (j.hasNext()) projectListModel.addElement(j.next());
         }
     }

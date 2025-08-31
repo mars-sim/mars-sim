@@ -146,9 +146,8 @@ public class ConstructBuilding extends EVAOperation {
 
 		boolean workAvailable = false;
 
-		// Checking stage for NullPointerException
 		if (stage != null)
-			workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+			workAvailable = stage.getRequiredWorkTime() > stage.getCompletedWorkTime();
 
 		return (workAvailable);
 	}
@@ -249,7 +248,7 @@ public class ConstructBuilding extends EVAOperation {
 		// Check if an accident happens during construction.
 		checkForAccident(workTime);
 		
-		boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+		boolean availableWork = stage.getRequiredWorkTime() > stage.getCompletedWorkTime();
 
 		// Check if site duration has ended or there is reason to cut the construction
 		// phase short and return to the rover.

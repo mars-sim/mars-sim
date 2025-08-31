@@ -19,6 +19,8 @@ import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.SettlementParameters;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
@@ -72,6 +74,23 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
                         new ConstructionPhase(frameInfo, true),
                         new ConstructionPhase(buildingInfo, true));
     }
+
+    public void testQuickConstruction() {
+        var s = buildSettlement();
+        s.getPreferences().putValue(SettlementParameters.INSTANCE, SettlementParameters.QUICK_CONST, Boolean.TRUE);
+
+        var site = new ConstructionSite(s, "Site1", WORKSHOP, phases, PLACE);
+
+        var stage = site.getCurrentConstructionStage();
+
+        assertLessThan("Work Time", foundationInfo.getWorkTime(), stage.getRequiredWorkTime());
+
+        var originalReqResources = foundationInfo.getResources();
+        var resource = RandomUtil.getARandSet(originalReqResources.keySet());
+        assertLessThan("Resource", foundationInfo.getResources().get(resource),
+                                            stage.getOriginalResources().get(resource));
+    }
+
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.

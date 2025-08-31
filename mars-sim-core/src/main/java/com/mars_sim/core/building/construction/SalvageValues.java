@@ -120,7 +120,7 @@ implements Serializable {
 		double result = 0D;
 
 		ConstructionManager manager = settlement.getConstructionManager();
-		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission(false).iterator();
+		Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission().iterator();
 		while (i.hasNext()) {
 			double profit = getSalvageSiteProfit(i.next(), constructionSkill);
 			if (profit > result) result = profit;

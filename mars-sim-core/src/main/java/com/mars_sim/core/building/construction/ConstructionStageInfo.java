@@ -8,6 +8,7 @@
 package com.mars_sim.core.building.construction;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -77,8 +78,8 @@ public class ConstructionStageInfo implements Serializable {
         this.workTime = workTime;
         this.architectConstructionSkill = architectConstructionSkill;
         this.prerequisiteStage = prerequisiteStage;
-        this.parts = parts;
-        this.resources = resources;
+        this.parts = Collections.unmodifiableMap(parts);
+        this.resources = Collections.unmodifiableMap(resources);
         this.vehicles = vehicles;
     }
 

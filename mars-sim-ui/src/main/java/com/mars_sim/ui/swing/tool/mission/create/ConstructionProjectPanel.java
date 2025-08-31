@@ -220,7 +220,7 @@ class ConstructionProjectPanel extends WizardPanel {
         Settlement settlement = getConstructionSettlement();
         if (settlement != null) {
             ConstructionManager manager = settlement.getConstructionManager();
-            manager.getConstructionSitesNeedingMission(true).forEach(cs -> siteListModel.addElement(cs));
+            manager.getConstructionSitesNeedingMission().forEach(cs -> siteListModel.addElement(cs));
         }
     }
 

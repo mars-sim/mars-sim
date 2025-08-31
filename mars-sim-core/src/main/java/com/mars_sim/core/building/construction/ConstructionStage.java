@@ -8,11 +8,11 @@ package com.mars_sim.core.building.construction;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementParameters;
 
 /**
  * A construction stage of a construction site.
@@ -29,7 +29,8 @@ public class ConstructionStage implements Serializable {
     private boolean isConstruction;
     
     private double completedWorkTime;
-    private double completableWorkTime;
+    private double requiredWorkTime;
+
 
     private ConstructionStageInfo info;
     private ConstructionSite site;
@@ -48,26 +49,40 @@ public class ConstructionStage implements Serializable {
      * 
      * @param info the stage information.
      */
-    public ConstructionStage(ConstructionStageInfo info, ConstructionSite site, boolean isConstruction) {
+    ConstructionStage(ConstructionStageInfo info, ConstructionSite site, boolean isConstruction) {
         this.info = info;
         this.site = site;
-        
         this.isConstruction = isConstruction;
         
+        var quickConstruction = site.getAssociatedSettlement().getPreferences().getBooleanValue(
+                                                                        SettlementParameters.INSTANCE,
+                                                                        SettlementParameters.QUICK_CONST,
+                                                           false);
         completedWorkTime = 0D;
-        completableWorkTime = 0D;
+        requiredWorkTime =  (quickConstruction ? 0.1D : 1D) * info.getWorkTime();
+        if (!isConstruction) {
+            requiredWorkTime *= SALVAGE_WORK_TIME_MODIFIER;
+        }
         
-        originalReqParts = new HashMap<>(info.getParts());
-        originalReqResources = new HashMap<>(info.getResources());
+        // Quick construction also reduces resources needed
+        if (quickConstruction && isConstruction) {
+            originalReqParts = new HashMap<>();
+            info.getParts().forEach((k,v) -> originalReqParts.put(k, (int)(v * 0.1D)));
 
-        availableResources = new HashMap<>();
+            originalReqResources = new HashMap<>();
+            info.getResources().forEach((k,v) -> originalReqResources.put(k, (v * 0.1D)));
+        }
+        else {
+            originalReqParts = info.getParts();
+            originalReqResources = info.getResources();
+        }
+
+        missingParts = new HashMap<>(originalReqParts);
         availableParts = new HashMap<>();
-        
-        missingParts = new HashMap<>(info.getParts());
-        missingResources = new HashMap<>(info.getResources());
-        
-        // Update the missing completable work time.
-        updateCompletableWorkTime();
+
+        missingResources = new HashMap<>(originalReqResources);
+        availableResources = new HashMap<>();
+
     }
 
     /**
@@ -77,6 +92,14 @@ public class ConstructionStage implements Serializable {
      */
     public ConstructionStageInfo getInfo() {
         return info;
+    }
+
+    /**
+     * Is this stage doing Constructiopn or Salvage
+     * @return
+     */
+    public boolean isConstruction() {
+        return isConstruction;
     }
 
     /**
@@ -98,24 +121,11 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Gets the amount work time that can be completed for this stage.
-     * 
-     * @return completable work time (millisols).
-     */
-    public double getCompletableWorkTime() {
-        return completableWorkTime;
-    }
-
-    /**
      * Gets the required work time for the stage.
      * 
      * @return work time (in millisols).
      */
     public double getRequiredWorkTime() {
-        double requiredWorkTime = info.getWorkTime();
-        if (!isConstruction) {
-            requiredWorkTime *= SALVAGE_WORK_TIME_MODIFIER;
-        }
         return requiredWorkTime;
     }
 
@@ -142,10 +152,6 @@ public class ConstructionStage implements Serializable {
      */
     public boolean isComplete() {
         return (completedWorkTime >= getRequiredWorkTime());
-    }
-
-    public double getCompletedPerc() {
-        return completedWorkTime / getRequiredWorkTime();
     }
 
     /**
@@ -202,6 +208,81 @@ public class ConstructionStage implements Serializable {
         return new HashMap<>(availableParts);
     }
     
+    /**
+	 * Loads remaining required construction materials into site that are available
+	 * at settlement inventory.
+	 * @param settlement 
+	 * 
+	 * @return true if all resources are available
+	 */
+	public boolean loadAvailableConstructionMaterials(Settlement settlement) {
+		// Account for the situation when all the input materials are ready 
+		// but since some processes take time to produce the output materials (the construction materials)
+		// It should simply wait for it to finish, without having to compute if resources are 
+		// missing over and over again.
+		if (!isConstruction) {
+            return true;
+        }
+
+		// Load amount resources.
+		for(var r : missingResources.entrySet()) {
+			int resource = r.getKey();
+			double amountNeeded = r.getValue();
+			double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
+			// Load as much of the remaining resource as possible into the construction site
+			// stage.
+			double amountLoading = Math.min(amountAvailable, amountNeeded);
+
+			if (amountLoading > 0) {
+				// Retrieve this materials now
+				settlement.retrieveAmountResource(resource, amountLoading);
+				// Store the materials at this site
+				addResource(resource, amountLoading);
+				amountNeeded -= amountLoading;
+			}
+
+			// Use a 10% buffer just in case other tasks will consume this materials at the same time
+			if (amountNeeded > 0) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+		
+		
+	/**
+	 * Loads remaining required construction materials into site that are available
+	 * at settlement inventory.
+	 * 
+	 * @return true if all parts are available
+	 */
+	public boolean loadAvailableConstructionParts(Settlement settlement) {
+        if (!isConstruction) {
+            return true;
+        }
+
+		boolean enough = true;
+		// Load parts.
+		for(var e : missingParts.entrySet()) {
+			int part = e.getKey();
+			int numberNeeded = e.getValue();
+			int numberAvailable = settlement.getItemResourceStored(part);
+			// Load as many remaining parts as possible into the construction site stage.
+			int numberLoading = Math.min(numberAvailable, numberNeeded);
+
+			if (numberLoading > 0) {
+				// Retrieve this item now
+				settlement.retrieveItemResource(part, numberLoading);
+				// Store this item at this site
+				addParts(part, numberLoading);
+			}
+			else
+				enough = false;
+		}
+		
+		return enough;
+	}
     
     /**
      * Adds parts to the construction stage.
@@ -209,7 +290,7 @@ public class ConstructionStage implements Serializable {
      * @param part the part to add.
      * @param number the number of parts to add.
      */
-    public void addParts(Integer part, int number) {
+    private void addParts(Integer part, int number) {
 
         if (missingParts.containsKey(part)) {
             int missingRequiredNum = missingParts.get(part);
@@ -225,9 +306,6 @@ public class ConstructionStage implements Serializable {
                 }
                 availableNum += number;
                 availableParts.put(part, availableNum);
-                
-                // Update the missing completable work time.
-                updateCompletableWorkTime();
                 
                 // Fire construction event
                 site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
@@ -250,7 +328,7 @@ public class ConstructionStage implements Serializable {
      * @param resource the resource to add.
      * @param amount the amount (kg) of resource to add.
      */
-    public void addResource(Integer resource, double amount) {
+    private void addResource(Integer resource, double amount) {
 
         if (missingResources.containsKey(resource)) {
             double missingRequiredAmount = missingResources.get(resource);
@@ -264,9 +342,6 @@ public class ConstructionStage implements Serializable {
                 }
                 availableAmount += amount;
                 availableResources.put(resource, availableAmount);
-                
-                // Update the missing completable work time.
-                updateCompletableWorkTime();
                 
                 // Fire construction event
                 site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
@@ -299,58 +374,6 @@ public class ConstructionStage implements Serializable {
         return missingParts.entrySet().stream()
             .anyMatch(e -> (e.getValue() > 0)
                     && (e.getValue() > settlement.getItemResourceStored(e.getKey())));
-    }
-
-    /**
-     * Updates the completable work time available.
-     */
-    private void updateCompletableWorkTime() {
-
-        double totalRequiredConstructionMaterial = getConstructionMaterialMass(
-                info.getResources(), info.getParts());
-
-        double totalMissingConstructionMaterial = getConstructionMaterialMass(
-                missingResources, missingParts);
-
-        double proportion = 1D;
-        if (totalRequiredConstructionMaterial > 0D) {
-            proportion = (totalRequiredConstructionMaterial - totalMissingConstructionMaterial) / 
-                    totalRequiredConstructionMaterial;
-        }
-
-        completableWorkTime = proportion * info.getWorkTime();
-    }
-
-    /**
-     * Gets the total mass of construction materials.
-     * 
-     * @param resources map of resources and their amounts (kg).
-     * @param parts map of parts and their numbers.
-     * @return total mass.
-     */
-    private double getConstructionMaterialMass(Map<Integer, Double> resources, 
-    		Map<Integer, Integer> parts) {
-
-        double result = 0D;
-
-        // Add total mass of resources.
-        Iterator<Integer> i = resources.keySet().iterator();
-        while (i.hasNext()) {
-        	Integer resource = i.next();
-            double amount = resources.get(resource);
-            result += amount;
-        }
-
-        // Add total mass of parts.
-        Iterator<Integer> j = parts.keySet().iterator();
-        while (j.hasNext()) {
-        	Integer part = j.next();
-            int number = parts.get(part);
-            double mass = ItemResourceUtil.findItemResource(part).getMassPerItem();
-            result += number * mass;
-        }
-
-        return result;
     }
 
     @Override
